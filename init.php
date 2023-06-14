@@ -7,6 +7,8 @@
 use Monolog\Logger;
 use Pastell\Database\DatabaseUpdater;
 use Pastell\Service\FeatureToggleService;
+use Pastell\Storage\StorageInterfaceDummy;
+use Pastell\Storage\VaultAdapter;
 use Pastell\Utilities\Identifier\IdentifierGeneratorInterface;
 use Pastell\Utilities\Identifier\UuidGenerator;
 use Pastell\Storage\S3Adapter;
@@ -84,6 +86,17 @@ if ($objectInstancier->getInstance(Authentification::class)->isConnected()) {
 }
 $objectInstancier->getInstance(Journal::class)->setId($id_u_journal);
 
+$objectInstancier->setInstance('useVaultForPasswordStorage', USE_VAULT_FOR_PASSWORD_STORAGE);
+$objectInstancier->setInstance('vaultUrl', VAULT_URL);
+$objectInstancier->setInstance('vaultToken', VAULT_TOKEN);
+
+$donneesFormulaireFactory = $objectInstancier->getInstance(DonneesFormulaireFactory::class);
+$donneesFormulaireFactory->setPasswordStorage(new StorageInterfaceDummy());
+$donneesFormulaireFactory->setUuidGenerator(new UuidGenerator());
+if (USE_VAULT_FOR_PASSWORD_STORAGE) {
+    $donneesFormulaireFactory->setPasswordStorage(new VaultAdapter(VAULT_URL, VAULT_TOKEN));
+}
+
 try {
     $horodateur = $objectInstancier->getInstance(ConnecteurFactory::class)->getGlobalConnecteur('horodateur');
     if ($horodateur) {
@@ -116,7 +129,7 @@ $authentification = $objectInstancier->getInstance(Authentification::class);
 
 $journal = $objectInstancier->getInstance(Journal::class);
 $documentTypeFactory = $objectInstancier->getInstance(DocumentTypeFactory::class);
-$donneesFormulaireFactory = $objectInstancier->getInstance(DonneesFormulaireFactory::class);
+
 $roleUtilisateur = $objectInstancier->getInstance(RoleUtilisateur::class);
 
 if (PHP_SAPI !== 'cli' || $objectInstancier->getInstance(SQLQuery::class)->isConnected()) {

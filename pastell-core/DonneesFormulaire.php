@@ -1,6 +1,8 @@
 <?php
 
 use Pastell\Configuration\ElementType;
+use Pastell\Storage\StorageInterface;
+use Pastell\Utilities\Identifier\UuidGenerator;
 
 /**
  * Gestion des données de formulaire à partir d'un fichier YML de type clé:valeur
@@ -34,12 +36,19 @@ class DonneesFormulaire
      * @param DocumentType $documentType
      * @param YMLLoader|null $ymlLoader
      */
-    public function __construct($filePath, DocumentType $documentType, ?YMLLoader $ymlLoader = null)
-    {
+    public function __construct(
+        $filePath,
+        DocumentType $documentType,
+        ?YMLLoader $ymlLoader = null,
+        private readonly bool $useVaultForPasswordStorage = false,
+        private readonly ?StorageInterface $passwordStorage = null,
+        private readonly ?UuidGenerator $uuidGenerator = null,
+    ) {
         $this->filePath = $filePath;
         $this->documentType = $documentType;
         $this->onChangeAction = [];
         $this->fichierCleValeur = new FichierCleValeur($filePath, $ymlLoader);
+        $this->checkPasswordValueToGet();
         $this->setOnglet();
         /** @var Field $field */
         foreach ($this->getFormulaire()->getAllFields() as $field) {
@@ -1078,5 +1087,45 @@ class DonneesFormulaire
             );
         }
         return $fieldSize;
+    }
+
+    private function checkPasswordFieldToSave(): void
+    {
+        if (
+            $this->useVaultForPasswordStorage &&
+            str_contains($this->id_d, DonneesFormulaireFactory::ID_CONNECTEUR)
+        ) {
+            foreach ($this->getFormulaire()->getFields() as $field) {
+                if (
+                    $field->getType() === 'password' &&
+                    ($value = $this->get($field->getName())) !== ''
+                ) {
+                    $passwordId = $this->fichierCleValeur->getYmlInfo()[$field->getName()];
+                    if ($this->passwordStorage->read($passwordId) === '404 : Bad status received from Vault') {
+                        $passwordId = $this->uuidGenerator->generate();
+                    }
+                    $this->passwordStorage->write($passwordId, $value);
+                    $this->fichierCleValeur->set($field->getName(), $passwordId);
+                }
+            }
+        }
+    }
+
+    private function checkPasswordValueToGet(): void
+    {
+        if (
+            $this->useVaultForPasswordStorage &&
+            str_contains($this->filePath, DonneesFormulaireFactory::ID_CONNECTEUR)
+        ) {
+            foreach ($this->getFormulaire()->getFields() as $field) {
+                if ($field->getType() === 'password') {
+                    $passwordId = $this->fichierCleValeur->getYmlInfo()[$field->getName()] ?? '';
+                    $password = $this->passwordStorage->read($passwordId);
+                    if ($password !== '404 : Bad status received from Vault') {
+                        $this->fichierCleValeur->set($field->getName(), $password);
+                    }
+                }
+            }
+        }
     }
 }

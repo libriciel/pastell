@@ -1,11 +1,18 @@
 <?php
 
+use Pastell\Storage\StorageInterface;
+use Pastell\Utilities\Identifier\UuidGenerator;
+
 /**
  * Permet de créer un objet de type DonneesFormulaire
  * @author eric
  */
 class DonneesFormulaireFactory
 {
+    private ?StorageInterface $passwordStorage = null;
+    private ?UuidGenerator $uuidGenerator = null;
+    public const ID_CONNECTEUR = 'connecteur_';
+
     public function __construct(
         private readonly DocumentTypeFactory $documentTypeFactory,
         private $workspacePath,
@@ -13,7 +20,8 @@ class DonneesFormulaireFactory
         private readonly DocumentSQL $documentSQL,
         private readonly DocumentIndexSQL $documentIndexSQL,
         private readonly YMLLoader $ymlLoader,
-        private readonly DocumentActionSQL $documentAction
+        private readonly DocumentActionSQL $documentAction,
+        private readonly bool $useVaultForPasswordStorage,
     ) {
     }
     /**
@@ -49,8 +57,7 @@ class DonneesFormulaireFactory
         $documentType = ($connecteur_entite_info['global']) ?
             $this->documentTypeFactory->getGlobalDocumentType($connecteur_entite_info['id_connecteur'])
             : $this->documentTypeFactory->getEntiteDocumentType($connecteur_entite_info['id_connecteur']);
-
-        $id_document = "connecteur_$id_ce";
+        $id_document = DonneesFormulaireFactory::ID_CONNECTEUR . "$id_ce";
         return $this->getConnecteurFromCache($id_document, $documentType);
     }
 
@@ -79,9 +86,12 @@ class DonneesFormulaireFactory
         $doc = new DonneesFormulaire(
             $this->workspacePath  . "/$id_document.yml",
             $documentType,
-            $this->ymlLoader
+            $this->ymlLoader,
+            $this->useVaultForPasswordStorage,
+            $this->passwordStorage,
+            $this->uuidGenerator,
         );
-        $doc->{'id_d'} = $id_document;
+        $doc->id_d = $id_document;
         $documentIndexor = new DocumentIndexor($this->documentIndexSQL, $id_document);
         $doc->setDocumentIndexor($documentIndexor);
         return $doc;
@@ -98,8 +108,15 @@ class DonneesFormulaireFactory
         if (! file_exists($dir)) {
             mkdir($dir, 0777, true);
         }
-        $doc = new DonneesFormulaire("$dir/$id_document.yml", $documentType, $this->ymlLoader);
-        $doc->{'id_d'} = $id_document;
+        $doc = new DonneesFormulaire(
+            "$dir/$id_document.yml",
+            $documentType,
+            $this->ymlLoader,
+            $this->useVaultForPasswordStorage,
+            $this->passwordStorage,
+            $this->uuidGenerator,
+        );
+        $doc->id_d = $id_document;
         $doc = $this->setEditableContent($documentType, $doc);
         $documentIndexor = new DocumentIndexor($this->documentIndexSQL, $id_document);
         $doc->setDocumentIndexor($documentIndexor);
@@ -113,10 +130,10 @@ class DonneesFormulaireFactory
 
     private function getNewDirectoryPath($id_document)
     {
-        if (mb_strlen($id_document) < 2) {
+        if (! is_string($id_document)) {
             return $this->workspacePath;
         }
-        if (! is_string($id_document)) {
+        if (mb_strlen($id_document) < 2) {
             return $this->workspacePath;
         }
         $a = $id_document[0];
@@ -131,7 +148,14 @@ class DonneesFormulaireFactory
         if (file_exists($filename)) {
             unlink($filename);
         }
-        return new DonneesFormulaire($filename, $documentType);
+        return new DonneesFormulaire(
+            $filename,
+            $documentType,
+            null,
+            $this->useVaultForPasswordStorage,
+            $this->passwordStorage,
+            $this->uuidGenerator,
+        );
     }
 
     /**
@@ -150,5 +174,15 @@ class DonneesFormulaireFactory
             $doc->setEditableContent($editable_content ?: []);
         }
         return $doc;
+    }
+
+    public function setPasswordStorage(StorageInterface $passwordStorage): void
+    {
+        $this->passwordStorage = $passwordStorage;
+    }
+
+    public function setUuidGenerator(UuidGenerator $uuidGenerator): void
+    {
+        $this->uuidGenerator = $uuidGenerator;
     }
 }

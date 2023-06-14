@@ -26,18 +26,22 @@ class FichierCleValeur
             return ;
         }
 
-        $this->info = $this->ymlLoader->getArray($this->filePath, self::CACHE_TTL);
+        $this->info = $this->getYmlInfo();
+    }
 
-
-        foreach ($this->info as $field_name => $field_value) {
+    public function getYmlInfo(): array
+    {
+        $info = $this->ymlLoader->getArray($this->filePath, self::CACHE_TTL);
+        foreach ($info as $field_name => $field_value) {
             if (is_array($field_value)) {
                 foreach ($field_value as $i => $value) {
-                    $this->info[$field_name][$i] = $this->unescape($value);
+                    $info[$field_name][$i] = $this->unescape($value);
                 }
             } else {
-                $this->info[$field_name] = $this->unescape($field_value);
+                $info[$field_name] = $this->unescape($field_value);
             }
         }
+        return $info;
     }
 
     //La conversion YML efface parfois des caractères lorsque ceux-ci peuvent être transformés en autre chose que des
