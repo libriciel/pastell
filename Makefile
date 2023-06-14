@@ -79,11 +79,17 @@ start:  ## Start all services
 start-minio:  ## Start all services with minio
 	$(DOCKER_COMPOSE) -f docker/compose.minio.yaml up -d --remove-orphans
 
+start-vault:  ## Start all services with minio
+	$(DOCKER_COMPOSE) -f docker/docker-compose.vault.yml up -d --remove-orphans
+
 stop: ## Stop all services
 	$(DOCKER_COMPOSE) down
 
 stop-minio:  ## Start all services with minio
 	$(DOCKER_COMPOSE) -f docker/compose.minio.yaml down
+
+stop-vault:  ## Start all services with minio
+	$(DOCKER_COMPOSE) -f docker/docker-compose.vault.yml down
 
 module-json-actes: docker-compose-up ## Run make-module json-actes
 	$(MAKE_MODULE) ./json-studio/json-actes/draft-ls-actes.json ./module/ --id ls-actes --name "Actes"

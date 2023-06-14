@@ -288,3 +288,16 @@ if (!defined('DISPLAY_SECURITY_BANNER')) {
 if (!defined('ARCHIVE_CREATION_TIMEOUT')) {
     define('ARCHIVE_CREATION_TIMEOUT', 1200);
 }
+
+// Password storage configuration for Vault
+if (!defined('USE_VAULT_FOR_PASSWORD_STORAGE')) {
+    define('USE_VAULT_FOR_PASSWORD_STORAGE', false);
+}
+
+if (!defined('VAULT_URL')) {
+    define('VAULT_URL', 'http://vault:8200');
+}
+
+if (!defined('VAULT_TOKEN')) {
+    define('VAULT_TOKEN', 'tdctoken');
+}
