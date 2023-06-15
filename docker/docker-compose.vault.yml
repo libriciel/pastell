@@ -1,19 +1,20 @@
 services:
   web:
     environment:
-      USE_VAULT_FOR_PASSWORD_STORAGE: ${USE_VAULT_FOR_PASSWORD_STORAGE:-true}
-      VAULT_URL: ${VAULT_URL:-http://0.0.0.0:8200}
-      VAULT_TOKEN: ${VAULT_TOKEN:-tdctoken}
+      USE_EXTERNAL_STORAGE_FOR_PASSWORD_CONNECTOR: ${USE_EXTERNAL_STORAGE_FOR_PASSWORD_CONNECTOR:-false}
+      VAULT_URL: ${VAULT_URL:-http://vault:8200}
+      VAULT_TOKEN: ${VAULT_TOKEN:-vaultToken}
+      VAULT_UNSEAL_KEY: ${VAULT_UNSEAL_KEY:-vaultUnsealKey}
 
   vault:
-      image: hashicorp/vault
+      image: registry.libriciel.fr:443/public/signature/ip-vault:1.7.10.2
       container_name: pastell-vault-1
       cap_add:
         - IPC_LOCK
       ports:
         - 8200:8200
       environment:
-        - VAULT_DEV_ROOT_TOKEN_ID=tdctoken
-        - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+        - VAULT_ADDR=http://vault:8200
+        - VAULT_API_ADDR=http://vault:8200
       volumes:
-        - ${HOME}/vault/data:/data
+        - ${HOME}/data/file:/vault/data

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pastell\Storage;
 
+use Exception;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vault\AuthenticationStrategies\TokenAuthenticationStrategy;
@@ -22,8 +23,9 @@ class VaultAdapter implements StorageInterface
      * @throws ClientExceptionInterface
      * @throws RuntimeException
      * @throws InvalidArgumentException
+     * @throws Exception
      */
-    public function __construct(string $vaultUrl, string $token)
+    public function __construct(string $vaultUrl, string $unsealKey, string $token)
     {
         $this->vaultClient = new Client(
             new Uri($vaultUrl),
@@ -31,6 +33,13 @@ class VaultAdapter implements StorageInterface
             new RequestFactory(),
             new StreamFactory()
         );
+
+        try {
+            $this->vaultClient->post('v1/sys/unseal', json_encode(['key' => $unsealKey]));
+        } catch (ClientExceptionInterface $exception) {
+            throw new Exception($exception->getCode() . ' : ' . $exception->getMessage());
+        }
+
         $authenticated = $this->vaultClient
             ->setAuthenticationStrategy(new TokenAuthenticationStrategy($token))
             ->authenticate();

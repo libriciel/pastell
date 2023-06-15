@@ -21,7 +21,7 @@ class DonneesFormulaireFactory
         private readonly DocumentIndexSQL $documentIndexSQL,
         private readonly YMLLoader $ymlLoader,
         private readonly DocumentActionSQL $documentAction,
-        private readonly bool $useVaultForPasswordStorage,
+        private readonly bool $useExternalStorageForPasswordConnector,
     ) {
     }
     /**
@@ -87,7 +87,7 @@ class DonneesFormulaireFactory
             $this->workspacePath  . "/$id_document.yml",
             $documentType,
             $this->ymlLoader,
-            $this->useVaultForPasswordStorage,
+            $this->useExternalStorageForPasswordConnector,
             $this->passwordStorage,
             $this->uuidGenerator,
         );
@@ -112,7 +112,7 @@ class DonneesFormulaireFactory
             "$dir/$id_document.yml",
             $documentType,
             $this->ymlLoader,
-            $this->useVaultForPasswordStorage,
+            $this->useExternalStorageForPasswordConnector,
             $this->passwordStorage,
             $this->uuidGenerator,
         );
@@ -152,7 +152,7 @@ class DonneesFormulaireFactory
             $filename,
             $documentType,
             null,
-            $this->useVaultForPasswordStorage,
+            $this->useExternalStorageForPasswordConnector,
             $this->passwordStorage,
             $this->uuidGenerator,
         );

@@ -290,8 +290,8 @@ if (!defined('ARCHIVE_CREATION_TIMEOUT')) {
 }
 
 // Password storage configuration for Vault
-if (!defined('USE_VAULT_FOR_PASSWORD_STORAGE')) {
-    define('USE_VAULT_FOR_PASSWORD_STORAGE', false);
+if (!defined('USE_EXTERNAL_STORAGE_FOR_PASSWORD_CONNECTOR')) {
+    define('USE_EXTERNAL_STORAGE_FOR_PASSWORD_CONNECTOR', false);
 }
 
 if (!defined('VAULT_URL')) {
@@ -299,5 +299,9 @@ if (!defined('VAULT_URL')) {
 }
 
 if (!defined('VAULT_TOKEN')) {
-    define('VAULT_TOKEN', 'tdctoken');
+    define('VAULT_TOKEN', 'vaultToken');
+}
+
+if (!defined('VAULT_UNSEAL_KEY')) {
+    define('VAULT_UNSEAL_KEY', 'vaultUnsealKey');
 }

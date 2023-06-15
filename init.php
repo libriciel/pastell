@@ -86,15 +86,20 @@ if ($objectInstancier->getInstance(Authentification::class)->isConnected()) {
 }
 $objectInstancier->getInstance(Journal::class)->setId($id_u_journal);
 
-$objectInstancier->setInstance('useVaultForPasswordStorage', USE_VAULT_FOR_PASSWORD_STORAGE);
+$objectInstancier->setInstance('useExternalStorageForPasswordConnector', USE_EXTERNAL_STORAGE_FOR_PASSWORD_CONNECTOR);
 $objectInstancier->setInstance('vaultUrl', VAULT_URL);
 $objectInstancier->setInstance('vaultToken', VAULT_TOKEN);
+$objectInstancier->setInstance('vaultUnsealKey', VAULT_UNSEAL_KEY);
 
 $donneesFormulaireFactory = $objectInstancier->getInstance(DonneesFormulaireFactory::class);
 $donneesFormulaireFactory->setPasswordStorage(new StorageInterfaceDummy());
 $donneesFormulaireFactory->setUuidGenerator(new UuidGenerator());
-if (USE_VAULT_FOR_PASSWORD_STORAGE) {
-    $donneesFormulaireFactory->setPasswordStorage(new VaultAdapter(VAULT_URL, VAULT_TOKEN));
+if (USE_EXTERNAL_STORAGE_FOR_PASSWORD_CONNECTOR) {
+    $donneesFormulaireFactory->setPasswordStorage(new VaultAdapter(
+        VAULT_URL,
+        VAULT_UNSEAL_KEY,
+        VAULT_TOKEN
+    ));
 }
 
 try {

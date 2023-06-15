@@ -41,7 +41,7 @@ abstract class PastellTestCase extends TestCase
         $this->objectInstancier = new ObjectInstancier();
         ObjectInstancierFactory::setObjectInstancier($this->objectInstancier);
 
-        $this->objectInstancier->setInstance('useVaultForPasswordStorage', false);
+        $this->objectInstancier->setInstance('useExternalStorageForPasswordConnector', false);
 
         $this->objectInstancier->setInstance('site_base', 'https://localhost:8443');
         $this->objectInstancier->setInstance('websec_base', 'https://localhost:8443');
