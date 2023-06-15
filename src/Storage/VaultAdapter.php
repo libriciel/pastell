@@ -60,4 +60,15 @@ class VaultAdapter implements StorageInterface
         }
         return $response;
     }
+
+    public function delete(string $id): string
+    {
+        try {
+            $this->vaultClient->revoke('/secret/metadata/' . $id);
+            $response = 'Delete successful';
+        } catch (ClientExceptionInterface $e) {
+            $response = $e->getCode() . ' : ' . $e->getMessage();
+        }
+        return $response;
+    }
 }

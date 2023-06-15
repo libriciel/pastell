@@ -15,4 +15,9 @@ class StorageInterfaceDummy implements StorageInterface
     {
         return '';
     }
+
+    public function delete(string $id): string
+    {
+        return '';
+    }
 }

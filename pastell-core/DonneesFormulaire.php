@@ -604,6 +604,7 @@ class DonneesFormulaire
 
     private function saveDataFile($setModifiedToFalse = true)
     {
+        $this->checkPasswordFieldsToSaveOrDelete(true);
         $this->fichierCleValeur->save();
         if ($setModifiedToFalse) {
             $this->isModified = false;
@@ -826,9 +827,10 @@ class DonneesFormulaire
         return $this->lastError;
     }
 
-    public function delete()
+    public function delete(): void
     {
-        $file_to_delete = glob($this->filePath . "*");
+        $file_to_delete = glob($this->filePath . '*');
+        $this->checkPasswordFieldsToSaveOrDelete(false);
         foreach ($file_to_delete as $file) {
             unlink($file);
         }
@@ -1089,23 +1091,27 @@ class DonneesFormulaire
         return $fieldSize;
     }
 
-    private function checkPasswordFieldToSave(): void
+    private function checkPasswordFieldsToSaveOrDelete(bool $toSave): void
     {
         if (
             $this->useVaultForPasswordStorage &&
             str_contains($this->id_d, DonneesFormulaireFactory::ID_CONNECTEUR)
         ) {
             foreach ($this->getFormulaire()->getFields() as $field) {
-                if (
-                    $field->getType() === 'password' &&
-                    ($value = $this->get($field->getName())) !== ''
-                ) {
+                if ($field->getType() === 'password' && ($value = $this->get($field->getName())) !== '') {
                     $passwordId = $this->fichierCleValeur->getYmlInfo()[$field->getName()];
-                    if ($this->passwordStorage->read($passwordId) === '404 : Bad status received from Vault') {
-                        $passwordId = $this->uuidGenerator->generate();
+                    if ($toSave) {
+                        if ($this->passwordStorage->read($passwordId) === '404 : Bad status received from Vault') {
+                            $passwordId = $this->uuidGenerator->generate();
+                        }
+                        $response = $this->passwordStorage->write($passwordId, $value);
+                        $this->fichierCleValeur->set($field->getName(), $passwordId);
+                    } else {
+                        $response = $this->passwordStorage->delete($passwordId);
                     }
-                    $this->passwordStorage->write($passwordId, $value);
-                    $this->fichierCleValeur->set($field->getName(), $passwordId);
+                    if ($response === '404 : Bad status received from Vault') {
+                        throw new Exception("Problème d'accès au Vault");
+                    }
                 }
             }
         }

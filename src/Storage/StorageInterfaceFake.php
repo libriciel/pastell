@@ -21,4 +21,13 @@ class StorageInterfaceFake implements StorageInterface
         }
         return 'Objet inexistant';
     }
+
+    public function delete(string $id): string
+    {
+        if (isset(self::$memory[$id])) {
+            unset(self::$memory[$id]);
+            return "$id détruit";
+        }
+        return 'Objet inexistant';
+    }
 }
