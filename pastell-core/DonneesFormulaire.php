@@ -1123,13 +1123,14 @@ class DonneesFormulaire
         $value = $this->get($field->getName());
         if ($value !== '' && $value !== false) {
             $passwordId = '';
-            if (in_array($field->getName(), $this->fichierCleValeur->getYmlInfo())) {
+            if (array_key_exists($field->getName(), $this->fichierCleValeur->getYmlInfo())) {
                 $passwordId = $this->fichierCleValeur->getYmlInfo()[$field->getName()];
             }
             if ($action === 'save') {
                 if (
                     $passwordId === ''
-                    || $this->passwordStorage->read($passwordId) === '404 : Bad status received from Vault'
+                    || str_contains($passwordId, '#')
+                    || str_contains($this->passwordStorage->read($passwordId), '404')
                 ) {
                     $passwordId = $this->uuidGenerator->generate();
                 }
@@ -1138,8 +1139,8 @@ class DonneesFormulaire
             } else {
                 $response = $this->passwordStorage->delete($passwordId);
             }
-            if ($response === '404 : Bad status received from Vault') {
-                throw new Exception("Problème d'accès au Vault");
+            if (str_starts_with($response, 'Erreur')) {
+                $this->lastError = $response;
             }
         }
     }
@@ -1149,10 +1150,12 @@ class DonneesFormulaire
         $info = $this->fichierCleValeur->getYmlInfo();
         if ($info) {
             $passwordId = $info[$field->getName()] ?? '';
-            if ($passwordId !== '' && str_contains($passwordId, '.')) {
-                $password = $this->passwordStorage->read($passwordId);
-                if ($password !== '404 : Bad status received from Vault') {
-                    $this->fichierCleValeur->set($field->getName(), $password);
+            if ($passwordId !== '' && !str_contains($passwordId, '.')) {
+                $response = $this->passwordStorage->read($passwordId);
+                if (str_starts_with($response, 'Erreur')) {
+                    $this->lastError = $response;
+                } else {
+                    $this->fichierCleValeur->set($field->getName(), $response);
                 }
             }
         }

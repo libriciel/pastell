@@ -95,11 +95,7 @@ $donneesFormulaireFactory = $objectInstancier->getInstance(DonneesFormulaireFact
 $donneesFormulaireFactory->setPasswordStorage(new StorageInterfaceDummy());
 $donneesFormulaireFactory->setUuidGenerator(new UuidGenerator());
 if (USE_EXTERNAL_STORAGE_FOR_PASSWORD_CONNECTOR) {
-    $donneesFormulaireFactory->setPasswordStorage(new VaultAdapter(
-        VAULT_URL,
-        VAULT_UNSEAL_KEY,
-        VAULT_TOKEN
-    ));
+    $donneesFormulaireFactory->setPasswordStorage($objectInstancier->getInstance(VaultAdapter::class));
 }
 
 try {

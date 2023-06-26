@@ -247,6 +247,7 @@ abstract class ActionExecutor
      * @return Connecteur|false
      * @throws NotFoundException
      * @throws UnrecoverableException
+     * @throws Exception
      */
     public function getConnecteur($type_connecteur, $num_same_connecteur = 0): Connecteur|false
     {
@@ -255,17 +256,34 @@ abstract class ActionExecutor
             ->getProperties($this->action, 'num-same-connecteur') ?: $num_same_connecteur;
 
         if (isset($this->connecteurs[$type_connecteur][$num_same_connecteur])) {
+            $this->checkValidityConnector($this->connecteurs[$type_connecteur][$num_same_connecteur]);
             return $this->connecteurs[$type_connecteur][$num_same_connecteur] ;
         }
 
         $id_ce = $this->getConnecteurId($type_connecteur, $num_same_connecteur);
         $connecteur = $this->getConnecteurFactory()->getConnecteurById($id_ce);
+
+        $this->checkValidityConnector($connecteur);
+
         if ($this->id_d) {
             $connecteur->setDocDonneesFormulaire($this->getDonneesFormulaire());
         }
 
         $this->connecteurs[$type_connecteur][$num_same_connecteur] = $connecteur;
         return $connecteur;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function checkValidityConnector(Connecteur $connecteur): void
+    {
+        $error = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)
+            ->getConnecteurEntiteFormulaire($connecteur->getConnecteurInfo()['id_ce'])->getLastError();
+
+        if ($error) {
+            throw new Exception($error);
+        }
     }
 
     /**
@@ -330,7 +348,9 @@ abstract class ActionExecutor
         if (! $this->id_ce) {
             throw new Exception("Cette action n'est pas une action de connecteur.");
         }
-        return $this->getConnecteurFactory()->getConnecteurById($this->id_ce);
+        $connecteur = $this->getConnecteurFactory()->getConnecteurById($this->id_ce);
+        $this->checkValidityConnector($connecteur);
+        return $connecteur;
     }
 
     /**

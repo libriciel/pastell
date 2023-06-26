@@ -781,31 +781,55 @@ class DonneesFormulaireTest extends PastellTestCase
     }
 
     /**
-     * @throws NotFoundException
      * @throws Exception
      */
-    public function testSavePasswordsConnecteurOnExternalStorage(): void
+    private function getDataFromConnecteurWithPasswordOnExternalStorage(): array
     {
+        $data = [];
         $this->getObjectInstancier()->setInstance('useExternalStorageForPasswordConnector', true);
         $id_ce = $this->createConnector('vitam', 'VITAM', 1)['id_ce'];
 
         $donneesFormulaireFactory = $this->getDonneesFormulaireFactory();
-        $storage = new StorageInterfaceFake();
-        $donneesFormulaireFactory->setPasswordStorage($storage);
+        $data['storage'] = new StorageInterfaceFake();
+        $donneesFormulaireFactory->setPasswordStorage($data['storage']);
         $donneesFormulaireFactory->setUuidGenerator(new UuidGenerator());
 
-        $donneesFormulaire = $donneesFormulaireFactory->getConnecteurEntiteFormulaire($id_ce);
-        $password = 'monMotDePasse';
-        $donneesFormulaire->setData('certificate_password', $password);
+        $data['donneesFormulaire'] = $donneesFormulaireFactory->getConnecteurEntiteFormulaire($id_ce);
+        $data['password'] = 'monMotDePasse';
+        $data['donneesFormulaire']->setData('certificate_password', $data['password']);
 
         $ymlLoader = new YMLLoader(new StaticWrapper());
         $ymlContent = $ymlLoader->getArray(
             $this->getObjectInstancier()->getInstance('workspacePath')  . "/connecteur_$id_ce.yml"
         );
-        $ymlPassword = $ymlContent['certificate_password'];
-        self::assertNotEquals($ymlPassword, $password);
+        $data['ymlPassword'] = $ymlContent['certificate_password'];
 
-        $storagePassword = $storage->read(trim(stripslashes($ymlPassword), '"'));
-        self::assertSame($password, $storagePassword);
+        return $data;
+    }
+
+    /**
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    public function testSavePasswordsConnecteurOnExternalStorage(): void
+    {
+        $data = $this->getDataFromConnecteurWithPasswordOnExternalStorage();
+
+        self::assertNotEquals($data['ymlPassword'], $data['password']);
+
+        $storagePassword = $data['storage']->read(trim(stripslashes($data['ymlPassword']), '"'));
+        self::assertSame($data['password'], $storagePassword);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testDeletePasswordsConnecteurOnExternalStorage(): void
+    {
+        $data = $this->getDataFromConnecteurWithPasswordOnExternalStorage();
+
+        $data['donneesFormulaire']->delete();
+        $response = $data['storage']->read(trim(stripslashes($data['ymlPassword']), '"'));
+        self::assertSame('Objet inexistant', $response);
     }
 }
