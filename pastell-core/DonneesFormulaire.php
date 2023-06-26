@@ -1104,7 +1104,7 @@ class DonneesFormulaire
     {
         if (
             $this->useExternalStorageForPasswordConnector &&
-            str_contains($this->id_d, DonneesFormulaireFactory::ID_CONNECTEUR)
+            str_contains($this->filePath, DonneesFormulaireFactory::ID_CONNECTEUR)
         ) {
             foreach ($this->getFormulaire()->getFields() as $field) {
                 if ($field->getType() === 'password') {
@@ -1148,10 +1148,12 @@ class DonneesFormulaire
     {
         $info = $this->fichierCleValeur->getYmlInfo();
         if ($info) {
-            $passwordId = $info[$field->getName()];
-            $password = $this->passwordStorage->read($passwordId);
-            if ($password !== '404 : Bad status received from Vault') {
-                $this->fichierCleValeur->set($field->getName(), $password);
+            $passwordId = $info[$field->getName()] ?? '';
+            if ($passwordId !== '' && str_contains($passwordId, '.')) {
+                $password = $this->passwordStorage->read($passwordId);
+                if ($password !== '404 : Bad status received from Vault') {
+                    $this->fichierCleValeur->set($field->getName(), $password);
+                }
             }
         }
     }

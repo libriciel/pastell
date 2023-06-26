@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Storage\StorageInterfaceFake;
+use Pastell\Utilities\Identifier\UuidGenerator;
+
 class DonneesFormulaireTest extends PastellTestCase
 {
     /**
@@ -775,5 +778,34 @@ class DonneesFormulaireTest extends PastellTestCase
         );
         $donneesFormulaire->setData("pas_un_fichier", "toto");
         $this->assertTrue($donneesFormulaire->isValidable());
+    }
+
+    /**
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    public function testSavePasswordsConnecteurOnExternalStorage(): void
+    {
+        $this->getObjectInstancier()->setInstance('useExternalStorageForPasswordConnector', true);
+        $id_ce = $this->createConnector('vitam', 'VITAM', 1)['id_ce'];
+
+        $donneesFormulaireFactory = $this->getDonneesFormulaireFactory();
+        $storage = new StorageInterfaceFake();
+        $donneesFormulaireFactory->setPasswordStorage($storage);
+        $donneesFormulaireFactory->setUuidGenerator(new UuidGenerator());
+
+        $donneesFormulaire = $donneesFormulaireFactory->getConnecteurEntiteFormulaire($id_ce);
+        $password = 'monMotDePasse';
+        $donneesFormulaire->setData('certificate_password', $password);
+
+        $ymlLoader = new YMLLoader(new StaticWrapper());
+        $ymlContent = $ymlLoader->getArray(
+            $this->getObjectInstancier()->getInstance('workspacePath')  . "/connecteur_$id_ce.yml"
+        );
+        $ymlPassword = $ymlContent['certificate_password'];
+        self::assertNotEquals($ymlPassword, $password);
+
+        $storagePassword = $storage->read(trim(stripslashes($ymlPassword), '"'));
+        self::assertSame($password, $storagePassword);
     }
 }

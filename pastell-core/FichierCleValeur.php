@@ -10,6 +10,7 @@ class FichierCleValeur
     public const CACHE_TTL = 60;
 
     private $filePath;
+    /** @var array $info */
     private $info;
 
     private $ymlLoader;
@@ -31,7 +32,7 @@ class FichierCleValeur
 
     public function getYmlInfo(): array
     {
-        $info = $this->ymlLoader->getArray($this->filePath, self::CACHE_TTL);
+        $info = ($result = $this->ymlLoader->getArray($this->filePath, self::CACHE_TTL)) ? $result : [];
         foreach ($info as $field_name => $field_value) {
             if (is_array($field_value)) {
                 foreach ($field_value as $i => $value) {
