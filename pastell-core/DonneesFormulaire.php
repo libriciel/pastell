@@ -2,6 +2,7 @@
 
 use Pastell\Configuration\ElementType;
 use Pastell\Storage\StorageInterface;
+use Pastell\Storage\VaultAdapter;
 use Pastell\Utilities\Identifier\UuidGenerator;
 
 /**
@@ -1097,9 +1098,6 @@ class DonneesFormulaire
         return $fieldSize;
     }
 
-    /**
-     * @throws Exception
-     */
     private function checkConnectorFieldsWithPassword(string $action): void
     {
         if (
@@ -1108,9 +1106,9 @@ class DonneesFormulaire
         ) {
             foreach ($this->getFormulaire()->getFields() as $field) {
                 if ($field->getType() === 'password') {
-                    if ($action === 'save' || $action === 'delete') {
+                    if ($action === self::SAVE || $action === self::DELETE) {
                         $this->checkPasswordFieldsToSaveOrDelete($action, $field);
-                    } elseif ($action === 'fetch') {
+                    } elseif ($action === self::FETCH) {
                         $this->checkPasswordFieldsToFetch($field);
                     }
                 }
@@ -1120,26 +1118,26 @@ class DonneesFormulaire
 
     private function checkPasswordFieldsToSaveOrDelete(string $action, Field $field): void
     {
-        $value = $this->get($field->getName());
-        if ($value !== '' && $value !== false) {
-            $passwordId = '';
+        $fieldValue = $this->get($field->getName());
+        if ($fieldValue !== '' && $fieldValue !== false) {
+            $response = '';
             if (array_key_exists($field->getName(), $this->fichierCleValeur->getYmlInfo())) {
                 $passwordId = $this->fichierCleValeur->getYmlInfo()[$field->getName()];
             }
-            if ($action === 'save') {
+            if ($action === self::DELETE && isset($passwordId)) {
+                $response = $this->passwordStorage->delete($passwordId);
+            } elseif ($action === self::SAVE) {
                 if (
-                    $passwordId === ''
-                    || str_contains($passwordId, '#')
-                    || str_contains($this->passwordStorage->read($passwordId), '404')
+                    !isset($passwordId)
+                    || !$this->isUuidLike($passwordId)
+                    || str_contains($this->passwordStorage->read($passwordId), VaultAdapter::NOT_FOUND_CODE)
                 ) {
                     $passwordId = $this->uuidGenerator->generate();
                 }
-                $response = $this->passwordStorage->write($passwordId, $value);
+                $response = $this->passwordStorage->write($passwordId, $fieldValue);
                 $this->fichierCleValeur->set($field->getName(), $passwordId);
-            } else {
-                $response = $this->passwordStorage->delete($passwordId);
             }
-            if (str_starts_with($response, 'Erreur')) {
+            if (str_starts_with($response, VaultAdapter::VAULT_ERREUR)) {
                 $this->lastError = $response;
             }
         }
@@ -1149,15 +1147,23 @@ class DonneesFormulaire
     {
         $info = $this->fichierCleValeur->getYmlInfo();
         if ($info) {
-            $passwordId = $info[$field->getName()] ?? '';
-            if ($passwordId !== '' && !str_contains($passwordId, '.')) {
-                $response = $this->passwordStorage->read($passwordId);
-                if (str_starts_with($response, 'Erreur')) {
-                    $this->lastError = $response;
-                } else {
-                    $this->fichierCleValeur->set($field->getName(), $response);
+            if (array_key_exists($field->getName(), $info)) {
+                $passwordId = $info[$field->getName()];
+                if ($this->isUuidLike($passwordId)) {
+                    $response = $this->passwordStorage->read($passwordId);
+                    if (str_starts_with($response, VaultAdapter::VAULT_ERREUR)) {
+                        $this->lastError = $response;
+                    } else {
+                        $this->fichierCleValeur->set($field->getName(), $response);
+                    }
                 }
             }
         }
+    }
+
+    private function isUuidLike($uuid): bool
+    {
+        $pattern = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i';
+        return preg_match($pattern, $uuid) === 1;
     }
 }

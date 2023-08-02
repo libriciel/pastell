@@ -100,10 +100,6 @@ class DonneesFormulaireTest extends PastellTestCase
         return new DonneesFormulaire(
             $filePath,
             $documentType,
-            null,
-            false,
-            null,
-            null,
         );
     }
 
@@ -347,10 +343,6 @@ class DonneesFormulaireTest extends PastellTestCase
         $donneesFormulaire = new DonneesFormulaire(
             "/tmp/toto.yml",
             $documentType,
-            null,
-            false,
-            null,
-            null
         );
         $donneesFormulaire->setDocumentIndexor(new DocumentIndexor(new DocumentIndexSQL($this->getSQLQuery()), '1'));
         static::assertFileDoesNotExist($filepath);

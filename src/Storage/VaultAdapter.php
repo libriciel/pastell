@@ -19,6 +19,7 @@ class VaultAdapter implements StorageInterface
 {
     private const RESPONSE_OK = 'ok';
     public const VAULT_ERREUR = 'Erreur Vault : ';
+    public const NOT_FOUND_CODE = '404';
     private Client $vaultClient;
     private string $vaultUnsealKey;
     private string $vaultToken;
