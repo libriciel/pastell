@@ -13,7 +13,6 @@ use Pastell\Utilities\Identifier\IdentifierGeneratorInterface;
 use Pastell\Utilities\Identifier\UuidGenerator;
 use Pastell\Storage\S3Adapter;
 use Pastell\Storage\StorageInterface;
-use Pastell\Storage\StorageInterfaceDummy;
 use Pastell\Storage\StorageInterfaceFake;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\InMemoryStore;

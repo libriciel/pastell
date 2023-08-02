@@ -17,9 +17,7 @@ use Vault\Exceptions\RuntimeException;
 
 class VaultAdapter implements StorageInterface
 {
-    private const RESPONSE_OK = 'ok';
-    public const VAULT_ERREUR = 'Erreur Vault : ';
-    public const NOT_FOUND_CODE = '404';
+    public const NOT_FOUND_CODE = 404;
     private Client $vaultClient;
     private string $vaultUnsealKey;
     private string $vaultToken;
@@ -36,61 +34,60 @@ class VaultAdapter implements StorageInterface
         $this->vaultUnsealKey = $vaultUnsealKey;
     }
 
-    private function isUnsealed(): string
+    /**
+     * @throws ClientExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     */
+    private function unseal(): void
     {
-        $response = self::RESPONSE_OK;
-        try {
-            $this->vaultClient->post('v1/sys/unseal', json_encode(['key' => $this->vaultUnsealKey]));
-            $this->vaultClient->setAuthenticationStrategy(new TokenAuthenticationStrategy($this->vaultToken))
-                ->authenticate();
-        } catch (ClientExceptionInterface | InvalidArgumentException | RuntimeException | Exception $exception) {
-            $response = self::VAULT_ERREUR . $exception->getMessage();
-        }
-        return $response;
+        $this->vaultClient->post('v1/sys/unseal', json_encode(['key' => $this->vaultUnsealKey]));
+        $this->vaultClient->setAuthenticationStrategy(new TokenAuthenticationStrategy($this->vaultToken))
+            ->authenticate();
     }
 
+    /**
+     * @throws ClientExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     */
     public function write(string $id, string $content): string
     {
-        $response = $this->isUnsealed();
-        if ($response !== self::RESPONSE_OK) {
-            return $response;
-        }
-        try {
-            $response = $this->vaultClient->write('/secret/data/' . $id, ['data' => ['password' => $content]]);
-            $response = $response->getData()['created_time'];
-        } catch (ClientExceptionInterface $e) {
-            $response = self::VAULT_ERREUR . $e->getCode() . ' : ' . $e->getMessage();
-        }
-        return $response;
+        $this->unseal();
+        $response = $this->vaultClient->write('/secret/data/' . $id, ['data' => ['password' => $content]]);
+        return $response->getData()['created_time'];
     }
 
+    /**
+     * @throws ClientExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     * @throws Exception
+     */
     public function read(string $id): string
     {
-        $response = $this->isUnsealed();
-        if ($response !== self::RESPONSE_OK) {
-            return $response;
-        }
+        $this->unseal();
         try {
             $response = $this->vaultClient->read('/secret/data/' . $id);
-            $response = $response->getData()['data']['password'];
-        } catch (ClientExceptionInterface $e) {
-            $response = self::VAULT_ERREUR . $e->getCode() . ' : ' . $e->getMessage();
+            $password = $response->getData()['data']['password'];
+        } catch (Exception $e) {
+            if ($e->getCode() === self::NOT_FOUND_CODE) {
+                throw new VaultIdNotFoundException($e->getMessage());
+            }
+            throw $e;
         }
-        return $response;
+        return $password;
     }
 
+    /**
+     * @throws ClientExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     */
     public function delete(string $id): string
     {
-        $response = $this->isUnsealed();
-        if ($response !== self::RESPONSE_OK) {
-            return $response;
-        }
-        try {
-            $this->vaultClient->revoke('/secret/metadata/' . $id);
-            $response = 'Delete successful';
-        } catch (ClientExceptionInterface $e) {
-            $response = self::VAULT_ERREUR . $e->getCode() . ' : ' . $e->getMessage();
-        }
-        return $response;
+        $this->unseal();
+        $this->vaultClient->revoke('/secret/metadata/' . $id);
+        return 'Delete successful';
     }
 }

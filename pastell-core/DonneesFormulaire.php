@@ -2,7 +2,7 @@
 
 use Pastell\Configuration\ElementType;
 use Pastell\Storage\StorageInterface;
-use Pastell\Storage\VaultAdapter;
+use Pastell\Storage\VaultIdNotFoundException;
 use Pastell\Utilities\Identifier\UuidGenerator;
 
 /**
@@ -1120,25 +1120,32 @@ class DonneesFormulaire
     {
         $fieldValue = $this->get($field->getName());
         if ($fieldValue !== '' && $fieldValue !== false) {
-            $response = '';
+            $passwordId = '';
             if (array_key_exists($field->getName(), $this->fichierCleValeur->getYmlInfo())) {
                 $passwordId = $this->fichierCleValeur->getYmlInfo()[$field->getName()];
             }
-            if ($action === self::DELETE && isset($passwordId)) {
-                $response = $this->passwordStorage->delete($passwordId);
+            if ($action === self::DELETE && $passwordId !== '') {
+                $this->passwordStorage->delete($passwordId);
             } elseif ($action === self::SAVE) {
-                if (
-                    !isset($passwordId)
-                    || !$this->isUuidLike($passwordId)
-                    || str_contains($this->passwordStorage->read($passwordId), VaultAdapter::NOT_FOUND_CODE)
-                ) {
+                $isVaultId = true;
+                try {
+                    $this->passwordStorage->read($passwordId);
+                } catch (VaultIdNotFoundException) {
+                    $isVaultId = false;
+                } catch (Exception $e) {
+                    $this->lastError = $e->getCode() . ' : ' . $e->getMessage();
+                    return;
+                }
+                if ($passwordId === '' || !$isVaultId) {
                     $passwordId = $this->uuidGenerator->generate();
                 }
-                $response = $this->passwordStorage->write($passwordId, $fieldValue);
-                $this->fichierCleValeur->set($field->getName(), $passwordId);
-            }
-            if (str_starts_with($response, VaultAdapter::VAULT_ERREUR)) {
-                $this->lastError = $response;
+                try {
+                    $this->passwordStorage->write($passwordId, $fieldValue);
+                    $this->fichierCleValeur->set($field->getName(), $passwordId);
+                    $this->fichierCleValeur->save();
+                } catch (Exception $e) {
+                    $this->lastError = $e->getCode() . ' : ' . $e->getMessage();
+                }
             }
         }
     }
@@ -1147,23 +1154,20 @@ class DonneesFormulaire
     {
         $info = $this->fichierCleValeur->getYmlInfo();
         if ($info) {
-            if (array_key_exists($field->getName(), $info)) {
-                $passwordId = $info[$field->getName()];
-                if ($this->isUuidLike($passwordId)) {
-                    $response = $this->passwordStorage->read($passwordId);
-                    if (str_starts_with($response, VaultAdapter::VAULT_ERREUR)) {
-                        $this->lastError = $response;
-                    } else {
-                        $this->fichierCleValeur->set($field->getName(), $response);
-                    }
+            if (
+                array_key_exists($field->getName(), $info)
+                && $info[$field->getName()] !== ''
+            ) {
+                try {
+                    $response = $this->passwordStorage->read($info[$field->getName()]);
+                    $this->fichierCleValeur->set($field->getName(), $response);
+                } catch (VaultIdNotFoundException) {
+                    $this->checkPasswordFieldsToSaveOrDelete(self::SAVE, $field);
+                    $this->checkPasswordFieldsToFetch($field);
+                } catch (Exception $e) {
+                    $this->lastError = $e->getCode() . ' : ' . $e->getMessage();
                 }
             }
         }
-    }
-
-    private function isUuidLike($uuid): bool
-    {
-        $pattern = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i';
-        return preg_match($pattern, $uuid) === 1;
     }
 }

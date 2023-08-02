@@ -256,14 +256,13 @@ abstract class ActionExecutor
             ->getProperties($this->action, 'num-same-connecteur') ?: $num_same_connecteur;
 
         if (isset($this->connecteurs[$type_connecteur][$num_same_connecteur])) {
-            $this->checkValidityConnector($this->connecteurs[$type_connecteur][$num_same_connecteur]);
             return $this->connecteurs[$type_connecteur][$num_same_connecteur] ;
         }
 
         $id_ce = $this->getConnecteurId($type_connecteur, $num_same_connecteur);
         $connecteur = $this->getConnecteurFactory()->getConnecteurById($id_ce);
 
-        $this->checkValidityConnector($connecteur);
+        $this->checkValidityConnector();
 
         if ($this->id_d) {
             $connecteur->setDocDonneesFormulaire($this->getDonneesFormulaire());
@@ -276,13 +275,17 @@ abstract class ActionExecutor
     /**
      * @throws Exception
      */
-    private function checkValidityConnector(Connecteur $connecteur): void
+    private function checkValidityConnector(): void
     {
-        $error = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)
-            ->getConnecteurEntiteFormulaire($connecteur->getConnecteurInfo()['id_ce'])->getLastError();
-
-        if ($error) {
-            throw new Exception($error);
+        //TODO delete condition when used in prod
+        if (
+            $this->objectInstancier->getInstance('useExternalStorageForPasswordConnector')
+            && isset($this->id_ce)
+        ) {
+            $error = $this->getConnecteurConfig($this->id_ce)->getLastError();
+            if ($error) {
+                throw new UnrecoverableException($error);
+            }
         }
     }
 
@@ -349,7 +352,7 @@ abstract class ActionExecutor
             throw new Exception("Cette action n'est pas une action de connecteur.");
         }
         $connecteur = $this->getConnecteurFactory()->getConnecteurById($this->id_ce);
-        $this->checkValidityConnector($connecteur);
+        $this->checkValidityConnector();
         return $connecteur;
     }
 
