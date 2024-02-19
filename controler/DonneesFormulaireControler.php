@@ -1,9 +1,6 @@
 <?php
 
-use Flow\Basic;
-use Flow\Config;
-use Flow\Request;
-use Flow\Uploader;
+use Pastell\File\Chunk\ChunkUploader;
 use Pastell\Viewer\ViewerFactory;
 
 class DonneesFormulaireControler extends PastellControler
@@ -171,20 +168,16 @@ class DonneesFormulaireControler extends PastellControler
             throw new UnrecoverableException("Champ `$field` incorrect");
         }
 
-        $config = new Config();
-        $config->setTempDir(UPLOAD_CHUNK_DIRECTORY);
-
-        $request = new Request();
-
+        $chunkUploader = $this->getObjectInstancier()->getInstance(ChunkUploader::class);
         $upload_filepath = \sprintf(
             '%s/%s_%s_%s_%s_%s_%s',
-            UPLOAD_CHUNK_DIRECTORY,
+            $chunkUploader->getUploadChunkDirectory(),
             $id_e,
             $id_d,
             $id_ce,
             $field,
             time(),
-            mt_rand(0, mt_getrandmax())
+            random_int(0, mt_getrandmax())
         );
 
         $this->getLogger()->debug(
@@ -198,15 +191,15 @@ class DonneesFormulaireControler extends PastellControler
             )
         );
 
-        if (Basic::save($upload_filepath, $config, $request)) {
+        if ($chunkUploader->uploadChunk($upload_filepath)) {
             $donneesFormulaire = $this->getDonneesFormulaireFactory()->getFromDocumentOrConnecteur($id_d, $id_ce);
 
             if ($donneesFormulaire->getFormulaire()->getField($field)->isMultiple()) {
                 $nb_file = $donneesFormulaire->get($field) ? count($donneesFormulaire->get($field)) : 0;
                 $this->getLogger()->debug("ajout fichier $nb_file");
-                $donneesFormulaire->addFileFromCopy($field, $request->getFileName(), $upload_filepath, $nb_file);
+                $donneesFormulaire->addFileFromCopy($field, $chunkUploader->getRequest()->getFileName(), $upload_filepath, $nb_file);
             } else {
-                $donneesFormulaire->addFileFromCopy($field, $request->getFileName(), $upload_filepath);
+                $donneesFormulaire->addFileFromCopy($field, $chunkUploader->getRequest()->getFileName(), $upload_filepath);
             }
 
             foreach ($donneesFormulaire->getOnChangeAction() as $action_on_change) {
@@ -234,9 +227,7 @@ class DonneesFormulaireControler extends PastellControler
             unlink($upload_filepath);
         }
 
-        if (1 == mt_rand(1, 100)) {
-            Uploader::pruneChunks(UPLOAD_CHUNK_DIRECTORY);
-        }
+        $chunkUploader->pruneChunks();
         echo 'OK';
         exit_wrapper();
     }

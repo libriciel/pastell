@@ -67,6 +67,8 @@ abstract class PastellTestCase extends TestCase
         $this->objectInstancier->setInstance('redis_port', 0);
         $this->objectInstancier->setInstance('disable_journal_horodatage', false);
 
+        $this->objectInstancier->setInstance('upload_chunk_directory', UPLOAD_CHUNK_DIRECTORY);
+
         $this->objectInstancier->setInstance(LockFactory::class, new LockFactory(new InMemoryStore()));
 
         $this->getObjectInstancier()->setInstance(
@@ -143,11 +145,12 @@ iparapheur_retour: Archive',
             'log' => [],
             'tmp' => [],
             'html_purifier' => [],
+            'upload_chunk' => [],
         ];
         vfsStream::setup('test', null, $structure);
         $this->emulated_disk = vfsStream::url('test');
         $this->objectInstancier->setInstance('workspacePath', $this->getEmulatedDisk() . "/workspace/");
-
+        $this->objectInstancier->setInstance('upload_chunk_directory', $this->getEmulatedDisk() . '/upload_chunk');
         $htmlPurifier = new HTMLPurifier();
         $htmlPurifier->config->set('Cache.SerializerPath', $this->emulated_disk . "/html_purifier/");
         $this->objectInstancier->setInstance(HTMLPurifier::class, $htmlPurifier);

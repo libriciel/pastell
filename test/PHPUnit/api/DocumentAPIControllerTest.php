@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\File\Chunk\ChunkRequest;
 use Pastell\Service\Utilisateur\UserCreationService;
 
 class DocumentAPIControllerTest extends PastellTestCase
@@ -628,5 +629,54 @@ class DocumentAPIControllerTest extends PastellTestCase
         $this->expectException('DonneesFormulaireException');
         $this->expectExceptionMessage("Le champ 'fichier' n'est pas autorisé sur un PATCH");
         $this->getInternalAPI()->patch("entite/1/document/$id_d", ['fichier' => 'toto']);
+    }
+
+
+    public function testPostChunk(): void
+    {
+        $id_d = $this->createTestDocument();
+        $config = new \Flow\Config();
+        $chunkNumber = 3;
+
+        for ($i = 1; $i <= $chunkNumber; $i++) {
+            $tmpFile = new TmpFile();
+            $tmp = $tmpFile->copyToTmpDir(__DIR__ . '/fixtures/chunk' . $i, 'chunk' . $i);
+
+            $_SERVER['REQUEST_METHOD'] = 'POST';
+            $_REQUEST['file_name'] = 'toto.txt';
+            $_REQUEST['chunk_number'] = $i;
+            $_REQUEST['total_chunks'] = $chunkNumber;
+            $_REQUEST['total_size'] = $chunkNumber;
+            $_FILES['file'] = [
+                'name' => 'chunk' . $i,
+                'type' => 'text/plain',
+                'full_path' => __DIR__ . '/fixtures/chunk' . $i,
+                'error' => UPLOAD_ERR_OK,
+                'size' => 1,
+                'tmp_name' => $tmp,
+            ];
+
+            $source = $_FILES['file']['tmp_name'];
+
+            $chunkRequest = new ChunkRequest();
+            $chunkName = call_user_func($config->getHashNameCallback(), $chunkRequest->getRequest()) . "_$i";
+
+            $chunkDirectory = $this->getObjectInstancier()->getInstance('upload_chunk_directory');
+            $destination = $chunkDirectory . '/' . $chunkName;
+
+            if (copy($source, $destination)) {
+                echo "Le fichier a été déplacé avec succès.\n";
+            } else {
+                echo "Erreur lors du déplacement du fichier.\n";
+            }
+
+            $response = $this->getInternalAPI()->post(
+                "entite/1/document/$id_d/chunk/fichier/0"
+            );
+
+            static::assertSame('success', $response['result']);
+            static::assertSame($i < $chunkNumber ? 'Chunk uploaded' : 'File uploaded', $response['message']);
+        }
+        static::assertSame('123', $this->getDonneesFormulaireFactory()->get($id_d)->getFileContent('fichier', '0'));
     }
 }

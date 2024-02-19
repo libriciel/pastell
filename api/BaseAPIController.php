@@ -32,10 +32,7 @@ abstract class BaseAPIController
 
     public function getFromQueryArgs($place_number)
     {
-        if (empty($this->query_args[$place_number])) {
-            return false;
-        }
-        return $this->query_args[$place_number];
+        return $this->query_args[$place_number] ?? false;
     }
 
     public function setAllDroit($hasAllDroit = false)

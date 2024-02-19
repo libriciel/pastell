@@ -142,6 +142,8 @@ $objectInstancier->setInstance('pastell_admin_email', PASTELL_ADMIN_EMAIL);
 
 $objectInstancier->setInstance('unlock_job_error_at_startup', UNLOK_JOB_ERROR_AT_STARTUP);
 
+$objectInstancier->setInstance('upload_chunk_directory', UPLOAD_CHUNK_DIRECTORY);
+
 $featureToggleService = $objectInstancier->getInstance(FeatureToggleService::class);
 
 /**

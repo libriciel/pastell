@@ -1,9 +1,6 @@
 <?php
 
-use Flow\Config;
-use Flow\Request;
-use Flow\Basic;
-use Flow\Uploader;
+use Pastell\File\Chunk\ChunkUploader;
 
 class DocumentControler extends PastellControler
 {
@@ -1424,41 +1421,54 @@ class DocumentControler extends PastellControler
 
         $info = $this->getDocumentSQL()->getInfo($id_d);
 
-        if (! $this->getDroitService()->hasDroit($this->getId_u(), $this->getDroitService()->getDroitEdition($info['type']), $id_e)) {
-            if (! $this->isDocumentEmailChunkUpload()) {
-                echo "KO";
-                exit_wrapper();
-            }
+        if (
+            !$this->isDocumentEmailChunkUpload()
+            && !$this->getDroitService()->hasDroit($this->getId_u(), $this->getDroitService()::getDroitEdition($info['type']), $id_e)
+        ) {
+            echo 'KO';
+            exit_wrapper();
         }
 
-        $config = new Config();
-        $config->setTempDir(UPLOAD_CHUNK_DIRECTORY);
+        $chunkUploader = $this->getInstance(ChunkUploader::class);
+        $upload_filepath = $chunkUploader->getUploadChunkDirectory() . "/{$id_e}_{$id_d}_{$field}" . time() . '_' . random_int(0, mt_getrandmax());
 
-        $request = new Request();
+        $this->getLogger()->debug(
+            "Chargement partiel du fichier : $upload_filepath dans (id_e={$id_e},id_d={$id_d},field={$field}"
+        );
 
-        $upload_filepath = UPLOAD_CHUNK_DIRECTORY . "/{$id_e}_{$id_d}_{$field}" . time() . "_" . mt_rand(0, mt_getrandmax());
-
-        $this->getLogger()->debug("Chargement partiel du fichier : $upload_filepath dans (id_e={$id_e},id_d={$id_d},field={$field}");
-
-        if (Basic::save($upload_filepath, $config, $request)) {
+        if ($chunkUploader->upload($upload_filepath)) {
             $documentModificationService =
                 $this->getObjectInstancier()->getInstance(DocumentModificationService::class);
 
             if ($donneesFormulaire->getFormulaire()->getField($field)->isMultiple()) {
                 $nb_file = $donneesFormulaire->get($field) ? count($donneesFormulaire->get($field)) : 0;
                 $this->getLogger()->debug("ajout fichier $nb_file");
-                $documentModificationService->addFile($id_e, $this->getId_u(), $id_d, $field, $nb_file, $upload_filepath);
+                $documentModificationService->addFile(
+                    $id_e,
+                    $this->getId_u(),
+                    $id_d,
+                    $field,
+                    $nb_file,
+                    $upload_filepath,
+                    $chunkUploader->getUploadChunkDirectory()
+                );
             } else {
-                $documentModificationService->addFile($id_e, $this->getId_u(), $id_d, $field, 0, $upload_filepath);
+                $documentModificationService->addFile(
+                    $id_e,
+                    $this->getId_u(),
+                    $id_d,
+                    $field,
+                    0,
+                    $upload_filepath,
+                    $chunkUploader->getUploadChunkDirectory()
+                );
             }
-            $this->getLogger()->debug("chargement terminé");
+            $this->getLogger()->debug('chargement terminé');
             unlink($upload_filepath);
         }
 
-        if (1 == mt_rand(1, 100)) {
-            Uploader::pruneChunks(UPLOAD_CHUNK_DIRECTORY);
-        }
-        echo "OK";
+        $chunkUploader->pruneChunks();
+        echo 'OK';
         exit_wrapper();
     }
 }
