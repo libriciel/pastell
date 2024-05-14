@@ -60,6 +60,8 @@ class TypeDossierActesEtape implements TypeDossierEtapeSetSpecificInformation
                 = $typeDossierEtape->specific_type_info[self::OBJET_ACTE];
             $result[DocumentType::ACTION][$tamponnerTdtAction][Action::CONNECTEUR_TYPE_MAPPING]['objet']
                 = $typeDossierEtape->specific_type_info[self::OBJET_ACTE];
+            $result[DocumentType::ACTION]['duplicate'][Action::CONNECTEUR_TYPE_MAPPING]['objet']
+                = $typeDossierEtape->specific_type_info[self::OBJET_ACTE];
         }
         if (!empty($typeDossierEtape->specific_type_info[self::DROIT_SPECIFIQUE])) {
             $result[DocumentType::ACTION][$teletransmissionTdtAction]

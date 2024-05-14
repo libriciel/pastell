@@ -1018,6 +1018,21 @@ action:
             acte_nature: acte_nature
             arrete: document
             autre_document_attache: annexes
+    duplicate:
+        name-action: "Dupliquer l'acte"
+        rule:
+            no_1:
+                last-action:
+                    - creation
+        action-class: StandardAction
+        connecteur-type: TdT
+        connecteur-type-action: Pastell\Step\Tdt\Acte\Action\DuplicateActeAction
+        connecteur-type-mapping:
+            acte_nature: acte_nature
+            date_de_lacte: date_de_lacte
+            document_papier: document_papier
+            classification: classification
+            objet: titre_document
     preparation-send-mailsec:
         name: "Préparation de l'envoi par mail sécurisé"
         rule:

@@ -412,6 +412,20 @@ action:
             type_piece_fichier: type_piece_fichier
             acte_nature: acte_nature
             arrete: actes
+    duplicate:
+        name-action: "Dupliquer l'acte"
+        rule:
+            no_1:
+                last-action:
+                    - creation
+        action-class: StandardAction
+        connecteur-type: TdT
+        connecteur-type-action: Pastell\Step\Tdt\Acte\Action\DuplicateActeAction
+        connecteur-type-mapping:
+            acte_nature: acte_nature
+            date_de_lacte: date_de_lacte
+            document_papier: document_papier
+            classification: classification
 threshold_size: '157286400'
 threshold_fields:
     - actes
