@@ -18,6 +18,10 @@ final class VitamSedaHelper extends SedaHelper
                 '(/seda:ArchiveTransferReply/seda:DataObjectPackage/seda:DescriptiveMetadata' .
                 '/seda:ArchiveUnit/seda:Content/seda:SystemId)[1]',
             ],
+            self::SEDA_2_2_NS => [
+                '(/seda:ArchiveTransferReply/seda:DataObjectPackage/seda:DescriptiveMetadata' .
+                '/seda:ArchiveUnit/seda:Content/seda:SystemId)[1]',
+            ],
         ];
     }
 
@@ -32,6 +36,7 @@ final class VitamSedaHelper extends SedaHelper
                 self::SEDA_0_2_NS => $expression,
                 self::SEDA_1_0_NS => $expression,
                 self::SEDA_2_1_NS => $expression,
+                self::SEDA_2_2_NS => $expression,
             ];
 
             return $this->getElement($xml, $xpath, 'Commentaire');

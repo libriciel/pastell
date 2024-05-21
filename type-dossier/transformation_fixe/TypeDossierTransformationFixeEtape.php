@@ -14,7 +14,7 @@ class TypeDossierTransformationFixeEtape implements TypeDossierEtapeSetSpecificI
         if (isset($transformation)) {
             $explodedTransformation = explode(':', trim($transformation), 2);
             $result[DocumentType::ACTION][$transformationFixeAction]
-            [Action::TRANSFORMATIONS][$explodedTransformation[0]] = $explodedTransformation[1];
+            [Action::TRANSFORMATIONS][$explodedTransformation[0]] = $explodedTransformation[1] ?? null;
         }
 
         $result[DocumentType::ACTION]['supression'][Action::ACTION_RULE][Action::ACTION_RULE_LAST_ACTION][]
