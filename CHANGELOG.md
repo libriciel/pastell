@@ -14,7 +14,9 @@
 - Studio, étape tdt_actes, ajout du contrôle sur le total des fichiers Acte et Annexes < 157.29 MB #1602
 - Studio, étape tdt_helios, ajout du contrôle sur la taille du fichier PES ALLER < 128 MB #1602
 - Studio, étape tdt_helios, ajout de la possibilité de définir le champ "Objet PES ALLER" (prend la valeur NomFic du Fichier PES) #1969
-- Studio : Ajout de la possibilté de définir des `Transformation fixe` (de la forme 'id_element:expression_twig') au niveau du type de dossier #1979
+- Studio : étape mail sécurisé avec réponse : Les champs indexés dans le flux de réponse sont affichés dans le
+récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2073
+- Studio : Ajout de la possibilité de définir des `Transformation fixe` (de la forme 'id_element:expression_twig') au niveau du type de dossier #1979
 - Possibilité de créer un utilisateur exclusivement API et de gérer ses tokens via l'administrateur de son entité #1943
 - Possibilité de sélectionner une entité et ses entités filles dans le connecteur de purge global #1704
 - Possibilité d'afficher le contenu d'un type de dossier studio sur un seul onglet #1980
