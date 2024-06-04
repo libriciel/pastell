@@ -33,6 +33,16 @@ final class DuplicateActeAction extends \ConnecteurTypeActionExecutor
             $data[$field] = $this->getDonneesFormulaire()->get($field);
         }
 
+        $cheminementTabNumber = $this->getDonneesFormulaire()->getFormulaire()->getTabNumber('Cheminement');
+        if ($cheminementTabNumber !== false) {
+            $cheminementFieldDataList = $this->getDonneesFormulaire()
+                ->getFieldDataList('editeur', $cheminementTabNumber);
+            /** @var \FieldData $field */
+            foreach ($cheminementFieldDataList as $field) {
+                $data[$field->getField()->getName()] = $field->getValueForIndex() === 'OUI';
+            }
+        }
+
         $this->objectInstancier->getInstance(\DocumentModificationService::class)
             ->modifyDocument(
                 $this->id_e,

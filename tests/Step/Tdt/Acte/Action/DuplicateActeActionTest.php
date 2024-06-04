@@ -95,6 +95,11 @@ final class DuplicateActeActionTest extends \PastellTestCase
             $duplicatedDocumentForm->get('actes'),
         );
 
+        self::assertSame(
+            $oldDocumentForm->get('envoi_tdt_actes'),
+            $duplicatedDocumentForm->get('envoi_tdt_actes')
+        );
+
         $this->assertLastDocumentAction('modification', $documentId);
     }
 }
