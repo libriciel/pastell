@@ -23,6 +23,7 @@
 - Possibilité d'envoyer en mode préparation vers Fast-tdt #1541
 - Permettre la configuration des attributs LDAP : nom, prénom et email #1975
 - Ajustement de la zone de séléction dans la gestion d'éléments studio #1281
+- Possibilité d'envoyer des fichiers lourds en chunk par API #1350
 - Possibilité d'envoyer des PES PJ autonomes vers iParapheur #644
 
 ## Corrections

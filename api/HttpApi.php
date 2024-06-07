@@ -169,10 +169,10 @@ class HttpApi
             $internalAPI->setFileUploader($fileUploader);
             $this->request = utf8_encode_array($this->request);
         }
-        $result = $internalAPI->$request_method($ressource, $this->request);
-        if (in_array($request_method, ['post']) && ! $is_legacy) {
+        if (in_array($request_method, ['post']) && !$is_legacy) {
             header_wrapper('HTTP/1.1 201 Created');
         }
+        $result = $internalAPI->$request_method($ressource, $this->request);
         if ($is_legacy) {
             if ($old_api_function == 'action.php' && $result['result'] === true) {
                 $result['result'] = "1";

@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\File\Chunk\ChunkRequest;
+use Pastell\File\Chunk\ChunkUploader;
 use Pastell\Service\Connecteur\ConnecteurCreationService;
 use Pastell\Service\Connecteur\ConnecteurDeletionService;
 use Pastell\Service\Connecteur\ConnecteurModificationService;
@@ -17,7 +19,8 @@ class ConnecteurAPIController extends BaseAPIController
         private readonly EntiteSQL $entiteSQL,
         private readonly ConnecteurCreationService $connecteurCreationService,
         private readonly ConnecteurDeletionService $connecteurDeletionService,
-        private readonly ConnecteurModificationService $connecteurModificationService
+        private readonly ConnecteurModificationService $connecteurModificationService,
+        private readonly ChunkUploader $chunkUploader,
     ) {
     }
 
@@ -278,6 +281,11 @@ class ConnecteurAPIController extends BaseAPIController
 
         $id_ce = $this->getFromQueryArgs(2);
         if ($id_ce) {
+            $this->checkedConnecteur($id_e, $id_ce);
+            $file_type = $this->getFromQueryArgs(3);
+            if ($file_type === 'chunk') {
+                return $this->postChunk($id_e, $id_ce);
+            }
             return $this->postFile($id_e, $id_ce);
         }
 
@@ -497,5 +505,61 @@ class ConnecteurAPIController extends BaseAPIController
             "result" => $result,
             "last_message" => $this->actionExecutorFactory->getLastMessage()
         ];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function postChunk(string $id_e, string $id_ce): array
+    {
+        $field_name = $this->getFromQueryArgs(4);
+        $file_number = $this->getFromQueryArgs(5);
+        $file_number = $file_number === '' || $file_number === false ? 0 : (int)$file_number;
+        $file_name = $this->getFromRequest('file_name');
+
+        if (!isset($field_name, $file_name)) {
+            throw new BadRequestException('Les paramètres field_name et file_name sont obligatoires');
+        }
+
+        $upload_filepath = sprintf(
+            '%s/%d_%d_%s_%s_%s',
+            $this->chunkUploader->getUploadChunkDirectory(),
+            $id_e,
+            $id_ce,
+            $field_name,
+            time(),
+            random_int(0, mt_getrandmax())
+        );
+
+        try {
+            $chunkRequest = new ChunkRequest();
+        } catch (InvalidArgumentException $e) {
+            header_wrapper('HTTP/1.1 400 Bad Request');
+            throw new BadRequestException($e->getMessage());
+        }
+
+        $chunkRequest->setFileNumber($file_number);
+        $this->chunkUploader->setRequest($chunkRequest->getRequest());
+        if ($this->chunkUploader->uploadChunk($upload_filepath)) {
+            try {
+                $this->connecteurModificationService->addFileFromData(
+                    (int) $id_ce,
+                    $field_name,
+                    $file_name,
+                    file_get_contents($upload_filepath),
+                    $file_number,
+                    $this->getUtilisateurId(),
+                );
+            } finally {
+                unlink($upload_filepath);
+                header_wrapper('HTTP/1.1 201 Created');
+                $response = ['result' => 'success', 'message' => 'File uploaded'];
+            }
+        } else {
+            header_wrapper('HTTP/1.1 200 Ok');
+            $response = ['result' => 'success', 'message' => 'Chunk uploaded'];
+        }
+        $this->chunkUploader->pruneChunks();
+        return $response;
     }
 }
