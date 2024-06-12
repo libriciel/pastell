@@ -314,3 +314,17 @@ action:
             type_piece: type_piece
             type_piece_fichier: type_piece_fichier
             acte_nature: acte_nature
+    duplicate:
+        name-action: Dupliquer l'acte
+        rule:
+            no_1:
+                last-action:
+                    - creation
+        action-class: StandardAction
+        connecteur-type: TdT
+        connecteur-type-action: Pastell\Step\Tdt\Acte\Action\DuplicateActeAction
+        connecteur-type-mapping:
+            acte_nature: acte_nature
+            date_de_lacte: date_de_lacte
+            document_papier: document_papier
+            classification: classification
