@@ -864,13 +864,6 @@ class IParapheur extends SignatureConnecteur
 
     public function getRefusalMessage($dossierID): string
     {
-        //try catch
-        $lastLog = end($this->getAllHistoriqueInfo($dossierID)->LogDossier);
-        return sprintf(
-            '%s : [%s] %s',
-            date('d/m/Y H:i:s', strtotime($lastLog->timestamp)),
-            $lastLog->status,
-            $lastLog->annotation
-        );
+        return '';
     }
 }

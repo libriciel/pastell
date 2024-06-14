@@ -164,14 +164,11 @@ class IParapheurRecup extends ActionExecutor
         $result = $signature->getLastHistorique($all_historique);
         $actes->setData('parapheur_last_message', $result);
 
-        if (str_contains($result, '[Archive]')) {
+        if (strstr($result, "[Archive]")) {
             return $this->retrieveDossier();
-        }
-
-        if ($signature->isRejected($result)) {
+        } elseif ($signature->isRejected($result)) {
             $this->rejeteDossier($dossierID, $result);
-            die($this->getLastMessage());
-            $this->setLastMessage($signature->getRefusalMessage($dossierID));
+            $this->setLastMessage($result);
             return true;
         }
         $nb_jour_max = $signature->getNbJourMaxInConnecteur();

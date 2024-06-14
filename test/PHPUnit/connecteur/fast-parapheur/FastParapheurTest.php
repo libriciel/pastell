@@ -750,4 +750,76 @@ class FastParapheurTest extends PastellTestCase
         );
         $this->fastParapheur->sendDossier($file);
     }
+
+    /**
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    public function testGetRefusalMessage(): void
+    {
+        $this->mockSoapClient(
+            function ($soapMethod, $arguments) {
+                if ($soapMethod === 'upload') {
+                    return json_decode(
+                        json_encode([
+                            'return' => '1234-abed'
+                        ], JSON_THROW_ON_ERROR),
+                        false,
+                        512,
+                        JSON_THROW_ON_ERROR
+                    );
+                }
+                if ($soapMethod === 'getRefusalMessage') {
+                    return json_decode(
+                        json_encode([
+                            'return' => 'test message de refus'
+                        ], JSON_THROW_ON_ERROR),
+                        false,
+                        512,
+                        JSON_THROW_ON_ERROR
+                    );
+                }
+                if ($soapMethod === 'history') {
+                    return json_decode(
+                        json_encode([
+                            'return' => [
+                                [
+                                    'userFullName' => 'Agent',
+                                    'date' => '2019-04-03T14:46:49.274+01:00',
+                                    'stateName' => 'Refusé'
+                                ]
+                            ]
+                        ], JSON_THROW_ON_ERROR),
+                        false,
+                        512,
+                        JSON_THROW_ON_ERROR
+                    );
+                }
+                throw new UnrecoverableException("Unexpected call to SOAP method : $soapMethod");
+            }
+        );
+
+        $id_ce = $this->createConnector('fast-parapheur', 'fast-parapheur')['id_ce'];
+        $this->configureConnector($id_ce, [
+            'wsdl' => 'https://foo',
+        ]);
+
+        $this->associateFluxWithConnector($id_ce, 'ls-document-pdf', 'signature');
+
+        $id_d = $this->createDocument('ls-document-pdf')['id_d'];
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
+        $donneesFormulaire->setTabData([
+            'iparapheur_type' => 'FOO',
+            'iparapheur_sous_type' => 'BAR',
+            'libelle' => 'LIBELLE',
+            'fast_parapheur_circuit' => 'circuit',
+            'fast_parapheur_circuit_configuration' => 'config'
+        ]);
+
+        $this->triggerActionOnDocument($id_d, 'send-iparapheur');
+        $this->assertLastMessage('Le document a été envoyé au parapheur électronique');
+
+        $this->triggerActionOnDocument($id_d, 'verif-iparapheur');
+        $this->assertLastMessage('03/04/2019 15:46:49 : [Refusé] test message de refus');
+    }
 }
