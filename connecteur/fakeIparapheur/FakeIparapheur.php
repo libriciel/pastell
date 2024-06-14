@@ -246,4 +246,15 @@ class FakeIparapheur extends SignatureConnecteur
     {
         return true;
     }
+
+    public function getRefusalMessage($dossierID)
+    {
+        $lastLog = end($this->getAllHistoriqueInfo($dossierID)->LogDossier);
+        return sprintf(
+            '%s : [%s] %s',
+            date('d/m/Y H:i:s', strtotime($lastLog->timestamp)),
+            $lastLog->status,
+            $lastLog->annotation
+        );
+    }
 }

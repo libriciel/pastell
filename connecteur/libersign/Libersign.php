@@ -424,4 +424,9 @@ class Libersign extends SignatureConnecteur
     {
         return $this->cryptoClient->version()->getVersion();
     }
+
+    public function getRefusalMessage($dossierID)
+    {
+        return '';
+    }
 }

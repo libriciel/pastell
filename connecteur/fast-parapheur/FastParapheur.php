@@ -421,4 +421,13 @@ class FastParapheur extends SignatureConnecteur
     {
         throw new BadMethodCallException('Not implemented');
     }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws Exception
+     */
+    public function getRefusalMessage($dossierID): string
+    {
+        return $this->getClient()->getRefusalMessage($dossierID);
+    }
 }
