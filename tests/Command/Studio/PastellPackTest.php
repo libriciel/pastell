@@ -54,6 +54,11 @@ class PastellPackTest extends PastellTestCase
                 'ls-recup-parapheur',
                 'Récupération parapheur',
             ],
+        'draft-ls-pes-pj' => [
+            '',
+            'ls-pes-pj',
+            'PES PJ',
+        ],
         'draft-gfc-dossier' => [
             '',
             'gfc-dossier',

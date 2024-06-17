@@ -1,0 +1,121 @@
+{
+  "id_type_dossier": "draft-ls-pes-pj",
+  "pastell-version": "%VERSION%",
+  "timestamp": 1718616173,
+  "raw_data": {
+    "id_type_dossier": "draft-ls-pes-pj",
+    "nom": "draft-ls-pes-pj",
+    "type": "Types de dossier personnalis\u00e9s",
+    "description": "",
+    "nom_onglet": "onglet1",
+    "affiche_one": false,
+    "restriction_pack": "",
+    "formulaireElement": [
+      {
+        "element_id": "objet",
+        "name": "Objet",
+        "type": "text",
+        "commentaire": "",
+        "requis": "on",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "on",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "fichier_pes",
+        "name": "Fichier PES",
+        "type": "file",
+        "commentaire": "Format XML",
+        "requis": "on",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "metadonnees",
+        "name": "Fichier contenant les m\u00e9tadonn\u00e9es",
+        "type": "file",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      }
+    ],
+    "etape": [
+      {
+        "num_etape": 0,
+        "type": "signature",
+        "label": "Signature",
+        "defaultChecked": false,
+        "requis": "",
+        "automatique": "on",
+        "specific_type_info": {
+          "libelle_parapheur": "objet",
+          "document_a_signer": "fichier_pes",
+          "annexe": "",
+          "has_date_limite": "on",
+          "has_primo_signature": "",
+          "has_metadata_in_json": "on",
+          "continue_after_refusal": ""
+        },
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      },
+      {
+        "num_etape": "1",
+        "type": "tdt_helios",
+        "label": "Tr\u00e9sorerie (via Tdt)",
+        "defaultChecked": false,
+        "requis": "",
+        "automatique": "on",
+        "specific_type_info": {
+          "objet_pes": "objet",
+          "fichier_pes": "fichier_pes",
+          "ajout_champs_affiche": "on"
+        },
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      },
+      {
+        "num_etape": 2,
+        "type": "depot",
+        "label": "D\u00e9p\u00f4t",
+        "defaultChecked": false,
+        "requis": "",
+        "automatique": "on",
+        "specific_type_info": [],
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      },
+      {
+        "num_etape": "3",
+        "type": "sae",
+        "label": "SAE",
+        "defaultChecked": false,
+        "requis": "",
+        "automatique": "on",
+        "specific_type_info": {
+          "sae_has_metadata_in_json": ""
+        },
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      }
+    ]
+  }
+}
