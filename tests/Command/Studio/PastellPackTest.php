@@ -57,7 +57,7 @@ class PastellPackTest extends PastellTestCase
         'draft-ls-pes-pj' => [
             '',
             'ls-pes-pj',
-            'PES PJ',
+            'Pièce jointe autonome PES',
         ],
         'draft-gfc-dossier' => [
             '',
