@@ -72,7 +72,7 @@ RUN COMPOSER_ALLOW_SUPERUSER=1 composer dump-autoload --no-dev --optimize
 
 USER "${USERNAME}"
 
-HEALTHCHECK CMD curl --fail -k https://localhost/ || exit 1
+HEALTHCHECK CMD curl --fail -k https://localhost/ --noproxy '*' || exit 1
 
 ENTRYPOINT ["docker-pastell-entrypoint"]
 CMD ["/usr/bin/supervisord"]

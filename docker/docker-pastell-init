@@ -92,6 +92,8 @@ define("S3_SECRET", "${S3_SECRET:-minioadmin}");
 define("S3_BUCKET_JOURNAL", "${S3_BUCKET_JOURNAL:-journal-preuves}");
 define("USE_EXTERNAL_STORAGE_FOR_JOURNAL_PROOF", ${USE_EXTERNAL_STORAGE_FOR_JOURNAL_PROOF:-false});
 
+define('RATE_LIMITER_VARIABLE', '${RATE_LIMITER_VARIABLE:-REMOTE_ADDR}');
+
 EOF
 
 env | grep '^TOGGLE_' | sed "s/^TOGGLE_\([^=]*\)=\(.*\)/\$feature_toggle[Pastell\\\Service\\\FeatureToggle\\\\\1::class] = \2;/g"

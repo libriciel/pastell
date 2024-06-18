@@ -492,6 +492,47 @@ class FastTdtTest extends PastellTestCase
 
     /**
      * @test
+     * @throws ClientHttpException|DonneesFormulaireException
+     */
+    public function whenGettingStatusWithActeNumberWithHypen(): void
+    {
+        $connecteurConfig = $this->getDefaultConnecteurConfig();
+        $connecteurConfig->addFileFromCopy(
+            'classification_file',
+            'classification.xml',
+            __DIR__ . '/fixtures/999-1234----7-2_1.xml'
+        );
+        $connecteurConfig->setData('classification_date', '2019-04-18');
+
+        $webdavWrapper = $this->createMock(WebdavWrapper::class);
+        $webdavWrapper
+            ->method('propfind')
+            ->willReturn(
+                [
+                    '999-1234-20190515-Numero-Acte-AI-1-2_0.xml' => [],
+                ]
+            );
+        $webdavWrapper
+            ->method('get')
+            ->willReturn(file_get_contents(__DIR__ . '/fixtures/999-1234----1-2_0.xml'));
+
+        $soapClientFactory = $this->createMock(SoapClientFactory::class);
+        /**
+         * @var WebdavWrapper $webdavWrapper
+         * @var SoapClientFactory $soapClientFactory
+         */
+        $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
+        $this->fastTdt->setConnecteurConfig($connecteurConfig);
+        $this->fastTdt->setDocDonneesFormulaire($this->getDefaultActeDonneesFormulaire(1));
+
+        $this->assertSame(
+            TdtConnecteur::STATUS_ACQUITTEMENT_RECU,
+            $this->fastTdt->getStatus('999-1234-20190430-Numero-Acte-AI')
+        );
+    }
+
+    /**
+     * @test
      * @throws ClientHttpException
      */
     public function whenGettingStatusWithAnError()

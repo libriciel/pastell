@@ -51,6 +51,26 @@
 - Renommage des fichiers ayant le même nom dans les champs fichiers multiples lors du téléchargement #2052
 - Modification du type de dossier `gfc-dossier` #1931
 
+# [4.0.14] - 2024-06-10
+
+## Évolutions
+
+- Permettre de récupérer les aractes sur fast même si le numéro d'acte contient un tiret #2061
+- Permettre de définir la variable de vérification du rate limiter (par défaut, il s'agit de l'IP) #2065
+  - En cas d'utilisation d'un header de la requête, préfixer par `HTTP_`, remplacer les `-` par des `_` et tout mettre 
+  en majuscule.
+  - Exemple : Header `X-Forwarded-For` => `HTTP_X_FORWARDED_FOR`
+- Mise à jour du service seda-generator en version 1.0.4
+  (Permettre d'utiliser "SystemId" pour les rattachements des AU sur vitam)
+
+## Correction
+
+- Il n'était pas possible de déposer des fichiers de plus de 200MB par API même avec la configuration adéquate #2064
+- Ajout du paramètre noproxy au healthcheck du container applicatif #2063
+- Connecteur `recup-parapheur` : L'ajout de nouvelles métadonnées pour la balise `<significantPropertiesType>` dans le 
+fichier premis du iparapheur à partir des versions 5.0.25 et 5.1.3 est ignoré et ne génère pas le message d'erreur 
+"The data must belong to a backed enumeration of type Pastell\Client\IparapheurV5\Model\SignificantPropertyType" #2068
+
 # [4.0.13] - 2024-04-15
 
 ***Cette version nécessite une mise à jour du générateur SEDA en 1.0.3***

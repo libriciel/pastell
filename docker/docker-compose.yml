@@ -74,6 +74,7 @@ services:
             OPENSSL_CIPHER_STRING_SECURITY_LEVEL: ${OPENSSL_CIPHER_STRING_SECURITY_LEVEL:-2}
             USE_UUID_FOR_DOCUMENT: ${USE_UUID_FOR_DOCUMENT:-false}
             PASSWORD_MIN_ENTROPY: ${PASSWORD_MIN_ENTROPY:-80}
+            RATE_LIMITER_VARIABLE: ${RATE_LIMITER_VARIABLE:-REMOTE_ADDR}
         ports:
             - "${WEB_HTTP_PORT:-8000}:80"
             - "${WEB_HTTPS_PORT:-8443}:443"
@@ -98,7 +99,7 @@ services:
         restart: unless-stopped
 
     seda-generator:
-        image: 'registry.libriciel.fr:443/public/plateforme/seda-generator:1.0.3'
+        image: 'registry.libriciel.fr:443/public/plateforme/seda-generator:1.0.4'
         restart: unless-stopped
         volumes:
             - '/etc/localtime:/etc/localtime:ro'

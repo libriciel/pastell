@@ -26,6 +26,10 @@
       <significantPropertiesType>i_Parapheur_reserved_mainDocument</significantPropertiesType>
       <significantPropertiesValue>true</significantPropertiesValue>
     </significantProperties>
+    <significantProperties>
+      <significantPropertiesType>autres_meta_parapheur</significantPropertiesType>
+      <significantPropertiesValue>nouvelles meta possible à partir des versions 5.0.25 et 5.1.3</significantPropertiesValue>
+    </significantProperties>
     <objectCharacteristics>
       <fixity>
         <messageDigestAlgorithm>SHA-256</messageDigestAlgorithm>
