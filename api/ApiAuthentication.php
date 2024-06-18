@@ -8,6 +8,7 @@ use Symfony\Component\RateLimiter\Exception\RateLimitExceededException;
 
 class ApiAuthentication
 {
+    private const DEFAULT_RATE_LIMITER_VARIABLE = 'REMOTE_ADDR';
     private array $server = [];
     private array $request = [];
 
@@ -17,6 +18,7 @@ class ApiAuthentication
         private readonly LoginAttemptLimit $loginAttemptLimit,
         private readonly UtilisateurSQL $utilisateurSQL,
         private readonly UserTokenService $userTokenService,
+        private readonly string $rateLimiterVariable,
     ) {
     }
 
@@ -120,23 +122,42 @@ class ApiAuthentication
         return \str_starts_with($authorizationHeader, 'Bearer ');
     }
 
+    private function getRateLimiterVariable(): ?string
+    {
+        if (
+            isset($this->server[$this->rateLimiterVariable])
+            && $this->server[$this->rateLimiterVariable] !== ''
+        ) {
+            return $this->rateLimiterVariable;
+        }
+        if (
+            isset($this->server[self::DEFAULT_RATE_LIMITER_VARIABLE])
+            && $this->server[self::DEFAULT_RATE_LIMITER_VARIABLE] !== ''
+        ) {
+            return self::DEFAULT_RATE_LIMITER_VARIABLE;
+        }
+        return null;
+    }
+
     private function checkRateLimit(): void
     {
-        if (!isset($this->server['REMOTE_ADDR'])) {
+        $rateLimiterVariable = $this->getRateLimiterVariable();
+        if ($rateLimiterVariable === null) {
             return;
         }
-        if ($this->loginAttemptLimit->isLoginAttemptAuthorized($this->server['REMOTE_ADDR']) === false) {
+        if ($this->loginAttemptLimit->isLoginAttemptAuthorized($this->server[$rateLimiterVariable]) === false) {
             throw new RateLimitExceededException(
-                $this->loginAttemptLimit->getRateLimit($this->server['REMOTE_ADDR'])
+                $this->loginAttemptLimit->getRateLimit($this->server[$rateLimiterVariable])
             );
         }
     }
 
     private function resetRateLimit(): void
     {
-        if (!isset($this->server['REMOTE_ADDR'])) {
+        $rateLimiterVariable = $this->getRateLimiterVariable();
+        if ($rateLimiterVariable === null) {
             return;
         }
-        $this->loginAttemptLimit->resetLoginAttempt($this->server['REMOTE_ADDR']);
+        $this->loginAttemptLimit->resetLoginAttempt($this->server[$rateLimiterVariable]);
     }
 }

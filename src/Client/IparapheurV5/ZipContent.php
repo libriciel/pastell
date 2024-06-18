@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Client\IparapheurV5;
 
 use Pastell\Client\IparapheurV5\Model\Premis;
-use Pastell\Client\IparapheurV5\Model\SignificantPropertyType;
+use Pastell\Client\IparapheurV5\Model\SignificantProperties;
 use Pastell\Client\IparapheurV5\Model\Type;
 use Pastell\Client\IparapheurV5\Model\ZipContentModel;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
@@ -55,7 +55,7 @@ final class ZipContent
             }
             if ($object->type === Type::file) {
                 $significantProperty = $object->significantProperties[0];
-                if ($significantProperty->significantPropertiesType === SignificantPropertyType::MAIN_DOCUMENT) {
+                if ($significantProperty->significantPropertiesType === SignificantProperties::MAIN_DOCUMENT) {
                     if ($significantProperty->significantPropertiesValue === 'true') {
                         $zipContentModel->documentPrincipaux[] = $object->originalName;
                     } else {

@@ -46,6 +46,8 @@ $objectInstancier->setInstance('bd_password', BD_PASS);
 $objectInstancier->setInstance('redis_server', REDIS_SERVER);
 $objectInstancier->setInstance('redis_port', REDIS_PORT);
 
+$objectInstancier->setInstance('rateLimiterVariable', RATE_LIMITER_VARIABLE);
+
 if (REDIS_SERVER && !TESTING_ENVIRONNEMENT) {
     $objectInstancier->setInstance(RedisWrapper::class, new RedisWrapper(REDIS_SERVER, REDIS_PORT));
     $objectInstancier->setInstance(MemoryCache::class, $objectInstancier->getInstance(RedisWrapper::class));

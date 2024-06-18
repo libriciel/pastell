@@ -404,17 +404,21 @@ class FastTdt extends TdtConnecteur
             ],
             1
         );
-
-        $transactionId = preg_split('/-/', $id_transaction);
+        $transactionId = [];
+        preg_match(
+            '/(.*)-(.*)-(\d{8})-(.*)-(.*)/',
+            $id_transaction,
+            $transactionId
+        );
         $filesMatchingTransactionId = [];
         foreach ($files as $file => $properties) {
             $matches = [];
             $pattern = sprintf(
                 '/%s-%s-(\d{8})-%s-%s-(%s|%s|%s)_(.*).xml/',
-                $transactionId[0], // department
-                $transactionId[1], // subscriber number
-                $transactionId[3], // acte number
-                $transactionId[4], // shortened acte nature
+                $transactionId[1], // department
+                $transactionId[2], // subscriber number
+                $transactionId[4], // acte number
+                $transactionId[5], // shortened acte nature
                 self::ACTES_FLUX_ACKNOWLEDGMENT,
                 self::ACTES_FLUX_ANOMALY,
                 self::ACTES_FLUX_CANCELLATION_ACKNOWLEDGMENT
