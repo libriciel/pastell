@@ -194,11 +194,12 @@ final class MailsecManager
      * @throws NotEditableResponseException
      * @throws TransportExceptionInterface
      * @throws UnableToExecuteActionException
+     * @throws \JsonException
      */
     public function validateResponse(MailSecInfo $mailSecInfo): void
     {
         $this->checkResponseCanBeEdited($mailSecInfo);
-        /** Pour des raisons de compatibilité */
+        /** TODO: PA 5, delete this `modification-reponse` */
         if (
             $this->objectInstancier
                 ->getInstance(DocumentTypeFactory::class)
@@ -220,6 +221,17 @@ final class MailsecManager
                     $this->objectInstancier->getInstance(ActionExecutorFactory::class)->getLastMessage()
                 );
             }
+        } else {
+            $data = [];
+            $indexedFields = $mailSecInfo->donneesFormulaireReponse->getFormulaire()->getIndexedFields();
+            foreach ($indexedFields as $fieldId => $fieldLabel) {
+                $field = $mailSecInfo->donneesFormulaireReponse->getFieldData($fieldId)->getField();
+                if (!$field->isFile()) {
+                    $data[$fieldLabel] = $mailSecInfo->donneesFormulaireReponse->get($fieldId);
+                }
+            }
+            $documentEmail = $this->objectInstancier->getInstance(DocumentEmail::class);
+            $documentEmail->addReponse($mailSecInfo->id_de, \json_encode($data, JSON_THROW_ON_ERROR));
         }
         $this->objectInstancier->getInstance(ActionExecutorFactory::class)->executeOnDocument(
             $mailSecInfo->id_e,
