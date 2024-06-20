@@ -13,6 +13,12 @@ formulaire:
             type: externalData
             link_name: 'Décrire les transformations'
             choice-action: fill-data
+        data:
+            name: 'Fichier de configuration'
+            commentaire: "Format JSON ou XML (identifiant: pa_connector_data)<br />
+            Les données de ce fichier peuvent être utilisées dans les transformations, exemple :
+             {{ jsonpath('pa_connector_data', '$.id') }}"
+            type: file
 action:
     test_extraction:
         name: 'Tester la transformation'

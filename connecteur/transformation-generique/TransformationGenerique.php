@@ -4,6 +4,7 @@ use Pastell\Service\Document\DocumentTransformService;
 
 class TransformationGenerique extends TransformationConnecteur
 {
+    public const PA_CONNECTOR_DATA = 'pa_connector_data';
     private DonneesFormulaire $connecteurConfig;
 
     public function __construct(
@@ -18,11 +19,20 @@ class TransformationGenerique extends TransformationConnecteur
     }
 
     /**
-     * @throws UnrecoverableException
+     * @throws DonneesFormulaireException
      * @throws JsonException
+     * @throws UnrecoverableException
      */
     public function transform(DonneesFormulaire $donneesFormulaire): array
     {
+        if ($this->connecteurConfig->get('data')) {
+            $donneesFormulaire->addFileFromCopy(
+                self::PA_CONNECTOR_DATA,
+                '',
+                $this->connecteurConfig->getFilePath('data')
+            );
+        }
+
         return $this->documentTransformService->transform(
             $donneesFormulaire,
             $this->transformationGeneriqueDefinition->getData($this->connecteurConfig)
@@ -30,11 +40,20 @@ class TransformationGenerique extends TransformationConnecteur
     }
 
     /**
-     * @throws UnrecoverableException
+     * @throws DonneesFormulaireException
      * @throws JsonException
+     * @throws UnrecoverableException
      */
     public function testTransform(DonneesFormulaire $donneesFormulaire): string
     {
+        if ($this->connecteurConfig->get('data')) {
+            $donneesFormulaire->addFileFromCopy(
+                self::PA_CONNECTOR_DATA,
+                '',
+                $this->connecteurConfig->getFilePath('data')
+            );
+        }
+
         $result = $this->documentTransformService->getNewValue(
             $donneesFormulaire,
             $this->transformationGeneriqueDefinition->getData($this->connecteurConfig)
