@@ -14,7 +14,7 @@
         <p>Identifiant de l'élément représente l'élément qui va recevoir le résultat de la transformation</p>
         <p>Transformation représente une expression <a href="https://twig.symfony.com/" target="_blank">twig</a> dont le
             résultat sera affecté à l'élément associé</p>
-        <?php $this->render('TwigCommandDocumentation'); ?>
+        <?php $this->render('/twigDocumentation/TwigCommandDocumentation'); ?>
     </div>
 
 </div>

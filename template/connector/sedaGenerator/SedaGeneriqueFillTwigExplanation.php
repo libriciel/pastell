@@ -17,7 +17,7 @@ declare(strict_types=1);
             <a href="https://twig.symfony.com/" target="_blank">twig</a> qui sera analysée lors de la génération du
             bordereau
         </p>
-        <?php $this->render('TwigCommandDocumentation'); ?>
+        <?php $this->render('/twigDocumentation/TwigCommandDocumentation'); ?>
 
         <p>L'expression pour les fichiers et les unités d'archivage doit renvoyer un identifiant d'élément Pastell de
             type fichier</p>
