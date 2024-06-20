@@ -1,5 +1,7 @@
 <?php
+
 use Pastell\Service\Document\DocumentPastellMetadataService;
+
 ?>
 <div class="box" >
     <a class="collapse-link" data-bs-toggle="collapse" data-bs-target="#collapseDataPastell">

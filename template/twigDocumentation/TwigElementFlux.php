@@ -1,8 +1,10 @@
 <?php
+
 /**
  * @var string $flux
  * @var Field[] $fieldsList
  */
+
 ?>
 
 <?php if ($flux) : ?>
