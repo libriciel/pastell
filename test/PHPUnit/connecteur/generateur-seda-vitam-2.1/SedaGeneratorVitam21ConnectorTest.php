@@ -10,7 +10,10 @@ final class SedaGeneratorVitam21ConnectorTest extends AbstractSedaGeneratorConne
 {
     public function getSedaMessageBuilder(): SedaMessageBuilder
     {
-        return new VitamSedaMessageBuilder($this->getTmpFolder());
+        return new VitamSedaMessageBuilder(
+            $this->getTmpFolder(),
+            $this->getPastellMetadataService()
+        );
     }
 
     public function getSedaConnectorId(): string

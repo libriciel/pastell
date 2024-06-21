@@ -11,6 +11,7 @@ use FluxDataTestSedaGenerique;
 use NotFoundException;
 use Pastell\Connector\AbstractSedaGeneratorConnector;
 use Pastell\Seda\Message\SedaMessageBuilder;
+use Pastell\Service\Document\DocumentPastellMetadataService;
 use PastellTestCase;
 use TmpFolder;
 use UnrecoverableException;
@@ -52,6 +53,10 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
     public function getTmpFolder(): TmpFolder
     {
         return $this->tmpFolder;
+    }
+    public function getPastellMetadataService(): DocumentPastellMetadataService
+    {
+        return $this->getObjectInstancier()->getInstance(DocumentPastellMetadataService::class);
     }
 
     private function setCurl(callable $returnCallback): void
