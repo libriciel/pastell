@@ -28,6 +28,7 @@ récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2
 - Possibilité d'envoyer des fichiers lourds en chunk par API #1350
 - Possibilité d'envoyer des PES PJ autonomes vers iParapheur #644
 - Possibilité de dupliquer un acte #499
+- Ajout d'un fichier de configuration sur le connecteur de transformation #2021
 
 ## Corrections
 
