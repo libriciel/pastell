@@ -72,24 +72,15 @@ class TransformationGeneriqueTest extends PastellTestCase
 
         $connectorConfig = $this->getDonneesFormulaireFactory()->getConnecteurEntiteFormulaire($connectorId);
 
-        $connectorData = TransformationGenerique::PA_CONNECTOR_DATA;
-        $connectorConfig->addFileFromData(
+        $connectorConfig->addFileFromCopy(
             'definition',
             'definition.json',
-            <<<TXT
-{
-  "foo": "{{jsonpath('$connectorData', '$.key') }}"
-}
-TXT,
+            __DIR__ . '/fixtures/definition_with_file.json',
         );
-            $connectorConfig->addFileFromData(
+            $connectorConfig->addFileFromCopy(
                 'data',
                 'data.json',
-                <<<TXT
-{
-    "key": "valueFromFile"
-}
-TXT,
+                __DIR__ . '/fixtures/data.json',
             );
         /** @var TransformationGenerique $connector */
         $connector = $this->getConnecteurFactory()->getConnecteurById($connectorId);
