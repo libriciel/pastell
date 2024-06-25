@@ -757,22 +757,18 @@ class FastParapheurTest extends PastellTestCase
      */
     public function testGetRefusalMessage(): void
     {
+        $expectedMessage = 'test message de refus';
+        $this->mockCurl([
+            sprintf(FastParapheur::REFUSAL_MESSAGE_URI, '1234') => json_encode([
+                'comment' => $expectedMessage
+            ], JSON_THROW_ON_ERROR)
+        ]);
         $this->mockSoapClient(
             function ($soapMethod, $arguments) {
                 if ($soapMethod === 'upload') {
                     return json_decode(
                         json_encode([
-                            'return' => '1234-abed'
-                        ], JSON_THROW_ON_ERROR),
-                        false,
-                        512,
-                        JSON_THROW_ON_ERROR
-                    );
-                }
-                if ($soapMethod === 'getRefusalMessage') {
-                    return json_decode(
-                        json_encode([
-                            'return' => 'test message de refus'
+                            'return' => '1234'
                         ], JSON_THROW_ON_ERROR),
                         false,
                         512,
@@ -795,14 +791,24 @@ class FastParapheurTest extends PastellTestCase
                         JSON_THROW_ON_ERROR
                     );
                 }
+                if ($soapMethod === 'download') {
+                    return json_decode(
+                        json_encode([
+                            'return' => [
+                                'documentId' => '1234-abcd',
+                                'content' => 'signed file content'
+                            ]
+                        ], JSON_THROW_ON_ERROR),
+                        false,
+                        512,
+                        JSON_THROW_ON_ERROR
+                    );
+                }
                 throw new UnrecoverableException("Unexpected call to SOAP method : $soapMethod");
             }
         );
 
         $id_ce = $this->createConnector('fast-parapheur', 'fast-parapheur')['id_ce'];
-        $this->configureConnector($id_ce, [
-            'wsdl' => 'https://foo',
-        ]);
 
         $this->associateFluxWithConnector($id_ce, 'ls-document-pdf', 'signature');
 
