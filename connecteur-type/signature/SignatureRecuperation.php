@@ -99,9 +99,11 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
             );
         }
         if ($signature->isRejected($lastState)) {
-            $this->rejeteDossier($dossierID, $lastState, $bordereau_element);
             $refusal_message = $signature->getRefusalMessage($dossierID);
-            $this->setLastMessage(trim("$lastState $refusal_message"));
+            $lastState = trim("$lastState $refusal_message");
+            $this->setLastMessage($lastState);
+            $donneesFormulaire->setData($parapheur_last_message_element, $lastState);
+            $this->rejeteDossier($dossierID, $lastState, $bordereau_element);
             return true;
         }
 

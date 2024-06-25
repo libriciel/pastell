@@ -127,9 +127,4 @@ class DocapostParapheurSoapClient
         }
         return $fdc->return->content;
     }
-
-    public function getRefusalMessage(string $documentId)
-    {
-        return $this->client->getRefusalMessage(['documentId' => $documentId])->return;
-    }
 }

@@ -6,6 +6,7 @@ class FastParapheur extends SignatureConnecteur
     public const WSDL_URI = '/parapheur-soap/soap/v1/Documents?wsdl';
     public const REST_URI = '/parapheur-ws/rest/v1/';
     public const CIRCUIT_ON_THE_FLY_URI = self::REST_URI . '/documents/ondemand/%s/upload';
+    public const REFUSAL_MESSAGE_URI = self::REST_URI . '/documents/v2/%s/comments/refusal';
 
     private const SIGNED_STATE = ['Signé'];
 
@@ -423,11 +424,32 @@ class FastParapheur extends SignatureConnecteur
     }
 
     /**
-     * @throws UnrecoverableException
      * @throws Exception
      */
     public function getRefusalMessage($dossierID): string
     {
-        return $this->getClient()->getRefusalMessage($dossierID);
+        $result_from_curl = $this->curlWrapper->get(
+            $this->url . sprintf(self::REFUSAL_MESSAGE_URI, $dossierID)
+        );
+
+        if ($this->curlWrapper->getLastError()) {
+            throw new RuntimeException($this->curlWrapper->getLastError());
+        }
+        $result = json_decode($result_from_curl, true, 512, JSON_THROW_ON_ERROR);
+        if ($result === null) {
+            throw new RuntimeException("unable to decode json : $result_from_curl");
+        }
+        if (isset($result['errorCode']) && $result['errorCode'] !== 102) {
+            throw new SignatureException(
+                sprintf(
+                    'Erreur %s : %s (%s)',
+                    $result['errorCode'],
+                    $result['userFriendlyMessage'],
+                    $result['developerMessage']
+                )
+            );
+        }
+
+        return $result['comment'] ?? '';
     }
 }
