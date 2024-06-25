@@ -338,7 +338,7 @@ class UtilisateurControler extends PastellControler
             $this->getRoleUtilisateur()->getEntite($this->getId_u(), 'entite:edition')
         );
 
-        if ($id_u === $this->getId_u()) {
+        if ((int) $id_u === $this->getId_u()) {
             $this->setViewParameter('notification_list', $this->getNotificationList($id_u));
         }
 
