@@ -84,7 +84,6 @@ module-json-document: docker-compose-up ## Run make-module json-document
 	$(MAKE_MODULE) ./json-studio/json-document/draft-ls-document-pdf.json ./module/ --id ls-document-pdf --name "Document PDF"
 	$(MAKE_MODULE) ./json-studio/json-document/draft-ls-document-pdf-destinataire.json ./module/ --id ls-document-pdf-destinataire --name "Document PDF (destinataire)"
 	$(MAKE_MODULE) ./json-studio/json-document/draft-ls-recup-parapheur.json ./module/ --id ls-recup-parapheur --name "Récupération parapheur" --restriction_pack 'suppl_recup_fin_parapheur'
-	$(MAKE_MODULE) ./json-studio/json-document/draft-ls-pes-pj.json ./module/ --id ls-pes-pj --name "Pièce jointe autonome PES"
 
 module-json-gfc: docker-compose-up ## Run make-module json-gfc
 	$(MAKE_MODULE) ./json-studio/json-gfc/draft-gfc-dossier.json ./module/ --id gfc-dossier --name "Dossier GFC"
@@ -92,6 +91,7 @@ module-json-gfc: docker-compose-up ## Run make-module json-gfc
 
 module-json-helios: docker-compose-up ## Run make-module json-helios
 	$(MAKE_MODULE) ./json-studio/json-helios/draft-ls-helios.json ./module/ --id ls-helios --name "Helios"
+	$(MAKE_MODULE) ./json-studio/json-helios/draft-ls-helios-pj.json ./module/ --id ls-helios-pj --name "Helios PES PJ"
 
 module-json-mailsec: docker-compose-up ## Run make-module json-mailsec
 	$(MAKE_MODULE) ./json-studio/json-mailsec/draft-ls-mailsec.json ./module/ --id ls-mailsec --name "Mail sécurisé"

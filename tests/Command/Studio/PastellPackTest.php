@@ -54,11 +54,6 @@ class PastellPackTest extends PastellTestCase
                 'ls-recup-parapheur',
                 'Récupération parapheur',
             ],
-        'draft-ls-pes-pj' => [
-            '',
-            'ls-pes-pj',
-            'Pièce jointe autonome PES',
-        ],
         'draft-gfc-dossier' => [
             '',
             'gfc-dossier',
@@ -73,6 +68,11 @@ class PastellPackTest extends PastellTestCase
             '',
             'ls-helios',
             'Helios',
+        ],
+        'draft-ls-helios-pj' => [
+            '',
+            'ls-helios-pj',
+            'Helios PES PJ',
         ],
         'draft-ls-mailsec' =>
             [
