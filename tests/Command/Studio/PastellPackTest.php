@@ -69,6 +69,11 @@ class PastellPackTest extends PastellTestCase
             'ls-helios',
             'Helios',
         ],
+        'draft-ls-helios-pj' => [
+            '',
+            'ls-helios-pj',
+            'Helios PES PJ',
+        ],
         'draft-ls-mailsec' =>
             [
                 '',

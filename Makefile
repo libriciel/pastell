@@ -91,6 +91,7 @@ module-json-gfc: docker-compose-up ## Run make-module json-gfc
 
 module-json-helios: docker-compose-up ## Run make-module json-helios
 	$(MAKE_MODULE) ./json-studio/json-helios/draft-ls-helios.json ./module/ --id ls-helios --name "Helios"
+	$(MAKE_MODULE) ./json-studio/json-helios/draft-ls-helios-pj.json ./module/ --id ls-helios-pj --name "Helios PES PJ"
 
 module-json-mailsec: docker-compose-up ## Run make-module json-mailsec
 	$(MAKE_MODULE) ./json-studio/json-mailsec/draft-ls-mailsec.json ./module/ --id ls-mailsec --name "Mail sécurisé"

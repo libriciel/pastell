@@ -14,7 +14,8 @@
 - Studio, étape tdt_actes, ajout du contrôle sur le total des fichiers Acte et Annexes < 157.29 MB #1602
 - Studio, étape tdt_helios, ajout du contrôle sur la taille du fichier PES ALLER < 128 MB #1602
 - Studio, étape tdt_helios, ajout de la possibilité de définir le champ "Objet PES ALLER" (prend la valeur NomFic du Fichier PES) #1969
-- Studio : étape mail sécurisé avec réponse : Les champs indexés dans le flux de réponse sont affichés dans le
+- Studio : Ajout du flux ls-helios-pj pour envoyer des PES PJ autonomes vers iParapheur #2034
+- Studio : étape mail sécurisé avec réponse : Les champs indexés dans le flux de réponse sont affichés dans le 
 récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2073
 - Studio : Ajout de la possibilité de définir des `Transformation fixe` (de la forme 'id_element:expression_twig') au niveau du type de dossier #1979
 - Possibilité de créer un utilisateur exclusivement API et de gérer ses tokens via l'administrateur de son entité #1943
