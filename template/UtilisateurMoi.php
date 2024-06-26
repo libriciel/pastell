@@ -179,7 +179,7 @@ use Pastell\Utilities\Certificate;
         <form action='Utilisateur/notificationAjout' method='post' class='input-group align-items-center'>
             <?php $this->displayCSRFInput(); ?>
 
-            <select name='id_e' class='select2_entite'>
+            <select name='id_e' class='select2_entite form-control col-md-1'>
                 <?php if ($droit_entite_racine) : ?>
                     <option value='0'>Entité racine</option>
                 <?php endif; ?>
