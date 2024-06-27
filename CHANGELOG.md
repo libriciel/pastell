@@ -9,6 +9,7 @@
   - Exemple : Header `X-Forwarded-For` => `HTTP_X_FORWARDED_FOR`
 - Mise à jour du service seda-generator en version 1.0.4
   (Permettre d'utiliser "SystemId" pour les rattachements des AU sur vitam)
+- Ajout du champ accessible via API "iparapeheur_sous_type" sur le connecteur Iparapheur #1930
 
 ## Correction
 

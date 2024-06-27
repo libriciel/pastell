@@ -15,6 +15,11 @@ formulaire:
             type: externalData
             choice-action: iparapheur-type
             link_name: 'Sélectionner un type'
+        iparapheur_sous_type:
+            name: 'Sous-type iparapheur'
+            type: externalData
+            choice-action: iparapheur-subtype
+            no-show: true
         iparapheur_nb_jour_max:
             name: 'Nombre de jours maximum dans le parapheur'
             commentaire: "Nombre de jours avant de déclencher une erreur s'il n'y a pas de réponse du parapheur\n(Peut ne pas être implémenté par les différents flux)."
@@ -60,6 +65,11 @@ action:
         rule:
             internal-action: true
         action-class: IparapheurType
+    iparapheur-subtype:
+        name: 'Liste des sous-types iparapheur'
+        rule:
+            internal-action: true
+        action-class: IparapheurSubType
     iparapheur-empty-cache:
         name: 'Vider le cache WSDL'
         action-class: IParapheurEmptyWSDLCache
