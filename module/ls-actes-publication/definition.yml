@@ -180,7 +180,7 @@ action:
             - envoi_depot
         modification-no-change-etat: true
     transformation-error:
-        name: 'Erreur lors de la transformation du dossier'
+        name: 'Erreur lors de la transformation du document'
         rule:
             role_id_e: no-role
     preparation-send-ged:

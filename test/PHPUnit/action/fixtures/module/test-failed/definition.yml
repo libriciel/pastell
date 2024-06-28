@@ -105,6 +105,6 @@ action:
         connecteur-type: transformation
         connecteur-type-action: TransformationTransform
     transformation-error:
-        name: 'Erreur lors de la transformation du dossier'
+        name: 'Erreur lors de la transformation du document'
         rule:
             role_id_e: no-role

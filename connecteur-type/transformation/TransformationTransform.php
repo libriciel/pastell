@@ -29,9 +29,9 @@ class TransformationTransform extends ConnecteurTypeActionExecutor
         $transformationErrorState = $this->getMappingValue('transformation-error');
 
         $donneesFormulaire = $this->getDonneesFormulaire();
-        $modifiedFields = $transformationConnecteur->transform($donneesFormulaire);
 
         try {
+            $modifiedFields = $transformationConnecteur->transform($donneesFormulaire);
             $this->addOnChange($modifiedFields);
         } catch (Exception $e) {
             $this->changeAction($transformationErrorState, $e->getMessage());

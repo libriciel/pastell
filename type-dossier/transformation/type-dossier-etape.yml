@@ -36,6 +36,6 @@ action:
             transformation_file: transformation_file
             has_transformation: has_transformation
     transformation-error:
-        name: 'Erreur lors de la transformation du dossier'
+        name: 'Erreur lors de la transformation du document'
         rule:
             role_id_e: no-role

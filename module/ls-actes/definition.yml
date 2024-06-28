@@ -515,7 +515,7 @@ action:
             - sae_atr_comment
         modification-no-change-etat: true
     transformation-error:
-        name: 'Erreur lors de la transformation du dossier'
+        name: 'Erreur lors de la transformation du document'
         rule:
             role_id_e: no-role
     preparation-send-iparapheur:
