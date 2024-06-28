@@ -22,13 +22,6 @@ class LoginAttemptLimit
         $this->redis_port = $redis_port;
     }
 
-    public function isLoginAttemptAuthorized(string $login): bool
-    {
-        $loginAttemptFactory = $this->getLimiterFactory();
-        $limiter = $loginAttemptFactory->create($login);
-        return  $limiter->consume()->isAccepted();
-    }
-
     public function resetLoginAttempt(string $login)
     {
         $loginAttemptFactory = $this->getLimiterFactory();
@@ -39,8 +32,13 @@ class LoginAttemptLimit
     public function getRateLimit(string $login): RateLimit
     {
         $loginAttemptFactory = $this->getLimiterFactory();
-        $limiter = $loginAttemptFactory->create($login);
-        return $limiter->consume(0);
+        return $loginAttemptFactory->create($login)->consume(0);
+    }
+
+    public function consumeLoginAttempt(string $login): RateLimit
+    {
+        $loginAttemptFactory = $this->getLimiterFactory();
+        return $loginAttemptFactory->create($login)->consume();
     }
 
 

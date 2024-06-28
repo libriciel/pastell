@@ -2,6 +2,7 @@
 
 ## Évolutions
 
+- Révision du fonctionnement du rate limiter #2072
 - Ajout du champ `iparapheur_sous_type` externalData accessible via API sur le connecteur iparapheur
   (`GET /entite/:id_e/connecteur/:id_ce/externalData/iparapheur_sous_type`) #1930
 
