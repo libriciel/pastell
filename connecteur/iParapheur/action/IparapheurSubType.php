@@ -25,6 +25,6 @@ class IparapheurSubType extends ChoiceActionExecutor
     {
         /** @var IParapheur $signature */
         $signature = $this->getMyConnecteur();
-        return $signature->getSousType();
+        return $signature->getSousTypeAPI();
     }
 }
