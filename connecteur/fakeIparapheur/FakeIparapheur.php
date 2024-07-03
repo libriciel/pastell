@@ -246,4 +246,9 @@ class FakeIparapheur extends SignatureConnecteur
     {
         return true;
     }
+
+    public function getRefusalMessage($dossierID)
+    {
+        return '';
+    }
 }

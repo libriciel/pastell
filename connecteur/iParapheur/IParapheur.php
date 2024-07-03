@@ -861,4 +861,9 @@ class IParapheur extends SignatureConnecteur
         $all_document_signe[] = $info_from_get_signature['document_signe'];
         return $all_document_signe;
     }
+
+    public function getRefusalMessage($dossierID): string
+    {
+        return '';
+    }
 }

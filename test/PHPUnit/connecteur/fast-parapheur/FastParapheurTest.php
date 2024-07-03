@@ -750,4 +750,80 @@ class FastParapheurTest extends PastellTestCase
         );
         $this->fastParapheur->sendDossier($file);
     }
+
+    /**
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    public function testGetRefusalMessage(): void
+    {
+        $expectedMessage = 'test message de refus';
+        $this->mockCurl([
+            sprintf(FastParapheur::REFUSAL_MESSAGE_URI, '1234') => json_encode([
+                'comment' => $expectedMessage
+            ], JSON_THROW_ON_ERROR)
+        ]);
+        $this->mockSoapClient(
+            function ($soapMethod, $arguments) {
+                if ($soapMethod === 'upload') {
+                    return json_decode(
+                        json_encode([
+                            'return' => '1234'
+                        ], JSON_THROW_ON_ERROR),
+                        false,
+                        512,
+                        JSON_THROW_ON_ERROR
+                    );
+                }
+                if ($soapMethod === 'history') {
+                    return json_decode(
+                        json_encode([
+                            'return' => [
+                                [
+                                    'userFullName' => 'Agent',
+                                    'date' => '2019-04-03T14:46:49.274+01:00',
+                                    'stateName' => 'Refusé'
+                                ]
+                            ]
+                        ], JSON_THROW_ON_ERROR),
+                        false,
+                        512,
+                        JSON_THROW_ON_ERROR
+                    );
+                }
+                if ($soapMethod === 'download') {
+                    return json_decode(
+                        json_encode([
+                            'return' => [
+                                'documentId' => '1234-abcd',
+                                'content' => 'signed file content'
+                            ]
+                        ], JSON_THROW_ON_ERROR),
+                        false,
+                        512,
+                        JSON_THROW_ON_ERROR
+                    );
+                }
+                throw new UnrecoverableException("Unexpected call to SOAP method : $soapMethod");
+            }
+        );
+
+        $id_ce = $this->createConnector('fast-parapheur', 'fast-parapheur')['id_ce'];
+
+        $this->associateFluxWithConnector($id_ce, 'ls-document-pdf', 'signature');
+
+        $id_d = $this->createDocument('ls-document-pdf')['id_d'];
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
+        $donneesFormulaire->setTabData([
+            'libelle' => 'LIBELLE',
+            'fast_parapheur_circuit' => 'circuit',
+            'fast_parapheur_circuit_configuration' => 'config'
+        ]);
+
+        $this->triggerActionOnDocument($id_d, 'send-iparapheur');
+        $this->assertLastMessage('Le document a été envoyé au parapheur électronique');
+
+        $this->triggerActionOnDocument($id_d, 'verif-iparapheur');
+        $this->assertLastMessage('03/04/2019 15:46:49 : [Refusé] test message de refus');
+    }
 }
