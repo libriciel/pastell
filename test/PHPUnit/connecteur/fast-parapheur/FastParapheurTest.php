@@ -815,8 +815,6 @@ class FastParapheurTest extends PastellTestCase
         $id_d = $this->createDocument('ls-document-pdf')['id_d'];
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
         $donneesFormulaire->setTabData([
-            'iparapheur_type' => 'FOO',
-            'iparapheur_sous_type' => 'BAR',
             'libelle' => 'LIBELLE',
             'fast_parapheur_circuit' => 'circuit',
             'fast_parapheur_circuit_configuration' => 'config'
