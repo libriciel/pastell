@@ -694,6 +694,13 @@ class IParapheur extends SignatureConnecteur
         }
     }
 
+    public function getSousTypeAPI(): array
+    {
+        $result = $this->getSousType();
+        return is_array($result) ? $result : [];
+    }
+
+
     public function testConnexion()
     {
         $client = $this->getClient();

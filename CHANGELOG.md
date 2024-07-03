@@ -1,3 +1,10 @@
+# [4.0.15]
+
+## Évolutions
+
+- Ajout du champ `iparapheur_sous_type` externalData accessible via API sur le connecteur iparapheur
+  (`GET /entite/:id_e/connecteur/:id_ce/externalData/iparapheur_sous_type`) #1930
+
 # [4.0.14] - 2024-06-10
 
 ## Évolutions
