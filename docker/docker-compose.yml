@@ -100,7 +100,7 @@ services:
         restart: unless-stopped
 
     seda-generator:
-        image: 'registry.libriciel.fr:443/public/plateforme/seda-generator:1.0.4'
+        image: 'registry.libriciel.fr:443/public/plateforme/seda-generator:1.0.5'
         restart: unless-stopped
         volumes:
             - '/etc/localtime:/etc/localtime:ro'
