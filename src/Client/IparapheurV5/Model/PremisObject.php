@@ -7,7 +7,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 class PremisObject
 {
     #[SerializedName('@xsi:type')]
-    public Type $type;
+    public string $type;
 
     public ObjectIdentifier $objectIdentifier;
 

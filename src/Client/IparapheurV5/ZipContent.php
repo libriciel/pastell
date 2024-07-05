@@ -6,7 +6,6 @@ namespace Pastell\Client\IparapheurV5;
 
 use Pastell\Client\IparapheurV5\Model\Premis;
 use Pastell\Client\IparapheurV5\Model\SignificantProperties;
-use Pastell\Client\IparapheurV5\Model\Type;
 use Pastell\Client\IparapheurV5\Model\ZipContentModel;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
@@ -49,11 +48,11 @@ final class ZipContent
         $zipContentModel->premisFile = self::PREMIS_FILENAME;
 
         foreach ($premis->object as $object) {
-            if ($object->type === Type::intellectualEntity) {
+            if ($object->type === 'intellectualEntity') {
                 $zipContentModel->id = $object->objectIdentifier->objectIdentifierValue;
                 $zipContentModel->name = $object->originalName;
             }
-            if ($object->type === Type::file) {
+            if ($object->type === 'file') {
                 $significantProperty = $object->significantProperties[0];
                 if ($significantProperty->significantPropertiesType === SignificantProperties::MAIN_DOCUMENT) {
                     if ($significantProperty->significantPropertiesValue === 'true') {
