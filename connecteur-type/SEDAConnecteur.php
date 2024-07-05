@@ -45,7 +45,7 @@ abstract class SEDAConnecteur extends Connecteur
             \copy($filepath, "$tmp_folder/$filename");
         }
 
-        $command = "cd $tmp_folder && tar -cvzf $archive_path * 2>&1";
+        $command = "cd $tmp_folder && tar -cvzf $archive_path . --transform 's,^\.,,' 2>&1";
 
         \exec($command, $output, $return_var);
 
