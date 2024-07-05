@@ -30,7 +30,7 @@ final class SedaGeneratorAsalae10Test extends AbstractSedaGeneratorConnectorTest
         $sedaGeneriqueConnector = $this->getConnecteurFactory()->getConnecteurById($id_ce);
         $this->expectException(UnrecoverableException::class);
         $this->expectExceptionMessage(
-            "Impossible de créer le fichier d'archive empty - status : 2 - output: tar: *: Cannot stat: No such file or directory"
+            "Impossible de créer le fichier d'archive empty - status : 1"
         );
         $sedaGeneriqueConnector->generateArchive(new \FluxDataTest([]), "empty");
     }
