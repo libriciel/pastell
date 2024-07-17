@@ -946,7 +946,7 @@ class DonneesFormulaire
     }
 
     /**
-     * @deprecated 4.0.8 unused
+     * used by pastell-quarantaine
      */
     public function copyAllFiles($field_name, $folder_destination, $new_filename = null): array
     {
