@@ -10,6 +10,7 @@
 
 - Mise à jour du service seda-generator en version 1.0.5
   (La propriété "AlgorithmIdentifier" n'était pas utilisée sur le template 2.2 asalae)
+- Connecteur `recup-parapheur` : Retrait de enum Type #2071
 
 # [4.0.14] - 2024-06-10
 
