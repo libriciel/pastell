@@ -38,6 +38,16 @@ class PastellPackTest extends PastellTestCase
             'ls-commande-destinataire',
             'Commande (destinataire)',
         ],
+        'draft-ls-document' => [
+            '',
+            'ls-document',
+            'Document',
+        ],
+        'draft-ls-document-destinataire' => [
+            '',
+            'ls-document-destinataire',
+            'Document (destinataire)',
+        ],
         'draft-ls-document-pdf' => [
             '',
             'ls-document-pdf',

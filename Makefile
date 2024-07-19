@@ -81,6 +81,8 @@ module-json-actes: docker-compose-up ## Run make-module json-actes
 module-json-document: docker-compose-up ## Run make-module json-document
 	$(MAKE_MODULE) ./json-studio/json-document/draft-ls-commande.json ./module/ --id ls-commande --name "Commande"
 	$(MAKE_MODULE) ./json-studio/json-document/draft-ls-commande-destinataire.json ./module/ --id ls-commande-destinataire --name "Commande (destinataire)"
+	$(MAKE_MODULE) ./json-studio/json-document/draft-ls-document.json ./module/ --id ls-document --name "Document"
+	$(MAKE_MODULE) ./json-studio/json-document/draft-ls-document-destinataire.json ./module/ --id ls-document-destinataire --name "Document (destinataire)"
 	$(MAKE_MODULE) ./json-studio/json-document/draft-ls-document-pdf.json ./module/ --id ls-document-pdf --name "Document PDF"
 	$(MAKE_MODULE) ./json-studio/json-document/draft-ls-document-pdf-destinataire.json ./module/ --id ls-document-pdf-destinataire --name "Document PDF (destinataire)"
 	$(MAKE_MODULE) ./json-studio/json-document/draft-ls-recup-parapheur.json ./module/ --id ls-recup-parapheur --name "Récupération parapheur" --restriction_pack 'suppl_recup_fin_parapheur'
