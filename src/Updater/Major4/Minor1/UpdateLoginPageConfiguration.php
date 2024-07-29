@@ -17,6 +17,9 @@ final class UpdateLoginPageConfiguration implements Version
      */
     public function update(): void
     {
+        if (!\file_exists($this->loginPageConfigurationLocation)) {
+            return;
+        }
         $fileContent = \file_get_contents($this->loginPageConfigurationLocation);
         if ($fileContent === false) {
             return;

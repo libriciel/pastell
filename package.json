@@ -6,7 +6,6 @@
   "dependencies": {
     "@flowjs/flow.js": "^2.14.1",
     "@libriciel/ls-auth-native": "^1.0.8",
-    "@libriciel/ls-composants": "15.0.4",
     "@libriciel/ls-elements-native": "^1.0.4",
     "@libriciel/ls-jquery-password": "1.2.3",
     "bootstrap": "^5.2",
