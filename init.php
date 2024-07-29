@@ -146,6 +146,8 @@ $objectInstancier->setInstance('unlock_job_error_at_startup', UNLOK_JOB_ERROR_AT
 
 $objectInstancier->setInstance('upload_chunk_directory', UPLOAD_CHUNK_DIRECTORY);
 
+$objectInstancier->setInstance('loginPageConfigurationLocation', LOGIN_PAGE_CONFIGURATION_LOCATION);
+
 $featureToggleService = $objectInstancier->getInstance(FeatureToggleService::class);
 
 /**
