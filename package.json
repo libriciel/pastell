@@ -5,9 +5,10 @@
   "license": "AGPL-3.0-only",
   "dependencies": {
     "@flowjs/flow.js": "^2.14.1",
-    "@libriciel/ls-composants": "15.0.4",
+    "@libriciel/ls-auth-native": "^1.0.8",
+    "@libriciel/ls-elements-native": "^1.0.4",
     "@libriciel/ls-jquery-password": "1.2.3",
-    "bootstrap": "^5.3.2",
+    "bootstrap": "^5.2",
     "components-jqueryui": "^1.12.1",
     "fork-awesome": "^1.2.0",
     "jquery": "^3.7.0",

@@ -1,4 +1,4 @@
-FROM node:14-slim AS node_modules
+FROM node:22-slim AS node_modules
 WORKDIR /var/www/pastell/
 COPY package*.json ./
 RUN npm install

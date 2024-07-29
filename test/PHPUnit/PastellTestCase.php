@@ -152,6 +152,10 @@ iparapheur_retour: Archive',
         $this->emulated_disk = vfsStream::url('test');
         $this->objectInstancier->setInstance('workspacePath', $this->getEmulatedDisk() . "/workspace/");
         $this->objectInstancier->setInstance('upload_chunk_directory', $this->getEmulatedDisk() . '/upload_chunk');
+        $this->objectInstancier->setInstance(
+            'loginPageConfigurationLocation',
+            $this->objectInstancier->getInstance('workspacePath') . '/conf.json'
+        );
         $htmlPurifier = new HTMLPurifier();
         $htmlPurifier->config->set('Cache.SerializerPath', $this->emulated_disk . "/html_purifier/");
         $this->objectInstancier->setInstance(HTMLPurifier::class, $htmlPurifier);

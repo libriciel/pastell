@@ -308,14 +308,6 @@ html body .table th, html body .table td {
     border: none;
 }
 
-html body .table-striped tbody tr:nth-of-type(even) {
-    background-color: var(--bs-ls-grey-50);
-}
-
-html body .table-striped tbody tr:nth-of-type(odd) {
-    background-color: white;
-}
-
 html body table.table-end {
     border-bottom: 1px solid var(--bs-ls-grey-200);
 }
