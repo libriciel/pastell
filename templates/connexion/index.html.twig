@@ -2,35 +2,44 @@
 
 {% block main %}
 
-    <ls-lib-login-form
-            visual-configuration="{{ login_page_configuration }}"
-            logo="{{ asset('img/commun/pastell-color-grey.svg') }}"
-            form-action="{{ path('app.legacy.connexion_doConnexion') }}"
-            username-input-name="login"
-            password-input-name="password"
-            {% if gabarit.getLastMessage().getLastMessage() %}
-                password-reset="true"
-            {% elseif gabarit.getLastError().getLastError() %}
-                show-error="true"
-                error-message="{{ gabarit.getLastError().getLastError() }}"
-            {% endif %}
-    >
-        {% if login is defined %}
-            <div class="alert alert-info">
-                Votre certificat vous permet de vous connecter automatiquement avec le compte
-                <a href="{{ path('app.legacy.connexion_autoConnect') }}">{{ login }}</a>
+    <div class="page-height d-flex position-relative">
+        <ls-auth-page-sidebar class="sidebar"></ls-auth-page-sidebar>
+        <div class="login-form">
+            <ls-auth-page-alert></ls-auth-page-alert>
+            <div class="form-content">
+                <div class="text-center h-100">
+                    <img src="{{ asset('img/commun/pastell-color-grey.svg') }}" alt="logo de l'application">
+                </div>
+                <ls-login-form></ls-login-form>
             </div>
-        {% endif %}
-
-        <input type="hidden" name="request_uri" value="{{ request_uri }}"/>
-        {{ gabarit.displayCSRFInput() }}
-    </ls-lib-login-form>
-
+        </div>
+    </div>
 
     <script>
-        document.getElementsByTagName("ls-lib-login-form")[0].addEventListener('forgotPassword', function () {
+        const loginFormElement = document.getElementsByTagName("ls-login-form")[0];
+
+        loginFormElement.addEventListener('forgotPassword', function () {
             window.location = "{{ path('app.legacy.connexion_oublieIdentifiant') }}";
         })
+
+        loginFormElement.additionalSubmittedValues = [
+            {name: 'csrf_token', value: '{{ gabarit.getCSRFToken().getCSRFToken() }}', type: 'hidden'},
+            {name: 'request_uri', value: '{{ request_uri }}', type: 'hidden'},
+        ];
+
+        loginFormElement.configuration = {
+            formAction: "{{ path('app.legacy.connexion_doConnexion') }}",
+            usernameInputName: 'login',
+            passwordInputName: 'password',
+            {% if gabarit.getLastMessage().getLastMessage() %}
+            passwordReset: true,
+            {% elseif gabarit.getLastError().getLastError() %}
+            showError: true,
+            errorMessage: "{{ gabarit.getLastError().getLastError() }}"
+            {% endif %}
+        };
+        document.getElementsByTagName("ls-auth-page-sidebar")[0].configuration = {{ login_page_configuration | raw }};
+        document.getElementsByTagName("ls-auth-page-alert")[0].configuration = {{ login_page_configuration | raw }};
     </script>
 
     <noscript>

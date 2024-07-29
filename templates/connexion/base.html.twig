@@ -16,9 +16,11 @@
 
     {% set cssFiles = [
         'node_modules/fork-awesome/css/fork-awesome.min.css',
+        'node_modules/@libriciel/ls-auth-native/styles.css',
         'node_modules/@libriciel/ls-bootstrap-5/pa-bootstrap.css',
         'node_modules/@libriciel/ls-jquery-password/dist/css/ls-jquery-password.css',
     ] %}
+
     {% block stylesheets %}
         {% for cssFile in cssFiles %}
             <link rel="stylesheet" href="{{ cssFile }}" type="text/css"/>
@@ -30,16 +32,18 @@
 
 {% block main %}{% endblock %}
 
-<ls-lib-footer
+<ls-footer
         class="ls-login-footer"
         application_name="Pastell {{ manifest_info.version }}"
         active="pastell"
 >
-</ls-lib-footer>
+</ls-footer>
 
 {% set jsFiles = [
-    'node_modules/@libriciel/ls-composants/angular-elements/ls-elements.js',
+    'node_modules/@libriciel/ls-elements-native/ls-elements.js',
+    'node_modules/@libriciel/ls-auth-native/ls-auth.js',
 ] %}
+
 {% block javascript %}
 {% for jsFile in jsFiles %}
     <script type="text/javascript" src="{{ jsFile }}"></script>
