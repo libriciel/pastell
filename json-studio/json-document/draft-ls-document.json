@@ -1,0 +1,143 @@
+{
+  "id_type_dossier": "draft-ls-document",
+  "pastell-version": "%VERSION%",
+  "timestamp": 1721381839,
+  "raw_data": {
+    "id_type_dossier": "draft-ls-document",
+    "nom": "Document (Draft)",
+    "type": "Documents divers",
+    "description": "",
+    "nom_onglet": "Informations",
+    "affiche_one": false,
+    "restriction_pack": "",
+    "formulaireElement": [
+      {
+        "element_id": "libelle",
+        "name": "Libell\u00e9",
+        "type": "text",
+        "commentaire": "",
+        "requis": "on",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "on",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": false,
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "document",
+        "name": "Document",
+        "type": "file",
+        "commentaire": "",
+        "requis": "on",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "annexe",
+        "name": "Annexe(s)",
+        "type": "multi_file",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": false,
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "metadonnees",
+        "name": "Fichier contenant les m\u00e9tadonn\u00e9es",
+        "type": "file",
+        "commentaire": "Pr\u00e9f\u00e9rentiellement au format JSON, XML possible",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": false,
+        "preg_match_error": "",
+        "content_type": ""
+      }
+    ],
+    "etape": [
+      {
+        "num_etape": 0,
+        "type": "transformation",
+        "label": null,
+        "defaultChecked": false,
+        "requis": "on",
+        "automatique": "on",
+        "specific_type_info": [],
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      },
+      {
+        "num_etape": "1",
+        "type": "signature",
+        "label": null,
+        "defaultChecked": false,
+        "requis": "",
+        "automatique": "on",
+        "specific_type_info": {
+          "libelle_parapheur": "libelle",
+          "document_a_signer": "document",
+          "annexe": "annexe",
+          "has_date_limite": "on",
+          "has_primo_signature": "",
+          "has_metadata_in_json": "on",
+          "continue_after_refusal": ""
+        },
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      },
+      {
+        "num_etape": 2,
+        "type": "mailsec",
+        "label": "",
+        "defaultChecked": false,
+        "requis": "",
+        "automatique": "on",
+        "specific_type_info": [],
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      },
+      {
+        "num_etape": 3,
+        "type": "depot",
+        "label": "",
+        "defaultChecked": false,
+        "requis": "",
+        "automatique": "on",
+        "specific_type_info": [],
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      },
+      {
+        "num_etape": "4",
+        "type": "sae",
+        "label": null,
+        "defaultChecked": false,
+        "requis": "",
+        "automatique": "on",
+        "specific_type_info": {
+          "sae_has_metadata_in_json": ""
+        },
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      }
+    ]
+  }
+}
