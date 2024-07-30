@@ -1,4 +1,4 @@
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !(img|js|static)/(.*)\.(js|ico|gif|jpg|png|css|swf|flv|mpg|mp4|mp3|wmv|mov|mp2|doc|pdf|docx|xls|xlsx|xml)$
-RewriteRule ^(.*)$ index.php?page_request=$1 [QSA,L]
+RewriteRule ^(.*)$ index.php?page_request=$1 [UnsafeAllow3F,QSA,L]
