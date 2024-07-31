@@ -202,7 +202,7 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
     public function testWhenAKeywordIsAssociatedWithAFile(): void
     {
         $this->setCurl(function (array $json_data) {
-            $this->assertJsonStringEqualsJsonString(
+            static::assertJsonStringEqualsJsonString(
                 '{"Keywords":[],"ArchiveUnits":[],"Files":[]}',
                 \json_encode($json_data, \JSON_THROW_ON_ERROR)
             );
@@ -220,7 +220,11 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
                 \JSON_THROW_ON_ERROR
             )
         );
-        $connecteurConfig->addFileFromCopy('files', 'file.xml', __DIR__ . '/fixtures/seda-test-cases/empty/files.xml');
+        $connecteurConfig->addFileFromCopy(
+            'files',
+            'file.xml',
+            __DIR__ . '/fixtures/seda-test-cases/empty/files.xml'
+        );
 
         /** @var AbstractSedaGeneratorConnector $sedaGeneriqueConnector */
         $sedaGeneriqueConnector = $this->getConnecteurFactory()->getConnecteurById($id_ce);
@@ -229,7 +233,7 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
         $sedaGeneriqueConnector->setDocDonneesFormulaire($docDonneesFormulaire);
 
         $this->expectExceptionMessage(
-            'Erreur sur le template {{ arrete }} : An exception has been thrown during the rendering of a template ("Array to string conversion")'
+            'Erreur sur le template {{ arrete }} : Array to string conversion'
         );
         $this->expectException(UnrecoverableException::class);
         $sedaGeneriqueConnector->getBordereau(new FluxDataTestSedaGenerique());
