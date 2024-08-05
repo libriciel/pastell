@@ -411,7 +411,6 @@ class S2low extends TdtConnecteur
 
 
     /**
-     * @param $id_transaction
      * @return bool|mixed|string
      * @throws S2lowException
      */
@@ -435,7 +434,7 @@ class S2low extends TdtConnecteur
         if ($result == -1) {
             array_shift($ligne);
             array_shift($ligne);
-            $this->lastError = utf8_decode(implode("\n", $ligne));
+            $this->lastError = implode("\n", $ligne);
         }
         return $result;
     }

@@ -12,6 +12,7 @@
   (La propriété "AlgorithmIdentifier" n'était pas utilisée sur le template 2.2 asalae)
 - Connecteur `recup-parapheur` : Retrait de enum Type #2071
 - Les fichiers commençant par un point ou un tiret ne pouvaient pas être archivés #2078
+- Le message d'erreur de s2low sur les transactions en erreur était mal encodé #1282
 
 # [4.0.14] - 2024-06-10
 

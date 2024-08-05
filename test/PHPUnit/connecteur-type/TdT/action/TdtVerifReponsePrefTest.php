@@ -72,12 +72,12 @@ class TdtVerifReponsePrefTest extends PastellTestCase
         );
     }
 
-    public function testErrorWithLettreObservation()
+    public function testErrorWithLettreObservation(): void
     {
         $this->mockCurl([
             '/admin/users/api-list-login.php' => true,
             '/modules/actes/actes_transac_get_status.php?transaction=3' =>
-                "OK\n-1\nErreur: Détail erreur"
+                utf8_decode("OK\n-1\nErreur: Détail erreur")
         ]);
 
         $id_d = $this->createConnectorAndDocument([
