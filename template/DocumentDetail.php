@@ -194,7 +194,7 @@ if ($infoDocumentEmail) :
                                     $id_d,
                                     $reponse_info['id_d_reponse']
                                 )); ?>"
-                                   class="badge <?php echo $reponse_info['is_lu'] ?: 'bg-info' ?>"
+                                   class="badge <?php echo $reponse_info['is_lu'] ? 'bg-light text-dark' : 'bg-info' ?>"
                                 >
                                     <?php hecho($reponse_info['titre'] ?: 'Voir'); ?>
                                 </a>
