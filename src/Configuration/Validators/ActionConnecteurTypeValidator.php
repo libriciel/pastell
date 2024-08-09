@@ -18,7 +18,6 @@ class ActionConnecteurTypeValidator implements ValidatorInterface
     public function __construct(
         private readonly DocumentTypeValidation $documentTypeValidation,
         private readonly ConnecteurDefinitionFiles $connecteurDefinitionFiles,
-        private readonly DocumentTransformService $documentTransformService,
     ) {
     }
 
@@ -34,7 +33,6 @@ class ActionConnecteurTypeValidator implements ValidatorInterface
             $this->validateConnecteurType($actionProperties, $actionName);
             $this->validateConnecteurTypeAction($actionProperties, $actionName);
             $this->validateConnecteurTypeMapping($actionProperties, $allActionKeys, $actionName);
-            $this->validateConnecteurTransformations($actionProperties, $actionName);
         }
         return count($this->errors) === 0;
     }
@@ -89,27 +87,6 @@ class ActionConnecteurTypeValidator implements ValidatorInterface
                 $this->errors[] = "action:<b>$actionName</b>:connecteur-type-mapping:$key:" .
                     "<b>$elementName</b> n'est pas un élément du formulaire";
             }
-        }
-    }
-
-    private function validateConnecteurTransformations(
-        array $actionProperties,
-        string $actionName
-    ): void {
-        $transformationData = $actionProperties[ActionElement::TRANSFORMATIONS->value];
-        if (!isset($transformationData)) {
-            return;
-        }
-        try {
-            $this->documentTransformService->validateTransformationData($transformationData);
-        } catch (\Exception $e) {
-            $this->errors[] = sprintf(
-                'action:<b>%s</b>:transformations:' .
-                "<b>%s</b> n'est pas correcte: %s",
-                $actionName,
-                json_encode($transformationData, JSON_THROW_ON_ERROR),
-                $e->getMessage(),
-            );
         }
     }
 }
