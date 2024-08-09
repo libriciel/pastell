@@ -2,6 +2,11 @@ libelle: 'Mail sécurisé'
 connecteur_type:
     - mailsec
     - pdf-relance
+
+configuration_etape_formulaire:
+    add_displayed_fields:
+        name: 'Ajouter le nombre de destinataires et de mails lu dans la liste des dossiers'
+        type: checkbox
 formulaire:
     'Mail sécurisé':
         to:
@@ -35,11 +40,13 @@ formulaire:
         sent_mail_number:
             name: Destinataires
             default: '0'
+            index: true
             no-show: true
             read-only: true
         sent_mail_read:
             name: 'Mails lus'
             default: '0'
+            index: true
             no-show: true
             read-only: true
         sent_mail_answered:

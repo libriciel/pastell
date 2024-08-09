@@ -201,11 +201,13 @@ formulaire:
         sent_mail_number:
             name: Destinataires
             default: '0'
+            index: true
             no-show: true
             read-only: true
         sent_mail_read:
             name: 'Mails lus'
             default: '0'
+            index: true
             no-show: true
             read-only: true
         sent_mail_answered:

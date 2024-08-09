@@ -91,7 +91,9 @@
         "defaultChecked": true,
         "requis": "on",
         "automatique": "on",
-        "specific_type_info": [],
+        "specific_type_info": {
+          "add_displayed_fields": "on"
+        },
         "num_etape_same_type": 0,
         "etape_with_same_type_exists": false
       }

@@ -96,7 +96,7 @@
           "document_a_signer": "arrete",
           "annexe": "autre_document_attache",
           "has_date_limite": "on",
-          "has_primo_signature": "on",
+          "has_primo_signature": "",
           "has_metadata_in_json": "on",
           "continue_after_refusal": ""
         },
