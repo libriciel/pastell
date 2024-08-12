@@ -1,0 +1,17 @@
+libelle: 'Test restriction pack'
+connecteur_type:
+    - GED
+formulaire:
+    'Retour GED':
+        has_ged_document_id:
+            no-show: true
+            read-only: true
+        ged_document_id_file:
+            name: 'Identifiants des documents sur la GED'
+            type: file
+            visionneuse: Pastell\Viewer\GedIdDocumentsViewer
+            read-only: true
+            requis: true
+            visionneuse-no-link: true
+restriction_pack :
+    - 'suppl_test'

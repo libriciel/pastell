@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Pack\PackService;
+
 class TypeDossierEtapeManager
 {
     public const TYPE_DOSSIER_ETAPE_DEFINITION_FILENAME = "type-dossier-etape.yml";
@@ -12,9 +14,11 @@ class TypeDossierEtapeManager
     public const REQUIS = "requis";
     public const AUTOMATIQUE = "automatique";
     public const SPECIFIC_TYPE_INFO = "specific_type_info";
+    public const RESTRICTION_PACK = 'restriction_pack';
 
     private $ymlLoader;
     private $extensions;
+    private $packService;
 
     public static function getPropertiesId(): array
     {
@@ -29,10 +33,11 @@ class TypeDossierEtapeManager
     }
 
 
-    public function __construct(YMLLoader $ymlLoader, Extensions $extensions)
+    public function __construct(YMLLoader $ymlLoader, Extensions $extensions, PackService $packService)
     {
         $this->ymlLoader = $ymlLoader;
         $this->extensions = $extensions;
+        $this->packService = $packService;
     }
 
     public function getEtapeFromArray(array $etape_info, $fomulaire_configuration)
@@ -90,13 +95,12 @@ class TypeDossierEtapeManager
 
     public function getPageCondition(TypeDossierEtapeProperties $typeDossierEtape)
     {
-
         $page_condition = $this->getPart($typeDossierEtape->type, 'page-condition');
-        if (! $page_condition) {
+        if (!$page_condition) {
             return [];
         }
         $etape_with_same_type_exists = $typeDossierEtape->etape_with_same_type_exists;
-        if (! $etape_with_same_type_exists) {
+        if (!$etape_with_same_type_exists) {
             return $page_condition;
         }
 
@@ -122,9 +126,9 @@ class TypeDossierEtapeManager
         $type = $typeDossierEtape->type;
         $etape_with_same_type_exists = $typeDossierEtape->etape_with_same_type_exists;
 
-        $result =  $this->getPart($type, DocumentType::FORMULAIRE);
+        $result = $this->getPart($type, DocumentType::FORMULAIRE);
 
-        if (! $etape_with_same_type_exists) {
+        if (!$etape_with_same_type_exists) {
             return $result;
         }
 
@@ -152,16 +156,14 @@ class TypeDossierEtapeManager
     }
 
 
-
     public function getActionForEtape(TypeDossierEtapeProperties $typeDossierEtape)
     {
-
         $type = $typeDossierEtape->type;
         $etape_with_same_type_exists = $typeDossierEtape->etape_with_same_type_exists;
 
-        $result =  $this->getPart($type, 'action');
+        $result = $this->getPart($type, 'action');
 
-        if (! $etape_with_same_type_exists) {
+        if (!$etape_with_same_type_exists) {
             return $result;
         }
 
@@ -174,28 +176,30 @@ class TypeDossierEtapeManager
         }
 
         foreach ($result as $action_id => $action_properties) {
-            if (! empty($action_properties[Action::ACTION_AUTOMATIQUE])) {
+            if (!empty($action_properties[Action::ACTION_AUTOMATIQUE])) {
                 $stringMapper->map($result[$action_id][Action::ACTION_AUTOMATIQUE]);
             }
         }
 
         foreach ($result as $action_id => $action_properties) {
-            if (! empty($action_properties[Action::ACTION_RULE][Action::ACTION_RULE_LAST_ACTION])) {
+            if (!empty($action_properties[Action::ACTION_RULE][Action::ACTION_RULE_LAST_ACTION])) {
                 foreach ($action_properties[Action::ACTION_RULE][Action::ACTION_RULE_LAST_ACTION] as $num_last_action => $last_action) {
-                    $stringMapper->map($result[$action_id][Action::ACTION_RULE][Action::ACTION_RULE_LAST_ACTION][$num_last_action]);
+                    $stringMapper->map(
+                        $result[$action_id][Action::ACTION_RULE][Action::ACTION_RULE_LAST_ACTION][$num_last_action]
+                    );
                 }
             }
-            if (! empty($action_properties[Action::CONNECTEUR_TYPE_MAPPING])) {
+            if (!empty($action_properties[Action::CONNECTEUR_TYPE_MAPPING])) {
                 foreach ($action_properties[Action::CONNECTEUR_TYPE_MAPPING] as $key => $value) {
                     $stringMapper->map($result[$action_id][Action::CONNECTEUR_TYPE_MAPPING][$key]);
                 }
             }
-            if (! empty($action_properties[Action::TRANSFORMATIONS])) {
+            if (!empty($action_properties[Action::TRANSFORMATIONS])) {
                 foreach ($action_properties[Action::TRANSFORMATIONS] as $key => $value) {
                     $stringMapper->map($result[$action_id][Action::TRANSFORMATIONS][$key]);
                 }
             }
-            if (! empty($action_properties[Action::EDITABLE_CONTENT])) {
+            if (!empty($action_properties[Action::EDITABLE_CONTENT])) {
                 foreach ($action_properties[Action::EDITABLE_CONTENT] as $key => $value) {
                     $stringMapper->map($result[$action_id][Action::EDITABLE_CONTENT][$key]);
                 }
@@ -208,7 +212,6 @@ class TypeDossierEtapeManager
 
     private function setActionName(TypeDossierEtapeProperties $typeDossierEtape, array &$result): void
     {
-
         $map_action_name = function (&$original_value) use ($typeDossierEtape) {
             $original_value = sprintf("%s #%d", $original_value, $typeDossierEtape->num_etape_same_type + 1);
         };
@@ -240,7 +243,7 @@ class TypeDossierEtapeManager
     private function getEtapeInfo($type)
     {
         $type_dossier_path = $this->extensions->getTypeDossierPath($type);
-        if (! $type_dossier_path) {
+        if (!$type_dossier_path) {
             return false;
         }
         return $this->ymlLoader->getArray($type_dossier_path . "/" . self::TYPE_DOSSIER_ETAPE_DEFINITION_FILENAME);
@@ -255,7 +258,7 @@ class TypeDossierEtapeManager
     public function setSpecificData(TypeDossierEtapeProperties $etape, $result)
     {
         $type_dossier_path = $this->extensions->getTypeDossierPath($etape->type);
-        if (! $type_dossier_path) {
+        if (!$type_dossier_path) {
             return $result;
         }
 
@@ -280,6 +283,11 @@ class TypeDossierEtapeManager
         );
     }
 
+    private function isRestrictedEtape(string $type_dossier_etape): bool
+    {
+        $restriction_pack =  $this->getPart($type_dossier_etape, self::RESTRICTION_PACK);
+        return (!$this->packService->hasOneOrMorePackEnabled($restriction_pack));
+    }
 
     public function getAllType()
     {
@@ -287,7 +295,9 @@ class TypeDossierEtapeManager
         $type_dossier_etape_directory_list = $this->extensions->getAllTypeDossier();
         foreach ($type_dossier_etape_directory_list as $dir) {
             $type_dossier_etape = basename($dir);
-            $result[$type_dossier_etape] = $this->getLibelle($type_dossier_etape);
+            if (!$this->isRestrictedEtape($type_dossier_etape)) {
+                $result[$type_dossier_etape] = $this->getLibelle($type_dossier_etape);
+            }
         }
         return $result;
     }
