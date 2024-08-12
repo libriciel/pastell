@@ -38,5 +38,5 @@
     <div class="alert alert-info">
     <p><strong>Format du fichier</strong></p>
     <p>Le fichier CSV doit contenir une collectivité par ligne.</p>
-    <p>Les lignes sont formatées de la manière suivante : "libellé collectivité";"siren"</p>
+    <p>Les lignes sont formatées de la manière suivante : "libellé collectivité","siren"</p>
 </div>

@@ -96,7 +96,7 @@
           "document_a_signer": "document",
           "annexe": "annexe",
           "has_date_limite": "on",
-          "has_primo_signature": "",
+          "has_primo_signature": "on",
           "has_metadata_in_json": "on",
           "continue_after_refusal": ""
         },

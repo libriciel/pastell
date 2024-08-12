@@ -11,6 +11,10 @@ class TdTFichierPESChange extends ConnecteurTypeActionExecutor
         $fichierPESElement = $this->getMappingValue('fichier_pes');
         $objetPESElement = $this->getMappingValue('objet_pes');
 
+        if ($this->getDonneesFormulaire()->get($fichierPESElement) === false) {
+            return true;
+        }
+
         $info = $this->objectInstancier
             ->getInstance(PESAllerFile::class)
             ->getAllInfo($this->getDonneesFormulaire()->getFilePath($fichierPESElement));
