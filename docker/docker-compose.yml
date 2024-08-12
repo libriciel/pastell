@@ -81,7 +81,7 @@ services:
         user: "${UID:-33}:${GID:-33}"
 
     db:
-        image: 'hubdocker.libriciel.fr/mariadb:10.11.7-jammy'
+        image: 'hubdocker.libriciel.fr/mariadb:10.11.8-jammy'
         restart: unless-stopped
         command:
             - "--character-set-server=utf8mb4"
@@ -99,7 +99,7 @@ services:
         restart: unless-stopped
 
     seda-generator:
-        image: 'registry.libriciel.fr:443/public/plateforme/seda-generator:1.0.4'
+        image: 'registry.libriciel.fr:443/public/plateforme/seda-generator:1.0.5'
         restart: unless-stopped
         volumes:
             - '/etc/localtime:/etc/localtime:ro'
@@ -112,7 +112,7 @@ services:
         restart: unless-stopped
 
     pes-viewer:
-        image: 'registry.libriciel.fr/public/signature/pes-viewer:2.0.10'
+        image: 'registry.libriciel.fr/public/signature/pes-viewer:2.0.12'
         restart: unless-stopped
         deploy:
             resources:

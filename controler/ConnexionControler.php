@@ -415,12 +415,13 @@ class ConnexionControler extends PastellControler
             }
         } else {
             $loginAttemptLimit = $this->getObjectInstancier()->getInstance(LoginAttemptLimit::class);
-
-            if (false === $loginAttemptLimit->isLoginAttemptAuthorized($login)) {
+            $rateLimit = $loginAttemptLimit->getRateLimit($login);
+            if ($rateLimit->getRemainingTokens() <= 0) {
                 $this->getLastError()->setLastError('Trop de tentatives de connexion, veuillez réessayer plus tard.');
                 $this->redirect($redirect_fail);
             }
             if (!$this->getUtilisateur()->verifPassword($id_u, $password)) {
+                $loginAttemptLimit->consumeLoginAttempt($login);
                 $this->getLastError()->setLastError('Login ou mot de passe incorrect.');
                 $this->redirect($redirect_fail);
             }
