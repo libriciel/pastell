@@ -60,6 +60,22 @@ récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2
 - Renommage des fichiers ayant le même nom dans les champs fichiers multiples lors du téléchargement #2052
 - Modification du type de dossier `gfc-dossier` #1931
 
+# [4.0.15] - 2024-08-12
+
+## Évolutions
+
+- Révision du fonctionnement du rate limiter #2072
+- Ajout du champ `iparapheur_sous_type` externalData accessible via API sur le connecteur iparapheur
+  (`GET /entite/:id_e/connecteur/:id_ce/externalData/iparapheur_sous_type`) #1930
+
+## Correction
+
+- Mise à jour du service seda-generator en version 1.0.5
+  (La propriété "AlgorithmIdentifier" n'était pas utilisée sur le template 2.2 asalae)
+- Connecteur `recup-parapheur` : Retrait de enum Type #2071
+- Les fichiers commençant par un point ou un tiret ne pouvaient pas être archivés #2078
+- Le message d'erreur de s2low sur les transactions en erreur était mal encodé #1282
+
 # [4.0.14] - 2024-06-10
 
 ## Évolutions

@@ -30,6 +30,9 @@ abstract class SEDAConnecteur extends Connecteur
 
     public function generateArchiveThrow(FluxData $fluxData, string $archive_path, string $tmp_folder): void
     {
+        if (\count($fluxData->getFilelist()) === 0) {
+            throw new \RuntimeException('Aucun fichier à archiver');
+        }
         foreach ($fluxData->getFilelist() as $file_id) {
             $filename = $file_id['filename'];
             $filepath = $file_id['filepath'];
@@ -45,7 +48,7 @@ abstract class SEDAConnecteur extends Connecteur
             \copy($filepath, "$tmp_folder/$filename");
         }
 
-        $command = "cd $tmp_folder && tar -cvzf $archive_path * 2>&1";
+        $command = "cd $tmp_folder && tar -cvzf $archive_path . --transform 's,^\.,,' 2>&1";
 
         \exec($command, $output, $return_var);
 

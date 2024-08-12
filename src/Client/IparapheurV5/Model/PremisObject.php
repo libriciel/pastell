@@ -6,8 +6,11 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 
 class PremisObject
 {
+    public const INTELLECTUAL_ENTITY = 'intellectualEntity';
+    public const FILE = 'file';
+
     #[SerializedName('@xsi:type')]
-    public Type $type;
+    public string $type;
 
     public ObjectIdentifier $objectIdentifier;
 

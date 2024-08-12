@@ -80,7 +80,7 @@ class ApiAuthentication
         if (!$id_u) {
             throw new UnauthorizedException("Accès interdit");
         }
-        if (! $this->utilisateurSQL->isEnabled($id_u)) {
+        if (!$this->utilisateurSQL->isEnabled($id_u)) {
             throw new UnauthorizedException('Votre compte a été désactivé');
         }
         return $id_u;
@@ -96,6 +96,7 @@ class ApiAuthentication
             $this->resetRateLimit();
             return $user['id_u'];
         }
+        $this->attemptFailed();
         return null;
     }
 
@@ -113,6 +114,10 @@ class ApiAuthentication
         }
         if (!$certificatConnexion->connexionGranted($userId)) {
             $userId = null;
+        }
+
+        if ($userId === null) {
+            $this->attemptFailed();
         }
         return $userId;
     }
@@ -145,11 +150,16 @@ class ApiAuthentication
         if ($rateLimiterVariable === null) {
             return;
         }
-        if ($this->loginAttemptLimit->isLoginAttemptAuthorized($this->server[$rateLimiterVariable]) === false) {
-            throw new RateLimitExceededException(
-                $this->loginAttemptLimit->getRateLimit($this->server[$rateLimiterVariable])
-            );
+
+        $rateLimit = $this->loginAttemptLimit->getRateLimit($this->server[$rateLimiterVariable]);
+        if ($rateLimit->getRemainingTokens() <= 0) {
+            throw new RateLimitExceededException($rateLimit);
         }
+    }
+
+    private function attemptFailed(): void
+    {
+        $this->loginAttemptLimit->consumeLoginAttempt($this->server[$this->getRateLimiterVariable()]);
     }
 
     private function resetRateLimit(): void
