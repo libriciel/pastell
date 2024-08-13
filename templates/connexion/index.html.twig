@@ -38,8 +38,12 @@
             errorMessage: "{{ gabarit.getLastError().getLastError() }}"
             {% endif %}
         };
-        document.getElementsByTagName("ls-auth-page-sidebar")[0].configuration = {{ login_page_configuration | raw }};
-        document.getElementsByTagName("ls-auth-page-alert")[0].configuration = {{ login_page_configuration | raw }};
+
+        {% if login_page_configuration != '' %}
+            document.getElementsByTagName("ls-auth-page-sidebar")[0].configuration = {{ login_page_configuration | raw }};
+            document.getElementsByTagName("ls-auth-page-alert")[0].configuration = {{ login_page_configuration | raw }};
+        {% endif %}
+
     </script>
 
     <noscript>
