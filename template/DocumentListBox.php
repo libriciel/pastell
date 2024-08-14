@@ -13,9 +13,11 @@
 ?>
 <div class="box">
     <h2 id="title-result" class="ls-off">Résultat(s) de la recherche
-        <a href="Document/traitementLot?<?php hecho($url); ?>" class="btn btn-primary">
-            <i class='fa fa-cogs'></i>&nbsp;Traitement par lot
-        </a>
+        <?php if (!empty($_GET['type'])) : ?>
+            <a href="Document/traitementLot?<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>" class="btn btn-primary">
+                <i class='fa fa-cogs'></i>&nbsp;Traitement par lot
+            </a>
+        <?php endif; ?>
 
         <a class='btn btn-primary' href='Document/export?<?php hecho($url); ?>'>
             <i class='fa fa-download'></i>&nbsp;Exporter
