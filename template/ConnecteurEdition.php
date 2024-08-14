@@ -78,9 +78,11 @@ if ($has_definition) {
             <td>
                 <?php
                 $links = [];
-                foreach ($usage_flux_list as $id_e => $flux) {
+                foreach ($usage_flux_list as $usage) {
+                    $id_e = $usage['id_e'];
+                    $flux = $usage['flux'];
                     ob_start();
-                    $this->url("Entite/detail?id_e=$id_e");
+                    $this->url("Flux/detail?id_e=$id_e&flux=$flux");
                     $url = ob_get_clean();
                     $links[] = "$flux (<a href=\"$url\">$id_e</a>)";
                 }

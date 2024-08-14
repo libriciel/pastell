@@ -193,7 +193,7 @@ EOT;
 
         $result = [];
         foreach ($rows as $row) {
-            $result[$row['id_e']] = $row['flux'];
+            $result[] = ['id_e' => $row['id_e'], 'flux' => $row['flux']];
         }
 
         return $result;
