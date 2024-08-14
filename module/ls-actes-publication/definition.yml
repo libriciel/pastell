@@ -163,8 +163,8 @@ action:
             role_id_e: no-role
         action-automatique: transformation
     transformation:
-        name-action: 'Transformer le document'
-        name: 'Transformation du document'
+        name-action: 'Transformer le dossier'
+        name: 'Transformation du dossier'
         rule:
             last-action:
                 - preparation-transformation
@@ -180,7 +180,7 @@ action:
             - envoi_depot
         modification-no-change-etat: true
     transformation-error:
-        name: 'Erreur lors de la transformation du document'
+        name: 'Erreur lors de la transformation du dossier'
         rule:
             role_id_e: no-role
     preparation-send-ged:

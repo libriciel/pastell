@@ -94,8 +94,8 @@ action:
             role_id_e: no-role
         action-automatique: transformation
     transformation:
-        name-action: 'Transformer le document'
-        name: 'Transformation du document'
+        name-action: 'Transformer le dossier'
+        name: 'Transformation du dossier'
         rule:
             last-action:
                 - preparation-transformation
@@ -105,7 +105,7 @@ action:
         connecteur-type: transformation
         connecteur-type-action: TransformationTransform
     transformation-error:
-        name: 'Erreur lors de la transformation du document'
+        name: 'Erreur lors de la transformation du dossier'
         rule:
             role_id_e: no-role
 studio_definition: eyJpZF90eXBlX2Rvc3NpZXIiOiJ0ZXN0LXNpbXBsZSIsInBhc3RlbGwtdmVyc2lvbiI6IiVWRVJTSU9OJSIsInRpbWVzdGFtcCI6MTYzNDU0MjU2NiwicmF3X2RhdGEiOnsibm9tIjoidGVzdC1zaW1wbGUiLCJ0eXBlIjoiVHlwZXMgZGUgZG9zc2llciBwZXJzb25uYWxpc1x1MDBlOXMiLCJldGFwZSI6W3sidHlwZSI6InRyYW5zZm9ybWF0aW9uIiwibGFiZWwiOiIiLCJyZXF1aXMiOiJvbiIsIm51bV9ldGFwZSI6MCwiYXV0b21hdGlxdWUiOiJvbiIsImRlZmF1bHRDaGVja2VkIjpmYWxzZSwic3BlY2lmaWNfdHlwZV9pbmZvIjpbXSwibnVtX2V0YXBlX3NhbWVfdHlwZSI6MCwiZXRhcGVfd2l0aF9zYW1lX3R5cGVfZXhpc3RzIjpmYWxzZX1dLCJub21fb25nbGV0Ijoib25nbGV0MSIsImRlc2NyaXB0aW9uIjoiIiwiaWRfdHlwZV9kb3NzaWVyIjoidGVzdC1zaW1wbGUiLCJmb3JtdWxhaXJlRWxlbWVudCI6W3sibmFtZSI6IkZvbyIsInR5cGUiOiJ0ZXh0IiwidGl0cmUiOiIiLCJyZXF1aXMiOiJvbiIsImVsZW1lbnRfaWQiOiJmb28iLCJwcmVnX21hdGNoIjoiIiwiY29tbWVudGFpcmUiOiIiLCJjb250ZW50X3R5cGUiOiIiLCJzZWxlY3RfdmFsdWUiOiIiLCJjaGFtcHNfYWZmaWNoZXMiOiIiLCJwcmVnX21hdGNoX2Vycm9yIjoiIiwiY2hhbXBzX3JlY2hlcmNoZV9hdmFuY2VlIjoiIn0seyJuYW1lIjoiQmFyIiwidHlwZSI6InRleHQiLCJ0aXRyZSI6IiIsInJlcXVpcyI6IiIsImVsZW1lbnRfaWQiOiJiYXIiLCJwcmVnX21hdGNoIjoiIiwiY29tbWVudGFpcmUiOiIiLCJjb250ZW50X3R5cGUiOiIiLCJzZWxlY3RfdmFsdWUiOiIiLCJjaGFtcHNfYWZmaWNoZXMiOiIiLCJwcmVnX21hdGNoX2Vycm9yIjoiIiwiY2hhbXBzX3JlY2hlcmNoZV9hdmFuY2VlIjoiIn1dfX0=

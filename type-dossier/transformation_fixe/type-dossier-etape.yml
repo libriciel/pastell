@@ -25,7 +25,7 @@ action:
             role_id_e: no-role
         action-automatique: transformation-fixe
     transformation-fixe:
-        name: 'Transformation fixe du document'
+        name: 'Transformation fixe du dossier'
         rule:
             last-action:
                 - preparation-transformation-fixe
@@ -39,6 +39,6 @@ action:
             has_transformation_fixe: has_transformation_fixe
             transformation-fixe-error: transformation-fixe-error
     transformation-fixe-error:
-        name: 'Erreur lors de la transformation fixe du document'
+        name: 'Erreur lors de la transformation fixe du dossier'
         rule:
             role_id_e: no-role
