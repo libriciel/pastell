@@ -57,6 +57,11 @@ class TypeDossierControler extends PastellControler
         return $this->getObjectInstancier()->getInstance(TypeDossierManager::class);
     }
 
+    private function getTypeDossierEtapeManager(): TypeDossierEtapeManager
+    {
+        return $this->getObjectInstancier()->getInstance(TypeDossierEtapeManager::class);
+    }
+
     /**
      * @return TypeDossierEditionService
      */
@@ -491,6 +496,7 @@ class TypeDossierControler extends PastellControler
      * @throws LastErrorException
      * @throws LastMessageException
      * @throws UnrecoverableException
+     * @throws Exception
      */
     public function doNewEtapeAction(): void
     {
@@ -512,6 +518,9 @@ class TypeDossierControler extends PastellControler
         }
 
         $etapeInfo = $this->getTypeDossierService()->getEtapeInfo($this->getViewParameterByKey('id_t'), $num_etape);
+        if (!array_key_exists($etapeInfo->type, $this->getTypeDossierEtapeManager()->getAllType())) {
+            throw new \RuntimeException("Type d'étape inconnu");
+        }
         $message = 'La modification des étapes du cheminement a été enregistrée';
         if ($etapeInfo->specific_type_info) {
             $this->getTypeDossierActionService()->add(

@@ -18,7 +18,7 @@ class TypeDossierEtapeManager
 
     private $ymlLoader;
     private $extensions;
-    private $packService;
+    private PackService $packService;
 
     public static function getPropertiesId(): array
     {
@@ -283,7 +283,7 @@ class TypeDossierEtapeManager
         );
     }
 
-    private function isRestrictedEtape(string $type_dossier_etape): bool
+    private function isRestrictedStep(string $type_dossier_etape): bool
     {
         $restriction_pack =  $this->getPart($type_dossier_etape, self::RESTRICTION_PACK);
         return (!$this->packService->hasOneOrMorePackEnabled($restriction_pack));
@@ -295,7 +295,7 @@ class TypeDossierEtapeManager
         $type_dossier_etape_directory_list = $this->extensions->getAllTypeDossier();
         foreach ($type_dossier_etape_directory_list as $dir) {
             $type_dossier_etape = basename($dir);
-            if (!$this->isRestrictedEtape($type_dossier_etape)) {
+            if (!$this->isRestrictedStep($type_dossier_etape)) {
                 $result[$type_dossier_etape] = $this->getLibelle($type_dossier_etape);
             }
         }

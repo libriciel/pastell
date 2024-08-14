@@ -74,7 +74,7 @@ class TypeDossierEtapeManagerTest extends PastellTestCase
         static::assertSame('password_2', $result['Mail sécurisé #2']['password2_2']['is_equal']);
     }
 
-    public function testGetAllRestricted()
+    public function testGetAllRestricted(): void
     {
         $objectInstancier = $this->getObjectInstancier();
         $extensionsMock = $this->createMock(Extensions::class);
@@ -97,6 +97,6 @@ class TypeDossierEtapeManagerTest extends PastellTestCase
         static::assertEmpty($result);
         $this->setListPack(['suppl_test' => true]);
         $result = $typeDossierEtapeManager->getAllType();
-        static::assertEquals(['restriction_pack_test' => 'Test restriction pack'], $result);
+        static::assertSame(['restriction_pack_test' => 'Test restriction pack'], $result);
     }
 }

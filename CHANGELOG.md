@@ -36,6 +36,7 @@ récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2
 - Ajout du connecteur Générateur SEDA Vitam (SEDA 2.2) #1984
 - Ajout du flux Document `ls-document` (identique à `ls-document-pdf` sans restriction sur le type de fichier) #2018
 - Sur la page d'un connecteur, ajout du numéro d'entité des types de dossiers utilisant ce connecteur #2041
+- Possibilité de définir des restrictions sur les étapes studio #2095
 
 ## Corrections
 
@@ -61,8 +62,6 @@ récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2
 - Indicateur des utilisateurs désactivés dans la liste des utilisateurs #2048
 - Renommage des fichiers ayant le même nom dans les champs fichiers multiples lors du téléchargement #2052
 - Modification du type de dossier `gfc-dossier` #1931
-- Possibilité d'ajouter des méta-données entité, utilisateur, document dans le connecteur generateur-seda 
-(Voir "Liste des métadonnées communes à tous les types de dossier" au niveau du connecteur) #1397
 
 # [4.0.15] - 2024-08-12
 
