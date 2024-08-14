@@ -67,6 +67,6 @@ use Pastell\Validator\ElementIdValidator;
 
 </div>
 
-<?php include __DIR__ . '/TransformationTwigExplanation.php' ?>
+<?php $this->render('/connector/transformation/TransformationTwigExplanation'); ?>
 <?php $this->render('/twigDocumentation/TwigElementFlux'); ?>
 <?php $this->render('/twigDocumentation/TwigPastellMetadataDescription'); ?>

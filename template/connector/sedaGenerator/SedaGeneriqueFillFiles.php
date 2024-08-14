@@ -226,6 +226,6 @@ if ($node_id) {
     </form>
 </div>
 
-<?php include __DIR__ . '/SedaGeneriqueFillTwigExplanation.php' ?>
+<?php $this->render('/connector/sedaGenerator/SedaGeneriqueFillTwigExplanation'); ?>
 <?php $this->render('/twigDocumentation/TwigElementFlux'); ?>
 <?php $this->render('/twigDocumentation/TwigPastellMetadataDescription'); ?>

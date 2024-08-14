@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<Root>
+    <File id="96848607-cac9-4097-b07d-567b9d6ea373" description="Actes soumis au contr&#xF4;le de l&#xE9;galit&#xE9; : {{ objet }}" field_expression="arrete"/>
+    <File id="5ca5ecb9-63e8-42e7-b40c-1b8c777cadbd" description="Annexe de l'acte" field_expression="{% set foo='autre_document_attache' %}{{ foo }}"/>
+</Root>
