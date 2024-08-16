@@ -47,6 +47,7 @@ récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2
 - Correction du format xml d'import et d'export de collectivités #2051
 - Suppresion de la mention d'erreur lors de l'action voir sur un connecteur de transformation non configuré #1770
 - Passage en état `transformation-error` lorsqu'il y a une erreur lors de la transformation pour générer un élément #2013
+- Le bouton "Traitement par lot" n'apparaît plus si le type de dossier n'est pas sélectionné #2082
 - Il manquait `modification-no-change-etat: true` pour l'état `send-tdt-erreur` de l'étape `tdt_actes` #2121
 
 ## Dépréciations
@@ -66,8 +67,6 @@ récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2
 - Indicateur des utilisateurs désactivés dans la liste des utilisateurs #2048
 - Renommage des fichiers ayant le même nom dans les champs fichiers multiples lors du téléchargement #2052
 - Modification du type de dossier `gfc-dossier` #1931
-- Possibilité d'ajouter des méta-données entité, utilisateur, document dans le connecteur generateur-seda 
-(Voir "Liste des métadonnées communes à tous les types de dossier" au niveau du connecteur) #1397
 
 # [4.0.15] - 2024-08-12
 
