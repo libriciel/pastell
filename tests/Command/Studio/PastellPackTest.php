@@ -26,7 +26,7 @@ class PastellPackTest extends PastellTestCase
         'draft-ls-dossier-seance' => [
             '',
             'ls-dossier-seance',
-            'Dossiers de séances (archivage)',
+            'Dossier de séance (archivage)',
         ],
         'draft-ls-commande' => [
             '',
@@ -162,7 +162,7 @@ class PastellPackTest extends PastellTestCase
         'draft-dossier-autorisation-urbanisme' => [
             'pack_urbanisme',
             'dossier-autorisation-urbanisme',
-            "Dossiers d'autorisation d'urbanisme (archivage)"
+            "Dossier d'autorisation d'urbanisme (archivage)"
         ],
     ];
 

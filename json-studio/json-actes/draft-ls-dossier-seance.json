@@ -4,7 +4,7 @@
   "timestamp": 1691158253,
   "raw_data": {
     "id_type_dossier": "draft-ls-dossier-seance",
-    "nom": "Dossiers de séances (archivage) (Draft)",
+    "nom": "Dossier de séance (archivage) (Draft)",
     "type": "Actes administratifs",
     "description": "Type de dossier \u00e0 utiliser pour l'archivage des dossiers de s\u00e9ance de la collectivit\u00e9.",
     "nom_onglet": "Informations principales",
