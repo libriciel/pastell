@@ -96,6 +96,17 @@
         },
         "num_etape_same_type": 0,
         "etape_with_same_type_exists": false
+      },
+      {
+        "num_etape": 2,
+        "type": "depot",
+        "label": "",
+        "defaultChecked": false,
+        "requis": "",
+        "automatique": "on",
+        "specific_type_info": [],
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
       }
     ]
   }

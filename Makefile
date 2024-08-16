@@ -76,7 +76,7 @@ stop-minio:  ## Start all services with minio
 module-json-actes: docker-compose-up ## Run make-module json-actes
 	$(MAKE_MODULE) ./json-studio/json-actes/draft-ls-actes.json ./module/ --id ls-actes --name "Actes"
 	$(MAKE_MODULE) ./json-studio/json-actes/draft-ls-actes-publication.json ./module/ --id ls-actes-publication --name "Actes publication"
-	$(MAKE_MODULE) ./json-studio/json-actes/draft-ls-dossier-seance.json ./module/ --id ls-dossier-seance --name "Dossiers de séances (archivage)"
+	$(MAKE_MODULE) ./json-studio/json-actes/draft-ls-dossier-seance.json ./module/ --id ls-dossier-seance --name "Dossier de séance (archivage)"
 
 module-json-document: docker-compose-up ## Run make-module json-document
 	$(MAKE_MODULE) ./json-studio/json-document/draft-ls-commande.json ./module/ --id ls-commande --name "Commande"
@@ -114,7 +114,7 @@ module-json-rh: docker-compose-up ## Run make-module json-rh
 module-json-urbanisme: docker-compose-up ## Run make-module json-urbanisme
 	$(MAKE_MODULE) ./json-studio/json-urbanisme/draft-document-autorisation-urbanisme.json ./module/ --id document-autorisation-urbanisme --name "Document d'autorisation d'urbanisme" --restriction_pack 'pack_urbanisme'
 	$(MAKE_MODULE) ./json-studio/json-urbanisme/draft-document-autorisation-urbanisme-destinataire.json ./module/ --id document-autorisation-urbanisme-destinataire --name "Document d'autorisation d'urbanisme (destinataire)" --restriction_pack 'pack_urbanisme'
-	$(MAKE_MODULE) ./json-studio/json-urbanisme/draft-dossier-autorisation-urbanisme.json ./module/ --id dossier-autorisation-urbanisme --name "Dossiers d'autorisation d'urbanisme (archivage)" --restriction_pack 'pack_urbanisme'
+	$(MAKE_MODULE) ./json-studio/json-urbanisme/draft-dossier-autorisation-urbanisme.json ./module/ --id dossier-autorisation-urbanisme --name "Dossier d'autorisation d'urbanisme (archivage)" --restriction_pack 'pack_urbanisme'
 
 all-module: module-json-actes module-json-document module-json-gfc module-json-helios module-json-mailsec module-json-rh module-json-urbanisme
 
