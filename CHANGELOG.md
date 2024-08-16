@@ -35,6 +35,7 @@ récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2
 - Récupération du message de refus lors du rejet de fast parapheur #1391
 - Ajout du connecteur Générateur SEDA Vitam (SEDA 2.2) #1984
 - Ajout du flux Document `ls-document` (identique à `ls-document-pdf` sans restriction sur le type de fichier) #2018
+- Sur la page d'un connecteur, ajout du numéro d'entité des types de dossiers utilisant ce connecteur #2041
 
 ## Corrections
 

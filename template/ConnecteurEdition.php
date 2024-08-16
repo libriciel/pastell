@@ -75,7 +75,20 @@ if ($has_definition) {
         </tr>
         <tr>
             <th>Utilisation</th>
-            <td><?php hecho(implode(",", $usage_flux_list) ?: "Aucune"); ?></td>
+            <td>
+                <?php
+                $links = [];
+                foreach ($usage_flux_list as $usage) {
+                    $id_e = $usage['id_e'];
+                    $flux = $usage['flux'];
+                    ob_start();
+                    $this->url("Flux/detail?id_e=$id_e&flux=$flux");
+                    $url = ob_get_clean();
+                    $links[] = "$flux (<a href=\"$url\">$id_e</a>)";
+                }
+                echo implode(', ', $links);
+                ?>
+            </td>
             <td>&nbsp;</td>
         </tr>
         <tr>

@@ -183,4 +183,19 @@ EOT;
 
         return $this->query($sql, $connectorId);
     }
+
+    public function getFluxAndEntityByConnectorId(string $id_ce): array
+    {
+        $sql = "SELECT flux, flux_entite.id_e FROM flux_entite" .
+            " JOIN connecteur_entite ON flux_entite.id_ce=connecteur_entite.id_ce " .
+            " WHERE connecteur_entite.id_ce=?";
+        $rows = $this->query($sql, $id_ce);
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = ['id_e' => $row['id_e'], 'flux' => $row['flux']];
+        }
+
+        return $result;
+    }
 }
