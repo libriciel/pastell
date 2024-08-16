@@ -53,16 +53,21 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
     public function go()
     {
         $numberOfRecipients = 0;
+        $uniqueRecipients = [];
+
         foreach (['to', 'cc', 'bcc'] as $type) {
             $typeMapped = $this->getMappingValue($type);
-
             $mail_to_send = $this->getMailToSend($typeMapped);
 
             foreach ($mail_to_send as $mail) {
-                $this->add2SendEmail($mail, $type);
-                ++$numberOfRecipients;
+                if (!in_array($mail, $uniqueRecipients, true)) {
+                    $this->add2SendEmail($mail, $type);
+                    $uniqueRecipients[] = $mail; // Ajoute l'adresse e-mail au tableau des destinataires uniques
+                    ++$numberOfRecipients;
+                }
             }
         }
+
 
         if ($numberOfRecipients === 0) {
             $this->changeAction(

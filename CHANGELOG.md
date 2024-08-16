@@ -49,6 +49,7 @@ récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2
 - Suppresion de la mention d'erreur lors de l'action voir sur un connecteur de transformation non configuré #1770
 - Passage en état `transformation-error` lorsqu'il y a une erreur lors de la transformation pour générer un élément #2013
 - Le bouton "Traitement par lot" n'apparaît plus si le type de dossier n'est pas sélectionné #2082
+- Les doublons de destinataires de mail sécurisé (to, cc, bcc) ne sont plus comptés dans le décompte total #2056
 - Il manquait `modification-no-change-etat: true` pour l'état `send-tdt-erreur` de l'étape `tdt_actes` #2121
 - La valeur "0" est désormais valide pour les champs texte obligatoires #2123
 - Les utilisateurs désactivés ne reçoivent plus les notifications #2100
