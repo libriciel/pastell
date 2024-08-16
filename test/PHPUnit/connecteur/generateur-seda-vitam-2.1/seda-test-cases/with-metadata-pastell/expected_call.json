@@ -1,0 +1,72 @@
+{
+    "version": "2.1-vitam",
+    "Title": "Actes soumis au contr\u00f4le de l\u00e9galit\u00e9 : Nomination du colonel Moutarde",
+    "ArchivalAgreement": "ACCORDS_ACTES",
+    "ArchivalProfile": "PROFILE_ACTES",
+    "ServiceLevel": "234567890",
+    "Language": "fra",
+    "DescriptionLanguage": "fra",
+    "StartDate": "2020-12-04",
+    "EndDate": "2020-12-04",
+    "AccessRule": {
+        "Rule": "AR038",
+        "StartDate": "2020-12-04"
+    },
+    "AppraisalRule": {
+        "FinalAction": "Destroy",
+        "Rule": "P10Y",
+        "StartDate": "2020-12-04"
+    },
+    "Keywords": [
+        {
+            "KeywordContent": "000000000"
+        },
+        {
+            "KeywordContent": "Bourg-en-Bresse"
+        }
+    ],
+    "Files": [
+        {
+            "Id": "NOT_TESTABLE_1",
+            "Filename": "document.pdf",
+            "Uri": "content\/fbc1a9f858ea9e177916964bd88c3d37b91a1e84412765e29950777f265c4b75.pdf",
+            "MessageDigest": "fbc1a9f858ea9e177916964bd88c3d37b91a1e84412765e29950777f265c4b75",
+            "AlgorithmIdentifier": "SHA-256",
+            "Size": "7",
+            "MimeType": "text\/plain",
+            "Title": "Actes soumis au contr\u00f4le de l\u00e9galit\u00e9 : Nomination du colonel Moutarde"
+        },
+        {
+            "Id": "NOT_TESTABLE_2",
+            "Filename": "document.pdf",
+            "Uri": "content\/dbd318c1c462aee872f41109a4dfd3048871a03dedd0fe0e757ced57dad6f2d7.pdf",
+            "MessageDigest": "dbd318c1c462aee872f41109a4dfd3048871a03dedd0fe0e757ced57dad6f2d7",
+            "AlgorithmIdentifier": "SHA-256",
+            "Size": "11",
+            "MimeType": "text\/plain",
+            "Title": "Annexe de l'acte"
+        },
+        {
+            "Id": "NOT_TESTABLE_3",
+            "Filename": "annexe2.pdf",
+            "Uri": "content\/d12441fc641d202581cf7f6396cb1f1f36a033620b5d306d023c6f6fb21918f2.pdf",
+            "MessageDigest": "d12441fc641d202581cf7f6396cb1f1f36a033620b5d306d023c6f6fb21918f2",
+            "AlgorithmIdentifier": "SHA-256",
+            "Size": "3",
+            "MimeType": "text\/plain",
+            "Title": "Annexe de l'acte"
+        }
+    ],
+    "OriginatingAgency": {
+        "Identifier": "491 011 698 0001",
+        "Name": "LIBRICIEL SCOP service RH"
+    },
+    "ArchivalAgency": {
+        "Identifier": "FRAD000",
+        "Name": "Service d'archive de Libriciel"
+    },
+    "TransferringAgency": {
+        "Identifier": "491 011 698",
+        "Name": "LIBRICIEL SCOP"
+    }
+}

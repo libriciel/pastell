@@ -13,6 +13,7 @@ use Pastell\Seda\Message\Part\ArchiveUnit;
 use Pastell\Seda\Message\Part\File;
 use Pastell\Seda\Message\Part\Keyword;
 use Pastell\Seda\SedaVersion;
+use Pastell\Service\Document\DocumentPastellMetadataService;
 use Pastell\Service\SimpleTwigRenderer;
 use SimpleXMLWrapperException;
 use TmpFolder;
@@ -34,6 +35,7 @@ class SedaMessageBuilder
 
     public function __construct(
         private readonly TmpFolder $tmpFolder,
+        private readonly DocumentPastellMetadataService $documentPastellMetadataService,
     ) {
         $this->message = new SedaMessage();
         $this->setIdGeneratorFunction(fn() => 'id_' . \uuid_create(\UUID_TYPE_RANDOM));
@@ -490,9 +492,11 @@ class SedaMessageBuilder
      */
     private function getStringWithMetatadaReplacement(string $expression): string
     {
+        $donneesFormulaire = $this->getDonneesFormulaire();
         return (new SimpleTwigRenderer())->render(
             $expression,
-            $this->getDonneesFormulaire()
+            $donneesFormulaire,
+            $this->documentPastellMetadataService->getMetadataPastellByDocument($donneesFormulaire->id_d)
         );
     }
 

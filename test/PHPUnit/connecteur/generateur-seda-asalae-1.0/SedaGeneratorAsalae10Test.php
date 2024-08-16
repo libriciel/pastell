@@ -10,7 +10,10 @@ final class SedaGeneratorAsalae10Test extends AbstractSedaGeneratorConnectorTest
 {
     public function getSedaMessageBuilder(): SedaMessageBuilder
     {
-        return new SedaMessageBuilder($this->getTmpFolder());
+        return new SedaMessageBuilder(
+            $this->getTmpFolder(),
+            $this->getPastellMetadataService()
+        );
     }
 
     public function getSedaConnectorId(): string

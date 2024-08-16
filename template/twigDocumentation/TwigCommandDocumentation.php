@@ -3,6 +3,7 @@
 use Pastell\Service\SimpleTwigRendererExemple;
 
 $simpleTwigRendererExemple = new SimpleTwigRendererExemple();
+
 ?>
 <table class="table table-striped" aria-label="Exemple de commande twig">
     <tr>
