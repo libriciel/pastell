@@ -125,8 +125,8 @@ action:
         action-automatique: transformation_1
         num-same-connecteur: '0'
     transformation_1:
-        name-action: 'Transformer le document #1'
-        name: 'Transformation du document #1'
+        name-action: 'Transformer le dossier #1'
+        name: 'Transformation du dossier #1'
         rule:
             last-action:
                 - preparation-transformation_1
@@ -153,8 +153,8 @@ action:
         action-automatique: transformation_2
         num-same-connecteur: '1'
     transformation_2:
-        name-action: 'Transformer le document #2'
-        name: 'Transformation du document #2'
+        name-action: 'Transformer le dossier #2'
+        name: 'Transformation du dossier #2'
         rule:
             last-action:
                 - preparation-transformation_2

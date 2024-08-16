@@ -23,9 +23,9 @@ class TransformationFixeTransform extends ConnecteurTypeActionExecutor
         $transformationData = $this->getTransformations();
         $donneesFormulaire = $this->getDonneesFormulaire();
         $documentTransformService = $this->objectInstancier->getInstance(DocumentTransformService::class);
-        $modifiedFields = $documentTransformService->transform($donneesFormulaire, $transformationData);
 
         try {
+            $modifiedFields = $documentTransformService->transform($donneesFormulaire, $transformationData);
             $this->addOnChange($modifiedFields);
         } catch (Exception $e) {
             $this->changeAction($transformationFixeErrorState, $e->getMessage());

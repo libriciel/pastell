@@ -4,6 +4,8 @@ class TypeDossierTransformationTest extends PastellTestCase
 {
     public const TRANSFORMATION = 'studio-transformation';
     public const PATH_CONFIG_JSON = __DIR__ . "/../../connecteur/transformation-generique/fixtures/definition.json";
+    public const PATH_CONFIG_JSON_WITH_TWIG_ERROR
+        = __DIR__ . '/../../connecteur/transformation-generique/fixtures/definition_with_twig_error.json';
 
     /** @var TypeDossierLoader */
     private $typeDossierLoader;
@@ -106,6 +108,43 @@ class TypeDossierTransformationTest extends PastellTestCase
         );
 
         return $info;
+    }
+
+
+    /**
+     * @return void
+     * @throws DonneesFormulaireException
+     * @throws NotFoundException
+     * @throws TypeDossierException
+     */
+    public function testEtapeTransformationNotValidateByTwigError(): void
+    {
+        $info = $this->createConnectorAndDocument(
+            self::TRANSFORMATION,
+            self::PATH_CONFIG_JSON_WITH_TWIG_ERROR
+        );
+
+        $this->assertTrue(
+            $this->triggerActionOnDocument($info['id_d'], 'orientation')
+        );
+        $this->assertLastMessage("sélection automatique de l'action suivante");
+        $this->triggerActionOnDocument($info['id_d'], 'transformation');
+        $expectedMessage = <<<EOT
+Erreur lors de la transformation pour générer l'élement <b>foo</b> :
+                        <br/><br/> Erreur de syntaxe sur le template twig ligne 1<br />
+Message d'erreur : Unexpected "notelsle" tag (expecting closing tag for the "if" tag defined near line 1).<br />
+<br />
+<br />
+<br />
+<b>1. {% if objet %}{{objet}}{% notelsle %}bar{% endif %}</b><em>^^^ Unexpected "notelsle" tag (expecting closing tag for the "if" tag defined near line 1).</em><br />
+<br />
+
+EOT;
+        $this->assertSame(
+            $expectedMessage,
+            $this->getObjectInstancier()->getInstance(ActionExecutorFactory::class)->getLastMessage()
+        );
+        $this->assertLastDocumentAction('transformation-error', $info['id_d']);
     }
 
     /**

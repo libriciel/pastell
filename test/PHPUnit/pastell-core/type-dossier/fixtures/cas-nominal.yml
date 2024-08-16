@@ -790,7 +790,7 @@ action:
         rule:
             role_id_e: no-role
     verif-sae:
-        name-action: "Récupérer l'AR du document sur le SAE"
+        name-action: "Récupérer l'AR du dossier sur le SAE"
         name: "Récuperation de l'AR sur le SAE"
         rule:
             last-action:

@@ -1,0 +1,4 @@
+{
+  "foo": "{% if objet %}{{objet}}{% notelsle %}bar{% endif %}",
+  "titre": "Ceci est mon titre"
+}

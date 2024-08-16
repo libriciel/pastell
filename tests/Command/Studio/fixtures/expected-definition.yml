@@ -515,8 +515,8 @@ action:
             role_id_e: no-role
         action-automatique: transformation
     transformation:
-        name-action: 'Transformer le document'
-        name: 'Transformation du document'
+        name-action: 'Transformer le dossier'
+        name: 'Transformation du dossier'
         rule:
             last-action:
                 - preparation-transformation
@@ -1195,7 +1195,7 @@ action:
         rule:
             role_id_e: no-role
     verif-sae:
-        name-action: "Récupérer l'AR du document sur le SAE"
+        name-action: "Récupérer l'AR du dossier sur le SAE"
         name: "Récuperation de l'AR sur le SAE"
         rule:
             last-action:

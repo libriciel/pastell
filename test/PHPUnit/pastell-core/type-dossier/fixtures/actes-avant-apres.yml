@@ -273,8 +273,8 @@ action:
             role_id_e: no-role
         action-automatique: transformation
     transformation:
-        name-action: 'Transformer le document'
-        name: 'Transformation du document'
+        name-action: 'Transformer le dossier'
+        name: 'Transformation du dossier'
         rule:
             last-action:
                 - preparation-transformation
