@@ -269,7 +269,7 @@ class MailSecConnecteurTest extends PastellTestCase
     public function testReturnPath()
     {
         $id_ce = $this->createConnector('undelivered-mail', "Undelivered mail", 0)['id_ce'];
-        $this->configureConnector($id_ce, ['return_path' => 'foo@libriciel.net'], 0);
+        $this->configureConnector($id_ce, ['return_path' => 'foo@libriciel.invalid'], 0);
         /** @var ConnecteurAssociationService $connecteurAssociationService */
         $connecteurAssociationService = $this->getObjectInstancier()->getInstance(
             ConnecteurAssociationService::class
@@ -356,10 +356,10 @@ class MailSecConnecteurTest extends PastellTestCase
         $id_ce  = $result['id_ce'];
         $this->configureConnector(
             $id_ce,
-            ['mailsec_reply_to' => 'test@libriciel.net']
+            ['mailsec_reply_to' => 'test@libriciel.invalid']
         );
         $actionResult = $this->triggerActionOnConnector($id_ce, 'test');
         $this->assertTrue($actionResult);
-        $this->assertLastMessage('Un email a été envoyé à test@libriciel.net');
+        $this->assertLastMessage('Un email a été envoyé à test@libriciel.invalid');
     }
 }

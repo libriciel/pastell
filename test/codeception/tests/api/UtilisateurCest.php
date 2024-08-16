@@ -4,7 +4,7 @@ class UtilisateurCest
 {
     private function getUser1()
     {
-        return ['id_u' => 1,'login' => 'admin','email' => 'test@libriciel.net'];
+        return ['id_u' => 1,'login' => 'admin','email' => 'test@libriciel.invalid'];
     }
 
     private function getCreatedUser($login = 'bar')

@@ -18,7 +18,7 @@ $sqlQuery->query(file_get_contents(__DIR__ . '/truncate_all.sql'));
 require_once __DIR__ . '/../../../docker/init-docker.php';
 
 $objectInstancier->setInstance('pastell_admin_login', 'admin');
-$objectInstancier->setInstance('pastell_admin_email', 'test@libriciel.net');
+$objectInstancier->setInstance('pastell_admin_email', 'test@libriciel.invalid');
 
 $bootstrap = $objectInstancier->getInstance(Bootstrap::class);
 $bootstrap->bootstrap();

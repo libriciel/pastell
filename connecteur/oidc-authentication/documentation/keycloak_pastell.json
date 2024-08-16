@@ -41,7 +41,7 @@
   "loginTheme": "keycloak",
   "smtpServer": {
     "host": "mail",
-    "from": "test@libriciel.net",
+    "from": "test@libriciel.invalid",
     "starttls": "",
     "auth": "",
     "ssl": ""
