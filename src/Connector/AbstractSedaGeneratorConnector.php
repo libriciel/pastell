@@ -273,8 +273,13 @@ abstract class AbstractSedaGeneratorConnector extends SEDAConnecteur
             \JSON_THROW_ON_ERROR
         );
         $dataFromFiles = $this->connecteurConfig->getFileContent('files') ?: '';
-
-        $message = $this->getMessage($fluxData, $dataFromBordereau, $dataFromFiles);
+        $dataFromAdvancedData = \json_decode(
+            $this->connecteurConfig->getFileContent('advanced_data') ?: '{}',
+            true,
+            512,
+            \JSON_THROW_ON_ERROR
+        );
+        $message = $this->getMessage($fluxData, $dataFromBordereau, $dataFromFiles, $dataFromAdvancedData);
 
         if ($this->connecteurConfig->get('template')) {
             $curlWrapper->addPostFile('template', $this->connecteurConfig->getFilePath('template'));
@@ -350,8 +355,12 @@ abstract class AbstractSedaGeneratorConnector extends SEDAConnecteur
      * @throws SimpleXMLWrapperException
      * @throws \JsonException
      */
-    public function getMessage(FluxData $fluxData, array $dataFromBordereau, string $dataFromFiles): array
-    {
+    public function getMessage(
+        FluxData $fluxData,
+        array $dataFromBordereau,
+        string $dataFromFiles,
+        array $dataFromAdvancedData
+    ): array {
         $algorithm = $this->getHashAlgorithm();
         $message = $this->sedaMessageBuilder
             ->setDonneesFormulaire($this->getDocDonneesFormulaire())
@@ -361,6 +370,7 @@ abstract class AbstractSedaGeneratorConnector extends SEDAConnecteur
             ->setVersion($this->getVersion())
             ->buildHeaders($dataFromBordereau)
             ->buildKeywords($dataFromBordereau['keywords'] ?? '')
+            ->buildCustom($dataFromAdvancedData)
             ->buildFiles($dataFromFiles)
             ->buildArchiveUnit($dataFromFiles)
             ->getMessage();

@@ -176,6 +176,20 @@ class SedaMessageBuilder
     /**
      * @throws UnrecoverableException
      */
+    public function buildCustom(array $dataFromAdvancedData): self
+    {
+        foreach ($dataFromAdvancedData as $i => $data) {
+            $this->message->addCustom(
+                $i,
+                $this->getStringWithMetatadaReplacement($data),
+            );
+        }
+        return $this;
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
     public function buildKeywords(string $keywordsData): self
     {
         $keywords_data = $this->getStringWithMetatadaReplacement($keywordsData);

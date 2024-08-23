@@ -12,8 +12,10 @@ use NotFoundException;
 use Pastell\Connector\AbstractSedaGeneratorConnector;
 use Pastell\Seda\Message\SedaMessageBuilder;
 use Pastell\Service\Document\DocumentPastellMetadataService;
+use Pastell\Step\SAE\Enum\SAEActionsEnum;
 use PastellTestCase;
 use TmpFolder;
+use TypeDossierLoader;
 use UnrecoverableException;
 
 abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
@@ -340,5 +342,81 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
             "L'URL du générateur n'a pas été trouvé. Avez-vous pensé à créer un connecteur global Generateur SEDA et à l'associer ?"
         );
         $sedaGeneriqueConnector->testConnexion();
+    }
+
+    /**
+     * @throws \TypeDossierException
+     * @throws NotFoundException
+     * @throws DonneesFormulaireException
+     */
+    public function testGenerateArchiveWithTemplateAndAdvancedData(): void
+    {
+        $this->mockCurl([
+            'http://seda-generator:8080/generateWithTemplate' => file_get_contents(
+                __DIR__ . '/fixtures/seda-with-template-and-advanced-data/bordereau.xml'
+            ),
+        ]);
+
+        $typeDossierSAETemplate = 'studio-sae-for-template-gps';
+        $typeDossierLoader = $this->getObjectInstancier()->getInstance(TypeDossierLoader::class);
+        $typeDossierLoader->createTypeDossierDefinitionFile($typeDossierSAETemplate);
+
+        $document = $this->createDocument($typeDossierSAETemplate);
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document['id_d']);
+        $donneesFormulaire->setTabData([
+            'titre' => 'test sae whith template gps',
+            'gps_altitude' => '598',
+            'gps_altitude_ref' => '0',
+            'gps_latitude' => '45 18 46.922',
+            'gps_latitude_ref' => 'N',
+            'gps_longitude' => '5 23 32.229',
+            'gps_longitude_ref' => 'E'
+        ]);
+        $donneesFormulaire->addFileFromCopy(
+            'fichier',
+            'vide.pdf',
+            __DIR__ . '/fixtures/seda-with-template-and-advanced-data/vide.pdf'
+        );
+
+        $saeConnector = $this->createConnector('fakeSAE', 'SAE');
+        $this->associateFluxWithConnector($saeConnector['id_ce'], $typeDossierSAETemplate, 'SAE');
+
+        $id_ce = $this->createSedaGeneriqueConnector();
+        $connecteurConfig = $this->getConnecteurFactory()->getConnecteurConfig($id_ce);
+        $connecteurConfig->addFileFromCopy(
+            'files',
+            'file.xml',
+            __DIR__ . '/fixtures/seda-with-template-and-advanced-data/connecteur-files.xml'
+        );
+        $connecteurConfig->addFileFromCopy(
+            'data',
+            'data.json',
+            __DIR__ . '/fixtures/seda-with-template-and-advanced-data/connecteur-data.json'
+        );
+        $connecteurConfig->addFileFromCopy(
+            'template',
+            'seda_2.2-asalae_template_gps.xml.twig',
+            __DIR__ . '/fixtures/seda-with-template-and-advanced-data/seda_2.2-asalae_template_gps.xml.twig'
+        );
+        $connecteurConfig->addFileFromCopy(
+            'advanced_data',
+            'advanced_data_gps.json',
+            __DIR__ . '/fixtures/seda-with-template-and-advanced-data/advanced_data_gps.json'
+        );
+        $this->associateFluxWithConnector($id_ce, $typeDossierSAETemplate, 'Bordereau SEDA');
+
+        static::assertTrue(
+            $this->triggerActionOnDocument($document['id_d'], 'orientation')
+        );
+        $this->assertLastMessage("sélection automatique de l'action suivante");
+
+        static::assertTrue(
+            $this->triggerActionOnDocument($document['id_d'], SAEActionsEnum::GENERATE_SIP->value)
+        );
+        $this->assertLastMessage("L'archive a été générée");
+
+        $this->assertLastDocumentAction(SAEActionsEnum::GENERATE_SIP->value, $document['id_d']);
+
+        $typeDossierLoader->unload();
     }
 }

@@ -1,0 +1,151 @@
+{
+  "id_type_dossier": "studio-sae-for-template-gps",
+  "pastell-version": "%VERSION%",
+  "timestamp": 1724416142,
+  "raw_data": {
+    "id_type_dossier": "studio-sae-for-template-gps",
+    "nom": "studio-sae-for-template-gps",
+    "type": "Types de dossier personnalis\u00e9s",
+    "description": "",
+    "nom_onglet": "onglet1",
+    "affiche_one": false,
+    "restriction_pack": "",
+    "formulaireElement": [
+      {
+        "element_id": "titre",
+        "name": "Titre",
+        "type": "text",
+        "commentaire": "",
+        "requis": "on",
+        "champs_affiches": "on",
+        "champs_recherche_avancee": "on",
+        "titre": "on",
+        "select_value": false,
+        "preg_match": false,
+        "default_value": false,
+        "preg_match_error": false,
+        "content_type": false
+      },
+      {
+        "element_id": "fichier",
+        "name": "Fichier",
+        "type": "file",
+        "commentaire": "",
+        "requis": "on",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": false,
+        "preg_match": false,
+        "default_value": false,
+        "preg_match_error": false,
+        "content_type": false
+      },
+      {
+        "element_id": "gps_altitude",
+        "name": "gps_altitude",
+        "type": "text",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "gps_altitude_ref",
+        "name": "gps_altitude_ref",
+        "type": "text",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "gps_latitude",
+        "name": "gps_latitude",
+        "type": "text",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "gps_latitude_ref",
+        "name": "gps_latitude_ref",
+        "type": "text",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "gps_longitude",
+        "name": "gps_longitude",
+        "type": "text",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "gps_longitude_ref",
+        "name": "gps_longitude_ref",
+        "type": "text",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      }
+    ],
+    "etape": [
+      {
+        "num_etape": 0,
+        "type": "sae",
+        "label": null,
+        "defaultChecked": false,
+        "requis": "on",
+        "automatique": "on",
+        "specific_type_info": {
+          "sae_has_metadata_in_json": "on"
+        },
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ArchiveTransfer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="fr:gouv:culture:archivesdefrance:seda:v2.2">
+  <Comment>commentaire</Comment>
+  <Date>2024-08-23T11:53:34+02:00</Date>
+  <MessageIdentifier>edff4d99-72cb-4950-b17d-e2c288758c74</MessageIdentifier>
+  <ArchivalAgreement schemeAgencyName="Libriciel SCOP" schemeName="Accord de versement">ac_pastell_recette</ArchivalAgreement>
+  <CodeListVersions xml:id="ID005">
+    <ReplyCodeListVersion>ReplyCodeListVersion0</ReplyCodeListVersion>
+    <MessageDigestAlgorithmCodeListVersion>MessageDigestAlgorithmCodeListVersion0</MessageDigestAlgorithmCodeListVersion>
+    <MimeTypeCodeListVersion>MimeTypeCodeListVersion0</MimeTypeCodeListVersion>
+    <FileFormatCodeListVersion>FileFormatCodeListVersion0</FileFormatCodeListVersion>
+    <CompressionAlgorithmCodeListVersion>CompressionAlgorithmCodeListVersion0</CompressionAlgorithmCodeListVersion>
+    <DataObjectVersionCodeListVersion>DataObjectVersionCodeListVersion0</DataObjectVersionCodeListVersion>
+    <StorageRuleCodeListVersion>StorageRuleCodeListVersion0</StorageRuleCodeListVersion>
+    <AppraisalRuleCodeListVersion>AppraisalRuleCodeListVersion0</AppraisalRuleCodeListVersion>
+    <AccessRuleCodeListVersion>AccessRuleCodeListVersion0</AccessRuleCodeListVersion>
+    <DisseminationRuleCodeListVersion>DisseminationRuleCodeListVersion0</DisseminationRuleCodeListVersion>
+    <ReuseRuleCodeListVersion>ReuseRuleCodeListVersion0</ReuseRuleCodeListVersion>
+    <ClassificationRuleCodeListVersion>ClassificationRuleCodeListVersion0</ClassificationRuleCodeListVersion>
+    <AuthorizationReasonCodeListVersion>AuthorizationReasonCodeListVersion0</AuthorizationReasonCodeListVersion>
+    <RelationshipCodeListVersion>RelationshipCodeListVersion0</RelationshipCodeListVersion>
+  </CodeListVersions>
+  <DataObjectPackage>
+    <BinaryDataObject id="id_413add10-dd9f-4e4f-84fa-de95504ef4f2">
+      <Uri>vide.pdf</Uri>
+      <MessageDigest algorithm="http://www.w3.org/2001/04/xmlenc#sha256">3e2a692af6201c48882316d4c23377f134d7c41cb9a38aa2dc5076a3d12db36a</MessageDigest>
+      <Size>9566</Size>
+      <FormatIdentification>
+        <MimeType>application/pdf</MimeType>
+      </FormatIdentification>
+      <FileInfo>
+        <Filename>vide.pdf</Filename>
+      </FileInfo>
+    </BinaryDataObject>
+    <DescriptiveMetadata>
+      <ArchiveUnit id="idedff4d99-72cb-4950-b17d-e2c288758c74">
+        <Management>
+          <AppraisalRule>
+            <Rule>APP10Y</Rule>
+            <StartDate>2024-08-23</StartDate>
+            <FinalAction>Destroy</FinalAction>
+          </AppraisalRule>
+          <AccessRule>
+            <Rule>AR048</Rule>
+            <StartDate>2024-08-23</StartDate>
+          </AccessRule>
+        </Management>
+        <Content>
+          <DescriptionLevel>Item</DescriptionLevel>
+          <Title>titre</Title>
+          <TransferringAgencyArchiveUnitIdentifier>test sae whith template gps</TransferringAgencyArchiveUnitIdentifier>
+          <Description>description_unite_archive_principale</Description>
+          <Language>fr</Language>
+          <DescriptionLanguage>fr</DescriptionLanguage>
+          <Keyword>
+            <KeywordContent>test sae whith template gps</KeywordContent>
+          </Keyword>
+          <Keyword>
+            <KeywordContent>autre mot clé</KeywordContent>
+          </Keyword>
+          <OriginatingAgency>
+            <Identifier>Pastell_SA</Identifier>
+            <OrganizationDescriptiveMetadata>
+              <Name xmlns="fr:gouv:culture:archivesdefrance:seda:v1.0">Pastell</Name>
+            </OrganizationDescriptiveMetadata>
+          </OriginatingAgency>
+          <Gps>
+            <GpsAltitude>598</GpsAltitude>
+            <GpsAltitudeRef>0</GpsAltitudeRef>
+            <GpsLatitude>45 18 46.922</GpsLatitude>
+            <GpsLatitudeRef>N</GpsLatitudeRef>
+            <GpsLongitude>5 23 32.229</GpsLongitude>
+            <GpsLongitudeRef>E</GpsLongitudeRef>
+          </Gps>
+        </Content>
+        <ArchiveUnit id="id_96794c2b-531e-4c00-8bf8-0c1f9a2beeed">
+          <Content>
+            <DescriptionLevel>SubGrp</DescriptionLevel>
+          </Content>
+        </ArchiveUnit>
+        <ArchiveUnit id="archive_file_id_413add10-dd9f-4e4f-84fa-de95504ef4f2">
+          <Content>
+            <DescriptionLevel>Item</DescriptionLevel>
+            <Title>Fichier</Title>
+          </Content>
+          <DataObjectReference>
+            <DataObjectReferenceId>id_413add10-dd9f-4e4f-84fa-de95504ef4f2</DataObjectReferenceId>
+          </DataObjectReference>
+        </ArchiveUnit>
+      </ArchiveUnit>
+    </DescriptiveMetadata>
+    <ManagementMetadata>
+                        
+        </ManagementMetadata>
+  </DataObjectPackage>
+  <ArchivalAgency>
+    <Identifier>Pastell_SA</Identifier>
+    <OrganizationDescriptiveMetadata>
+      <Name xmlns="fr:gouv:culture:archivesdefrance:seda:v1.0">Pastell</Name>
+    </OrganizationDescriptiveMetadata>
+  </ArchivalAgency>
+  <TransferringAgency>
+    <Identifier>Pastell_SA</Identifier>
+    <OrganizationDescriptiveMetadata>
+      <Name xmlns="fr:gouv:culture:archivesdefrance:seda:v1.0">Pastell</Name>
+    </OrganizationDescriptiveMetadata>
+  </TransferringAgency>
+</ArchiveTransfer>

@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ArchiveTransfer
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="fr:gouv:culture:archivesdefrance:seda:v2.2"
+>
+    {% if Comment is defined %}
+        <Comment>{{ Comment }}</Comment>
+    {% endif %}
+    <Date>{{ Date }}</Date>
+    <MessageIdentifier>{{ MessageIdentifier }}</MessageIdentifier>
+    {% if ArchivalAgreement is defined %}
+        <ArchivalAgreement schemeAgencyName="Libriciel SCOP"
+                           schemeName="Accord de versement">{{ ArchivalAgreement }}</ArchivalAgreement>
+    {% endif %}
+    <CodeListVersions xml:id="ID005">
+        <ReplyCodeListVersion>ReplyCodeListVersion0</ReplyCodeListVersion>
+        <MessageDigestAlgorithmCodeListVersion>MessageDigestAlgorithmCodeListVersion0</MessageDigestAlgorithmCodeListVersion>
+        <MimeTypeCodeListVersion>MimeTypeCodeListVersion0</MimeTypeCodeListVersion>
+        <FileFormatCodeListVersion>FileFormatCodeListVersion0</FileFormatCodeListVersion>
+        <CompressionAlgorithmCodeListVersion>CompressionAlgorithmCodeListVersion0</CompressionAlgorithmCodeListVersion>
+        <DataObjectVersionCodeListVersion>DataObjectVersionCodeListVersion0</DataObjectVersionCodeListVersion>
+        <StorageRuleCodeListVersion>StorageRuleCodeListVersion0</StorageRuleCodeListVersion>
+        <AppraisalRuleCodeListVersion>AppraisalRuleCodeListVersion0</AppraisalRuleCodeListVersion>
+        <AccessRuleCodeListVersion>AccessRuleCodeListVersion0</AccessRuleCodeListVersion>
+        <DisseminationRuleCodeListVersion>DisseminationRuleCodeListVersion0</DisseminationRuleCodeListVersion>
+        <ReuseRuleCodeListVersion>ReuseRuleCodeListVersion0</ReuseRuleCodeListVersion>
+        <ClassificationRuleCodeListVersion>ClassificationRuleCodeListVersion0</ClassificationRuleCodeListVersion>
+        <AuthorizationReasonCodeListVersion>AuthorizationReasonCodeListVersion0</AuthorizationReasonCodeListVersion>
+        <RelationshipCodeListVersion>RelationshipCodeListVersion0</RelationshipCodeListVersion>
+    </CodeListVersions>
+    <DataObjectPackage>
+        {% macro recursiveArchiveUnitForFiles(ArchiveUnits) %}
+            {% for ArchiveUnit in ArchiveUnits %}
+                {{ _self.fileForFiles(ArchiveUnit.Files) }}
+                {% if ArchiveUnit.ArchiveUnits is defined %}
+                    {{ _self.recursiveArchiveUnitForFiles(ArchiveUnit.ArchiveUnits) }}
+                {% endif %}
+            {% endfor %}
+        {% endmacro %}
+
+        {% macro fileForFiles(Files) %}
+            {% for File in Files %}
+                <BinaryDataObject id="{{ File.Id }}">
+                    <Uri>{{ File.Uri }}</Uri>
+                    <MessageDigest
+                            algorithm="{{ File.AlgorithmIdentifier ?? 'http://www.w3.org/2001/04/xmlenc#sha256' }}"
+                    >{{ File.MessageDigest }}</MessageDigest>
+                    <Size>{{ File.Size }}</Size>
+                    {% if File.MimeType is defined and File.MimeType is not empty %}
+                        <FormatIdentification>
+                            <MimeType>{{ File.MimeType }}</MimeType>
+                        </FormatIdentification>
+                    {% endif %}
+                    <FileInfo>
+                        <Filename>{{ File.Uri }}</Filename>
+                    </FileInfo>
+                </BinaryDataObject>
+            {% endfor %}
+        {% endmacro %}
+
+        {% if ArchiveUnits is defined %}
+            {{ _self.recursiveArchiveUnitForFiles(ArchiveUnits) }}
+        {% endif %}
+        {% if Files is defined %}
+            {{ _self.fileForFiles(Files) }}
+        {% endif %}
+        <DescriptiveMetadata>
+            <ArchiveUnit id="id{{ MessageIdentifier }}">
+                <Management>
+                    <AppraisalRule>
+                        <Rule>{{ AppraisalRule.Rule }}</Rule>
+                        <StartDate>{{ AppraisalRule.StartDate }}</StartDate>
+                        <FinalAction>{{ AppraisalRule.FinalAction }}</FinalAction>
+                    </AppraisalRule>
+                    <AccessRule>
+                        <Rule>{{ AccessRule.Rule }}</Rule>
+                        <StartDate>{{ AccessRule.StartDate }}</StartDate>
+                    </AccessRule>
+                </Management>
+                <Content>
+                    {% if DescriptionLevel is defined %}
+                        <DescriptionLevel>{{ DescriptionLevel }}</DescriptionLevel>
+                    {% else %}
+                        <DescriptionLevel>RecordGrp</DescriptionLevel>
+                    {% endif %}
+                    {% if Title is defined %}
+                        <Title>{{ Title }}</Title>
+                    {% endif %}
+                    {% if OriginatingAgencyArchiveIdentifier is defined %}
+                        <OriginatingAgencyArchiveUnitIdentifier>{{ OriginatingAgencyArchiveIdentifier }}</OriginatingAgencyArchiveUnitIdentifier>
+                    {% endif %}
+                    {% if TransferringAgencyArchiveIdentifier is defined %}
+                        <TransferringAgencyArchiveUnitIdentifier>{{ TransferringAgencyArchiveIdentifier }}</TransferringAgencyArchiveUnitIdentifier>
+                    {% endif %}
+                    {% if Description is defined %}
+                        <Description>{{ Description }}</Description>
+                    {% endif %}
+                    {% if CustodialHistory is defined %}
+                        <CustodialHistory>
+                            <CustodialHistoryItem>{{ CustodialHistory }}</CustodialHistoryItem>
+                        </CustodialHistory>
+                    {% endif %}
+                    {% if Language is defined %}
+                        <Language>{{ Language }}</Language>
+                    {% endif %}
+                    {% if DescriptionLanguage is defined %}
+                        <DescriptionLanguage>{{ DescriptionLanguage }}</DescriptionLanguage>
+                    {% endif %}
+                    {% if Keywords is defined %}
+                        {% for Keyword in Keywords %}
+                            <Keyword>
+                                <KeywordContent>{{ Keyword.KeywordContent }}</KeywordContent>
+                                {% if Keyword.KeywordReference is defined %}
+                                    <KeywordReference>{{ Keyword.KeywordReference }}</KeywordReference>
+                                {% endif %}
+                                {% if Keyword.KeywordType is defined %}
+                                    <KeywordType>{{ Keyword.KeywordType }}</KeywordType>
+                                {% endif %}
+                            </Keyword>
+                        {% endfor %}
+                    {% endif %}
+                    {% if OriginatingAgency is defined %}
+                        <OriginatingAgency>
+                            <Identifier>{{ OriginatingAgency.Identifier }}</Identifier>
+                            {% if OriginatingAgency.Name is defined %}
+                                <OrganizationDescriptiveMetadata>
+                                    <Name xmlns="fr:gouv:culture:archivesdefrance:seda:v1.0">{{ OriginatingAgency.Name }}</Name>
+                                </OrganizationDescriptiveMetadata>
+                            {% endif %}
+                        </OriginatingAgency>
+                    {% endif %}
+                    {% if ExternalReference is defined %}
+                        <RelatedObjectReference>
+                            <IsPartOf>
+                                <RepositoryArchiveUnitPID>{{ ExternalReference }}</RepositoryArchiveUnitPID>
+                            </IsPartOf>
+                        </RelatedObjectReference>
+                    {% endif %}
+                    {% if StartDate is defined %}
+                        <StartDate>{{ StartDate }}</StartDate>
+                    {% endif %}
+                    {% if EndDate is defined %}
+                        <EndDate>{{ EndDate }}</EndDate>
+                    {% endif %}
+                    {% if Custom is defined %}
+                        <Gps>
+                            {% if Custom.GpsAltitude is defined %}
+                                <GpsAltitude>{{ Custom.GpsAltitude }}</GpsAltitude>
+                            {% endif %}
+                            {% if Custom.GpsAltitudeRef is defined %}
+                                <GpsAltitudeRef>{{ Custom.GpsAltitudeRef }}</GpsAltitudeRef>
+                            {% endif %}
+                            {% if Custom.GpsLatitude is defined %}
+                                <GpsLatitude>{{ Custom.GpsLatitude }}</GpsLatitude>
+                            {% endif %}
+                            {% if Custom.GpsLatitudeRef is defined %}
+                                <GpsLatitudeRef>{{ Custom.GpsLatitudeRef }}</GpsLatitudeRef>
+                            {% endif %}
+                            {% if Custom.GpsLongitude is defined %}
+                                <GpsLongitude>{{ Custom.GpsLongitude }}</GpsLongitude>
+                            {% endif %}
+                            {% if Custom.GpsLongitudeRef is defined %}
+                                <GpsLongitudeRef>{{ Custom.GpsLongitudeRef }}</GpsLongitudeRef>
+                            {% endif %}
+                        </Gps>
+                    {% endif %}
+                </Content>
+                {% macro recursiveArchiveUnit(ArchiveUnits) %}
+                    {% for ArchiveUnit in ArchiveUnits %}
+                        <ArchiveUnit id="{{ ArchiveUnit.Id }}">
+                            {% if ArchiveUnit.AppraisalRule is defined or ArchiveUnit.AccessRestrictionRule is defined %}
+                                <Management>
+                                    {% if ArchiveUnit.AppraisalRule is defined %}
+                                        <AppraisalRule>
+                                            <Rule>{{ ArchiveUnit.AppraisalRule.Rule }}</Rule>
+                                            <StartDate>{{ ArchiveUnit.AppraisalRule.StartDate }}</StartDate>
+                                            <FinalAction>{{ ArchiveUnit.AppraisalRule.FinalAction }}</FinalAction>
+                                        </AppraisalRule>
+                                    {% endif %}
+                                    {% if ArchiveUnit.AccessRestrictionRule is defined %}
+                                        <AccessRule>
+                                            <Rule>{{ ArchiveUnit.AccessRestrictionRule.AccessRule }}</Rule>
+                                            <StartDate>{{ ArchiveUnit.AccessRestrictionRule.StartDate }}</StartDate>
+                                        </AccessRule>
+                                    {% endif %}
+                                </Management>
+                            {% endif %}
+                            <Content>
+                                {% if ArchiveUnit.ContentDescription.DescriptionLevel is defined %}
+                                    <DescriptionLevel>{{ ArchiveUnit.ContentDescription.DescriptionLevel }}</DescriptionLevel>
+                                {% else %}
+                                    <DescriptionLevel>SubGrp</DescriptionLevel>
+                                {% endif %}
+                                {% if ArchiveUnit.Title is defined %}
+                                    <Title>{{ ArchiveUnit.Title }}</Title>
+                                {% endif %}
+                                {% if ArchiveUnit.ContentDescription.Description is defined %}
+                                    <Description>{{ ArchiveUnit.ContentDescription.Description }}</Description>
+                                {% endif %}
+                                {% if ArchiveUnit.ContentDescription.CustodialHistory is defined %}
+                                    <CustodialHistory>
+                                        <CustodialHistoryItem>{{ ArchiveUnit.ContentDescription.CustodialHistory }}</CustodialHistoryItem>
+                                    </CustodialHistory>
+                                {% endif %}
+                                {% if ArchiveUnit.ContentDescription.Language is defined %}
+                                    <Language>{{ ArchiveUnit.ContentDescription.Language }}</Language>
+                                {% endif %}
+                                {% if ArchiveUnit.ContentDescription.Keywords is defined %}
+                                    {% for Keyword in ArchiveUnit.ContentDescription.Keywords %}
+                                        <Keyword>
+                                            <KeywordContent>{{ Keyword.KeywordContent }}</KeywordContent>
+                                            {% if Keyword.KeywordReference is defined %}
+                                                <KeywordReference>{{ Keyword.KeywordReference }}</KeywordReference>
+                                            {% endif %}
+                                            {% if Keyword.KeywordType is defined %}
+                                                <KeywordType>{{ Keyword.KeywordType }}</KeywordType>
+                                            {% endif %}
+                                        </Keyword>
+                                    {% endfor %}
+                                {% endif %}
+                            </Content>
+                            {% if ArchiveUnit.Files is defined %}
+                                {{ _self.metadataFiles(ArchiveUnit.Files) }}
+                            {% endif %}
+                            {% if ArchiveUnit.ArchiveUnits is defined %}
+                                {{ _self.recursiveArchiveUnit(ArchiveUnit.ArchiveUnits) }}
+                            {% endif %}
+                        </ArchiveUnit>
+                    {% endfor %}
+                {% endmacro %}
+
+                {% macro metadataFiles(Files) %}
+                    {% for File in Files %}
+                        <ArchiveUnit id="archive_file_{{ File.Id }}">
+                            {% if File.AppraisalRule is defined or File.AccessRestrictionRule is defined %}
+                                <Management>
+                                    {% if File.AppraisalRule is defined %}
+                                        <AppraisalRule>
+                                            <Rule>{{ File.AppraisalRule.Rule  }}</Rule>
+                                            <StartDate>{{ File.AppraisalRule.StartDate }}</StartDate>
+                                            <FinalAction>{{ File.AppraisalRule.FinalAction }}</FinalAction>
+                                        </AppraisalRule>
+                                    {% endif %}
+                                    {% if File.AccessRestrictionRule is defined %}
+                                        <AccessRule>
+                                            <Rule>{{ File.AccessRestrictionRule.AccessRule }}</Rule>
+                                            <StartDate>{{ File.AccessRestrictionRule.StartDate }}</StartDate>
+                                        </AccessRule>
+                                    {% endif %}
+                                </Management>
+                            {% endif %}
+                            <Content>
+                                {% if File.ContentDescription.DescriptionLevel is defined %}
+                                    <DescriptionLevel>{{ File.ContentDescription.DescriptionLevel }}</DescriptionLevel>
+                                {% else %}
+                                    <DescriptionLevel>Item</DescriptionLevel>
+                                {% endif %}
+                                {% if File.Title is defined %}
+                                    <Title>{{ File.Title }}</Title>
+                                {% endif %}
+                                {% if File.ContentDescription.Description is defined %}
+                                    <Description>{{ File.ContentDescription.Description }}</Description>
+                                {% endif %}
+                                {% if File.ContentDescription.CustodialHistory is defined %}
+                                    <CustodialHistory>
+                                        <CustodialHistoryItem>{{ File.ContentDescription.CustodialHistory }}</CustodialHistoryItem>
+                                    </CustodialHistory>
+                                {% endif %}
+                                {% if File.ContentDescription.Language is defined %}
+                                    <Language>{{ File.ContentDescription.Language }}</Language>
+                                {% endif %}
+                                {% if File.ContentDescription.Keywords is defined %}
+                                    {% for Keyword in File.ContentDescription.Keywords %}
+                                        <Keyword>
+                                            <KeywordContent>{{ Keyword.KeywordContent }}</KeywordContent>
+                                            {% if Keyword.KeywordReference is defined %}
+                                                <KeywordReference>{{ Keyword.KeywordReference }}</KeywordReference>
+                                            {% endif %}
+                                            {% if Keyword.KeywordType is defined %}
+                                                <KeywordType>{{ Keyword.KeywordType }}</KeywordType>
+                                            {% endif %}
+                                        </Keyword>
+                                    {% endfor %}
+                                {% endif %}
+                            </Content>
+                            <DataObjectReference>
+                                <DataObjectReferenceId>{{ File.Id }}</DataObjectReferenceId>
+                            </DataObjectReference>
+                        </ArchiveUnit>
+                    {% endfor %}
+                {% endmacro %}
+
+                {% if ArchiveUnits is defined %}
+                    {{ _self.recursiveArchiveUnit(ArchiveUnits) }}
+                {% endif %}
+
+                {{ _self.metadataFiles(Files) }}
+            </ArchiveUnit>
+        </DescriptiveMetadata>
+        <ManagementMetadata>
+            {% if ArchivalProfile is defined %}
+                <ArchivalProfile schemeAgencyName="Libriciel SCOP"
+                                 schemeName="Profil de données">{{ ArchivalProfile }}</ArchivalProfile>
+            {% endif %}
+            {% if ServiceLevel is defined %}
+                <ServiceLevel>{{ ServiceLevel }}</ServiceLevel>
+            {% endif %}
+
+        </ManagementMetadata>
+    </DataObjectPackage>
+    <ArchivalAgency>
+        <Identifier>{{ ArchivalAgency.Identifier }}</Identifier>
+        {% if ArchivalAgency.Name is defined and ArchivalAgency.Name is not empty %}
+            <OrganizationDescriptiveMetadata>
+                <Name xmlns="fr:gouv:culture:archivesdefrance:seda:v1.0">{{ ArchivalAgency.Name }}</Name>
+            </OrganizationDescriptiveMetadata>
+        {% endif %}
+    </ArchivalAgency>
+    <TransferringAgency>
+        <Identifier>{{ TransferringAgency.Identifier }}</Identifier>
+        {% if TransferringAgency.Name is defined and TransferringAgency.Name is not empty %}
+            <OrganizationDescriptiveMetadata>
+                <Name xmlns="fr:gouv:culture:archivesdefrance:seda:v1.0">{{ TransferringAgency.Name }}</Name>
+            </OrganizationDescriptiveMetadata>
+        {% endif %}
+    </TransferringAgency>
+</ArchiveTransfer>
