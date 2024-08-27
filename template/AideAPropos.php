@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * @var array $manifest_info
+ * @var array $listPack
  * @var string $changelog
  */
 ?>
@@ -26,7 +28,7 @@
 </div>
 
 <div class="box">
-    <h2>Liste des suppléments activés</h2>
+    <h2>Liste des suppléments et packs activés</h2>
     <table class='table table-striped'>
         <?php foreach ($listPack as $pack => $enabled) : ?>
             <tr>
