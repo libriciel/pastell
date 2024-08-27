@@ -1,4 +1,5 @@
 nom: 'Transformation générique'
+description: 'Permet de définir une expression twig dont le résultat sera affecté à l''élément associé'
 type: transformation
 formulaire:
     page0:
