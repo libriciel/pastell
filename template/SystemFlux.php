@@ -1,6 +1,9 @@
 <?php
 
-/** @var Gabarit $this */
+/**
+ * @var Gabarit $this
+ * @var array $all_flux
+ */
 ?>
 <div class="box">
 <table class='table table-striped'>
@@ -8,7 +11,7 @@
     <th class="w200">Nom symbolique</th>
     <th class="w200">Libellé</th>
     <th>Restriction</th>
-    <th>Validation</th>
+    <th>Validation technique</th>
 </tr>
 <?php foreach ($all_flux as $id_flux => $flux) : ?>
     <tr>
