@@ -71,7 +71,7 @@ $exportUserUrl = sprintf(
 <a class='btn btn-outline-primary' href='<?php echo $exportUserUrl; ?>'><i class='fa fa-download'></i>&nbsp;Exporter</a>
 
     <?php
-    $this->SuivantPrecedent(
+    $this->suivantPrecedent(
         $offset,
         UtilisateurListe::NB_UTILISATEUR_DISPLAY,
         $nb_utilisateur,
@@ -135,22 +135,26 @@ $exportUserUrl = sprintf(
             <?php endforeach;?>
 
         </td>
-        <?php
-           echo $user['is_enabled'] === 0 ? "<td><p class='badge bg-danger'>désactivé</p></td>" : "<td><p class='badge bg-success'>activé</p></td>";
-        ?>
         <?php if ($descendance) : ?>
             <td>
                 <a href='Entite/detail?id_e=<?php echo $user['id_e']?>'
                 ><?php hecho($user['denomination'] ?: "Entité racine"); ?></a>
             </td>
         <?php endif;?>
+        <td>
+            <?php if ($user['is_enabled'] === 0) : ?>
+                <p class='badge bg-danger'>désactivé</p>
+            <?php else : ?>
+                <p class='badge bg-success'>activé</p>
+            <?php endif; ?>
+        </td>
     </tr>
 <?php endforeach; ?>
 
 </table>
 
     <?php
-    $this->SuivantPrecedent(
+    $this->suivantPrecedent(
         $offset,
         UtilisateurListe::NB_UTILISATEUR_DISPLAY,
         $nb_utilisateur,

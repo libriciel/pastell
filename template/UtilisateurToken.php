@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @var String $id_u
+ * @var string $id_u
  * @var Gabarit $this
  */
 
@@ -30,7 +30,7 @@ declare(strict_types=1);
             </div>
         </div>
 
-        <div class="form-group row">
+        <div class="input-group">
             <label for="expiration" class="col-sm-2 col-form-label ">Date d'expiration</label>
             <div class="col-md-4">
                 <input type='text'
@@ -41,9 +41,7 @@ declare(strict_types=1);
                        class="form-control"
                 />
             </div>
-            <div class="input-group-append">
-                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-            </div>
+            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
         </div>
         <script type="text/javascript">
             jQuery.datepicker.setDefaults(jQuery.datepicker.regional['fr']);
