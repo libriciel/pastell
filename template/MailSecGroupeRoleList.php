@@ -84,7 +84,7 @@
                         $roleSQL = new RoleSQL($sqlQuery);
                         $allRole = $roleSQL->getAllRole();
                     ?>
-                    <select name='role' class="form-control col-md-4">
+                    <select name='role' class="form-select col-md-4">
                         <option value=''>...</option>
                         <?php foreach ($allRole as $role) : ?>
                             <option value='<?php echo $role['role']?>'> <?php hecho($role['role']); ?> </option>
@@ -95,7 +95,7 @@
             <tr>
                 <th>Collectivité ou service</th>
                 <td>
-                <select name='id_e' class="form-control col-md-4">
+                <select name='id_e' class="form-select col-md-4">
                     <option value=''>...</option>
                     <?php foreach ($arbre as $entiteInfo) : ?>
                     <option value='<?php echo $entiteInfo['id_e']?>'>

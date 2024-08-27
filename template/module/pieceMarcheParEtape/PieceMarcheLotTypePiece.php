@@ -43,7 +43,7 @@
                     <td class="w300"><label for="type_<?php echo $num_piece ?>"><?php hecho($libelle_piece) ?></label>
                     </td>
                     <td>
-                        <select id="type_<?php echo $num_piece ?>" name="type_pj[]" class="form-control col-md-7">
+                        <select id="type_<?php echo $num_piece ?>" name="type_pj[]" class="form-select col-md-7">
                             <?php foreach ($pieces_type_pj_list as $id_pj => $libelle_pj) : ?>
                                 <option value="<?php hecho($id_pj) ?>" <?php hecho($id_pj == $type_pj_selection[$num_piece] ? 'selected="selected"' : '') ?> ><?php hecho($libelle_pj) ?></option>
 

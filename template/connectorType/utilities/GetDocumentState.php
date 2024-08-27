@@ -26,7 +26,7 @@
                     <label for="module_type">État du dossier</label>
                 </th>
                 <td>
-                    <select name="document_state" id="document_state" class="form-control col-md-2">
+                    <select name="document_state" id="document_state" class="form-select col-md-2">
                         <option></option>
                         <?php foreach ($list_etat as $etat_id => $etat_info) : ?>
                             <option

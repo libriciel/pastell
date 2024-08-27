@@ -24,7 +24,7 @@
                     <label for="fast_parapheur_circuit">Circuit Parapheur FAST</label>
                 </th>
                 <td>
-                    <select name='fast_parapheur_circuit' id="fast_parapheur_circuit" class="form-control col-md-2">
+                    <select name='fast_parapheur_circuit' id="fast_parapheur_circuit" class="form-select col-md-2">
                         <?php foreach ($circuits as $num => $type_message) : ?>
                             <option value='<?php hecho($type_message) ?>'><?php hecho($type_message) ?></option>
                         <?php endforeach; ?>

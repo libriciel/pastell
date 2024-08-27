@@ -25,7 +25,7 @@
             <input type='hidden' name='type' value='<?php echo $type; ?>'/>
             <input type='text' placeholder="Rechercher par titre" name='search' class="form-control col-2 me-2"
                    value='<?php hecho($search); ?>'/>
-            <select name='filtre' class="form-control me-2">
+            <select name='filtre' class="form-select me-2">
                 <option value=''>Sélectionner un état</option>
                 <?php foreach ($all_action as $etat => $libelle_etat) : ?>
                     <option value='<?php echo $etat; ?>'

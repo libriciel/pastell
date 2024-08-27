@@ -1,6 +1,10 @@
 <?php
 
-/** @var Gabarit $this */
+/**
+ * @var Gabarit $this
+ * @var int $id_e
+ * @var array $all_connecteur_dispo
+ */
 
 use Pastell\Configuration\ConnectorConfiguration;
 
@@ -22,7 +26,7 @@ use Pastell\Configuration\ConnectorConfiguration;
 
 <tr>
     <th><label for="id_connecteur">Connecteur</label></th>
-<td><select name='id_connecteur' id="id_connecteur" class="input-xxlarge form-control col-md-2" >
+<td><select name='id_connecteur' id="id_connecteur" class="input-xxlarge form-select col-md-2" >
         <?php foreach ($all_connecteur_dispo as $id_connecteur => $connecteur) : ?>
             <option value='<?php hecho($id_connecteur)?>'>
                 <?php hecho($connecteur[ConnectorConfiguration::NOM])?> (<?php hecho($connecteur[ConnectorConfiguration::TYPE])?>)

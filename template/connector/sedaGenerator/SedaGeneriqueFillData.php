@@ -31,7 +31,7 @@
                         <?php if (! empty($element_info['value'])) : ?>
                             <select id="<?php hecho($pastell_id) ?>"
                                     name="<?php hecho($pastell_id) ?>"
-                                    class="form-control col-md-12"
+                                    class="form-select col-md-12"
                             >
                                 <?php foreach ($element_info['value'] as $value) : ?>
                                     <option <?php if (($data[$pastell_id] ?? '') === $value) {

@@ -15,7 +15,7 @@
     <input type='hidden' name='field' value='<?php hecho($field); ?>'/>
     <?php $this->displayCSRFInput(); ?>
 
-    <select name='entity_id' class='select2_entite form-control col-md-1'>
+    <select name='entity_id' class='select2_entite form-select col-md-1'>
         <option
                 value='0'
             <?php echo $selectedEntity == EntiteSQL::ID_E_ENTITE_RACINE ? 'selected' : '' ?>

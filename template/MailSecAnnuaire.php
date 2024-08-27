@@ -35,7 +35,7 @@
         <input type='hidden' name='id_e' value='<?php echo $id_e; ?>'/>
         <input type='text' name='search' value='<?php echo $search; ?>'
                class="form-control col-md-2 me-2" placeholder="Nom ou email"/>
-        <select name='id_g' class="form-control col-md-2 me-2">
+        <select name='id_g' class="form-select col-md-2 me-2">
             <option value=''>Tous les groupes</option>
             <?php foreach ($groupe_list as $groupe) : ?>
                 <option value='<?php echo $groupe['id_g'] ?>'

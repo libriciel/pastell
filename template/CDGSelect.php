@@ -1,4 +1,4 @@
-<select name="centre_de_gestion" class="form-control col-md-4">
+<select name="centre_de_gestion" class="form-select col-md-4">
     <option>...</option>
     <?php
 

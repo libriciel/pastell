@@ -552,7 +552,7 @@ html body #main_droite.pa-one-block {
     color: #B2B2B2;
 }
 
-.form-control:focus {
+.form-select:focus {
     color: #495057;
     background-color: #fff;
     border-color: var(--bs-ls-primary-300) !important;

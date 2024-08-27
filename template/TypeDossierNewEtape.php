@@ -22,7 +22,7 @@ use Pastell\Validator\ElementIdValidator;
                 </th>
                 <td>
 
-                    <select class="form-control col-md-4" name='type' id="type">
+                    <select class="form-select col-md-4" name='type' id="type">
                         <?php foreach ($all_etape_type as $type => $libelle_type) : ?>
                             <option value="<?php echo $type ?>" <?php echo $type == $etapeInfo->type ? 'selected="selected"' : ''; ?>><?php hecho($libelle_type) ?></option>
                         <?php endforeach; ?>

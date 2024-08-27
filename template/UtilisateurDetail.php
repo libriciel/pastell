@@ -291,7 +291,7 @@ use Pastell\Utilities\Certificate;
             <form action='Utilisateur/notificationAjout' method='post' class='input-group align-items-center'>
                 <?php $this->displayCSRFInput(); ?>
                 <input type='hidden' name='id_u' value='<?php echo $id_u ?>'/>
-                <select name='id_e' class='select2_entite form-control col-md-1'>
+                <select name='id_e' class='select2_entite form-select col-md-1'>
                     <option></option>
                     <option value='0'>Entité racine</option>
                     <?php foreach ($arbre as $entiteInfo) : ?>
@@ -303,7 +303,7 @@ use Pastell\Utilities\Certificate;
                 </select>
 
                 <?php $this->getDocumentTypeHtml()->displaySelectWithCollectivite($all_module); ?>
-                <select name='daily_digest' class="form-control col-md-2 me-2">
+                <select name='daily_digest' class="form-select col-md-2 me-2">
                     <option value=''>Envoi à chaque événement</option>
                     <option value='1'>Résumé journalier</option>
                 </select>

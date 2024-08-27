@@ -24,7 +24,7 @@
             <th class='w200'>    <label for="iparapheur_sous_type">Sous-type iparapheur</label>
             </th>
             <td>
-                <select name='iparapheur_sous_type' id="iparapheur_sous_type" class="form-control col-md-2">
+                <select name='iparapheur_sous_type' id="iparapheur_sous_type" class="form-select col-md-2">
                     <?php foreach ($sous_type as $num => $type_message) : ?>
                         <option value='<?php hecho($type_message) ?>'><?php hecho($type_message)?></option>
                     <?php endforeach; ?>

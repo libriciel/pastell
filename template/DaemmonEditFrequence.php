@@ -17,7 +17,7 @@
                     <label for="type_connecteur">Type de connecteur</label>
                 </th>
                 <td >
-                    <select name="type_connecteur" id="type_connecteur" class="form-control col-md-4">
+                    <select name="type_connecteur" id="type_connecteur" class="form-select col-md-4">
                         <option value="">Tous les types</option>
                         <option value="<?php echo ConnecteurFrequence::TYPE_GLOBAL ?>">Connecteurs globaux</option>
                         <option value="<?php echo ConnecteurFrequence::TYPE_ENTITE ?>">Connecteurs d'entité</option>
@@ -29,7 +29,7 @@
                     <label for="famille_connecteur">Famille de connecteur</label>
                 </th>
                 <td>
-                    <select name="famille_connecteur" id="famille_connecteur" class="form-control col-md-4">
+                    <select name="famille_connecteur" id="famille_connecteur" class="form-select col-md-4">
                     </select>
                 </td>
             </tr>
@@ -38,7 +38,7 @@
                     <label for="id_connecteur">Connecteur</label>
                 </th>
                 <td>
-                    <select name="id_connecteur" id="id_connecteur" class="form-control col-md-4">
+                    <select name="id_connecteur" id="id_connecteur" class="form-select col-md-4">
                     </select>
                 </td>
             </tr>
@@ -47,7 +47,7 @@
                     <label for="id_ce">Instance de connecteur</label>
                 </th>
                 <td>
-                    <select name="id_ce" id="id_ce" class="form-control col-md-4">
+                    <select name="id_ce" id="id_ce" class="form-select col-md-4">
                     </select>
                 </td>
             </tr>
@@ -57,7 +57,7 @@
                     <label for="action_type">Type d'action</label>
                 </th>
                 <td>
-                    <select name="action_type" id="action_type" class="form-control col-md-4">
+                    <select name="action_type" id="action_type" class="form-select col-md-4">
                         <option value="">Tous les types</option>
                         <option value="<?php echo ConnecteurFrequence::TYPE_ACTION_CONNECTEUR ?>">Actions de connecteur</option>
                         <option value="<?php echo ConnecteurFrequence::TYPE_ACTION_DOCUMENT ?>">Actions de document</option>
@@ -70,7 +70,7 @@
                     <label for="type_document">Type de dossier</label>
                 </th>
                 <td>
-                    <select name="type_document" id="type_document" class="form-control col-md-4">
+                    <select name="type_document" id="type_document" class="form-select col-md-4">
                     </select>
                 </td>
             </tr>
@@ -79,7 +79,7 @@
                     <label for="action">Action</label>
                 </th>
                 <td>
-                    <select name="action" id="action" class="form-control col-md-4">
+                    <select name="action" id="action" class="form-select col-md-4">
                     </select>
                 </td>
             </tr>

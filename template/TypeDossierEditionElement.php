@@ -54,7 +54,7 @@ use Pastell\Validator\ElementIdValidator;
                     <label for="type" >Type d'élément</label>
                 </th>
                 <td>
-                    <select id="type" name="type" class="form-control col-md-8">
+                    <select id="type" name="type" class="form-select col-md-8">
                         <?php
                         foreach (TypeDossierFormulaireElementManager::getAllTypeElement() as $type => $type_libelle) :
                             ?>
