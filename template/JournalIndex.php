@@ -49,7 +49,7 @@ $exportUrl = sprintf(
 
         <h2>Journal des événements (extraits)</h2>
 
-        <form action="Journal/index" method='get' class="col-4">
+        <form action="Journal/index" method='get' class="col-5">
             <input type='hidden' name='id_e' value='<?php echo $id_e?>'/>
             <input type='hidden' name='type' value='<?php hecho($type); ?>'/>
             <input type='hidden' name='id_d' value='<?php hecho($id_d); ?>'/>
@@ -60,11 +60,11 @@ $exportUrl = sprintf(
                        name='recherche'
                        class="form-control input-search"
                        value='<?php hecho($recherche); ?>'
-                       placeholder="Date, document, message"
+                       placeholder="Date, dossier, message"
                 />
                 <button type='submit' class='btn btn-primary btn-search'><i class='fa fa-search'></i></button>
                 <a class='btn btn-outline-primary ms-2' href='<?php hecho($exportUrl); ?>'>
-                    <i class='fa fa-download'></i>&nbsp;Exporter
+                    <i class='fa fa-download'></i>&nbsp;Exporter le journal
                 </a>
             </div>
 
@@ -134,7 +134,7 @@ $exportUrl = sprintf(
             <?php endforeach;?>
         </table>
         <a class='btn btn-outline-primary' href='<?php hecho($exportUrl); ?>'>
-            <i class='fa fa-download'></i>&nbsp;Exporter
+            <i class='fa fa-download'></i>&nbsp;Exporter le journal
         </a>
     </div>
 
