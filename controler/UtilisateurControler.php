@@ -1105,8 +1105,8 @@ class UtilisateurControler extends PastellControler
             ->createToken($id_u, $recuperateur->get('name'), $recuperateur->get('expiration') ?: null);
 
         $message = <<<EOT
-Votre jeton est <strong>$token</strong><br />
-Assurez-vous de le sauvegarder, il ne sera plus affiché.
+La valeur de votre jeton est <strong>$token</strong><br />
+Assurez-vous de la sauvegarder, elle ne sera plus affichée.
 EOT;
 
         $this->setLastMessage($message);
@@ -1150,7 +1150,7 @@ EOT;
         $token = $userTokenService->renewToken($id);
         $message = <<<EOT
 Le jeton a été renouvelé. Sa valeur est <strong>$token</strong><br />
-Assurez-vous de le sauvegarder, il ne sera plus affiché.
+Assurez-vous de la sauvegarder, elle ne sera plus affichée.
 EOT;
         $this->setLastMessage($message);
         $this->redirectAPIToken($source, $id_u);

@@ -6,10 +6,7 @@ use Pastell\Service\Entite\EntityCreationService;
 
 class UtilisateurControlerTest extends ControlerTestCase
 {
-    /**
-     * @return UtilisateurControler
-     */
-    private function getUtilisateurControler()
+    private function getUtilisateurControler(): UtilisateurControler
     {
         return $this->getControlerInstance(UtilisateurControler::class);
     }
@@ -148,7 +145,10 @@ class UtilisateurControlerTest extends ControlerTestCase
         try {
             $this->getUtilisateurControler()->doAddTokenAction();
         } catch (Exception $e) {
-            static::assertMatchesRegularExpression('/Votre jeton est <strong>(.*)<\/strong>/', $e->getMessage());
+            static::assertMatchesRegularExpression(
+                '/La valeur de votre jeton est <strong>(.*)<\/strong>/',
+                $e->getMessage()
+            );
         }
     }
 
@@ -241,7 +241,7 @@ class UtilisateurControlerTest extends ControlerTestCase
             $this->getUtilisateurControler()->doAddTokenAction();
         } catch (Exception $e) {
             self::assertMatchesRegularExpression(
-                '/Votre jeton est/',
+                '/La valeur de votre jeton est/',
                 $e->getMessage()
             );
         }
