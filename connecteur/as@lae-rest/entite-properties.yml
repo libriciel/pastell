@@ -1,4 +1,5 @@
 nom: 'asalae (Rest)'
+description: 'Connecteur pour le SAE asalae de Libriciel'
 type: SAE
 formulaire:
     page0:
