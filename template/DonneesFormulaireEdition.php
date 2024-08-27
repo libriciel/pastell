@@ -284,14 +284,12 @@ if ($donneesFormulaire->getFormulaire()->getNbPage() > 1) {
                                     name='<?php echo $field->getName(); ?>'
                                     value='<?php echo date_iso_to_fr($this->donneesFormulaire->geth($field->getName(), $field->getDefault()))?>'
                                     size='40'
-                                      autocomplete="off"
-                                      class=" form-control col-md-5 ls-box-input"
+                                    autocomplete="off"
+                                    class=" form-control col-md-5 ls-box-input"
 
                                     <?php echo $donneesFormulaire->isEditable($field->getName()) ?: "disabled='disabled'" ?>
                                     />
-                            <div class="input-group-append">
-                                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-                            </div>
+                            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
                         </div>
                                 <script type="text/javascript">
                                      jQuery.datepicker.setDefaults(jQuery.datepicker.regional['fr']);
