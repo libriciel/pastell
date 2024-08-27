@@ -1,0 +1,60 @@
+{
+    "version": "1.0",
+    "Comment": "commentaire",
+    "Title": "titre",
+    "ArchivalAgreement": "ac_pastell_recette",
+    "Language": "fr",
+    "Description": "description_unite_archive_principale",
+    "DescriptionLanguage": "fr",
+    "DescriptionLevel": "Item",
+    "AppraisalRule": {
+        "FinalAction": "detruire",
+        "Rule": "APP10Y"
+    },
+    "Keywords": [
+        {
+            "KeywordContent": "test sae whith template gps"
+        },
+        {
+            "KeywordContent": "autre mot cl\u00e9"
+        }
+    ],
+    "Custom": {
+        "GpsAltitude": "698",
+        "GpsAltitudeRef": "100",
+        "GpsLatitude": "45 18 46.922",
+        "GpsLatitudeRef": "N",
+        "GpsLongitude": "5 23 32.229",
+        "GpsLongitudeRef": "E"
+    },
+    "ArchiveUnits": [
+        {
+            "Id": "NOT_TESTABLE_2"
+        }
+    ],
+    "Files": [
+        {
+            "Id": "NOT_TESTABLE_1",
+            "Filename": "vide.pdf",
+            "Uri": "vide.pdf",
+            "MessageDigest": "3e2a692af6201c48882316d4c23377f134d7c41cb9a38aa2dc5076a3d12db36a",
+            "AlgorithmIdentifier": "http:\/\/www.w3.org\/2001\/04\/xmlenc#sha256",
+            "Size": "9566",
+            "MimeType": "application\/pdf",
+            "Title": "Fichier"
+        }
+    ],
+    "OriginatingAgency": {
+        "Identifier": "Pastell_SA",
+        "Name": "Pastell"
+    },
+    "ArchivalAgency": {
+        "Identifier": "Pastell_SA",
+        "Name": "Pastell"
+    },
+    "TransferringAgency": {
+        "Identifier": "Pastell_SA",
+        "Name": "Pastell"
+    },
+    "TransferringAgencyArchiveIdentifier": "test sae whith template gps"
+}

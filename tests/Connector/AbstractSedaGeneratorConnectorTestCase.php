@@ -348,12 +348,16 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
      * @throws \TypeDossierException
      * @throws NotFoundException
      * @throws DonneesFormulaireException
+     * @throws \JsonException
      */
     public function testGenerateArchiveWithTemplateAndAdvancedData(): void
     {
+        $fixtureFolder = __DIR__ . '/fixtures/seda-with-template-and-advanced-data/';
+        $exceptedFolder = $this->getExpectedCallDirectory() . '/seda-with-template-and-advanced-data/';
+
         $this->mockCurl([
             'http://seda-generator:8080/generateWithTemplate' => file_get_contents(
-                __DIR__ . '/fixtures/seda-with-template-and-advanced-data/bordereau.xml'
+                $fixtureFolder . 'bordereau.xml'
             ),
         ]);
 
@@ -375,7 +379,7 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
         $donneesFormulaire->addFileFromCopy(
             'fichier',
             'vide.pdf',
-            __DIR__ . '/fixtures/seda-with-template-and-advanced-data/vide.pdf'
+            $fixtureFolder . 'vide.pdf'
         );
 
         $saeConnector = $this->createConnector('fakeSAE', 'SAE');
@@ -386,36 +390,45 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
         $connecteurConfig->addFileFromCopy(
             'files',
             'file.xml',
-            __DIR__ . '/fixtures/seda-with-template-and-advanced-data/connecteur-files.xml'
+            $fixtureFolder . 'connecteur-files.xml'
         );
         $connecteurConfig->addFileFromCopy(
             'data',
             'data.json',
-            __DIR__ . '/fixtures/seda-with-template-and-advanced-data/connecteur-data.json'
+            $fixtureFolder . 'connecteur-data.json'
         );
         $connecteurConfig->addFileFromCopy(
             'template',
-            'seda_2.2-asalae_template_gps.xml.twig',
-            __DIR__ . '/fixtures/seda-with-template-and-advanced-data/seda_2.2-asalae_template_gps.xml.twig'
+            'template_gps.xml.twig',
+            $fixtureFolder . 'seda_2.2-asalae_template_gps.xml.twig'
         );
         $connecteurConfig->addFileFromCopy(
             'advanced_data',
             'advanced_data_gps.json',
-            __DIR__ . '/fixtures/seda-with-template-and-advanced-data/advanced_data_gps.json'
+            $fixtureFolder . 'advanced_data_gps.json'
         );
         $this->associateFluxWithConnector($id_ce, $typeDossierSAETemplate, 'Bordereau SEDA');
 
-        static::assertTrue(
-            $this->triggerActionOnDocument($document['id_d'], 'orientation')
+        /** @var AbstractSedaGeneratorConnector $connector */
+        $connector = $this->getConnecteurFactory()->getConnecteurById($id_ce);
+        $connector->setDocDonneesFormulaire($donneesFormulaire);
+        $message = $connector->getMessage(
+            new \FluxDataSedaDefault($donneesFormulaire),
+            json_decode($connecteurConfig->getFileContent('data'), true, 512, JSON_THROW_ON_ERROR),
+            $connecteurConfig->getFileContent('files'),
+            json_decode($connecteurConfig->getFileContent('advanced_data'), true, 512, JSON_THROW_ON_ERROR),
         );
-        $this->assertLastMessage("sélection automatique de l'action suivante");
 
-        static::assertTrue(
-            $this->triggerActionOnDocument($document['id_d'], SAEActionsEnum::GENERATE_SIP->value)
+        $json_content = \json_encode($message, \JSON_THROW_ON_ERROR);
+        //\mkdir($exceptedFolder);
+        //\file_put_contents(
+        //    $exceptedFolder . 'expected_call.json',
+        //    \json_encode($message, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT)
+        //);
+        static::assertJsonStringEqualsJsonFile(
+            $exceptedFolder . 'expected_call.json',
+            $json_content
         );
-        $this->assertLastMessage("L'archive a été générée");
-
-        $this->assertLastDocumentAction(SAEActionsEnum::GENERATE_SIP->value, $document['id_d']);
 
         $typeDossierLoader->unload();
     }
