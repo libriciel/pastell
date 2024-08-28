@@ -2,10 +2,16 @@
 
 /**
  * @var Gabarit $this
+ * @var int $id_e
+ * @var string $id_d
+ * @var int $id_u
+ * @var string $type
  * @var array $entite_info
  * @var array $utilisateur_info
  * @var array $document_info
  * @var string $recherche
+ * @var string $date_debut
+ * @var string $date_fin
  *
  */
 ?>
@@ -51,9 +57,7 @@
                      <input type='text' id='date_debut'
                             class="col-md-3 form-control ls-box-input" name='date_debut'
                             value='<?php hecho(date_iso_to_fr($date_debut))?>'/>
-                     <div class="input-group-append">
-                         <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-                     </div>
+                     <span class="input-group-text"><i class="fa fa-calendar"></i></span>
                  </div>
              </td>
         </tr>
@@ -65,9 +69,7 @@
                  <div class="input-group">
                      <input type='text' id='date_fin' class="col-md-3 form-control ls-box-input"
                             name='date_fin' value='<?php hecho(date_iso_to_fr($date_fin))?>' />
-                     <div class="input-group-append">
-                         <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-                     </div>
+                     <span class="input-group-text"><i class="fa fa-calendar"></i></span>
                  </div>
 
              </td>

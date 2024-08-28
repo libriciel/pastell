@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * @var Gabarit $this
  * @var int $id_e
  */
 
@@ -34,15 +35,17 @@
                             minlength="8"
                             required
                         />
-                        <div class="input-group-append">
-                            <span class="input-group-text"><i class="fa fa-eye-slash" onclick="switchInputType('password',this)"></i></span>
-                        </div>
+                        <span class="input-group-text">
+                            <i class="fa fa-eye-slash" onclick="switchInputType('password',this)"></i>
+                        </span>
                     </div>
                 </td>
             </tr>
         </table>
 
-        <button type='submit' class='btn btn-primary' value="go"><i class="fa fa-download"></i>&nbsp;Importer les élements</button>
+        <button type='submit' class='btn btn-primary' value="go">
+            <i class="fa fa-download"></i>&nbsp;Importer les élements
+        </button>
 
     </form>
 </div>

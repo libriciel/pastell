@@ -346,9 +346,7 @@ class RechercheAvanceFormulaireHTML extends PastellControler
                    value='<?php hecho($value); ?>'
                    class='date form-control col-md-3 ls-box-input'
             />
-            <div class="input-group-append ">
-                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-            </div>
+            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
         </div>
         <script type="text/javascript">
             jQuery.datepicker.setDefaults(jQuery.datepicker.regional['fr']);
