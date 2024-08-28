@@ -62,7 +62,10 @@ use Pastell\Utilities\Certificate;
             <th>Activé</th>
             <td><?php echo $info['is_enabled'] ? 'Oui' : 'Non' ?></td>
         </tr>
-
+        <tr>
+            <th>Utilisateur API pour authentification exclusivement par jetons</th>
+            <td><?php echo $info['is_api'] ? 'Oui' : 'Non' ?></td>
+        </tr>
 
         <tr>
             <th>Entité de base</th>

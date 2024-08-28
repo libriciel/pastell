@@ -34,8 +34,13 @@ use Pastell\Utilities\Certificate;
                            value='<?php hecho($infoUtilisateur['login']); ?>'/>
                 </td>
             </tr>
-            <tr>
-                <th><label for='email'>Email<span class='obl non-api-required'>*</span></label></th>
+            <tr id="email_row">
+                <th>
+                    <label for='email'>Email<span class='obl'>*</span></label>
+                    <p class='form_commentaire'>
+                        Non requis pour les utilisateurs API avec authentification via jetons
+                    </p>
+                </th>
                 <td>
                     <input class="form-control col-md-4" type='text' name='email'
                            value='<?php hecho($infoUtilisateur['email']); ?>'/>
@@ -93,13 +98,14 @@ use Pastell\Utilities\Certificate;
             </tr>
             <?php if ($new_user || $is_api) : ?>
             <tr>
-                <th><label for='api_user'>Utilisateur exclusivement API</label></th>
+                <th><label for='api_user'>Utilisateur API pour authentification exclusivement par jetons</label></th>
                 <td>
-
-                    <input class="" type='checkbox' name='api_user' id='api_user' <?php
-                    if ($is_api) :
-                        echo 'disabled checked value="on"';
-                    endif; ?>/>
+                    <input
+                        type='checkbox'
+                        name='api_user'
+                        id='api_user'
+                        <?php echo $is_api ? 'disabled checked' : '' ?>
+                    />
                 </td>
             </tr>
             <?php endif ?>
@@ -127,23 +133,18 @@ use Pastell\Utilities\Certificate;
 </div>
 
 <script>
-    let checkbox = document.getElementById('api_user');
-    let elementsToHide = document.querySelectorAll('.non-api-required');
-    if(checkbox.value === "on")
-    {
-        toggle();
-    }
-    checkbox.addEventListener('change', function () {
-        toggle();
-    });
+    /** @type HTMLInputElement */
+    const checkbox = document.getElementById('api_user');
+    let emailRow = document.getElementById('email_row');
 
-    function toggle() {
-        for (let i = 0; i < elementsToHide.length; i++) {
-            if (checkbox.checked) {
-                elementsToHide[i].style.opacity = "0";
-            } else {
-                elementsToHide[i].style.opacity = "1";
-            }
-        }
+    if(checkbox.checked) {
+        emailRow.setAttribute('hidden', 'true');
     }
+    checkbox.addEventListener('change', () => {
+        if(checkbox.checked) {
+            emailRow.setAttribute('hidden', 'true');
+        } else {
+            emailRow.removeAttribute('hidden');
+        }
+    });
 </script>
