@@ -156,21 +156,27 @@ class RechercheAvanceFormulaireHTML extends PastellControler
         $documentType = $this->getInstance(DocumentTypeFactory::class)->getFluxDocumentType($type);
         $indexedFieldsList = $documentType->getFormulaire()->getIndexedFields();
         ?>
-        <select name='tri' class="form-select col-md-8 select2_appearance">
+        <select name='tri' class="form-select col-md-8">
             <?php
             foreach (
                 [
-                    'date_dernier_etat' => "Date de dernière modification",
-                    "titre" => 'Titre du dossier',
-                    "entite" => "Nom de l'entité"
+                    'date_dernier_etat' => 'Date de dernière modification',
+                    'titre' => 'Titre du dossier',
+                    "entity" => "Nom de l'entité",
                 ] as $key => $libelle
             ) :
                 ?>
-                <option value='<?php echo $key ?>' <?php echo $tri == $key ? 'selected="selected"' : '' ?>><?php echo $libelle ?></option>
+                <option
+                    value='<?php echo $key; ?>'
+                    <?php echo $tri == $key ? 'selected' : '' ?>
+                ><?php echo $libelle; ?></option>
             <?php endforeach; ?>
             <?php if ($type) : ?>
                 <?php foreach ($indexedFieldsList as $indexField => $indexLabel) : ?>
-                    <option value='<?php hecho($indexField) ?>' <?php echo $tri == $indexField ? 'selected="selected"' : '' ?>><?php hecho($indexLabel) ?></option>
+                    <option
+                        value='<?php hecho($indexField) ?>'
+                        <?php echo $tri == $indexField ? 'selected' : '' ?>
+                    ><?php hecho($indexLabel) ?></option>
                 <?php endforeach; ?>
             <?php endif; ?>
         </select>
@@ -178,13 +184,15 @@ class RechercheAvanceFormulaireHTML extends PastellControler
         <tr>
         <th class="w300">Selon l'ordre</th>
         <td>
-        <select name='sens_tri' class="form-select col-md-8 select2_appearance">
-            <option value='DESC' <?php echo $sens_tri == 'DESC' ? 'selected="selected"' : '' ?>>Descendant (Z à A, 9 à
-                0, plus récent au plus ancien)
-            </option>
-            <option value='ASC' <?php echo $sens_tri == 'ASC' ? 'selected="selected"' : '' ?>>Ascendant (A à Z, 0 à 9,
-                plus ancien au plus récent)
-            </option>
+        <select name='sens_tri' class="form-select col-md-8">
+            <option
+                value='DESC'
+                <?php echo $sens_tri == 'DESC' ? 'selected' : '' ?>
+            >Descendant (Z à A, 9 à 0, plus récent au plus ancien)</option>
+            <option
+                value='ASC'
+                <?php echo $sens_tri == 'ASC' ? 'selected' : '' ?>
+            >Ascendant (A à Z, 0 à 9, plus ancien au plus récent)</option>
         </select>
         <?php
     }
