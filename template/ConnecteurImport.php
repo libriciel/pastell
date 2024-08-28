@@ -1,13 +1,19 @@
 <?php
 
-/** @var Gabarit $this */
+/**
+ * @var Gabarit $this
+ * @var array $connecteur_entite_info
+ */
 ?>
 
 <div class="box">
-    <h2>Connecteur <?php hecho($connecteur_entite_info['type']) ?> - <?php hecho($connecteur_entite_info['id_connecteur'])?> : <?php hecho($connecteur_entite_info['libelle']) ?>
+    <h2>
+        Connecteur <?php hecho($connecteur_entite_info['type']) ?>
+        - <?php hecho($connecteur_entite_info['id_connecteur'])?>
+        : <?php hecho($connecteur_entite_info['libelle']) ?>
     </h2>
 
-    <form action='<?php $this->url("Connecteur/doImport") ?>' method='post'  enctype="multipart/form-data">
+    <form action='<?php $this->url('Connecteur/doImport') ?>' method='post' enctype="multipart/form-data">
         <?php $this->displayCSRFInput() ?>
         <input type='hidden' name='id_ce' value='<?php echo $connecteur_entite_info['id_ce'] ?>' />
         <table class='table table-striped'>
@@ -24,16 +30,25 @@
                 </th>
                 <td>
                     <div class="input-group">
-                        <input id="password" type="password" class="form-control col-md-4 ls-box-input" name="password" value=''/>
-                        <div class="input-group-append">
-                            <span class="input-group-text"><i class="fa fa-eye-slash" onclick="switchInputType('password',this)"></i></span>
-                        </div>
+                        <input
+                            id="password"
+                            type="password"
+                            class="form-control col-md-4 ls-box-input"
+                            name="password"
+                            value=''
+                        />
+                        <span class="input-group-text">
+                            <i class="fa fa-eye-slash" onclick="switchInputType('password',this)"></i>
+                        </span>
                     </div>
                 </td>
             </tr>
 
         </table>
-        <a class='btn btn-outline-primary' href='Connecteur/edition?id_ce=<?php echo $connecteur_entite_info['id_ce']?>'>
+        <a
+            class='btn btn-outline-primary'
+            href='Connecteur/edition?id_ce=<?php echo $connecteur_entite_info['id_ce']?>'
+        >
             <i class="fa fa-times-circle"></i>&nbsp;Annuler
         </a>
 
