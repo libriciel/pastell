@@ -41,7 +41,7 @@
         <tr>
             <td>
                 <label for="type_envoi" class="label">Type d'envoi</label>
-                <select id="type_envoi" class="form-control col-md-4" name="has_daily_digest">
+                <select id="type_envoi" class="form-select col-md-4" name="has_daily_digest">
                     <option value="0" <?php echo $has_daily_digest ?: 'selected="selected"'?> >Envoi à chaque événement</option>
                     <option value="1" <?php echo $has_daily_digest ? 'selected="selected"' : ''?> >Résumé journalier</option>
                 </select>

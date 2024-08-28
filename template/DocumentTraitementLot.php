@@ -27,7 +27,7 @@ if ($search) {
     <form action='<?php $this->url('Document/confirmTraitementLot'); ?>' >
         <h3>Sélectionner un ou plusieurs objets, puis l'action à exécuter</h3>
         <div class="input-group">
-            <select class="form-control col-md-5 me-2" id="action-select" name="action" title="Sélectionner une action">
+            <select class="form-select col-md-5 me-2" id="action-select" name="action" title="Sélectionner une action">
                 <option value="" disabled selected>Sélectionner une action</option>
             </select>
             <button type="submit"

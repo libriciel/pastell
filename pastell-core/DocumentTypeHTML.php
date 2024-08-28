@@ -22,7 +22,7 @@ class DocumentTypeHTML
     public function displaySelect($type_selected = "", $all_module = [])
     {
         ?>
-        <select name='type' class="form-control col-md-3 select2_document">
+        <select name='type' class="form-select col-md-3 select2_document">
             <?php $this->getOption($type_selected, $all_module) ?>
         </select>
         <?php
@@ -31,7 +31,7 @@ class DocumentTypeHTML
     public function displaySelectWithCollectivite($all_module = [])
     {
         ?>
-        <select name='type' class='select2_document form-control col-md-3'>
+        <select name='type' class='select2_document form-select col-md-3'>
             <?php $this->getOption("", $all_module) ?>
             <option value='collectivite-properties'>Collectivite</option>
         </select>

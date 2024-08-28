@@ -90,7 +90,7 @@ use Pastell\Validator\ElementIdValidator;
 
                     <td>
                         <?php if ($element_info['type'] == 'file') : ?>
-                            <select class="form-control col-md-8"
+                            <select class="form-select col-md-8"
                                     name='<?php hecho($element_id) ?>'
                                     id="<?php hecho($element_id) ?>"
                             >
@@ -103,7 +103,7 @@ use Pastell\Validator\ElementIdValidator;
                                 <?php endforeach; ?>
                             </select>
                         <?php elseif ($element_info['type'] == 'multi_file') : ?>
-                            <select class="form-control col-md-8"
+                            <select class="form-select col-md-8"
                                     name='<?php hecho($element_id) ?>'
                                     id="<?php hecho($element_id) ?>"
                             >
@@ -116,7 +116,7 @@ use Pastell\Validator\ElementIdValidator;
                                 <?php endforeach; ?>
                             </select>
                         <?php elseif ($element_info['type'] == 'select') : ?>
-                            <select class="form-control col-md-8"
+                            <select class="form-select col-md-8"
                                     name='<?php hecho($element_id) ?>'
                                     id="<?php hecho($element_id) ?>"
                             >
@@ -134,7 +134,7 @@ use Pastell\Validator\ElementIdValidator;
                                 <?php echo $etapeInfo->specific_type_info[$element_id] ? "checked='checked'" : ""?>
                             />
                         <?php elseif ($element_info['type'] == 'text_select') : ?>
-                            <select class="form-control col-md-8"
+                            <select class="form-select col-md-8"
                                     name='<?php hecho($element_id) ?>'
                                     id="<?php hecho($element_id) ?>"
                             >

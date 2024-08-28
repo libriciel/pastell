@@ -25,7 +25,7 @@
                     <label for="module_type">Type de dossier</label>
                 </th>
                 <td>
-                    <select name="module_type" id="module_type" class="form-control col-md-2">
+                    <select name="module_type" id="module_type" class="form-select col-md-2">
                         <option></option>
                         <?php foreach ($moduleList as $flux_id => $flux_info) : ?>
                             <option

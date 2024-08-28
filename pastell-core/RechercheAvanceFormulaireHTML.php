@@ -115,7 +115,7 @@ class RechercheAvanceFormulaireHTML extends PastellControler
             ->getChoiceForSearch($id_e, $this->getId_u(), $type, $action_name, $field_name);
         ?>
 
-        <select name='<?php hecho($field_name) ?>' class="form-control col-md-8">
+        <select name='<?php hecho($field_name) ?>' class="form-select col-md-8">
             <option value=''></option>
             <?php foreach ($all_choice as $key => $value) : ?>
                 <option <?php echo $key == $select ? "selected='selected'" : ""; ?>
@@ -137,7 +137,7 @@ class RechercheAvanceFormulaireHTML extends PastellControler
         $field = $this->documentType->getFormulaire()->getField($field_name);
         $possible_value = $field->getSelect();
         ?>
-        <select name='<?php hecho($field_name) ?>' class="form-control col-md-8">
+        <select name='<?php hecho($field_name) ?>' class="form-select col-md-8">
             <option value=''></option>
             <?php foreach ($possible_value as $value) : ?>
                 <option value='<?php hecho($value) ?>' <?php echo $value == $select ? "selected='selected'" : ""; ?>>
@@ -156,21 +156,27 @@ class RechercheAvanceFormulaireHTML extends PastellControler
         $documentType = $this->getInstance(DocumentTypeFactory::class)->getFluxDocumentType($type);
         $indexedFieldsList = $documentType->getFormulaire()->getIndexedFields();
         ?>
-        <select name='tri' class="form-control col-md-8 select2_appearance">
+        <select name='tri' class="form-select col-md-8">
             <?php
             foreach (
                 [
-                    'date_dernier_etat' => "Date de dernière modification",
-                    "titre" => 'Titre du dossier',
-                    "entite" => "Nom de l'entité"
+                    'date_dernier_etat' => 'Date de dernière modification',
+                    'titre' => 'Titre du dossier',
+                    "entity" => "Nom de l'entité",
                 ] as $key => $libelle
             ) :
                 ?>
-                <option value='<?php echo $key ?>' <?php echo $tri == $key ? 'selected="selected"' : '' ?>><?php echo $libelle ?></option>
+                <option
+                    value='<?php echo $key; ?>'
+                    <?php echo $tri == $key ? 'selected' : '' ?>
+                ><?php echo $libelle; ?></option>
             <?php endforeach; ?>
             <?php if ($type) : ?>
                 <?php foreach ($indexedFieldsList as $indexField => $indexLabel) : ?>
-                    <option value='<?php hecho($indexField) ?>' <?php echo $tri == $indexField ? 'selected="selected"' : '' ?>><?php hecho($indexLabel) ?></option>
+                    <option
+                        value='<?php hecho($indexField) ?>'
+                        <?php echo $tri == $indexField ? 'selected' : '' ?>
+                    ><?php hecho($indexLabel) ?></option>
                 <?php endforeach; ?>
             <?php endif; ?>
         </select>
@@ -178,13 +184,15 @@ class RechercheAvanceFormulaireHTML extends PastellControler
         <tr>
         <th class="w300">Selon l'ordre</th>
         <td>
-        <select name='sens_tri' class="form-control col-md-8 select2_appearance">
-            <option value='DESC' <?php echo $sens_tri == 'DESC' ? 'selected="selected"' : '' ?>>Descendant (Z à A, 9 à
-                0, plus récent au plus ancien)
-            </option>
-            <option value='ASC' <?php echo $sens_tri == 'ASC' ? 'selected="selected"' : '' ?>>Ascendant (A à Z, 0 à 9,
-                plus ancien au plus récent)
-            </option>
+        <select name='sens_tri' class="form-select col-md-8">
+            <option
+                value='DESC'
+                <?php echo $sens_tri == 'DESC' ? 'selected' : '' ?>
+            >Descendant (Z à A, 9 à 0, plus récent au plus ancien)</option>
+            <option
+                value='ASC'
+                <?php echo $sens_tri == 'ASC' ? 'selected' : '' ?>
+            >Ascendant (A à Z, 0 à 9, plus ancien au plus récent)</option>
         </select>
         <?php
     }
@@ -194,7 +202,7 @@ class RechercheAvanceFormulaireHTML extends PastellControler
         $listeEtat = $this->getDocumentStateList();
         $etatTransit = $this->getParameter('etatTransit');
         ?>
-        <select name='etatTransit' class="form-control col-md-8">
+        <select name='etatTransit' class="form-select col-md-8">
             <option value=''>----</option>
             <?php foreach ($listeEtat as $typeDocument => $allEtat) : ?>
                 <optgroup label="<?php hecho($typeDocument) ?>">
@@ -224,7 +232,7 @@ class RechercheAvanceFormulaireHTML extends PastellControler
         $listeEtat = $this->getDocumentStateList();
         $notEtatTransit = $this->getParameter('notEtatTransit');
         ?>
-        <select name='notEtatTransit' class="form-control col-md-8">
+        <select name='notEtatTransit' class="form-select col-md-8">
             <option value=''>----</option>
             <?php foreach ($listeEtat as $typeDocument => $allEtat) : ?>
                 <optgroup label="<?php hecho($typeDocument) ?>">
@@ -256,7 +264,7 @@ class RechercheAvanceFormulaireHTML extends PastellControler
         $listeEtat = $this->getDocumentStateList();
         $lastEtat = $this->getParameter('lastetat');
         ?>
-        <select name='lastetat' class="form-control col-md-8">
+        <select name='lastetat' class="form-select col-md-8">
             <option value=''>N'importe quel état</option>
             <?php foreach ($listeEtat as $typeDocument => $allEtat) : ?>
                 <optgroup label="<?php hecho($typeDocument) ?>">
@@ -291,7 +299,7 @@ class RechercheAvanceFormulaireHTML extends PastellControler
         $id_e = $this->getParameter('id_e');
 
         ?>
-        <select class="form-control col-md-8 select2_entite" name='id_e'>
+        <select class="form-select col-md-8 select2_entite" name='id_e'>
             <?php foreach ($arbre as $entiteInfo) : ?>
                 <option value='<?php echo $entiteInfo['id_e'] ?>' <?php echo $entiteInfo['id_e'] == $id_e ? "selected='selected'" : ""; ?>>
                     <?php for ($i = 0; $i < $entiteInfo['profondeur']; $i++) {

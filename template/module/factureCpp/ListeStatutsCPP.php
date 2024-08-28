@@ -24,7 +24,7 @@
             <th class='w200'>    <label for="statut_cible_liste">Statut cible</label>
             </th>
             <td>
-                <select name='statut_cible_liste' id="statut_cible_liste" class="form-control col-md-2">
+                <select name='statut_cible_liste' id="statut_cible_liste" class="form-select col-md-2">
                     <?php foreach ($statut_cible_liste as $num => $type_message) : ?>
                         <option value='<?php hecho($type_message) ?>'><?php hecho($type_message)?></option>
                     <?php endforeach; ?>

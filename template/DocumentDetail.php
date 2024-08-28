@@ -427,7 +427,7 @@ if ($infoDocumentEmail) :
                     <?php $this->displayCSRFInput(); ?>
                     <input type='hidden' name='id_e' value='<?php echo $id_e; ?>'/>
                     <input type='hidden' name='id_d' value='<?php echo $id_d; ?>'/>
-                    Nouvel état : <select name='action' class="form-control">
+                    Nouvel état : <select name='action' class="form-select">
                         <option value=''></option>
                         <?php foreach ($all_action as $etat => $libelle_etat) : ?>
                             <option value='<?php echo $etat; ?>'>

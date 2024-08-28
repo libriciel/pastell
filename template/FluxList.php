@@ -81,7 +81,7 @@
                         <label for="module_type">Type de dossier</label>
                     </th>
                     <td>
-                        <select name="flux" id="module_type" class="select2_type_dossier form-control col-md-3">
+                        <select name="flux" id="module_type" class="select2_type_dossier form-select col-md-3">
                             <?php foreach ($possible_pack_list as $type => $possible_flux_list) : ?>
                                 <optgroup label="<?php hecho($type) ?>">
                                 <?php foreach ($possible_flux_list as $flux_id => $flux_info) : ?>

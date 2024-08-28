@@ -40,10 +40,6 @@ $(document).ready(function () {
         placeholder: 'Sélectionner un état'
     });
 
-    $('.select2_appearance').select2({
-        minimumResultsForSearch: -1
-    });
-
     $('[data-toggle="tooltip"]').tooltip()
 
 

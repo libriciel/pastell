@@ -40,7 +40,7 @@ $exportUserUrl = sprintf(
         </tr>
         <tr>
         <td>Rôle</td>
-        <td><select name='role' class="form-control col-md-5">
+        <td><select name='role' class="form-select col-md-5">
         <option value=''>N'importe quel rôle</option>
             <?php foreach ($all_role as $role) : ?>
                 <option value='<?php hecho($role['role']); ?>'

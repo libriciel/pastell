@@ -76,7 +76,7 @@ use Pastell\Utilities\Certificate;
             <tr>
                 <th>Entité de base</th>
                 <td>
-                    <select name='id_e' class="form-control col-md-4">
+                    <select name='id_e' class="form-select col-md-4">
                         <option value=''>Entité racine</option>
                         <?php foreach ($arbre as $entiteInfo) : ?>
                             <option value='<?php echo $entiteInfo['id_e'] ?>'
