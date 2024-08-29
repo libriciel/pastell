@@ -161,6 +161,7 @@ action:
             role_id_e: no-role
         editable-content:
             - numero_de_lacte
+        modification-no-change-etat: true
     document-transmis-tdt:
         name-action: 'Transmettre les documents au TdT'
         name: 'En attente du certificat RGS**'

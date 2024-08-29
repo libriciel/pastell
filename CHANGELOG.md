@@ -44,6 +44,7 @@ récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2
 - Correction du format xml d'import et d'export de collectivités #2051
 - Suppresion de la mention d'erreur lors de l'action voir sur un connecteur de transformation non configuré #1770
 - Passage en état `transformation-error` lorsqu'il y a une erreur lors de la transformation pour générer un élément #2013
+- Il manquait `modification-no-change-etat: true` pour l'état `send-tdt-erreur` de l'étape `tdt_actes` #2121
 
 ## Dépréciations
 
