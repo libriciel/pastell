@@ -111,7 +111,7 @@
         "requis": "on",
         "automatique": "on",
         "specific_type_info": {
-          "transformations": "date_de_lacte:{{ parapheur_date_signature  ? parapheur_date_signature : date_de_lacte}}"
+          "transformations": "date_de_lacte:{{ acte_nature !=1 and parapheur_date_signature  ? parapheur_date_signature : date_de_lacte}}"
         },
         "num_etape_same_type": 0,
         "etape_with_same_type_exists": false
