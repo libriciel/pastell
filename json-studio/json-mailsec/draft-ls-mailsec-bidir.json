@@ -1,7 +1,7 @@
 {
   "id_type_dossier": "draft-ls-mailsec-bidir",
   "pastell-version": "%VERSION%",
-  "timestamp": 1704450007,
+  "timestamp": 1724920159,
   "raw_data": {
     "id_type_dossier": "draft-ls-mailsec-bidir",
     "nom": "Mail s\u00e9curis\u00e9 avec r\u00e9ponse (Draft)",
@@ -105,6 +105,19 @@
         "requis": "",
         "automatique": "on",
         "specific_type_info": [],
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      },
+      {
+        "num_etape": "3",
+        "type": "sae",
+        "label": null,
+        "defaultChecked": false,
+        "requis": "",
+        "automatique": "on",
+        "specific_type_info": {
+          "sae_has_metadata_in_json": "on"
+        },
         "num_etape_same_type": 0,
         "etape_with_same_type_exists": false
       }

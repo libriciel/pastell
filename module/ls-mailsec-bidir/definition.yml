@@ -6,6 +6,8 @@ connecteur:
     - mailsec
     - pdf-relance
     - GED
+    - 'Bordereau SEDA'
+    - SAE
 affiche_one: true
 formulaire:
     Dossier:
@@ -49,6 +51,12 @@ formulaire:
             read-only: true
         envoi_depot:
             name: 'Dépôt (GED, FTP, ...)'
+            type: checkbox
+            onchange: cheminement-change
+            default: ''
+            read-only: false
+        envoi_sae:
+            name: "Système d'archivage électronique"
             type: checkbox
             onchange: cheminement-change
             default: ''
@@ -129,6 +137,44 @@ formulaire:
             read-only: true
             requis: true
             visionneuse-no-link: true
+    'Configuration SAE':
+        sae_config:
+            name: 'Configuration du versement SAE'
+            commentaire: "Fichier JSON {cle1:valeur1,cle2:valeur2,...}.\nLes métadonnées de ce fichier prévalent sur les métadonnées Pastell"
+            type: file
+    SAE:
+        sae_show:
+            no-show: true
+        journal:
+            name: 'Faisceau de preuves'
+            type: file
+        date_journal_debut:
+            name: 'Date du premier évènement journalisé'
+        date_cloture_journal:
+            name: 'Date de clôture du journal'
+        date_cloture_journal_iso8601:
+            name: 'Date de clôture du journal (iso 8601)'
+        sae_transfert_id:
+            name: 'Identifiant de transfert'
+            index: true
+        sae_bordereau:
+            name: 'Bordereau SEDA'
+            type: file
+        sae_archive:
+            name: "Paquet d'archive (SIP)"
+            type: file
+        ar_sae:
+            type: file
+            name: 'Accusé de réception SAE'
+        sae_ack_comment:
+            name: "Commentaire de l'accusé de réception"
+        reply_sae:
+            type: file
+            name: 'Réponse du SAE'
+        sae_archival_identifier:
+            name: "Identifiant de l'archive sur le SAE"
+        sae_atr_comment:
+            name: 'Commentaire de la réponse du SAE'
 champs-affiches:
     - titre
     - dernier_etat
@@ -153,6 +199,10 @@ page-condition:
         lecture_mail: true
     'Retour GED':
         has_ged_document_id: true
+    'Configuration SAE':
+        envoi_sae: true
+    SAE:
+        sae_show: true
 action:
     creation:
         name-action: Créer
@@ -170,6 +220,7 @@ action:
                 - transformation
                 - reception
                 - non-recu
+                - send-ged
                 - send-mailsec-error
     supression:
         name-action: Supprimer
@@ -184,6 +235,7 @@ action:
                 - transformation-error
                 - send-mailsec-error
                 - error-ged
+                - rejet-sae
         action-class: Supprimer
         warning: 'Êtes-vous sûr ?'
     importation:
@@ -203,6 +255,7 @@ action:
                 - reception
                 - non-recu
                 - send-ged
+                - accepter-sae
             document_is_valide: true
         action-class: OrientationTypeDossierPersonnalise
     termine:
@@ -242,11 +295,26 @@ action:
         editable-content:
             - envoi_mailsec
             - envoi_depot
+            - envoi_sae
             - to
             - cc
             - bcc
             - password
             - password2
+            - sae_config
+            - sae_show
+            - journal
+            - date_journal_debut
+            - date_cloture_journal
+            - date_cloture_journal_iso8601
+            - sae_transfert_id
+            - sae_bordereau
+            - sae_archive
+            - ar_sae
+            - sae_ack_comment
+            - reply_sae
+            - sae_archival_identifier
+            - sae_atr_comment
         modification-no-change-etat: true
     transformation-error:
         name: 'Erreur lors de la transformation du dossier'
@@ -327,6 +395,21 @@ action:
         action-automatique: orientation
         editable-content:
             - envoi_depot
+            - envoi_sae
+            - sae_config
+            - sae_show
+            - journal
+            - date_journal_debut
+            - date_cloture_journal
+            - date_cloture_journal_iso8601
+            - sae_transfert_id
+            - sae_bordereau
+            - sae_archive
+            - ar_sae
+            - sae_ack_comment
+            - reply_sae
+            - sae_archival_identifier
+            - sae_atr_comment
         modification-no-change-etat: true
     reception-partielle:
         name: 'Reçu partiellement'
@@ -354,6 +437,21 @@ action:
         action-automatique: orientation
         editable-content:
             - envoi_depot
+            - envoi_sae
+            - sae_config
+            - sae_show
+            - journal
+            - date_journal_debut
+            - date_cloture_journal
+            - date_cloture_journal_iso8601
+            - sae_transfert_id
+            - sae_bordereau
+            - sae_archive
+            - ar_sae
+            - sae_ack_comment
+            - reply_sae
+            - sae_archival_identifier
+            - sae_atr_comment
         modification-no-change-etat: true
     reponse:
         name: 'Une réponse a été enregistrée'
@@ -396,8 +494,144 @@ action:
         connecteur-type-action: GEDEnvoyer
         connecteur-type-mapping:
             fatal-error: error-ged
+        editable-content:
+            - envoi_sae
+            - sae_config
+            - sae_show
+            - journal
+            - date_journal_debut
+            - date_cloture_journal
+            - date_cloture_journal_iso8601
+            - sae_transfert_id
+            - sae_bordereau
+            - sae_archive
+            - ar_sae
+            - sae_ack_comment
+            - reply_sae
+            - sae_archival_identifier
+            - sae_atr_comment
+        modification-no-change-etat: true
     error-ged:
         name: 'Erreur irrécupérable lors du dépôt'
         rule:
             role_id_e: no-role
-studio_definition: ewogICJpZF90eXBlX2Rvc3NpZXIiOiAiZHJhZnQtbHMtbWFpbHNlYy1iaWRpciIsCiAgInBhc3RlbGwtdmVyc2lvbiI6ICIlVkVSU0lPTiUiLAogICJ0aW1lc3RhbXAiOiAxNzA0NDUwMDA3LAogICJyYXdfZGF0YSI6IHsKICAgICJpZF90eXBlX2Rvc3NpZXIiOiAiZHJhZnQtbHMtbWFpbHNlYy1iaWRpciIsCiAgICAibm9tIjogIk1haWwgc1x1MDBlOWN1cmlzXHUwMGU5IGF2ZWMgclx1MDBlOXBvbnNlIChEcmFmdCkiLAogICAgInR5cGUiOiAiTWFpbHMgc1x1MDBlOWN1cmlzXHUwMGU5cyIsCiAgICAiZGVzY3JpcHRpb24iOiAiVHlwZSBkZSBkb3NzaWVyIHBlcm1ldHRhbnQgZCdlbnZveWVyIGRlcyBtYWlsIHNcdTAwZTljdXJpc1x1MDBlOXMgZXQgZGUgclx1MDBlOWN1cFx1MDBlOXJlciBkZXMgclx1MDBlOXBvbnNlcyBkZXMgZGVzdGluYXRhaXJlcyIsCiAgICAibm9tX29uZ2xldCI6ICJEb3NzaWVyIiwKICAgICJhZmZpY2hlX29uZSI6IHRydWUsCiAgICAicmVzdHJpY3Rpb25fcGFjayI6ICIiLAogICAgImZvcm11bGFpcmVFbGVtZW50IjogWwogICAgICB7CiAgICAgICAgImVsZW1lbnRfaWQiOiAib2JqZXQiLAogICAgICAgICJuYW1lIjogIk9iamV0IiwKICAgICAgICAidHlwZSI6ICJ0ZXh0IiwKICAgICAgICAiY29tbWVudGFpcmUiOiAiIiwKICAgICAgICAicmVxdWlzIjogIm9uIiwKICAgICAgICAiY2hhbXBzX2FmZmljaGVzIjogIiIsCiAgICAgICAgImNoYW1wc19yZWNoZXJjaGVfYXZhbmNlZSI6ICIiLAogICAgICAgICJ0aXRyZSI6ICJvbiIsCiAgICAgICAgInNlbGVjdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoIjogIiIsCiAgICAgICAgImRlZmF1bHRfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaF9lcnJvciI6ICIiLAogICAgICAgICJjb250ZW50X3R5cGUiOiAiIgogICAgICB9LAogICAgICB7CiAgICAgICAgImVsZW1lbnRfaWQiOiAibWVzc2FnZSIsCiAgICAgICAgIm5hbWUiOiAiTWVzc2FnZSIsCiAgICAgICAgInR5cGUiOiAidGV4dGFyZWEiLAogICAgICAgICJjb21tZW50YWlyZSI6ICIiLAogICAgICAgICJyZXF1aXMiOiAiIiwKICAgICAgICAiY2hhbXBzX2FmZmljaGVzIjogIiIsCiAgICAgICAgImNoYW1wc19yZWNoZXJjaGVfYXZhbmNlZSI6ICIiLAogICAgICAgICJ0aXRyZSI6IGZhbHNlLAogICAgICAgICJzZWxlY3RfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaCI6ICIiLAogICAgICAgICJkZWZhdWx0X3ZhbHVlIjogIiIsCiAgICAgICAgInByZWdfbWF0Y2hfZXJyb3IiOiAiIiwKICAgICAgICAiY29udGVudF90eXBlIjogIiIKICAgICAgfSwKICAgICAgewogICAgICAgICJlbGVtZW50X2lkIjogImRvY3VtZW50X2F0dGFjaGUiLAogICAgICAgICJuYW1lIjogIkRvY3VtZW50KHMpIiwKICAgICAgICAidHlwZSI6ICJtdWx0aV9maWxlIiwKICAgICAgICAiY29tbWVudGFpcmUiOiAiIiwKICAgICAgICAicmVxdWlzIjogIiIsCiAgICAgICAgImNoYW1wc19hZmZpY2hlcyI6ICIiLAogICAgICAgICJjaGFtcHNfcmVjaGVyY2hlX2F2YW5jZWUiOiAiIiwKICAgICAgICAidGl0cmUiOiAiIiwKICAgICAgICAic2VsZWN0X3ZhbHVlIjogIiIsCiAgICAgICAgInByZWdfbWF0Y2giOiAiIiwKICAgICAgICAiZGVmYXVsdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoX2Vycm9yIjogIiIsCiAgICAgICAgImNvbnRlbnRfdHlwZSI6ICIiCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAiZWxlbWVudF9pZCI6ICJtZXRhZG9ubmVlcyIsCiAgICAgICAgIm5hbWUiOiAiRmljaGllciBjb250ZW5hbnQgbGVzIG1cdTAwZTl0YWRvbm5cdTAwZTllcyIsCiAgICAgICAgInR5cGUiOiAiZmlsZSIsCiAgICAgICAgImNvbW1lbnRhaXJlIjogIlByXHUwMGU5Zlx1MDBlOXJlbnRpZWxsZW1lbnQgYXUgZm9ybWF0IEpTT04sIFhNTCBwb3NzaWJsZSIsCiAgICAgICAgInJlcXVpcyI6ICIiLAogICAgICAgICJjaGFtcHNfYWZmaWNoZXMiOiAiIiwKICAgICAgICAiY2hhbXBzX3JlY2hlcmNoZV9hdmFuY2VlIjogIiIsCiAgICAgICAgInRpdHJlIjogZmFsc2UsCiAgICAgICAgInNlbGVjdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoIjogIiIsCiAgICAgICAgImRlZmF1bHRfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaF9lcnJvciI6ICIiLAogICAgICAgICJjb250ZW50X3R5cGUiOiAiIgogICAgICB9CiAgICBdLAogICAgImV0YXBlIjogWwogICAgICB7CiAgICAgICAgIm51bV9ldGFwZSI6IDAsCiAgICAgICAgInR5cGUiOiAidHJhbnNmb3JtYXRpb24iLAogICAgICAgICJsYWJlbCI6ICJUcmFuc2Zvcm1hdGlvbiIsCiAgICAgICAgImRlZmF1bHRDaGVja2VkIjogZmFsc2UsCiAgICAgICAgInJlcXVpcyI6ICJvbiIsCiAgICAgICAgImF1dG9tYXRpcXVlIjogIm9uIiwKICAgICAgICAic3BlY2lmaWNfdHlwZV9pbmZvIjogW10sCiAgICAgICAgIm51bV9ldGFwZV9zYW1lX3R5cGUiOiAwLAogICAgICAgICJldGFwZV93aXRoX3NhbWVfdHlwZV9leGlzdHMiOiBmYWxzZQogICAgICB9LAogICAgICB7CiAgICAgICAgIm51bV9ldGFwZSI6IDEsCiAgICAgICAgInR5cGUiOiAibWFpbHNlYyIsCiAgICAgICAgImxhYmVsIjogIiIsCiAgICAgICAgImRlZmF1bHRDaGVja2VkIjogdHJ1ZSwKICAgICAgICAicmVxdWlzIjogIm9uIiwKICAgICAgICAiYXV0b21hdGlxdWUiOiAib24iLAogICAgICAgICJzcGVjaWZpY190eXBlX2luZm8iOiB7CiAgICAgICAgICAiYWRkX2Rpc3BsYXllZF9maWVsZHMiOiAib24iCiAgICAgICAgfSwKICAgICAgICAibnVtX2V0YXBlX3NhbWVfdHlwZSI6IDAsCiAgICAgICAgImV0YXBlX3dpdGhfc2FtZV90eXBlX2V4aXN0cyI6IGZhbHNlCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAibnVtX2V0YXBlIjogMiwKICAgICAgICAidHlwZSI6ICJkZXBvdCIsCiAgICAgICAgImxhYmVsIjogIiIsCiAgICAgICAgImRlZmF1bHRDaGVja2VkIjogZmFsc2UsCiAgICAgICAgInJlcXVpcyI6ICIiLAogICAgICAgICJhdXRvbWF0aXF1ZSI6ICJvbiIsCiAgICAgICAgInNwZWNpZmljX3R5cGVfaW5mbyI6IFtdLAogICAgICAgICJudW1fZXRhcGVfc2FtZV90eXBlIjogMCwKICAgICAgICAiZXRhcGVfd2l0aF9zYW1lX3R5cGVfZXhpc3RzIjogZmFsc2UKICAgICAgfQogICAgXQogIH0KfQ==
+    preparation-send-sae:
+        name: "Préparation de l'envoi au SAE"
+        rule:
+            role_id_e: no-role
+        action-automatique: generate-sip
+    generate-sip:
+        name-action: "Générer le paquet d'archive (SIP)"
+        name: "Paquet d'archive (SIP) généré"
+        rule:
+            last-action:
+                - preparation-send-sae
+                - generate-sip-error
+                - rejet-sae
+                - erreur-envoie-sae
+        action-class: StandardAction
+        connecteur-type: SAE
+        connecteur-type-action: Pastell\Step\SAE\Action\SAEGenerateArchiveAction
+        action-automatique: send-archive
+        connecteur-type-mapping:
+            generate-sip-error: generate-sip-error
+            sae_show: sae_show
+            sae_bordereau: sae_bordereau
+            sae_archive: sae_archive
+            sae_config: sae_config
+            journal: journal
+            date_journal_debut: date_journal_debut
+            date_cloture_journal: date_cloture_journal
+            date_cloture_journal_iso8601: date_cloture_journal_iso8601
+    generate-sip-error:
+        name: "Erreur lors de la génération de l'archive"
+        rule:
+            role_id_e: no-role
+    send-archive:
+        name-action: 'Verser au SAE'
+        name: 'Versé au SAE'
+        rule:
+            last-action:
+                - generate-sip
+                - rejet-sae
+                - erreur-envoie-sae
+        action-class: StandardAction
+        connecteur-type: SAE
+        connecteur-type-action: Pastell\Step\SAE\Action\SAESendArchiveAction
+        action-automatique: verif-sae
+        connecteur-type-mapping:
+            sae_transfert_id: sae_transfert_id
+            sae_bordereau: sae_bordereau
+            sae_archive: sae_archive
+            erreur-envoie-sae: erreur-envoie-sae
+    erreur-envoie-sae:
+        name: "Erreur lors de l'envoi au SAE"
+        rule:
+            role_id_e: no-role
+    verif-sae:
+        name-action: "Récupérer l'AR du dossier sur le SAE"
+        name: "Récuperation de l'AR sur le SAE"
+        rule:
+            last-action:
+                - send-archive
+                - verif-sae-erreur
+        action-class: StandardAction
+        connecteur-type: SAE
+        connecteur-type-action: SAEVerifier
+        connecteur-type-mapping:
+            sae_transfert_id: sae_transfert_id
+            ar_sae: ar_sae
+            ar-recu-sae: ar-recu-sae
+            verif-sae-erreur: verif-sae-erreur
+            sae_ack_comment: sae_ack_comment
+            sae_bordereau: sae_bordereau
+            ack-not-provided: ack-not-provided
+    verif-sae-erreur:
+        name: "Erreur lors de la récupération de l'AR"
+        rule:
+            role_id_e: no-role
+    ar-recu-sae:
+        name: 'AR SAE reçu'
+        rule:
+            role_id_e: no-role
+        action-automatique: validation-sae
+    ack-not-provided:
+        name: 'En attente de la validation par le SAE'
+        rule:
+            role_id_e: no-role
+        action-automatique: validation-sae
+    validation-sae:
+        name-action: "Vérifier l'acceptation par le SAE"
+        name: "Vérification de l'acceptation par le SAE"
+        rule:
+            last-action:
+                - ar-recu-sae
+                - ack-not-provided
+                - validation-sae-erreur
+        action-class: StandardAction
+        connecteur-type: SAE
+        connecteur-type-action: SAEValider
+        connecteur-type-mapping:
+            sae_transfert_id: sae_transfert_id
+            reply_sae: reply_sae
+            erreur-envoie-sae: erreur-envoie-sae
+            validation-sae-erreur: validation-sae-erreur
+            accepter-sae: accepter-sae
+            rejet-sae: rejet-sae
+            sae_atr_comment: sae_atr_comment
+            sae_archival_identifier: sae_archival_identifier
+            sae_bordereau: sae_bordereau
+    validation-sae-erreur:
+        name: 'Erreur lors de la vérification de la validité du transfert'
+        rule:
+            role_id_e: no-role
+    accepter-sae:
+        name: 'Transfert accepté par le SAE'
+        rule:
+            role_id_e: no-role
+        action-automatique: orientation
+    rejet-sae:
+        name: 'Transfert rejeté par le SAE'
+        rule:
+            role_id_e: no-role
+studio_definition: ewogICJpZF90eXBlX2Rvc3NpZXIiOiAiZHJhZnQtbHMtbWFpbHNlYy1iaWRpciIsCiAgInBhc3RlbGwtdmVyc2lvbiI6ICIlVkVSU0lPTiUiLAogICJ0aW1lc3RhbXAiOiAxNzI0OTIwMTU5LAogICJyYXdfZGF0YSI6IHsKICAgICJpZF90eXBlX2Rvc3NpZXIiOiAiZHJhZnQtbHMtbWFpbHNlYy1iaWRpciIsCiAgICAibm9tIjogIk1haWwgc1x1MDBlOWN1cmlzXHUwMGU5IGF2ZWMgclx1MDBlOXBvbnNlIChEcmFmdCkiLAogICAgInR5cGUiOiAiTWFpbHMgc1x1MDBlOWN1cmlzXHUwMGU5cyIsCiAgICAiZGVzY3JpcHRpb24iOiAiVHlwZSBkZSBkb3NzaWVyIHBlcm1ldHRhbnQgZCdlbnZveWVyIGRlcyBtYWlsIHNcdTAwZTljdXJpc1x1MDBlOXMgZXQgZGUgclx1MDBlOWN1cFx1MDBlOXJlciBkZXMgclx1MDBlOXBvbnNlcyBkZXMgZGVzdGluYXRhaXJlcyIsCiAgICAibm9tX29uZ2xldCI6ICJEb3NzaWVyIiwKICAgICJhZmZpY2hlX29uZSI6IHRydWUsCiAgICAicmVzdHJpY3Rpb25fcGFjayI6ICIiLAogICAgImZvcm11bGFpcmVFbGVtZW50IjogWwogICAgICB7CiAgICAgICAgImVsZW1lbnRfaWQiOiAib2JqZXQiLAogICAgICAgICJuYW1lIjogIk9iamV0IiwKICAgICAgICAidHlwZSI6ICJ0ZXh0IiwKICAgICAgICAiY29tbWVudGFpcmUiOiAiIiwKICAgICAgICAicmVxdWlzIjogIm9uIiwKICAgICAgICAiY2hhbXBzX2FmZmljaGVzIjogIiIsCiAgICAgICAgImNoYW1wc19yZWNoZXJjaGVfYXZhbmNlZSI6ICIiLAogICAgICAgICJ0aXRyZSI6ICJvbiIsCiAgICAgICAgInNlbGVjdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoIjogIiIsCiAgICAgICAgImRlZmF1bHRfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaF9lcnJvciI6ICIiLAogICAgICAgICJjb250ZW50X3R5cGUiOiAiIgogICAgICB9LAogICAgICB7CiAgICAgICAgImVsZW1lbnRfaWQiOiAibWVzc2FnZSIsCiAgICAgICAgIm5hbWUiOiAiTWVzc2FnZSIsCiAgICAgICAgInR5cGUiOiAidGV4dGFyZWEiLAogICAgICAgICJjb21tZW50YWlyZSI6ICIiLAogICAgICAgICJyZXF1aXMiOiAiIiwKICAgICAgICAiY2hhbXBzX2FmZmljaGVzIjogIiIsCiAgICAgICAgImNoYW1wc19yZWNoZXJjaGVfYXZhbmNlZSI6ICIiLAogICAgICAgICJ0aXRyZSI6IGZhbHNlLAogICAgICAgICJzZWxlY3RfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaCI6ICIiLAogICAgICAgICJkZWZhdWx0X3ZhbHVlIjogIiIsCiAgICAgICAgInByZWdfbWF0Y2hfZXJyb3IiOiAiIiwKICAgICAgICAiY29udGVudF90eXBlIjogIiIKICAgICAgfSwKICAgICAgewogICAgICAgICJlbGVtZW50X2lkIjogImRvY3VtZW50X2F0dGFjaGUiLAogICAgICAgICJuYW1lIjogIkRvY3VtZW50KHMpIiwKICAgICAgICAidHlwZSI6ICJtdWx0aV9maWxlIiwKICAgICAgICAiY29tbWVudGFpcmUiOiAiIiwKICAgICAgICAicmVxdWlzIjogIiIsCiAgICAgICAgImNoYW1wc19hZmZpY2hlcyI6ICIiLAogICAgICAgICJjaGFtcHNfcmVjaGVyY2hlX2F2YW5jZWUiOiAiIiwKICAgICAgICAidGl0cmUiOiAiIiwKICAgICAgICAic2VsZWN0X3ZhbHVlIjogIiIsCiAgICAgICAgInByZWdfbWF0Y2giOiAiIiwKICAgICAgICAiZGVmYXVsdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoX2Vycm9yIjogIiIsCiAgICAgICAgImNvbnRlbnRfdHlwZSI6ICIiCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAiZWxlbWVudF9pZCI6ICJtZXRhZG9ubmVlcyIsCiAgICAgICAgIm5hbWUiOiAiRmljaGllciBjb250ZW5hbnQgbGVzIG1cdTAwZTl0YWRvbm5cdTAwZTllcyIsCiAgICAgICAgInR5cGUiOiAiZmlsZSIsCiAgICAgICAgImNvbW1lbnRhaXJlIjogIlByXHUwMGU5Zlx1MDBlOXJlbnRpZWxsZW1lbnQgYXUgZm9ybWF0IEpTT04sIFhNTCBwb3NzaWJsZSIsCiAgICAgICAgInJlcXVpcyI6ICIiLAogICAgICAgICJjaGFtcHNfYWZmaWNoZXMiOiAiIiwKICAgICAgICAiY2hhbXBzX3JlY2hlcmNoZV9hdmFuY2VlIjogIiIsCiAgICAgICAgInRpdHJlIjogZmFsc2UsCiAgICAgICAgInNlbGVjdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoIjogIiIsCiAgICAgICAgImRlZmF1bHRfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaF9lcnJvciI6ICIiLAogICAgICAgICJjb250ZW50X3R5cGUiOiAiIgogICAgICB9CiAgICBdLAogICAgImV0YXBlIjogWwogICAgICB7CiAgICAgICAgIm51bV9ldGFwZSI6IDAsCiAgICAgICAgInR5cGUiOiAidHJhbnNmb3JtYXRpb24iLAogICAgICAgICJsYWJlbCI6ICJUcmFuc2Zvcm1hdGlvbiIsCiAgICAgICAgImRlZmF1bHRDaGVja2VkIjogZmFsc2UsCiAgICAgICAgInJlcXVpcyI6ICJvbiIsCiAgICAgICAgImF1dG9tYXRpcXVlIjogIm9uIiwKICAgICAgICAic3BlY2lmaWNfdHlwZV9pbmZvIjogW10sCiAgICAgICAgIm51bV9ldGFwZV9zYW1lX3R5cGUiOiAwLAogICAgICAgICJldGFwZV93aXRoX3NhbWVfdHlwZV9leGlzdHMiOiBmYWxzZQogICAgICB9LAogICAgICB7CiAgICAgICAgIm51bV9ldGFwZSI6IDEsCiAgICAgICAgInR5cGUiOiAibWFpbHNlYyIsCiAgICAgICAgImxhYmVsIjogIiIsCiAgICAgICAgImRlZmF1bHRDaGVja2VkIjogdHJ1ZSwKICAgICAgICAicmVxdWlzIjogIm9uIiwKICAgICAgICAiYXV0b21hdGlxdWUiOiAib24iLAogICAgICAgICJzcGVjaWZpY190eXBlX2luZm8iOiB7CiAgICAgICAgICAiYWRkX2Rpc3BsYXllZF9maWVsZHMiOiAib24iCiAgICAgICAgfSwKICAgICAgICAibnVtX2V0YXBlX3NhbWVfdHlwZSI6IDAsCiAgICAgICAgImV0YXBlX3dpdGhfc2FtZV90eXBlX2V4aXN0cyI6IGZhbHNlCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAibnVtX2V0YXBlIjogMiwKICAgICAgICAidHlwZSI6ICJkZXBvdCIsCiAgICAgICAgImxhYmVsIjogIiIsCiAgICAgICAgImRlZmF1bHRDaGVja2VkIjogZmFsc2UsCiAgICAgICAgInJlcXVpcyI6ICIiLAogICAgICAgICJhdXRvbWF0aXF1ZSI6ICJvbiIsCiAgICAgICAgInNwZWNpZmljX3R5cGVfaW5mbyI6IFtdLAogICAgICAgICJudW1fZXRhcGVfc2FtZV90eXBlIjogMCwKICAgICAgICAiZXRhcGVfd2l0aF9zYW1lX3R5cGVfZXhpc3RzIjogZmFsc2UKICAgICAgfSwKICAgICAgewogICAgICAgICJudW1fZXRhcGUiOiAiMyIsCiAgICAgICAgInR5cGUiOiAic2FlIiwKICAgICAgICAibGFiZWwiOiBudWxsLAogICAgICAgICJkZWZhdWx0Q2hlY2tlZCI6IGZhbHNlLAogICAgICAgICJyZXF1aXMiOiAiIiwKICAgICAgICAiYXV0b21hdGlxdWUiOiAib24iLAogICAgICAgICJzcGVjaWZpY190eXBlX2luZm8iOiB7CiAgICAgICAgICAic2FlX2hhc19tZXRhZGF0YV9pbl9qc29uIjogIm9uIgogICAgICAgIH0sCiAgICAgICAgIm51bV9ldGFwZV9zYW1lX3R5cGUiOiAwLAogICAgICAgICJldGFwZV93aXRoX3NhbWVfdHlwZV9leGlzdHMiOiBmYWxzZQogICAgICB9CiAgICBdCiAgfQp9
