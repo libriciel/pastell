@@ -15,7 +15,7 @@ $elapsedTime = round($this->getPastellTimer()->getElapsedTime(), 3);
     <div class="bloc_copyright">
         <div class="bloc_logo_libriciel">
             <a href='https://www.libriciel.fr/' target="_blank">
-                <img src="img/commun/libriciel_white_blue.svg" alt="Libriciel" />
+                <img src="img/commun/ls-light.svg" alt="Libriciel" />
             </a>
         </div>
         <div class="bloc_mentions">
