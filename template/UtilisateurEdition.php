@@ -38,7 +38,7 @@ use Pastell\Utilities\Certificate;
                 <th>
                     <label for='email'>Email<span class='obl'>*</span></label>
                     <p class='form_commentaire'>
-                        Non requis pour les utilisateurs API avec authentification via jetons
+                        Ignoré pour les utilisateurs API avec authentification via jetons
                     </p>
                 </th>
                 <td>
