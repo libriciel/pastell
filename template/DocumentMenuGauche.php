@@ -68,3 +68,14 @@ if (empty($type_e_menu) && !empty($this->viewParameter['id_d'])) {
 
 
 </div><!-- main_gauche  -->
+
+<script>
+    const shownElements = document.getElementsByClassName('show');
+    if(shownElements.length > 0) {
+        const shownElement = shownElements[0];
+        const collapsibleElement = document.querySelector('[aria-controls=' + CSS.escape(shownElement.id) + ']');
+        if(collapsibleElement !== null) {
+            collapsibleElement.setAttribute('aria-expanded', 'true');
+        }
+    }
+</script>
