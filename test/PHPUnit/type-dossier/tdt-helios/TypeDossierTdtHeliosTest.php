@@ -29,10 +29,7 @@ class TypeDossierTdtHeliosTest extends PastellTestCase
     {
         $this->typeDossierLoader->createTypeDossierDefinitionFile(self::TDT_HELIOS_ONLY);
 
-
         $info_connecteur = $this->createConnector("fakeTdt", "Bouchon Tdt");
-
-
         $this->associateFluxWithConnector($info_connecteur['id_ce'], self::TDT_HELIOS_ONLY, "TdT");
 
         $info = $this->createDocument(self::TDT_HELIOS_ONLY);
@@ -42,25 +39,15 @@ class TypeDossierTdtHeliosTest extends PastellTestCase
             'fichier.xml',
             __DIR__ . "/../../module/helios-generique/fixtures/HELIOS_SIMU_ALR2_1496987735_826268894.xml"
         );
+
         $this->assertTrue(
             $this->triggerActionOnDocument($info['id_d'], "fichier-pes-change")
         );
-        $this->assertTrue(
-            $this->triggerActionOnDocument($info['id_d'], "orientation")
-        );
-        $this->assertLastMessage("sélection automatique de l'action suivante");
-
-        $this->assertLastDocumentAction('helios-pre-extraction', $info['id_d']);
-
-        $this->assertTrue(
-            $this->triggerActionOnDocument($info['id_d'], "helios-extraction")
-        );
-        $this->assertLastMessage("Les données ont été extraites du fichier PES ALLER");
 
         $this->assertEquals([
             'objet' => 'HELIOS_SIMU_ALR2_1496987735_826268894.xml',
             'pes_aller' =>
-                 [
+                [
                     0 => 'fichier.xml',
                 ],
             'id_coll' => '12345678912345',
@@ -68,6 +55,7 @@ class TypeDossierTdtHeliosTest extends PastellTestCase
             'cod_bud' => '12',
             'exercice' => '2009',
             'id_bordereau' => '1234567',
+            'montant_bordereau_ht' => '75724.75',
             'id_pj' => '',
             'id_pce' => '832',
             'id_nature' => '6553',
@@ -76,6 +64,13 @@ class TypeDossierTdtHeliosTest extends PastellTestCase
             'pes_information_pes_aller' => '1',
             'envoi_tdt_helios' => 'checked',
         ], $this->getDonneesFormulaireFactory()->get($info['id_d'])->getRawData());
+
+        $this->assertTrue(
+            $this->triggerActionOnDocument($info['id_d'], "orientation")
+        );
+        $this->assertLastMessage("sélection automatique de l'action suivante");
+
+        $this->assertLastDocumentAction('pre-send-tdt', $info['id_d']);
 
         $this->assertTrue(
             $this->triggerActionOnDocument($info['id_d'], "send-tdt")

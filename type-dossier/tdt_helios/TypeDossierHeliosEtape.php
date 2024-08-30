@@ -15,7 +15,6 @@ class TypeDossierHeliosEtape implements TypeDossierEtapeSetSpecificInformation
 
         $sendTdtAction = $stringMapper->get('send-tdt');
         $verifTdtAction = $stringMapper->get('verif-tdt');
-        $heliosExtraction = $stringMapper->get('helios-extraction');
         $fichierPESChange = $stringMapper->get('fichier-pes-change');
 
         if (!empty($typeDossierEtape->specific_type_info[self::OBJET_PES])) {
@@ -26,8 +25,6 @@ class TypeDossierHeliosEtape implements TypeDossierEtapeSetSpecificInformation
             $result[DocumentType::ACTION][$sendTdtAction][Action::CONNECTEUR_TYPE_MAPPING][self::FICHIER_PES]
                 = $typeDossierEtape->specific_type_info[self::FICHIER_PES];
             $result[DocumentType::ACTION][$verifTdtAction][Action::CONNECTEUR_TYPE_MAPPING][self::FICHIER_PES]
-                = $typeDossierEtape->specific_type_info[self::FICHIER_PES];
-            $result[DocumentType::ACTION][$heliosExtraction][Action::CONNECTEUR_TYPE_MAPPING][self::FICHIER_PES]
                 = $typeDossierEtape->specific_type_info[self::FICHIER_PES];
             $result[DocumentType::ACTION][$fichierPESChange][Action::CONNECTEUR_TYPE_MAPPING][self::FICHIER_PES]
                 = $typeDossierEtape->specific_type_info[self::FICHIER_PES];
@@ -46,7 +43,10 @@ class TypeDossierHeliosEtape implements TypeDossierEtapeSetSpecificInformation
             foreach (['dte_str', 'cod_bud', 'pes_etat_ack'] as $champs_id) {
                 $result['champs-affiches'][] = $stringMapper->get($champs_id);
             }
-            foreach (['id_coll','dte_str', 'cod_bud', 'exercice','id_bordereau','id_pj','pes_etat_ack'] as $champs_id) {
+            foreach (
+                ['id_coll', 'dte_str', 'cod_bud', 'exercice','id_bordereau',
+                    'montant_bordereau_ht','id_pj','pes_etat_ack'] as $champs_id
+            ) {
                 $result['champs-recherche-avancee'][] = $stringMapper->get($champs_id);
             }
         }

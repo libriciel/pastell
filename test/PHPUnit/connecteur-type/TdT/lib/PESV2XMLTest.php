@@ -26,6 +26,7 @@ class PESV2XMLTest extends TestCase
             'NomFic' => 'HELIOS_SIMU_ALR2_1496987735_826268894.xml',
             'IdNature' => '6553',
             'IdFonction' => '113',
+            'MtBordHt' => '75724.75',
         ], $info);
     }
 }
