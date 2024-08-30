@@ -28,11 +28,11 @@ if (!defined("PASTELL_PATH")) {
 }
 
 if (!defined("ADMIN_EMAIL")) {
-    define("ADMIN_EMAIL", "test@libriciel.net");
+    define("ADMIN_EMAIL", "test@libriciel.invalid");
 }
 
 if (!defined("PASTELL_ADMIN_EMAIL")) {
-    define("PASTELL_ADMIN_EMAIL", "test@libriciel.net");
+    define("PASTELL_ADMIN_EMAIL", "test@libriciel.invalid");
 }
 
 if (!defined("PASTELL_ADMIN_LOGIN")) {
@@ -98,7 +98,7 @@ if (!defined("PRODUCTION")) {
 }
 
 if (!defined("PLATEFORME_MAIL")) {
-    define("PLATEFORME_MAIL", "test@libriciel.net");
+    define("PLATEFORME_MAIL", "test@libriciel.invalid");
 }
 
 if (!defined("TEMPLATE_PATH")) {

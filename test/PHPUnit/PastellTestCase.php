@@ -59,7 +59,7 @@ abstract class PastellTestCase extends TestCase
         $this->objectInstancier->setInstance(SQLQuery::class, self::getSQLQuery());
         $this->objectInstancier->setInstance('template_path', TEMPLATE_PATH);
         $this->objectInstancier->setInstance('email_template_path', __DIR__ . '/../../templates/email');
-        $this->objectInstancier->setInstance('plateforme_mail', 'test@libriciel.net');
+        $this->objectInstancier->setInstance('plateforme_mail', 'test@libriciel.invalid');
 
         $this->objectInstancier->setInstance(MemoryCache::class, new StaticWrapper());
         $this->objectInstancier->setInstance(RedisWrapper::class, $this->createMock(RedisWrapper::class));
@@ -104,11 +104,11 @@ abstract class PastellTestCase extends TestCase
 
         $this->objectInstancier->setInstance('opensslPath', OPENSSL_PATH);
         $this->objectInstancier->setInstance('journal_max_age_in_months', 2);
-        $this->objectInstancier->setInstance('admin_email', ['test@libriciel.net']);
+        $this->objectInstancier->setInstance('admin_email', ['test@libriciel.invalid']);
         $this->objectInstancier->setInstance('mailer_dsn', 'null://null');
 
         $this->objectInstancier->setInstance('pastell_admin_login', 'admin');
-        $this->objectInstancier->setInstance('pastell_admin_email', 'test@libriciel.net');
+        $this->objectInstancier->setInstance('pastell_admin_email', 'test@libriciel.invalid');
         $this->objectInstancier->setInstance('password_min_entropy', 80);
 
         $this->objectInstancier->setInstance('unlock_job_error_at_startup', false);

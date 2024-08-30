@@ -40,7 +40,7 @@ services:
             PASTELL_SITE_BASE: ${PASTELL_SITE_BASE:-https://localhost:8443}
             WEBSEC_BASE: ${WEBSEC_BASE:-https://127.0.0.1:8443/}
             PASTELL_ADMIN_LOGIN: ${PASTELL_ADMIN_LOGIN:-admin}
-            PASTELL_ADMIN_EMAIL: ${PASTELL_ADMIN_EMAIL:-test@libriciel.net}
+            PASTELL_ADMIN_EMAIL: ${PASTELL_ADMIN_EMAIL:-test@libriciel.invalid}
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
             MYSQL_USER: ${MYSQL_USER:-user}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD:-user}
@@ -53,7 +53,7 @@ services:
             SENTRY_DSN: ${SENTRY_DSN:-}
             SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-dev}
             MAILER_DSN: ${MAILER_DSN:-null://null}
-            ADMIN_EMAIL: ${ADMIN_EMAIL:-test@libriciel.net}
+            ADMIN_EMAIL: ${ADMIN_EMAIL:-test@libriciel.invalid}
             PACK_CHORUS_PRO: ${PACK_CHORUS_PRO:-false}
             PACK_MARCHE: ${PACK_MARCHE:-false}
             PACK_URBANISME: ${PACK_URBANISME:-false}

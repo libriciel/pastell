@@ -41,9 +41,9 @@ define("PES_VIEWER_URL", "${PES_VIEWER_URL:-http://pes-viewer:8888}");
 
 define("MAILER_DSN", "${MAILER_DSN:-null://null}");
 
-define("ADMIN_EMAIL", "${ADMIN_EMAIL:-test@libriciel.net}");
+define("ADMIN_EMAIL", "${ADMIN_EMAIL:-test@libriciel.invalid}");
 
-define("PASTELL_ADMIN_EMAIL", "${PASTELL_ADMIN_EMAIL:-test@libriciel.net}");
+define("PASTELL_ADMIN_EMAIL", "${PASTELL_ADMIN_EMAIL:-test@libriciel.invalid}");
 define("PASTELL_ADMIN_LOGIN", "${PASTELL_ADMIN_LOGIN:-admin}");
 
 \$packs = [];
