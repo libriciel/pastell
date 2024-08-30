@@ -43,10 +43,7 @@ class TypeDossierHeliosEtape implements TypeDossierEtapeSetSpecificInformation
             foreach (['dte_str', 'cod_bud', 'pes_etat_ack'] as $champs_id) {
                 $result['champs-affiches'][] = $stringMapper->get($champs_id);
             }
-            foreach (
-                ['id_coll', 'dte_str', 'cod_bud', 'exercice','id_bordereau',
-                    'montant_bordereau_ht','id_pj','pes_etat_ack'] as $champs_id
-            ) {
+            foreach (['id_coll', 'dte_str', 'cod_bud', 'exercice', 'id_bordereau', 'montant_bordereau_ht', 'id_pj', 'pes_etat_ack'] as $champs_id) {
                 $result['champs-recherche-avancee'][] = $stringMapper->get($champs_id);
             }
         }
