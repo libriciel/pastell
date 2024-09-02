@@ -11,6 +11,7 @@ use DonneesFormulaireFactory;
 use Exception;
 use FileUploader;
 use Gabarit;
+use Journal;
 use Mailsec\Exception\InvalidKeyException;
 use Mailsec\Exception\MissingPasswordException;
 use Mailsec\Exception\NotEditableResponseException;
@@ -361,6 +362,13 @@ final class RecipientController extends AbstractController
 
         $response = $this->file($filePath, $fileName);
         $response->headers->set('Content-Type', $mimeType);
+        $this->objectInstancier->getInstance(Journal::class)->add(
+            Journal::DOCUMENT_CONSULTATION,
+            $mailSecInfo->id_e,
+            $mailSecInfo->id_d,
+            'Consulté',
+            "{$mailSecInfo->email} a consulté le document $fileName"
+        );
         return $response;
     }
 
