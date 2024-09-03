@@ -335,6 +335,8 @@ page-condition:
         has_ged_document_id: true
     'Mail sécurisé':
         envoi_mailsec: true
+    'Accusé de notification':
+        generated_receipt: true
     Acte:
         envoi_tdt_actes: true
     'Retour Tdt':

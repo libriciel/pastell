@@ -98,6 +98,8 @@ champs-recherche-avancee:
 page-condition:
     'Mail sécurisé':
         envoi_mailsec: true
+    'Accusé de notification':
+        generated_receipt: true
 action:
     creation:
         name-action: Créer
