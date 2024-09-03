@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated 4.1.0, unused, will be removed in 5.0
+ */
 class TdTExtractionHelios extends ConnecteurTypeActionExecutor
 {
     /**

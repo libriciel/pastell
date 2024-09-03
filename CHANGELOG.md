@@ -16,6 +16,9 @@
 - Studio, étape tdt_actes, ajout du contrôle sur le total des fichiers Acte et Annexes < 157.29 MB #1602
 - Studio, étape tdt_helios, ajout du contrôle sur la taille du fichier PES ALLER < 128 MB #1602
 - Studio, étape tdt_helios, ajout de la possibilité de définir le champ "Objet PES ALLER" (prend la valeur NomFic du Fichier PES) #1969
+- Studio, étape tdt_helios, l'extraction des informations du PES ALLER se fait sur le onchange du Fichier PES ALLER,
+  (suppression des actions `helios-pre-extraction` et `helios-extraction` et dépréciation de la classe TdTExtractionHelios) #2084
+- Studio, étape tdt_helios, `fichier-pes-change`, ajout de l'extraction de la balise `MtBordHt` PesRecette ou `MtBordHT` PesDepense #2084
 - Studio : Ajout du flux ls-helios-pj pour envoyer des PES PJ autonomes vers iParapheur #2034
 - Studio : étape mail sécurisé avec réponse : Les champs indexés dans le flux de réponse sont affichés dans le 
 récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2073

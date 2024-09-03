@@ -190,6 +190,10 @@ formulaire:
             name: 'Identifiant bordereau'
             index: true
             read-only: true
+        montant_bordereau_ht:
+            name: 'Montant bordereau HT'
+            index: true
+            read-only: true
         id_pj:
             name: 'Identifiant PJ'
             index: true
@@ -292,6 +296,7 @@ champs-recherche-avancee:
     - cod_bud
     - exercice
     - id_bordereau
+    - montant_bordereau_ht
     - id_pj
     - pes_etat_ack
 page-condition:
@@ -555,38 +560,10 @@ action:
             iparapheur_type: iparapheur_type
             iparapheur_sous_type: iparapheur_sous_type
             fast_parapheur_circuit: fast_parapheur_circuit
-    helios-pre-extraction:
-        name: "Préparation de l'extraction des informations"
-        rule:
-            role_id_e: no-role
-        action-automatique: helios-extraction
-    helios-extraction:
-        name: 'Extraction des informations du PES ALLER'
-        rule:
-            last-action:
-                - helios-pre-extraction
-        action-class: StandardAction
-        connecteur-type: TdT
-        connecteur-type-action: TdTExtractionHelios
-        connecteur-type-mapping:
-            pes_information_pes_aller: pes_information_pes_aller
-            id_coll: id_coll
-            dte_str: dte_str
-            cod_bud: cod_bud
-            exercice: exercice
-            id_bordereau: id_bordereau
-            id_pj: id_pj
-            id_pce: id_pce
-            id_nature: id_nature
-            id_fonction: id_fonction
-            pes_etat_ack: pes_etat_ack
-            fichier_pes: fichier_pes
-        action-automatique: pre-send-tdt
     pre-send-tdt:
         name: "Préparation de l'envoi au TdT"
         rule:
-            last-action:
-                - helios-extraction
+            role_id_e: no-role
         action-class: Defaut
         action-automatique: send-tdt
     send-tdt:
@@ -656,6 +633,18 @@ action:
         connecteur-type: TdT
         connecteur-type-action: TdTFichierPESChange
         connecteur-type-mapping:
+            pes_information_pes_aller: pes_information_pes_aller
+            id_coll: id_coll
+            dte_str: dte_str
+            cod_bud: cod_bud
+            exercice: exercice
+            id_bordereau: id_bordereau
+            montant_bordereau_ht: montant_bordereau_ht
+            id_pj: id_pj
+            id_pce: id_pce
+            id_nature: id_nature
+            id_fonction: id_fonction
+            pes_etat_ack: pes_etat_ack
             objet_pes: objet
             fichier_pes: fichier_pes
     preparation-send-ged:

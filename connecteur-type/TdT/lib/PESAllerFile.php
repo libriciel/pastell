@@ -7,6 +7,7 @@ class PESAllerFile extends PESV2XMLFile
     public const COD_BUD = 'CodBud';
     public const EXERCICE = 'Exercice';
     public const ID_BORD = 'IdBord';
+    public const MT_BORD_HT = 'MtBordHt';
     public const ID_PJ = 'IdPJ';
     public const ID_PCE = 'IdPce';
     public const NOM_FIC = 'NomFic';
@@ -29,21 +30,43 @@ class PESAllerFile extends PESV2XMLFile
 
         $info[self::LIBELLE_COD_BUD] = $this->getValueFromXPath($xml, "//EnTetePES/LibelleColBud/@V");
 
-
-        $info[self::EXERCICE] = $this->getValueFromXPath($xml, "//Bordereau/BlocBordereau/Exer/@V|//PES_PJ/PJ/RefCompta/Exercice/@V");
+        $info[self::EXERCICE] = $this->getValueFromXPath(
+            $xml,
+            "//Bordereau/BlocBordereau/Exer/@V|//PES_PJ/PJ/RefCompta/Exercice/@V"
+        );
         $info[self::ID_BORD] = $this->getValueFromXPath($xml, "//Bordereau/BlocBordereau/IdBord/@V");
         $info[self::ID_PJ] = $this->getValueFromXPath($xml, "//PES_PJ/PJ/IdUnique/@V");
         $info[self::ID_PCE] = $this->getValueFromXPath($xml, "//Bordereau/Piece/BlocPiece/InfoPce/IdPce/@V");
         $info[self::NOM_FIC] = $this->getValueFromXPath($xml, "//Enveloppe/Parametres/NomFic/@V");
 
-        $info[self::ID_NATURE] = $this->getValueFromXPath($xml, "//Bordereau/Piece/LigneDePiece/BlocLignePiece/InfoLignePce/Nature/@V");
-        $info[self::ID_FONCTION] = $this->getValueFromXPath($xml, "//Bordereau/Piece/LigneDePiece/BlocLignePiece/InfoLignePce/Fonction/@V");
-        // PesDepense => InfoLignePce et PesRecette => InfoLignePiece
-        if (! $info[self::ID_NATURE]) {
-            $info[self::ID_NATURE] = $this->getValueFromXPath($xml, "//Bordereau/Piece/LigneDePiece/BlocLignePiece/InfoLignePiece/Nature/@V");
+        // PesDepense => MtBordHT et PesRecette => MtBordHt
+        $info[self::MT_BORD_HT] = $this->getValueFromXPath($xml, "//Bordereau/BlocBordereau/MtBordHT/@V");
+        if (! $info[self::MT_BORD_HT]) {
+            $info[self::MT_BORD_HT] = $this->getValueFromXPath($xml, "//Bordereau/BlocBordereau/MtBordHt/@V");
         }
+
+        // PesDepense => InfoLignePce et PesRecette => InfoLignePiece
+        $info[self::ID_NATURE] = $this->getValueFromXPath(
+            $xml,
+            "//Bordereau/Piece/LigneDePiece/BlocLignePiece/InfoLignePce/Nature/@V"
+        );
+        if (! $info[self::ID_NATURE]) {
+            $info[self::ID_NATURE] = $this->getValueFromXPath(
+                $xml,
+                "//Bordereau/Piece/LigneDePiece/BlocLignePiece/InfoLignePiece/Nature/@V"
+            );
+        }
+
+        // PesDepense => InfoLignePce et PesRecette => InfoLignePiece
+        $info[self::ID_FONCTION] = $this->getValueFromXPath(
+            $xml,
+            "//Bordereau/Piece/LigneDePiece/BlocLignePiece/InfoLignePce/Fonction/@V"
+        );
         if (! $info[self::ID_FONCTION]) {
-            $info[self::ID_FONCTION] = $this->getValueFromXPath($xml, "//Bordereau/Piece/LigneDePiece/BlocLignePiece/InfoLignePiece/Fonction/@V");
+            $info[self::ID_FONCTION] = $this->getValueFromXPath(
+                $xml,
+                "//Bordereau/Piece/LigneDePiece/BlocLignePiece/InfoLignePiece/Fonction/@V"
+            );
         }
 
         return $info;

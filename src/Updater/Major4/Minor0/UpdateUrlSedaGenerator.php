@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pastell\Updater\Major4\Minor3;
+namespace Pastell\Updater\Major4\Minor0;
 
 use ConnecteurEntiteSQL;
 use DonneesFormulaireFactory;
