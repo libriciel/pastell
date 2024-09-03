@@ -1,5 +1,6 @@
 <?php
 
+use Mailsec\MailsecManager;
 use Pastell\Mailer\Mailer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
@@ -23,6 +24,7 @@ class MailSec extends MailsecConnecteur
         private readonly string $websec_base,
         private readonly ConnecteurFactory $connecteurFactory,
         private readonly string $plateforme_mail,
+        private readonly MailsecManager $mailsecManager,
     ) {
     }
 
@@ -33,21 +35,25 @@ class MailSec extends MailsecConnecteur
 
     /**
      * @throws Exception
+     * @throws Throwable
      */
     public function sendAllMail(int $id_e, string $id_d): void
     {
         foreach ($this->documentEmail->getInfo($id_d) as $email_info) {
             $this->sendEmail($id_e, $id_d, $email_info);
         }
+        $this->mailsecManager->updateReceipt($id_d);
     }
 
     /**
      * @throws Exception
+     * @throws Throwable
      */
     public function sendOneMail(int $id_e, string $id_d, int $id_de): void
     {
         $email_info = $this->documentEmail->getInfoFromPK($id_de);
         $this->sendEmail($id_e, $id_d, $email_info);
+        $this->mailsecManager->updateReceipt($id_d);
     }
 
     /**

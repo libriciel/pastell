@@ -74,7 +74,7 @@ formulaire:
             no-show: true
             read-only: true
     'Accusé de notification':
-        lecture_mail:
+        generated_receipt:
             no-show: true
             read-only: true
         accuse_notification:
@@ -98,8 +98,6 @@ champs-recherche-avancee:
 page-condition:
     'Mail sécurisé':
         envoi_mailsec: true
-    'Accusé de notification':
-        lecture_mail: true
 action:
     creation:
         name-action: Créer

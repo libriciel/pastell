@@ -40,6 +40,7 @@ récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2
 - Ajout du flux Document `ls-document` (identique à `ls-document-pdf` sans restriction sur le type de fichier) #2018
 - Sur la page d'un connecteur, ajout du numéro d'entité des types de dossiers utilisant ce connecteur #2041
 - Possibilité de définir des restrictions sur les étapes studio #2095
+- Mise à jour de l'accusé de récéption à l'envoi d'un mail sécurisé #2120
 
 ## Corrections
 
