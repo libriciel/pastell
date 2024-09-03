@@ -68,7 +68,7 @@ récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2
 - Renommage des fichiers ayant le même nom dans les champs fichiers multiples lors du téléchargement #2052
 - Modification du type de dossier `gfc-dossier` #1931
 - Possibilité d'ajouter des méta-données entité, utilisateur, document dans le connecteur generateur-seda
-  (Voir "Liste des métadonnées communes à tous les types de dossier" au niveau du connecteur) #1397
+(Voir "Liste des métadonnées communes à tous les types de dossier" au niveau du connecteur) #1397
 
 # [4.0.15] - 2024-08-12
 
