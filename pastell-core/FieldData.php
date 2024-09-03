@@ -129,7 +129,7 @@ class FieldData
 
     public function isValide()
     {
-        if ($this->field->isRequired() && (trim($this->value) === '')) {
+        if ($this->field->isRequired() && !$this->value && !(($this->field->getType() === 'text' || $this->field->getType() === 'textarea') && $this->value === '0')) {
             $this->lastError = "Le formulaire est incomplet : le champ «" . $this->field->getLibelle() . "» est obligatoire.";
             return false;
         }

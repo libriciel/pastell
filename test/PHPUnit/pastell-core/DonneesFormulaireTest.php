@@ -760,4 +760,8 @@ class DonneesFormulaireTest extends PastellTestCase
         $donneesFormulaire->setData("pas_un_fichier", "toto");
         $this->assertTrue($donneesFormulaire->isValidable());
     }
+
+    public function testSpecialFieldValues(){
+
+    }
 }
