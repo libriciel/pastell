@@ -36,6 +36,7 @@ use NotificationMail;
 use ObjectInstancier;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Throwable;
 use UnrecoverableException;
 
 /**
@@ -56,7 +57,7 @@ final class MailsecManager
      * @throws InvalidKeyException
      * @throws UnavailableMailException
      * @throws \Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function getMailsecInfo(string $key, Request $request, bool $checkPassword = true): MailSecInfo
     {
@@ -425,7 +426,7 @@ final class MailsecManager
 
     /**
      * @throws UnrecoverableException
-     * @throws \Throwable
+     * @throws Throwable
      * @throws InvalidKeyException
      * @throws NotFoundException
      * @throws UnavailableMailException

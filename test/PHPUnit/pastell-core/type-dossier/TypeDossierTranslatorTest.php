@@ -36,10 +36,10 @@ class TypeDossierTranslatorTest extends PastellTestCase
         $this->loadDossierType("$case.json");
         $this->validateDefinitionFile($case);
 
-        \file_put_contents(
-            __DIR__ . "/fixtures/$case.yml",
-            \file_get_contents($this->getWorkspacePath() . "/type-dossier-personnalise/module/$case/definition.yml")
-        );
+//        \file_put_contents(
+//            __DIR__ . "/fixtures/$case.yml",
+//            \file_get_contents($this->getWorkspacePath() . "/type-dossier-personnalise/module/$case/definition.yml")
+//        );
         static::assertFileEquals(
             __DIR__ . "/fixtures/$case.yml",
             $this->getWorkspacePath() . "/type-dossier-personnalise/module/$case/definition.yml"
