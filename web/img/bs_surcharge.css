@@ -145,10 +145,6 @@ html body .input-group-text {
     position: relative;
 }
 
-.ls-password-toggler {
-    border: none;
-    background-color: red;
-}
 
 .flow-progress table {
     width: 100%;
