@@ -79,10 +79,6 @@ services:
     ports:
       - "1080:1080"
 
-  flow:
-    image: registry.libriciel.fr/public/libriciel/flow:1.0.0-rc.4
-    restart: unless-stopped
-
 volumes:
   pastell_glaneur:
   mariadb_datadir_test:
