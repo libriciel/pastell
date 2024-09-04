@@ -11,7 +11,6 @@
  * @var int $id_e
  * @var string $type
  */
-
 ?>
 <div class="box">
     <h2 id="title-result" class="ls-off">Résultat(s) de la recherche
