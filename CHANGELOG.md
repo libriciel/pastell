@@ -50,6 +50,7 @@ récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2
 - Le bouton "Traitement par lot" n'apparaît plus si le type de dossier n'est pas sélectionné #2082
 - Il manquait `modification-no-change-etat: true` pour l'état `send-tdt-erreur` de l'étape `tdt_actes` #2121
 - La valeur "0" est désormais valide pour les champs texte obligatoires #2123
+- Les utilisateurs désactivés ne reçoivent plus les notifications #2100
 
 ## Dépréciations
 
