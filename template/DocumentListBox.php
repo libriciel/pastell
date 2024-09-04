@@ -9,12 +9,14 @@
  * @var string $sens_tri
  * @var array $listDocument
  * @var int $id_e
+ * @var string $type
  */
+
 ?>
 <div class="box">
     <h2 id="title-result" class="ls-off">Résultat(s) de la recherche
-        <?php if (!empty($_GET['type'])) : ?>
-            <a href="Document/traitementLot?<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>" class="btn btn-primary">
+        <?php if (!empty($type)) : ?>
+            <a href="Document/traitementLot?<?php hecho($url); ?>" class="btn btn-primary">
                 <i class='fa fa-cogs'></i>&nbsp;Traitement par lot
             </a>
         <?php endif; ?>
