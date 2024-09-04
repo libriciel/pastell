@@ -198,7 +198,7 @@ formulaire:
             no-show: true
             read-only: true
     'Accusé de notification':
-        lecture_mail:
+        generated_receipt:
             no-show: true
             read-only: true
         accuse_notification:
@@ -336,7 +336,7 @@ page-condition:
     'Mail sécurisé':
         envoi_mailsec: true
     'Accusé de notification':
-        lecture_mail: true
+        generated_receipt: true
     Acte:
         envoi_tdt_actes: true
     'Retour Tdt':

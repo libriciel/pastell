@@ -1,5 +1,7 @@
 <?php
 
+use Mailsec\MailsecManager;
+
 class MailsecRenvoyer extends ConnecteurTypeActionExecutor
 {
     /**
@@ -13,10 +15,16 @@ class MailsecRenvoyer extends ConnecteurTypeActionExecutor
         return $connector;
     }
 
+    private function getMailsecManager(): MailsecManager
+    {
+        return $this->objectInstancier->getInstance(MailsecManager::class);
+    }
+
     /**
      * @return bool
      * @throws NotFoundException
      * @throws UnrecoverableException
+     * @throws Throwable
      */
     public function go()
     {
@@ -30,6 +38,7 @@ class MailsecRenvoyer extends ConnecteurTypeActionExecutor
             $this->getMailSecConnecteur()->sendAllMail($this->id_e, $this->id_d);
             $this->addActionOK("Un email a été renvoyé à tous les destinataires");
         }
+        $this->getMailsecManager()->updateReceipt($this->id_d);
         return true;
     }
 }

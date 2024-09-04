@@ -1,5 +1,7 @@
 <?php
 
+use Mailsec\MailsecManager;
+
 class MailsecEnvoyer extends ConnecteurTypeActionExecutor
 {
     private const SENT_MAIL_NUMBER_FIELD = 'sent_mail_number';
@@ -8,6 +10,11 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
     private function getDocumentEmail(): DocumentEmail
     {
         return $this->objectInstancier->getInstance(DocumentEmail::class);
+    }
+
+    private function getMailsecManager(): MailsecManager
+    {
+        return $this->objectInstancier->getInstance(MailsecManager::class);
     }
 
     /**
@@ -41,7 +48,7 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
      * @return bool
      * @throws NotFoundException
      * @throws UnrecoverableException
-     * @throws Exception
+     * @throws Throwable
      */
     public function go()
     {
@@ -79,7 +86,7 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
         );
 
         $this->setLastMessage('Le document a été envoyé au(x) destinataire(s)');
-
+        $this->getMailsecManager()->updateReceipt($this->id_d);
         return true;
     }
 

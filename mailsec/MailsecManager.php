@@ -36,6 +36,7 @@ use NotificationMail;
 use ObjectInstancier;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Throwable;
 use UnrecoverableException;
 
 /**
@@ -56,7 +57,7 @@ final class MailsecManager
      * @throws InvalidKeyException
      * @throws UnavailableMailException
      * @throws \Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function getMailsecInfo(string $key, Request $request, bool $checkPassword = true): MailSecInfo
     {
@@ -138,11 +139,10 @@ final class MailsecManager
         }
 
         try {
-            $odtFile = $this->updateReceipt($mailSecInfo);
+            $odtFile = $this->generateReceipt($mailSecInfo);
             $config = new CloudoooServiceConfiguration();
             $pdfFile = (new CloudoooStrategy($config))->conversion($odtFile);
             $mailSecInfo->donneesFormulaire->addFileFromData('accuse_notification', 'accuse_notification.pdf', $pdfFile);
-            $mailSecInfo->donneesFormulaire->setData('lecture_mail', true);
         } catch (ConnectionException) {
         }
         return $mailSecInfo;
@@ -311,7 +311,7 @@ final class MailsecManager
      * @throws InvalidTemplateException
      * @throws UnrecoverableException
      */
-    public function updateReceipt(MailSecInfo $info): string
+    public function generateReceipt(MailSecInfo $info): string
     {
         $id_d = $info->id_d;
         $documentEmail = $this->objectInstancier->getInstance(DocumentEmail::class);
@@ -422,5 +422,57 @@ final class MailsecManager
         );
         $config = new RestServiceConfiguration('http://flow:8080');
         return (new RestStrategy($config))->fusion($template_path, $main);
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws Throwable
+     * @throws InvalidKeyException
+     * @throws NotFoundException
+     * @throws UnavailableMailException
+     * @throws MissingPasswordException
+     */
+    public function updateReceipt(string $id_d): void
+    {
+        $mailSecInfo = new MailSecInfo();
+        $info = $this->objectInstancier->getInstance(DocumentEmail::class)->getInfo($id_d)[0];
+        if (!$info) {
+            throw new InvalidKeyException('Unable to find document');
+        }
+        if ($info['non_recu']) {
+            throw new UnavailableMailException('Email no longer available');
+        }
+
+        $mailSecInfo->id_de = $info['id_de'];
+        $mailSecInfo->id_d = $info['id_d'];
+        $mailSecInfo->type_destinataire = $info['type_destinataire'];
+        $mailSecInfo->reponse = $info['reponse'];
+        $mailSecInfo->has_reponse = (bool)$mailSecInfo->reponse;
+        $mailSecInfo->email = $info['email'];
+        $mailSecInfo->id_e = $this->objectInstancier->getInstance(DocumentEntite::class)->getEntiteWithRole(
+            $mailSecInfo->id_d,
+            'editeur'
+        );
+        $mailSecInfo->denomination_entite =
+            $this->objectInstancier->getInstance(EntiteSQL::class)->getInfo($mailSecInfo->id_e)['denomination'];
+        $mailSecInfo->type_document = $this->objectInstancier
+            ->getInstance(DocumentSQL::class)
+            ->getInfo($mailSecInfo->id_d)['type'];
+        $mailSecInfo->flux_destinataire = $this->getRecipientFlux($mailSecInfo->type_document);
+        $mailSecInfo->donneesFormulaire = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)->get(
+            $mailSecInfo->id_d,
+            $mailSecInfo->flux_destinataire
+        );
+        $mailSecInfo->donneesFormulaire->getFormulaire()->setTabNumber(0);
+        $mailSecInfo->fieldDataList = $mailSecInfo->donneesFormulaire->getFieldDataList('', 0);
+
+        try {
+            $odtFile = $this->generateReceipt($mailSecInfo);
+            $config = new CloudoooServiceConfiguration();
+            $pdfFile = (new CloudoooStrategy($config))->conversion($odtFile);
+            $mailSecInfo->donneesFormulaire->addFileFromData('accuse_notification', 'accuse_notification.pdf', $pdfFile);
+            $mailSecInfo->donneesFormulaire->setData('generated_receipt', true);
+        } catch (ConnectionException) {
+        }
     }
 }
