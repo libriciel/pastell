@@ -113,6 +113,12 @@ final class MailsecManager
             $mailSecInfo->id_d,
             'compute_read_mail'
         );
+
+        // Refresh form after update in previous actions
+        $mailSecInfo->donneesFormulaire = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)->get(
+            $mailSecInfo->id_d,
+            $mailSecInfo->flux_destinataire
+        );
         $mailSecInfo->donneesFormulaire->getFormulaire()->setTabNumber(0);
         $mailSecInfo->fieldDataList = $mailSecInfo->donneesFormulaire->getFieldDataList('', 0);
 
