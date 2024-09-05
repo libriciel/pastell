@@ -9,15 +9,11 @@ formulaire:
         textarea_field:
             type: textarea
             requis: true
-        checkbox_field:
-            type: checkbox
-            requis: true
-        file_field:
-            type: file
+        password_field:
+            type: textarea
             requis: true
         select_field:
             type: select
             requis: true
-        date_field:
-            type: date
-            requis: true
+            value:
+                1: 'value'

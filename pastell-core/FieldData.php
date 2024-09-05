@@ -127,9 +127,14 @@ class FieldData
         }
     }
 
-    public function isValide()
+    public function isValide(): bool
     {
-        if ($this->field->isRequired() && !$this->value && !(($this->field->getType() === 'text' || $this->field->getType() === 'textarea') && $this->value === '0')) {
+        $fieldTypesAllowingZeroAsValue = ['text', 'textarea', 'select', 'password'];
+        if (
+            !$this->value &&
+            $this->field->isRequired() &&
+            !(in_array($this->field->getType(), $fieldTypesAllowingZeroAsValue, true) && $this->value === '0')
+        ) {
             $this->lastError = "Le formulaire est incomplet : le champ «" . $this->field->getLibelle() . "» est obligatoire.";
             return false;
         }
