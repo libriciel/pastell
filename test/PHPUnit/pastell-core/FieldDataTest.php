@@ -42,4 +42,61 @@ class FieldDataTest extends PHPUnit\Framework\TestCase
 
         static::assertTrue($fieldData->isMailList());
     }
+
+    public function fieldDataProvider(): array
+    {
+        $fieldNames = ['text', 'textarea', 'select'];
+        $values = [
+            ['0', true],
+            ['1', true],
+            ['true', true],
+            ['false', true],
+            ['on', true],
+            ['off', true],
+            ['yes', true],
+            ['no', true],
+            ['y', true],
+            ['n', true],
+            ['+', true],
+            ['-', true],
+            [' ', true],
+            ["\n", true],
+            ["\t", true],
+            ["\r", true],
+            ["\0", true],
+            ["\u{1F600}", true],
+            ['', false],
+        ];
+
+        $data = [];
+        foreach ($fieldNames as $fieldName) {
+            foreach ($values as $value) {
+                $data[] = array_merge([$fieldName], $value);
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * @dataProvider fieldDataProvider
+     */
+    public function testSpecialStringValueForField($fieldType, $fieldValue, $expected): void
+    {
+        $field = new Field('test', ['type' => $fieldType, 'requis' => true, 'value' => $fieldValue]);
+        $fieldData = new FieldData($field, $fieldValue);
+        try {
+            static::assertSame($expected, $fieldData->isValide());
+        } catch (\PHPUnit\Framework\ExpectationFailedException $e) {
+            throw new \PHPUnit\Framework\ExpectationFailedException(
+                sprintf(
+                    "Test failed for combination fieldType: %s, fieldValue: \"%s\", expected: %s. Error: %s",
+                    $fieldType,
+                    $fieldValue,
+                    var_export($expected, true),
+                    $e->getMessage()
+                ),
+                $e->getComparisonFailure()
+            );
+        }
+    }
 }

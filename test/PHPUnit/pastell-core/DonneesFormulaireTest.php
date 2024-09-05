@@ -760,49 +760,4 @@ class DonneesFormulaireTest extends PastellTestCase
         $donneesFormulaire->setData("pas_un_fichier", "toto");
         $this->assertTrue($donneesFormulaire->isValidable());
     }
-
-    public function fieldDataProvider(): array
-    {
-        $fieldNames = ['text_field', 'textarea_field', 'password_field', 'select_field'];
-        $values = [
-            ['0', true],
-            ['true', true],
-            ['false', true],
-            ['on', true],
-            ['off', true],
-            ['yes', true],
-            ['no', true],
-            ['y', true],
-            ['n', true],
-            ['+', true],
-            ['-', true],
-            [' ', true],
-            ["\n", true],
-            ["\t", true],
-            ["\r", true],
-            ["\0", true],
-            ["\u{1F600}", true],
-            ['', false],
-        ];
-
-        $data = [];
-        foreach ($fieldNames as $fieldName) {
-            foreach ($values as $value) {
-                $data[] = array_merge([$fieldName], $value);
-            }
-        }
-        return $data;
-    }
-
-    /**
-     * @dataProvider fieldDataProvider
-     */
-    public function testSpecialStringValueForField($fieldName, $fieldValue, $expected): void
-    {
-        $donneesFormulaire = $this->getCustomDonneesFormulaire(
-            __DIR__ . '/fixtures/definition-for-field-value-test.yml'
-        );
-        $donneesFormulaire->setData($fieldName, $fieldValue);
-        static::assertSame($expected, $donneesFormulaire->getFieldData($fieldName)->isValide());
-    }
 }

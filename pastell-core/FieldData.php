@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Configuration\ElementType;
+
 class FieldData
 {
     private $field;
@@ -129,7 +131,7 @@ class FieldData
 
     public function isValide(): bool
     {
-        $fieldTypesAllowingZeroAsValue = ['text', 'textarea', 'select', 'password'];
+        $fieldTypesAllowingZeroAsValue = [ElementType::TEXT, ElementType::TEXTAREA, ElementType::SELECT];
         if (
             !$this->value &&
             $this->field->isRequired() &&
