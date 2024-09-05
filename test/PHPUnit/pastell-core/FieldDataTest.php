@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Pastell\Configuration\ElementType;
+
 class FieldDataTest extends PHPUnit\Framework\TestCase
 {
     public function testSetValue(): void
@@ -45,7 +47,7 @@ class FieldDataTest extends PHPUnit\Framework\TestCase
 
     public function fieldDataProvider(): array
     {
-        $fieldNames = ['text', 'textarea', 'select'];
+        $fieldNames = [ElementType::TEXT, ElementType::TEXTAREA, ElementType::SELECT];
         $values = [
             ['0', true],
             ['1', true],
