@@ -73,7 +73,7 @@ class FieldDataTest extends PHPUnit\Framework\TestCase
         $data = [];
         foreach ($fieldNames as $fieldName) {
             foreach ($values as $value) {
-                $data[] = array_merge([$fieldName], $value);
+                $data["$fieldName->value : '$value[0]'"] = array_merge([$fieldName], $value);
             }
         }
         return $data;
@@ -86,19 +86,6 @@ class FieldDataTest extends PHPUnit\Framework\TestCase
     {
         $field = new Field('test', ['type' => $fieldType, 'requis' => true, 'value' => $fieldValue]);
         $fieldData = new FieldData($field, $fieldValue);
-        try {
-            static::assertSame($expected, $fieldData->isValide());
-        } catch (\PHPUnit\Framework\ExpectationFailedException $e) {
-            throw new \PHPUnit\Framework\ExpectationFailedException(
-                sprintf(
-                    "Test failed for combination fieldType: %s, fieldValue: \"%s\", expected: %s. Error: %s",
-                    $fieldType,
-                    $fieldValue,
-                    var_export($expected, true),
-                    $e->getMessage()
-                ),
-                $e->getComparisonFailure()
-            );
-        }
+        static::assertSame($expected, $fieldData->isValide());
     }
 }
