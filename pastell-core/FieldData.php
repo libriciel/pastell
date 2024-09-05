@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Configuration\ElementType;
+
 class FieldData
 {
     private $field;
@@ -127,9 +129,14 @@ class FieldData
         }
     }
 
-    public function isValide()
+    public function isValide(): bool
     {
-        if ($this->field->isRequired() && ! $this->value) {
+        $fieldTypesAllowingZeroAsValue = [ElementType::TEXT, ElementType::TEXTAREA, ElementType::SELECT];
+        if (
+            !$this->value &&
+            $this->field->isRequired() &&
+            !(in_array($this->field->getType(), $fieldTypesAllowingZeroAsValue, true) && $this->value === '0')
+        ) {
             $this->lastError = "Le formulaire est incomplet : le champ «" . $this->field->getLibelle() . "» est obligatoire.";
             return false;
         }
