@@ -1,86 +1,100 @@
 <?php
 
+declare(strict_types=1);
+
 class NotificationTest extends PastellTestCase
 {
     /**
      * @var Notification
      */
-    private $notification;
+    private Notification $notification;
+    private UtilisateurSQL $utilisateurSQL;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->notification = new Notification($this->getSQLQuery());
+        $this->notification = new Notification(self::getSQLQuery());
+        $this->utilisateurSQL = new UtilisateurSQL(self::getSQLQuery());
     }
 
-    public function testAdd()
+    public function testAdd(): void
     {
         $this->notification->add(1, 1, 'actes-generique', 'send-tdt', false);
         $info = $this->notification->getAll(1);
-        $this->assertEquals('actes-generique', $info['1-actes-generique']['type']);
+        static::assertEquals('actes-generique', $info['1-actes-generique']['type']);
     }
 
-    public function testAddTwoTimes()
+    public function testAddTwoTimes(): void
     {
-        $this->assertCount(0, $this->notification->getAll(1));
+        static::assertCount(0, $this->notification->getAll(1));
         $this->notification->add(1, 1, 'actes-generique', 'send-tdt', false);
-        $this->assertCount(1, $this->notification->getAll(1));
+        static::assertCount(1, $this->notification->getAll(1));
         $this->notification->add(1, 1, 'actes-generique', 'send-tdt', false);
-        $this->assertCount(1, $this->notification->getAll(1));
+        static::assertCount(1, $this->notification->getAll(1));
     }
 
-    public function testHasDailyDigest()
+    public function testHasDailyDigest(): void
     {
         $this->notification->add(1, 1, 'actes-generique', 'send-tdt', true);
-        $this->assertEquals(1, $this->notification->hasDailyDigest(1, 1, 'actes-generique'));
+        static::assertSame(1, $this->notification->hasDailyDigest(1, 1, 'actes-generique'));
     }
 
-    public function testGetNotificationActionList()
+    public function testGetNotificationActionList(): void
     {
         $this->notification->add(1, 1, 'actes-generique', 'send-tdt', false);
         $info = $this->notification->getNotificationActionList(1, 1, 'actes-generique', [['id' => 'send-tdt']]);
-        $this->assertEquals(1, $info[0]['checked']);
+        static::assertTrue($info[0]['checked']);
     }
 
-    public function testGetInfo()
+    public function testGetInfo(): void
     {
         $this->notification->add(1, 1, 'actes-generique', 'send-tdt', false);
         $all_info = $this->notification->getAllInfo(1, 'actes-generique', 'send-tdt');
         $id_n = $all_info[0]['id_n'];
         $info = $this->notification->getInfo($id_n);
-        $this->assertEquals($all_info[0]['action'], $info['action']);
+        static::assertSame($all_info[0]['action'], $info['action']);
     }
 
-    public function testRemove()
+    public function testRemove(): void
     {
         $this->notification->add(1, 1, 'actes-generique', 'send-tdt', false);
         $all_info = $this->notification->getAllInfo(1, 'actes-generique', 'send-tdt');
         $id_n = $all_info[0]['id_n'];
         $this->notification->remove($id_n);
         $all_info = $this->notification->getAllInfo(1, 'actes-generique', 'send-tdt');
-        $this->assertEmpty($all_info);
+        static::assertEmpty($all_info);
     }
 
-    public function testGetMail()
+    public function testGetMail(): void
     {
         $this->notification->add(1, 1, 'actes-generique', 'send-tdt', false);
         $info = $this->notification->getMail(1, 'actes-generique', 'send-tdt');
-        $this->assertEquals(["eric@sigmalis.com"], $info);
+        static::assertSame(['eric@sigmalis.com'], $info);
     }
 
-    public function testRemoveAll()
+    public function testRemoveAll(): void
     {
         $this->notification->add(1, 1, 'actes-generique', 'send-tdt', false);
         $this->notification->removeAll(1, 1, 'actes-generique');
         $all_info = $this->notification->getAllInfo(1, 'actes-generique', 'send-tdt');
-        $this->assertEmpty($all_info);
+        static::assertEmpty($all_info);
     }
 
-    public function testToogleDailyDigest()
+    public function testToogleDailyDigest(): void
     {
         $this->notification->add(1, 1, 'actes-generique', 'send-tdt', false);
         $this->notification->toogleDailyDigest(1, 1, 'actes-generique');
         $all_info = $this->notification->getAllInfo(1, 'actes-generique', 'send-tdt');
-        $this->assertEquals(1, $all_info[0]['daily_digest']);
+        static::assertSame(1, $all_info[0]['daily_digest']);
+    }
+
+    public function testDisabledUser(): void
+    {
+        $this->notification->add(1, 1, 'actes-generique', 'send-tdt', false);
+        $all_info = $this->notification->getAllInfo(1, 'actes-generique', 'send-tdt');
+        static::assertCount(1, $all_info);
+        $this->utilisateurSQL->disable(1);
+        $all_info = $this->notification->getAllInfo(1, 'actes-generique', 'send-tdt');
+        static::assertEmpty($all_info);
     }
 }
