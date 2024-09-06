@@ -367,7 +367,7 @@ final class RecipientController extends AbstractController
             $mailSecInfo->id_e,
             $mailSecInfo->id_d,
             'Consulté',
-            "{$mailSecInfo->email} a consulté le document $fileName"
+            "{$mailSecInfo->email} a consulté le fichier $fileName"
         );
         return $response;
     }
