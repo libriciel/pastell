@@ -47,7 +47,7 @@ class FieldDataTest extends PHPUnit\Framework\TestCase
 
     public function fieldDataProvider(): array
     {
-        $fieldNames = [ElementType::TEXT, ElementType::TEXTAREA, ElementType::SELECT];
+        $fieldNames = [ElementType::TEXT->value, ElementType::TEXTAREA->value, ElementType::SELECT->value];
         $values = [
             ['0', true],
             ['1', true],
@@ -73,7 +73,7 @@ class FieldDataTest extends PHPUnit\Framework\TestCase
         $data = [];
         foreach ($fieldNames as $fieldName) {
             foreach ($values as $value) {
-                $data["$fieldName->value : '$value[0]'"] = array_merge([$fieldName], $value);
+                $data["$fieldName: '$value[0]'"] = array_merge([$fieldName], $value);
             }
         }
         return $data;
