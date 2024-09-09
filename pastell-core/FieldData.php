@@ -131,7 +131,7 @@ class FieldData
 
     public function isValide(): bool
     {
-        $fieldTypesAllowingZeroAsValue = [ElementType::TEXT, ElementType::TEXTAREA, ElementType::SELECT];
+        $fieldTypesAllowingZeroAsValue = [ElementType::TEXT->value, ElementType::TEXTAREA->value, ElementType::SELECT->value];
         if (
             !$this->value &&
             $this->field->isRequired() &&
