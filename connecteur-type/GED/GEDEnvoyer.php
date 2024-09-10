@@ -14,7 +14,7 @@ class GEDEnvoyer extends ConnecteurTypeActionExecutor
 
         $donneesFormulaire = $this->getDonneesFormulaire();
         /** @var GEDConnecteur $ged */
-        $ged = $this->getConnecteur("GED");
+        $ged = @$this->getConnecteur("GED");
 
         try {
             $result = $ged->send($donneesFormulaire);
@@ -37,7 +37,7 @@ class GEDEnvoyer extends ConnecteurTypeActionExecutor
         }
 
         $message = sprintf(
-            "Le dossier %s a été versé sur le dépôt",
+            'Le dossier %s a été versé sur le dépôt',
             $this->getDonneesFormulaire()->getTitre()
         );
 
