@@ -11,16 +11,16 @@
     (Connecteurs Transformation et Générateur SEDA) #1376
   - Connecteur Transformation : Ajout d'un fichier de configuration #2021
   - Connecteur Générateur SEDA : Ajout du connecteur Générateur SEDA Vitam (SEDA 2.2) #1984
-  - Connecteur iParapheur : Possibilité d'envoyer des PES PJ autonomes vers iParapheur #644
+  - Connecteur iparapheur : Possibilité d'envoyer des PES PJ autonomes vers iparapheur (iparapheur >=v5) #644
   - Connecteur Fast : 
-    - Récupération via l'API Fast des circuits disponibles #1912
-    - Récupération du bordereau de signature #1925
-    - Récupération du message de refus lors du rejet de fast parapheur #1391
-    - Récupération de l'acte tamponné pour les Tdt Fast #1558
-    - Possibilité d'envoyer en mode préparation vers Tdt Fast #1541
-- Type de dossier :
+      - Récupération via l'API Fast des circuits disponibles #1912
+      - Récupération du bordereau de signature #1925
+      - Récupération du message de refus lors du rejet de fast parapheur #1391
+      - Récupération de l'acte tamponné pour les Tdt Fast #1558
+      - Possibilité d'envoyer en mode préparation vers Tdt Fast #1541
+- Nouveaux Types de dossiers issus du studio (voir aussi Dépréciations au profit de ...) :
   - Ajout de Dossier de séance (archivage) `ls-dossier-seance` #1946
-  - Ajout de Helios PES PJ `ls-helios-pj` pour envoyer des PES PJ autonomes vers iParapheur #2034
+  - Ajout de Helios PES PJ `ls-helios-pj` pour envoyer des PES PJ autonomes vers iparapheur (iparapheur >=v5) #2034
   - Ajout de Document `ls-document` (identique à `ls-document-pdf` sans restriction sur le type de fichier) #2018
 - Types de dossier personnalisés (studio) :
   - Ajout du contrôle d'expression régulière pour valider le format d'un champ textarea #1967
@@ -30,7 +30,7 @@
   - Possibilité de définir des restrictions sur la disponibilité d'étapes studio (interne cf "restriction_pack") #2095
 - Étape Signature des types de dossiers issus du studio :
   - Ajout de l'option de co-signature #684
-  - Ajout des champs annotations publiques et privées pour l'envoi vers iParapheur #1883
+  - Ajout des champs annotations publiques et privées pour l'envoi vers iparapheur #1883
   - Ajout du champ 'Date de dernière signature' sur l'onglet Signature #2005
 - Étape tdt_actes des types de dossiers issus du studio :
   - Ajout du contrôle sur le total des fichiers Acte et Annexes < 157.29 MB #1602
@@ -76,14 +76,14 @@
 - Prise en compte des valeurs par défaut `default` définies dans le yml pour les connecteurs #1938
 - La valeur "0" est désormais valide pour les champs texte obligatoires #2123
 
-## Dépréciations et remplacement de types de dossiers
+## Dépréciations au profit de nouveaux types de dossiers issus du studio
 
-- `mailsec` est remplacé par le type de dossier issu du studio `ls-mailsec` #1978
-- `mailsec-bidir` est remplacé par le type de dossier issu du studio `ls-mailsec-bidir` #1978
-- `commande-generique` est remplacé par le type de dossier issu du studio `ls-commande` #1968
-- `pdf-generique` et `document-a-signer` sont remplacés par le type de dossier issu du studio `ls-document-pdf` #1870
-- `helios-generique` et `helios-automatique` sont remplacés par le type de dossier issu du studio `ls-helios` #1969
-- `actes-generique` et `actes-automatique` sont remplacés par le type de dossier issu du studio `ls-actes` #1967
+- `mailsec` est déprécié au profit du nouveau type de dossier issu du studio `ls-mailsec` #1978
+- `mailsec-bidir` est déprécié au profit du nouveau type de dossier issu du studio `ls-mailsec-bidir` #1978
+- `commande-generique` est déprécié au profit du nouveau type de dossier issu du studio `ls-commande` #1968
+- `pdf-generique` et `document-a-signer` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-document-pdf` #1870
+- `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
+- `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
 
 # [4.0.15] - 2024-08-12
 
