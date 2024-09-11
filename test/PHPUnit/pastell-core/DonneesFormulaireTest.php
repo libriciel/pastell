@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Storage\StorageInterfaceFake;
+use Pastell\Storage\VaultIdNotFoundException;
 use Pastell\Utilities\Identifier\UuidGenerator;
 
 class DonneesFormulaireTest extends PastellTestCase
@@ -788,7 +789,9 @@ class DonneesFormulaireTest extends PastellTestCase
 
         $data['donneesFormulaire'] = $donneesFormulaireFactory->getConnecteurEntiteFormulaire($id_ce);
         $data['password'] = 'monMotDePasse';
-        $data['donneesFormulaire']->setData('certificate_password', $data['password']);
+        $field = $data['donneesFormulaire']->getFieldData('certificate_password')->getField();
+        $data['donneesFormulaire']->injectData('certificate_password', $data['password']);
+        $data['donneesFormulaire']->setInfo($field, $data['password']);
 
         $ymlLoader = new YMLLoader(new StaticWrapper());
         $ymlContent = $ymlLoader->getArray(
@@ -819,9 +822,8 @@ class DonneesFormulaireTest extends PastellTestCase
     public function testDeletePasswordsConnecteurOnExternalStorage(): void
     {
         $data = $this->getDataFromConnecteurWithPasswordOnExternalStorage();
-
         $data['donneesFormulaire']->delete();
-        $response = $data['storage']->read(trim(stripslashes($data['ymlPassword']), '"'));
-        self::assertSame('Objet inexistant', $response);
+        $this->expectException(VaultIdNotFoundException::class);
+        $data['storage']->read(trim(stripslashes($data['ymlPassword']), '"'));
     }
 }

@@ -7,7 +7,7 @@ services:
       VAULT_UNSEAL_KEY: ${VAULT_UNSEAL_KEY:-vaultUnsealKey}
 
   vault:
-      image: registry.libriciel.fr:443/public/signature/ip-vault:1.7.10.2
+      image: registry.libriciel.fr:443/public/signature/ip-vault:1.15.6.2
       container_name: pastell-vault-1
       cap_add:
         - IPC_LOCK
@@ -16,6 +16,8 @@ services:
         - VAULT_API_ADDR=http://vault:8200
       volumes:
         - ${VAULT_DATADIR:-vault_datadir}:/vault/data
+      ports:
+        - "8201:8200"
 
 volumes:
   vault_datadir:

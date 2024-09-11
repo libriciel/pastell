@@ -14,20 +14,24 @@ class StorageInterfaceFake implements StorageInterface
         return $id;
     }
 
+    /**
+     * @throws VaultIdNotFoundException
+     */
     public function read(string $id): string
     {
         if (isset(self::$memory[$id])) {
             return self::$memory[$id];
         }
-        return 'Objet inexistant';
+        throw new VaultIdNotFoundException();
     }
 
+    /**
+     * @throws VaultIdNotFoundException
+     */
     public function delete(string $id): string
     {
-        if (isset(self::$memory[$id])) {
-            unset(self::$memory[$id]);
-            return "$id détruit";
-        }
-        return 'Objet inexistant';
+        $this->read($id);
+        unset(self::$memory[$id]);
+        return "$id détruit";
     }
 }

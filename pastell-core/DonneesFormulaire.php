@@ -1,8 +1,12 @@
 <?php
 
 use Pastell\Configuration\ElementType;
+use Pastell\Storage\MissingVaultException;
 use Pastell\Storage\StorageInterface;
+use Pastell\Storage\EmptyPasswordException;
+use Pastell\Storage\StorageInterfaceDummy;
 use Pastell\Storage\VaultIdNotFoundException;
+use Pastell\Storage\VaultPasswordAlreadyStoredException;
 use Pastell\Utilities\Identifier\UuidGenerator;
 
 /**
@@ -30,10 +34,6 @@ class DonneesFormulaire
 
     private DocumentIndexor $documentIndexor;
 
-    private const SAVE = 'save';
-    private const DELETE = 'delete';
-    public const FETCH = 'fetch';
-
     /**
      * DonneesFormulaire constructor.
      * @param $filePath string emplacement vers un fichier YML
@@ -54,7 +54,6 @@ class DonneesFormulaire
         $this->documentType = $documentType;
         $this->onChangeAction = [];
         $this->fichierCleValeur = new FichierCleValeur($filePath, $ymlLoader);
-        $this->checkConnectorFieldsWithPassword(self::FETCH);
         $this->setOnglet();
         /** @var Field $field */
         foreach ($this->getFormulaire()->getAllFields() as $field) {
@@ -238,6 +237,11 @@ class DonneesFormulaire
                 if (in_array(strtolower($value), ['false', 'off', '-', 'no', 'n'])) {
                     return false;
                 }
+            } elseif (
+                $this->useExternalStorageForPasswordConnector &&
+                $field instanceof Field && $field->getType() === ElementType::PASSWORD->value
+            ) {
+                $value = $this->readVaultPassword($field);
             }
         }
         return $value;
@@ -248,11 +252,11 @@ class DonneesFormulaire
         $field = $this->getFormulaire()->getField($item);
         $key = $this->get($item);
         if (! $field || $field->getType() != Field::TYPE_SELECT || ! $key) {
-            return "";
+            return '';
         }
         $select_array = $field->getSelect();
         if (! isset($select_array[$key])) {
-            return "";
+            return '';
         }
         return $select_array[$key];
     }
@@ -272,7 +276,7 @@ class DonneesFormulaire
      * Indique si le champs est modifiable
      *
      * @param string $field_name
-     * @return boolean
+     * @return bool
      */
     public function isReadOnly($field_name)
     {
@@ -312,7 +316,7 @@ class DonneesFormulaire
     /*fonction sur l'emplacement et le nom des fichiers annexes*/
     public function getFilePath($field_name, $num = 0): string
     {
-        if (\preg_match('#[^\w-]#', $field_name)) {
+        if (preg_match('#[^\w-]#', $field_name)) {
             throw new UnrecoverableException("Champ `$field_name` incorrect");
         }
 
@@ -369,10 +373,10 @@ class DonneesFormulaire
                 $value =  $recuperateur->get($name);
 
                 if ($type == 'password') {
-                    $value =  $recuperateur->getNoTrim($name, "");
+                    $value =  $recuperateur->getNoTrim($name, '');
                 }
                 if (! $this->fichierCleValeur->exists($name)) {
-                    $this->fichierCleValeur->set($name, "");
+                    $this->fichierCleValeur->set($name, '');
                 }
 
                 if (( $this->fichierCleValeur->get($name) != $value) &&  $field->getOnChange()) {
@@ -389,16 +393,24 @@ class DonneesFormulaire
         $this->saveDataFile(false);
     }
 
-    private function setInfo(Field $field, $value)
+    /**
+     * @throws EmptyPasswordException
+     * @throws VaultPasswordAlreadyStoredException
+     * @throws MissingVaultException
+     */
+    public function setInfo(Field $field, $value)
     {
-        if ($this->fichierCleValeur->get($field->getName()) === $value) {
-            return;
+        if ($this->useExternalStorageForPasswordConnector && $field->getType() === ElementType::PASSWORD->value) {
+            $this->updatePasswordValue($field, $value);
+        } else {
+            if ($this->fichierCleValeur->get($field->getName()) === $value) {
+                return;
+            }
+            if ($field->getType() === 'date') {
+                $value = preg_replace('#^(\d{2})/(\d{2})/(\d{4})$#', '$3-$2-$1', $value);
+            }
+            $this->injectData($field->getName(), $value);
         }
-        if ($field->getType() == 'date') {
-            $value = preg_replace("#^(\d{2})/(\d{2})/(\d{4})$#", '$3-$2-$1', $value);
-        }
-
-        $this->injectData($field->getName(), $value);
         $this->isModified = true;
     }
 
@@ -610,9 +622,7 @@ class DonneesFormulaire
 
     private function saveDataFile($setModifiedToFalse = true)
     {
-        $this->checkConnectorFieldsWithPassword(self::SAVE);
         $this->fichierCleValeur->save();
-        $this->checkConnectorFieldsWithPassword(self::FETCH);
         if ($setModifiedToFalse) {
             $this->isModified = false;
         }
@@ -677,17 +687,17 @@ class DonneesFormulaire
     {
         $ext = pathinfo($file_name, PATHINFO_EXTENSION);
         $openXMLExtension = [
-            'xlsx' => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            'xltx' => "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
-            'potx' =>  "application/vnd.openxmlformats-officedocument.presentationml.template",
-            'ppsx' =>  "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
-            'pptx'   =>  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-            'sldx'   =>  "application/vnd.openxmlformats-officedocument.presentationml.slide",
-            'docx'   =>  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            'dotx'   =>  "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
-            'xlam'   =>  "application/vnd.ms-excel.addin.macroEnabled.12",
-            'xlsb'   =>  "application/vnd.ms-excel.sheet.binary.macroEnabled.12",
-            'txt' => "text/plain"
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'xltx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
+            'potx' => 'application/vnd.openxmlformats-officedocument.presentationml.template',
+            'ppsx' => 'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
+            'pptx'   => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'sldx'   => 'application/vnd.openxmlformats-officedocument.presentationml.slide',
+            'docx'   => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'dotx'   => 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
+            'xlam'   => 'application/vnd.ms-excel.addin.macroEnabled.12',
+            'xlsb'   => 'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
+            'txt' => 'text/plain'
         ];
         if (isset($openXMLExtension[$ext])) {
             return $openXMLExtension[$ext];
@@ -720,7 +730,7 @@ class DonneesFormulaire
         }
 
         if ($result == 'application/x-empty') {
-            $result = "text/plain";
+            $result = 'text/plain';
         }
 
         if ($result == 'application/octet-stream') {
@@ -743,7 +753,7 @@ class DonneesFormulaire
     {
         $all_file_name = $this->get($field_name);
         if (! $all_file_name) {
-            return "";
+            return '';
         }
         return basename($all_file_name[$num]);
     }
@@ -763,7 +773,7 @@ class DonneesFormulaire
 
     public function geth($item, $default = false)
     {
-        return nl2br(htmlentities($this->get($item, $default), ENT_QUOTES, "UTF-8"));
+        return nl2br(htmlentities($this->get($item, $default), ENT_QUOTES, 'UTF-8'));
     }
 
     public function isValidable()
@@ -836,8 +846,12 @@ class DonneesFormulaire
 
     public function delete(): void
     {
+        if ($this->useExternalStorageForPasswordConnector) {
+            foreach ($this->getPasswordFields() as $passwordField) {
+                $this->extractPasswordFromVault($passwordField);
+            }
+        }
         $file_to_delete = glob($this->filePath . '*');
-        $this->checkConnectorFieldsWithPassword(self::DELETE);
         foreach ($file_to_delete as $file) {
             unlink($file);
         }
@@ -857,7 +871,7 @@ class DonneesFormulaire
                 continue;
             }
             if ($field->getType() == 'password') {
-                $result[$element_id] = "MOT DE PASSE NON RECUPERABLE";
+                $result[$element_id] = 'MOT DE PASSE NON RECUPERABLE';
             }
         }
         return $result;
@@ -905,27 +919,27 @@ class DonneesFormulaire
             'text/plain'        => '.txt',
             'text/xml'          => '.xml',
         ];
-        $result = "";
+        $result = '';
 
         if (isset($map[$contentType])) {
             $result = $map[$contentType];
         }
 
-        if ($result == ".zip") {
+        if ($result == '.zip') {
             if (in_array($path_parts['extension'], ['xltx','potx','ppsx','sldx','docx','dotx','xlam','xlsb'])) {
-                return "." . $path_parts['extension'];
+                return '.' . $path_parts['extension'];
             }
         }
         if ($result == '.txt') {
             $file_content = file_get_contents($file_path);
-            if (preg_match("#-----BEGIN PKCS7-----#", $file_content)) {
-                return ".p7c";
+            if (preg_match('#-----BEGIN PKCS7-----#', $file_content)) {
+                return '.p7c';
             }
         }
 
         if (!$result) {
             if (! empty($path_parts['extension'])) {
-                $result = "." . $path_parts['extension'];
+                $result = '.' . $path_parts['extension'];
             }
         }
 
@@ -982,6 +996,11 @@ class DonneesFormulaire
     public function jsonExport()
     {
         $result['metadata'] = $this->getRawData() ?? [];
+        if ($this->useExternalStorageForPasswordConnector) {
+            foreach ($this->getPasswordFields() as $passwordField) {
+                $result['metadata'][$passwordField->getName()] = $this->readVaultPassword($passwordField);
+            }
+        }
         foreach ($this->getAllFile() as $field) {
             foreach ($this->get($field) as $file_num => $file_name) {
                 $result['file'][$field][$file_num] = base64_encode($this->getFileContent($field, $file_num));
@@ -999,21 +1018,28 @@ class DonneesFormulaire
     {
         $result = json_decode($data, true);
         if ($result === null) {
-            throw new Exception("Impossible de déchiffrer le fichier : erreur " . json_last_error());
+            throw new Exception('Impossible de déchiffrer le fichier : erreur ' . json_last_error());
         }
         if (!isset($result['metadata'])) {
             if (isset($result['salt'], $result['message'])) {
                 throw new DonneesFormulaireException('Le contenu du connecteur est protégé');
             }
-            throw new Exception("Clé metadata absente du fichier");
+            throw new Exception('Clé metadata absente du fichier');
         }
 
         foreach ($result['metadata'] as $field_name => $field_value) {
-            if (! is_array($field_value)) {
-                $this->setData($field_name, $field_value);
+            if (!is_array($field_value)) {
+                if ($this->useExternalStorageForPasswordConnector) {
+                    $field = $this->getFormulaire()->getField($field_name);
+                    if ($field instanceof Field && $field->getType() === ElementType::PASSWORD->value) {
+                        $this->updatePasswordValue($field, $field_value);
+                    }
+                } else {
+                    $this->setData($field_name, $field_value);
+                }
             } else {
                 foreach ($field_value as $file_num => $file_name) {
-                    $file_content = "";
+                    $file_content = '';
                     if (! empty($result['file'][$field_name][$file_num])) {
                         $file_content = $result['file'][$field_name][$file_num];
                         $file_content = base64_decode($file_content, true);
@@ -1098,76 +1124,103 @@ class DonneesFormulaire
         return $fieldSize;
     }
 
-    private function checkConnectorFieldsWithPassword(string $action): void
+    public function getPasswordFields(): array
     {
-        if (
-            $this->useExternalStorageForPasswordConnector &&
-            str_contains($this->filePath, DonneesFormulaireFactory::ID_CONNECTEUR)
-        ) {
+        $passwordFields = [];
+        if (str_contains($this->filePath, DonneesFormulaireFactory::ID_CONNECTEUR)) {
             foreach ($this->getFormulaire()->getFields() as $field) {
-                if ($field->getType() === 'password') {
-                    if ($action === self::SAVE || $action === self::DELETE) {
-                        $this->checkPasswordFieldsToSaveOrDelete($action, $field);
-                    } elseif ($action === self::FETCH) {
-                        $this->checkPasswordFieldsToFetch($field);
-                    }
+                if ($field->getType() === ElementType::PASSWORD->value) {
+                    $passwordFields[] = $field;
                 }
             }
         }
+        return $passwordFields;
     }
 
-    private function checkPasswordFieldsToSaveOrDelete(string $action, Field $field): void
+    /**
+     * @throws MissingVaultException
+     */
+    private function readVaultPassword(Field $passwordField): string
     {
-        $fieldValue = $this->get($field->getName());
-        if ($fieldValue !== '' && $fieldValue !== false) {
-            $passwordId = '';
-            if (array_key_exists($field->getName(), $this->fichierCleValeur->getYmlInfo())) {
-                $passwordId = $this->fichierCleValeur->getYmlInfo()[$field->getName()];
+        if ($this->passwordStorage instanceof StorageInterfaceDummy) {
+            throw new MissingVaultException('Le vault n\'est pas configuré');
+        }
+        if (array_key_exists($passwordField->getName(), $this->fichierCleValeur->getInfo())) {
+            $passwordValue = $this->fichierCleValeur->get($passwordField->getName());
+            if ($passwordValue !== '' && $passwordValue !== false) {
+                try {
+                    return $this->passwordStorage->read($passwordValue);
+                } catch (VaultIdNotFoundException) {
+                    $this->lastError = 'Le champ ' . $passwordField->getName() . ' n\'est pas stocké dans le vault';
+                }
             }
-            if ($action === self::DELETE && $passwordId !== '') {
+        }
+        return '';
+    }
+
+    /**
+     * @throws EmptyPasswordException
+     * @throws MissingVaultException
+     */
+    public function extractPasswordFromVault(Field $passwordField): void
+    {
+        if ($this->passwordStorage instanceof StorageInterfaceDummy) {
+            throw new MissingVaultException('Le vault n\'est pas configuré');
+        }
+        if (array_key_exists($passwordField->getName(), $this->fichierCleValeur->getInfo())) {
+            $passwordValue = $this->fichierCleValeur->get($passwordField->getName());
+            if ($passwordValue !== '' && $passwordValue !== false) {
+                $passwordId = $this->fichierCleValeur->getYmlInfo()[$passwordField->getName()];
+                $retrievedPassword = $this->passwordStorage->read($passwordId);
                 $this->passwordStorage->delete($passwordId);
-            } elseif ($action === self::SAVE) {
-                $isVaultId = true;
-                try {
-                    $this->passwordStorage->read($passwordId);
-                } catch (VaultIdNotFoundException) {
-                    $isVaultId = false;
-                } catch (Exception $e) {
-                    $this->lastError = $e->getCode() . ' : ' . $e->getMessage();
-                    return;
-                }
-                if ($passwordId === '' || !$isVaultId) {
-                    $passwordId = $this->uuidGenerator->generate();
-                }
-                try {
-                    $this->passwordStorage->write($passwordId, $fieldValue);
-                    $this->fichierCleValeur->set($field->getName(), $passwordId);
-                    $this->fichierCleValeur->save();
-                } catch (Exception $e) {
-                    $this->lastError = $e->getCode() . ' : ' . $e->getMessage();
-                }
+                $this->fichierCleValeur->set($passwordField->getName(), $retrievedPassword);
+                $this->injectData($passwordField->getName(), $retrievedPassword);
+                $this->fichierCleValeur->save();
+                return;
             }
         }
+        throw new EmptyPasswordException();
     }
 
-    private function checkPasswordFieldsToFetch($field): void
+    /**
+     * @throws VaultPasswordAlreadyStoredException
+     * @throws EmptyPasswordException
+     * @throws MissingVaultException
+     */
+    public function updatePasswordValue(Field $passwordField, string $value): void
     {
-        $info = $this->fichierCleValeur->getYmlInfo();
-        if ($info) {
-            if (
-                array_key_exists($field->getName(), $info)
-                && $info[$field->getName()] !== ''
-            ) {
-                try {
-                    $response = $this->passwordStorage->read($info[$field->getName()]);
-                    $this->fichierCleValeur->set($field->getName(), $response);
-                } catch (VaultIdNotFoundException) {
-                    $this->checkPasswordFieldsToSaveOrDelete(self::SAVE, $field);
-                    $this->checkPasswordFieldsToFetch($field);
-                } catch (Exception $e) {
-                    $this->lastError = $e->getCode() . ' : ' . $e->getMessage();
+        if ($this->passwordStorage instanceof StorageInterfaceDummy) {
+            throw new MissingVaultException('Le vault n\'est pas configuré');
+        }
+        if ($value !== '' && array_key_exists($passwordField->getName(), $this->fichierCleValeur->getInfo())) {
+            try {
+                $this->passwordStorage->read($value);
+                throw new VaultPasswordAlreadyStoredException('Le mot de passe est déjà stocké dans le vault');
+            } catch (VaultIdNotFoundException) {
+                $passwordValue = $this->readVaultPassword($passwordField);
+                if ($passwordValue !== '') {
+                    $this->extractPasswordFromVault($passwordField);
                 }
+
+                $passwordId = $this->uuidGenerator->generate();
+                $this->passwordStorage->write($passwordId, $value);
+                $this->fichierCleValeur->set($passwordField->getName(), $passwordId);
+                $this->fichierCleValeur->save();
+                $this->injectData($passwordField->getName(), $passwordId);
+                return;
             }
         }
+        throw new EmptyPasswordException();
+    }
+
+    /**
+     * @throws EmptyPasswordException
+     * @throws VaultPasswordAlreadyStoredException
+     * @throws MissingVaultException
+     */
+    public function savePasswordValue(Field $passwordField): void
+    {
+        $value = $this->fichierCleValeur->get($passwordField->getName());
+        $this->updatePasswordValue($passwordField, $value);
     }
 }
