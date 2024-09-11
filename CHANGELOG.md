@@ -4,75 +4,86 @@
 
 ## Ajouts
 
-- Ajout de la fonction jsonpath_array pour récupérer des listes de données #1376
-- Ajout du flux Dossier de séance (archivage) `ls-dossier-seance` #1946
-- Ajout d'un fichier pdf 'Accusé de notification' pour les mails sécurisés des flux studio #1128
-- Ajout d'un captcha avant la lecture d'un mail sécurisé #942
-- Ajout de l'option de co-signature pour les flux studios #684
-- Ajout des champs annotations publiques et privées pour l'envoi vers iParapheur pour les flux studios #1883
-- Ajout de la récupération du bordereau de signature pour Fast Parapheur pour les flux studios #1925
-- Ajout du champ 'Date de dernière signature' sur l'onglet Signature pour les flux studios #2005
-- Ajout du contrôle d'expression régulière pour valider le format d'un champ textarea dans le studio #1967
-- Studio, étape tdt_actes, ajout du contrôle sur le total des fichiers Acte et Annexes < 157.29 MB #1602
-- Studio, étape tdt_helios, ajout du contrôle sur la taille du fichier PES ALLER < 128 MB #1602
-- Studio, étape tdt_helios, ajout de la possibilité de définir le champ "Objet PES ALLER" (prend la valeur NomFic du Fichier PES) #1969
-- Studio, étape tdt_helios, l'extraction des informations du PES ALLER se fait sur le onchange du Fichier PES ALLER,
-  (suppression des actions `helios-pre-extraction` et `helios-extraction` et dépréciation de la classe TdTExtractionHelios) #2084
-- Studio, étape tdt_helios, `fichier-pes-change`, ajout de l'extraction de la balise `MtBordHt` PesRecette ou `MtBordHT` PesDepense #2084
-- Studio : Ajout du flux ls-helios-pj pour envoyer des PES PJ autonomes vers iParapheur #2034
-- Studio : étape mail sécurisé avec réponse : Les champs indexés dans le flux de réponse sont affichés dans le 
-récapitulatif du mail sécurisé sans avoir besoin de visualiser la réponse #2073
-- Studio : Ajout de la possibilité de définir des `Transformation fixe` (de la forme 'id_element:expression_twig') au niveau du type de dossier #1979
-- Possibilité de créer un utilisateur exclusivement API et de gérer ses tokens via l'administrateur de son entité #1943
-- Possibilité de sélectionner une entité et ses entités filles dans le connecteur de purge global #1704
-- Possibilité d'afficher le contenu d'un type de dossier studio sur un seul onglet #1980
-- Ajout de la récupération via l'API Fast des circuits disponibles pour Fast Parapheur #1912
-- Récupération de l'acte tamponné pour les Tdt Fast #1558
-- Possibilité d'envoyer en mode préparation vers Fast-tdt #1541
-- Permettre la configuration des attributs LDAP : nom, prénom et email #1975
-- Ajustement de la zone de séléction dans la gestion d'éléments studio #1281
-- Possibilité d'envoyer des fichiers lourds en chunk par API #1350
-- Possibilité d'envoyer des PES PJ autonomes vers iParapheur #644
-- Possibilité de dupliquer un acte #499
-- Ajout d'un fichier de configuration sur le connecteur de transformation #2021
-- Récupération du message de refus lors du rejet de fast parapheur #1391
-- Ajout du connecteur Générateur SEDA Vitam (SEDA 2.2) #1984
-- Ajout du flux Document `ls-document` (identique à `ls-document-pdf` sans restriction sur le type de fichier) #2018
-- Sur la page d'un connecteur, ajout du numéro d'entité des types de dossiers utilisant ce connecteur #2041
-- Possibilité de définir des restrictions sur les étapes studio #2095
-- Ajout dans le journal du nom du document consulté par mail #2076
-
-## Corrections
-
-- Correction des entités affichées dans la liste déroulantes de l'entête pour les utilisateurs ayant un rôle 'aucun droit' #1919
-- Correction du format xml d'import et d'export de collectivités #2051
-- Suppresion de la mention d'erreur lors de l'action voir sur un connecteur de transformation non configuré #1770
-- Passage en état `transformation-error` lorsqu'il y a une erreur lors de la transformation pour générer un élément #2013
-- Le bouton "Traitement par lot" n'apparaît plus si le type de dossier n'est pas sélectionné #2082
-- Les doublons de destinataires de mail sécurisé (to, cc, bcc) ne sont plus comptés dans le décompte total #2056
-- Il manquait `modification-no-change-etat: true` pour l'état `send-tdt-erreur` de l'étape `tdt_actes` #2121
-- La valeur "0" est désormais valide pour les champs texte obligatoires #2123
-- Les utilisateurs désactivés ne reçoivent plus les notifications #2100
-
-## Dépréciations
-
-- Le flux `mailsec` est remplacé par le flux studio `ls-mailsec` #1978
-- Le flux `mailsec-bidir` est remplacé par le flux studio `ls-mailsec-bidir` #1978
-- Le flux `commande-generique` est remplacé par le flux studio `ls-commande` #1968
-- Les flux `pdf-generique` et `document-a-signer` sont remplacés par le flux studio `ls-document-pdf` #1870
-- Les flux `helios-generique` et `helios-automatique` sont remplacés par le flux studio `ls-helios` #1969
-- Les flux `actes-generique` et `actes-automatique` sont remplacés par le flux studio `ls-actes` #1967
+- Connecteurs :
+  - Connecteur de purge global : Possibilité de sélectionner une entité et ses entités filles #1704
+  - Connecteur LDAP : Permettre la configuration des attributs nom, prénom et email #1975
+  - Expression twig : Ajout de la fonction jsonpath_array pour récupérer des listes de données
+    (Connecteurs Transformation et Générateur SEDA) #1376
+  - Connecteur Transformation : Ajout d'un fichier de configuration #2021
+  - Connecteur Générateur SEDA : Ajout du connecteur Générateur SEDA Vitam (SEDA 2.2) #1984
+  - Connecteur iParapheur : Possibilité d'envoyer des PES PJ autonomes vers iParapheur #644
+  - Connecteur Fast : 
+    - Récupération via l'API Fast des circuits disponibles #1912
+    - Récupération du bordereau de signature #1925
+    - Récupération du message de refus lors du rejet de fast parapheur #1391
+    - Récupération de l'acte tamponné pour les Tdt Fast #1558
+    - Possibilité d'envoyer en mode préparation vers Tdt Fast #1541
+- Type de dossier :
+  - Ajout de Dossier de séance (archivage) `ls-dossier-seance` #1946
+  - Ajout de Helios PES PJ `ls-helios-pj` pour envoyer des PES PJ autonomes vers iParapheur #2034
+  - Ajout de Document `ls-document` (identique à `ls-document-pdf` sans restriction sur le type de fichier) #2018
+- Types de dossier personnalisés (studio) :
+  - Ajout du contrôle d'expression régulière pour valider le format d'un champ textarea #1967
+  - Ajustement de la zone de séléction dans la gestion d'éléments #1281
+  - Ajout de la possibilité de définir des `Transformation fixe` (de la forme 'id_element:expression_twig') #1979
+  - Possibilité d'afficher le contenu d'un type de dossier sur un seul onglet en consultation #1980
+  - Possibilité de définir des restrictions sur la disponibilité d'étapes studio (interne cf "restriction_pack") #2095
+- Étape Signature des types de dossiers issus du studio :
+  - Ajout de l'option de co-signature #684
+  - Ajout des champs annotations publiques et privées pour l'envoi vers iParapheur #1883
+  - Ajout du champ 'Date de dernière signature' sur l'onglet Signature #2005
+- Étape tdt_actes des types de dossiers issus du studio :
+  - Ajout du contrôle sur le total des fichiers Acte et Annexes < 157.29 MB #1602
+  - Possibilité de dupliquer un acte #499
+- Étape tdt_helios des types de dossiers issus du studio :
+  - Ajout du contrôle sur la taille du fichier PES ALLER < 128 MB #1602
+  - Ajout de la possibilité de définir le champ "Objet PES ALLER" (prend la valeur NomFic du Fichier PES) #1969
+  - L'extraction des informations du PES ALLER se fait sur le onchange du Fichier PES ALLER,
+    (suppression des actions `helios-pre-extraction` et `helios-extraction` et dépréciation de la classe TdTExtractionHelios) #2084
+  - Ajout de l'extraction de la balise `MtBordHt` PesRecette ou `MtBordHT` PesDepense #2084
+- Étape Mail sécurisé des types de dossiers issus du studio :
+  - Ajout d'un fichier pdf 'Accusé de notification' #1128
+  - Les champs indexés dans le flux de réponse sont affichés dans le récapitulatif du mail sécurisé
+    sans avoir besoin de visualiser la réponse (mail sécurisé avec réponse) #2073
+- Autres :
+  - Possibilité de créer un utilisateur exclusivement API et de gérer ses tokens via l'administrateur de son entité #1943
+  - Possibilité d'envoyer des fichiers lourds en chunk par API
+    (`POST /entite/:id_e/document/:id_d/chunk/:field/:number`)#1350
+  - Ajout d'un captcha avant la lecture d'un mail sécurisé #942
+  - Ajout dans le journal du nom du document consulté par mail #2076
+  - Sur la page d'un connecteur, ajout du numéro d'entité des types de dossiers utilisant ce connecteur #2041
 
 ## Évolutions
 
-- Prise en compte des valeurs par défaut pour les connecteurs #1938
 - Le dossier poursuit son cheminement même s'il n'y a pas de connecteur associé pour une étape de transformation #1981
 - Harmonisation des libellés des types de dossiers et de leurs classements #1897
 - Indicateur des utilisateurs désactivés dans la liste des utilisateurs #2048
 - Renommage des fichiers ayant le même nom dans les champs fichiers multiples lors du téléchargement #2052
 - Modification du type de dossier `gfc-dossier` #1931
-- Possibilité d'ajouter des méta-données entité, utilisateur, document dans le connecteur generateur-seda 
-(Voir "Liste des métadonnées communes à tous les types de dossier" au niveau du connecteur) #1397
+- Possibilité d'ajouter des méta-données entité, utilisateur, document dans le connecteur generateur-seda
+  (Voir "Liste des métadonnées communes à tous les types de dossier" au niveau du connecteur) #1397
+
+## Corrections
+
+- Correction des entités affichées dans la liste déroulantes de l'entête pour les utilisateurs ayant un rôle 'aucun droit' #1919
+- Les utilisateurs désactivés ne reçoivent plus les notifications #2100
+- Correction du format xml d'import et d'export de collectivités #2051
+- Suppression de la mention d'erreur lors de l'action voir sur un connecteur de transformation non configuré #1770
+- Passage en état `transformation-error` lorsqu'il y a une erreur lors de la transformation pour générer un élément #2013
+- Le bouton "Traitement par lot" n'apparaît plus si le type de dossier n'est pas sélectionné #2082
+- Les doublons de destinataires de mail sécurisé (to, cc, bcc) ne sont plus comptés dans le décompte total #2056
+- Il manquait `modification-no-change-etat: true` pour l'état `send-tdt-erreur` de l'étape `tdt_actes` #2121
+- Prise en compte des valeurs par défaut `default` définies dans le yml pour les connecteurs #1938
+- La valeur "0" est désormais valide pour les champs texte obligatoires #2123
+
+## Dépréciations et remplacement de types de dossiers
+
+- `mailsec` est remplacé par le type de dossier issu du studio `ls-mailsec` #1978
+- `mailsec-bidir` est remplacé par le type de dossier issu du studio `ls-mailsec-bidir` #1978
+- `commande-generique` est remplacé par le type de dossier issu du studio `ls-commande` #1968
+- `pdf-generique` et `document-a-signer` sont remplacés par le type de dossier issu du studio `ls-document-pdf` #1870
+- `helios-generique` et `helios-automatique` sont remplacés par le type de dossier issu du studio `ls-helios` #1969
+- `actes-generique` et `actes-automatique` sont remplacés par le type de dossier issu du studio `ls-actes` #1967
 
 # [4.0.15] - 2024-08-12
 
