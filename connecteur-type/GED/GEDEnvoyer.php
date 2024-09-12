@@ -14,7 +14,7 @@ class GEDEnvoyer extends ConnecteurTypeActionExecutor
 
         $donneesFormulaire = $this->getDonneesFormulaire();
         /** @var GEDConnecteur $ged */
-        $ged = @$this->getConnecteur("GED");
+        $ged = $this->getConnecteur("GED");
 
         try {
             $result = $ged->send($donneesFormulaire);
