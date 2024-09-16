@@ -12,20 +12,21 @@
   - Connecteur Transformation : Ajout d'un fichier de configuration #2021
   - Connecteur Générateur SEDA : Ajout du connecteur Générateur SEDA Vitam (SEDA 2.2) #1984
   - Connecteur iparapheur : Possibilité d'envoyer des PES PJ autonomes vers iparapheur (iparapheur >=v5) #644
-  - Connecteur Fast : 
+  - Connecteur Fast Parapheur : 
       - Récupération via l'API Fast des circuits disponibles #1912
       - Récupération du bordereau de signature #1925
-      - Récupération du message de refus lors du rejet de fast parapheur #1391
-      - Récupération de l'acte tamponné pour les Tdt Fast #1558
-      - Possibilité d'envoyer en mode préparation vers Tdt Fast #1541
+      - Récupération du message de refus lors du rejet #1391
+    - Connecteur Fast Tdt :
+      - Récupération de l'acte tamponné #1558
+      - Possibilité d'envoyer en mode préparation #1541
 - Nouveaux Types de dossiers issus du studio (voir aussi Dépréciations au profit de ...) :
   - Ajout de Dossier de séance (archivage) `ls-dossier-seance` #1946
   - Ajout de Helios PES PJ `ls-helios-pj` pour envoyer des PES PJ autonomes vers iparapheur (iparapheur >=v5) #2034
   - Ajout de Document `ls-document` (identique à `ls-document-pdf` sans restriction sur le type de fichier) #2018
 - Types de dossier personnalisés (studio) :
   - Ajout du contrôle d'expression régulière pour valider le format d'un champ textarea #1967
-  - Ajustement de la zone de séléction dans la gestion d'éléments #1281
-  - Ajout de la possibilité de définir des `Transformation fixe` (de la forme 'id_element:expression_twig') #1979
+  - Ajustement de la zone de sélection dans la gestion d'éléments #1281
+  - Nouvelle étape pour définir des `Transformation fixe` (de la forme 'id_element:expression_twig') #1979
   - Possibilité d'afficher le contenu d'un type de dossier sur un seul onglet en consultation #1980
   - Possibilité de définir des restrictions sur la disponibilité d'étapes studio (interne cf "restriction_pack") #2095
 - Étape Signature des types de dossiers issus du studio :
@@ -60,7 +61,7 @@
 - Indicateur des utilisateurs désactivés dans la liste des utilisateurs #2048
 - Renommage des fichiers ayant le même nom dans les champs fichiers multiples lors du téléchargement #2052
 - Modification du type de dossier `gfc-dossier` #1931
-- Possibilité d'ajouter des méta-données entité, utilisateur, document dans le connecteur generateur-seda
+- Possibilité d'ajouter des méta-données entité, utilisateur, document dans les connecteurs generateur-seda
   (Voir "Liste des métadonnées communes à tous les types de dossier" au niveau du connecteur) #1397
 
 ## Corrections
