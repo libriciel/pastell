@@ -12,9 +12,12 @@ class PDFGeneriqueSAEVerifierTest extends PastellTestCase
     public function testCasNominal(): void
     {
         $this->mockCurl([
-            'https://sae/sedaMessages/sequence:ArchiveTransfer/message:Acknowledgement/' .
-            'originOrganizationIdentification:Pastell_API/' .
-            'originMessageIdentifier:15ef78ef665a8777c33d1125783707f8dfb190f82869dc9248e46c5ed396d70b_1542893421'
+            'https://' .
+            urlencode(
+                'sae/sedaMessages/sequence:ArchiveTransfer/message:Acknowledgement/' .
+                'originOrganizationIdentification:Pastell_API/' .
+                'originMessageIdentifier:15ef78ef665a8777c33d1125783707f8dfb190f82869dc9248e46c5ed396d70b_1542893421'
+            )
             => file_get_contents(__DIR__ . '/fixtures/acuse-de-reception-asalae.xml'),
         ]);
 
@@ -110,8 +113,11 @@ class PDFGeneriqueSAEVerifierTest extends PastellTestCase
     {
         $this->mockCurl(
             [
-                'https://sae/sedaMessages/sequence:ArchiveTransfer/message:Acknowledgement/' .
-                'originOrganizationIdentification:Pastell_API/originMessageIdentifier:mon_id_de_transfert_phpunit'
+                'https://' .
+                urlencode(
+                    'sae/sedaMessages/sequence:ArchiveTransfer/message:Acknowledgement/' .
+                    'originOrganizationIdentification:Pastell_API/originMessageIdentifier:mon_id_de_transfert_phpunit'
+                )
                 => 'pas disponible erreur 500',
             ],
             500
