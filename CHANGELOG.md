@@ -1,3 +1,9 @@
+# [4.0.16] - 2024-10-14
+
+## Correction
+
+- Les expressions xpath ne fonctionnaient pas sur les éléments ayant un namespace sans préfixe #2086
+
 # [4.0.15] - 2024-08-12
 
 ## Évolutions
