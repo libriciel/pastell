@@ -86,6 +86,7 @@
 - Il manquait `modification-no-change-etat: true` pour l'état `send-tdt-erreur` de l'étape `tdt_actes` #2121
 - Prise en compte des valeurs par défaut `default` définies dans le yml pour les connecteurs #1938
 - La valeur "0" est désormais valide pour les champs texte obligatoires #2123
+- Conservation des champs mots de passe lors de l'édition d'un formulaire #1701
 
 ## Dépréciation
 
