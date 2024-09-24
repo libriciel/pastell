@@ -89,9 +89,12 @@ class SAEValiderTest extends PastellTestCase
     private function prepareValidation(string $sae_reponse_file): string
     {
         $this->mockCurl([
-            'https://sae/sedaMessages/sequence:ArchiveTransfer/message:ArchiveTransferReply/' .
-            'originOrganizationIdentification:LS_PA/' .
-            'originMessageIdentifier:15ef78ef665a8777c33d1125783707f8dfb190f82869dc9248e46c5ed396d70b_1542893421'
+            'https://' .
+            urlencode(
+                'sae/sedaMessages/sequence:ArchiveTransfer/message:ArchiveTransferReply/' .
+                'originOrganizationIdentification:LS_PA/' .
+                'originMessageIdentifier:15ef78ef665a8777c33d1125783707f8dfb190f82869dc9248e46c5ed396d70b_1542893421'
+            )
             => file_get_contents($sae_reponse_file),
         ]);
 

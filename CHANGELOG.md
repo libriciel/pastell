@@ -3,6 +3,7 @@
 ## Correction
 
 - Les expressions xpath ne fonctionnaient pas sur les éléments ayant un namespace sans préfixe #2086
+- Il n'était pas possible d'avoir d'espace dans l'identifiant du service versant sur asalae #1683
 
 # [4.0.15] - 2024-08-12
 
