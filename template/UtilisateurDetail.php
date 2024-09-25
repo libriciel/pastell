@@ -164,7 +164,11 @@ use Pastell\Utilities\Certificate;
                     <?php endif; ?>
                 </td>
                 <td>
-                    <?php if ($utilisateur_edition) : ?>
+                    <?php if (
+                            $utilisateur_edition &&
+                            ($infoRole['role'] !== 'aucun droit' ||
+                            count($this->getRoleUtilisateur()->getRole($id_u)) > 1)
+) : ?>
                         <?php
                         $deleteRoleUrl = \sprintf(
                             'Utilisateur/supprimeRole?id_u=%s&role=%s&id_e=%s',
