@@ -1,0 +1,8 @@
+{
+    "GpsAltitude": "{{100 + gps_altitude }}",
+    "GpsAltitudeRef": "100",
+    "GpsLatitude": "{{ gps_latitude }}",
+    "GpsLatitudeRef": "{{ gps_latitude_ref }}",
+    "GpsLongitude": "{{ gps_longitude }}",
+    "GpsLongitudeRef": "{{ gps_longitude_ref }}"	
+}

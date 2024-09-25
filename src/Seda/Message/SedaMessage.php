@@ -53,6 +53,8 @@ class SedaMessage implements \JsonSerializable
     /** @var Keyword[] $keywords */
     private array $keywords = [];
 
+    private array $custom = [];
+
     public function setVersion(SedaVersion $version): self
     {
         $this->version = $version;
@@ -118,6 +120,12 @@ class SedaMessage implements \JsonSerializable
         return $this;
     }
 
+    public function addCustom(string $id, ?string $value): self
+    {
+        $this->custom[$id] = $value;
+        return $this;
+    }
+
     public function addFile(File $file): self
     {
         $this->files[] = $file;
@@ -148,6 +156,7 @@ class SedaMessage implements \JsonSerializable
             'AccessRule' => $this->accessRule,
             'AppraisalRule' => $this->appraisalRule,
             'Keywords' => $this->keywords,
+            'Custom' => $this->custom,
             'ArchiveUnits' => $this->archiveUnits,
             'Files' => $this->files,
             'CustodialHistory' => $this->custodialHistory,

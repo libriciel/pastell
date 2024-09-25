@@ -12,8 +12,10 @@ use NotFoundException;
 use Pastell\Connector\AbstractSedaGeneratorConnector;
 use Pastell\Seda\Message\SedaMessageBuilder;
 use Pastell\Service\Document\DocumentPastellMetadataService;
+use Pastell\Step\SAE\Enum\SAEActionsEnum;
 use PastellTestCase;
 use TmpFolder;
+use TypeDossierLoader;
 use UnrecoverableException;
 
 abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
@@ -340,5 +342,94 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
             "L'URL du générateur n'a pas été trouvé. Avez-vous pensé à créer un connecteur global Generateur SEDA et à l'associer ?"
         );
         $sedaGeneriqueConnector->testConnexion();
+    }
+
+    /**
+     * @throws \TypeDossierException
+     * @throws NotFoundException
+     * @throws DonneesFormulaireException
+     * @throws \JsonException
+     */
+    public function testGenerateArchiveWithTemplateAndAdvancedData(): void
+    {
+        $fixtureFolder = __DIR__ . '/fixtures/seda-with-template-and-advanced-data/';
+        $exceptedFolder = $this->getExpectedCallDirectory() . '/seda-with-template-and-advanced-data/';
+
+        $this->mockCurl([
+            'http://seda-generator:8080/generateWithTemplate' => file_get_contents(
+                $fixtureFolder . 'bordereau.xml'
+            ),
+        ]);
+
+        $typeDossierSAETemplate = 'studio-sae-for-template-gps';
+        $typeDossierLoader = $this->getObjectInstancier()->getInstance(TypeDossierLoader::class);
+        $typeDossierLoader->createTypeDossierDefinitionFile($typeDossierSAETemplate);
+
+        $document = $this->createDocument($typeDossierSAETemplate);
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document['id_d']);
+        $donneesFormulaire->setTabData([
+            'titre' => 'test sae whith template gps',
+            'gps_altitude' => '598',
+            'gps_altitude_ref' => '0',
+            'gps_latitude' => '45 18 46.922',
+            'gps_latitude_ref' => 'N',
+            'gps_longitude' => '5 23 32.229',
+            'gps_longitude_ref' => 'E'
+        ]);
+        $donneesFormulaire->addFileFromCopy(
+            'fichier',
+            'vide.pdf',
+            $fixtureFolder . 'vide.pdf'
+        );
+
+        $saeConnector = $this->createConnector('fakeSAE', 'SAE');
+        $this->associateFluxWithConnector($saeConnector['id_ce'], $typeDossierSAETemplate, 'SAE');
+
+        $id_ce = $this->createSedaGeneriqueConnector();
+        $connecteurConfig = $this->getConnecteurFactory()->getConnecteurConfig($id_ce);
+        $connecteurConfig->addFileFromCopy(
+            'files',
+            'file.xml',
+            $fixtureFolder . 'connecteur-files.xml'
+        );
+        $connecteurConfig->addFileFromCopy(
+            'data',
+            'data.json',
+            $fixtureFolder . 'connecteur-data.json'
+        );
+        $connecteurConfig->addFileFromCopy(
+            'template',
+            'template_gps.xml.twig',
+            $fixtureFolder . 'seda_2.2-asalae_template_gps.xml.twig'
+        );
+        $connecteurConfig->addFileFromCopy(
+            'advanced_data',
+            'advanced_data_gps.json',
+            $fixtureFolder . 'advanced_data_gps.json'
+        );
+        $this->associateFluxWithConnector($id_ce, $typeDossierSAETemplate, 'Bordereau SEDA');
+
+        /** @var AbstractSedaGeneratorConnector $connector */
+        $connector = $this->getConnecteurFactory()->getConnecteurById($id_ce);
+        $connector->setDocDonneesFormulaire($donneesFormulaire);
+        $message = $connector->getMessage(
+            new \FluxDataSedaDefault($donneesFormulaire),
+            json_decode($connecteurConfig->getFileContent('data'), true, 512, JSON_THROW_ON_ERROR),
+            $connecteurConfig->getFileContent('files'),
+            json_decode($connecteurConfig->getFileContent('advanced_data'), true, 512, JSON_THROW_ON_ERROR),
+        );
+
+        $json_content = \json_encode($message, \JSON_THROW_ON_ERROR);
+        //\mkdir($exceptedFolder);
+        //\file_put_contents(
+        //    $exceptedFolder . 'expected_call.json',
+        //    \json_encode($message, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT)
+        //);
+        static::assertJsonStringEqualsJsonFile(
+            $exceptedFolder . 'expected_call.json',
+            $json_content
+        );
+
+        $typeDossierLoader->unload();
     }
 }

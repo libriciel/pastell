@@ -10,8 +10,12 @@
   - Expression twig : Ajout de la fonction jsonpath_array pour récupérer des listes de données
     (Connecteurs Transformation et Générateur SEDA) #1376
   - Connecteur Transformation : Ajout d'un fichier de configuration #2021
-  - Connecteur Générateur SEDA : Ajout du connecteur Générateur SEDA Vitam (SEDA 2.2) #1984
   - Connecteur iparapheur : Possibilité d'envoyer des PES PJ autonomes vers iparapheur (iparapheur >=v5) #644
+  - Connecteurs Générateurs SEDA :
+      - Ajout du connecteur Générateur SEDA Vitam (SEDA 2.2) #1984
+      - Possibilité d'ajouter des méta-données entité, utilisateur, document 
+        (Voir "Liste des métadonnées communes à tous les types de dossier" au niveau du connecteur) #1397
+      - Permettre d'utiliser le champ Données JSON #2098
   - Connecteur Fast Parapheur : 
       - Récupération via l'API Fast des circuits disponibles #1912
       - Récupération du bordereau de signature #1925
@@ -61,8 +65,6 @@
 - Indicateur des utilisateurs désactivés dans la liste des utilisateurs #2048
 - Renommage des fichiers ayant le même nom dans les champs fichiers multiples lors du téléchargement #2052
 - Modification du type de dossier `gfc-dossier` #1931
-- Possibilité d'ajouter des méta-données entité, utilisateur, document dans les connecteurs generateur-seda
-  (Voir "Liste des métadonnées communes à tous les types de dossier" au niveau du connecteur) #1397
 
 ## Corrections
 

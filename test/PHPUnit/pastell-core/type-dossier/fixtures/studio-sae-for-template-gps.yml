@@ -1,0 +1,301 @@
+nom: studio-sae-for-template-gps
+type: 'Types de dossier personnalisés'
+description: ''
+connecteur:
+    - 'Bordereau SEDA'
+    - SAE
+affiche_one: false
+formulaire:
+    onglet1:
+        titre:
+            name: Titre
+            type: text
+            requis: true
+            multiple: false
+            commentaire: ''
+            title: true
+            index: true
+        fichier:
+            name: Fichier
+            type: file
+            requis: true
+            multiple: false
+            commentaire: ''
+        gps_altitude:
+            name: gps_altitude
+            type: text
+            requis: false
+            multiple: false
+            commentaire: ''
+        gps_altitude_ref:
+            name: gps_altitude_ref
+            type: text
+            requis: false
+            multiple: false
+            commentaire: ''
+        gps_latitude:
+            name: gps_latitude
+            type: text
+            requis: false
+            multiple: false
+            commentaire: ''
+        gps_latitude_ref:
+            name: gps_latitude_ref
+            type: text
+            requis: false
+            multiple: false
+            commentaire: ''
+        gps_longitude:
+            name: gps_longitude
+            type: text
+            requis: false
+            multiple: false
+            commentaire: ''
+        gps_longitude_ref:
+            name: gps_longitude_ref
+            type: text
+            requis: false
+            multiple: false
+            commentaire: ''
+    Cheminement:
+        envoi_sae:
+            name: "Système d'archivage électronique"
+            type: checkbox
+            onchange: cheminement-change
+            default: checked
+            read-only: true
+    'Configuration SAE':
+        sae_config:
+            name: 'Configuration du versement SAE'
+            commentaire: "Fichier JSON {cle1:valeur1,cle2:valeur2,...}.\nLes métadonnées de ce fichier prévalent sur les métadonnées Pastell"
+            type: file
+    SAE:
+        sae_show:
+            no-show: true
+        journal:
+            name: 'Faisceau de preuves'
+            type: file
+        date_journal_debut:
+            name: 'Date du premier évènement journalisé'
+        date_cloture_journal:
+            name: 'Date de clôture du journal'
+        date_cloture_journal_iso8601:
+            name: 'Date de clôture du journal (iso 8601)'
+        sae_transfert_id:
+            name: 'Identifiant de transfert'
+            index: true
+        sae_bordereau:
+            name: 'Bordereau SEDA'
+            type: file
+        sae_archive:
+            name: "Paquet d'archive (SIP)"
+            type: file
+        ar_sae:
+            type: file
+            name: 'Accusé de réception SAE'
+        sae_ack_comment:
+            name: "Commentaire de l'accusé de réception"
+        reply_sae:
+            type: file
+            name: 'Réponse du SAE'
+        sae_archival_identifier:
+            name: "Identifiant de l'archive sur le SAE"
+        sae_atr_comment:
+            name: 'Commentaire de la réponse du SAE'
+champs-affiches:
+    - titre
+    - dernier_etat
+    - date_dernier_etat
+    - titre
+champs-recherche-avancee:
+    - type
+    - id_e
+    - lastetat
+    - last_state_begin
+    - etatTransit
+    - state_begin
+    - notEtatTransit
+    - search
+    - titre
+page-condition:
+    'Configuration SAE':
+        envoi_sae: true
+    SAE:
+        sae_show: true
+action:
+    creation:
+        name-action: Créer
+        name: Créé
+        rule:
+            no-last-action: ''
+    modification:
+        name-action: Modifier
+        name: 'En cours de rédaction'
+        rule:
+            last-action:
+                - creation
+                - modification
+                - importation
+    supression:
+        name-action: Supprimer
+        name: Supprimé
+        rule:
+            last-action:
+                - creation
+                - modification
+                - importation
+                - termine
+                - fatal-error
+                - rejet-sae
+        action-class: Supprimer
+        warning: 'Êtes-vous sûr ?'
+    importation:
+        name: 'Importation du document'
+        rule:
+            role_id_e: no-role
+        action-automatique: orientation
+    orientation:
+        name: 'Envoi du document'
+        name-action: 'Envoyer le document'
+        rule:
+            last-action:
+                - creation
+                - modification
+                - importation
+                - accepter-sae
+            document_is_valide: true
+        action-class: OrientationTypeDossierPersonnalise
+    termine:
+        name: 'Traitement terminé'
+        rule:
+            role_id_e: no-role
+    reouverture:
+        name: 'Rouvrir le dossier'
+        rule:
+            last-action:
+                - termine
+        action-class: Reopen
+    cheminement-change:
+        no-workflow: true
+        rule:
+            role_id_e: 'no-role,'
+        action-class: CheminementChangeTypeDossierPersonnalise
+    preparation-send-sae:
+        name: "Préparation de l'envoi au SAE"
+        rule:
+            role_id_e: no-role
+        action-automatique: generate-sip
+    generate-sip:
+        name-action: "Générer le paquet d'archive (SIP)"
+        name: "Paquet d'archive (SIP) généré"
+        rule:
+            last-action:
+                - preparation-send-sae
+                - generate-sip-error
+                - rejet-sae
+                - erreur-envoie-sae
+        action-class: StandardAction
+        connecteur-type: SAE
+        connecteur-type-action: Pastell\Step\SAE\Action\SAEGenerateArchiveAction
+        action-automatique: send-archive
+        connecteur-type-mapping:
+            generate-sip-error: generate-sip-error
+            sae_show: sae_show
+            sae_bordereau: sae_bordereau
+            sae_archive: sae_archive
+            sae_config: sae_config
+            journal: journal
+            date_journal_debut: date_journal_debut
+            date_cloture_journal: date_cloture_journal
+            date_cloture_journal_iso8601: date_cloture_journal_iso8601
+    generate-sip-error:
+        name: "Erreur lors de la génération de l'archive"
+        rule:
+            role_id_e: no-role
+    send-archive:
+        name-action: 'Verser au SAE'
+        name: 'Versé au SAE'
+        rule:
+            last-action:
+                - generate-sip
+                - rejet-sae
+                - erreur-envoie-sae
+        action-class: StandardAction
+        connecteur-type: SAE
+        connecteur-type-action: Pastell\Step\SAE\Action\SAESendArchiveAction
+        action-automatique: verif-sae
+        connecteur-type-mapping:
+            sae_transfert_id: sae_transfert_id
+            sae_bordereau: sae_bordereau
+            sae_archive: sae_archive
+            erreur-envoie-sae: erreur-envoie-sae
+    erreur-envoie-sae:
+        name: "Erreur lors de l'envoi au SAE"
+        rule:
+            role_id_e: no-role
+    verif-sae:
+        name-action: "Récupérer l'AR du dossier sur le SAE"
+        name: "Récuperation de l'AR sur le SAE"
+        rule:
+            last-action:
+                - send-archive
+                - verif-sae-erreur
+        action-class: StandardAction
+        connecteur-type: SAE
+        connecteur-type-action: SAEVerifier
+        connecteur-type-mapping:
+            sae_transfert_id: sae_transfert_id
+            ar_sae: ar_sae
+            ar-recu-sae: ar-recu-sae
+            verif-sae-erreur: verif-sae-erreur
+            sae_ack_comment: sae_ack_comment
+            sae_bordereau: sae_bordereau
+            ack-not-provided: ack-not-provided
+    verif-sae-erreur:
+        name: "Erreur lors de la récupération de l'AR"
+        rule:
+            role_id_e: no-role
+    ar-recu-sae:
+        name: 'AR SAE reçu'
+        rule:
+            role_id_e: no-role
+        action-automatique: validation-sae
+    ack-not-provided:
+        name: 'En attente de la validation par le SAE'
+        rule:
+            role_id_e: no-role
+        action-automatique: validation-sae
+    validation-sae:
+        name-action: "Vérifier l'acceptation par le SAE"
+        name: "Vérification de l'acceptation par le SAE"
+        rule:
+            last-action:
+                - ar-recu-sae
+                - ack-not-provided
+                - validation-sae-erreur
+        action-class: StandardAction
+        connecteur-type: SAE
+        connecteur-type-action: SAEValider
+        connecteur-type-mapping:
+            sae_transfert_id: sae_transfert_id
+            reply_sae: reply_sae
+            erreur-envoie-sae: erreur-envoie-sae
+            validation-sae-erreur: validation-sae-erreur
+            accepter-sae: accepter-sae
+            rejet-sae: rejet-sae
+            sae_atr_comment: sae_atr_comment
+            sae_archival_identifier: sae_archival_identifier
+            sae_bordereau: sae_bordereau
+    validation-sae-erreur:
+        name: 'Erreur lors de la vérification de la validité du transfert'
+        rule:
+            role_id_e: no-role
+    accepter-sae:
+        name: 'Transfert accepté par le SAE'
+        rule:
+            role_id_e: no-role
+        action-automatique: orientation
+    rejet-sae:
+        name: 'Transfert rejeté par le SAE'
+        rule:
+            role_id_e: no-role

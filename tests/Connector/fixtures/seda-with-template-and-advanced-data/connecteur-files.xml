@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<Root>
+    <File id="7ef9e750-643c-4c03-88d1-64a09969fd51" description="Fichier" field_expression="fichier"
+          do_not_put_mime_type=""/>
+    <ArchiveUnit id="bd6993db-e6d7-42a1-b5dc-dd19a5dadb5e" description="" field_expression="" do_not_put_mime_type=""/>
+</Root>
