@@ -80,6 +80,7 @@
 - Il manquait `modification-no-change-etat: true` pour l'état `send-tdt-erreur` de l'étape `tdt_actes` #2121
 - Prise en compte des valeurs par défaut `default` définies dans le yml pour les connecteurs #1938
 - La valeur "0" est désormais valide pour les champs texte obligatoires #2123
+- Health check : date du premier enregistrement dans le journal corrigée #1999
 
 ## Dépréciation
 
@@ -109,7 +110,6 @@
 - Connecteur `recup-parapheur` : Retrait de enum Type #2071
 - Les fichiers commençant par un point ou un tiret ne pouvaient pas être archivés #2078
 - Le message d'erreur de s2low sur les transactions en erreur était mal encodé #1282
-- Health check : date du premier enregistrement journal corrigée #1999
 
 # [4.0.14] - 2024-06-10
 
