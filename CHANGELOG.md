@@ -1,4 +1,4 @@
-# [4.1.0]
+# [4.1.0] - 2024-09-27
 
 ***Cette version nécessite une mise à jour du générateur SEDA en 1.1.0***
 
