@@ -1,4 +1,4 @@
-nom: 'Bordereau SEDA NG'
+nom: 'Bordereau SEDA NG - déprécié'
 description: 'Permet de générer des bordereaux SEDA avec un fichier relaxNG'
 type: 'Bordereau SEDA'
 formulaire:
