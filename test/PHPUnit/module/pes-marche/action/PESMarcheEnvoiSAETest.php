@@ -82,7 +82,7 @@ class PESMarcheEnvoiSAETest extends PastellMarcheTestCase
         $tmpFolder = new TmpFolder();
         $tmp_folder = $tmpFolder->create();
         file_put_contents("$tmp_folder/archive.tgz", $sae_archive);
-        exec("tar xvzf $tmp_folder/archive.tgz -C $tmp_folder");
+        exec("tar xvzf $tmp_folder/archive.tgz -C $tmp_folder 2>/dev/null");
 
         $this->assertEquals(['.','..','PESALR2_XYZ.xml','archive.tgz'], scandir("$tmp_folder/"));
 

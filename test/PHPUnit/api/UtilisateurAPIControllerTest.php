@@ -355,6 +355,7 @@ class UtilisateurAPIControllerTest extends PastellTestCase
         $token = $this->getInternalAPI()->get('utilisateur/token');
         $this->getInternalAPI()->delete('utilisateur/token/1');
         self::assertNotEquals($token[0], $this->getInternalAPI()->get('utilisateur/token'));
+        $this->expectOutputRegex('/HTTP\/1.1 204 No Content/');
     }
 
     public function testDeleteTokenFail(): void
