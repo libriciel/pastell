@@ -9,24 +9,25 @@ class CPPChoixService extends ChoiceActionExecutor
     public function go()
     {
         $recuperateur = $this->getRecuperateur();
-        $idService = $recuperateur->get('idService');
+        $idService = (int)$recuperateur->get('idService');
+
         if (! $idService) {
-            $this->getConnecteurProperties()->setData('service_destinataire_libelle', "");
+            $this->getConnecteurProperties()->setData('service_destinataire_libelle', '');
             $this->getConnecteurProperties()->setData('service_destinataire', '');
             return true;
         }
 
-        $service_list = $this->displayAPI();
+        /** @var CPP $cpp */
+        $cpp = $this->getMyConnecteur();
+        $serviceInfo =  $cpp->getService($idService);
 
-        foreach ($service_list['listeServices'] as $service_info) {
-            if ($service_info['idService'] == $idService) {
-                $this->getConnecteurProperties()->setData(
-                    'service_destinataire_libelle',
-                    "{$service_info['libelleService']} ({$service_info['codeService']})"
-                );
-                $this->getConnecteurProperties()->setData('service_destinataire', $service_info['idService']);
-            }
-        }
+        $this->getConnecteurProperties()->setData(
+            'service_destinataire_libelle',
+            "{$serviceInfo['informationsGenerales']['nomService']} 
+            ({$serviceInfo['informationsGenerales']['codeService']})"
+        );
+        $this->getConnecteurProperties()->setData('service_destinataire', $idService);
+
         return true;
     }
 
@@ -36,7 +37,18 @@ class CPPChoixService extends ChoiceActionExecutor
      */
     public function display()
     {
-        $this->setViewParameter('service_list', $this->displayAPI());
+        $recuperateur = $this->getRecuperateur();
+        $offset = (int)$recuperateur->get('offset', 0);
+        $limit = CPPWrapper::NB_SERVICE_PAR_PAGE;
+
+        $serviceList = $this->getListeService(intdiv($offset, $limit) + 1);
+        $count = $serviceList['parametresRetour']['total'];
+
+        $this->setViewParameter('service_list', $serviceList);
+        $this->setViewParameter('offset', $offset);
+        $this->setViewParameter('limit', $limit);
+        $this->setViewParameter('count', $count);
+
         $this->renderPage("Choix d'un service Chorus Pro", 'connector/cpp/CPPChoixServiceTemplate');
         return true;
     }
@@ -47,8 +59,21 @@ class CPPChoixService extends ChoiceActionExecutor
      */
     public function displayAPI()
     {
+        $recuperateur = $this->getRecuperateur();
+        $pageCourante = (int)$recuperateur->get('pageCourante');
+        $nbResultatsParPage = (int)$recuperateur->get('nbResultatsParPage');
+        return $this->getListeService($pageCourante, $nbResultatsParPage);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function getListeService(
+        int $pageCourante = 1,
+        int $nbResultatsParPage = CPPWrapper::NB_SERVICE_PAR_PAGE
+    ): array {
         /** @var CPP $cpp */
         $cpp = $this->getMyConnecteur();
-        return $cpp->getListeService();
+        return $cpp->getListeService($pageCourante, $nbResultatsParPage);
     }
 }

@@ -224,6 +224,108 @@ class CPPWrapperTest extends ExtensionCppTestCase
     }
 
     /**
+     * @throws CPPException
+     * @throws JsonException
+     * @throws CPPWrapperExceptionServices
+     */
+    public function testGetListeService(): void
+    {
+        $returnData = [
+            'codeRetour' => 0,
+            'libelle' => 'TRA_MSG_00.000',
+            'listeServices' => [
+                [
+                    'idService' => 10136558,
+                    'codeService' => 'SERVICE_DESTINATAIRETAA070',
+                    'libelleService' => 'SERVICE_DESTINATAIRETAA070',
+                    'dateDbtService' => '2016-12-28 08:30',
+                    'estActif' => true
+                ],
+                [
+                    'idService' => 10136557,
+                    'codeService' => 'FACTURES_PUBLIQUES',
+                    'libelleService' => 'Service des factures publiques',
+                    'dateDbtService' => '2016-12-28 08:30',
+                    'estActif' => true
+                ]
+            ],
+            'parametresRetour' => [
+                'pageCourante' => 1,
+                'pages' => 1,
+                'nbResultatsParPage' => 20,
+                'total' => 2,
+            ]
+        ];
+
+        $curlWrapper = $this->getMockBuilder(CurlWrapper::class)->disableOriginalConstructor()->getMock();
+        $curlWrapper->method('get')->willReturn(json_encode($returnData, JSON_THROW_ON_ERROR));
+        $curlWrapper->method('getLastHttpCode')->willReturn(200);
+
+        $curlWrapperFactory = $this->getMockBuilder(CurlWrapperFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $curlWrapperFactory->method('getInstance')->willReturn($curlWrapper);
+
+        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
+        $cppWrapperConfig = $this->getDefaultWrapperConfig();
+        $cppWrapperConfig->identifiant_structure_cpp = 25783752;
+        $this->cppWrapper = $this->getCPPWrapper($cppWrapperConfig);
+
+        $this->assertEquals($returnData, $this->cppWrapper->getListeService());
+    }
+
+    /**
+     * @throws CPPException
+     * @throws JsonException
+     * @throws CPPWrapperExceptionServices
+     */
+    public function testGetService(): void
+    {
+        $returnData = [
+            'codeRetour' => 0,
+            'libelle' => 'TRA_MSG_00.000',
+            'parametres' => [
+                'dateCreation' => '2016-12-28T08:31:19+01:00',
+                'dateDebutValidite' => '2016-12-28T08:30:47+01:00',
+                'numeroEngagement' => false,
+            ],
+            'informationsGenerales' => [
+                'codeService' => 'FACTURES_PUBLIQUES',
+                'nomService' => 'Service des factures publiques',
+                'descriptionService' => 'Service des factures publiques',
+            ],
+            'adressePostale' => [
+                'adresse' => '1 rue Test',
+                'complementAdresse1' => 'Batiment A',
+                'complementAdresse2' => 'Etage 1',
+                'codePostal' => '75000',
+                'ville' => 'Test',
+                'pays' => 'France',
+                'telephone' => '234567890',
+                'indicatifTelephone' => '+33',
+                'fax' => '234567890',
+                'indicatifFax' => '+33',
+            ]
+        ];
+
+        $curlWrapper = $this->getMockBuilder(CurlWrapper::class)->disableOriginalConstructor()->getMock();
+        $curlWrapper->method('get')->willReturn(json_encode($returnData, JSON_THROW_ON_ERROR));
+        $curlWrapper->method('getLastHttpCode')->willReturn(200);
+
+        $curlWrapperFactory = $this->getMockBuilder(CurlWrapperFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $curlWrapperFactory->method('getInstance')->willReturn($curlWrapper);
+
+        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
+        $cppWrapperConfig = $this->getDefaultWrapperConfig();
+        $cppWrapperConfig->identifiant_structure_cpp = 25783752;
+        $this->cppWrapper = $this->getCPPWrapper($cppWrapperConfig);
+
+        $this->assertEquals($returnData, $this->cppWrapper->getService(10136557));
+    }
+
+    /**
      * @throws Exception
      */
     public function testGetIdentifiantStructureCPPWhenFalse()

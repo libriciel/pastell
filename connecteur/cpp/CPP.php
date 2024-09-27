@@ -275,13 +275,21 @@ class CPP extends PortailFactureConnecteur
     }
 
     /**
-     * @return array|mixed
      * @throws Exception
      */
-    public function getListeService()
+    public function getListeService(int $pageCourante, int $nbResultatsParPage): array
     {
-        return $this->cppWrapper->getListeService();
+        return $this->cppWrapper->getListeService($pageCourante, $nbResultatsParPage);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function getService(int $idService): array
+    {
+        return $this->cppWrapper->getService($idService);
+    }
+
 
     /**
      * @param $filename

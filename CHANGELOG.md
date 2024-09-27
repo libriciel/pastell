@@ -10,6 +10,8 @@
 - Les expressions xpath ne fonctionnaient pas sur les éléments ayant un namespace sans préfixe #2086
 - Il n'était pas possible d'avoir d'espace dans l'identifiant du service versant sur asalae #1683
 - Suppression des chunks temporaires après l'envoi en SAE #2103
+- Connecteur CPP : La liste des services n'est plus limité à 10. 
+  Via l'API Pastell on peut utiliser les parametres pageCourante et nbResultatsParPage pour l'externalData service_destinataire_libelle #2090
 
 # [4.0.15] - 2024-08-12
 
