@@ -126,6 +126,8 @@ abstract class PastellTestCase extends TestCase
             'pack_libersign' => true,
             'suppl_recup_parapheur_corbeille_connector' => true,
             'suppl_recup_fin_parapheur' => true,
+            'module_connecteur_fast' => true,
+            'module_connecteur_vitam' => true,
         ]);
     }
 

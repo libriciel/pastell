@@ -1,6 +1,8 @@
 nom: Vitam
 type: SAE
 description: 'Connecteur vers le SAE Vitam'
+restriction_pack:
+    - module_connecteur_vitam
 formulaire:
     page:
         url:

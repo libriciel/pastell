@@ -1,6 +1,8 @@
 nom: 'Fast Parapheur'
 type: signature
 description: 'Connecteur Fast parapheur'
+restriction_pack:
+    - module_connecteur_fast
 formulaire:
     page:
         wsdl:

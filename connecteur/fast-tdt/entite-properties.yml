@@ -1,6 +1,8 @@
 nom: 'Fast Tdt'
 type: TdT
 description: 'Connecteur Fast Tdt'
+restriction_pack:
+    - module_connecteur_fast
 formulaire:
     page:
         url:

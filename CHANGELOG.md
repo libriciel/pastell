@@ -65,6 +65,8 @@
 - Indicateur des utilisateurs désactivés dans la liste des utilisateurs #2048
 - Renommage des fichiers ayant le même nom dans les champs fichiers multiples lors du téléchargement #2052
 - Modification du type de dossier `gfc-dossier` #1931
+- Les connecteurs "Fast TdT", "Fast parapheur", "Vitam", "Générateur SEDA Vitam (SEDA 2.1)" et
+  "Générateur SEDA Vitam (SEDA 2.2)" sont désormais soumis à activation
 
 ## Corrections
 
