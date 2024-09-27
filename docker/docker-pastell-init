@@ -74,6 +74,14 @@ if (${PACK_RECUP_FIN_PARAPHEUR:-false}) {
   \$packs["suppl_recup_fin_parapheur"]=true;
 }
 
+if (${PACK_FAST_CONNECTORS:-false}) {
+  \$packs["module_connecteur_fast"] = true;
+}
+
+if (${PACK_VITAM_CONNECTORS:-false}) {
+  \$packs["module_connecteur_vitam"] = true;
+}
+
 define("LIST_PACK", \$packs);
 
 define("NB_WORKERS", "${NB_WORKERS:-5}");

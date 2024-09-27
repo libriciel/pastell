@@ -1,4 +1,6 @@
 nom: 'Générateur SEDA Vitam (SEDA 2.2)'
 type: 'Bordereau SEDA'
 description: "Permet de générer des bordereaux SEDA 2.2 à destination de Vitam"
+restriction_pack:
+  - module_connecteur_vitam
 heritage: seda-generator-common

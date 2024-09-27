@@ -1,6 +1,8 @@
 nom: 'Fast Parapheur'
 type: signature
 description: "Permet de faire des actions sur l'ensemble des connecteurs Fast parapheur installés sur Pastell."
+restriction_pack:
+    - module_connecteur_fast
 formulaire:
     page:
         changement_certificat:
