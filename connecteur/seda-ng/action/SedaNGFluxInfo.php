@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated 4.1.0, use SedaGenerator instead, to be removed in v5
+ */
 class SedaNGFluxInfo extends ChoiceActionExecutor
 {
     public function getMyConnecteurConfig()

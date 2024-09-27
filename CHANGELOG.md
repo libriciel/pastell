@@ -81,6 +81,10 @@
 - Prise en compte des valeurs par défaut `default` définies dans le yml pour les connecteurs #1938
 - La valeur "0" est désormais valide pour les champs texte obligatoires #2123
 
+## Dépréciation
+
+- Le connecteur 'Bordereau SEDA NG' est déprécié au profit des connecteurs 'Générateur SEDA' #1664
+
 ## Dépréciations au profit de nouveaux types de dossiers issus du studio
 
 - `mailsec` est déprécié au profit du nouveau type de dossier issu du studio `ls-mailsec` #1978
