@@ -663,19 +663,14 @@ class DocumentAPIControllerTest extends PastellTestCase
 
             $chunkDirectory = $this->getObjectInstancier()->getInstance('upload_chunk_directory');
             $destination = $chunkDirectory . '/' . $chunkName;
-
-            if (copy($source, $destination)) {
-                echo "Le fichier a été déplacé avec succès.\n";
-            } else {
-                echo "Erreur lors du déplacement du fichier.\n";
-            }
-
+            copy($source, $destination);
             $response = $this->getInternalAPI()->post(
                 "entite/1/document/$id_d/chunk/fichier/0"
             );
 
             static::assertSame('success', $response['result']);
             static::assertSame($i < $chunkNumber ? 'Chunk uploaded' : 'File uploaded', $response['message']);
+            $this->expectOutputRegex('/HTTP\/1.1 (200 Ok|201 Created)/');
         }
         static::assertSame('123', $this->getDonneesFormulaireFactory()->get($id_d)->getFileContent('fichier', '0'));
     }
