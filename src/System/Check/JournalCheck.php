@@ -14,8 +14,11 @@ class JournalCheck implements CheckInterface
 
     public function check(): array
     {
-        $firstLineDate = $this->journal->getFirstLineDate();
-        $firstLineDateString = empty($firstLineDate) ? '' : round((time() - strtotime($firstLineDate)) / 86400) . ' jours';
+        $firstLineDate = round(
+            (time() - strtotime(
+                $this->journal->getFirstLineDate() ?: date('Y-m-d H:i:s')
+            )) / 86400
+        );
         return [
             new HealthCheckItem(
                 "Nombre d'enregistrements dans la table journal",
@@ -32,8 +35,8 @@ class JournalCheck implements CheckInterface
             new HealthCheckItem("Nombre de mois de conservation du journal", (string)JOURNAL_MAX_AGE_IN_MONTHS),
             (new HealthCheckItem(
                 "Age du premier enregistrement de la table journal",
-                $firstLineDateString
-            ))->setSuccess(round((time() - strtotime($firstLineDate)) / 86400) <= JOURNAL_MAX_AGE_IN_MONTHS * 31),
+                $firstLineDate . ' jours'
+            ))->setSuccess($firstLineDate <= JOURNAL_MAX_AGE_IN_MONTHS * 31),
         ];
     }
 }

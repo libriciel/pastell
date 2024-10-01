@@ -1,3 +1,9 @@
+# [4.1.1]
+
+## Corrections
+
+- Health check : si le journal est vide, la date du premier enregistrement est de 0 jours #1999
+
 # [4.1.0] - 2024-09-27
 
 ***Cette version nécessite une mise à jour du générateur SEDA en 1.1.0***
