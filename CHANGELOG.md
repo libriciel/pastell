@@ -1,5 +1,9 @@
 # [4.0.16] - 2024-10-14
 
+## Ajouts
+
+- Ajout d'un cron pour purger les chunks #2097
+
 ## Correction
 
 - Les expressions xpath ne fonctionnaient pas sur les éléments ayant un namespace sans préfixe #2086
