@@ -58,11 +58,11 @@
     </button>
 
     <button type="submit" class="btn btn-primary" name="submit" value="Partager">
-        <i class="fa fa-plus-circle"></i>&nbsp;Partager
+        <i class="fa fa-share-alt"></i>&nbsp;Partager
     </button>
 
-    <button type="submit" class="btn btn-danger" name="submit" value="Enlever le partage">
-        <i class="fa fa-plus-circle"></i>&nbsp;Supprimer le partager
+    <button type="submit" class="btn btn-warning" name="submit" value="Enlever le partage">
+        <i class="fa fa-share-alt"></i>&nbsp;Ne plus partager
     </button>
 
 <?php endif; ?>
