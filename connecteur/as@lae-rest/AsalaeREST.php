@@ -86,9 +86,13 @@ class AsalaeREST extends SAEConnecteur
         $this->logger->debug('Results of /sedaMessage call : ', $seda_message_result);
         $tmpFolder = new TmpFolder();
         $temp_dir = $tmpFolder->create();
+        $temp_file_path = $temp_dir . '/' . basename($attachments_path);
+        if (!copy($attachments_path, $temp_file_path)) {
+            throw new RuntimeException("Unable to copy $attachments_path to $temp_dir");
+        }
 
         $splitFile = new SplitFile($this->logger);
-        $chunk_part_list = $splitFile->split($attachments_path, $this->chunk_size_in_bytes, $temp_dir . '/archive_part');
+        $chunk_part_list = $splitFile->split($temp_file_path, $this->chunk_size_in_bytes, 'archive_part');
 
         try {
             foreach ($chunk_part_list as $chunk_index => $chunk_part) {
@@ -98,7 +102,7 @@ class AsalaeREST extends SAEConnecteur
                     basename($attachments_path),
                     count($chunk_part_list),
                     $chunk_index,
-                    $chunk_part
+                    $temp_dir . '/' . $chunk_part
                 );
             }
         } finally {
