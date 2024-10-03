@@ -14,7 +14,11 @@ class JournalCheck implements CheckInterface
 
     public function check(): array
     {
-        $firstLineDate = round((time() - strtotime($this->journal->getFirstLineDate())) / 86400);
+        $firstLineDate = round(
+            (time() - strtotime(
+                $this->journal->getFirstLineDate() ?: date('Y-m-d H:i:s')
+            )) / 86400
+        );
         return [
             new HealthCheckItem(
                 "Nombre d'enregistrements dans la table journal",
