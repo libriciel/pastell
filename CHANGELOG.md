@@ -3,6 +3,7 @@
 ## Ajouts
 
 - Ajout d'un cron pour purger les chunks #2097
+- Ajout d'un index sur id_d dans la table document_email #2136
 
 ## Correction
 
