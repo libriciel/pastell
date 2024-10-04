@@ -2,6 +2,7 @@
 
 ## Corrections
 
+- Conservation des champs mots de passe lors de l'édition d'un formulaire #1701
 - Health check : si le journal est vide, la date du premier enregistrement est de 0 jours #1999
 
 # [4.1.0] - 2024-09-27
