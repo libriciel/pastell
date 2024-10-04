@@ -226,7 +226,7 @@ class CPPWrapperTest extends ExtensionCppTestCase
     /**
      * @throws CPPException
      * @throws JsonException
-     * @throws CPPWrapperExceptionServices
+     * @throws CPPWrapperServicesException
      */
     public function testGetListeService(): void
     {
@@ -277,7 +277,7 @@ class CPPWrapperTest extends ExtensionCppTestCase
     /**
      * @throws CPPException
      * @throws JsonException
-     * @throws CPPWrapperExceptionServices
+     * @throws CPPWrapperServicesException
      */
     public function testGetService(): void
     {

@@ -509,7 +509,7 @@ class CPPWrapper
     }
 
     /**
-     * @throws CPPWrapperExceptionServices
+     * @throws CPPWrapperServicesException
      * @throws Exception
      */
     public function getListeService(
@@ -518,7 +518,7 @@ class CPPWrapper
     ): array {
 
         if (!$this->cppWrapperConfig->identifiant_structure_cpp) {
-            throw new CPPWrapperExceptionServices(
+            throw new CPPWrapperServicesException(
                 "Impossible de récupérer la liste des services si l'identifiant structure CPP n'est pas renseigné"
             );
         }
@@ -535,13 +535,13 @@ class CPPWrapper
     }
 
     /**
-     * @throws CPPWrapperExceptionServices
+     * @throws CPPWrapperServicesException
      * @throws Exception
      */
     public function getService(int $idService): array
     {
         if (!$this->cppWrapperConfig->identifiant_structure_cpp) {
-            throw new CPPWrapperExceptionServices(
+            throw new CPPWrapperServicesException(
                 "Impossible de récupérer le service si l'identifiant structure CPP n'est pas renseigné"
             );
         }
