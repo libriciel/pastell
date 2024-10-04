@@ -60,8 +60,8 @@ class CPPChoixService extends ChoiceActionExecutor
     public function displayAPI()
     {
         $recuperateur = $this->getRecuperateur();
-        $pageCourante = (int)$recuperateur->get('pageCourante');
-        $nbResultatsParPage = (int)$recuperateur->get('nbResultatsParPage');
+        $pageCourante = (int)$recuperateur->get('pageCourante') ?: 1;
+        $nbResultatsParPage = (int)$recuperateur->get('nbResultatsParPage') ?: CPPWrapper::NB_SERVICE_PAR_PAGE;
         return $this->getListeService($pageCourante, $nbResultatsParPage);
     }
 
