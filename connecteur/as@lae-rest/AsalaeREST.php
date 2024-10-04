@@ -74,32 +74,40 @@ class AsalaeREST extends SAEConnecteur
     /**
      * @throws Exception
      */
-    private function sendArchiveByChunk($seda_message_path, $attachments_path): bool
+    private function sendArchiveByChunk($seda_message_path, $attachments_path): void
     {
-        $this->logger->debug("Sending seda message by chunk");
-        //call seda message
+        $this->logger->debug('Sending seda message by chunk');
         $seda_message_result = $this->callSedaMessage($seda_message_path, false, true);
 
         if (empty($seda_message_result['chunk_session_identifier']) || empty($seda_message_result['chunk_security_identifier'])) {
-            throw new Exception("Cette version d'asalae ne permet pas l'envoi d'archive par morceaux");
+            throw new RuntimeException("Cette version d'asalae ne permet pas l'envoi d'archive par morceaux");
         }
 
-        $this->logger->debug("Results of /sedaMessage call : ", $seda_message_result);
+        $this->logger->debug('Results of /sedaMessage call : ', $seda_message_result);
+        $tmpFolder = new TmpFolder();
+        $temp_dir = $tmpFolder->create();
+        $temp_file_path = $temp_dir . '/' . basename($attachments_path);
+        if (!copy($attachments_path, $temp_file_path)) {
+            throw new RuntimeException("Unable to copy $attachments_path to $temp_dir");
+        }
 
         $splitFile = new SplitFile($this->logger);
-        $chunk_part_list = $splitFile->split($attachments_path, $this->chunk_size_in_bytes, "archive_part");
+        $chunk_part_list = $splitFile->split($temp_file_path, $this->chunk_size_in_bytes, 'archive_part');
 
-        foreach ($chunk_part_list as $chunk_index => $chunk_part) {
-            $this->sedaAttachmentsChunkFiles(
-                $seda_message_result['chunk_session_identifier'],
-                $seda_message_result['chunk_security_identifier'],
-                basename($attachments_path),
-                count($chunk_part_list),
-                $chunk_index,
-                dirname($attachments_path) . "/" . $chunk_part
-            );
+        try {
+            foreach ($chunk_part_list as $chunk_index => $chunk_part) {
+                $this->sedaAttachmentsChunkFiles(
+                    $seda_message_result['chunk_session_identifier'],
+                    $seda_message_result['chunk_security_identifier'],
+                    basename($attachments_path),
+                    count($chunk_part_list),
+                    $chunk_index,
+                    $temp_dir . '/' . $chunk_part
+                );
+            }
+        } finally {
+            $tmpFolder->delete($temp_dir);
         }
-        return true;
     }
 
     /**
