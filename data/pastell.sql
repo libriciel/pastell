@@ -127,7 +127,8 @@ CREATE TABLE `document_email` (
 	`last_error` text NOT NULL,
 	`non_recu` tinyint(1) NOT NULL,
 	PRIMARY KEY (`id_de`),
-	UNIQUE KEY `key` (`key`) 
+	UNIQUE KEY `key` (`key`) ,
+	KEY `document_email_id_d_index` (`id_d`)
 )  ENGINE=MyISAM  ;
 CREATE TABLE `document_email_reponse` (
 	`id_reponse` int(11) NOT NULL AUTO_INCREMENT,
