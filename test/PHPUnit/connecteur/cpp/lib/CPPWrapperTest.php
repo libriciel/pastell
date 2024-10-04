@@ -271,7 +271,7 @@ class CPPWrapperTest extends ExtensionCppTestCase
         $cppWrapperConfig->identifiant_structure_cpp = 25783752;
         $this->cppWrapper = $this->getCPPWrapper($cppWrapperConfig);
 
-        $this->assertEquals($returnData, $this->cppWrapper->getListeService());
+        $this->assertSame($returnData, $this->cppWrapper->getListeService());
     }
 
     /**
@@ -322,7 +322,7 @@ class CPPWrapperTest extends ExtensionCppTestCase
         $cppWrapperConfig->identifiant_structure_cpp = 25783752;
         $this->cppWrapper = $this->getCPPWrapper($cppWrapperConfig);
 
-        $this->assertEquals($returnData, $this->cppWrapper->getService(10136557));
+        $this->assertSame($returnData, $this->cppWrapper->getService(10136557));
     }
 
     /**

@@ -13,7 +13,7 @@
 
 <a class='btn btn-link' href='Connecteur/editionModif?id_ce=<?php echo $id_ce?>'><i class="fa fa-arrow-left"></i>&nbsp;Retour à la définition du connecteur</a>
 
-<?php $this->SuivantPrecedent($offset, $limit, $count, "/Connecteur/externalData?id_ce=$id_ce&field=$field"); ?>
+<?php $this->suivantPrecedent($offset, $limit, $count, "/Connecteur/externalData?id_ce=$id_ce&field=$field"); ?>
 <div class="box">
 <div class="alert alert-info">Cliquez sur le code du service pour le sélectionner</div>
 
@@ -52,4 +52,4 @@
     </button>
 </form>
 </div>
-<?php $this->SuivantPrecedent($offset, $limit, $count, "/Connecteur/externalData?id_ce=$id_ce&field=$field"); ?>
+<?php $this->suivantPrecedent($offset, $limit, $count, "/Connecteur/externalData?id_ce=$id_ce&field=$field"); ?>
