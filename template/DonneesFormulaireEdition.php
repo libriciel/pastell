@@ -249,15 +249,11 @@ if ($donneesFormulaire->getFormulaire()->getNbPage() > 1) {
                             <?php endif;?>
                         <?php endif;?>
                         <?php echo $this->donneesFormulaire->get($field->getName())?>&nbsp;
-                    <?php elseif ($field->getType() == 'password') : ?>
+                    <?php elseif ($field->getType() === 'password') : ?>
                         <input  type='password'
                                 id='<?php echo $field->getName();?>'
                                 name='<?php echo $field->getName(); ?>'
-                                value="<?php
-                                $rawData = $donneesFormulaire->getRawData();
-                                $passwordValue = is_array($rawData) && isset($rawData[$field->getName()]) ? $rawData[$field->getName()] : '';
-                                echo $passwordValue;
-                                ?>"
+                                value="<?= $donneesFormulaire->get($field->getName())?>"
                                 size='16'
                                   class="form-control col-md-12"
                                   autocomplete="new-password"
