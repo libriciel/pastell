@@ -125,6 +125,16 @@ services:
             - ${CACERTS_PATH:-cacerts}:/etc/ssl/certs/
             - ${LOCAL_CACERTS_PATH:-local_cacerts}:/usr/local/share/ca-certificates
 
+    libriciel-feedback:
+        image: 'registry.libriciel.fr:443/public/libriciel/deploiement/libriciel-feedback:0.9.1'
+        restart: unless-stopped
+        user: "10001:10001"
+        read_only: true
+        tmpfs:
+            - /home/feedback:mode=700,uid=10001,gid=10001
+        environment:
+            ALLO_TOKEN: ${ALLO_TOKEN:-}
+            VERSION: canary
 volumes:
     mariadb_datadir:
     app_workspace:
