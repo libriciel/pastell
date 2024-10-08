@@ -86,4 +86,37 @@ class SimpleTwigXpathTest extends \PastellTestCase
 
         self::assertSame('', $this->twigRenderer()->render($expression, $form));
     }
+
+
+    public static function expressionProvider(): \Generator
+    {
+        yield [
+          '{{ ' . SimpleTwigXpath::XPATH_FUNCTION . '("xml","//auth:name") }}',
+            'Jane Doe'
+        ];
+        yield [
+            '{{ ' . SimpleTwigXpath::XPATH_FUNCTION . '("xml","//pub:year") }}',
+            '2023'
+        ];
+        yield [
+            '{{ ' . SimpleTwigXpath::XPATH_FUNCTION . '("xml","//title") }}',
+            'XML and XPath Mastery'
+        ];
+    }
+
+    /**
+     * @dataProvider expressionProvider
+     * @throws Exception
+     */
+    public function testWithNamespaces(string $expression, string $expected): void
+    {
+        $form = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
+        $form->addFileFromData(
+            'xml',
+            'test.xml',
+            \file_get_contents(__DIR__ . '/xml_with_namespaces.xml')
+        );
+
+        self::assertSame($expected, $this->twigRenderer()->render($expression, $form));
+    }
 }
