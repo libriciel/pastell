@@ -1,5 +1,11 @@
 # [4.1.3]
 
+## Évolutions
+
+- Studio, Gestion des éléments du formulaire : Ajout d'un indicateur `Identifiant en doublon`
+  (Cet élément du formulaire est déjà automatiquement créé via une étape du cheminement.
+  Il ne doit pas être créé manuellement.) #989
+
 ## Corrections
 
 - Il manquait acte_unique_id sur l'étape tdt_actes pour avoir le lien "URL de l'acte" des Actes réponse préfecture #2130

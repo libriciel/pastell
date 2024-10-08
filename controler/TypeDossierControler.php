@@ -234,12 +234,14 @@ class TypeDossierControler extends PastellControler
 
     /**
      * @throws NotFoundException
+     * @throws UnrecoverableException
      */
     public function detailAction()
     {
         $this->commonEdition();
         $this->setViewParameter('csrfToken', $this->getObjectInstancier()->getInstance(CSRFToken::class));
-        $this->setViewParameter('template_milieu', "TypeDossierDetail");
+        $this->setViewParameter('template_milieu', 'TypeDossierDetail');
+        $this->setViewParameter('fieldsFromEtape', $this->getFieldsFromEtape());
         $this->renderDefault();
     }
 
@@ -737,5 +739,24 @@ class TypeDossierControler extends PastellControler
 
         $this->setLastMessage("Tous les dossiers <b>{$id_type_dossier}</b> ont été mis dans l'état erreur fatale");
         $this->redirect('/TypeDossier/list');
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    private function getFieldsFromEtape(): array
+    {
+        $typeDossierProperties = $this->getTypeDossierManager()
+            ->getTypeDossierProperties($this->getViewParameterByKey('id_t'));
+
+        $fieldsFromEtape = $this->getTypeDossierService()->getFieldsFromEtape($typeDossierProperties);
+        $fieldsForOngletCheminement = $this->getDocumentTypeFactory()
+            ->getFluxDocumentType($typeDossierProperties->id_type_dossier)
+            ->getFormulaire()
+            ->getFieldsForOnglet('Cheminement');
+        foreach ($fieldsForOngletCheminement as $field) {
+            $fieldsFromEtape [] =  $field->getName();
+        }
+        return $fieldsFromEtape;
     }
 }

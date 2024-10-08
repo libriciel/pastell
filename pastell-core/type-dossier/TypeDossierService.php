@@ -1,32 +1,19 @@
 <?php
 
 use Pastell\Configuration\ElementType;
+use Pastell\Helpers\ArrayHelper;
 use Pastell\Service\TypeDossier\TypeDossierEditionService;
 use Pastell\Service\TypeDossier\TypeDossierManager;
 
 class TypeDossierService
 {
-    private $typeDossierPersonnaliseDirectoryManager;
-    private $typeDossierEtapeDefinition;
-    private $typeDossierEditionService;
-    private $typeDossierManager;
-    private $typeDossierSQL;
-    private $pastellLogger;
-
     public function __construct(
-        TypeDossierPersonnaliseDirectoryManager $typeDossierPersonnaliseDirectoryManager,
-        TypeDossierEtapeManager $typeDossierEtapeDefinition,
-        TypeDossierEditionService $typeDossierEditionService,
-        TypeDossierManager $typeDossierManager,
-        TypeDossierSQL $typeDossierSQL,
-        PastellLogger $pastellLogger
+        private readonly TypeDossierEtapeManager $typeDossierEtapeDefinition,
+        private readonly TypeDossierEditionService $typeDossierEditionService,
+        private readonly TypeDossierManager $typeDossierManager,
+        private readonly TypeDossierSQL $typeDossierSQL,
+        private readonly PastellLogger $pastellLogger
     ) {
-        $this->typeDossierPersonnaliseDirectoryManager = $typeDossierPersonnaliseDirectoryManager;
-        $this->typeDossierEtapeDefinition = $typeDossierEtapeDefinition;
-        $this->typeDossierEditionService = $typeDossierEditionService;
-        $this->typeDossierManager = $typeDossierManager;
-        $this->typeDossierSQL = $typeDossierSQL;
-        $this->pastellLogger = $pastellLogger;
     }
 
     public function getFormulaireElement($id_t, $element_id)
@@ -378,5 +365,14 @@ class TypeDossierService
                 "Le fichier YAML du flux personnalisé {$typeDossierData->id_type_dossier} a été reconstruit"
             );
         }
+    }
+
+    public function getFieldsFromEtape(TypeDossierProperties $typeDossierProperties): array
+    {
+        $etapeList = [];
+        foreach ($typeDossierProperties->etape as $etape) {
+            $etapeList[] = $this->typeDossierEtapeDefinition->getFormulaireForEtape($etape);
+        }
+        return ArrayHelper::getArrayKeysByDeph($etapeList, 2);
     }
 }

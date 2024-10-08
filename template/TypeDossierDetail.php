@@ -8,6 +8,7 @@
  * @var int $id_t
  * @var CSRFToken $csrfToken
  * @var array $all_etape_type
+ * @var array $fieldsFromEtape
 */
 
 ?>
@@ -81,7 +82,18 @@
             <tbody id="sortElement" class="type-dossier-sortable">
             <?php foreach ($typeDossierProperties->formulaireElement as $formulaireElement) : ?>
                 <tr id="tr-<?php  hecho($formulaireElement->element_id) ?>">
-                    <td><i class="fa fa-arrows handle"></i>&nbsp;<?php hecho($formulaireElement->element_id) ?></td>
+                    <td><i class="fa fa-arrows handle"></i>&nbsp;<?php hecho($formulaireElement->element_id) ?>
+                        <?php if (in_array($formulaireElement->element_id, $fieldsFromEtape, true)) :?>
+                            <p><strong style='color:red'>Identifiant en doublon </strong>
+                                <em class="text-muted"
+                                    data-toggle="tooltip"
+                                    title="Cet élément du formulaire est déjà automatiquement créé via une étape du cheminement.
+                                    Il ne doit pas être créé manuellement.">
+                                    <i class="fa fa-info-circle"></i>
+                                </em>
+                            </p>
+                        <?php endif;?>
+                    </td>
                     <td><?php hecho($formulaireElement->name) ?></td>
                     <td><?php hecho(TypeDossierFormulaireElementManager::getTypeElementLibelle($formulaireElement->type)) ?></td>
                     <td>

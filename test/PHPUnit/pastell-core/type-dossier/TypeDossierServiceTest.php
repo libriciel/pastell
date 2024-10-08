@@ -609,4 +609,71 @@ class TypeDossierServiceTest extends PastellTestCase
         $this->expectExceptionMessage('La valeur par défaut ne répond pas à l\'expression régulière.');
         $this->getTypeDossierService()->editionElement($id_t, $recuperateur);
     }
+
+    /**
+     * @throws TypeDossierException
+     */
+    public function testGetFieldsFromEtape(): void
+    {
+        $id_t = $this->copyTypeDossierTest();
+        $typeDossierProperties = $this->getTypeDossierManager()->getTypeDossierProperties($id_t);
+        $fieldsFromEtape = $this->getTypeDossierService()->getFieldsFromEtape($typeDossierProperties);
+
+        static::assertSame([
+            0 => 'envoi_iparapheur',
+            1 => 'iparapheur_type',
+            2 => 'iparapheur_sous_type',
+            3 => 'json_metadata',
+            4 => 'has_date_limite',
+            5 => 'date_limite',
+            6 => 'primo_signature_detachee',
+            7 => 'annotation_publique',
+            8 => 'annotation_privee',
+            9 => 'envoi_fast',
+            10 => 'fast_parapheur_circuit',
+            11 => 'fast_parapheur_circuit_configuration',
+            12 => 'fast_parapheur_email_destinataire',
+            13 => 'fast_parapheur_email_cc',
+            14 => 'fast_parapheur_agents',
+            15 => 'iparapheur_dossier_id',
+            16 => 'iparapheur_historique',
+            17 => 'parapheur_last_message',
+            18 => 'parapheur_date_signature',
+            19 => 'has_signature',
+            20 => 'signature',
+            21 => 'bordereau_signature',
+            22 => 'document_original',
+            23 => 'multi_document_original',
+            24 => 'iparapheur_annexe_sortie',
+            25 => 'has_ged_document_id_1',
+            26 => 'ged_document_id_file_1',
+            27 => 'to',
+            28 => 'cc',
+            29 => 'bcc',
+            30 => 'password',
+            31 => 'password2',
+            32 => 'key',
+            33 => 'sent_mail_number',
+            34 => 'sent_mail_read',
+            35 => 'sent_mail_answered',
+            36 => 'generated_receipt',
+            37 => 'accuse_notification',
+            38 => 'has_ged_document_id_2',
+            39 => 'ged_document_id_file_2',
+            40 => 'sae_config',
+            41 => 'sae_show',
+            42 => 'journal',
+            43 => 'date_journal_debut',
+            44 => 'date_cloture_journal',
+            45 => 'date_cloture_journal_iso8601',
+            46 => 'sae_transfert_id',
+            47 => 'sae_bordereau',
+            48 => 'sae_archive',
+            49 => 'ar_sae',
+            50 => 'sae_ack_comment',
+            51 => 'reply_sae',
+            52 => 'sae_archival_identifier',
+            53 => 'sae_atr_comment',
+        ], $fieldsFromEtape);
+    }
 }
