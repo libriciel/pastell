@@ -101,6 +101,22 @@
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
 
+# [4.0.16] - 2024-10-14
+
+## Ajouts
+
+- Ajout d'un cron pour purger les chunks #2097
+- Ajout d'un index sur id_d dans la table document_email #2136
+
+## Correction
+
+- Les expressions xpath ne fonctionnaient pas sur les éléments ayant un namespace sans préfixe #2086
+- Il n'était pas possible d'avoir d'espace dans l'identifiant du service versant sur asalae #1683
+- Suppression des chunks temporaires après l'envoi en SAE #2103
+- Connecteur CPP : La liste des services n'est plus limitée à 10. 
+  Via l'API Pastell, on peut utiliser les paramètres `pageCourante` et `nbResultatsParPage`
+  pour l'externalData `service_destinataire_libelle` #2090
+
 # [4.0.15] - 2024-08-12
 
 ## Évolutions

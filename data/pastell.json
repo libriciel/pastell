@@ -804,7 +804,7 @@
                 "Field": "id_d",
                 "Type": "varchar(64)",
                 "Null": "NO",
-                "Key": "",
+                "Key": "MUL",
                 "Default": null,
                 "Extra": ""
             },
@@ -911,6 +911,13 @@
                     "key"
                 ],
                 "unique": true
+            },
+            "document_email_id_d_index": {
+                "type": "BTREE",
+                "col": [
+                    "id_d"
+                ],
+                "unique": false
             }
         }
     },

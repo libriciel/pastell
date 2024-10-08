@@ -47,6 +47,7 @@ class DepotCMIS extends DepotConnecteur
         $this->donneesFormulaireFactory = $donneesFormulaireFactory;
         $this->http_proxy_url = $http_proxy_url;
         $this->no_proxy = $no_proxy;
+        $this->disableDeprecated();
         $this->client = new Client();
     }
 

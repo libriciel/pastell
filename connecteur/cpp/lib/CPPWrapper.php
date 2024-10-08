@@ -11,7 +11,8 @@ use Monolog\Logger;
 class CPPWrapper
 {
     private const MAX_FACTURE_LIST = 999999;
-    private const NB_FACTURE_PER_PAGE = 1000;
+    private const NB_FACTURE_PAR_PAGE = 1000;
+    public const NB_SERVICE_PAR_PAGE = 20;
 
     private const PISTE_API_VERSION = 'v1';
 
@@ -26,6 +27,7 @@ class CPPWrapper
     private const RECUPERER_STRUCTURE_DESTINATAIRE = "transverses/%s/recuperer/structures/actives/destinataire";
     private const RECHERCHER_STRUCTURE = "structures/%s/rechercher";
     private const RECHERCHER_SERVICE = "structures/%s/rechercher/services";
+    private const CONSULTER_SERVICE = "structures/%s/consulter/service";
 
     public const SOUMETTRE_FACTURE = "factures/%s/soumettre";
     public const DEPOSER_PDF = "factures/%s/deposer/pdf";
@@ -291,7 +293,7 @@ class CPPWrapper
                 $data = [
                     'typeDemandePaiement' => $typeDemandePaiement,
                     'paramRecherche' => [
-                        'nbResultatsParPage' => self::NB_FACTURE_PER_PAGE,
+                        'nbResultatsParPage' => self::NB_FACTURE_PAR_PAGE,
                         'pageResultatDemandee' => $num_page,
                         //A supprimer
                         'nbResultatsMaximum' => self::MAX_FACTURE_LIST
@@ -300,14 +302,14 @@ class CPPWrapper
                 if ($this->cppWrapperConfig->fetchDownloadedInvoices !== null) {
                     $data['factureTelechargeeParDestinataire'] = $this->cppWrapperConfig->fetchDownloadedInvoices;
                 }
-                if (intval($idFournisseur)) {
-                    $data['listeFournisseurs'][0] = ['idFournisseur' => intval($idFournisseur)];
+                if ((int)$idFournisseur) {
+                    $data['listeFournisseurs'][0] = ['idFournisseur' => (int)$idFournisseur];
                 }
-                if (intval($this->cppWrapperConfig->identifiant_structure_cpp)) {
-                    $data['idDestinataire'] = intval($this->cppWrapperConfig->identifiant_structure_cpp);
+                if ((int)$this->cppWrapperConfig->identifiant_structure_cpp) {
+                    $data['idDestinataire'] = (int)$this->cppWrapperConfig->identifiant_structure_cpp;
                 }
-                if (intval($this->cppWrapperConfig->service_destinataire)) {
-                    $data['idServiceExecutant'] = intval($this->cppWrapperConfig->service_destinataire);
+                if ((int)$this->cppWrapperConfig->service_destinataire) {
+                    $data['idServiceExecutant'] = (int)$this->cppWrapperConfig->service_destinataire;
                 }
                 if ($periodeDateHeureEtatCourantDu) {
                     $data['periodeDateHeureEtatCourantDu'] = $periodeDateHeureEtatCourantDu;
@@ -348,8 +350,8 @@ class CPPWrapper
     public function consulterHistoriqueFacture($idFacture, int $nbResultatsMaximum = 50)
     {
         $data = [
-            'idFacture' => intval($idFacture),
-            'nbResultatsMaximum' => intval($nbResultatsMaximum)
+            'idFacture' => (int)$idFacture,
+            'nbResultatsMaximum' => $nbResultatsMaximum
         ];
         return $this->call(self::CONSULTER_HISTORIQUE_FACTURE, $data);
     }
@@ -364,7 +366,7 @@ class CPPWrapper
     {
         $data = [
             'format' => $format,
-            'listeFacture' => [['idFacture' => intval($idFacture)]]
+            'listeFacture' => [['idFacture' => (int)$idFacture]]
         ];
         $result = $this->call(self::TELECHARGER_GROUPE_FACTURE, $data);
         if (!array_key_exists('fichierResultat', $result)) {
@@ -384,7 +386,7 @@ class CPPWrapper
     public function traiterFactureRecue($idFacture, $idNouveauStatut, string $motif = "", string $numeroMandat = "")
     {
         $data = [
-            'idFacture' => intval($idFacture),
+            'idFacture' => (int)$idFacture,
             'nouveauStatut' => $idNouveauStatut,
             'motif' => $motif,
             'numeroDPMandat' => $numeroMandat
@@ -414,7 +416,7 @@ class CPPWrapper
             $data = [
                 'roleUtilisateur' => $this->cppWrapperConfig->user_role,
                 'rechercheFactureTravaux' => [
-                    'nbResultatsParPage' => self::NB_FACTURE_PER_PAGE,
+                    'nbResultatsParPage' => self::NB_FACTURE_PAR_PAGE,
                     'pageResultatDemandee' => $num_page,
                 ]
             ];
@@ -507,19 +509,49 @@ class CPPWrapper
     }
 
     /**
-     * @return array|mixed
+     * @throws CPPWrapperServicesException
      * @throws Exception
      */
-    public function getListeService()
-    {
+    public function getListeService(
+        int $pageCourante = 1,
+        int $nbResultatsParPage = self::NB_SERVICE_PAR_PAGE
+    ): array {
+
         if (!$this->cppWrapperConfig->identifiant_structure_cpp) {
-            throw new Exception(
+            throw new CPPWrapperServicesException(
                 "Impossible de récupérer la liste des services si l'identifiant structure CPP n'est pas renseigné"
             );
         }
-        $data = ["idStructure" => intval($this->cppWrapperConfig->identifiant_structure_cpp)];
+        $data = [
+            'idStructure' => (int)$this->cppWrapperConfig->identifiant_structure_cpp,
+            'parametresRechercherServicesStructure' => [
+                'nbResultatsParPage' => $nbResultatsParPage,
+                'pageResultatDemandee' => $pageCourante,
+                'triColonne' => 'CodeService',
+                'triSens' => 'Descendant'
+            ]
+        ];
         return $this->call(self::RECHERCHER_SERVICE, $data);
     }
+
+    /**
+     * @throws CPPWrapperServicesException
+     * @throws Exception
+     */
+    public function getService(int $idService): array
+    {
+        if (!$this->cppWrapperConfig->identifiant_structure_cpp) {
+            throw new CPPWrapperServicesException(
+                "Impossible de récupérer le service si l'identifiant structure CPP n'est pas renseigné"
+            );
+        }
+        $data = [
+            'idStructure' => (int)$this->cppWrapperConfig->identifiant_structure_cpp,
+            'idService' => $idService
+        ];
+        return $this->call(self::CONSULTER_SERVICE, $data);
+    }
+
 
     /* WTF : Chorus gère un xieme identifiant pour les factures côté fournisseur */
     /**

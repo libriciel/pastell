@@ -1,0 +1,1 @@
+0 * * * * %USERNAME% /usr/bin/php /var/www/pastell/bin/console app:system:prune-upload-chunks >> /data/log/prune-upload-chunks.log 2>&1
