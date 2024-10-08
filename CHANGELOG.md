@@ -1,9 +1,20 @@
-# [4.1.1]
+# [4.1.1] - 2024-10-14
+
+## Ajouts
+
+- Ajout d'un cron pour purger les chunks #2097
+- Ajout d'un index sur id_d dans la table document_email #2136
 
 ## Corrections
 
 - Conservation des champs mots de passe lors de l'édition d'un formulaire #1701
 - Health check : si le journal est vide, la date du premier enregistrement est de 0 jours #1999
+- Les expressions xpath ne fonctionnaient pas sur les éléments ayant un namespace sans préfixe #2086
+- Il n'était pas possible d'avoir d'espace dans l'identifiant du service versant sur asalae #1683
+- Suppression des chunks temporaires après l'envoi en SAE #2103
+- Connecteur CPP : La liste des services n'est plus limitée à 10.
+  Via l'API Pastell, on peut utiliser les paramètres `pageCourante` et `nbResultatsParPage`
+  pour l'externalData `service_destinataire_libelle` #2090
 
 # [4.1.0] - 2024-09-27
 
