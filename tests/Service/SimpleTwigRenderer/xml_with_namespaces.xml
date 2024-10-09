@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library xmlns="http://example.com/library"
+         xmlns:auth="http://example.com/authors"
+         xmlns:pub="http://example.com/publishers">
+    <book>
+        <title>XML and XPath Mastery</title>
+        <auth:author>
+            <auth:name>Jane Doe</auth:name>
+            <auth:country>USA</auth:country>
+        </auth:author>
+        <pub:publisher>
+            <pub:name>TechBooks Inc.</pub:name>
+            <pub:year>2023</pub:year>
+        </pub:publisher>
+        <isbn>978-1234567890</isbn>
+    </book>
+    <book>
+        <title>Namespace Adventures</title>
+        <auth:author>
+            <auth:name>John Smith</auth:name>
+            <auth:country>Canada</auth:country>
+        </auth:author>
+        <pub:publisher>
+            <pub:name>CodePress</pub:name>
+            <pub:year>2022</pub:year>
+        </pub:publisher>
+        <isbn>978-0987654321</isbn>
+    </book>
+</library>
