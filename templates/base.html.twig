@@ -27,7 +27,7 @@
     ] %}
     {% block stylesheets %}
         {% for cssFile in cssFiles %}
-            <link rel="stylesheet" href="{{ cssFile }}" type="text/css"/>
+            <link rel="stylesheet" href="{{ cssFile ~ '?rev=' ~ manifest_info.revision }}" type="text/css"/>
         {% endfor %}
     {% endblock %}
 
