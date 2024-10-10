@@ -6,18 +6,12 @@ use Pastell\Client\S2low\S2lowClient;
 use Pastell\Client\S2low\S2lowClientException;
 use Psr\Http\Client\ClientExceptionInterface;
 
-class Connexion
+final class Connexion
 {
-    /**
-     * @var S2lowClient
-     */
-    private S2lowClient $client;
-
     private const TEST_CONNEXION_API = '/api/test-connexion.php';
 
-    public function __construct(S2lowClient $client)
+    public function __construct(private readonly S2lowClient $client)
     {
-        $this->client = $client;
     }
 
     /**

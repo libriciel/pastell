@@ -18,14 +18,12 @@ use Symfony\Component\Serializer\Serializer;
 
 class S2lowClient
 {
-    private ClientInterface $httpClient;
     private RequestFactoryInterface $requestFactory;
 
     public function __construct(
-        ClientInterface $clientInterface,
-        RequestFactoryInterface $requestFactory = null,
+        private readonly ClientInterface $clientInterface,
+        RequestFactoryInterface $requestFactory = null
     ) {
-        $this->httpClient = $clientInterface;
         $this->requestFactory = $requestFactory ?? Psr17FactoryDiscovery::findRequestFactory();
     }
 
@@ -33,13 +31,13 @@ class S2lowClient
      * @throws S2lowClientException
      * @throws ClientExceptionInterface
      */
-    public function get(string $endpoint, object $queryObject = null): string
+    public function get(string $endpoint, $queryData = null): string
     {
-        if ($queryObject) {
+        if ($queryData !== null) {
             $encoders = [new UrlEncoder()];
             $normalizers = [new ObjectNormalizer(nameConverter: new CamelCaseToSnakeCaseNameConverter())];
             $serializer = (new Serializer($normalizers, $encoders));
-            $queryArray = get_object_vars($queryObject);
+            $queryArray = \is_object($queryData) ? get_object_vars($queryData) : $queryData;
             $filteredQueryArray = array_filter($queryArray, static function ($value) {
                 return $value !== null;
             });
@@ -49,7 +47,7 @@ class S2lowClient
         }
         $request = $this->requestFactory
             ->createRequest('GET', $endpoint);
-        $response = $this->httpClient->sendRequest($request);
+        $response = $this->clientInterface->sendRequest($request);
 
         $body = (string)$response->getBody();
         $body = mb_convert_encoding($body, 'UTF-8', 'UTF-8');
@@ -81,7 +79,7 @@ class S2lowClient
             ->createRequest('POST', $endpoint)
             ->withAddedHeader('Content-Type', $contentType)
             ->withBody($stream);
-        $response = $this->httpClient->sendRequest($request);
+        $response = $this->clientInterface->sendRequest($request);
 
         $body = (string)$response->getBody();
         if ($response->getStatusCode() !== 200) {

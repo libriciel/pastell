@@ -9,22 +9,21 @@ use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\Psr18Client;
 use UnrecoverableException;
 
-class S2lowClientFactory
+final class S2lowClientFactory
 {
-    /**
-     * @throws UnrecoverableException|UnrecoverableException
-     */
-    public function getClient(DonneesFormulaire $donneesFormulaire): S2lowClient
+    public function getClient(string $url, S2lowClientAuth $s2lowClientAuth): S2lowClient
     {
-        $client = new Psr18Client(HttpClient::createForBaseUri($donneesFormulaire->get('url'), [
-            'auth_basic' => [
-                $donneesFormulaire->get('username'),
-                $donneesFormulaire->get('password')
-            ],
-            'local_cert' => $donneesFormulaire->getFilePath('user_certificat_pem'),
-            'local_pk' => $donneesFormulaire->getFilePath('user_key_pem'),
-            'passphrase' => $donneesFormulaire->get('user_certificat_password')
-        ]));
+        $client = new Psr18Client(
+            HttpClient::createForBaseUri($url, [
+                'auth_basic' => [
+                    $s2lowClientAuth->username,
+                    $s2lowClientAuth->password
+                ],
+                'local_cert' => $s2lowClientAuth->user_certificat_pem,
+                'local_pk' => $s2lowClientAuth->user_key_pem,
+                'passphrase' => $s2lowClientAuth->user_certificat_password
+            ])
+        );
         return new S2lowClient($client);
     }
 }
