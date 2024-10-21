@@ -1,3 +1,9 @@
+# [4.0.17] - 2024-10-22
+
+## Correction
+
+- La récupération des acquittements et ATR d'asalae renvoyaient un code d'erreur 404 #2150
+
 # [4.0.16] - 2024-10-14
 
 ## Ajouts
