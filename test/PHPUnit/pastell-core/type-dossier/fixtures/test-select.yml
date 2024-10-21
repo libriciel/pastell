@@ -277,6 +277,10 @@ formulaire:
             type: file
             commentaire: 'Accusé de réception (XML) envoyé par la préfecture'
             read-only: true
+        acte_unique_id:
+            no-show: true
+            index: true
+            read-only: true
         acte_tamponne:
             name: 'Acte tamponné par le TdT'
             type: file
@@ -800,6 +804,7 @@ action:
             has_bordereau: has_bordereau
             bordereau: bordereau
             aractes: aractes
+            acte_unique_id: acte_unique_id
             acte_tamponne: acte_tamponne
             annexes_tamponnees: annexes_tamponnees
             date_ar: date_ar
