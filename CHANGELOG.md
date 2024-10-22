@@ -1,3 +1,9 @@
+# [4.1.2] - 2024-10-22
+
+## Correction
+
+- La récupération des acquittements et ATR d'asalae renvoyaient un code d'erreur 404 #2150
+
 # [4.1.1] - 2024-10-14
 
 ## Ajouts
@@ -111,6 +117,12 @@
 - `pdf-generique` et `document-a-signer` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-document-pdf` #1870
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
+
+# [4.0.17] - 2024-10-22
+
+## Correction
+
+- La récupération des acquittements et ATR d'asalae renvoyaient un code d'erreur 404 #2150
 
 # [4.0.16] - 2024-10-14
 
