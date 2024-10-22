@@ -158,12 +158,10 @@ class AsalaeREST extends SAEConnecteur
             throw new UnrecoverableException("L'identifiant du transfert n'a pas été trouvé");
         }
         return $this->getWS(
-            urlencode(
-                sprintf(
-                    '/sedaMessages/sequence:ArchiveTransfer/message:Acknowledgement/originOrganizationIdentification:%s/originMessageIdentifier:%s',
-                    $originatingAgencyId,
-                    $transfertId
-                )
+            sprintf(
+                '/sedaMessages/sequence:ArchiveTransfer/message:Acknowledgement/originOrganizationIdentification:%s/originMessageIdentifier:%s',
+                urlencode($originatingAgencyId),
+                urlencode($transfertId),
             ),
             'application/xml'
         );
@@ -176,12 +174,10 @@ class AsalaeREST extends SAEConnecteur
         }
 
         return $this->getWS(
-            urlencode(
-                sprintf(
-                    '/sedaMessages/sequence:ArchiveTransfer/message:ArchiveTransferReply/originOrganizationIdentification:%s/originMessageIdentifier:%s',
-                    $originatingAgencyId,
-                    $transfertId
-                )
+            sprintf(
+                '/sedaMessages/sequence:ArchiveTransfer/message:ArchiveTransferReply/originOrganizationIdentification:%s/originMessageIdentifier:%s',
+                urlencode($originatingAgencyId),
+                urlencode($transfertId),
             ),
             'application/xml'
         );
