@@ -21,7 +21,7 @@ class SplitFile
     {
         $dirname = dirname($filepath);
         $filename = basename($filepath);
-        $output = "";
+        $output = [];
 
         $command = "cd $dirname && split -b $size $filepath $chunk_name";
         $this->logger->debug("Execute shell command", [$command]);
