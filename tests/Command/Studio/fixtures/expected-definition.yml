@@ -286,6 +286,16 @@ formulaire:
             type: file
             commentaire: 'Accusé de réception (XML) envoyé par la préfecture'
             read-only: true
+    'Réponses de la préfecture':
+        has_reponse_prefecture:
+            no-show: true
+            read-only: true
+        reponse_prefecture_file:
+            name: 'Réponse préfecture'
+            type: file
+            visionneuse: Pastell\Viewer\ReponsePrefectureLinkViewer
+            read-only: true
+            visionneuse-no-link: true
     'Mail sécurisé':
         to:
             name: Destinataire(s)
@@ -415,6 +425,8 @@ page-condition:
         has_bordereau: true
     Annulation:
         has_annulation: true
+    'Réponses de la préfecture':
+        has_reponse_prefecture: true
     'Mail sécurisé':
         envoi_mailsec: true
     'Accusé de notification':
