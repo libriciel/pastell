@@ -90,7 +90,13 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 $bordereau_element
             );
         } elseif ($signature->isRejected($lastState)) {
-            $this->rejeteDossier($dossierID, $lastState, $bordereau_element);
+            $this->rejeteDossier(
+                $dossierID,
+                $lastState,
+                $bordereau_element,
+                $annexe_element,
+                $iparapheur_annexe_sortie_element
+            );
             $this->setLastMessage($lastState);
             return true;
         }
@@ -122,31 +128,57 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
      * @param $dossierID
      * @param $lastState
      * @param $bordereau_element
-     * @return bool
+     * @param $annexe_element
+     * @param $iparapheur_annexe_sortie_element
+     * @throws NotFoundException
+     * @throws UnrecoverableException
      * @throws Exception
      */
-    public function rejeteDossier($dossierID, $lastState, $bordereau_element)
-    {
+    public function rejeteDossier(
+        $dossierID,
+        $lastState,
+        $bordereau_element,
+        $annexe_element,
+        $iparapheur_annexe_sortie_element
+    ): bool {
         /** @var SignatureConnecteur $signature */
         $signature = $this->getConnecteur('signature');
+        $donneesFormulaire = $this->getDonneesFormulaire();
 
+        $info = $signature->getSignature($dossierID, false);
+
+        if (!$info) {
+            $this->setLastMessage('Le bordereau n\'a pas pu être récupéré : ' . $signature->getLastError());
+            return false;
+        }
         if ($signature->hasBordereau()) {
-            $info = $signature->getSignature($dossierID, false);
-            if (!$info) {
-                $this->setLastMessage("Le bordereau n'a pas pu être récupéré : " . $signature->getLastError());
-                return false;
-            }
-
             $bordereau = $signature->getBordereauFromSignature($info);
             if ($bordereau) {
-                $this->getDonneesFormulaire()
-                    ->addFileFromData($bordereau_element, $bordereau->filename, $bordereau->content);
+                $donneesFormulaire->addFileFromData($bordereau_element, $bordereau->filename, $bordereau->content);
             }
+        }
+
+        //Traitement des $iparapheur_annexe_sortie_element
+        if ($signature->hasMultiDocumentSigne($info)) {
+            // les fichiers annexes ont été envoyés en DocumentsSupplementaires
+            $output_annexe = $signature->getOutputAnnexe($info, 0);
+        } else {
+            // les fichiers annexes ont été envoyés en DocumentsAnnexes(si le sous-type i-parapheur ne permet pas la
+            //Signature multi-document alors les DocumentsSupplementaires ont été reçus en tant que DocumentsAnnexes)
+            $output_annexe = $signature->getOutputAnnexe($info, $donneesFormulaire->getFileNumber($annexe_element));
+        }
+        foreach ($output_annexe as $i => $annexe) {
+            $donneesFormulaire->addFileFromData(
+                $iparapheur_annexe_sortie_element,
+                $annexe['nom_document'],
+                $annexe['document'],
+                $i
+            );
         }
 
         $signature->effacerDossierRejete($dossierID);
 
-        $message = "Le document a été rejeté dans le parapheur : $lastState";
+        $message = 'Le document a été rejeté dans le parapheur : ' . $lastState;
         $this->getActionCreator()->addAction(
             $this->id_e,
             $this->id_u,

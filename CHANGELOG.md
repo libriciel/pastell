@@ -4,6 +4,12 @@
 
 - Correction d'un log d'erreur SplitFile #1666
 
+# [4.0.18]
+
+## Évolutions
+
+- Il manquait les annexes de sortie dans le cas d'un rejet iParapheur sur l'étape signature #2149
+
 # [4.0.17] - 2024-10-22
 
 ## Correction
