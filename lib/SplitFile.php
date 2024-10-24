@@ -21,14 +21,13 @@ class SplitFile
     {
         $dirname = dirname($filepath);
         $filename = basename($filepath);
-        $output = [];
 
         $command = "cd $dirname && split -b $size $filepath $chunk_name";
         $this->logger->debug("Execute shell command", [$command]);
         exec($command, $ouput, $return_var);
         if ($return_var !== 0) {
             $message = "Unable to split $filepath into chunk ";
-            $this->logger->error($message, $output);
+            $this->logger->error($message);
             throw new Exception($message);
         }
 
