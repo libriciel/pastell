@@ -1,14 +1,14 @@
 # [4.0.18]
 
-## Correction
-
-- Correction d'un log d'erreur SplitFile #1666
-
-# [4.0.18]
-
 ## Évolutions
 
 - Il manquait les annexes de sortie dans le cas d'un rejet iParapheur sur l'étape signature #2149
+
+## Correction
+
+- Depuis Parapheur V5 les annexes entrée/sortie ne sont plus ordonnées. 
+  On se base maintenant sur le hash pour les distinguer #2149
+- Correction d'un log d'erreur SplitFile #1666
 
 # [4.0.17] - 2024-10-22
 

@@ -158,22 +158,20 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
             }
         }
 
-        //Traitement des $iparapheur_annexe_sortie_element
-        if ($signature->hasMultiDocumentSigne($info)) {
-            // les fichiers annexes ont été envoyés en DocumentsSupplementaires
-            $output_annexe = $signature->getOutputAnnexe($info, 0);
-        } else {
-            // les fichiers annexes ont été envoyés en DocumentsAnnexes(si le sous-type i-parapheur ne permet pas la
-            //Signature multi-document alors les DocumentsSupplementaires ont été reçus en tant que DocumentsAnnexes)
-            $output_annexe = $signature->getOutputAnnexe($info, $donneesFormulaire->getFileNumber($annexe_element));
+        $annexeElementHash = [];
+        foreach ($donneesFormulaire->get($annexe_element) as $i => $name) {
+            $annexeElementHash[] = hash('sha256', $donneesFormulaire->getFileContent($annexe_element, $i));
         }
-        foreach ($output_annexe as $i => $annexe) {
-            $donneesFormulaire->addFileFromData(
-                $iparapheur_annexe_sortie_element,
-                $annexe['nom_document'],
-                $annexe['document'],
-                $i
-            );
+        $i = 0;
+        foreach ($signature->getOutputAnnexe($info, 0) as $annexe) {
+            if (!in_array(hash('sha256', $annexe['document']), $annexeElementHash, true)) {
+                $donneesFormulaire->addFileFromData(
+                    $iparapheur_annexe_sortie_element,
+                    $annexe['nom_document'],
+                    $annexe['document'],
+                    $i++
+                );
+            }
         }
 
         $signature->effacerDossierRejete($dossierID);
@@ -230,21 +228,20 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         }
 
         //Traitement des $iparapheur_annexe_sortie_element avant addMultiDocumentSigne (modification de $annexe_element)
-        if ($signature->hasMultiDocumentSigne($info)) {
-            // les fichiers annexes ont été envoyés en DocumentsSupplementaires
-            $output_annexe = $signature->getOutputAnnexe($info, 0);
-        } else {
-            // les fichiers annexes ont été envoyés en DocumentsAnnexes(si le sous-type i-parapheur ne permet pas la
-            //Signature multi-document alors les DocumentsSupplementaires ont été reçus en tant que DocumentsAnnexes)
-            $output_annexe = $signature->getOutputAnnexe($info, $donneesFormulaire->getFileNumber($annexe_element));
+        $annexeElementHash = [];
+        foreach ($donneesFormulaire->get($annexe_element) as $i => $name) {
+            $annexeElementHash[] = hash('sha256', $donneesFormulaire->getFileContent($annexe_element, $i));
         }
-        foreach ($output_annexe as $i => $annexe) {
-            $donneesFormulaire->addFileFromData(
-                $iparapheur_annexe_sortie_element,
-                $annexe['nom_document'],
-                $annexe['document'],
-                $i
-            );
+        $i = 0;
+        foreach ($signature->getOutputAnnexe($info, 0) as $annexe) {
+            if (!in_array(hash('sha256', $annexe['document']), $annexeElementHash, true)) {
+                $donneesFormulaire->addFileFromData(
+                    $iparapheur_annexe_sortie_element,
+                    $annexe['nom_document'],
+                    $annexe['document'],
+                    $i++
+                );
+            }
         }
 
         $donneesFormulaire->setData($has_signature_element, true);

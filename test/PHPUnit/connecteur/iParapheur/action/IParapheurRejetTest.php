@@ -4,6 +4,9 @@ class IParapheurRejetTest extends PastellTestCase
 {
     use SoapUtilitiesTestTrait;
 
+    /**
+     * @throws NotFoundException
+     */
     public function testRejet()
     {
         $this->mockSoapClient(function ($soapMethod) {
@@ -21,6 +24,13 @@ class IParapheurRejetTest extends PastellTestCase
                     'NomDocPrincipal' => 'test éàê accent.pdf',
                     'DocumentsAnnexes' => [
                         'DocAnnexe' => [
+                            [
+                                'nom' => 'annexe origine.pdf',
+                                'fichier' => [
+                                    '_' => 'annexe origine content',
+                                    'contentType' => 'application/pdf',
+                                ],
+                            ],
                             [
                                 'nom' => 'annexe rajoutée dans i-parapheur.pdf',
                                 'fichier' => [
@@ -62,7 +72,12 @@ class IParapheurRejetTest extends PastellTestCase
         $this->associateFluxWithConnector($id_ce, 'pdf-generique', 'signature');
 
         $id_d = $this->createDocument('pdf-generique')['id_d'];
-
+        $this->getDonneesFormulaireFactory()->get($id_d)->addFileFromData(
+            'annexe',
+            'annexe origine.pdf',
+            'annexe origine content',
+            0
+        );
         $this->triggerActionOnDocument($id_d, 'verif-iparapheur');
 
         $this->assertLastDocumentAction('rejet-iparapheur', $id_d);
