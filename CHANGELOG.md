@@ -3,6 +3,7 @@
 ## Corrections
 
 - Il manquait acte_unique_id sur l'étape tdt_actes pour avoir le lien "URL de l'acte" des Actes réponse préfecture #2130
+- Il manquait l'onglet 'Réponses de la préfecture' sur l'étape tdt_actes #2130
 
 # [4.1.2] - 2024-10-22
 
