@@ -159,8 +159,10 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         }
 
         $annexeElementHash = [];
-        foreach ($donneesFormulaire->get($annexe_element) as $i => $name) {
-            $annexeElementHash[] = hash('sha256', $donneesFormulaire->getFileContent($annexe_element, $i));
+        if ($donneesFormulaire->get($annexe_element)) {
+            foreach ($donneesFormulaire->get($annexe_element) as $i => $name) {
+                $annexeElementHash[] = hash('sha256', $donneesFormulaire->getFileContent($annexe_element, $i));
+            }
         }
         $i = 0;
         foreach ($signature->getOutputAnnexe($info, 0) as $annexe) {
@@ -229,8 +231,10 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
 
         //Traitement des $iparapheur_annexe_sortie_element avant addMultiDocumentSigne (modification de $annexe_element)
         $annexeElementHash = [];
-        foreach ($donneesFormulaire->get($annexe_element) as $i => $name) {
-            $annexeElementHash[] = hash('sha256', $donneesFormulaire->getFileContent($annexe_element, $i));
+        if ($donneesFormulaire->get($annexe_element)) {
+            foreach ($donneesFormulaire->get($annexe_element) as $i => $name) {
+                $annexeElementHash[] = hash('sha256', $donneesFormulaire->getFileContent($annexe_element, $i));
+            }
         }
         $i = 0;
         foreach ($signature->getOutputAnnexe($info, 0) as $annexe) {
