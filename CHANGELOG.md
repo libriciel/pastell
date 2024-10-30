@@ -1,4 +1,4 @@
-# [4.0.18]
+# [4.0.18] - 2024-11-12
 
 ## Évolutions
 
@@ -9,6 +9,7 @@
 - Depuis Parapheur V5 les annexes entrée/sortie ne sont plus ordonnées. 
   On se base maintenant sur le hash pour les distinguer #2149
 - Correction d'un log d'erreur SplitFile #1666
+- Les SIPs n'étaient pas acceptés par vitam #2167
 
 # [4.0.17] - 2024-10-22
 

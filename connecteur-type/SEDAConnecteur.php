@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\Process;
 
 abstract class SEDAConnecteur extends Connecteur
 {
@@ -48,14 +49,20 @@ abstract class SEDAConnecteur extends Connecteur
             \copy($filepath, "$tmp_folder/$filename");
         }
 
-        $command = "cd $tmp_folder && tar -cvzf $archive_path . --transform 's,^\.,,' 2>&1";
+        $process = Process::fromShellCommandline(
+            \sprintf(
+                'bash -c \'cd %s && shopt -s nullglob dotglob && tar -czvf %s -- * 2>&1\'',
+                $tmp_folder,
+                $archive_path,
+            )
+        );
+        $process->run();
 
-        \exec($command, $output, $return_var);
-
-        if ($return_var !== 0) {
-            $output = \implode("\n", $output);
+        if (!$process->isSuccessful()) {
+            $output = $process->getOutput();
+            $exitCode = $process->getExitCode();
             throw new \RuntimeException(
-                "Impossible de créer le fichier d'archive $archive_path - status : $return_var - output: $output"
+                "Impossible de créer le fichier d'archive $archive_path - status : $exitCode - output: $output"
             );
         }
     }
