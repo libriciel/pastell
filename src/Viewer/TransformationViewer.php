@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pastell\Viewer;
 
+/** @deprecated Since 4.1.3, Use MetadonneesViewer instead */
 final class TransformationViewer implements Viewer
 {
     /**

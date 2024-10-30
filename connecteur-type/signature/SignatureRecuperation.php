@@ -7,7 +7,12 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
     public const ACTION_NAME_ERROR = 'erreur-verif-iparapheur';
 
     private $action_name;
+
+    /** @deprecated Since 4.1.3, Use file 'iparapheur_metadata_sortie' instead */
     private $iparapheur_metadata_sortie;
+
+
+
 
     /**
      * @return bool
@@ -34,6 +39,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         $annexe_element = $this->getMappingValue('autre_document_attache');
         $multi_document_original_element = $this->getMappingValue('multi_document_original');
         $iparapheur_annexe_sortie_element = $this->getMappingValue('iparapheur_annexe_sortie');
+        $iparapheur_metadata_sortie_element = $this->getMappingValue('iparapheur_metadata_sortie');
         $iparapheur_dossier_id = $this->getMappingValue('iparapheur_dossier_id');
 
 
@@ -95,6 +101,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 $multi_document_original_element,
                 $annexe_element,
                 $iparapheur_annexe_sortie_element,
+                $iparapheur_metadata_sortie_element,
                 $bordereau_element
             );
         }
@@ -103,7 +110,12 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
             $lastState = trim("$lastState $refusal_message");
             $this->setLastMessage($lastState);
             $donneesFormulaire->setData($parapheur_last_message_element, $lastState);
-            $this->rejeteDossier($dossierID, $lastState, $bordereau_element);
+            $this->rejeteDossier(
+                $dossierID,
+                $lastState,
+                $bordereau_element,
+                $iparapheur_metadata_sortie_element
+            );
             return true;
         }
 
@@ -140,8 +152,12 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
      * @return bool
      * @throws Exception
      */
-    public function rejeteDossier($dossierID, $lastState, $bordereau_element)
-    {
+    public function rejeteDossier(
+        $dossierID,
+        $lastState,
+        $bordereau_element,
+        $iparapheur_metadata_sortie_element
+    ) {
         /** @var SignatureConnecteur $signature */
         $signature = $this->getConnecteur('signature');
 
@@ -155,6 +171,14 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         if ($bordereau) {
             $this->getDonneesFormulaire()
                 ->addFileFromData($bordereau_element, $bordereau->filename, $bordereau->content);
+        }
+        $metadataSortie = $signature->getMetadataSortie($info);
+        if ($metadataSortie) {
+            $this->getDonneesFormulaire()->addFileFromData(
+                $iparapheur_metadata_sortie_element,
+                $metadataSortie->filename,
+                $metadataSortie->content
+            );
         }
 
         $signature->effacerDossierRejete($dossierID);
@@ -197,6 +221,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         $multi_document_original_element,
         $annexe_element,
         $iparapheur_annexe_sortie_element,
+        $iparapheur_metadata_sortie_element,
         $bordereau_element
     ) {
         /** @var SignatureConnecteur $signature */
@@ -267,6 +292,14 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         if ($bordereau) {
             $donneesFormulaire->addFileFromData($bordereau_element, $bordereau->filename, $bordereau->content);
         }
+        $metadataSortie = $signature->getMetadataSortie($info);
+        if ($metadataSortie) {
+            $this->getDonneesFormulaire()->addFileFromData(
+                $iparapheur_metadata_sortie_element,
+                $metadataSortie->filename,
+                $metadataSortie->content
+            );
+        }
 
         if (!$signature->archiver($dossierID)) {
             throw new RecoverableException(
@@ -314,6 +347,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
      * @param $nomMetaDonnee
      * @return bool|string
      */
+    /** @deprecated Since 4.1.3, Use file 'iparapheur_metadata_sortie' instead */
     public function getMetaDonnee($nomMetaDonnee)
     {
         if ($this->iparapheur_metadata_sortie) {
