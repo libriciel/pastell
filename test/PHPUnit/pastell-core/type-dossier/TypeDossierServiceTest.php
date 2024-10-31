@@ -609,4 +609,21 @@ class TypeDossierServiceTest extends PastellTestCase
         $this->expectExceptionMessage('La valeur par défaut ne répond pas à l\'expression régulière.');
         $this->getTypeDossierService()->editionElement($id_t, $recuperateur);
     }
+
+    /**
+     * @throws TypeDossierException
+     */
+    public function testGetFieldsFromEtape(): void
+    {
+        $id_t = $this->copyTypeDossierTest(__DIR__ . '/fixtures/double-ged.json');
+        $typeDossierProperties = $this->getTypeDossierManager()->getTypeDossierProperties($id_t);
+        $fieldsFromEtape = $this->getTypeDossierService()->getFieldsFromEtape($typeDossierProperties);
+
+        static::assertSame([
+            0 => 'has_ged_document_id_1',
+            1 => 'ged_document_id_file_1',
+            2 => 'has_ged_document_id_2',
+            3 => 'ged_document_id_file_2',
+        ], $fieldsFromEtape);
+    }
 }
