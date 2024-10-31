@@ -85,7 +85,7 @@ unit_test:
       COMPOSER_PROCESS_TIMEOUT: 1200
       DONT_RETRIEVE_VALIDCA: "true"
     services:
-        - name: hubdocker.libriciel.fr/mariadb:10.9.3-jammy
+        - name: hubdocker.libriciel.fr/mariadb:10.11.9-jammy
           alias: mariadb
     script:
         - cd /var/www/pastell
@@ -119,9 +119,9 @@ acceptance_test:
         PACK_TEST: "true"
     image :  "$CONTAINER_IMAGE"
     services:
-        - name: hubdocker.libriciel.fr/mariadb:10.9.3-jammy
+        - name: hubdocker.libriciel.fr/mariadb:10.11.9-jammy
           alias: mariadb
-        - name: hubdocker.libriciel.fr/redis:7.0.5
+        - name: hubdocker.libriciel.fr/redis:7.2.6
           alias: redis
     script:
         - cd /var/www/pastell
