@@ -8,21 +8,21 @@ use function is_array;
 
 final class ArrayHelper
 {
-    public static function getArrayKeysByDeph(array $array, int $deph = 0, int $currentLevel = 0): array
+    public static function getArrayKeysByDepth(array $array, int $depth = 0, int $currentLevel = 0): array
     {
-        $arrayKeysByDeph = [];
+        $arrayKeysByDepth = [];
         foreach ($array as $key => $value) {
             if (is_array($value)) {
-                if ($currentLevel === $deph) {
-                    $arrayKeysByDeph[] = $key;
+                if ($currentLevel === $depth) {
+                    $arrayKeysByDepth[] = $key;
                 } else {
-                    $subKeys = self::getArrayKeysByDeph($value, $deph, $currentLevel + 1);
+                    $subKeys = self::getArrayKeysByDepth($value, $depth, $currentLevel + 1);
                     foreach ($subKeys as $subKey) {
-                        $arrayKeysByDeph[] = $subKey;
+                        $arrayKeysByDepth[] = $subKey;
                     }
                 }
             }
         }
-        return $arrayKeysByDeph;
+        return $arrayKeysByDepth;
     }
 }

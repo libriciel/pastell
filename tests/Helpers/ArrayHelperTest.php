@@ -10,9 +10,9 @@ use PastellTestCase;
 
 final class ArrayHelperTest extends PastellTestCase
 {
-    public function getArrayKeysByDephProvider(): Generator
+    public static function getExpectedArrayByDepthProvider(): Generator
     {
-        yield 'deph 0' => [
+        yield 'depth 0' => [
             0,
             [
                 0 => 0,
@@ -20,7 +20,7 @@ final class ArrayHelperTest extends PastellTestCase
                 2 => 2,
             ],
         ];
-        yield 'deph 1' => [
+        yield 'depth 1' => [
             1,
             [
                 0 => 'Retour GED',
@@ -28,7 +28,7 @@ final class ArrayHelperTest extends PastellTestCase
                 2 => 'Accusé de notification',
             ],
         ];
-        yield 'deph 2' => [
+        yield 'depth 2' => [
             2,
             [
                 0 => 'has_ged_document_id',
@@ -44,7 +44,7 @@ final class ArrayHelperTest extends PastellTestCase
                 10 => 'accuse_notification',
             ],
         ];
-        yield 'deph 3' => [
+        yield 'depth 3' => [
             3,
             [
                 0 => 'name',
@@ -54,17 +54,17 @@ final class ArrayHelperTest extends PastellTestCase
                 4 => 'default',
             ],
         ];
-        yield 'deph 4' => [
+        yield 'depth 4' => [
             4,
             [],
         ];
     }
     /**
-     * @dataProvider getArrayKeysByDephProvider
+     * @dataProvider getExpectedArrayByDepthProvider
      */
-    public function testGetArrayKeysByDeph(int $deph, array $arrayExcepted): void
+    public function testGetArrayKeysByDepth(int $depth, array $expectedArray): void
     {
-        $arrayBrowsed = [
+        $browseArray = [
             0 => [
                 'Retour GED' => [
                     'has_ged_document_id' => [],
@@ -103,8 +103,8 @@ final class ArrayHelperTest extends PastellTestCase
             ];
 
         self::assertSame(
-            $arrayExcepted,
-            ArrayHelper::getArrayKeysByDeph($arrayBrowsed, $deph)
+            $expectedArray,
+            ArrayHelper::getArrayKeysByDepth($browseArray, $depth)
         );
     }
 }

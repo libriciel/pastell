@@ -373,6 +373,6 @@ class TypeDossierService
         foreach ($typeDossierProperties->etape as $etape) {
             $etapeList[] = $this->typeDossierEtapeDefinition->getFormulaireForEtape($etape);
         }
-        return ArrayHelper::getArrayKeysByDeph($etapeList, 2);
+        return ArrayHelper::getArrayKeysByDepth($etapeList, 2);
     }
 }
