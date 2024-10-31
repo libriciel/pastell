@@ -97,7 +97,6 @@ formulaire:
             commentaire: 'Au format JSON {"cle1":"valeur1","cle2":"valeur2",...}'
             type: file
             visionneuse: Pastell\Viewer\MetadonneesViewer
-            visionneuse-no-link: true
         has_date_limite:
             name: 'Utiliser une date limite'
             type: checkbox
@@ -176,7 +175,6 @@ formulaire:
             type: file
             read-only: true
             visionneuse: Pastell\Viewer\MetadonneesViewer
-            visionneuse-no-link: true
     'Mail sécurisé':
         to:
             name: Destinataire(s)

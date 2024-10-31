@@ -272,7 +272,6 @@ formulaire:
             type: file
             read-only: true
             visionneuse: Pastell\Viewer\MetadonneesViewer
-            visionneuse-no-link: true
     Acte:
         acte_nature:
             name: "Nature de l'acte"

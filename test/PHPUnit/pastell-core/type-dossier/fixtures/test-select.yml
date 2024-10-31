@@ -145,7 +145,6 @@ formulaire:
             type: file
             read-only: true
             visionneuse: Pastell\Viewer\MetadonneesViewer
-            visionneuse-no-link: true
     'Retour GED':
         has_ged_document_id:
             no-show: true

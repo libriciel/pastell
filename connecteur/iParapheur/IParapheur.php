@@ -862,7 +862,7 @@ class IParapheur extends SignatureConnecteur
             ), JSON_THROW_ON_ERROR);
         }
         $file = new Fichier();
-        $file->filename = 'iparapheur_metadata_sortie.json';
+        $file->filename = 'metadonneesSortieParapheur.json';
         $file->content = $fileContent;
         return $file;
     }
