@@ -1,20 +1,22 @@
-# [4.1.3]
+# [4.1.3] - 2024-11-12
 
 ## Évolutions
 
 - Studio, Gestion des éléments du formulaire : Ajout d'un indicateur `Identifiant en doublon`
   (Cet élément du formulaire est déjà automatiquement créé via une étape du cheminement.
   Il ne doit pas être créé manuellement.) #989
+- Étape Signature, Récupération des Métadonnées de sortie du iParapheur #1083
+- Ajout du viewer de métadonnées json au format {"cle1":"valeur1","cle2":"valeur2",...} #1083
+- Il manquait les annexes de sortie dans le cas d'un rejet iParapheur sur l'étape signature #2149
 
 ## Corrections
 
 - Il manquait acte_unique_id sur l'étape tdt_actes pour avoir le lien "URL de l'acte" des Actes réponse préfecture #2130
 - Il manquait l'onglet 'Réponses de la préfecture' sur l'étape tdt_actes #2130
-
-## Évolutions
-
-- Étape Signature, Récupération des Métadonnées de sortie du iParapheur #1083
-- Ajout du viewer de métadonnées json au format {"cle1":"valeur1","cle2":"valeur2",...} #1083
+- Depuis Parapheur V5 les annexes entrée/sortie ne sont plus ordonnées.
+  On se base maintenant sur le hash pour les distinguer #2149
+- Correction d'un log d'erreur SplitFile #1666
+- Les SIPs n'étaient pas acceptés par vitam #2167
 
 # [4.1.2] - 2024-10-22
 
@@ -135,6 +137,19 @@
 - `pdf-generique` et `document-a-signer` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-document-pdf` #1870
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
+
+# [4.0.18] - 2024-11-12
+
+## Évolutions
+
+- Il manquait les annexes de sortie dans le cas d'un rejet iParapheur sur l'étape signature #2149
+
+## Correction
+
+- Depuis Parapheur V5 les annexes entrée/sortie ne sont plus ordonnées. 
+  On se base maintenant sur le hash pour les distinguer #2149
+- Correction d'un log d'erreur SplitFile #1666
+- Les SIPs n'étaient pas acceptés par vitam #2167
 
 # [4.0.17] - 2024-10-22
 

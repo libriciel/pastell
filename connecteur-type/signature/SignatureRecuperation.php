@@ -101,8 +101,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 $iparapheur_metadata_sortie_element,
                 $bordereau_element
             );
-        }
-        if ($signature->isRejected($lastState)) {
+        } elseif ($signature->isRejected($lastState)) {
             $refusal_message = $signature->getRefusalMessage($dossierID);
             $lastState = trim("$lastState $refusal_message");
             $this->setLastMessage($lastState);
@@ -111,7 +110,8 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 $dossierID,
                 $lastState,
                 $bordereau_element,
-                $iparapheur_metadata_sortie_element
+                $annexe_element,
+                $iparapheur_annexe_sortie_element
             );
             return true;
         }
@@ -146,29 +146,55 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
      * @param $dossierID
      * @param $lastState
      * @param $bordereau_element
-     * @return bool
+     * @param $annexe_element
+     * @param $iparapheur_annexe_sortie_element
+     * @throws NotFoundException
+     * @throws UnrecoverableException
      * @throws Exception
      */
     public function rejeteDossier(
         $dossierID,
         $lastState,
         $bordereau_element,
+        $annexe_element,
+        $iparapheur_annexe_sortie_element,
         $iparapheur_metadata_sortie_element
-    ) {
+    ): bool {
         /** @var SignatureConnecteur $signature */
         $signature = $this->getConnecteur('signature');
+        $donneesFormulaire = $this->getDonneesFormulaire();
 
         $info = $signature->getSignature($dossierID, false);
+
         if (!$info) {
-            $this->setLastMessage("Le bordereau n'a pas pu être récupéré : " . $signature->getLastError());
+            $this->setLastMessage('Le bordereau n\'a pas pu être récupéré : ' . $signature->getLastError());
             return false;
         }
-
-        $bordereau = $signature->getBordereauFromSignature($info, $dossierID);
-        if ($bordereau) {
-            $this->getDonneesFormulaire()
-                ->addFileFromData($bordereau_element, $bordereau->filename, $bordereau->content);
+        if ($signature->hasBordereau()) {
+            $bordereau = $signature->getBordereauFromSignature($info);
+            if ($bordereau) {
+                $donneesFormulaire->addFileFromData($bordereau_element, $bordereau->filename, $bordereau->content);
+            }
         }
+
+        $annexeElementHash = [];
+        if ($donneesFormulaire->get($annexe_element)) {
+            foreach ($donneesFormulaire->get($annexe_element) as $i => $name) {
+                $annexeElementHash[] = hash('sha256', $donneesFormulaire->getFileContent($annexe_element, $i));
+            }
+        }
+        $i = 0;
+        foreach ($signature->getOutputAnnexe($info, 0) as $annexe) {
+            if (!in_array(hash('sha256', $annexe['document']), $annexeElementHash, true)) {
+                $donneesFormulaire->addFileFromData(
+                    $iparapheur_annexe_sortie_element,
+                    $annexe['nom_document'],
+                    $annexe['document'],
+                    $i++
+                );
+            }
+        }
+
         $metadataSortie = $signature->getMetadataSortie($info);
         if ($metadataSortie !== null) {
             $this->getDonneesFormulaire()->addFileFromData(
@@ -233,21 +259,22 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         }
 
         //Traitement des $iparapheur_annexe_sortie_element avant addMultiDocumentSigne (modification de $annexe_element)
-        if ($signature->hasMultiDocumentSigne($info)) {
-            // les fichiers annexes ont été envoyés en DocumentsSupplementaires
-            $output_annexe = $signature->getOutputAnnexe($info, 0);
-        } else {
-            // les fichiers annexes ont été envoyés en DocumentsAnnexes(si le sous-type i-parapheur ne permet pas la
-            //Signature multi-document alors les DocumentsSupplementaires ont été reçus en tant que DocumentsAnnexes)
-            $output_annexe = $signature->getOutputAnnexe($info, $donneesFormulaire->getFileNumber($annexe_element));
+        $annexeElementHash = [];
+        if ($donneesFormulaire->get($annexe_element)) {
+            foreach ($donneesFormulaire->get($annexe_element) as $i => $name) {
+                $annexeElementHash[] = hash('sha256', $donneesFormulaire->getFileContent($annexe_element, $i));
+            }
         }
-        foreach ($output_annexe as $i => $annexe) {
-            $donneesFormulaire->addFileFromData(
-                $iparapheur_annexe_sortie_element,
-                $annexe['nom_document'],
-                $annexe['document'],
-                $i
-            );
+        $i = 0;
+        foreach ($signature->getOutputAnnexe($info, 0) as $annexe) {
+            if (!in_array(hash('sha256', $annexe['document']), $annexeElementHash, true)) {
+                $donneesFormulaire->addFileFromData(
+                    $iparapheur_annexe_sortie_element,
+                    $annexe['nom_document'],
+                    $annexe['document'],
+                    $i++
+                );
+            }
         }
 
         $donneesFormulaire->setData($has_signature_element, true);

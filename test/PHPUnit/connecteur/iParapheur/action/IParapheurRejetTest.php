@@ -4,6 +4,9 @@ class IParapheurRejetTest extends PastellTestCase
 {
     use SoapUtilitiesTestTrait;
 
+    /**
+     * @throws NotFoundException
+     */
     public function testRejet()
     {
         $this->mockSoapClient(function ($soapMethod) {
@@ -57,8 +60,30 @@ class IParapheurRejetTest extends PastellTestCase
                         'contentType' => 'application/pdf'
                     ],
                     'NomDocPrincipal' => 'test éàê accent.pdf',
-                    'MessageRetour' => [
-                        'codeRetour' => 'OK'
+                    'DocumentsAnnexes' => [
+                        'DocAnnexe' => [
+                            [
+                                'nom' => 'annexe origine.pdf',
+                                'fichier' => [
+                                    '_' => 'annexe origine content',
+                                    'contentType' => 'application/pdf',
+                                ],
+                            ],
+                            [
+                                'nom' => 'annexe rajoutée dans i-parapheur.pdf',
+                                'fichier' => [
+                                    '_' => 'annexe rajoutée dans i-parapheur content',
+                                    'contentType' => 'application/pdf',
+                                ],
+                            ],
+                            [
+                                'nom' => 'iParapheur_impression_dossier.pdf',
+                                'fichier' => [
+                                    '_' => 'Bordereau de signature content',
+                                    'contentType' => 'application/pdf',
+                                ],
+                            ],
+                        ],
                     ],
                     'MetaDonnees' => [
                         'MetaDonnee' => [
@@ -67,6 +92,9 @@ class IParapheurRejetTest extends PastellTestCase
                             ['nom' => 'ph:dossierTitre', 'valeur' => 'LIBELLE'],
                         ],
                     ],
+                    'MessageRetour' => [
+                        'codeRetour' => 'OK'
+                    ]
                 ], JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
             }
             if ($soapMethod === 'EffacerDossierRejete') {
@@ -80,7 +108,8 @@ class IParapheurRejetTest extends PastellTestCase
             throw new UnrecoverableException("unknow $soapMethod call");
         });
 
-        $id_ce = $this->createConnector('iParapheur', "i-parapheur")['id_ce'];
+        $id_ce = $this->createConnector('iParapheur', 'i-parapheur')['id_ce'];
+
         $this->configureConnector($id_ce, [
             'iparapheur_wsdl' => 'https://foo',
         ]);
@@ -118,6 +147,13 @@ class IParapheurRejetTest extends PastellTestCase
         static::assertStringEqualsFile(
             __DIR__ . '/fixtures/iparapheur-historique-rejetCachet.xml',
             $domDocument->saveXML()
+        );
+
+        static::assertSame(
+            'annexe rajoutée dans i-parapheur.pdf',
+            $this->getDonneesFormulaireFactory()
+                ->get($id_d)
+                ->getFileName('iparapheur_annexe_sortie', 0)
         );
     }
 }
