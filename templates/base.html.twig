@@ -52,7 +52,7 @@
     ] %}
     {% block javascript %}
     {% for jsFile in jsFiles %}
-        <script type="text/javascript" src="{{ jsFile }}"></script>
+        <script type="text/javascript" src="{{ jsFile ~ '?rev=' ~ manifest_info.revision}}"></script>
     {% endfor %}
 {% endblock %}
 </head>
