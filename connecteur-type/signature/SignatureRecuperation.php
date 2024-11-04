@@ -11,9 +11,6 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
     /** @deprecated Since 4.1.3, Use file 'iparapheur_metadata_sortie' instead */
     private $iparapheur_metadata_sortie;
 
-
-
-
     /**
      * @return bool
      * @throws Exception
@@ -173,7 +170,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 ->addFileFromData($bordereau_element, $bordereau->filename, $bordereau->content);
         }
         $metadataSortie = $signature->getMetadataSortie($info);
-        if ($metadataSortie) {
+        if ($metadataSortie !== null) {
             $this->getDonneesFormulaire()->addFileFromData(
                 $iparapheur_metadata_sortie_element,
                 $metadataSortie->filename,
@@ -293,7 +290,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
             $donneesFormulaire->addFileFromData($bordereau_element, $bordereau->filename, $bordereau->content);
         }
         $metadataSortie = $signature->getMetadataSortie($info);
-        if ($metadataSortie) {
+        if ($metadataSortie !== null) {
             $this->getDonneesFormulaire()->addFileFromData(
                 $iparapheur_metadata_sortie_element,
                 $metadataSortie->filename,

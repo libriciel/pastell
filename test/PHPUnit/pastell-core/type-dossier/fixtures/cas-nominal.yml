@@ -161,7 +161,7 @@ formulaire:
             name: 'Métadonnées de sortie du parapheur'
             type: file
             read-only: true
-            visionneuse: Pastell\Viewer\MetadonneesViewer
+            visionneuse: Pastell\Viewer\JsonViewer
     'Retour GED #1':
         has_ged_document_id_1:
             no-show: true

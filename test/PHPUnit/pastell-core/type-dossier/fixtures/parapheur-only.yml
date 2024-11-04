@@ -111,7 +111,7 @@ formulaire:
             name: 'Métadonnées de sortie du parapheur'
             type: file
             read-only: true
-            visionneuse: Pastell\Viewer\MetadonneesViewer
+            visionneuse: Pastell\Viewer\JsonViewer
 champs-affiches:
     - titre
     - dernier_etat

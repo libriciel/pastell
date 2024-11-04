@@ -90,7 +90,7 @@ formulaire:
         transformation_file:
             name: Transformations
             type: file
-            visionneuse: Pastell\Viewer\MetadonneesViewer
+            visionneuse: Pastell\Viewer\JsonViewer
             read-only: true
             visionneuse-no-link: true
     iparapheur:
@@ -183,7 +183,7 @@ formulaire:
             name: 'Métadonnées de sortie du parapheur'
             type: file
             read-only: true
-            visionneuse: Pastell\Viewer\MetadonneesViewer
+            visionneuse: Pastell\Viewer\JsonViewer
     Acte:
         acte_nature:
             name: "Nature de l'acte"

@@ -26,7 +26,7 @@ formulaire:
         transformation_file_1:
             name: Transformations
             type: file
-            visionneuse: Pastell\Viewer\MetadonneesViewer
+            visionneuse: Pastell\Viewer\JsonViewer
             read-only: true
             visionneuse-no-link: true
     'Transformation #2':
@@ -36,7 +36,7 @@ formulaire:
         transformation_file_2:
             name: Transformations
             type: file
-            visionneuse: Pastell\Viewer\MetadonneesViewer
+            visionneuse: Pastell\Viewer\JsonViewer
             read-only: true
             visionneuse-no-link: true
 champs-affiches:

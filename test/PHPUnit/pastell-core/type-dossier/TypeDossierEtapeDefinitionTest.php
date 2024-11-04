@@ -221,7 +221,7 @@ class TypeDossierEtapeDefinitionTest extends PastellTestCase
                             'name' => 'Métadonnées parapheur (JSON)',
                             'commentaire' => 'Au format JSON {"cle1":"valeur1","cle2":"valeur2",...}',
                             'type' => 'file',
-                            'visionneuse' => 'Pastell\Viewer\MetadonneesViewer',
+                            'visionneuse' => 'Pastell\Viewer\JsonViewer',
                         ],
                     'has_date_limite_2' =>
                         [
@@ -315,7 +315,7 @@ class TypeDossierEtapeDefinitionTest extends PastellTestCase
                             'name' => 'Métadonnées de sortie du parapheur',
                             'type' => 'file',
                             'read-only' => true,
-                            'visionneuse' => 'Pastell\Viewer\MetadonneesViewer',
+                            'visionneuse' => 'Pastell\Viewer\JsonViewer',
                         ],
                 ],
             'Parapheur FAST #2' => [

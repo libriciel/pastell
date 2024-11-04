@@ -56,7 +56,7 @@ formulaire:
             name: 'Métadonnées parapheur (JSON)'
             commentaire: 'Au format JSON {"cle1":"valeur1","cle2":"valeur2",...}'
             type: file
-            visionneuse: Pastell\Viewer\MetadonneesViewer
+            visionneuse: Pastell\Viewer\JsonViewer
         has_date_limite_1:
             name: 'Utiliser une date limite'
             type: checkbox
@@ -134,7 +134,7 @@ formulaire:
             name: 'Métadonnées de sortie du parapheur'
             type: file
             read-only: true
-            visionneuse: Pastell\Viewer\MetadonneesViewer
+            visionneuse: Pastell\Viewer\JsonViewer
     'iparapheur #2':
         envoi_iparapheur_2:
             no-show: true
@@ -152,7 +152,7 @@ formulaire:
             name: 'Métadonnées parapheur (JSON)'
             commentaire: 'Au format JSON {"cle1":"valeur1","cle2":"valeur2",...}'
             type: file
-            visionneuse: Pastell\Viewer\MetadonneesViewer
+            visionneuse: Pastell\Viewer\JsonViewer
         has_date_limite_2:
             name: 'Utiliser une date limite'
             type: checkbox
@@ -230,7 +230,7 @@ formulaire:
             name: 'Métadonnées de sortie du parapheur'
             type: file
             read-only: true
-            visionneuse: Pastell\Viewer\MetadonneesViewer
+            visionneuse: Pastell\Viewer\JsonViewer
 champs-affiches:
     - titre
     - dernier_etat

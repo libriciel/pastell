@@ -13,7 +13,7 @@ use function json_decode;
 
 use const JSON_THROW_ON_ERROR;
 
-final class MetadonneesViewer implements Viewer
+final class JsonViewer implements Viewer
 {
     /**
      * @throws JsonException
