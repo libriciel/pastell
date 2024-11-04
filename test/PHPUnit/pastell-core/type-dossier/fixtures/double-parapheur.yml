@@ -56,6 +56,7 @@ formulaire:
             name: 'Métadonnées parapheur (JSON)'
             commentaire: 'Au format JSON {"cle1":"valeur1","cle2":"valeur2",...}'
             type: file
+            visionneuse: Pastell\Viewer\JsonViewer
         has_date_limite_1:
             name: 'Utiliser une date limite'
             type: checkbox
@@ -129,6 +130,11 @@ formulaire:
             type: file
             multiple: true
             read-only: true
+        iparapheur_metadata_sortie_1:
+            name: 'Métadonnées de sortie du parapheur'
+            type: file
+            read-only: true
+            visionneuse: Pastell\Viewer\JsonViewer
     'iparapheur #2':
         envoi_iparapheur_2:
             no-show: true
@@ -146,6 +152,7 @@ formulaire:
             name: 'Métadonnées parapheur (JSON)'
             commentaire: 'Au format JSON {"cle1":"valeur1","cle2":"valeur2",...}'
             type: file
+            visionneuse: Pastell\Viewer\JsonViewer
         has_date_limite_2:
             name: 'Utiliser une date limite'
             type: checkbox
@@ -219,6 +226,11 @@ formulaire:
             type: file
             multiple: true
             read-only: true
+        iparapheur_metadata_sortie_2:
+            name: 'Métadonnées de sortie du parapheur'
+            type: file
+            read-only: true
+            visionneuse: Pastell\Viewer\JsonViewer
 champs-affiches:
     - titre
     - dernier_etat
@@ -384,6 +396,7 @@ action:
             multi_document_original: multi_document_original_1
             bordereau: bordereau_signature_1
             iparapheur_annexe_sortie: iparapheur_annexe_sortie_1
+            iparapheur_metadata_sortie: iparapheur_metadata_sortie_1
             iparapheur_dossier_id: iparapheur_dossier_id_1
             recu-iparapheur: recu-iparapheur_1
             rejet-iparapheur: rejet-iparapheur_1
@@ -509,6 +522,7 @@ action:
             multi_document_original: multi_document_original_2
             bordereau: bordereau_signature_2
             iparapheur_annexe_sortie: iparapheur_annexe_sortie_2
+            iparapheur_metadata_sortie: iparapheur_metadata_sortie_2
             iparapheur_dossier_id: iparapheur_dossier_id_2
             recu-iparapheur: recu-iparapheur_2
             rejet-iparapheur: rejet-iparapheur_2

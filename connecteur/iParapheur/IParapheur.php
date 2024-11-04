@@ -226,6 +226,7 @@ class IParapheur extends SignatureConnecteur
         return $info;
     }
 
+    /** @deprecated 4.1.3, unused */
     public function getMetaDonnee($metaDonnees, $nom)
     {
         if ($metaDonnees) {
@@ -845,6 +846,24 @@ class IParapheur extends SignatureConnecteur
         $file = new Fichier();
         $file->filename = $signature['nom_document'];
         $file->content = $signature['document'];
+        return $file;
+    }
+
+    /**
+     * @throws JsonException
+     */
+    public function getMetadataSortie($signature): ?Fichier
+    {
+        $fileContent = '';
+        if ($signature['meta_donnees']) {
+            $fileContent = json_encode(array_combine(
+                array_column($signature['meta_donnees'], 'nom'),
+                array_column($signature['meta_donnees'], 'valeur')
+            ), JSON_THROW_ON_ERROR);
+        }
+        $file = new Fichier();
+        $file->filename = 'metadonneesSortieParapheur.json';
+        $file->content = $fileContent;
         return $file;
     }
 

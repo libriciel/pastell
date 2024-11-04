@@ -93,6 +93,8 @@ abstract class SignatureConnecteur extends Connecteur
      */
     abstract public function getBordereauFromSignature($signature, string $documentId = ''): ?Fichier;
 
+    abstract public function getMetadataSortie($signature): ?Fichier;
+
     /**
      * @param $info_from_get_signature
      * @return bool

@@ -186,6 +186,11 @@ class Libersign extends SignatureConnecteur
         throw new BadMethodCallException('Not implemented');
     }
 
+    public function getMetadataSortie($signature): ?Fichier
+    {
+        throw new BadMethodCallException('Not implemented');
+    }
+
     /**
      * @param $dossierID
      */

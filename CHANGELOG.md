@@ -11,6 +11,11 @@
 - Il manquait acte_unique_id sur l'étape tdt_actes pour avoir le lien "URL de l'acte" des Actes réponse préfecture #2130
 - Il manquait l'onglet 'Réponses de la préfecture' sur l'étape tdt_actes #2130
 
+## Évolutions
+
+- Étape Signature, Récupération des Métadonnées de sortie du iParapheur #1083
+- Ajout du viewer de métadonnées json au format {"cle1":"valeur1","cle2":"valeur2",...} #1083
+
 # [4.1.2] - 2024-10-22
 
 ## Correction

@@ -415,6 +415,11 @@ class FastParapheur extends SignatureConnecteur
         return $return;
     }
 
+    public function getMetadataSortie($signature): ?Fichier
+    {
+        return null;
+    }
+
     /**
      * @param $dossierID
      */

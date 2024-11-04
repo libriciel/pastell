@@ -68,7 +68,7 @@ formulaire:
         transformation_file:
             name: Transformations
             type: file
-            visionneuse: Pastell\Viewer\TransformationViewer
+            visionneuse: Pastell\Viewer\JsonViewer
             read-only: true
             visionneuse-no-link: true
     'Mail sécurisé':

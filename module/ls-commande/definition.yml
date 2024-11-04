@@ -172,7 +172,7 @@ formulaire:
         transformation_file:
             name: Transformations
             type: file
-            visionneuse: Pastell\Viewer\TransformationViewer
+            visionneuse: Pastell\Viewer\JsonViewer
             read-only: true
             visionneuse-no-link: true
     iparapheur:
@@ -192,6 +192,7 @@ formulaire:
             name: 'Métadonnées parapheur (JSON)'
             commentaire: 'Au format JSON {"cle1":"valeur1","cle2":"valeur2",...}'
             type: file
+            visionneuse: Pastell\Viewer\JsonViewer
         has_date_limite:
             name: 'Utiliser une date limite'
             type: checkbox
@@ -265,6 +266,11 @@ formulaire:
             type: file
             multiple: true
             read-only: true
+        iparapheur_metadata_sortie:
+            name: 'Métadonnées de sortie du parapheur'
+            type: file
+            read-only: true
+            visionneuse: Pastell\Viewer\JsonViewer
     'Mail sécurisé':
         to:
             name: Destinataire(s)
@@ -599,6 +605,7 @@ action:
             multi_document_original: multi_document_original
             bordereau: bordereau_signature
             iparapheur_annexe_sortie: iparapheur_annexe_sortie
+            iparapheur_metadata_sortie: iparapheur_metadata_sortie
             iparapheur_dossier_id: iparapheur_dossier_id
             recu-iparapheur: recu-iparapheur
             rejet-iparapheur: rejet-iparapheur

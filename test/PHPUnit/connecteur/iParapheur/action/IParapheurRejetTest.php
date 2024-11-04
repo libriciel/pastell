@@ -59,7 +59,14 @@ class IParapheurRejetTest extends PastellTestCase
                     'NomDocPrincipal' => 'test éàê accent.pdf',
                     'MessageRetour' => [
                         'codeRetour' => 'OK'
-                    ]
+                    ],
+                    'MetaDonnees' => [
+                        'MetaDonnee' => [
+                            ['nom' => 'i_Parapheur_internal_creation_date', 'valeur' => '2024-10-30T16:43:36.464+0100'],
+                            ['nom' => 'test_pastell_texte', 'valeur' => 'Doc KO'],
+                            ['nom' => 'ph:dossierTitre', 'valeur' => 'LIBELLE'],
+                        ],
+                    ],
                 ], JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
             }
             if ($soapMethod === 'EffacerDossierRejete') {
@@ -98,6 +105,10 @@ class IParapheurRejetTest extends PastellTestCase
         $this->assertLastMessage('23/02/2024 16:22:30 : [RejetCachet] test rejet cachet');
 
         $donnesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
+        static::assertSame(
+            '{"i_Parapheur_internal_creation_date":"2024-10-30T16:43:36.464+0100","test_pastell_texte":"Doc KO","ph:dossierTitre":"LIBELLE"}',
+            $donnesFormulaire->getFileContent('iparapheur_metadata_sortie')
+        );
 
         $domDocument = new DOMDocument();
         $domDocument->preserveWhiteSpace = false;

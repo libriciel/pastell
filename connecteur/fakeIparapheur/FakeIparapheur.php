@@ -233,6 +233,12 @@ class FakeIparapheur extends SignatureConnecteur
         return $file;
     }
 
+    public function getMetadataSortie($signature): ?Fichier
+    {
+        return null;
+    }
+
+
     public function isFastSignature()
     {
         return $this->is_fast;
