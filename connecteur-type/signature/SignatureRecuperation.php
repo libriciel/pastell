@@ -111,7 +111,8 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 $lastState,
                 $bordereau_element,
                 $annexe_element,
-                $iparapheur_annexe_sortie_element
+                $iparapheur_annexe_sortie_element,
+                $iparapheur_metadata_sortie_element
             );
             return true;
         }
@@ -170,11 +171,10 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
             $this->setLastMessage('Le bordereau n\'a pas pu être récupéré : ' . $signature->getLastError());
             return false;
         }
-        if ($signature->hasBordereau()) {
-            $bordereau = $signature->getBordereauFromSignature($info);
-            if ($bordereau) {
-                $donneesFormulaire->addFileFromData($bordereau_element, $bordereau->filename, $bordereau->content);
-            }
+
+        $bordereau = $signature->getBordereauFromSignature($info, $dossierID);
+        if ($bordereau) {
+            $donneesFormulaire->addFileFromData($bordereau_element, $bordereau->filename, $bordereau->content);
         }
 
         $annexeElementHash = [];
