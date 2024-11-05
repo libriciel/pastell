@@ -124,6 +124,12 @@ class IParapheurRejetTest extends PastellTestCase
             'libelle' => 'LIBELLE',
         ]);
         $donneesFormulaire->addFileFromData('document', 'test éàê accent.pdf', 'test');
+        $this->getDonneesFormulaireFactory()->get($id_d)->addFileFromData(
+            'annexe',
+            'annexe origine.pdf',
+            'annexe origine content',
+            0
+        );
 
         $this->triggerActionOnDocument($id_d, 'send-iparapheur');
         $this->assertLastMessage('Le document a été envoyé au parapheur électronique');
