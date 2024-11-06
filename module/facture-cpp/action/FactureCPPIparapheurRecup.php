@@ -17,16 +17,23 @@ class FactureCPPIparapheurRecup extends SignatureRecuperation
 
         if ($result_parapheur) {
             $donneesFormulaire = $this->getDonneesFormulaire();
-            if ($this->getActionName() == self::ACTION_NAME_RECU) {
-                $donneesFormulaire->setData(AttrFactureCPP::ATTR_STATUT_CIBLE_LISTE, PortailFactureConnecteur::STATUT_SERVICE_FAIT);
-                $codeService = $this->getMetaDonnee("CodeService");
+            $metadata = json_decode(
+                $donneesFormulaire->getFileContent('iparapheur_metadata_sortie'),
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            );
+            if ($this->getActionName() === self::ACTION_NAME_RECU) {
+                $donneesFormulaire->setData(
+                    AttrFactureCPP::ATTR_STATUT_CIBLE_LISTE,
+                    PortailFactureConnecteur::STATUT_SERVICE_FAIT
+                );
+                $codeService = array_key_exists('CodeService', $metadata) ? $metadata['CodeService'] : '';
                 $donneesFormulaire->setData(AttrFactureCPP::ATTR_SERVICE_DESTINATAIRE_CODE, $codeService);
             }
-            if ($this->getActionName() == self::ACTION_NAME_REJET) {
-                $statutCible = $this->getMetaDonnee("chorusproStatutRejet");
-                if (!$statutCible) {
-                    $statutCible = "REJETEE";
-                }
+            if ($this->getActionName() === self::ACTION_NAME_REJET) {
+                $statutCible = array_key_exists('chorusproStatutRejet', $metadata) ?
+                    $metadata['chorusproStatutRejet'] : 'REJETEE';
                 $donneesFormulaire->setData(AttrFactureCPP::ATTR_STATUT_CIBLE_LISTE, $statutCible);
                 $lastState = $donneesFormulaire->get('parapheur_last_message');
                 $donneesFormulaire->setData(AttrFactureCPP::ATTR_MOTIF_MAJ, $lastState);
