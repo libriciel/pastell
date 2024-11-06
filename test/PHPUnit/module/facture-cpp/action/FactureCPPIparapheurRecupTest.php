@@ -53,7 +53,14 @@ class FactureCPPIparapheurRecupTest extends ExtensionCppTestCase
                         $arguments[0]
                     );
                 }
-
+                if ($soapMethod === 'CreerDossier') {
+                    return json_decode(
+                        '{"MessageRetour":{"codeRetour":"OK","message":"","severite":"INFO"}}',
+                        false,
+                        512,
+                        JSON_THROW_ON_ERROR
+                    );
+                }
                 if ($soapMethod === 'GetHistoDossier') {
                     return json_decode(json_encode([
                         'LogDossier' => [
@@ -62,18 +69,32 @@ class FactureCPPIparapheurRecupTest extends ExtensionCppTestCase
                                 'annotation' => 'annotation',
                                 'status' => 'RejetVisa'
                             ],
+                        ],
+                        'MessageRetour' => [
+                            'codeRetour' => 'OK',
+                            'message' => '',
+                            'severite' => 'INFO'
                         ]
                     ], JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
                 }
-                return json_decode(
-                    '{"MetaDonnees":
-                    [{"nom":"ph:dossierTitre","valeur":"20191125160915_1449812468"},
-                    {"nom":"chorusproStatutRejet","valeur":"SUSPENDUE"}],
-                     "MessageRetour":{"codeRetour":"OK","message":"message.","severite":"INFO"}}',
-                    false,
-                    512,
-                    JSON_THROW_ON_ERROR
-                );
+                if ($soapMethod === 'GetDossier') {
+                    return json_decode(json_encode([
+                        'DocPrincipal' => [
+                            '_' => '%PDF1-4',
+                            'contentType' => 'application/pdf'
+                        ],
+                        'NomDocPrincipal' => 'docPrincipal.pdf',
+                        'MetaDonnees' => [
+                            'MetaDonnee' => [
+                                ['nom' => 'chorusproStatutRejet', 'valeur' => 'SUSPENDUE'],
+                                ['nom' => 'ph:dossierTitre', 'valeur' => '20191125160915_1449812468'],
+                            ],
+                        ],
+                        'MessageRetour' => [
+                            'codeRetour' => 'OK'
+                        ]
+                    ], JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
+                }
             }
         );
 

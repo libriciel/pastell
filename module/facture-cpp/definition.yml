@@ -255,6 +255,11 @@ formulaire:
             name: 'Annexe(s) de sortie du parapheur'
             type: file
             multiple: true
+        iparapheur_metadata_sortie:
+            name: 'Métadonnées de sortie du parapheur'
+            type: file
+            read-only: true
+            visionneuse: Pastell\Viewer\JsonViewer
     'Retour GED':
         has_ged_document_id:
             no-show: true

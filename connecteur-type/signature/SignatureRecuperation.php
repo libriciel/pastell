@@ -8,7 +8,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
 
     private $action_name;
 
-    /** @deprecated Since 4.1.3, Use file 'iparapheur_metadata_sortie' instead */
+    /** @deprecated Since 4.1.3, Unused, Use file 'iparapheur_metadata_sortie' instead */
     private $iparapheur_metadata_sortie;
 
     /**
@@ -101,7 +101,8 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 $iparapheur_metadata_sortie_element,
                 $bordereau_element
             );
-        } elseif ($signature->isRejected($lastState)) {
+        }
+        if ($signature->isRejected($lastState)) {
             $refusal_message = $signature->getRefusalMessage($dossierID);
             $lastState = trim("$lastState $refusal_message");
             $this->setLastMessage($lastState);
@@ -371,7 +372,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
      * @param $nomMetaDonnee
      * @return bool|string
      */
-    /** @deprecated Since 4.1.3, Use file 'iparapheur_metadata_sortie' instead */
+    /** @deprecated Since 4.1.3, Unused, Use file 'iparapheur_metadata_sortie' instead */
     public function getMetaDonnee($nomMetaDonnee)
     {
         if ($this->iparapheur_metadata_sortie) {
