@@ -97,7 +97,7 @@ services:
             - ${MARIADB_DATADIR:-mariadb_datadir}:/var/lib/mysql/
 
     redis:
-        image: 'hubdocker.libriciel.fr/redis:7.0.15'
+        image: 'hubdocker.libriciel.fr/redis:7.2.6'
         restart: unless-stopped
 
     seda-generator:
