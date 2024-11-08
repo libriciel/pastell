@@ -1,3 +1,9 @@
+# [4.1.4]
+
+## Corrections
+
+- Mise à jour des fréquences par défaut #2166
+
 # [4.1.3] - 2024-11-12
 
 ## Évolutions
