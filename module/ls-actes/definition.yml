@@ -165,11 +165,11 @@ formulaire:
             type: file
             read-only: true
         document_original:
-            name: 'Document original'
+            name: "Document d'origine"
             type: file
             read-only: true
         multi_document_original:
-            name: 'Multi-document(s) original'
+            name: "Multi-document(s) d'origine"
             type: file
             multiple: true
             read-only: true

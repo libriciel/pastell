@@ -286,13 +286,13 @@ class TypeDossierEtapeDefinitionTest extends PastellTestCase
                     ],
                     'document_original_2' =>
                         [
-                            'name' => 'Document original',
+                            'name' => "Document d'origine",
                             'type' => 'file',
                             'read-only' => true,
                         ],
                     'multi_document_original_2' =>
                         [
-                            'name' => 'Multi-document(s) original',
+                            'name' => "Multi-document(s) d'origine",
                             'type' => 'file',
                             'multiple' => true,
                             'read-only' => true,
