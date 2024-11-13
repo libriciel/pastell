@@ -240,58 +240,36 @@ class PastellBootstrap
     public function getDefaultFrequencies(): iterable
     {
         yield 'base' => [
-            'expression' => '10',
+            'expression' => '15',
         ];
         yield 'iparapheur' => [
-            'expression' => '10',
+            'expression' => '30',
             'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
             'famille_connecteur' => 'signature',
             'id_connecteur' => 'iParapheur',
-            'id_verrou' => "I-PARAPHEUR",
+            'action_type' => ConnecteurFrequence::TYPE_ACTION_DOCUMENT,
+            'id_verrou' => 'IPARAPHEUR',
         ];
-        yield 'purge' => [
+        yield 'SAE' => [
+            'expression' => "60 X 24\n1440",
+            'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
+            'famille_connecteur' => 'SAE',
+            'action_type' => ConnecteurFrequence::TYPE_ACTION_DOCUMENT,
+            'id_verrou' => 'SAE',
+        ];
+        yield 'pdf relance' => [
             'expression' => '1440',
             'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
-            'famille_connecteur' => 'Purge',
-            'id_connecteur' => 'purge',
-            'id_verrou' => "PURGE",
-        ];
-        yield 'SAE actes-generique (validation)' => [
-            'expression' => "60 X 24\n1440",
-            'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
-            'famille_connecteur' => 'SAE',
+            'famille_connecteur' => 'pdf-relance',
             'action_type' => ConnecteurFrequence::TYPE_ACTION_DOCUMENT,
-            'type_document' => 'actes-generique',
-            'action' => 'validation-sae',
+            'id_verrou' => 'MAILSEC_RELANCE',
         ];
-        yield 'SAE actes-generique (vérification)' => [
-            'expression' => "60 X 24\n1440",
+        yield 'tdt entité' => [
+            'expression' => '30',
             'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
-            'famille_connecteur' => 'SAE',
-            'action_type' => ConnecteurFrequence::TYPE_ACTION_DOCUMENT,
-            'type_document' => 'actes-generique',
-            'action' => 'verif-sae',
-        ];
-        yield 'SAE helios-generique (validation)' => [
-            'expression' => "60 X 24\n1440",
-            'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
-            'famille_connecteur' => 'SAE',
-            'action_type' => ConnecteurFrequence::TYPE_ACTION_DOCUMENT,
-            'type_document' => 'helios-generique',
-            'action' => 'validation-sae',
-        ];
-        yield 'SAE helios-generique (vérification)' => [
-            'expression' => "60 X 24\n1440",
-            'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
-            'famille_connecteur' => 'SAE',
-            'action_type' => ConnecteurFrequence::TYPE_ACTION_DOCUMENT,
-            'type_document' => 'helios-generique',
-            'action' => 'verif-sae',
-        ];
-        yield 'tdt global' => [
-            'expression' => '1440',
-            'type_connecteur' => ConnecteurFrequence::TYPE_GLOBAL,
             'famille_connecteur' => 'TdT',
+            'action_type' => ConnecteurFrequence::TYPE_ACTION_DOCUMENT,
+            'id_verrou' => 'TDT',
         ];
         yield 'cpp entité' => [
             'expression' => '30',
@@ -299,24 +277,27 @@ class PastellBootstrap
             'famille_connecteur' => 'PortailFacture',
             'id_connecteur' => 'cpp',
             'action_type' => ConnecteurFrequence::TYPE_ACTION_CONNECTEUR,
-            'id_verrou' => "CHORUS",
+            'id_verrou' => 'CHORUS',
+        ];
+        yield 'purge' => [
+            'expression' => '(0 22 * * *)',
+            'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
+            'famille_connecteur' => 'Purge',
+            'id_connecteur' => 'purge',
+            'action_type' => ConnecteurFrequence::TYPE_ACTION_CONNECTEUR,
+            'id_verrou' => 'PURGE',
+        ];
+        yield 'tdt global' => [
+            'expression' => '(30 9 * * *)',
+            'type_connecteur' => ConnecteurFrequence::TYPE_GLOBAL,
+            'famille_connecteur' => 'TdT',
+            'id_verrou' => 'TDT_GLOBAL',
         ];
         yield 'cpp global' => [
             'expression' => '1440',
             'type_connecteur' => ConnecteurFrequence::TYPE_GLOBAL,
             'famille_connecteur' => 'PortailFacture',
-        ];
-        yield 'UndeliveredMail' => [
-            'expression' => '1440',
-            'type_connecteur' => ConnecteurFrequence::TYPE_GLOBAL,
-            'famille_connecteur' => 'UndeliveredMail',
-        ];
-        yield 'pdf-relance' => [
-            'expression' => '1440',
-            'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
-            'famille_connecteur' => 'pdf-relance',
-            'action_type' => ConnecteurFrequence::TYPE_ACTION_DOCUMENT,
-            'id_verrou' => "MAILSEC_RELANCE",
+            'id_verrou' => 'CHORUS_GLOBAL',
         ];
     }
 }
