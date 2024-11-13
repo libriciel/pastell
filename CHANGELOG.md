@@ -3,6 +3,7 @@
 ## Corrections
 
 - Mise à jour des fréquences par défaut #2166
+- Modification du libellé `Document original` en `Document d'origine` #2168
 
 # [4.1.3] - 2024-11-12
 
