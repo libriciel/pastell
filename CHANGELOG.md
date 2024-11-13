@@ -1,5 +1,10 @@
 # [4.1.4]
 
+## Évolutions
+
+- Lors d'une nouvelle installation les droits contenants `-destinataire` ou `-response` ne sont plus cochés par défaut
+  pour le rôle admin #2155
+
 ## Corrections
 
 - Mise à jour des fréquences par défaut #2166
