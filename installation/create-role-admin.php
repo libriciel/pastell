@@ -1,6 +1,6 @@
 <?php
 
-//TODO a mettre dans une Commande
+/** @deprecated Since 4.1.4, Use app:user:refresh-role-admin command instead */
 
 /**
  * @var ObjectInstancier $objectInstancier

@@ -1,6 +1,6 @@
 <?php
 
-//TODO a mettre dans une Commande
+/** @deprecated Since 4.1.4, Use app:user:refresh-role-admin and app:user:create-admin-user command instead */
 
 //Crée un admin (crée aussi le rôle admin et fixe les droits si il n'existe pas
 
