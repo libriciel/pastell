@@ -1,5 +1,14 @@
 # [4.1.4]
 
+## Évolutions
+
+- Lors d'une nouvelle installation les droits contenants `-destinataire:` ou `-reponse:` ne sont plus cochés par défaut
+  pour le rôle admin #2155
+- Le script `installation/create-admin.php` est remplacé par la commande `app:user:create-admin-user` #2155
+- Le script `installation/create-role-admin.php` est remplacé par la commande `app:user:refresh-role-admin` #2155
+- Ajout de la commande `app:user:update-user-email` #2155
+- Ajout de la commande `app:user:delete-user` #2155
+
 ## Corrections
 
 - Mise à jour des fréquences par défaut #2166

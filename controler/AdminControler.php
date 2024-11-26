@@ -55,10 +55,12 @@ class AdminControler extends Controler
 
     public function fixDroit()
     {
-        $this->getRoleSQL()->edit("admin", "Administrateur");
+        $this->getRoleSQL()->edit('admin', 'Administrateur');
 
         foreach ($this->getRoleDroit()->getAllDroit() as $droit) {
-            $this->getRoleSQL()->addDroit("admin", $droit);
+            if (!str_contains($droit, '-destinataire:') && !str_contains($droit, '-reponse:')) {
+                $this->getRoleSQL()->addDroit('admin', $droit);
+            }
         }
         $this->getEntiteSQL()->updateAllAncestors();
     }
