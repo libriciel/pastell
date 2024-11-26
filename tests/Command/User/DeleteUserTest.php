@@ -37,7 +37,7 @@ class DeleteUserTest extends PastellTestCase
     {
         $this->userCreationService->create(
             'LoginNewUser',
-            'a@a.fr',
+            'a@a.invalid',
             'a',
             'a',
             0,
@@ -65,7 +65,7 @@ class DeleteUserTest extends PastellTestCase
     {
         $this->userCreationService->create(
             'LoginNewUser',
-            'a@a.fr',
+            'a@a.invalid',
             'a',
             'a',
             0,

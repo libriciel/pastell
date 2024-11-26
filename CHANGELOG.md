@@ -2,7 +2,7 @@
 
 ## Évolutions
 
-- Lors d'une nouvelle installation les droits contenants `-destinataire` ou `-response` ne sont plus cochés par défaut
+- Lors d'une nouvelle installation les droits contenants `-destinataire:` ou `-reponse:` ne sont plus cochés par défaut
   pour le rôle admin #2155
 - Le script `installation/create-admin.php` est remplacé par la commande `app:user:create-admin-user` #2155
 - Le script `installation/create-role-admin.php` est remplacé par la commande `app:user:refresh-role-admin` #2155

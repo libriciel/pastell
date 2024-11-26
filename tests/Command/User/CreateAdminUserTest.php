@@ -32,7 +32,7 @@ class CreateAdminUserTest extends PastellTestCase
     {
         $this->commandTester->execute([
             'userLogin' => 'LoginNewUser',
-            'userEmail' => 'example@libriciel.net',
+            'userEmail' => 'example@libriciel.invalid',
         ]);
         $output = $this->commandTester->getDisplay();
         static::assertStringContainsString("Création de l'utilisateur LoginNewUser avec mot de passe :", $output);
@@ -42,7 +42,7 @@ class CreateAdminUserTest extends PastellTestCase
     {
         $this->commandTester->execute([
             'userLogin' => 'admin',
-            'userEmail' => 'example@libriciel.net',
+            'userEmail' => 'example@libriciel.invalid',
         ]);
         $output = $this->commandTester->getDisplay();
         static::assertStringContainsString("L'utilisateur admin existe déjà", $output);

@@ -35,7 +35,7 @@ class UpdateUserEmailTest extends PastellTestCase
     {
         $this->userCreationService->create(
             'LoginNewUser',
-            'a@a.fr',
+            'a@a.invalid',
             'a',
             'a',
             0,
@@ -43,11 +43,11 @@ class UpdateUserEmailTest extends PastellTestCase
         );
         $this->commandTester->execute([
             'userLogin' => 'LoginNewUser',
-            'userNewEmail' => 'example@libriciel.net',
+            'userNewEmail' => 'example@libriciel.invalid',
             ]);
         $output = $this->commandTester->getDisplay();
         static::assertStringContainsString(
-            "L'Email de l'utilisateur LoginNewUser a été modifié : example@libriciel.net",
+            "L'Email de l'utilisateur LoginNewUser a été modifié : example@libriciel.invalid",
             $output
         );
     }
