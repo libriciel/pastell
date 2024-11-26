@@ -21,7 +21,9 @@ final class S2lowClientFactory
                 ],
                 'local_cert' => $s2lowClientAuth->user_certificat_pem,
                 'local_pk' => $s2lowClientAuth->user_key_pem,
-                'passphrase' => $s2lowClientAuth->user_certificat_password
+                'passphrase' => $s2lowClientAuth->user_certificat_password,
+                'verify_peer' => false,
+                'verify_host' => false,
             ])
         );
         return new S2lowClient($client);

@@ -6,16 +6,12 @@ namespace Pastell\Client\S2low\Api;
 
 use JsonException;
 use Pastell\Client\S2low\Model\ActeListQuery;
-use Pastell\Client\S2low\Model\BordereauQuery;
 use Pastell\Client\S2low\Model\DownloadFileQuery;
-use Pastell\Client\S2low\Model\FileListQuery;
-use Pastell\Client\S2low\Responses\ActeListResponse;
-use Pastell\Client\S2low\Responses\File;
-use Pastell\Client\S2low\Responses\Transaction;
+use Pastell\Client\S2low\Model\ActeListResponse;
+use Pastell\Client\S2low\Model\File;
 use Pastell\Client\S2low\S2lowClient;
 use Pastell\Client\S2low\S2lowClientException;
 use Psr\Http\Client\ClientExceptionInterface;
-use stdClass;
 
 final class Actes
 {
@@ -38,25 +34,8 @@ final class Actes
     public function getActesList(
         ActeListQuery $actesListQuery
     ): ActeListResponse {
-        $response = json_decode(
-            $this->client->get(self::LIST_ACTES_API, $actesListQuery),
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
-        $transactions = array_map(static function ($transaction) {
-            return new Transaction(
-                $transaction->id,
-                $transaction->subject,
-                $transaction->number,
-                $transaction->date,
-                $transaction->nature_descr,
-                $transaction->classification,
-                $transaction->type
-            );
-        }, $response['transactions']);
-
-        return new ActeListResponse($response['status_id'], $transactions);
+        $response = $this->client->get(self::LIST_ACTES_API, $actesListQuery);
+        return $this->client->getSerializer()->deserialize($response, ActeListResponse::class, 'json');
     }
 
     /**
@@ -78,33 +57,18 @@ final class Actes
      */
     public function getBordereau(string $transactionId): string
     {
-        $transactionQuery = new BordereauQuery();
-        $transactionQuery->trans_id = $transactionId;
-        return $this->client->get(self::BORDEREAU_API, $transactionQuery);
+        return $this->client->get(self::BORDEREAU_API, ['trans_id' => $transactionId]);
     }
 
     /**
      * @throws S2lowClientException
      * @throws ClientExceptionInterface
-     * @throws JsonException
+     * @return File[]
      */
     public function getFileList(string $transactionId): array
     {
-        $transactionQuery = new FileListQuery();
-        $transactionQuery->transaction = $transactionId;
-        $fetched_files = $this->client->get(self::ACTES_FILES_LIST_API, $transactionQuery);
-        $files = json_decode($fetched_files, true, 512, JSON_THROW_ON_ERROR);
-
-        return array_map(static function ($file) {
-            return new File(
-                $file['id'],
-                $file['name'],
-                $file['posted_filename'],
-                $file['mimetype'],
-                $file['size'],
-                $file['signature'] ?? null
-            );
-        }, $files);
+        $fetched_files = $this->client->get(self::ACTES_FILES_LIST_API, ['transaction' => $transactionId]);
+        return $this->client->getSerializer()->deserialize($fetched_files, File::class . '[]', 'json');
     }
 
     /**

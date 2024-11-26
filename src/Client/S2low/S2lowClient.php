@@ -9,40 +9,56 @@ use Http\Discovery\Psr17FactoryDiscovery;
 use IparapheurV5Client\UrlEncoder;
 use Pastell\Client\S2low\Api\Actes;
 use Pastell\Client\S2low\Api\Connexion;
+use Pastell\Client\S2low\Normalizer\TransactionListDenormalizer;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 class S2lowClient
 {
-    private RequestFactoryInterface $requestFactory;
+    private readonly RequestFactoryInterface $requestFactory;
+    private readonly Serializer $serializer;
 
     public function __construct(
         private readonly ClientInterface $clientInterface,
         RequestFactoryInterface $requestFactory = null
     ) {
         $this->requestFactory = $requestFactory ?? Psr17FactoryDiscovery::findRequestFactory();
+
+        $encoders = [new UrlEncoder(), new JsonEncoder()];
+        $normalizers = [
+            new TransactionListDenormalizer(),
+            new ArrayDenormalizer(),
+            new ObjectNormalizer(
+                nameConverter: new CamelCaseToSnakeCaseNameConverter(),
+            )
+        ];
+        $this->serializer = new Serializer($normalizers, $encoders);
+    }
+
+    public function getSerializer(): Serializer
+    {
+        return $this->serializer;
     }
 
     /**
      * @throws S2lowClientException
      * @throws ClientExceptionInterface
      */
-    public function get(string $endpoint, $queryData = null): string
+    public function get(string $endpoint, object|array $queryData = null): string
     {
         if ($queryData !== null) {
-            $encoders = [new UrlEncoder()];
-            $normalizers = [new ObjectNormalizer(nameConverter: new CamelCaseToSnakeCaseNameConverter())];
-            $serializer = (new Serializer($normalizers, $encoders));
             $queryArray = \is_object($queryData) ? get_object_vars($queryData) : $queryData;
             $filteredQueryArray = array_filter($queryArray, static function ($value) {
                 return $value !== null;
             });
             $filteredQueryObject = (object) $filteredQueryArray;
-            $queryPart = $serializer->serialize($filteredQueryObject, 'url');
+            $queryPart = $this->serializer->serialize($filteredQueryObject, 'url');
             $endpoint .= "?$queryPart";
         }
         $request = $this->requestFactory
@@ -73,7 +89,7 @@ class S2lowClient
         }
 
         $stream = new MultipartStream($multipart);
-        $contentType = sprintf('%s; boundary="%s"', 'multipart/form-data', $stream->getBoundary());
+        $contentType = \sprintf('%s; boundary="%s"', 'multipart/form-data', $stream->getBoundary());
 
         $request = $this->requestFactory
             ->createRequest('POST', $endpoint)
