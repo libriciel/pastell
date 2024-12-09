@@ -5,6 +5,7 @@ use Pastell\Step\SAE\Enum\SAEActionsEnum;
 class TypeDossierSAETest extends PastellTestCase
 {
     public const SAE_ONLY = 'sae-only';
+    public const SAE_CONTINUE_AFTER_REFUSAL = 'sae-continue-after-refusal';
 
     /** @var TypeDossierLoader */
     private $typeDossierLoader;
@@ -34,7 +35,9 @@ class TypeDossierSAETest extends PastellTestCase
         $info_connecteur = $this->createConnector(SedaNG::CONNECTEUR_ID, "Bordereau SEDA");
         $this->associateFluxWithConnector($info_connecteur['id_ce'], self::SAE_ONLY, "Bordereau SEDA");
 
-        $connecteurInfo = $this->getDonneesFormulaireFactory()->getConnecteurEntiteFormulaire($info_connecteur['id_ce']);
+        $connecteurInfo = $this->getDonneesFormulaireFactory()->getConnecteurEntiteFormulaire(
+            $info_connecteur['id_ce']
+        );
 
         $connecteurInfo->addFileFromCopy('schema_rng', 'schema_rng.rng', __DIR__ . "/fixtures/test_sae_schema.rng");
         $connecteurInfo->addFileFromCopy('profil_agape', 'profil_agape.xml', __DIR__ . "/fixtures/test_sae.xml");
@@ -61,7 +64,11 @@ class TypeDossierSAETest extends PastellTestCase
         $donneesFormulaire->addFileFromData('fichier', 'fichier.txt', 'bar');
         $donneesFormulaire->addFileFromData('annexe', 'annexe1.txt', 'foo1', 0);
         $donneesFormulaire->addFileFromCopy('annexe', 'annexe2.xml', __DIR__ . "/fixtures/test_sae.xml", 1);
-        $donneesFormulaire->addFileFromData('sae_config', "sae_config.json", json_encode(['metadonne1' => 'Ma métadonnées']));
+        $donneesFormulaire->addFileFromData(
+            'sae_config',
+            "sae_config.json",
+            json_encode(['metadonne1' => 'Ma métadonnées'])
+        );
 
         $this->assertTrue(
             $this->triggerActionOnDocument($info['id_d'], "orientation")
@@ -70,7 +77,7 @@ class TypeDossierSAETest extends PastellTestCase
 
         $this->triggerActionOnDocument($info['id_d'], SAEActionsEnum::GENERATE_SIP->value);
         $result = $this->triggerActionOnDocument($info['id_d'], SAEActionsEnum::SEND_ARCHIVE->value);
-        if (! $result) {
+        if (!$result) {
             $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($info['id_d']);
             echo $donneesFormulaire->getFileContent('sae_bordereau');
         }
@@ -96,13 +103,13 @@ class TypeDossierSAETest extends PastellTestCase
 
         $this->assertEquals(
             [
-            '.',
-            '..',
-            'annexe1.txt',
-            'annexe2.xml',
-            'archive.tgz',
-            'fichier.txt',
-            'journal.json'
+                '.',
+                '..',
+                'annexe1.txt',
+                'annexe2.xml',
+                'archive.tgz',
+                'fichier.txt',
+                'journal.json'
             ],
             scandir("$tmp_folder/")
         );
@@ -176,5 +183,60 @@ class TypeDossierSAETest extends PastellTestCase
         $this->assertLastMessage(
             "Erreur de connexion au serveur : Could not resolve host: sae - L'envoi du bordereau a échoué : "
         );
+    }
+
+    /**
+     * @throws NotFoundException
+     * @throws TypeDossierException
+     * @throws Exception
+     */
+    public function testContinueProgressionAfterRefusal(): void
+    {
+        $this->typeDossierLoader->createTypeDossierDefinitionFile(self::SAE_CONTINUE_AFTER_REFUSAL);
+        $connector = $this->createConnector('FakeSEDA', 'Bordereau SEDA');
+        $this->associateFluxWithConnector($connector['id_ce'], self::SAE_CONTINUE_AFTER_REFUSAL, 'Bordereau SEDA');
+        $connector = $this->createConnector('fakeSAE', 'SAE');
+        $this->associateFluxWithConnector($connector['id_ce'], self::SAE_CONTINUE_AFTER_REFUSAL, 'SAE');
+        $this->configureConnector($connector['id_ce'], ['result_verif' => 2]);
+
+        $info = $this->createDocument(self::SAE_CONTINUE_AFTER_REFUSAL);
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($info['id_d']);
+        $donneesFormulaire->setTabData([
+            'titre' => 'Foo',
+            'date' => '1977-02-18',
+            'select' => 'B'
+        ]);
+        $donneesFormulaire->addFileFromData('fichier', 'fichier.txt', 'bar');
+        $donneesFormulaire->addFileFromData('annexe', 'annexe1.txt', 'foo1', 0);
+        $donneesFormulaire->addFileFromCopy('annexe', 'annexe2.xml', __DIR__ . "/fixtures/test_sae.xml", 1);
+        $donneesFormulaire->addFileFromData(
+            'sae_config',
+            'sae_config.json',
+            json_encode(['metadonne1' => 'Ma métadonnées'], JSON_THROW_ON_ERROR)
+        );
+
+        static::assertTrue(
+            $this->triggerActionOnDocument($info['id_d'], 'orientation')
+        );
+        $this->assertLastMessage("sélection automatique de l'action suivante");
+        static::assertTrue(
+            $this->triggerActionOnDocument($info['id_d'], 'generate-sip')
+        );
+        static::assertTrue(
+            $this->triggerActionOnDocument($info['id_d'], 'send-archive')
+        );
+        static::assertTrue(
+            $this->triggerActionOnDocument($info['id_d'], 'verif-sae')
+        );
+        $this->triggerActionOnDocument($info['id_d'], 'validation-sae');
+        $this->assertLastDocumentAction('rejet-sae', $info['id_d']);
+        $this->assertLastMessage(
+            "La transaction a été refusée par le SAE. Votre transfert d'archive a été rejeté par la plate-forme as@lae (Archive refusée - code de retour : 300)"
+        );
+        static::assertTrue(
+            $this->triggerActionOnDocument($info['id_d'], 'orientation')
+        );
+        $this->assertLastMessage("sélection automatique de l'action suivante");
+        $this->assertLastDocumentAction('termine', $info['id_d']);
     }
 }
