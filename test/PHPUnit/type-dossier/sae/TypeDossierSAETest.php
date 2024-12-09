@@ -233,9 +233,7 @@ class TypeDossierSAETest extends PastellTestCase
         $this->assertLastMessage(
             "La transaction a été refusée par le SAE. Votre transfert d'archive a été rejeté par la plate-forme as@lae (Archive refusée - code de retour : 300)"
         );
-        static::assertTrue(
-            $this->triggerActionOnDocument($info['id_d'], 'orientation')
-        );
+        $this->getInternalAPI()->post('entite/1/document/' . $info['id_d'] . '/action/orientation');
         $this->assertLastMessage("sélection automatique de l'action suivante");
         $this->assertLastDocumentAction('termine', $info['id_d']);
     }
