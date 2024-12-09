@@ -11,7 +11,7 @@ class CPPListeFactureTravauxTest extends ExtensionCppTestCase
             'FactureWithPisteAndRole' =>
                 [
                     "MOA",
-                    'Liste des factures de travaux ayant changé de statut entre le 2019-01-01 et le ' . date('Y-m-d') . ': ' .
+                    'Liste des factures de travaux ayant changé de statut entre le 2019-01-02 et le ' . date('Y-m-d') . ': ' .
                         '{"listeFactures":[{"identifiantDestinataire":"00000000013456","identifiantFournisseur":"00000000000727","dateDepot":"2019-07-11",' .
                         '"dateFactureTravaux":"2019-07-11","dateHeureEtatCourant":"2019-07-11T15:45:39.674+02:00","designationDestinataire":"TAA074DESTINATAIRE",' .
                         '"designationFournisseur":"TAA001DESTINATAIRE","devise":"EUR","factureTelechargeeParDestinataire":true,"idDestinataire":"25784152",' .
