@@ -34,11 +34,11 @@ formulaire:
             default: 30
         fichier_csv:
             name: 'Fichier CSV'
-            commentaire: 'Les lignes sont formatés de la manière suivante "utilisateur technique";"mot de passe";"SIRET de la structure (optionel)";"SIRET du fournisseur (optionel)"'
+            commentaire: 'Les lignes sont formatées de la manière suivante "utilisateur technique";"mot de passe";"SIRET de la structure (optionnel)";"SIRET du fournisseur (optionnel)"'
             type: file
         fichier_csv_interprete:
             name: 'Fichier CSV interprété'
-            commentaire: 'Les lignes sont formatés de la manière suivante "utilisateur technique";"mot de passe";"SIRET de la structure";"Identifiant Chorus de la structure";"SIRET du fournisseur";"Identifiant Chorus du fournisseur"'
+            commentaire: 'Les lignes sont formatées de la manière suivante "utilisateur technique";"mot de passe";"SIRET de la structure";"Identifiant Chorus de la structure";"SIRET du fournisseur";"Identifiant Chorus du fournisseur"'
             type: file
 action:
     interprete-csv:

@@ -6,8 +6,8 @@ restriction_pack:
 formulaire:
     page0:
         recup_status_facture:
-            name: 'Récupération des status des factures'
-            commentaire: "Permet de récuperer le statuts des factures une fois l'identifiant de facture récupéré"
+            name: 'Récupération des statuts des factures'
+            commentaire: "Permet de récupérer le statut des factures une fois l'identifiant de facture récupéré"
             type: checkbox
         nb_jour_max_synchro:
             name: 'Nombre de jours maximum de synchronisation'
