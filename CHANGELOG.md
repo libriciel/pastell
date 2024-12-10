@@ -2,7 +2,7 @@
 
 ## Correction
 
-- Corrections orthographiques #2183
+- Corrections orthographiques #2183 #2184
 
 # [4.0.18] - 2024-11-12
 
