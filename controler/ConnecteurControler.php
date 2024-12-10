@@ -7,32 +7,25 @@ use ParagonIE\Halite\Alerts\InvalidMessage;
 use ParagonIE\Halite\Alerts\InvalidSalt;
 use ParagonIE\Halite\Alerts\InvalidType;
 use Pastell\Service\Crypto;
-use Pastell\Service\Connecteur\ConnecteurHashService;
+use Pastell\Service\Connecteur\ConnecteurCreationService;
 use Pastell\Service\Connecteur\ConnecteurActionService;
 use Pastell\Service\Connecteur\ConnecteurModificationService;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 
 class ConnecteurControler extends PastellControler
 {
-    /**
-     * @return ConnecteurDefinitionFiles
-     */
-    protected function getConnecteurDefinitionFile()
+    protected function getConnecteurDefinitionFile(): ConnecteurDefinitionFiles
     {
         return $this->getInstance(ConnecteurDefinitionFiles::class);
     }
-
-    /**
-     * @return ConnecteurActionService
-     */
     private function getConnecteurActionService(): ConnecteurActionService
     {
         return $this->getObjectInstancier()->getInstance(ConnecteurActionService::class);
     }
-
-    /**
-     * @return ConnecteurModificationService
-     */
+    private function getConnecteurCreationService(): ConnecteurCreationService
+    {
+        return $this->getObjectInstancier()->getInstance(ConnecteurCreationService::class);
+    }
     private function getConnecteurModificationService(): ConnecteurModificationService
     {
         return $this->getObjectInstancier()->getInstance(ConnecteurModificationService::class);
@@ -44,23 +37,29 @@ class ConnecteurControler extends PastellControler
         parent::_beforeAction();
 
         $id_e = $this->getGetInfo()->getInt('id_e', 0);
-        if (! $id_e) {
+        (bool)$global = $this->getGetInfo()->get('global', 0);
+        if (! $id_e || ! $global) {
             $id_ce = $this->getGetInfo()->getInt('id_ce');
-
             $connecteur_entite_info = $this->getConnecteurEntiteSQL()->getInfo($id_ce);
-            $id_e = $connecteur_entite_info['id_e'] ?? 0;
+            if (! $id_e) {
+                $id_e = $connecteur_entite_info['id_e'] ?? 0;
+            }
+            if (! $global) {
+                $global = $connecteur_entite_info['global'] ?? 0;
+            }
         }
         $this->setViewParameter('id_e', $id_e);
+        $this->setViewParameter('global', $global);
 
-        $this->setNavigationInfo($id_e, "Entite/connecteur?");
+        $this->setNavigationInfo($id_e, "Entite/connecteur?global=$global");
         $this->setViewParameter('id_e_menu', $id_e);
-        $this->setViewParameter('type_e_menu', "");
+        $this->setViewParameter('type_e_menu', '');
         $this->setViewParameter(
             'droitLectureAnnuaire',
             $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'annuaire:lecture', $id_e)
         );
         $this->setViewParameter('menu_gauche_template', "EntiteMenuGauche");
-        $this->setViewParameter('menu_gauche_select', "Entite/connecteur");
+        $this->setViewParameter('menu_gauche_select', "Entite/connecteur?global=$global");
         $this->setDroitLectureOnConnecteur($id_e);
         $this->setDroitImportExportConfig($id_e);
         $this->setDroitLectureOnUtilisateur($id_e);
@@ -96,18 +95,34 @@ class ConnecteurControler extends PastellControler
     {
         $recuperateur = $this->getPostInfo();
         $id_e = $recuperateur->getInt('id_e');
+        (bool)$global = $recuperateur->get('global', 0);
+        $id_connecteur = $recuperateur->get('id_connecteur');
+        $libelle = $recuperateur->get('libelle');
+
         try {
             if ($id_e) {
                 $this->hasDroitEdition($id_e);
             }
+            $connecteur_info = $this->getConnecteurDefinitionFile()->getInfo($id_connecteur, $global);
+            if (!$connecteur_info) {
+                throw new RuntimeException("Aucun connecteur du type « $id_connecteur »");
+            }
+            $this->getConnecteurCreationService()->createConnecteur(
+                $id_connecteur,
+                $connecteur_info['type'],
+                $global,
+                $id_e,
+                $this->getId_u(),
+                $libelle,
+                [],
+                "Le connecteur $id_connecteur « $libelle » a été créé"
+            );
 
-            $this->apiPost("/entite/$id_e/connecteur");
-
-            $this->setLastMessage("Connecteur ajouté avec succès");
-            $this->redirect("/Entite/connecteur?id_e=$id_e");
+            $this->setLastMessage('Connecteur ajouté avec succès');
+            $this->redirect("/Entite/connecteur?global=$global&id_e=$id_e");
         } catch (Exception $ex) {
             $this->setLastError($ex->getMessage());
-            $this->redirect("/Connecteur/new?id_e=$id_e");
+            $this->redirect("/Connecteur/new?global=$global&id_e=$id_e");
         }
     }
 
@@ -125,7 +140,7 @@ class ConnecteurControler extends PastellControler
             $info = $this->getConnecteurEntiteSQL()->getInfo($id_ce);
             $this->apiDelete("/entite/{$info['id_e']}/connecteur/$id_ce");
             $this->setLastMessage("Le connecteur « {$info['libelle']} » a été supprimé.");
-            $this->redirect("/Entite/connecteur?id_e={$info['id_e']}");
+            $this->redirect("/Entite/connecteur?global={$info['global']}&id_e={$info['id_e']}");
         } catch (Exception $ex) {
             $this->setLastError($ex->getMessage());
             $this->redirect("/Connecteur/edition?id_ce=$id_ce");
@@ -287,23 +302,24 @@ class ConnecteurControler extends PastellControler
         $this->verifDroitOnConnecteur($id_ce);
         $connecteur_entite_info = $this->getConnecteurEntiteSQL()->getInfo($id_ce);
         $id_e = $connecteur_entite_info['id_e'];
+        $global = $connecteur_entite_info['global'];
         $entite_info = $this->getEntiteSQL()->getInfo($id_e) ?: [];
 
         $this->setViewParameter(
             'has_definition',
-            (bool) $this->getConnecteurDefinitionFile()->getInfo($connecteur_entite_info['id_connecteur'], !(bool)$id_e)
+            (bool) $this->getConnecteurDefinitionFile()->getInfo($connecteur_entite_info['id_connecteur'], $global)
         );
 
-        if ($this->getViewParameterOrObject('has_definition')) {
+        if ($this->getViewParameterByKey('has_definition')) {
             $donneesFormulaire = $this->getDonneesFormulaireFactory()->getConnecteurEntiteFormulaire($id_ce);
             $this->setViewParameter('donneesFormulaire', $donneesFormulaire);
-            if ($connecteur_entite_info['id_e']) {
+            if ($global) {
                 $this->setViewParameter('action', $this->getDocumentTypeFactory()
-                    ->getEntiteDocumentType($connecteur_entite_info['id_connecteur'])
+                    ->getGlobalDocumentType($connecteur_entite_info['id_connecteur'])
                     ->getAction());
             } else {
                 $this->setViewParameter('action', $this->getDocumentTypeFactory()
-                    ->getGlobalDocumentType($connecteur_entite_info['id_connecteur'])
+                    ->getEntiteDocumentType($connecteur_entite_info['id_connecteur'])
                     ->getAction());
             }
         } else {
@@ -316,16 +332,18 @@ class ConnecteurControler extends PastellControler
 
         $this->setViewParameter('inject', ['id_e' => $id_e,'id_ce' => $id_ce,'id_d' => '','action' => '']);
 
-        $this->setViewParameter('my_role', "");
+        $this->setViewParameter('my_role', '');
 
         if (! $id_e) {
-            $entite_info['denomination'] = "Entité racine";
+            $entite_info['denomination'] = 'Entité racine';
         }
 
         $this->setViewParameter('entite_info', $entite_info);
         $this->setViewParameter('connecteur_entite_info', $connecteur_entite_info);
         $this->setViewParameter('id_ce', $id_ce);
         $this->setViewParameter('id_e', $id_e);
+        $this->setViewParameter('global', $global);
+        $this->setViewParameter('menu_gauche_select', "Entite/connecteur?global=$global");
     }
 
     /**
@@ -374,29 +392,53 @@ class ConnecteurControler extends PastellControler
             'page_title',
             "Configuration des connecteurs pour « {$this->getViewParameter()['entite_info']['denomination']} »"
         );
-        $this->setViewParameter('recuperation_fichier_url', "Connecteur/recupFile?id_ce=" . $this->getViewParameterOrObject('id_ce'));
+        $this->setViewParameter(
+            'recuperation_fichier_url',
+            "Connecteur/recupFile?id_ce=" . $this->getViewParameterByKey('id_ce')
+        );
         $this->setViewParameter('template_milieu', "ConnecteurEdition");
-        $this->setViewParameter('fieldDataList', $this->getViewParameterOrObject('donneesFormulaire')->getFieldDataListAllOnglet($this->getViewParameterOrObject('my_role')));
-        $this->setViewParameter('job_list', $this->getWorkerSQL()->getJobListWithWorkerForConnecteur($this->getViewParameterOrObject('id_ce')));
-        $this->setViewParameter('return_url', urlencode("Connecteur/edition?id_ce={$this->getViewParameterOrObject('id_ce')}"));
+        $this->setViewParameter(
+            'fieldDataList',
+            $this->getViewParameterByKey('donneesFormulaire')
+                ->getFieldDataListAllOnglet($this->getViewParameterByKey('my_role'))
+        );
+        $this->setViewParameter(
+            'job_list',
+            $this->getWorkerSQL()->getJobListWithWorkerForConnecteur($this->getViewParameterByKey('id_ce'))
+        );
+        $this->setViewParameter(
+            'return_url',
+            urlencode("Connecteur/edition?id_ce={$this->getViewParameterByKey('id_ce')}")
+        );
 
-        $connecteur_info = $this->getViewParameterOrObject('connecteur_entite_info');
+        $connecteur_info = $this->getViewParameterByKey('connecteur_entite_info');
 
         $connecteurFrequence = new ConnecteurFrequence();
         $connecteurFrequence->type_connecteur =
-            $connecteur_info['id_e'] == 0 ? ConnecteurFrequence::TYPE_GLOBAL : ConnecteurFrequence::TYPE_ENTITE;
+            $connecteur_info['id_e'] === 0 ? ConnecteurFrequence::TYPE_GLOBAL : ConnecteurFrequence::TYPE_ENTITE;
         $connecteurFrequence->famille_connecteur = $connecteur_info['type'];
         $connecteurFrequence->id_connecteur = $connecteur_info['id_connecteur'];
         $connecteurFrequence->id_ce = $connecteur_info['id_ce'];
 
-        $this->setViewParameter('connecteurFrequence', $this->getJobManager()->getNearestConnecteurFrequence($this->getViewParameterOrObject('id_ce')));
-        $this->setViewParameter('connecteurFrequenceByFlux', $this->getJobManager()
-            ->getNearestConnecteurForDocument($this->getViewParameterOrObject('id_ce')));
-        $this->setViewParameter('connecteur_hash', $this->getConnecteurActionService()->getLastHash($this->getViewParameterOrObject('id_ce')));
-        $this->setViewParameter('usage_flux_list', $this->getFluxEntiteSQL()->getFluxAndEntityByConnectorId($this->getViewParameterOrObject('id_ce')));
-        if ($this->getViewParameterOrObject('has_definition')) {
+        $this->setViewParameter(
+            'connecteurFrequence',
+            $this->getJobManager()->getNearestConnecteurFrequence($this->getViewParameterByKey('id_ce'))
+        );
+        $this->setViewParameter(
+            'connecteurFrequenceByFlux',
+            $this->getJobManager()->getNearestConnecteurForDocument($this->getViewParameterByKey('id_ce'))
+        );
+        $this->setViewParameter(
+            'connecteur_hash',
+            $this->getConnecteurActionService()->getLastHash($this->getViewParameterByKey('id_ce'))
+        );
+        $this->setViewParameter(
+            'usage_flux_list',
+            $this->getFluxEntiteSQL()->getFluxAndEntityByConnectorId($this->getViewParameterByKey('id_ce'))
+        );
+        if ($this->getViewParameterByKey('has_definition')) {
             $this->setViewParameter('action_possible', $this->getActionPossible()
-                ->getActionPossibleOnConnecteur($this->getViewParameterOrObject('id_ce'), $this->getId_u()));
+                ->getActionPossibleOnConnecteur($this->getViewParameterByKey('id_ce'), $this->getId_u()));
         } else {
             $this->setViewParameter('action_possible', []);
         }
@@ -437,11 +479,13 @@ class ConnecteurControler extends PastellControler
     public function newAction()
     {
         $id_e = $this->getGetInfo()->getInt('id_e');
+        (bool)$global = $this->getGetInfo()->get('global', 0);
 
         $this->verifDroit($id_e, "connecteur:edition");
 
         $this->setViewParameter('id_e', $id_e);
-        $this->setViewParameter('all_connecteur_dispo', $this->getConnecteurDefinitionFile()->getAllByIdE($id_e));
+        $this->setViewParameter('global', $global);
+        $this->setViewParameter('all_connecteur_dispo', $this->getConnecteurDefinitionFile()->getAll($global));
 
         $this->setViewParameter('page_title', "Ajout d'un connecteur");
         $this->setViewParameter('template_milieu', "ConnecteurNew");
@@ -644,7 +688,9 @@ class ConnecteurControler extends PastellControler
         $this->setDroitLectureOnUtilisateur($id_e);
         $this->verifDroitOnConnecteur($id_ce);
 
-        $documentType = $this->getDocumentTypeFactory()->getDocumentType($id_e, $connecteur_info['id_connecteur']);
+        $documentType = ($connecteur_info['global']) ?
+            $this->getDocumentTypeFactory()->getGlobalDocumentType($connecteur_info['id_connecteur'])
+            : $this->getDocumentTypeFactory()->getEntiteDocumentType($connecteur_info['id_connecteur']);
 
         $formulaire = $documentType->getFormulaire();
         $formField = $formulaire->getField($field);
@@ -652,7 +698,6 @@ class ConnecteurControler extends PastellControler
             $this->setLastError("Le champ $field n'existe pas");
             $this->redirect("/Connecteur/editionModif?id_ce=$id_ce");
         }
-
         $action_name = $formField->getProperties('choice-action');
         $result = $this->getActionExecutorFactory()->displayChoiceOnConnecteur(
             $id_ce,

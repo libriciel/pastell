@@ -172,7 +172,9 @@ class ActionPossible
         $this->utilisateur_droit_list = $this->roleUtilisateur->getAllDroitEntite($id_u, $this->connecteur_entite_info['id_e']);
         $this->donneesFormulaire = null;
         $this->entite_info = $this->entiteSQL->getInfo($this->connecteur_entite_info['id_e']);
-        $this->documentType = $this->getConnecteurDocumentType($this->connecteur_entite_info['id_e'], $this->connecteur_entite_info['id_connecteur']);
+        $this->documentType = ($this->connecteur_entite_info['global']) ?
+            $this->documentTypeFactory->getGlobalDocumentType($this->connecteur_entite_info['id_connecteur'])
+            : $this->documentTypeFactory->getEntiteDocumentType($this->connecteur_entite_info['id_connecteur']);
         $this->actionObject = $this->documentType->getAction();
     }
 
@@ -281,22 +283,6 @@ class ActionPossible
     private function isActionPossibleOnConnecteurWithCache($id_u, $action_name)
     {
         return $this->internIsActionPossible($id_u, $action_name);
-    }
-
-    /**
-     * @param $id_e
-     * @param $id_connecteur
-     * @return DocumentType
-     * @throws Exception
-     */
-    private function getConnecteurDocumentType($id_e, $id_connecteur)
-    {
-        if ($id_e) {
-            $documentType = $this->documentTypeFactory->getEntiteDocumentType($id_connecteur);
-        } else {
-            $documentType = $this->documentTypeFactory->getGlobalDocumentType($id_connecteur);
-        }
-        return $documentType;
     }
 
     private function getDocumentType($type_document)

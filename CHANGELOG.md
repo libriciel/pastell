@@ -7,6 +7,7 @@
 ## Évolutions
 
 - Paramètre d'étape SAE permettant de continuer le cheminement d'un dossier après un refus #2144
+- Il est maintenant possible de définir des connecteurs d'entités au niveau de l'entité racine #2157
 
 ## Corrections
 

@@ -4,11 +4,12 @@
  * @var bool $droit_edition
  * @var array $all_connecteur
  * @var int $id_e
+ * @var bool $global
  */
 ?>
 <div class="box">
     <?php if ($droit_edition) : ?>
-<a href="<?php $this->url("Connecteur/new?id_e=$id_e") ?>" class='btn btn-primary grow'>
+<a href="<?php $this->url("Connecteur/new?global=$global&id_e=$id_e") ?>" class='btn btn-primary grow'>
     <i class="fa fa-plus-circle"></i>&nbsp; Ajouter
 </a>
     <?php endif;?>

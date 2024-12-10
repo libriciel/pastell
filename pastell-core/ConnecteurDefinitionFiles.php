@@ -88,9 +88,9 @@ class ConnecteurDefinitionFiles
         return $result;
     }
 
-    public function getAllByIdE(int $id_e): array
+    public function getAllByIdE(int $id_e, bool $global = false): array
     {
-        return $id_e ? $this->getAll() : $this->getAllGlobal();
+        return $global ? $this->getAllGlobal() : $this->getAll();
     }
 
     public function getInfo(string $id_connecteur, bool $global = false): bool|array

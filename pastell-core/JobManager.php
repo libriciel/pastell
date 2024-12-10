@@ -110,11 +110,9 @@ class JobManager
 
         $info_connecteur = $this->connecteurEntiteSQL->getInfo($id_ce);
 
-        if ($info_connecteur['id_e']) {
-            $documentType = $this->documentTypeFactory->getEntiteDocumentType($info_connecteur['id_connecteur']);
-        } else {
-            $documentType = $this->documentTypeFactory->getGlobalDocumentType($info_connecteur['id_connecteur']);
-        }
+        $documentType = ($info_connecteur['global']) ?
+            $this->documentTypeFactory->getGlobalDocumentType($info_connecteur['id_connecteur'])
+            : $this->documentTypeFactory->getEntiteDocumentType($info_connecteur['id_connecteur']);
 
         $all_action = $documentType->getAction()->getAutoAction();
         if (empty($all_action[$action_name])) {

@@ -124,13 +124,16 @@ final class ImportConfigService
                     $this->lastErrors[] = "Le connecteur global {$connecteurInfo['libelle']} ne peut pas être importé sur une entité fille : il n'a pas été importé.";
                     continue;
                 }
+                $global = true;
                 $connecteurInfo['id_e'] = 0;
             } else {
+                $global = false;
                 $connecteurInfo['id_e'] = $id_e_mapping[$connecteurInfo['id_e']];
             }
             $id_ce = $this->connecteurCreationService->createConnecteur(
                 $connecteurInfo['id_connecteur'],
                 $connecteurInfo['type'],
+                $global,
                 $connecteurInfo['id_e'],
                 0,
                 $connecteurInfo['libelle']

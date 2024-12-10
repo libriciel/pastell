@@ -4,6 +4,7 @@
  * @var Gabarit $this
  * @var int $id_e
  * @var array $all_connecteur_dispo
+ * @var bool $global
  */
 
 use Pastell\Configuration\ConnectorConfiguration;
@@ -17,6 +18,7 @@ use Pastell\Configuration\ConnectorConfiguration;
 <form action='<?php $this->url("/Connecteur/doNew") ?>' method='post' >
     <?php $this->displayCSRFInput() ?>
 <input type='hidden' name='id_e' value='<?php echo $id_e ?>' />
+<input type='hidden' name='global' value='<?php echo $global ?>' />
 <table class='table table-striped'>
 
 <tr>
@@ -36,7 +38,8 @@ use Pastell\Configuration\ConnectorConfiguration;
 </tr>
 
 </table>
-    <a class='btn btn-outline-primary' href='Entite/connecteur?id_e=<?php echo $id_e?>'><i class="fa fa-times-circle"></i>&nbsp;Annuler</a>
+    <a class='btn btn-outline-primary' href='Entite/connecteur?global=<?php echo $global?>&id_e=<?php echo $id_e?>'>
+        <i class="fa fa-times-circle"></i>&nbsp;Annuler</a>
 
     <button type="submit" class="btn btn-primary">
         <i class="fa fa-plus"></i>&nbsp; Créer

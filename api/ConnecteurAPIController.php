@@ -278,6 +278,13 @@ class ConnecteurAPIController extends BaseAPIController
         $id_e = $this->checkedEntite();
         $this->checkConnecteurEdition($id_e);
         $id_connecteur = $this->getFromRequest('id_connecteur');
+        $global = $this->getFromRequest('global', null);
+
+        if ($global !== null) {
+            $isGlobalConnecteur = $global;
+        } else {
+            $isGlobalConnecteur = ($id_e === 0) ? 1 : 0;
+        }
 
         $id_ce = $this->getFromQueryArgs(2);
         if ($id_ce) {
@@ -292,15 +299,10 @@ class ConnecteurAPIController extends BaseAPIController
         $libelle = $this->getFromRequest('libelle');
 
         if (!$libelle) {
-            throw new Exception("Le libellé est obligatoire.");
+            throw new Exception('Le libellé est obligatoire.');
         }
 
-        if ($id_e) {
-            $connecteur_info = $this->connecteurDefinitionFiles->getInfo($id_connecteur);
-        } else {
-            $connecteur_info = $this->connecteurDefinitionFiles->getInfoGlobal($id_connecteur);
-        }
-
+        $connecteur_info = $this->connecteurDefinitionFiles->getInfo($id_connecteur, $isGlobalConnecteur);
         if (!$connecteur_info) {
             throw new Exception("Aucun connecteur du type « $id_connecteur »");
         }
@@ -308,6 +310,7 @@ class ConnecteurAPIController extends BaseAPIController
         $id_ce = $this->connecteurCreationService->createConnecteur(
             $id_connecteur,
             $connecteur_info['type'],
+            $isGlobalConnecteur,
             $id_e,
             $this->getUtilisateurId(),
             $libelle,

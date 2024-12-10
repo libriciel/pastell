@@ -18,6 +18,7 @@ class ConnecteurEntiteSQL extends SQL
         return $this->query($sql, $id_e);
     }
 
+    /** @deprecated Since 4.1.5, Use getAllGlobalByIde($id_e) instead */
     public function getAllGlobal()
     {
         $sql = "SELECT * FROM connecteur_entite " .
@@ -26,6 +27,7 @@ class ConnecteurEntiteSQL extends SQL
         return $this->query($sql);
     }
 
+    /** @deprecated Since 4.1.5, Use getAllLocalByIde($id_e) instead  */
     public function getAllLocal()
     {
         $sql = "SELECT * FROM connecteur_entite " .
@@ -34,10 +36,28 @@ class ConnecteurEntiteSQL extends SQL
         return $this->query($sql);
     }
 
-    public function addConnecteur($id_e, $id_connecteur, $type, $libelle)
+    public function getAllGlobalByIde($id_e)
     {
-        $sql = "INSERT INTO connecteur_entite (id_e,id_connecteur,type,libelle) VALUES (?,?,?,?)";
-        $this->query($sql, $id_e, $id_connecteur, $type, $libelle);
+        $sql = "SELECT * FROM connecteur_entite " .
+            " WHERE global = 1" .
+            " AND id_e = ? " .
+            " ORDER BY libelle";
+        return $this->query($sql, $id_e);
+    }
+
+    public function getAllLocalByIde($id_e)
+    {
+        $sql = "SELECT * FROM connecteur_entite " .
+            " WHERE global = 0" .
+            " AND id_e = ? " .
+            " ORDER BY libelle";
+        return $this->query($sql, $id_e);
+    }
+
+    public function addConnecteur($id_e, $id_connecteur, $type, $libelle, $global)
+    {
+        $sql = "INSERT INTO connecteur_entite (id_e,id_connecteur,type,libelle,global) VALUES (?,?,?,?,?)";
+        $this->query($sql, $id_e, $id_connecteur, $type, $libelle, $global);
         return $this->lastInsertId();
     }
 
@@ -74,7 +94,7 @@ class ConnecteurEntiteSQL extends SQL
 
     public function getGlobal($id_connecteur)
     {
-        $sql = "SELECT id_ce FROM connecteur_entite WHERE id_connecteur = ? AND id_e=0";
+        $sql = "SELECT id_ce FROM connecteur_entite WHERE id_connecteur = ? AND global = 1";
         return $this->queryOne($sql, $id_connecteur);
     }
 
@@ -148,10 +168,10 @@ class ConnecteurEntiteSQL extends SQL
     {
         if ($global) {
             $sql = "SELECT distinct id_connecteur FROM connecteur_entite " .
-                " WHERE id_e = 0";
+                " WHERE global = 1";
         } else {
             $sql = "SELECT distinct id_connecteur FROM connecteur_entite " .
-                " WHERE id_e != 0";
+                " WHERE global = 0";
         }
         return  $this->queryOneCol($sql);
     }
@@ -173,11 +193,11 @@ class ConnecteurEntiteSQL extends SQL
     {
         if ($global) {
             $sql = "SELECT connecteur_entite.* FROM connecteur_entite " .
-                " WHERE id_connecteur = ? AND id_e=0";
+                " WHERE id_connecteur = ? AND global = 1";
         } else {
             $sql = "SELECT connecteur_entite.*, entite.denomination FROM connecteur_entite " .
                 " JOIN entite ON connecteur_entite.id_e=entite.id_e " .
-                " WHERE id_connecteur = ?";
+                " WHERE id_connecteur = ? AND global = 0";
         }
         return $this->query($sql, $id_connecteur);
     }

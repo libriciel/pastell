@@ -9,24 +9,13 @@ use Exception;
 
 class ConnecteurCreationService
 {
-    private $connecteurFactory;
-    private $connecteurEntiteSQL;
-    private $connecteurActionService;
-    private $connecteurAssociationService;
-    private $donneesFormulaireFactory;
-
     public function __construct(
-        ConnecteurFactory $connecteurFactory,
-        ConnecteurEntiteSQL $connecteurEntiteSQL,
-        ConnecteurActionService $connecteurActionService,
-        ConnecteurAssociationService $connecteurAssociationService,
-        DonneesFormulaireFactory $donneesFormulaireFactory
+        private readonly ConnecteurFactory $connecteurFactory,
+        private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
+        private readonly ConnecteurActionService $connecteurActionService,
+        private readonly ConnecteurAssociationService $connecteurAssociationService,
+        private readonly DonneesFormulaireFactory $donneesFormulaireFactory,
     ) {
-        $this->connecteurFactory = $connecteurFactory;
-        $this->connecteurEntiteSQL = $connecteurEntiteSQL;
-        $this->connecteurActionService = $connecteurActionService;
-        $this->connecteurAssociationService = $connecteurAssociationService;
-        $this->donneesFormulaireFactory = $donneesFormulaireFactory;
     }
 
     /**
@@ -35,6 +24,7 @@ class ConnecteurCreationService
     public function createConnecteur(
         string $connecteur_id,
         string $type,
+        bool $global = false,
         int $id_e = 0,
         int $id_u = 0,
         string $libelle = '',
@@ -42,13 +32,14 @@ class ConnecteurCreationService
         string $message = ''
     ): int {
 
-        $libelle = ($libelle == '') ? $connecteur_id : $libelle;
+        $libelle = ($libelle === '') ? $connecteur_id : $libelle;
 
         $id_ce =  $this->connecteurEntiteSQL->addConnecteur(
             $id_e,
             $connecteur_id,
             $type,
-            $libelle
+            $libelle,
+            $global
         );
 
         $donneesFormulaire = $this->donneesFormulaireFactory->getConnecteurEntiteFormulaire($id_ce);
@@ -93,6 +84,7 @@ class ConnecteurCreationService
         $id_ce = $this->createConnecteur(
             $connecteur_id,
             $type,
+            true,
             0,
             0,
             $libelle,

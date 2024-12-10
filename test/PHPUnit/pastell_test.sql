@@ -18,20 +18,20 @@ TRUNCATE TABLE `annuaire_groupe_contact`;
 TRUNCATE TABLE `annuaire_role`;
 TRUNCATE TABLE `collectivite_fournisseur`;
 TRUNCATE TABLE `connecteur_entite`;
-INSERT INTO `connecteur_entite` (`id_ce`, `id_e`, `libelle`, `id_connecteur`, `type`, `frequence_en_minute`, `id_verrou`) VALUES
-(1, 1, 'Fake iParapheur', 'fakeIparapheur', 'signature', 1, ''),
-(2, 1, 'Fake Tdt', 'fakeTdt', 'TdT', 1, ''),
-(3, 1, 'SEDA Standard', 'actes-seda-standard', 'Bordereau SEDA', 1, ''),
-(4, 1, 'Fake SAE', 'fakeSAE', 'SAE', 1, ''),
-(5, 1, 'Fake GED', 'FakeGED', 'GED', 1, ''),
-(6, 1, 'SEDA CG86', 'actes-seda-cg86', 'Bordereau SEDA', 1, ''),
-(7, 1, 'SEDA locarchive', 'actes-seda-locarchive', 'Bordereau SEDA', 1, ''),
-(8, 1, 'SEDA parametrable', 'actes-seda-parametrable', 'Bordereau SEDA', 1, ''),
-(9, 1, 'mail-fournisseur-invitation', 'mail-fournisseur-invitation', 'mail-fournisseur-invitation', 1, ''),
-(10, 0, 'Horodateur interne par défaut', 'horodateur-interne', 'horodateur', 1, ''),
-(11, 1, 'Mail securise', 'mailsec', 'mailsec', 1, ''),
-(12, 1, 'connecteur non associé', 'test', 'test', 1, ''),
-(13, 1, 'Connecteur de test', 'test', 'test', 1, 'toto');
+INSERT INTO `connecteur_entite` (`id_ce`, `id_e`, `libelle`, `id_connecteur`, `type`, `frequence_en_minute`, `id_verrou`, `global`) VALUES
+(1, 1, 'Fake iParapheur', 'fakeIparapheur', 'signature', 1, '', 0),
+(2, 1, 'Fake Tdt', 'fakeTdt', 'TdT', 1, '', 0),
+(3, 1, 'SEDA Standard', 'actes-seda-standard', 'Bordereau SEDA', 1, '', 0),
+(4, 1, 'Fake SAE', 'fakeSAE', 'SAE', 1, '', 0),
+(5, 1, 'Fake GED', 'FakeGED', 'GED', 1, '', 0),
+(6, 1, 'SEDA CG86', 'actes-seda-cg86', 'Bordereau SEDA', 1, '', 0),
+(7, 1, 'SEDA locarchive', 'actes-seda-locarchive', 'Bordereau SEDA', 1, '', 0),
+(8, 1, 'SEDA parametrable', 'actes-seda-parametrable', 'Bordereau SEDA', 1, '', 0),
+(9, 1, 'mail-fournisseur-invitation', 'mail-fournisseur-invitation', 'mail-fournisseur-invitation', 1, '', 0),
+(10, 0, 'Horodateur interne par défaut', 'horodateur-interne', 'horodateur', 1, '', 1),
+(11, 1, 'Mail securise', 'mailsec', 'mailsec', 1, '', 0),
+(12, 1, 'connecteur non associé', 'test', 'test', 1, '', 0),
+(13, 1, 'Connecteur de test', 'test', 'test', 1, 'toto', 0);
 
 TRUNCATE TABLE `connecteur_frequence`;
 INSERT INTO `connecteur_frequence` (`id_cf`, `type_connecteur`, `famille_connecteur`, `id_connecteur`, `id_ce`, `action_type`, `type_document`, `action`, `expression`, `id_verrou`) VALUES
