@@ -1,3 +1,9 @@
+# [4.1.5]
+
+## Évolutions
+
+- Paramètre d'étape SAE permettant de continuer le cheminement d'un dossier après un refus #2144
+
 # [4.1.4] - 2024-12-09
 
 ## Évolutions
@@ -8,7 +14,6 @@
 - Le script `installation/create-role-admin.php` est remplacé par la commande `app:user:refresh-role-admin` #2155
 - Ajout de la commande `app:user:update-user-email` #2155
 - Ajout de la commande `app:user:delete-user` #2155
-- Paramètre d'étape SAE permettant de continuer le cheminement d'un dossier après un refus #2144
 
 ## Corrections
 
