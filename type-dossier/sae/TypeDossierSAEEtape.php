@@ -4,6 +4,7 @@ class TypeDossierSAEEtape implements TypeDossierEtapeSetSpecificInformation
 {
     use TypeDossierRemoveFromEditableContent;
 
+    public const CONTINUE_AFTER_REFUSAL = 'continue_after_refusal';
     public function setSpecificInformation(
         TypeDossierEtapeProperties $typeDossierEtape,
         array $result,
@@ -21,6 +22,15 @@ class TypeDossierSAEEtape implements TypeDossierEtapeSetSpecificInformation
                 $result[DocumentType::ACTION][$generateSipAction][Action::CONNECTEUR_TYPE_MAPPING]['sae_config'],
             );
             $this->removeFromEditableContent([$saeConfig], $result);
+        }
+
+        if (!empty($typeDossierEtape->specific_type_info[self::CONTINUE_AFTER_REFUSAL])) {
+            $result[DocumentType::ACTION][TypeDossierTranslator::ORIENTATION]
+            [Action::ACTION_RULE][Action::ACTION_RULE_LAST_ACTION][] = $rejet_sae_action;
+            if ($typeDossierEtape->automatique) {
+                $result[DocumentType::ACTION][$rejet_sae_action]
+                [Action::ACTION_AUTOMATIQUE] = TypeDossierTranslator::ORIENTATION;
+            }
         }
 
         $result[DocumentType::ACTION]['supression'][Action::ACTION_RULE][Action::ACTION_RULE_LAST_ACTION][] = $rejet_sae_action;

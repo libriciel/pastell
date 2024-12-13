@@ -1,3 +1,9 @@
+# [4.1.5]
+
+## Évolutions
+
+- Paramètre d'étape SAE permettant de continuer le cheminement d'un dossier après un refus #2144
+
 # [4.1.4] - 2024-12-09
 
 ## Évolutions

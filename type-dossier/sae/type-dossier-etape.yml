@@ -6,6 +6,9 @@ configuration_etape_formulaire:
     sae_has_metadata_in_json:
         name: "Permettre l'envoi d'un fichier de métadonnée en JSON"
         type: checkbox
+    continue_after_refusal:
+        name: 'Continuer le cheminement après un refus de SAE'
+        type: checkbox
 formulaire:
     'Configuration SAE':
         sae_config:
