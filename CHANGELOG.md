@@ -8,6 +8,7 @@
 - Le script `installation/create-role-admin.php` est remplacé par la commande `app:user:refresh-role-admin` #2155
 - Ajout de la commande `app:user:update-user-email` #2155
 - Ajout de la commande `app:user:delete-user` #2155
+- Paramètre d'étape SAE permettant de continuer le cheminement d'un dossier après un refus #2144
 
 ## Corrections
 
@@ -24,7 +25,6 @@
 - Étape Signature, Récupération des Métadonnées de sortie du iParapheur #1083
 - Ajout du viewer de métadonnées json au format {"cle1":"valeur1","cle2":"valeur2",...} #1083
 - Il manquait les annexes de sortie dans le cas d'un rejet iParapheur sur l'étape signature #2149
-- Paramètre permettant de continuer le cheminement d'un dossier après un refus de SAE #2144
 
 ## Corrections
 
