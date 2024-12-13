@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 class TypeDossierSAEEtapeTest extends PastellTestCase
 {
-    /**
-     * @return TypeDossierProperties
-     */
     private function getDefaultTypeDossierProperties(): TypeDossierProperties
     {
         $typeDossierData = new TypeDossierProperties();
@@ -14,21 +13,21 @@ class TypeDossierSAEEtapeTest extends PastellTestCase
         return $typeDossierData;
     }
 
-    public function testSetSpecificInfo()
+    public function testSetSpecificInfo(): void
     {
         $typeDossierTranslator = $this->getObjectInstancier()->getInstance(TypeDossierTranslator::class);
         $typeDossierData = $this->getDefaultTypeDossierProperties();
         $result = $typeDossierTranslator->getDefinition($typeDossierData);
-        $this->assertArrayNotHasKey('Configuration SAE', $result['page-condition']);
+        static::assertArrayNotHasKey('Configuration SAE', $result['page-condition']);
     }
 
-    public function testHasConfigurationSAE()
+    public function testHasConfigurationSAE(): void
     {
         $typeDossierTranslator = $this->getObjectInstancier()->getInstance(TypeDossierTranslator::class);
         $typeDossierData = $this->getDefaultTypeDossierProperties();
         $typeDossierData->etape[0]->specific_type_info['sae_has_metadata_in_json'] = 'On';
         $result = $typeDossierTranslator->getDefinition($typeDossierData);
-        $this->assertArrayHasKey('Configuration SAE', $result['page-condition']);
+        static::assertArrayHasKey('Configuration SAE', $result['page-condition']);
     }
 
     public function testContinueFileProgressAfterRefusal(): void
