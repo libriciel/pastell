@@ -88,7 +88,7 @@
                     <i class="fa fa-puzzle-piece"></i><span>Administration avancée</span>
                 </a>
             {% endif %}
-            {% if roleUtilisateur.hasDroit(authentification.getId, 'system:lecture', 0) %}
+            {% if roleUtilisateur.hasDroit(authentification.getId, 'daemon:lecture', 0) %}
                 <a href="{{ path('app.legacy.daemon_index') }}" class='new_picto' style="float: right;">
                     {% if daemon_stopped_warning %}
                         <p class="badge badge-daemon">!</p>

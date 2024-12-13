@@ -104,6 +104,8 @@ class RoleUtilisateurSQLTest extends PastellTestCase
             'commande-generique:lecture',
             'connecteur:edition',
             'connecteur:lecture',
+            'daemon:edition',
+            'daemon:lecture',
             'document-a-signer:edition',
             'document-a-signer:lecture',
             'entite:edition',

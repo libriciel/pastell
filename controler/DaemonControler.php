@@ -58,9 +58,14 @@ class DaemonControler extends PastellControler
         $this->renderDefault();
     }
 
-    public function verrouAction()
+    /**
+     * @throws LastMessageException
+     * @throws NotFoundException
+     * @throws LastErrorException
+     */
+    public function verrouAction(): void
     {
-        $this->verifDroit(0, "system:lecture");
+        $this->verifDroit(0, 'daemon:lecture');
         $this->setViewParameter('job_queue_info_list', $this->getJobQueueSQL()->getCountJobByVerrouAndEtat());
         $this->setViewParameter('menu_gauche_select', "Daemon/verrou");
         $this->setViewParameter('template_milieu', "DaemonVerrou");
@@ -89,7 +94,7 @@ class DaemonControler extends PastellControler
      */
     private function indexData(): void
     {
-        $this->verifDroit(0, 'system:lecture');
+        $this->verifDroit(0, 'daemon:lecture');
         $this->setViewParameter('nb_worker_actif', $this->getWorkerSQL()->getNbActif());
         $this->setViewParameter('job_stat_info', $this->getJobQueueSQL()->getStatInfo());
         $this->setViewParameter('daemon_pid', $this->getDaemonManager()->getDaemonPID());
@@ -99,9 +104,13 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('daemonManager', $this->getObjectInstancier()->getInstance(DaemonManager::class));
     }
 
-    public function daemonStartAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function daemonStartAction(): void
     {
-        $this->verifDroit(0, "system:edition");
+        $this->verifDroit(0, 'daemon:edition');
         try {
             $this->getDaemonManager()->start();
             $this->getLogger()->info('Daemon start manually');
@@ -122,9 +131,13 @@ class DaemonControler extends PastellControler
         $this->redirect("Daemon/index");
     }
 
-    public function daemonStopAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function daemonStopAction(): void
     {
-        $this->verifDroit(0, "system:edition");
+        $this->verifDroit(0, 'daemon:edition');
         $this->getDaemonManager()->stop();
         if ($this->getDaemonManager()->status() == DaemonManager::IS_STOPPED) {
             $this->setLastMessage("Le gestionnaire de tâches a été arrêté");
@@ -134,9 +147,13 @@ class DaemonControler extends PastellControler
         $this->redirect("Daemon/index");
     }
 
-    public function lockAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function lockAction(): void
     {
-        $this->verifDroit(0, "system:edition");
+        $this->verifDroit(0, 'daemon:edition');
 
         $id_job = $this->getGetInfo()->getInt('id_job');
         $id_verrou = $this->getGetInfo()->get('id_verrou');
@@ -154,9 +171,13 @@ class DaemonControler extends PastellControler
         $this->redirect("$return_url");
     }
 
-    public function unlockAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function unlockAction(): void
     {
-        $this->verifDroit(0, "system:edition");
+        $this->verifDroit(0, 'daemon:edition');
 
         $id_job = $this->getGetInfo()->getInt('id_job');
         $id_verrou = $this->getGetInfo()->get('id_verrou');
@@ -174,17 +195,25 @@ class DaemonControler extends PastellControler
         $this->redirect($return_url);
     }
 
-    public function unlockAllAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function unlockAllAction(): void
     {
         $this->getWorkerSQL()->menageAll();
         $this->getJobQueueSQL()->unlockAll();
-        $this->verifDroit(0, "system:edition");
+        $this->verifDroit(0, 'daemon:edition');
         $this->redirect('Daemon/index');
     }
 
-    public function killAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function killAction(): void
     {
-        $this->verifDroit(0, "system:edition");
+        $this->verifDroit(0, 'daemon:edition');
         $recuperateur = new Recuperateur($_GET);
         $id_worker = $recuperateur->getInt('id_worker');
         $return_url = $recuperateur->get('return_url', 'Daemon/index');
@@ -219,7 +248,7 @@ class DaemonControler extends PastellControler
         $recuperateur = $this->getGetInfo();
         $this->setViewParameter('menu_gauche_select', 'Daemon/job');
 
-        $this->verifDroit(0, 'system:edition');
+        $this->verifDroit(0, 'daemon:edition');
         $this->setViewParameter('twigTemplate', 'daemon/job.html.twig');
         $this->setViewParameter('page_title', 'Gestionnaire de tâches');
         $filtre = $recuperateur->get('filtre', '');
@@ -260,9 +289,14 @@ class DaemonControler extends PastellControler
         $this->renderDefault();
     }
 
-    public function detailAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
+    public function detailAction(): void
     {
-        $this->verifDroit(0, "system:edition");
+        $this->verifDroit(0, 'daemon:edition');
         $id_job = $this->getGetInfo()->get("id_job");
 
         $this->setViewParameter('page_title', "Détail du travail #{$id_job}");
@@ -274,9 +308,14 @@ class DaemonControler extends PastellControler
         $this->renderDefault();
     }
 
-    public function configAction()
+    /**
+     * @throws LastMessageException
+     * @throws NotFoundException
+     * @throws LastErrorException
+     */
+    public function configAction(): void
     {
-        $this->verifDroit(0, "system:edition");
+        $this->verifDroit(0, 'daemon:edition');
 
         $this->setViewParameter('page_title', "Configuration de la fréquence des connecteurs");
         $this->setViewParameter('template_milieu', "DaemonConfig");
@@ -286,9 +325,14 @@ class DaemonControler extends PastellControler
         $this->renderDefault();
     }
 
-    public function editFrequenceAction()
+    /**
+     * @throws LastMessageException
+     * @throws NotFoundException
+     * @throws LastErrorException
+     */
+    public function editFrequenceAction(): void
     {
-        $this->verifDroit(0, "system:edition");
+        $this->verifDroit(0, 'daemon:edition');
         $id_cf = $this->getGetInfo()->getInt('id_cf');
         $connecteurFrequence = $this->getConnecteurFrequenceSQL()->getConnecteurFrequence($id_cf) ?: new ConnecteurFrequence();
 
@@ -356,9 +400,13 @@ class DaemonControler extends PastellControler
         echo json_encode(array_keys($result['action']));
     }
 
-    public function doEditFrequenceAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function doEditFrequenceAction(): void
     {
-        $this->verifDroit(0, "system:edition");
+        $this->verifDroit(0, 'daemon:edition');
         $connecteurFrequence = new ConnecteurFrequence($this->getPostInfo()->getAll());
         $id_cf = $this->getConnecteurFrequenceSQL()->edit($connecteurFrequence);
         $this->redirect("Daemon/connecteurFrequenceDetail?id_cf=$id_cf");
@@ -366,7 +414,7 @@ class DaemonControler extends PastellControler
 
     public function connecteurFrequenceDetailAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->verifDroit(0, 'daemon:edition');
         $id_cf = $this->getGetInfo()->getInt('id_cf');
         $connecteurFrequence = $this->verifConnecteur($id_cf);
         $this->setViewParameter('connecteurFrequence', $connecteurFrequence);
@@ -375,9 +423,14 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('menu_gauche_select', "Daemon/config");
         $this->renderDefault();
     }
-    private function verifConnecteur($id_cf)
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    private function verifConnecteur($id_cf): ConnecteurFrequence
     {
-        $this->verifDroit(0, "system:edition");
+        $this->verifDroit(0, 'daemon:edition');
         $connecteurFrequence = $this->getConnecteurFrequenceSQL()->getConnecteurFrequence($id_cf);
 
         if (! $connecteurFrequence) {
@@ -387,27 +440,39 @@ class DaemonControler extends PastellControler
         return $connecteurFrequence;
     }
 
-    public function deleteFrequenceAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function deleteFrequenceAction(): void
     {
-        $this->verifDroit(0, "system:edition");
+        $this->verifDroit(0, 'daemon:edition');
         $id_cf = $this->getGetInfo()->get('id_cf');
         $this->getConnecteurFrequenceSQL()->delete($id_cf);
         $this->setLastMessage("La fréquence a été supprimée");
         $this->redirect("Daemon/config");
     }
 
-    public function deleteJobAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function deleteJobAction(): void
     {
-        $this->verifDroit(0, "system:edition");
+        $this->verifDroit(0, 'daemon:edition');
         $id_job = $this->getGetInfo()->get('id_job');
         $id_connecteur = $this->getGetInfo()->get('id_ce');
         $this->getJobQueueSQL()->deleteJob($id_job);
         $this->redirect("Connecteur/edition?id_ce=$id_connecteur");
     }
 
-    public function deleteJobDocumentAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function deleteJobDocumentAction(): void
     {
-        $this->verifDroit(0, "system:edition");
+        $this->verifDroit(0, 'daemon:edition');
         $id_job = $this->getGetInfo()->get('id_job');
         $id_document = $this->getGetInfo()->get('id_d');
         $id_entite = $this->getGetInfo()->get('id_e');

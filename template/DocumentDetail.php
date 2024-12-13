@@ -16,6 +16,7 @@
  * @var Action $theAction
  * @var array $document_email_reponse_list
  * @var bool $is_super_admin
+ * @var bool $is_daemon_admin
  * @var array|bool $job_list
  * @var string $return_url
  * @var bool $droit_erreur_fatale
@@ -288,135 +289,6 @@ if ($infoDocumentEmail) :
         </a>
 
         <div class="collapse" id="collapseExample">
-            <?php if ($job_list) : ?>
-                <div class='box'>
-                    <h3>Travaux programmés</h3>
-                    <table class="table table-striped">
-                        <tr>
-                            <th>#ID travail</th>
-                            <th>Suspendu</th>
-                            <th>État source<br/>État cible</th>
-                            <th>Premier essai</th>
-                            <th>Dernier essai</th>
-                            <th>Nombre d'essais</th>
-                            <th>Dernier message</th>
-                            <th>Prochain essai</th>
-                            <th>Verrou</th>
-                            <th>#ID processus</th>
-                            <th>PID processus</th>
-                            <th>Début processus</th>
-                            <th>Fonction</th>
-                        </tr>
-                        <?php foreach ($job_list as $job_info) : ?>
-                            <tr>
-                                <td>
-                                    <a href='<?php $this->url("Daemon/detail?id_job={$job_info['id_job']}"); ?>'>
-                                        <?php echo $job_info['id_job']; ?>
-                                    </a>
-                                </td>
-                                <td>
-                                    <?php
-                                    $daemonQueryParams = 'id_job=' . $job_info['id_job'] . '&return_url=' . $return_url;
-                                    ?>
-                                    <?php if ($job_info['is_lock']) : ?>
-                                        <p class='alert alert-danger'>
-                                            OUI <br/>
-                                            Depuis le <?php
-                                            echo $this->getFancyDate()->getDateFr($job_info['lock_since']);
-                                            ?><br/>
-                                            <a href='<?php $this->url("Daemon/unlock?$daemonQueryParams"); ?>'
-                                               class=" btn-warning btn">
-                                                <i class="fa fa-unlock-alt"></i>&nbsp;
-                                                Reprendre
-                                            </a>
-                                        </p>
-                                    <?php else : ?>
-                                        <p>
-                                            NON <br/>
-                                            <a href='<?php $this->url("Daemon/lock?$daemonQueryParams"); ?>'
-                                               class="btn btn-warning">
-                                                <i class="fa fa-lock"></i>&nbsp;
-                                                Suspendre
-                                            </a>
-                                        </p>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php hecho($job_info['etat_source']); ?><br/>
-                                    <?php hecho($job_info['etat_cible']); ?></td>
-                                <td><?php echo $this->getFancyDate()->getDateFr($job_info['first_try']); ?></td>
-                                <td><?php echo $this->getFancyDate()->getDateFr($job_info['last_try']); ?></td>
-                                <td><?php echo $job_info['nb_try']; ?></td>
-                                <td><?php hecho($job_info['last_message']); ?></td>
-                                <td>
-                                    <?php echo $this->getFancyDate()->getDateFr($job_info['next_try']); ?><br/>
-                                    <?php echo $this->getFancyDate()->getTimeElapsed($job_info['next_try']); ?>
-                                </td>
-                                <td>
-                                    <?php hecho($job_info['id_verrou']); ?>
-                                </td>
-                                <td><?php echo $job_info['id_worker']; ?></td>
-                                <td>
-                                    <?php echo $job_info['pid']; ?>
-                                    <?php if ($job_info['pid']) : ?>
-                                        <?php if (!$job_info['termine']) : ?>
-                                            <?php
-                                            $killUrl = \sprintf(
-                                                'Daemon/kill?id_worker=%s&return_url=%s',
-                                                $job_info['id_worker'],
-                                                $return_url
-                                            );
-                                            ?>
-                                            <a href='<?php $this->url($killUrl); ?>'
-                                               class='btn btn-danger'>
-                                                <i class="fa fa-power-off"></i>&nbsp;Tuer
-                                            </a>
-                                        <?php else : ?>
-                                            <br/><?php echo $job_info['message']; ?>
-                                        <?php endif; ?>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?php if ($job_info['id_worker']) : ?>
-                                        <?php echo $this->getFancyDate()->getDateFr($job_info['date_begin']); ?><br/>
-                                        <?php echo $this->getFancyDate()->getTimeElapsed($job_info['date_begin']); ?>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?php
-                                        $deleteJobUrl = \sprintf(
-                                            'Daemon/deleteJobDocument?id_job=%s&id_e=%s&id_d=%s',
-                                            $job_info['id_job'],
-                                            $id_e,
-                                            $id_d,
-                                        );
-                                    ?>
-                                    <a href="<?php echo $deleteJobUrl; ?>"
-                                       class="btn btn-danger">
-                                        <i class="fa fa-trash"></i>&nbsp;
-                                        Supprimer
-                                    </a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </table>
-
-                    <?php if ($droit_erreur_fatale) : ?>
-                        <form action='Document/action' method='post'>
-                            <?php $this->displayCSRFInput(); ?>
-                            <input type='hidden' name='id_d' value='<?php echo $id_d; ?>'/>
-                            <input type='hidden' name='id_e' value='<?php echo $id_e; ?>'/>
-                            <input type='hidden' name='page' value='<?php echo $page; ?>'/>
-                            <input type='hidden' name='action' value='fatal-error'/>
-
-                            <button type='submit' class='btn btn-danger'>
-                                <i class="fa fa-exclamation-triangle"></i>&nbsp;Passer en erreur fatale
-                            </button>
-                        </form>
-                    <?php endif; ?>
-
-                </div>
-            <?php endif; ?>
-
             <div class="box">
                 <h3>Modification manuelle de l'état</h3>
 
@@ -446,4 +318,137 @@ if ($infoDocumentEmail) :
             </div>
         </div>
     </div>
+<?php endif; ?>
+<?php if ($is_daemon_admin && $job_list) : ?>
+    <div class="box">
+        <a class="collapse-link" data-bs-toggle="collapse" data-bs-target="#daemonCollapse">
+            <h2><i class="fa fa-plus-square"></i>&nbsp; Tâches automatiques</h2>
+        </a>
+        <div class="collapse" id="daemonCollapse">
+            <div class='box'>
+                <h3>Travaux programmés</h3>
+                <table class="table table-striped">
+                    <tr>
+                        <th>#ID travail</th>
+                        <th>Suspendu</th>
+                        <th>État source<br/>État cible</th>
+                        <th>Premier essai</th>
+                        <th>Dernier essai</th>
+                        <th>Nombre d'essais</th>
+                        <th>Dernier message</th>
+                        <th>Prochain essai</th>
+                        <th>Verrou</th>
+                        <th>#ID processus</th>
+                        <th>PID processus</th>
+                        <th>Début processus</th>
+                        <th>Fonction</th>
+                    </tr>
+                    <?php foreach ($job_list as $job_info) : ?>
+                        <tr>
+                            <td>
+                                <a href='<?php $this->url("Daemon/detail?id_job={$job_info['id_job']}"); ?>'>
+                                    <?php echo $job_info['id_job']; ?>
+                                </a>
+                            </td>
+                            <td>
+                                <?php
+                                $daemonQueryParams = 'id_job=' . $job_info['id_job'] . '&return_url=' . $return_url;
+                                ?>
+                                <?php if ($job_info['is_lock']) : ?>
+                                    <p class='alert alert-danger'>
+                                        OUI <br/>
+                                        Depuis le <?php
+                                        echo $this->getFancyDate()->getDateFr($job_info['lock_since']);
+                                        ?><br/>
+                                        <a href='<?php $this->url("Daemon/unlock?$daemonQueryParams"); ?>'
+                                           class=" btn-warning btn">
+                                            <i class="fa fa-unlock-alt"></i>&nbsp;
+                                            Reprendre
+                                        </a>
+                                    </p>
+                                <?php else : ?>
+                                    <p>
+                                        NON <br/>
+                                        <a href='<?php $this->url("Daemon/lock?$daemonQueryParams"); ?>'
+                                           class="btn btn-warning">
+                                            <i class="fa fa-lock"></i>&nbsp;
+                                            Suspendre
+                                        </a>
+                                    </p>
+                                <?php endif; ?>
+                            </td>
+                            <td><?php hecho($job_info['etat_source']); ?><br/>
+                                <?php hecho($job_info['etat_cible']); ?></td>
+                            <td><?php echo $this->getFancyDate()->getDateFr($job_info['first_try']); ?></td>
+                            <td><?php echo $this->getFancyDate()->getDateFr($job_info['last_try']); ?></td>
+                            <td><?php echo $job_info['nb_try']; ?></td>
+                            <td><?php hecho($job_info['last_message']); ?></td>
+                            <td>
+                                <?php echo $this->getFancyDate()->getDateFr($job_info['next_try']); ?><br/>
+                                <?php echo $this->getFancyDate()->getTimeElapsed($job_info['next_try']); ?>
+                            </td>
+                            <td>
+                                <?php hecho($job_info['id_verrou']); ?>
+                            </td>
+                            <td><?php echo $job_info['id_worker']; ?></td>
+                            <td>
+                                <?php echo $job_info['pid']; ?>
+                                <?php if ($job_info['pid']) : ?>
+                                    <?php if (!$job_info['termine']) : ?>
+                                        <?php
+                                        $killUrl = \sprintf(
+                                            'Daemon/kill?id_worker=%s&return_url=%s',
+                                            $job_info['id_worker'],
+                                            $return_url
+                                        );
+                                        ?>
+                                        <a href='<?php $this->url($killUrl); ?>'
+                                           class='btn btn-danger'>
+                                            <i class="fa fa-power-off"></i>&nbsp;Tuer
+                                        </a>
+                                    <?php else : ?>
+                                        <br/><?php echo $job_info['message']; ?>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if ($job_info['id_worker']) : ?>
+                                    <?php echo $this->getFancyDate()->getDateFr($job_info['date_begin']); ?><br/>
+                                    <?php echo $this->getFancyDate()->getTimeElapsed($job_info['date_begin']); ?>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php
+                                $deleteJobUrl = \sprintf(
+                                    'Daemon/deleteJobDocument?id_job=%s&id_e=%s&id_d=%s',
+                                    $job_info['id_job'],
+                                    $id_e,
+                                    $id_d,
+                                );
+                                ?>
+                                <a href="<?php echo $deleteJobUrl; ?>"
+                                   class="btn btn-danger">
+                                    <i class="fa fa-trash"></i>&nbsp;
+                                    Supprimer
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+
+                <?php if ($droit_erreur_fatale) : ?>
+                    <form action='Document/action' method='post'>
+                        <?php $this->displayCSRFInput(); ?>
+                        <input type='hidden' name='id_d' value='<?php echo $id_d; ?>'/>
+                        <input type='hidden' name='id_e' value='<?php echo $id_e; ?>'/>
+                        <input type='hidden' name='page' value='<?php echo $page; ?>'/>
+                        <input type='hidden' name='action' value='fatal-error'/>
+
+                        <button type='submit' class='btn btn-danger'>
+                            <i class="fa fa-exclamation-triangle"></i>&nbsp;Passer en erreur fatale
+                        </button>
+                    </form>
+                <?php endif; ?>
+            </div>
+        </div>
 <?php endif; ?>

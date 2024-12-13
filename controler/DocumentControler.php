@@ -133,6 +133,14 @@ class DocumentControler extends PastellControler
         if ($this->getViewParameterOrObject('is_super_admin')) {
             $this->setViewParameter('all_action', $documentType->getAction()->getWorkflowAction());
         }
+        $this->setViewParameter(
+            'is_daemon_admin',
+            $this->getRoleUtilisateur()->hasDroit(
+                $this->getId_u(),
+                'daemon:edition',
+                0
+            )
+        );
 
         $this->setViewParameter('page_title', $info_document['titre'] . " (" . $documentType->getName() . ")");
 
@@ -149,7 +157,7 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('document_email_reponse_list', $document_email_reponse_list);
 
         $this->setViewParameter('recuperation_fichier_url', "Document/recuperationFichier?id_d=$id_d&id_e=$id_e");
-        if ($this->hasDroit($this->getViewParameterOrObject('id_e'), "system:lecture")) {
+        if ($this->hasDroit($this->getViewParameterOrObject('id_e'), 'daemon:lecture')) {
             $this->setViewParameter('job_list', $this->getWorkerSQL()->getJobListWithWorkerForDocument($this->getViewParameterOrObject('id_e'), $this->getViewParameterOrObject('id_d')));
         } else {
             $this->setViewParameter('job_list', false);

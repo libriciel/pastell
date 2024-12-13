@@ -7,13 +7,14 @@ use RoleUtilisateur;
 
 class DroitService
 {
-    public const DROIT_LECTURE = "lecture";
-    public const DROIT_ECRITURE = "edition";
+    public const DROIT_LECTURE = 'lecture';
+    public const DROIT_ECRITURE = 'edition';
 
-    public const DROIT_CONNECTEUR = "connecteur";
-    public const DROIT_SYSTEM = "system";
-    public const DROIT_ENTITE = "entite";
-    public const DROIT_UTILISATEUR = "utilisateur";
+    public const DROIT_CONNECTEUR = 'connecteur';
+    public const DROIT_SYSTEM = 'system';
+    public const DROIT_ENTITE = 'entite';
+    public const DROIT_UTILISATEUR = 'utilisateur';
+    public const DROIT_DAEMON = 'daemon';
 
     public static function getDroitLecture(string $part): string
     {
@@ -196,5 +197,15 @@ class DroitService
     public function isRestrictedConnecteur(string $id_connecteur, bool $global = false): bool
     {
         return $this->documentTypeFactory->isRestrictedConnecteur($id_connecteur, $global);
+    }
+
+    public function hasDroitDaemonLecture(int $id_e, int $id_u): bool
+    {
+        return $this->hasDroit($id_u, self::getDroitLecture(self::DROIT_DAEMON), $id_e);
+    }
+
+    public function hasDroitDaemonEdition(int $id_e, int $id_u): bool
+    {
+        return $this->hasDroit($id_u, self::getDroitEdition(self::DROIT_DAEMON), $id_e);
     }
 }
