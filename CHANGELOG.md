@@ -24,6 +24,7 @@
 - Étape Signature, Récupération des Métadonnées de sortie du iParapheur #1083
 - Ajout du viewer de métadonnées json au format {"cle1":"valeur1","cle2":"valeur2",...} #1083
 - Il manquait les annexes de sortie dans le cas d'un rejet iParapheur sur l'étape signature #2149
+- Paramètre permettant de continuer le cheminement d'un dossier après un refus de SAE #2144
 
 ## Corrections
 

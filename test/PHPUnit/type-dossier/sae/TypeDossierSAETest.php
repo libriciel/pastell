@@ -185,11 +185,6 @@ class TypeDossierSAETest extends PastellTestCase
         );
     }
 
-    /**
-     * @throws NotFoundException
-     * @throws TypeDossierException
-     * @throws Exception
-     */
     public function testContinueProgressionAfterRefusal(): void
     {
         $this->typeDossierLoader->createTypeDossierDefinitionFile(self::SAE_CONTINUE_AFTER_REFUSAL);
