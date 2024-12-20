@@ -323,11 +323,12 @@ iparapheur_retour: Archive',
      * @param int $entite
      * @return array The connector
      */
-    protected function createConnector($id_connecteur, $libelle, $entite = self::ID_E_COL): array
+    protected function createConnector($id_connecteur, $libelle, $entite = self::ID_E_COL, $global = null): array
     {
         return $this->getInternalAPI()->post("/entite/$entite/connecteur/", [
             'id_connecteur' => $id_connecteur,
             'libelle' => $libelle,
+            'global' => $global,
         ]);
     }
 

@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
+use Pastell\Service\Entite\EntityUtilitiesService;
 
 class FluxControler extends PastellControler
 {
@@ -27,12 +28,13 @@ class FluxControler extends PastellControler
         $this->hasConnecteurDroitEdition($id_e);
     }
 
-    /**
-     * @return ConnecteurAssociationService
-     */
     private function getConnecteurAssociationService(): ConnecteurAssociationService
     {
         return $this->getObjectInstancier()->getInstance(ConnecteurAssociationService::class);
+    }
+    private function getEntityUtilitiesService(): EntityUtilitiesService
+    {
+        return $this->getObjectInstancier()->getInstance(EntityUtilitiesService::class);
     }
 
     /**
@@ -197,15 +199,10 @@ class FluxControler extends PastellControler
         $entite_denomination = $this->getEntiteSQL()->getDenomination($id_e);
         $this->setViewParameter('entite_denomination', $entite_denomination);
         $this->setViewParameter('connecteur_disponible', $this->getConnecteurDispo($id_e, $type_connecteur));
-        $this->setViewParameter(
-            'connecteur_info',
-            $this->getFluxEntiteSQL()->getConnecteur(
-                $id_e,
-                $flux,
-                $type_connecteur,
-                $num_same_type
-            )
-        );
+        $this->setViewParameter('connecteur_info', $this->getEntityUtilitiesService()
+            ->addDenominationForEntiteRacine(
+                [$this->getFluxEntiteSQL()->getConnecteur($id_e, $flux, $type_connecteur, $num_same_type)]
+            )[0]);
 
         $all_info = $this->getDocumentTypeFactory()->getFluxDocumentType($flux)->getConnecteurAllInfo();
         $type_connecteur_info = [];
@@ -245,9 +242,13 @@ class FluxControler extends PastellControler
         /** @var ConnecteurDisponible $connecteurDisponible */
         $connecteurDisponible = $this->getInstance(ConnecteurDisponible::class);
 
-        $connecteur_disponible = $connecteurDisponible->getList($this->getId_u(), $id_e, $type_connecteur);
+        $connecteur_disponible = $connecteurDisponible->getListByType(
+            $this->getId_u(),
+            $id_e,
+            $type_connecteur,
+            $id_e === 0
+        );
 
-        $this->getConnecteurEntiteSQL()->getDisponible($id_e, $type_connecteur);
         if (! $connecteur_disponible) {
             $this->setLastError("Aucun connecteur « $type_connecteur » disponible !");
             $this->redirect("/Flux/index?id_e=$id_e");
@@ -300,7 +301,6 @@ class FluxControler extends PastellControler
     {
         $fluxEntiteHeritageSQL = $this->getObjectInstancier()->getInstance(FluxEntiteHeritageSQL::class);
         $all_flux_entite = $fluxEntiteHeritageSQL->getAllWithSameType($id_e);
-
         $result = [];
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($id_flux);
         foreach ($documentType->getConnecteurAllInfo() as $j => $connecteur_type_info) {
@@ -311,11 +311,15 @@ class FluxControler extends PastellControler
             $line['id_flux'] = $id_flux;
             $line['nom_flux'] = $documentType->getName();
             $line['connecteur_type'] = $connecteur_id;
-            $line[DocumentType::CONNECTEUR_WITH_SAME_TYPE] = $connecteur_type_info[DocumentType::CONNECTEUR_WITH_SAME_TYPE];
+            $line[DocumentType::CONNECTEUR_WITH_SAME_TYPE] =
+                $connecteur_type_info[DocumentType::CONNECTEUR_WITH_SAME_TYPE];
             $line[DocumentType::NUM_SAME_TYPE] = $connecteur_type_info[DocumentType::NUM_SAME_TYPE];
             $line['inherited_flux'] = false;
             if (isset($all_flux_entite[$id_flux][$connecteur_id][$line[DocumentType::NUM_SAME_TYPE]])) {
-                $line['connecteur_info'] = $all_flux_entite[$id_flux][$connecteur_id][$line[DocumentType::NUM_SAME_TYPE]];
+                $line['connecteur_info'] = $this->getEntityUtilitiesService()
+                    ->addDenominationForEntiteRacine(
+                        [$all_flux_entite[$id_flux][$connecteur_id][$line[DocumentType::NUM_SAME_TYPE]]]
+                    )[0];
             } else {
                 $line['connecteur_info'] = false;
             }
