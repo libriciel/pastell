@@ -15,14 +15,18 @@ use Psr\Http\Client\ClientExceptionInterface;
 
 class RecupActesS2lowConnector extends \Connecteur
 {
+    private const FLUX = 'draft-ls-recup-actes-s2low';
     private const STATUS_ACK = 4;
     private S2lowClient $client;
     private string $startDate;
     private string $endDate;
     private int $transactionStatus;
+    private int $numberOfDocumentsPerJob;
+    private int $maxNumberOfDocumentsInEntity;
 
     public function __construct(
         private readonly S2lowClientFactory $s2lowClientFactory,
+        private readonly \DocumentEntite $documentEntite,
     ) {
     }
 
@@ -48,6 +52,9 @@ class RecupActesS2lowConnector extends \Connecteur
             $this->endDate = $dateSixtyDaysAgo->format('Y-m-d');
         }
 
+        $this->numberOfDocumentsPerJob = (int)$donneesFormulaire->get('nb_recup') ?: 10;
+        $this->maxNumberOfDocumentsInEntity = (int)$donneesFormulaire->get('nb_documents') ?: 100;
+
         $auth = new S2lowClientAuth();
         $auth->username = $donneesFormulaire->get('username') ?: '';
         $auth->password = $donneesFormulaire->get('password') ?: '';
@@ -55,6 +62,22 @@ class RecupActesS2lowConnector extends \Connecteur
         $auth->user_key_pem = $donneesFormulaire->getFilePath('certificate_key');
         $auth->user_certificat_pem = $donneesFormulaire->getFilePath('certificate_pem');
         $this->client = $this->s2lowClientFactory->getClient($url, $auth);
+    }
+
+    public function getNumberOfDocumentsToCreate(int $entityId): int
+    {
+        $maxCreatableDocuments = max(
+            $this->maxNumberOfDocumentsInEntity - $this->documentEntite->getNbAll(
+                $entityId,
+                self::FLUX
+            ),
+            0
+        );
+
+        return min(
+            $maxCreatableDocuments,
+            $this->numberOfDocumentsPerJob
+        );
     }
 
     public function getStartDate(): string

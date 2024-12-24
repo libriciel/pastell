@@ -62,12 +62,18 @@ class DocumentEntite extends SQL
         return $this->query($sql, $id_e);
     }
 
-    public function getNbAll($id_e)
+    public function getNbAll($id_e, string $type = '')
     {
-        $sql = "SELECT count(*) FROM document_entite " .
-                " JOIN document ON document_entite.id_d=document.id_d " .
-                " WHERE id_e=?";
-        return $this->queryOne($sql, $id_e);
+        $sql = 'SELECT count(*) FROM document_entite ' .
+            ' JOIN document ON document_entite.id_d=document.id_d ' .
+            ' WHERE id_e=?';
+        $params = [$id_e];
+
+        if ($type !== '') {
+            $sql .= ' AND last_type = ?';
+            $params[] = $type;
+        }
+        return $this->queryOne($sql, $params);
     }
 
     public function getAllByFluxAction($flux, $action_from)
