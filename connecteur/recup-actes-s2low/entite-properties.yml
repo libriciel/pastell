@@ -55,6 +55,9 @@ action:
   test_auth:
     name: 'Tester la connectivité'
     action-class: Pastell\Connector\RecupActesS2low\Action\TestAuthentication
+  list_actes:
+    name: 'Lister les actes archivables'
+    action-class: Pastell\Connector\RecupActesS2low\Action\FetchActesList
 
   update-certificate:
     name: 'Mettre à jour les certificats'

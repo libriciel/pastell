@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Pastell\Connector\RecupActesS2low;
 
 use DonneesFormulaire;
+use Pastell\Client\S2low\Model\ActeListQuery;
+use Pastell\Client\S2low\Model\ActeListResponse;
 use Pastell\Client\S2low\S2lowClient;
 use Pastell\Client\S2low\S2lowClientAuth;
 use Pastell\Client\S2low\S2lowClientException;
@@ -13,7 +15,11 @@ use Psr\Http\Client\ClientExceptionInterface;
 
 class RecupActesS2lowConnector extends \Connecteur
 {
+    private const STATUS_ACK = 4;
     private S2lowClient $client;
+    private string $startDate;
+    private string $endDate;
+    private int $transactionStatus;
 
     public function __construct(
         private readonly S2lowClientFactory $s2lowClientFactory,
@@ -28,6 +34,19 @@ class RecupActesS2lowConnector extends \Connecteur
     public function setConnecteurConfig(DonneesFormulaire $donneesFormulaire): void
     {
         $url = $donneesFormulaire->get('url');
+        $this->transactionStatus = (int)$donneesFormulaire->get('transaction_status') ?: self::STATUS_ACK;
+        $this->startDate = $donneesFormulaire->get('start_date');
+        $this->endDate = $donneesFormulaire->get('end_date');
+
+        $dateSixtyDaysAgo = new \DateTime();
+        $dateSixtyDaysAgo->sub(new \DateInterval('P62D'));
+        $connectorDate = new \DateTime($donneesFormulaire->get('end_date'));
+
+        if ($dateSixtyDaysAgo > $connectorDate) {
+            $this->endDate = $connectorDate->format('Y-m-d');
+        } else {
+            $this->endDate = $dateSixtyDaysAgo->format('Y-m-d');
+        }
 
         $auth = new S2lowClientAuth();
         $auth->username = $donneesFormulaire->get('username') ?: '';
@@ -38,6 +57,16 @@ class RecupActesS2lowConnector extends \Connecteur
         $this->client = $this->s2lowClientFactory->getClient($url, $auth);
     }
 
+    public function getStartDate(): string
+    {
+        return $this->startDate;
+    }
+
+    public function getEndDate(): string
+    {
+        return $this->endDate;
+    }
+
     /**
      * @throws S2lowClientException
      * @throws ClientExceptionInterface
@@ -45,5 +74,22 @@ class RecupActesS2lowConnector extends \Connecteur
     public function testAuth(): string
     {
         return $this->client->connexion()->testConnexion();
+    }
+
+    /**
+     * @throws S2lowClientException
+     * @throws ClientExceptionInterface
+     * @throws \JsonException
+     */
+    public function listActes(int $numberOfTransactions, int $offset = 0): ActeListResponse
+    {
+        $query = new ActeListQuery();
+        $query->limit = $numberOfTransactions;
+        $query->minDate = $this->startDate;
+        $query->maxDate = $this->endDate;
+        $query->offset = $offset;
+        $query->statusId = $this->transactionStatus;
+
+        return $this->client->actes()->getActesList($query);
     }
 }
