@@ -18,7 +18,7 @@ use Recuperateur;
 
 class RecupActesS2lowConnector extends \Connecteur
 {
-    private const FLUX = 'draft-ls-recup-actes-s2low';
+    private const FLUX = 'ls-recup-actes-s2low';
     private const STATUS_ACK = 4;
     private const STATUS_SENT_TO_SAE = '12';
     private S2lowClient $client;

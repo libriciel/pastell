@@ -1,6 +1,8 @@
 nom: Recup Actes S²low
 description: ""
 type: recup-actes-s2low
+restriction_pack:
+  - suppl_recup_actes_s2low
 
 formulaire:
   page:
@@ -61,6 +63,14 @@ action:
   fetch_once:
     name: 'Faire une boucle de récupération (synchrone)'
     action-class: Pastell\Connector\RecupActesS2low\Action\FetchActes
+  fetch:
+    name: Traitement (immédiat)
+    action-class: Pastell\Connector\RecupActesS2low\Action\FetchActes
+    action-automatique: fetch
+
+  fetch-async:
+    name: Traitement (par le gestionnaire de tâches)
+    action-class: Pastell\Connector\RecupActesS2low\Action\FetchActesAsync
 
   update-certificate:
     name: 'Mettre à jour les certificats'
