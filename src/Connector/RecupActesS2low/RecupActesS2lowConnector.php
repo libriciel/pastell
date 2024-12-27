@@ -5,18 +5,22 @@ declare(strict_types=1);
 namespace Pastell\Connector\RecupActesS2low;
 
 use DonneesFormulaire;
+use Pastell\Actes\ActeEnvelopeParser;
 use Pastell\Client\S2low\Model\ActeListQuery;
 use Pastell\Client\S2low\Model\ActeListResponse;
 use Pastell\Client\S2low\S2lowClient;
 use Pastell\Client\S2low\S2lowClientAuth;
 use Pastell\Client\S2low\S2lowClientException;
 use Pastell\Client\S2low\S2lowClientFactory;
+use Pastell\Service\Document\DocumentDeletionService;
 use Psr\Http\Client\ClientExceptionInterface;
+use Recuperateur;
 
 class RecupActesS2lowConnector extends \Connecteur
 {
     private const FLUX = 'draft-ls-recup-actes-s2low';
     private const STATUS_ACK = 4;
+    private const STATUS_SENT_TO_SAE = '12';
     private S2lowClient $client;
     private string $startDate;
     private string $endDate;
@@ -26,6 +30,11 @@ class RecupActesS2lowConnector extends \Connecteur
 
     public function __construct(
         private readonly S2lowClientFactory $s2lowClientFactory,
+        private readonly \DocumentCreationService $documentCreationService,
+        private readonly \DocumentModificationService $documentModificationService,
+        private readonly DocumentDeletionService $documentDeletionService,
+        private readonly \DonneesFormulaireFactory $formFactory,
+        private readonly \JobManager $jobManager,
         private readonly \DocumentEntite $documentEntite,
     ) {
     }
@@ -114,5 +123,137 @@ class RecupActesS2lowConnector extends \Connecteur
         $query->statusId = $this->transactionStatus;
 
         return $this->client->actes()->getActesList($query);
+    }
+
+    /**
+     * @throws S2lowClientException
+     * @throws ClientExceptionInterface
+     */
+    public function changeStatus(string $transactionId, string $statusId): void
+    {
+        $this->client->actes()->changeActeStatus($transactionId, $statusId);
+    }
+
+    /**
+     * @throws \UnrecoverableException
+     * @throws ClientExceptionInterface
+     * @throws \NotFoundException
+     * @throws S2lowClientException
+     * @throws \JsonException
+     */
+    public function fetchActes(): array
+    {
+        $entityId = $this->getConnecteurInfo()['id_e'];
+        $createdDocuments = 0;
+        $offset = 0;
+        $numberOfDocumentsToCreate = $this->getNumberOfDocumentsToCreate($entityId);
+        $message = [];
+        while ($createdDocuments < $numberOfDocumentsToCreate) {
+            $listActes = $this->listActes($numberOfDocumentsToCreate, $offset);
+            if (count($listActes->transactions) === 0) {
+                break;
+            }
+
+            foreach ($listActes->transactions as $transaction) {
+                if (!$transaction->isActes()) {
+                    continue;
+                }
+                $documentId = $this->documentCreationService->createDocumentWithoutAuthorizationChecking(
+                    $entityId,
+                    self::FLUX
+                );
+                try {
+                    $this->createDocument($entityId, $documentId, $transaction->id);
+                    ++$createdDocuments;
+
+                    $message[] = \sprintf(
+                        'Création du document lié à la transaction %s %s : %s',
+                        $transaction->id,
+                        $transaction->number,
+                        $documentId,
+                    );
+                    if ($createdDocuments >= $numberOfDocumentsToCreate) {
+                        break;
+                    }
+                } catch (\Throwable $e) {
+                    $message[] = \sprintf(
+                        'Impossible de créer le document lié à la transaction %s %s => %s',
+                        $transaction->id,
+                        $transaction->number,
+                        $e->getMessage(),
+                    );
+                    $this->documentDeletionService->delete($documentId);
+                }
+            }
+            $offset += $numberOfDocumentsToCreate;
+        }
+
+        return $message;
+    }
+
+    /**
+     * @throws S2lowClientException
+     * @throws ClientExceptionInterface
+     * @throws \NotFoundException
+     */
+    private function createDocument(int $entityId, string $documentId, string $transactionId): bool
+    {
+        $transactionFiles = $this->client->actes()->getFileList($transactionId);
+        $numberOfFiles = \count($transactionFiles);
+        $xml = $this->client->actes()->downloadFile($transactionFiles[0]->id);
+        $envelopeParser = new ActeEnvelopeParser($xml);
+
+        $form = $this->formFactory->get($documentId);
+
+        $form->addFileFromData(
+            'arrete',
+            $transactionFiles[1]->postedFilename,
+            $this->client->actes()->downloadFile($transactionFiles[1]->id)
+        );
+        if ($numberOfFiles > 2) {
+            for ($i = 2; $i < $numberOfFiles; ++$i) {
+                $form->addFileFromData(
+                    'autre_document_attache',
+                    $transactionFiles[$i]->postedFilename,
+                    $this->client->actes()->downloadFile($transactionFiles[$i]->id),
+                    $i - 2
+                );
+            }
+        }
+
+        $aractes = $this->client->actes()->getAractes($transactionId);
+        $form->addFileFromData(
+            'aractes',
+            'aractes.xml',
+            $aractes
+        );
+        $aractesParser = new ActeEnvelopeParser($aractes);
+
+        $recuperateur = new Recuperateur([
+            'transaction_id' => $transactionId,
+            'acte_nature' => $envelopeParser->getCodeNatureActe(),
+            'numero_de_lacte' => $envelopeParser->getNumeroInterne(),
+            'objet' => $envelopeParser->getObjet(),
+            'date_de_lacte' => $envelopeParser->getDate(),
+            'document_papier' => $envelopeParser->hasDocumentPapier(),
+            'classification' => $envelopeParser->getClassification(),
+            'date_ar' => $aractesParser->getDateAr(),
+            'update_status_actes_s2low_status_1' => self::STATUS_SENT_TO_SAE,
+        ]);
+        $this->documentModificationService->modifyDocumentWithoutAuthorizationChecking(
+            $entityId,
+            0,
+            $documentId,
+            $recuperateur,
+            new \FileUploader(),
+            true
+        );
+
+        $form = $this->formFactory->get($documentId);
+        if ($form->isValidable()) {
+            $this->jobManager->setTraitementLot($entityId, $documentId, 0, 'orientation');
+        }
+
+        return true;
     }
 }
