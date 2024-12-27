@@ -1,0 +1,17 @@
+{
+  "status_id": "13",
+  "authority_id": "2",
+  "offset": "0",
+  "limit": "100",
+  "transactions": [
+    {
+      "id": "7",
+      "subject": "test",
+      "number": "20240507_TEST01",
+      "date": "2024-05-07",
+      "nature_descr": "Actes individuels",
+      "classification": "3.4",
+      "type": "1"
+    }
+  ]
+}

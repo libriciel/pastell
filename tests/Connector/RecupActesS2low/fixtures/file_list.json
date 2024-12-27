@@ -1,0 +1,20 @@
+[
+  {
+    "id": 19,
+    "name": "034-000000000-20240507-20240507_TEST01-AI-1-1_0.xml",
+    "posted_filename": "",
+    "mimetype": "text\/xml",
+    "size": 836,
+    "sign": "",
+    "code_pj": ""
+  },
+  {
+    "id": 20,
+    "name": "99_AI-034-000000000-20240507-20240507_TEST01-AI-1-1_1.pdf",
+    "posted_filename": "PA-DOC-API-3.1.pdf",
+    "mimetype": "application\/pdf",
+    "size": 365631,
+    "sign": "",
+    "code_pj": "99_AI"
+  }
+]
