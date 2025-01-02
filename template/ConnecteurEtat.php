@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * @var Gabarit $this
  * @var int $id_ce
  * @var array $connecteurAction
  * @var int $offset
@@ -13,7 +14,7 @@
     <i class="fa fa-arrow-left"></i>&nbsp;Retour à la définition du connecteur
 </a>
 
-<?php $this->SuivantPrecedent($offset, $limit, $count, "Connecteur/etat?id_ce=$id_ce"); ?>
+<?php $this->suivantPrecedent($offset, $limit, $count, "Connecteur/etat?id_ce=$id_ce"); ?>
 <div class="box" >
     <table class="table table-striped">
         <tr>
@@ -45,9 +46,9 @@
                 </td>
                 <td><?php echo $action['type_dossier'] ?></td>
                 <td><?php echo $action['empreinte_sha256'] ?></td>
-                <td><?php echo $action['message'] ?></td>
+                <td><?php hecho($action['message']); ?></td>
             </tr>
         <?php endforeach;?>
     </table>
 </div>
-<?php $this->SuivantPrecedent($offset, $limit, $count, "Connecteur/etat?id_ce=$id_ce"); ?>
+<?php $this->suivantPrecedent($offset, $limit, $count, "Connecteur/etat?id_ce=$id_ce"); ?>
