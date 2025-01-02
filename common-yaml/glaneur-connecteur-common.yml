@@ -32,17 +32,17 @@ formulaire:
         file_preg_match:
             name: 'Expressions rationnelles pour associer les fichiers'
             type: textarea
-            commentaire: "Une expression par ligne. identifiant_fichier:expression rationnelle.\nUtiliser .* pour attraper le reste des fichiers.\nPossibilité d'utiliser $matches[num_ligne][num_parenthese] contenant les élements attrapés\npar les parenthèses des expressions\nprécédentes. Attention, pour les expressions sur les fichiers multiples, c'est le dernier fichier qui est attrapé.\n"
+            commentaire: "Une expression par ligne. identifiant_fichier:expression rationnelle.\nUtiliser .* pour attraper le reste des fichiers.\nPossibilité d'utiliser $matches[num_ligne][num_parenthese] contenant les éléments attrapés\npar les parenthèses des expressions\nprécédentes. Attention, pour les expressions sur les fichiers multiples, c'est le dernier fichier qui est attrapé.\n"
         metadata_static:
             name: 'Métadonnées du formulaire'
-            commentaire: "Une ligne par métadonnée de la forme clé:valeur, les élements du manifest ont priorité.\nPossibilité d'utiliser le nom des fichiers avec %element_fichier%\nPossibilité d'utiliser $matches[num_ligne][num_parenthese] contenant les élements attrapés\npar les parenthèses des expressions pour associer les fichiers\n"
+            commentaire: "Une ligne par métadonnée de la forme clé:valeur, les éléments du manifest ont priorité.\nPossibilité d'utiliser le nom des fichiers avec %element_fichier%\nPossibilité d'utiliser $matches[num_ligne][num_parenthese] contenant les éléments attrapés\npar les parenthèses des expressions pour associer les fichiers\n"
             type: textarea
         force_action_ok:
             type: checkbox
             name: "Déclencher l'action d'import réussie même si le dossier n'est pas valide"
             commentaire: "Attention ! Rien ne garantit la cohérence de l'action !"
         action_ok:
-            name: "Action à déclencher en cas d'import réussie, les élements du manifest ont priorité"
+            name: "Action à déclencher en cas d'import réussie, les éléments du manifest ont priorité"
             commentaire: 'Le dossier créé est valide'
         action_ko:
             name: "Action à déclencher en cas d'échec"

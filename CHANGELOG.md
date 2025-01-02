@@ -1,3 +1,9 @@
+# [4.0.19] -
+
+## Correction
+
+- Corrections orthographiques #2183
+
 # [4.0.18] - 2024-11-12
 
 ## Évolutions
