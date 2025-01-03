@@ -11,6 +11,29 @@ class DaemonSQL extends SQL
     {
         return new Daemon($info['id_daemon'], $info['id_e'], $info['state'], $info['nb_workers']);
     }
+
+    public function getNbTotalWorkers(): int
+    {
+        $sql = 'SELECT nb_workers FROM daemon_config LIMIT 1';
+        return $this->queryOne($sql);
+    }
+
+    public function setNbWorkers($nb_workers): void
+    {
+        $sql = 'UPDATE daemon_config SET nb_workers = ?';
+        $this->query($sql, $nb_workers);
+    }
+
+    public function checkConfig(): void
+    {
+        $sql = 'SELECT COUNT(*) as total FROM daemon_config';
+        $total = $this->queryOne($sql);
+        if ($total !== 1) {
+            $this->query('TRUNCATE TABLE daemon_config');
+            $this->query('INSERT INTO daemon_config(nb_workers) VALUES (?)', NB_WORKERS);
+        }
+    }
+
     public function getNbAllocatedWorkers(): int
     {
         $sql = 'SELECT SUM(nb_workers) FROM daemon where id_daemon != ?';
@@ -68,10 +91,9 @@ class DaemonSQL extends SQL
 
     public function refreshAvailableWorkers(): void
     {
-        $nb_allocated_workers = $this->getNbAllocatedWorkers();
-        $shared_workers = NB_WORKERS - $nb_allocated_workers;
-        $sql = 'UPDATE daemon SET nb_workers = ? WHERE id_daemon = ?';
-        $this->query($sql, [$shared_workers, self::GLOBAL_DAEMON]);
+        $shared_workers = $this->getNbTotalWorkers() - $this->getNbAllocatedWorkers();
+        $sql = 'UPDATE daemon SET nb_workers = ? WHERE id_daemon = 1';
+        $this->query($sql, $shared_workers);
     }
 
     public function deleteDaemon(int $id_daemon): void
@@ -91,12 +113,11 @@ class DaemonSQL extends SQL
         return $this->getDaemon(self::GLOBAL_DAEMON);
     }
 
-
     public function insertGlobalDaemon(): bool
     {
         $sql = 'INSERT INTO daemon (id_daemon, id_e, nb_workers) VALUES (?, ?, ?)';
-        $this->query($sql, [self::GLOBAL_DAEMON, null, NB_WORKERS]);
-
+        $this->checkConfig();
+        $this->query($sql, [self::GLOBAL_DAEMON, null, $this->getNbTotalWorkers()]);
         return $this->lastInsertId() !== false;
     }
 

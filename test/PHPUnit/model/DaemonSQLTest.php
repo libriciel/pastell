@@ -72,7 +72,10 @@ class DaemonSQLTest extends PastellTestCase
 
     public function testGetNbSharedWorkers(): void
     {
-        static::assertSame((int) NB_WORKERS, $this->daemonSQL->getNbSharedWorkers());
+        $id_daemon = $this->daemonSQL->insertDaemon(1);
+        $this->daemonSQL->allocateWorkers($id_daemon, 4);
+        $this->daemonSQL->refreshAvailableWorkers();
+        static::assertEquals($this->daemonSQL->getNbTotalWorkers() - 4, $this->daemonSQL->getNbSharedWorkers());
     }
 
     public function testGetAllocatedWorkers(): void
@@ -95,5 +98,16 @@ class DaemonSQLTest extends PastellTestCase
         $id_close_daemon = $this->daemonSQL->insertDaemon(1);
         $closestDaemon = $this->daemonSQL->getClosestDaemon(1);
         static::assertSame($id_close_daemon, $closestDaemon);
+    }
+
+    public function testGetNbTotalWorkers(): void
+    {
+        static::assertEquals(NB_WORKERS, $this->daemonSQL->getNbTotalWorkers());
+    }
+
+    public function testSetNbWorkers(): void
+    {
+        $this->daemonSQL->setNbWorkers(10);
+        static::assertEquals(10, $this->daemonSQL->getNbTotalWorkers());
     }
 }

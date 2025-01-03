@@ -97,6 +97,7 @@ class DaemonControler extends PastellControler
     {
         $this->verifDroit(0, DroitService::getDroitLecture(DroitService::DROIT_DAEMON));
         $this->setViewParameter('nb_worker_actif', $this->getWorkerSQL()->getNbActif());
+        $this->setViewParameter('nb_total_workers', $this->getDaemonSQL()->getNbTotalWorkers());
         $this->setViewParameter('job_stat_info', $this->getJobQueueSQL()->getStatInfo());
         $this->setViewParameter('daemon_pid', $this->getDaemonManager()->getDaemonPID());
         $this->setViewParameter('sub_title', 'Liste de tous les travaux');

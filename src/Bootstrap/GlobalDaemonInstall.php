@@ -28,6 +28,6 @@ class GlobalDaemonInstall implements InstallableBootstrap
 
     public function getName(): string
     {
-        return 'Daemon configuration';
+        return 'Global daemon install';
     }
 }
