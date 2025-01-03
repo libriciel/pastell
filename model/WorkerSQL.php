@@ -158,6 +158,15 @@ class WorkerSQL extends SQL
         return $this->queryOne($sql);
     }
 
+    public function getNbActifForDaemon(int $id_daemon)
+    {
+        $sql = 'SELECT count(*) 
+            FROM worker w 
+            JOIN job_queue jq ON jq.id_job = w.id_job 
+            WHERE termine=0 AND jq.id_daemon = ?';
+        return $this->queryOne($sql, $id_daemon);
+    }
+
     public function getActif($offset = 0, $limit = 20)
     {
         $offset = intval($offset);

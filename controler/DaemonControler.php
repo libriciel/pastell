@@ -345,7 +345,7 @@ class DaemonControler extends PastellControler
      * @throws NotFoundException
      * @throws LastErrorException
      */
-    public function frequenceConfigurationAction()
+    public function frequenceConfigurationAction(): void
     {
         $this->verifDroit(
             EntiteSQL::ID_E_ENTITE_RACINE,
@@ -629,6 +629,7 @@ class DaemonControler extends PastellControler
             );
         } else {
             $this->getDaemonSQL()->setNbWorkers($nb_workers);
+            $this->getDaemonSQL()->refreshAvailableWorkers();
             $this->setLastMessage('La configuration des processus à été mise à jour');
         }
         $this->redirect('Daemon/configuration');
