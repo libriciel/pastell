@@ -18,8 +18,11 @@ class Job
     public $etat_cible;
     public $last_message;
     public $lock;
+    public $lock_since;
     public $id_verrou;
     public $is_lock;
+    public $id_daemon;
+    public $daemon;
 
     public $nb_try;
     public $first_try;
@@ -27,6 +30,7 @@ class Job
     public $next_try;
 
     public $id_job;
+    public $worker;
 
     public function __construct()
     {
@@ -37,6 +41,7 @@ class Job
 
         $this->etat_cible = false;
         $this->id_verrou = "";
+        $this->id_daemon = 1;
         $this->next_try = date("Y-m-d H:i:s");
     }
 

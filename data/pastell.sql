@@ -81,6 +81,13 @@ CREATE TABLE `connecteur_frequence` (
 	`id_verrou` varchar(128) NOT NULL,
 	PRIMARY KEY (`id_cf`)
 )  ENGINE=MyISAM  ;
+CREATE TABLE `daemon` (
+	`id_daemon` int(11) NOT NULL AUTO_INCREMENT,
+	`id_e` int(11),
+	`state` tinyint(1) NOT NULL,
+	`nb_workers` int(11) NOT NULL DEFAULT '0',
+	PRIMARY KEY (`id_daemon`)
+)  ENGINE=InnoDB  ;
 CREATE TABLE `document` (
 	`id_d` varchar(64) NOT NULL,
 	`type` varchar(64) NOT NULL,
@@ -233,6 +240,7 @@ CREATE TABLE `job_queue` (
 	`nb_try` int(11) NOT NULL,
 	`first_try` datetime NOT NULL,
 	`id_verrou` varchar(32) NOT NULL,
+	`id_daemon` int(11) NOT NULL,
 	PRIMARY KEY (`id_job`)
 )  ENGINE=MyISAM  ;
 CREATE TABLE `journal` (

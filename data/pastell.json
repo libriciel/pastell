@@ -582,6 +582,52 @@
             }
         }
     },
+    "daemon": {
+        "Engine": "InnoDB",
+        "Column": {
+            "id_daemon": {
+                "Field": "id_daemon",
+                "Type": "int(11)",
+                "Null": "NO",
+                "Key": "PRI",
+                "Default": null,
+                "Extra": "auto_increment"
+            },
+            "id_e": {
+                "Field": "id_e",
+                "Type": "int(11)",
+                "Null": "YES",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "state": {
+                "Field": "state",
+                "Type": "tinyint(1)",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "nb_workers": {
+                "Field": "nb_workers",
+                "Type": "int(11)",
+                "Null": "NO",
+                "Key": "",
+                "Default": "0",
+                "Extra": ""
+            }
+        },
+        "Index": {
+            "PRIMARY": {
+                "type": "BTREE",
+                "col": [
+                    "id_daemon"
+                ],
+                "unique": true
+            }
+        }
+    },
     "document": {
         "Engine": "MyISAM",
         "Column": {
@@ -1636,6 +1682,14 @@
             "id_verrou": {
                 "Field": "id_verrou",
                 "Type": "varchar(32)",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "id_daemon": {
+                "Field": "id_daemon",
+                "Type": "int(11)",
                 "Null": "NO",
                 "Key": "",
                 "Default": null,

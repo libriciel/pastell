@@ -37,6 +37,7 @@ INSERT INTO `connecteur_frequence` (`id_cf`, `type_connecteur`, `famille_connect
 (1, '', '', '', 0, '', '', '', '2', 'DEFAULT_FREQUENCE'),
 (2, 'entite', '', 'i-parapheur', 42, 'document', 'actes-generique', 'verif-tdt', '30', '');
 
+TRUNCATE TABLE `daemon`;
 TRUNCATE TABLE `document`;
 TRUNCATE TABLE `document_action`;
 TRUNCATE TABLE `document_action_entite`;

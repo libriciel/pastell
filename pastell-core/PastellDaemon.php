@@ -49,19 +49,19 @@ class PastellDaemon
     {
         $workerSQL = $this->workerSQL;
 
-        foreach ($workerSQL->getAllRunningWorker() as $info) {
-            if (! posix_getpgid($info['pid'])) {
-                $workerInfo = $workerSQL->getInfo($info['id_worker']);
-                if (!$workerInfo || $workerInfo['termine'] === '1') {
-                    $this->logger->warning('Worker has already finished his job, Skipping...', $info);
+        foreach ($workerSQL->getAllRunningWorker() as $workerInfo) {
+            if (! posix_getpgid($workerInfo['pid'])) {
+                $worker = $workerSQL->getWorker($workerInfo['id_worker']);
+                if ($worker === null || $worker->termine === 1) {
+                    $this->logger->warning('Worker has already finished his job, Skipping...', $workerInfo);
                     continue;
                 }
-                $this->jobQueueSQL->lock($info['id_job']);
+                $this->jobQueueSQL->lock($worker->id_job);
                 $workerSQL->error(
-                    $info['id_worker'],
+                    $worker->id_worker,
                     "Message du gestionnaire de tâches : ce travail ne s'est pas terminé correctement"
                 );
-                $this->logger->error('Daemon detects a dead worker', $info);
+                $this->logger->error('Daemon detected a dead worker', $workerInfo);
             }
         }
         $nb_worker_alive = count($workerSQL->getAllRunningWorker());

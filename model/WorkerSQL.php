@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+use Model\Worker;
+
 class WorkerSQL extends SQL
 {
     public function create($pid)
@@ -9,10 +13,23 @@ class WorkerSQL extends SQL
         return $this->lastInsertId();
     }
 
-    public function getInfo($id_worker)
+    public function getWorker($id_worker): ?Worker
     {
-        $sql = "SELECT * FROM worker WHERE id_worker=?";
-        return $this->queryOne($sql, $id_worker);
+        $sql = 'SELECT * FROM worker WHERE id_worker=?';
+        $info = $this->queryOne($sql, $id_worker);
+        if (! $info) {
+            return null;
+        }
+        return new Worker(
+            $info['id_worker'],
+            $info['pid'],
+            $info['date_begin'],
+            $info['id_job'],
+            $info['date_end'],
+            $info['message'],
+            $info['termine'],
+            $info['success']
+        );
     }
 
     public function error($id_worker, $message)

@@ -5,6 +5,11 @@ class DaemonManager
     public const IS_RUNNING = 1;
     public const IS_STOPPED = 0;
 
+    public function __construct(
+        private readonly DaemonSQL $daemonSQL,
+    ) {
+    }
+
     public function status()
     {
         $command = 'supervisorctl status pastell-daemon';
@@ -51,5 +56,12 @@ class DaemonManager
     {
         $this->stop();
         $this->start();
+    }
+
+    public function globalDaemonInstall(): void
+    {
+        if ($this->daemonSQL->getGlobalDaemon() === null) {
+            $this->daemonSQL->insertGlobalDaemon();
+        }
     }
 }

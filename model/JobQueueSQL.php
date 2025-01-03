@@ -57,10 +57,8 @@ class JobQueueSQL extends SQL
         if (! $job->isTypeOK()) {
             throw new Exception("Type de job non pris en charge");
         }
-
-        $sql = "INSERT INTO job_queue(type,id_e,id_d,id_u,etat_source,etat_cible,id_ce,id_verrou,next_try) VALUES (?,?,?,?,?,?,?,?,?)";
-        $this->query($sql, $job->type, $job->id_e, $job->id_d, $job->id_u, $job->etat_source, $job->etat_cible, $job->id_ce, $job->id_verrou, $job->next_try);
-
+        $sql = "INSERT INTO job_queue(type,id_e,id_d,id_u,etat_source,etat_cible,id_ce,id_verrou,next_try, id_daemon) VALUES (?,?,?,?,?,?,?,?,?,?)";
+        $this->query($sql, $job->type, $job->id_e, $job->id_d, $job->id_u, $job->etat_source, $job->etat_cible, $job->id_ce, $job->id_verrou, $job->next_try, $job->id_daemon);
         $id_job = $this->lastInsertId();
         return $id_job;
     }
@@ -93,12 +91,14 @@ class JobQueueSQL extends SQL
         $job->type = $info['type'];
         $job->last_message = $info['last_message'];
         $job->is_lock = $info['is_lock'];
+        $job->lock_since = $info['lock_since'];
         $job->id_verrou = $info['id_verrou'];
         $job->nb_try = $info['nb_try'];
         $job->first_try = $info['first_try'];
         $job->last_try = $info['last_try'];
         $job->next_try = $info['next_try'];
         $job->id_job = $info['id_job'];
+        $job->id_daemon = $info['id_daemon'];
         return $job;
     }
 

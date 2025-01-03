@@ -1,13 +1,15 @@
 <?php
 
-class DaemonManagerTest extends PHPUnit\Framework\TestCase
+declare(strict_types=1);
+
+class DaemonManagerTest extends PastellTestCase
 {
     /** @var  DaemonManager */
-    private $daemonManager;
+    private DaemonManager $daemonManager;
 
     protected function setUp(): void
     {
-        $this->daemonManager = new DaemonManager();
+        $this->daemonManager = $this->getObjectInstancier()->getInstance(DaemonManager::class);
     }
 
     public function testStatus()
