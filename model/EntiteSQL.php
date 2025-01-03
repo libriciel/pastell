@@ -446,4 +446,10 @@ EOT;
         $listeEntiteMere[$i] = 'Entité racine';
         return array_reverse($listeEntiteMere);
     }
+
+    public function getAllDaemonsInfo(): array
+    {
+        $sql = 'SELECT *, e.id_e  as id_e FROM entite e LEFT JOIN daemon d  ON d.id_e = e.id_e WHERE is_active = 1';
+        return $this->query($sql);
+    }
 }

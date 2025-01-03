@@ -105,4 +105,15 @@ class DaemonSQLTest extends PastellTestCase
         $closestDaemon = $this->daemonSQL->getClosestDaemon(1);
         static::assertSame($id_close_daemon, $closestDaemon);
     }
+
+    public function testGetNbTotalWorkers(): void
+    {
+        static::assertEquals(NB_WORKERS, $this->daemonSQL->getNbTotalWorkers());
+    }
+
+    public function testSetNbWorkers(): void
+    {
+        $this->daemonSQL->setNbWorkers(10);
+        static::assertEquals(10, $this->daemonSQL->getNbTotalWorkers());
+    }
 }

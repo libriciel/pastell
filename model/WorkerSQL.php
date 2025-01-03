@@ -158,6 +158,15 @@ class WorkerSQL extends SQL
         return $this->queryOne($sql);
     }
 
+    public function getNbActifForDaemon(int $id_daemon)
+    {
+        $sql = 'SELECT count(*) 
+            FROM worker w 
+            JOIN job_queue jq ON jq.id_job = w.id_job 
+            WHERE termine=0 AND jq.id_daemon = ?';
+        return $this->queryOne($sql, $id_daemon);
+    }
+
     public function getActif($offset = 0, $limit = 20)
     {
         $offset = intval($offset);
@@ -170,29 +179,37 @@ class WorkerSQL extends SQL
         return $this->query($sql);
     }
 
-    public function getJobListWithWorker($offset = 0, $limit = 20, $filtre = "")
+    public function getJobListWithWorker(int $offset, int $limit, string $filtre, int $id_daemon = null): array
     {
-        if (! in_array($filtre, ["lock","actif","wait"])) {
-            $filtre = "";
+        if (! in_array($filtre, ['lock', 'actif', 'wait'])) {
+            $filtre = '';
         }
 
-        $sql = "SELECT *, job_queue.id_job as id_job FROM job_queue " .
-                " LEFT JOIN worker ON job_queue.id_job = worker.id_job " .
-                " WHERE 1=1 ";
+        $sql = 'SELECT *, job_queue.id_job as id_job 
+            FROM job_queue 
+            LEFT JOIN worker ON job_queue.id_job = worker.id_job
+            WHERE 1=1';
 
-        if ($filtre == 'lock') {
-            $sql .= " AND is_lock=1 ";
+        $params = [];
+        if ($id_daemon !== null) {
+            $sql .= ' AND job_queue.id_daemon=?';
+            $params[] = $id_daemon;
         }
-        if ($filtre == 'wait') {
-            $sql .= " AND next_try < now() ";
+        if ($filtre === 'lock') {
+            $sql .= ' AND is_lock=1 ';
         }
-        if ($filtre == 'actif') {
-            $sql .= " AND worker.termine=0 ";
+        if ($filtre === 'wait') {
+            $sql .= ' AND next_try < now() ';
+        }
+        if ($filtre === 'actif') {
+            $sql .= ' AND worker.termine=0 ';
         }
 
-        $sql .= " ORDER BY job_queue.is_lock,job_queue.next_try " .
-                " LIMIT $offset,$limit " ;
-        $result = $this->query($sql);
+        $sql .= " ORDER BY job_queue.is_lock, job_queue.next_try 
+              LIMIT $offset, $limit";
+
+        $result = $this->query($sql, $params);
+
         foreach ($result as $i => $line) {
             $result[$i]['time_since_next_try'] = time() - strtotime($line['next_try']);
         }
@@ -219,14 +236,14 @@ class WorkerSQL extends SQL
                 " LEFT JOIN worker ON job_queue.id_job = worker.id_job " .
                 " WHERE 1=1 ";
 
-        if ($filtre == 'lock') {
-            $sql .= " AND is_lock=1 ";
+        if ($filtre === 'lock') {
+            $sql .= ' AND job_queue.is_lock=1';
         }
-        if ($filtre == 'wait') {
-            $sql .= " AND next_try < now() ";
+        if ($filtre === 'wait') {
+            $sql .= ' AND job_queue.next_try < NOW()';
         }
-        if ($filtre == 'actif') {
-            $sql .= " AND worker.termine=0 ";
+        if ($filtre === 'actif') {
+            $sql .= ' AND COALESCE(worker.termine, 0) = 0';
         }
 
         return $this->queryOne($sql);

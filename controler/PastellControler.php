@@ -64,6 +64,19 @@ class PastellControler extends Controler
         ));
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    protected function setDroitsDaemon(int $id_e): void
+    {
+        $this->setViewParameter('daemon_global_lecture', $this->verifDroit(0, DroitService::getDroitLecture(DroitService::DROIT_DAEMON)));
+        $this->setViewParameter('daemon_lecture', $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_DAEMON)));
+        $this->setViewParameter('daemon_edition', $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_DAEMON)));
+        $this->setViewParameter('daemon_exists', $this->getDaemonSQL()->getDaemonByEntity($id_e));
+        $this->setViewParameter('system_edition', $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM)));
+    }
+
     protected function setDroitImportExportConfig(int $id_e): void
     {
         $this->setViewParameter(
@@ -425,6 +438,21 @@ class PastellControler extends Controler
     public function getDroitService(): DroitService
     {
         return $this->getInstance(DroitService::class);
+    }
+
+    public function getDaemonManager(): DaemonManager
+    {
+        return $this->getInstance(DaemonManager::class);
+    }
+
+    public function getDaemonSQL(): DaemonSQL
+    {
+        return $this->getInstance(DaemonSQL::class);
+    }
+
+    public function getJobQueueSQL(): JobQueueSQL
+    {
+        return $this->getInstance(JobQueueSQL::class);
     }
 
     /**

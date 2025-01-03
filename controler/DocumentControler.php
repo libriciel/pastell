@@ -141,31 +141,7 @@ class DocumentControler extends PastellControler
         if ($this->getViewParameterOrObject('is_super_admin')) {
             $this->setViewParameter('all_action', $documentType->getAction()->getWorkflowAction());
         }
-        $this->setViewParameter(
-            'daemon_edition',
-            $this->getRoleUtilisateur()->hasDroit(
-                $this->getId_u(),
-                DroitService::getDroitEdition(DroitService::DROIT_DAEMON),
-                $id_e
-            )
-        );
-        $this->setViewParameter(
-            'daemon_global_lecture',
-            $this->getRoleUtilisateur()->hasDroit(
-                $this->getId_u(),
-                DroitService::getDroitLecture(DroitService::DROIT_DAEMON),
-                0
-            )
-        );
-        $this->setViewParameter(
-            'daemon_lecture',
-            $this->getRoleUtilisateur()->hasDroit(
-                $this->getId_u(),
-                DroitService::getDroitLecture(DroitService::DROIT_DAEMON),
-                $id_e
-            )
-        );
-
+        $this->setDroitsDaemon($id_e);
         $this->setViewParameter('page_title', $info_document['titre'] . " (" . $documentType->getName() . ")");
 
         if ($documentType->isAfficheOneTab()) {

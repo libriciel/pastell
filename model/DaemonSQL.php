@@ -45,6 +45,16 @@ class DaemonSQL extends SQL
         return $this->mapToDaemon($info);
     }
 
+    public function getDaemonByEntity(int $id_e): ?Daemon
+    {
+        $sql = 'SELECT * FROM daemon WHERE id_e=?';
+        $info = $this->queryOne($sql, $id_e);
+        if (! $info) {
+            return null;
+        }
+        return $this->mapToDaemon($info);
+    }
+
     public function setDaemonState(int $id_daemon, int $state): void
     {
         $sql = 'UPDATE daemon SET state=? WHERE id_daemon=?';
@@ -90,24 +100,17 @@ class DaemonSQL extends SQL
         $this->query($sql, $id_daemon);
     }
 
-    public function getAllDaemonsInfo(): array
-    {
-        $sql = 'SELECT * FROM daemon d JOIN entite e ON d.id_e = e.id_e ';
-        return $this->query($sql);
-    }
-
     public function getGlobalDaemon(): ?Daemon
     {
         return $this->getDaemon(self::GLOBAL_DAEMON);
     }
 
+
     public function insertGlobalDaemon(): bool
     {
-        $sql = 'INSERT INTO daemon (id_daemon, id_e, nb_workers) VALUES (?, ?, ?)';
-        $this->query(
-            $sql,
-            [self::GLOBAL_DAEMON, null, $this->getNbWorkers()]
-        );
+        $sql = 'INSERT INTO daemon (id_daemon, id_e, nb_workers) VALUES (1, ?, ?)';
+        $this->query($sql, [null, NB_WORKERS]);
+
         return $this->lastInsertId() !== false;
     }
 

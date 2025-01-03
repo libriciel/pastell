@@ -15,6 +15,7 @@
             <th>Type</th>
             <th>Suspendu</th>
             <th>Entité</th>
+            <th>Daemon</th>
             <th>Dossier / Connecteur</th>
             <th>État source<br/>État cible</th>
             <th>Premier essai</th>
@@ -27,17 +28,17 @@
             <th>PID processus</th>
             <th>Début processus</th>
         </tr>
-        {% for jobInfo in job_list %}
+        {% for job in job_list %}
             <tr>
                 <td>
-                    <a href="{{ path('app.legacy.daemon_detail', {'id_job': jobInfo.id_job}) }}">{{ jobInfo.id_job }}</a>
+                    <a href="{{ path('app.legacy.daemon_detail', {'id_job': job.id_job}) }}">{{ job.id_job }}</a>
                 </td>
-                <td>{{ jobInfo['type'] == constant('Job::TYPE_DOCUMENT') ? 'Dossier' : 'Connecteur' }}</td>
+                <td>{{ job.type == constant('Job::TYPE_DOCUMENT') ? 'Dossier' : 'Connecteur' }}</td>
                 <td>
-                    {% if jobInfo.is_lock %}
+                    {% if job.is_lock %}
                         <p class='alert alert-danger'>OUI <br/>Depuis
-                            le {{ gabarit.FancyDate.getDateFr(jobInfo.lock_since) }}
-                            <a href="{{ path('app.legacy.daemon_unlock', {'id_job': jobInfo.id_job, 'return_url': return_url}) }}"
+                            le {{ gabarit.FancyDate.getDateFr(job.lock_since) }}
+                            <a href="{{ path('app.legacy.daemon_unlock', {'id_job': job.id_job, 'return_url': return_url}) }}"
                                class="btn-warning btn">
                                 <i class="fa fa-unlock-alt"></i>&nbsp;
                                 Reprendre
@@ -45,54 +46,61 @@
                         </p>
                     {% else %}
                         <p>NON
-                            <a href="{{ path('app.legacy.daemon_lock', {'id_job': jobInfo.id_job, 'return_url': return_url}) }}"
+                            <a href="{{ path('app.legacy.daemon_lock', {'id_job': job.id_job, 'return_url': return_url}) }}"
                                class="btn btn-warning">
                                 <i class="fa fa-lock"></i>&nbsp;
                                 Suspendre</a></p>
                     {% endif %}
                 </td>
-                <td>{{ jobInfo.id_e }}</td>
+                <td>{{ job.id_e }}</td>
                 <td>
-                    {% if jobInfo.id_d %}
-                        <a href="{{ path('app.legacy.document_detail', {'id_e': jobInfo.id_e, 'id_d': jobInfo.id_d}) }}">
-                            {{ jobInfo.id_d }}
+                    {% if daemon_pid is defined %}
+                        {{ job.id_daemon }}
+                    {% else %}
+                        {{ job.id_daemon }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if job.id_d %}
+                        <a href="{{ path('app.legacy.document_detail', {'id_e': job.id_e, 'id_d': job.id_d}) }}">
+                            {{ job.id_d }}
                         </a>
                     {% endif %}
-                    {% if jobInfo.id_ce %}
-                        <a href="{{ path('app.legacy.connecteur_edition', {'id_ce': jobInfo.id_ce}) }}">
-                            {{ jobInfo.id_ce }}
+                    {% if job.id_ce %}
+                        <a href="{{ path('app.legacy.connecteur_edition', {'id_ce': job.id_ce}) }}">
+                            {{ job.id_ce }}
                         </a>
                     {% endif %}
                 </td>
-                <td>{{ jobInfo.etat_source }}<br/>{{ jobInfo.etat_cible }}</td>
-                <td>{{ gabarit.FancyDate.getDateFr(jobInfo.first_try) }}</td>
-                <td>{{ gabarit.FancyDate.getDateFr(jobInfo.last_try) }}</td>
-                <td>{{ jobInfo.nb_try }}</td>
-                <td>{{ jobInfo.last_message }}</td>
+                <td>{{ job.etat_source }}<br/>{{ job.etat_cible }}</td>
+                <td>{{ gabarit.FancyDate.getDateFr(job.first_try) }}</td>
+                <td>{{ gabarit.FancyDate.getDateFr(job.last_try) }}</td>
+                <td>{{ job.nb_try }}</td>
+                <td>{{ job.last_message }}</td>
                 <td>
-                    {{ gabarit.FancyDate.getDateFr(jobInfo.next_try) }}
-                    <br/>{{ gabarit.FancyDate.getTimeElapsed(jobInfo.next_try) }}
+                    {{ gabarit.FancyDate.getDateFr(job.next_try) }}
+                    <br/>{{ gabarit.FancyDate.getTimeElapsed(job.next_try) }}
                 </td>
-                <td>{{ jobInfo.id_verrou }}</td>
-                <td>{{ jobInfo.id_worker }}</td>
+                <td>{{ job.id_verrou }}</td>
+                <td>{{ job.worker.id_worker|default('') }}</td>
                 <td>
-                    {{ jobInfo.pid }}
-                    {% if jobInfo.pid %}
-                        {% if not jobInfo.termine %}
-                            <a href="{{ path('app.legacy.daemon_kill', {'id_worker': jobInfo.id_worker, 'return_url': return_url}) }}"
+                    {{ job.worker.pid|default('') }}
+                    {% if job.worker.pid|default(false) %}
+                        {% if not job.worker.termine|default(false) %}
+                            <a href="{{ path('app.legacy.daemon_kill', {'id_worker': job.worker.id_worker|default(''), 'return_url': return_url}) }}"
                                class='btn btn-danger'>
                                 <i class="fa fa-bolt"></i>&nbsp;
                                 Tuer
                             </a>
                         {% else %}
-                            <br/>{{ jobInfo.message }}
+                            <br/>{{ job.worker.message|default('') }}
                         {% endif %}
                     {% endif %}
                 </td>
                 <td>
-                    {% if jobInfo.id_worker %}
-                        {{ gabarit.FancyDate.getDateFr(jobInfo.date_begin) }}
-                        <br/>{{ gabarit.FancyDate.getTimeElapsed(jobInfo.date_begin) }}
+                    {% if job.worker.id_worker|default('') %}
+                        {{ gabarit.FancyDate.getDateFr(job.date_begin) }}
+                        <br/>{{ gabarit.FancyDate.getTimeElapsed(job.date_begin) }}
                     {% endif %}
                 </td>
             </tr>

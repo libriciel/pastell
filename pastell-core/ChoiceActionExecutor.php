@@ -116,12 +116,17 @@ abstract class ChoiceActionExecutor extends ActionExecutor
         $isGlobalConnecteur = $this->isGlobalConnecteur($this->id_ce);
         $this->viewParameter['menu_gauche_template'] = 'EntiteMenuGauche';
         $this->viewParameter['menu_gauche_select'] = "Entite/connecteur?global=$isGlobalConnecteur";
-        $this->viewParameter['droit_lecture_on_connecteur'] = $this->objectInstancier
-            ->getInstance(DroitService::class)
+        $droitService = $this->objectInstancier->getInstance(DroitService::class);
+        $this->viewParameter['droit_lecture_on_connecteur'] = $droitService
             ->hasDroitConnecteurLecture($this->id_e, $this->id_u);
-        $this->viewParameter['droitLectureOnUtilisateur'] = $this->objectInstancier
-            ->getInstance(DroitService::class)
+        $this->viewParameter['droitLectureOnUtilisateur'] = $droitService
             ->hasDroitUtilisateurLecture($this->id_e, $this->id_u);
+        $this->viewParameter['daemon_lecture'] = $droitService
+            ->hasDroit($this->id_u, DroitService::getDroitLecture(DroitService::DROIT_DAEMON), $this->id_e);
+        $this->viewParameter['system_edition'] = $droitService
+            ->hasDroit($this->id_u, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM), $this->id_e);
+        $this->viewParameter['daemon_exists'] = $this->objectInstancier->getInstance(DaemonSQL::class)
+            ->getDaemon($this->id_e);
     }
 
     public function isEnabled()

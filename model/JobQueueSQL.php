@@ -154,11 +154,30 @@ class JobQueueSQL extends SQL
         return $info;
     }
 
+    public function getStatInfoForDaemon(int $id_daemon): array
+    {
+        $sql = 'SELECT count(*) FROM job_queue WHERE id_daemon = ?';
+        $info['nb_job'] = $this->queryOne($sql, $id_daemon);
+        $sql = 'SELECT count(*) FROM job_queue WHERE is_lock=1 AND id_daemon = ?';
+        $info['nb_lock'] = $this->queryOne($sql, $id_daemon);
+        $sql = 'SELECT count(*) FROM job_queue WHERE next_try<now() AND id_daemon = ?';
+        $info['nb_wait'] = $this->queryOne($sql, $id_daemon);
+        $info['nb_lock_one_hour'] = $this->getNbLockSinceOneHourForDaemon($id_daemon);
+        return $info;
+    }
+
     public function getNbLockSinceOneHour(): ?int
     {
         $last_hour = date("Y-m-d H:i:s", strtotime("-1 hour"));
         $sql = "SELECT count(*) FROM job_queue WHERE is_lock=1 AND lock_since < ?";
         return $this->queryOne($sql, $last_hour);
+    }
+
+    public function getNbLockSinceOneHourForDaemon(int $id_daemon): ?int
+    {
+        $last_hour = date('Y-m-d H:i:s', strtotime('-1 hour'));
+        $sql = 'SELECT count(*) FROM job_queue WHERE is_lock=1 AND lock_since < ? AND id_daemon = ?';
+        return $this->queryOne($sql, [$last_hour, $id_daemon]);
     }
 
     public function getMaxLastTryOneHourLate(): ?string
@@ -217,5 +236,44 @@ class JobQueueSQL extends SQL
             $result[] = $this->mapToJob($info);
         }
         return $result;
+    }
+
+    public function getJobsByDaemon(int $id_daemon): array
+    {
+        $sql = 'SELECT id_job
+        FROM job_queue jq
+        WHERE id_daemon = ?';
+        $results = $this->query($sql, [$id_daemon]);
+        $job_list = [];
+        foreach ($results as $job_info) {
+            $job_list[] = $this->getJob($job_info['id_job']);
+        }
+        return $job_list;
+    }
+
+    public function getJobsByAncestor(int $id_e): array
+    {
+        $sql = 'SELECT id_job
+        FROM job_queue jq
+        JOIN entite_ancetre ea ON ea.id_e = jq.id_e
+        WHERE id_e_ancetre = ?';
+        $results = $this->query($sql, [$id_e]);
+        $job_list = [];
+        foreach ($results as $job_info) {
+            $job_list[] = $this->getJob($job_info['id_job']);
+        }
+        return $job_list;
+    }
+
+    public function getAllJobs(): array
+    {
+        $sql = 'SELECT id_job
+        FROM job_queue jq';
+        $results = $this->query($sql);
+        $job_list = [];
+        foreach ($results as $job_info) {
+            $job_list[] = $this->getJob($job_info['id_job']);
+        }
+        return $job_list;
     }
 }

@@ -39,14 +39,19 @@ $onglet_tab  = [
         aria-expanded="false"
         aria-controls="collapse-1"
     >Configuration</h3>
-    <div class="menu collapse <?php hecho('Daemon/config' == $menu_gauche_select ? 'show' : ''); ?>"
+    <div class="menu collapse <?php hecho(('Daemon/frequenceConfig' == $menu_gauche_select) || ('Daemon/config' == $menu_gauche_select) ? 'show' : ''); ?>"
          id="collapse-1"
     >
         <ul>
             <li>
-                <a <?php echo ('Daemon/config' == $menu_gauche_select) ? 'class="actif"' : '' ?>
-                    href="<?php $this->url('Daemon/config'); ?>"
+                <a <?php echo ('Daemon/frequenceConfig' == $menu_gauche_select) ? 'class="actif"' : '' ?>
+                    href="<?php $this->url('Daemon/frequenceConfig'); ?>"
                 >Fréquence des connecteurs</a>
+            </li>
+            <li>
+                <a <?php echo ('Daemon/config' == $menu_gauche_select) ? 'class="actif"' : '' ?>
+                        href="<?php $this->url('Daemon/config'); ?>"
+                >Configuration des gestionnaires de tâches</a>
             </li>
         </ul>
     </div>

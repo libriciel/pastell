@@ -294,6 +294,7 @@ if ($infoDocumentEmail) :
                     <tr>
                         <th>#ID travail</th>
                         <th>Suspendu</th>
+                        <th>Daemon</th>
                         <th>État source<br/>État cible</th>
                         <th>Premier essai</th>
                         <th>Dernier essai</th>
@@ -350,6 +351,7 @@ if ($infoDocumentEmail) :
                                     </p>
                                 <?php endif; ?>
                             </td>
+                            <td><?php hecho($job_info['id_daemon']); ?><br/>
                             <td><?php hecho($job_info['etat_source']); ?><br/>
                                 <?php hecho($job_info['etat_cible']); ?></td>
                             <td><?php echo $this->getFancyDate()->getDateFr($job_info['first_try']); ?></td>
