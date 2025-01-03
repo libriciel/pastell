@@ -22,7 +22,7 @@ use Pastell\Service\TypeDossier\TypeDossierEditionService;
                 <th class="w400">
                         <label for="id_type_dossier" >Identifiant du type de dossier</label>
                         <span class='obl'>*</span>
-                    <p class='form_commentaire'>Chiffre, lettres minuscules ou -. 32 caractères maximum.</p>
+                    <p class='form_commentaire'>Chiffres, lettres minuscules ou -. 32 caractères maximum.</p>
                 </th>
                 <td>
                     <input
