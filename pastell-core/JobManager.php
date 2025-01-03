@@ -6,6 +6,7 @@ class JobManager
     public const DEFAULT_ID_VERROU = "DEFAULT_VERROU_ID";
 
     private $jobQueueSQL;
+    private DaemonSQL $daemonSQL;
     private $document;
     private $documentActionEntite;
     private $documentTypeFactory;
@@ -19,6 +20,7 @@ class JobManager
 
     public function __construct(
         JobQueueSQL $jobQueueSQL,
+        DaemonSQL $daemonSQL,
         DocumentSQL $document,
         DocumentActionEntite $documentActionEntite,
         DocumentTypeFactory $documentTypeFactory,
@@ -29,6 +31,7 @@ class JobManager
         $disable_job_queue = false
     ) {
         $this->jobQueueSQL = $jobQueueSQL;
+        $this->daemonSQL = $daemonSQL;
         $this->document = $document;
         $this->documentActionEntite = $documentActionEntite;
         $this->documentTypeFactory = $documentTypeFactory;
@@ -144,9 +147,14 @@ class JobManager
         $job->next_try = $now;
         $connecteurFrequence = $this->getConnecteurFrequence($job);
         $job->id_verrou = $verrou ?: $connecteurFrequence->id_verrou;
-        $job->id_daemon = 1;
         $this->deleteDocument($id_e, $id_d);
-        return $this->jobQueueSQL->createJob($job);
+        $id_job = $this->jobQueueSQL->createJob($job);
+        $job->id_daemon = $this->jobQueueSQL->getClosestDaemon($id_job);
+        $daemon = $this->daemonSQL->getDaemon($job->id_daemon);
+        if ($daemon !== null) {
+            $job->daemon = $daemon;
+        }
+        return $id_job;
     }
 
     private function createJobForConnecteur($id_ce, $action_name)
@@ -162,8 +170,13 @@ class JobManager
         $job->next_try = $now;
         $connecteurFrequence = $this->getConnecteurFrequence($job);
         $job->id_verrou = $connecteurFrequence->id_verrou;
-        $job->id_daemon = 1;
-        return $this->jobQueueSQL->createJob($job);
+        $id_job = $this->jobQueueSQL->createJob($job);
+        $job->id_daemon = $this->jobQueueSQL->getClosestDaemon($id_job);
+        $daemon = $this->daemonSQL->getDaemon($job->id_daemon);
+        if ($daemon !== null) {
+            $job->daemon = $daemon;
+        }
+        return $id_job;
     }
 
     private function updateJob($id_job, $last_message)

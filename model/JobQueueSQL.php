@@ -194,4 +194,25 @@ class JobQueueSQL extends SQL
             " GROUP BY id_verrou,etat_source,etat_cible ORDER BY count DESC,last_try ASC";
         return $this->query($sql);
     }
+
+    public function getClosestDaemon(int $job_id): int
+    {
+        $sql = 'SELECT d.id_daemon 
+            FROM entite_ancetre ea
+            JOIN daemon d ON d.id_e = ea.id_e_ancetre
+            JOIN job_queue jq ON jq.id_e = ea.id_e
+            WHERE jq.id_job = ?
+            ORDER BY ea.niveau
+            LIMIT 1';
+        $result = $this->queryOne($sql, [$job_id]);
+        return $result ?: 1;
+    }
+
+    public function updateClosestDaemon(int $job_id): void
+    {
+        $sql = 'UPDATE job_queue
+            SET id_daemon = ?
+            WHERE id_job = ?';
+        $this->query($sql, [$this->getClosestDaemon($job_id), $job_id]);
+    }
 }

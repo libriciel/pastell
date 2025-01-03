@@ -56,59 +56,64 @@ class WorkerSQL extends SQL
 
     public function getAllRunningWorker()
     {
-        $sql = "SELECT * FROM worker WHERE termine=0";
+        $sql = 'SELECT * FROM worker WHERE termine=0';
         return $this->query($sql);
     }
 
-    public function getJobToLaunch($limit)
+    public function getAllRunningWorkerForDaemon(int $id_daemon)
     {
-        if ($limit <= 0) {
-            return [];
-        }
-        $sql = "SELECT job_queue.id_job,next_try FROM job_queue " .
-            " LEFT JOIN worker ON job_queue.id_job=worker.id_job AND worker.termine=0" .
-            " WHERE worker.id_worker IS NULL " .
-            " AND next_try<=now() " .
-            " AND is_lock=0 " .
-            " AND id_verrou = '' " .
-            " ORDER BY next_try " .
-            " LIMIT $limit";
-        $job_list = $this->query($sql);
-        foreach ($this->getAllVerrou() as $verrou_id) {
-            $job_list = array_merge($job_list, $this->getFirstJobToLaunch($verrou_id));
-        }
-
-        usort($job_list, function ($a, $b) {
-            return strtotime($a['next_try']) - strtotime($b['next_try']);
-        });
-
-        $column = array_column($job_list, 'id_job');
-
-        return array_slice($column, 0, $limit);
+        $sql = 'SELECT * FROM worker 
+         JOIN job_queue jq ON worker.id_job=jq.id_job
+         WHERE termine=0 AND jq.id_daemon=?';
+        return $this->query($sql, $id_daemon);
     }
 
-    public function getFirstJobToLaunch($verrou_id)
+    public function getJobsToLaunch(int $limit, int $id_daemon): array
     {
-        $sql = "SELECT count(*) FROM job_queue " .
-            " JOIN worker ON worker.id_job=job_queue.id_job " .
-            " WHERE termine=0 AND id_verrou = ? ";
-        $nb_job_par_verrou_en_cours = $this->queryOne($sql, $verrou_id);
+        $sql = "SELECT jq.id_job,next_try FROM job_queue jq
+            LEFT JOIN worker ON jq.id_job=worker.id_job AND worker.termine=0
+            WHERE worker.id_worker IS NULL 
+            AND next_try<=now() 
+            AND is_lock=0 
+            AND id_verrou = '' 
+            AND jq.id_daemon = ?
+            ORDER BY next_try 
+            LIMIT $limit";
+        $job_list = $this->query($sql, $id_daemon);
+        foreach ($this->getAllVerrou() as $verrou_id) {
+            foreach ($this->getJobsToLaunchByLock($verrou_id, $id_daemon) as $job) {
+                $job_list[] = $job;
+            }
+        }
 
+        usort($job_list, fn($a, $b) => strtotime($a['next_try']) - strtotime($b['next_try']));
+        return array_slice(array_column($job_list, 'id_job'), 0, $limit);
+    }
+
+
+    public function getJobsToLaunchByLock($verrou_id, $id_daemon)
+    {
+        $sql = 'SELECT count(*) FROM job_queue jq 
+            JOIN worker ON worker.id_job=jq.id_job
+            WHERE termine=0 
+            AND id_verrou = ? 
+            AND jq.id_daemon = ?
+            ';
+        $nb_job_par_verrou_en_cours = $this->queryOne($sql, $verrou_id, $id_daemon);
         if ($nb_job_par_verrou_en_cours >= NB_JOB_PAR_VERROU) {
             return [];
         }
-
         $nb_job_par_verrou = NB_JOB_PAR_VERROU - $nb_job_par_verrou_en_cours;
-
-        $sql = "SELECT job_queue.id_job,next_try FROM job_queue " .
-            " LEFT JOIN worker ON job_queue.id_job=worker.id_job AND worker.termine=0" .
-            " WHERE worker.id_worker IS NULL " .
-            " AND next_try<now() " .
-            " AND is_lock=0 " .
-            " AND id_verrou = ? " .
-            " ORDER BY next_try  " .
-            " LIMIT $nb_job_par_verrou ";
-        return $this->query($sql, $verrou_id);
+        $sql = "SELECT jq.id_job,next_try FROM job_queue jq
+            LEFT JOIN worker ON jq.id_job=worker.id_job AND worker.termine=0
+            WHERE worker.id_worker IS NULL 
+            AND next_try<now()
+            AND is_lock=0
+            AND id_verrou = ? 
+            AND jq.id_daemon = ?
+            ORDER BY next_try  
+            LIMIT $nb_job_par_verrou ";
+        return $this->query($sql, $verrou_id, $id_daemon);
     }
 
     public function getAllVerrou()
@@ -217,7 +222,7 @@ class WorkerSQL extends SQL
     {
         $sql = "SELECT *, job_queue.id_job as id_job FROM job_queue " .
                 " LEFT JOIN worker ON job_queue.id_job = worker.id_job " .
-                " WHERE id_e=? AND id_d=?";
+                " WHERE job_queue.id_e=? AND id_d=?";
         return $this->query($sql, $id_e, $id_d);
     }
 
@@ -225,7 +230,7 @@ class WorkerSQL extends SQL
     {
         $sql = "SELECT id_worker FROM job_queue " .
                 " JOIN worker ON job_queue.id_job = worker.id_job " .
-                " WHERE id_e=? AND id_d=? AND termine=0";
+                " WHERE job_queue.id_e=? AND id_d=? AND termine=0";
         return $this->queryOne($sql, $id_e, $id_d);
     }
 

@@ -14,6 +14,7 @@ class PastellDaemon
         private readonly Logger $logger,
         private readonly bool $unlock_job_error_at_startup,
         private readonly string $pastell_path,
+        private readonly DaemonSQL $daemonSQL,
     ) {
     }
 
@@ -35,7 +36,10 @@ class PastellDaemon
 
         /** @phpstan-ignore-next-line */
         while (true) {
-            $this->jobMasterOneRun();
+            foreach ($this->daemonSQL->getRunningDaemons() as $daemonInfo) {
+                $daemon = new Daemon($daemonInfo['id_daemon'], $daemonInfo['id_e'], $daemonInfo['state'], $daemonInfo['nb_workers']);
+                $this->jobMasterOneRun($daemon);
+            }
             pcntl_signal_dispatch();
             sleep(1);
             pcntl_signal_dispatch();
@@ -45,11 +49,10 @@ class PastellDaemon
     /**
      * @throws Exception
      */
-    private function jobMasterOneRun(): void
+    private function jobMasterOneRun(Daemon $daemon): void
     {
         $workerSQL = $this->workerSQL;
-
-        foreach ($workerSQL->getAllRunningWorker() as $workerInfo) {
+        foreach ($workerSQL->getAllRunningWorkerForDaemon($daemon->id_daemon) as $workerInfo) {
             if (! posix_getpgid($workerInfo['pid'])) {
                 $worker = $workerSQL->getWorker($workerInfo['id_worker']);
                 if ($worker === null || $worker->termine === 1) {
@@ -61,14 +64,12 @@ class PastellDaemon
                     $worker->id_worker,
                     "Message du gestionnaire de tâches : ce travail ne s'est pas terminé correctement"
                 );
-                $this->logger->error('Daemon detected a dead worker', $workerInfo);
+                $this->logger->error("Daemon $daemon->id_daemon detected a dead worker", $workerInfo);
             }
         }
-        $nb_worker_alive = count($workerSQL->getAllRunningWorker());
-
-        $nb_worker_to_launch = NB_WORKERS - $nb_worker_alive;
-
-        $job_id_list = $workerSQL->getJobToLaunch($nb_worker_to_launch);
+        $nb_worker_alive = count($workerSQL->getAllRunningWorkerForDaemon($daemon->id_daemon));
+        $nb_worker_to_launch = max(0, $daemon->nb_workers - $nb_worker_alive);
+        $job_id_list = $workerSQL->getJobsToLaunch($nb_worker_to_launch, $daemon->id_daemon);
 
         foreach ($job_id_list as $id_job) {
             $this->launchWorker($id_job);
