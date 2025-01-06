@@ -71,6 +71,10 @@ final class Actes
         return $this->client->getSerializer()->deserialize($fetched_files, File::class . '[]', 'json');
     }
 
+    /**
+     * @throws S2lowClientException
+     * @throws ClientExceptionInterface
+     */
     public function getAractes(string $transactionId): string
     {
         return $this->client->get(

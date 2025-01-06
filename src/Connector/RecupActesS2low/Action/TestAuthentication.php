@@ -15,7 +15,7 @@ final class TestAuthentication extends \ConnecteurTypeActionExecutor
      * @throws ClientExceptionInterface
      * @throws \Exception
      */
-    public function go()
+    public function go(): bool
     {
         /** @var RecupActesS2lowConnector $connector */
         $connector = $this->getMyConnecteur();

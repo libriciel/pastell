@@ -50,7 +50,7 @@ class RecupActesS2lowConnectorTest extends \PastellTestCase
             [
                 'url' => 'https://url',
                 'start_date' => '2020-01-01',
-                'end_date' => '2025-01-01',
+                'end_date' => '2024-01-01',
                 'certificate_password' => '',
                 'nb_recup' => '1',
             ]
@@ -74,7 +74,7 @@ class RecupActesS2lowConnectorTest extends \PastellTestCase
 
         $lastMessage = $this->getObjectInstancier()->getInstance(ActionExecutorFactory::class)->getLastMessage();
         self::assertStringContainsString(
-            'Transactions entre le 2020-01-01 et le 2024-10-26',
+            'Transactions entre le 2020-01-01 et le 2024-01-01',
             $lastMessage
         );
         self::assertStringContainsString(

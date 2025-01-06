@@ -83,7 +83,7 @@ formulaire:
             commentaire: ''
     Cheminement:
         envoi_update_status_actes_s2low_1:
-            name: 'Mise à jour du status de la transaction sur s2low #1'
+            name: 'Mise à jour du statut de la transaction sur s2low #1'
             type: checkbox
             onchange: cheminement-change
             default: checked
@@ -101,14 +101,14 @@ formulaire:
             default: checked
             read-only: false
         envoi_update_status_actes_s2low_2:
-            name: 'Mise à jour du status de la transaction sur s2low #2'
+            name: 'Mise à jour du statut de la transaction sur s2low #2'
             type: checkbox
             onchange: cheminement-change
             default: checked
             read-only: false
     'Status s2low #1':
         update_status_actes_s2low_status_1:
-            name: 'Status de la transaction'
+            name: 'Statut de la transaction'
     SAE:
         sae_show:
             no-show: true
@@ -154,7 +154,7 @@ formulaire:
             visionneuse-no-link: true
     'Status s2low #2':
         update_status_actes_s2low_status_2:
-            name: 'Status de la transaction'
+            name: 'Statut de la transaction'
 champs-affiches:
     - titre
     - dernier_etat
@@ -244,14 +244,14 @@ action:
             role_id_e: 'no-role,'
         action-class: CheminementChangeTypeDossierPersonnalise
     preparation-change-status-transaction_1:
-        name: 'Préparation du changement de status de la transaction #1'
+        name: 'Préparation du changement de statut de la transaction #1'
         rule:
             role_id_e: no-role
         action-automatique: change-status-transaction_1
         num-same-connecteur: '0'
     change-status-transaction_1:
-        name-action: 'Changer le status de la transaction sur s2low #1'
-        name: 'Status de la transaction changé #1'
+        name-action: 'Changer le statut de la transaction sur s2low #1'
+        name: 'Statut de la transaction changé #1'
         rule:
             last-action:
                 - preparation-change-status-transaction_1
@@ -436,14 +436,14 @@ action:
         rule:
             role_id_e: no-role
     preparation-change-status-transaction_2:
-        name: 'Préparation du changement de status de la transaction #2'
+        name: 'Préparation du changement de statut de la transaction #2'
         rule:
             role_id_e: no-role
         action-automatique: change-status-transaction_2
         num-same-connecteur: '1'
     change-status-transaction_2:
-        name-action: 'Changer le status de la transaction sur s2low #2'
-        name: 'Status de la transaction changé #2'
+        name-action: 'Changer le statut de la transaction sur s2low #2'
+        name: 'Statut de la transaction changé #2'
         rule:
             last-action:
                 - preparation-change-status-transaction_2

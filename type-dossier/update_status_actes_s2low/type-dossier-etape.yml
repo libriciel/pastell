@@ -1,4 +1,4 @@
-libelle: 'Mise à jour du status de la transaction sur s2low'
+libelle: 'Mise à jour du statut de la transaction sur s2low'
 restriction_pack :
     - 'suppl_test'
 connecteur_type:
@@ -13,20 +13,20 @@ configuration_etape_formulaire:
 formulaire:
     Status s2low:
         update_status_actes_s2low_status:
-            name: 'Status de la transaction'
+            name: 'Statut de la transaction'
 page-condition:
     'Status s2low':
         envoi_update_status_actes_s2low: true
 
 action:
     preparation-change-status-transaction:
-        name: "Préparation du changement de status de la transaction"
+        name: "Préparation du changement de statut de la transaction"
         rule:
             role_id_e: no-role
         action-automatique: change-status-transaction
     change-status-transaction:
-        name-action: 'Changer le status de la transaction sur s2low'
-        name: 'Status de la transaction changé'
+        name-action: 'Changer le statut de la transaction sur s2low'
+        name: 'Statut de la transaction changé'
         rule:
             last-action:
                 - preparation-change-status-transaction

@@ -195,8 +195,9 @@ class RecupActesS2lowConnector extends \Connecteur
      * @throws S2lowClientException
      * @throws ClientExceptionInterface
      * @throws \NotFoundException
+     * @throws \Exception
      */
-    private function createDocument(int $entityId, string $documentId, string $transactionId): bool
+    private function createDocument(int $entityId, string $documentId, string $transactionId): void
     {
         $transactionFiles = $this->client->actes()->getFileList($transactionId);
         $numberOfFiles = \count($transactionFiles);
@@ -253,7 +254,5 @@ class RecupActesS2lowConnector extends \Connecteur
         if ($form->isValidable()) {
             $this->jobManager->setTraitementLot($entityId, $documentId, 0, 'orientation');
         }
-
-        return true;
     }
 }
