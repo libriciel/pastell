@@ -13,4 +13,9 @@ final class Transaction
     public string $natureDescr;
     public string $classification;
     public string $type;
+
+    public function isActes(): bool
+    {
+        return $this->type === '1';
+    }
 }

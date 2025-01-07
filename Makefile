@@ -77,6 +77,7 @@ module-json-actes: docker-compose-up ## Run make-module json-actes
 	$(MAKE_MODULE) ./json-studio/json-actes/draft-ls-actes.json ./module/ --id ls-actes --name "Actes"
 	$(MAKE_MODULE) ./json-studio/json-actes/draft-ls-actes-publication.json ./module/ --id ls-actes-publication --name "Actes publication"
 	$(MAKE_MODULE) ./json-studio/json-actes/draft-ls-dossier-seance.json ./module/ --id ls-dossier-seance --name "Dossier de séance (archivage)"
+	$(MAKE_MODULE) ./json-studio/json-actes/draft-ls-recup-actes-s2low.json ./module/ --id ls-recup-actes-s2low --name "Récupération arriéré actes s2low"  --restriction_pack 'suppl_recup_actes_s2low'
 
 module-json-document: docker-compose-up ## Run make-module json-document
 	$(MAKE_MODULE) ./json-studio/json-document/draft-ls-commande.json ./module/ --id ls-commande --name "Commande"

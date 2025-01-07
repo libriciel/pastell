@@ -1,4 +1,8 @@
-# [4.1.5]
+# [4.1.5] - 2025-01-13
+
+## Ajouts
+
+- Ajout du supplément de récupération des arriérés actes de s2low #2057
 
 ## Évolutions
 

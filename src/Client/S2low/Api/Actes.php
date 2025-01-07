@@ -17,10 +17,10 @@ final class Actes
 {
     private const LIST_ACTES_API = '/modules/actes/api/list_actes.php';
     private const ACTES_FILES_LIST_API = '/modules/actes/actes_transac_get_files_list.php';
+    private const ACTES_GET_ARACTES = '/modules/actes/actes_transac_get_ARActe.php';
     private const DOWNLOAD_FILE_API = '/modules/actes/actes_download_file.php';
     private const BORDEREAU_API = '/modules/actes/actes_create_pdf.php';
     private const ACTES_SAE_STATUS = '/modules/actes/api/actes_sae_status.php';
-    public const EN_ATTENTE_TRANSMISSION_SAE = '19';
 
     public function __construct(private readonly S2lowClient $client)
     {
@@ -69,6 +69,21 @@ final class Actes
     {
         $fetched_files = $this->client->get(self::ACTES_FILES_LIST_API, ['transaction' => $transactionId]);
         return $this->client->getSerializer()->deserialize($fetched_files, File::class . '[]', 'json');
+    }
+
+    /**
+     * @throws S2lowClientException
+     * @throws ClientExceptionInterface
+     */
+    public function getAractes(string $transactionId): string
+    {
+        return $this->client->get(
+            self::ACTES_GET_ARACTES,
+            [
+                'id' => $transactionId,
+                'api' => true,
+            ]
+        );
     }
 
     /**

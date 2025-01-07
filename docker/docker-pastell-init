@@ -74,6 +74,10 @@ if (${PACK_RECUP_FIN_PARAPHEUR:-false}) {
   \$packs["suppl_recup_fin_parapheur"]=true;
 }
 
+if (${PACK_RECUP_ACTES_S2LOW:-false}) {
+  \$packs["suppl_recup_actes_s2low"] = true;
+}
+
 if (${PACK_FAST_CONNECTORS:-false}) {
   \$packs["module_connecteur_fast"] = true;
 }
