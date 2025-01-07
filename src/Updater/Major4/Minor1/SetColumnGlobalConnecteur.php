@@ -30,7 +30,7 @@ EOT;
         $connectors = $this->sqlQuery->query($selectConnectorsQuery);
         foreach ($connectors as $connector) {
             $connectorId = $connector['id_ce'];
-            (bool)$global = $connector['id_e'] === 0 ? true : false;
+            $global = $connector['id_e'] === 0 ? 1 : 0;
 
             $updateConnectorQuery = <<<EOT
 UPDATE connecteur_entite

@@ -36,7 +36,7 @@ class ConnecteurEntiteSQL extends SQL
         return $this->query($sql);
     }
 
-    public function getAllGlobalByIde($id_e)
+    public function getAllGlobalByIde(int $id_e): array
     {
         $sql = "SELECT * FROM connecteur_entite " .
             " WHERE global = 1" .
@@ -54,7 +54,10 @@ class ConnecteurEntiteSQL extends SQL
         return $this->query($sql, $id_e);
     }
 
-    public function addConnecteur($id_e, $id_connecteur, $type, $libelle, $global)
+    /**
+     * @param int<0,1> $global
+     */
+    public function addConnecteur($id_e, $id_connecteur, $type, $libelle, int $global)
     {
         $sql = "INSERT INTO connecteur_entite (id_e,id_connecteur,type,libelle,global) VALUES (?,?,?,?,?)";
         $this->query($sql, $id_e, $id_connecteur, $type, $libelle, $global);

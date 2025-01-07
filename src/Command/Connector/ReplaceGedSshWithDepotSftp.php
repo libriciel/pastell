@@ -105,7 +105,7 @@ class ReplaceGedSshWithDepotSftp extends BaseCommand
         $depotSftpId = $this->connecteurCreationService->createConnecteur(
             'depot-sftp',
             'GED',
-            false,
+            0,
             $entityId,
             0,
             $label,

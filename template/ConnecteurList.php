@@ -4,7 +4,7 @@
  * @var bool $droit_edition
  * @var array $all_connecteur
  * @var int $id_e
- * @var bool $global
+ * @var int $global
  */
 ?>
 <div class="box">

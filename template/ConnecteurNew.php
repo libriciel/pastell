@@ -4,7 +4,7 @@
  * @var Gabarit $this
  * @var int $id_e
  * @var array $all_connecteur_dispo
- * @var bool $global
+ * @var int $global
  */
 
 use Pastell\Configuration\ConnectorConfiguration;

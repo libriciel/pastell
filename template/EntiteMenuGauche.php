@@ -8,7 +8,7 @@
  * @var int $id_e
  * @var bool $permission_on_import_export;
  * @var bool $droitLectureAnnuaire;
- * @var bool $global
+ * @var int $global
  */
 
 $admninistration_menu['Entite/detail'] = 'Informations (entités)';

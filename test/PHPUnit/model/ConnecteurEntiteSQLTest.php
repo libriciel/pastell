@@ -26,7 +26,13 @@ class ConnecteurEntiteSQLTest extends PastellTestCase
 
     public function testAddConnecteur()
     {
-        $id_ce = $this->getConnecteurEntiteSQL()->addConnecteur(1, 'mailsec', 'mailsec', 'Mail sécurisé', 0);
+        $id_ce = $this->getConnecteurEntiteSQL()->addConnecteur(
+            1,
+            'mailsec',
+            'mailsec',
+            'Mail sécurisé',
+            0
+        );
         $this->assertEquals(14, $id_ce);
     }
 

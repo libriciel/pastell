@@ -19,12 +19,13 @@ class ConnecteurCreationService
     }
 
     /**
+     * @param int<0,1> $global
      * @throws Exception
      */
     public function createConnecteur(
         string $connecteur_id,
         string $type,
-        bool $global = false,
+        int $global = 0,
         int $id_e = 0,
         int $id_u = 0,
         string $libelle = '',
@@ -84,7 +85,7 @@ class ConnecteurCreationService
         $id_ce = $this->createConnecteur(
             $connecteur_id,
             $type,
-            true,
+            1,
             0,
             0,
             $libelle,

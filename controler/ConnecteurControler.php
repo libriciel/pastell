@@ -37,7 +37,7 @@ class ConnecteurControler extends PastellControler
         parent::_beforeAction();
 
         $id_e = $this->getGetInfo()->getInt('id_e', 0);
-        (bool)$global = $this->getGetInfo()->get('global', 0);
+        $global = $this->getGetInfo()->getInt('global', 0);
         if (! $id_e || ! $global) {
             $id_ce = $this->getGetInfo()->getInt('id_ce');
             $connecteur_entite_info = $this->getConnecteurEntiteSQL()->getInfo($id_ce);
@@ -95,7 +95,7 @@ class ConnecteurControler extends PastellControler
     {
         $recuperateur = $this->getPostInfo();
         $id_e = $recuperateur->getInt('id_e');
-        (bool)$global = $recuperateur->get('global', 0);
+        $global = $recuperateur->getInt('global', 0);
         $id_connecteur = $recuperateur->get('id_connecteur');
         $libelle = $recuperateur->get('libelle');
 
@@ -479,7 +479,7 @@ class ConnecteurControler extends PastellControler
     public function newAction()
     {
         $id_e = $this->getGetInfo()->getInt('id_e');
-        (bool)$global = $this->getGetInfo()->get('global', 0);
+        $global = $this->getGetInfo()->getInt('global', 0);
 
         $this->verifDroit($id_e, "connecteur:edition");
 

@@ -487,7 +487,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = new Recuperateur($_GET);
         $id_e = $recuperateur->getInt('id_e', 0);
-        (bool) $global = $this->getGetInfo()->get('global', 0);
+        $global = $this->getGetInfo()->getInt('global', 0);
         $this->hasConnecteurDroitLecture($id_e);
         $this->hasEntiteDroitLecture($id_e);
         $this->setViewParameter(
