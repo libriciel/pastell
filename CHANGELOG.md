@@ -1,8 +1,10 @@
-# [4.0.19] -
+# [4.0.19] - 2025-01-13
 
 ## Correction
 
 - Corrections orthographiques #2183 #2184
+- Dans certains cas, le zip temporaire généré lors du téléchargement de tous les fichiers depuis l'interface
+n'était pas supprimé après récupération par l'utilisateur #2186
 
 # [4.0.18] - 2024-11-12
 

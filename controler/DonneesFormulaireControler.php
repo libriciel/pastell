@@ -104,25 +104,27 @@ class DonneesFormulaireControler extends PastellControler
 
         $zipArchive = new ZipArchive();
         $zip_filename = $tmp_folder . "/fichier-{$id_e}-" . ($id_d ?: $id_ce) . "-{$field}.zip";
-        if (! $zipArchive->open($zip_filename, ZIPARCHIVE::CREATE)) {
+        if (! $zipArchive->open($zip_filename, ZipArchive::CREATE)) {
             throw new Exception("Impossible de créer le fichier d'archive $zip_filename");
         }
 
-        foreach ($donneesFormulaire->get($field) as $i => $fichier) {
-            $file_path = $donneesFormulaire->getFilePath($field, $i);
-            $file_name = $donneesFormulaire->getFileName($field, $i);
-            if (! $zipArchive->addFile($file_path, $file_name)) {
-                throw new Exception(
-                    "Impossible d'ajouter le fichier $file_path ($file_name) dans l'archive $zip_filename"
-                );
+        try {
+            foreach ($donneesFormulaire->get($field) as $i => $fichier) {
+                $file_path = $donneesFormulaire->getFilePath($field, $i);
+                $file_name = $donneesFormulaire->getFileName($field, $i);
+                if (! $zipArchive->addFile($file_path, $file_name)) {
+                    throw new Exception(
+                        "Impossible d'ajouter le fichier $file_path ($file_name) dans l'archive $zip_filename"
+                    );
+                }
             }
+            $zipArchive->close();
+
+            $sendFileToBrowser = $this->getObjectInstancier()->getInstance(SendFileToBrowser::class);
+            $sendFileToBrowser->send($zip_filename);
+        } finally {
+            $tmpFolder->delete($tmp_folder);
         }
-        $zipArchive->close();
-
-        $sendFileToBrowser = $this->getObjectInstancier()->getInstance(SendFileToBrowser::class);
-        $sendFileToBrowser->send($zip_filename);
-
-        $tmpFolder->delete($tmp_folder);
     }
 
 
