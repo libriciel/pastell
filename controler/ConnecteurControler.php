@@ -49,8 +49,6 @@ class ConnecteurControler extends PastellControler
             }
         }
         $this->setViewParameter('id_e', $id_e);
-        $this->setViewParameter('global', $global);
-
         $this->setNavigationInfo($id_e, "Entite/connecteur?global=$global");
         $this->setViewParameter('id_e_menu', $id_e);
         $this->setViewParameter('type_e_menu', '');
@@ -342,7 +340,6 @@ class ConnecteurControler extends PastellControler
         $this->setViewParameter('connecteur_entite_info', $connecteur_entite_info);
         $this->setViewParameter('id_ce', $id_ce);
         $this->setViewParameter('id_e', $id_e);
-        $this->setViewParameter('global', $global);
         $this->setViewParameter('menu_gauche_select', "Entite/connecteur?global=$global");
     }
 
