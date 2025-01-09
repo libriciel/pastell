@@ -45,7 +45,7 @@ class ConnecteurEntiteSQL extends SQL
         return $this->query($sql, $id_e);
     }
 
-    public function getAllLocalByIde($id_e)
+    public function getAllLocalByIde(int $id_e): array
     {
         $sql = "SELECT * FROM connecteur_entite " .
             " WHERE global = 0" .
