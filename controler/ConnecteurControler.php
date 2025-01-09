@@ -393,7 +393,7 @@ class ConnecteurControler extends PastellControler
             'recuperation_fichier_url',
             "Connecteur/recupFile?id_ce=" . $this->getViewParameterByKey('id_ce')
         );
-        $this->setViewParameter('template_milieu', "ConnecteurEdition");
+        $this->setViewParameter('template_milieu', 'ConnecteurEdition');
         $this->setViewParameter(
             'fieldDataList',
             $this->getViewParameterByKey('donneesFormulaire')
@@ -407,16 +407,6 @@ class ConnecteurControler extends PastellControler
             'return_url',
             urlencode("Connecteur/edition?id_ce={$this->getViewParameterByKey('id_ce')}")
         );
-
-        $connecteur_info = $this->getViewParameterByKey('connecteur_entite_info');
-
-        $connecteurFrequence = new ConnecteurFrequence();
-        $connecteurFrequence->type_connecteur =
-            $connecteur_info['id_e'] === 0 ? ConnecteurFrequence::TYPE_GLOBAL : ConnecteurFrequence::TYPE_ENTITE;
-        $connecteurFrequence->famille_connecteur = $connecteur_info['type'];
-        $connecteurFrequence->id_connecteur = $connecteur_info['id_connecteur'];
-        $connecteurFrequence->id_ce = $connecteur_info['id_ce'];
-
         $this->setViewParameter(
             'connecteurFrequence',
             $this->getJobManager()->getNearestConnecteurFrequence($this->getViewParameterByKey('id_ce'))
