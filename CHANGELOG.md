@@ -8,6 +8,10 @@
 
 - Paramètre d'étape SAE permettant de continuer le cheminement d'un dossier après un refus #2144
 
+## Corrections
+
+- Corrections orthographiques #2184
+
 # [4.1.4] - 2024-12-09
 
 ## Évolutions

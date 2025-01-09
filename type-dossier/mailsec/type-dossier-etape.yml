@@ -5,7 +5,7 @@ connecteur_type:
 
 configuration_etape_formulaire:
     add_displayed_fields:
-        name: 'Ajouter le nombre de destinataires et de mails lu dans la liste des dossiers'
+        name: 'Ajouter le nombre de destinataires et de mails lus dans la liste des dossiers'
         type: checkbox
 formulaire:
     'Mail sécurisé':
