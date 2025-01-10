@@ -50,7 +50,7 @@ class S2lowClient
      * @throws S2lowClientException
      * @throws ClientExceptionInterface
      */
-    public function get(string $endpoint, object|array $queryData = null): string
+    public function get(string $endpoint, object|array $queryData = null, bool $encodeAsUtf8 = true): string
     {
         if ($queryData !== null) {
             $queryArray = \is_object($queryData) ? get_object_vars($queryData) : $queryData;
@@ -66,7 +66,9 @@ class S2lowClient
         $response = $this->clientInterface->sendRequest($request);
 
         $body = (string)$response->getBody();
-        $body = mb_convert_encoding($body, 'UTF-8', 'UTF-8');
+        if ($encodeAsUtf8) {
+            $body = mb_convert_encoding($body, 'UTF-8', 'UTF-8');
+        }
 
         if ($response->getStatusCode() !== 200 || str_starts_with($body, 'KO')) {
             throw new S2lowClientException($body, $response->getStatusCode());

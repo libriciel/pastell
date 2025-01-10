@@ -48,7 +48,7 @@ final class Actes
         $downloadFileQuery->file = $fileId;
         $downloadFileQuery->tampon = $tampon;
         $downloadFileQuery->date_affichage = $date_affichage;
-        return $this->client->get(self::DOWNLOAD_FILE_API, $downloadFileQuery);
+        return $this->client->get(self::DOWNLOAD_FILE_API, $downloadFileQuery, false);
     }
 
     /**
