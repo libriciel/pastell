@@ -35,8 +35,8 @@ formulaire:
     end_date:
       name: 'Date maximale des actes à récupérer'
       commentaire: 'Date de fin de la période de récupération des actes.<br/>
-      Si la date est plus récente que 60 jours à partir d''aujourd''hui, ce sera cette date qui sera utilisée pour ne
-      pas traiter les actes qui peuvent encore être annulés.'
+      Si la date est comprise dans les 60 derniers jours, 
+      elle ne sera pas prise en compte au profit de la date J-60.'
       type: date
     transaction_status:
       name: État des transactions à récupérer sur s2low
