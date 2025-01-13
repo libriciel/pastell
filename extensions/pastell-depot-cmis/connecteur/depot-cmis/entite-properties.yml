@@ -31,5 +31,5 @@ formulaire:
         depot_cmis_properties:
             name: Propriétés à ajouter aux fichiers
             type: textarea
-            commentaire: "Une propriété par ligne de la forme \"nom_propriete\":type:expression, possibilité d'utiliser des élements du type de dossier avec %identifiant_element%. Chaque propriété est ajoutée sur tous les fichiers déposés. Le type peut être datetime, sinon il sera envoyé en tant que texte. (Exemple: `\"guichetrh:date_depot\":datetime:%date_de_lacte%`)"
+            commentaire: "Une propriété par ligne de la forme \"nom_propriete\":type:expression, possibilité d'utiliser des éléments du type de dossier avec %identifiant_element%. Chaque propriété est ajoutée sur tous les fichiers déposés. Le type peut être datetime, sinon il sera envoyé en tant que texte. (Exemple: `\"guichetrh:date_depot\":datetime:%date_de_lacte%`)"
 

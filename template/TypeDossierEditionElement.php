@@ -24,7 +24,7 @@ use Pastell\Validator\ElementIdValidator;
             <tr>
                 <th class="w400">
                     <label for="element_id" >Identifiant de l'élément<span class="obl">*</span></label>
-                    <p class='form_commentaire'>Chiffre, lettres minuscules ou _. 64 caractères maximum.</p>
+                    <p class='form_commentaire'>Chiffres, lettres minuscules ou _. 64 caractères maximum.</p>
 
                 </th>
                 <td>
@@ -113,7 +113,7 @@ use Pastell\Validator\ElementIdValidator;
                 <th class="w400">
                     <label for="content_type">Type de contenu des fichiers</label>
                     <p class='form_commentaire'>
-                        Liste de type de contenu (content-type), séparé par des virgules.<br/>
+                        Liste de types de contenu (content-type), séparés par des virgules.<br/>
                         Le ou les fichiers doivent avoir un des types de la liste.
                     </p>
                 </th>

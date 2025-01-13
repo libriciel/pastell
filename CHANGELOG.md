@@ -10,7 +10,9 @@
 
 ## Corrections
 
-- Corrections orthographiques #2184
+- Corrections orthographiques #2183 #2184
+- Dans certains cas, le zip temporaire généré lors du téléchargement de tous les fichiers depuis l'interface
+  n'était pas supprimé après récupération par l'utilisateur #2186
 
 # [4.1.4] - 2024-12-09
 
@@ -167,6 +169,14 @@
 - `pdf-generique` et `document-a-signer` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-document-pdf` #1870
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
+
+# [4.0.19] - 2025-01-13
+
+## Correction
+
+- Corrections orthographiques #2183 #2184
+- Dans certains cas, le zip temporaire généré lors du téléchargement de tous les fichiers depuis l'interface
+n'était pas supprimé après récupération par l'utilisateur #2186
 
 # [4.0.18] - 2024-11-12
 
