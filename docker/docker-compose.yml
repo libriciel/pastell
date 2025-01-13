@@ -82,7 +82,7 @@ services:
         user: "${UID:-33}:${GID:-33}"
 
     db:
-        image: 'hubdocker.libriciel.fr/mariadb:10.11.9-jammy'
+        image: 'hubdocker.libriciel.fr/mariadb:10.11.10-jammy'
         restart: unless-stopped
         command:
             - "--character-set-server=utf8mb4"
@@ -96,7 +96,7 @@ services:
             - ${MARIADB_DATADIR:-mariadb_datadir}:/var/lib/mysql/
 
     redis:
-        image: 'hubdocker.libriciel.fr/redis:7.2.6'
+        image: 'hubdocker.libriciel.fr/redis:7.2.7'
         restart: unless-stopped
 
     seda-generator:
