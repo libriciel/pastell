@@ -9,9 +9,9 @@
     "@libriciel/ls-elements-native": "^1.0.4",
     "@libriciel/ls-jquery-password": "1.2.3",
     "bootstrap": "^5.2",
-    "components-jqueryui": "^1.12.1",
     "fork-awesome": "^1.2.0",
     "jquery": "^3.7.0",
+    "jquery-ui": "^1.14",
     "select2": "^4.0.13",
     "treeselectjs": "^0.10.0"
   }
