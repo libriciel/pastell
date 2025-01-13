@@ -4,29 +4,29 @@ description: 'Connecteur permettant de configurer le mail sécurisé pour une en
 formulaire:
     'Mail sécurisé':
         mailsec_from_description:
-            name: "Nom de l'emetteur"
+            name: "Nom de l'émetteur"
             commentaire: "Vous pouvez utiliser %ENTITE% (nom de l'entité)"
             default: PASTELL
         mailsec_reply_to:
             name: Reply-To
-            commentaire: "Lors de l'envoi, prend la valeur de l'emetteur PLATEFORME_MAIL si non renseigné"
+            commentaire: "Lors de l'envoi, prend la valeur de l'émetteur PLATEFORME_MAIL si non renseigné"
         mailsec_subject:
             name: 'Sujet du mail sécurisé'
             default: '[Pastell] Vous avez reçu un mail sécurisé'
             commentaire: "Vous pouvez utiliser les mêmes méta-informations que le contenu du mail texte\npar le nom de l'entité et par le titre du dossier Pastell."
         content_html:
             name: 'Mail HTML'
-            commentaire: "Un fichier HTML suceptible d'être envoyé par mail. Peux contenir les même méta-information que le contenu texte"
+            commentaire: "Un fichier HTML susceptible d'être envoyé par mail. Peut contenir les mêmes méta-informations que le contenu texte"
             type: file
         embeded_image:
             name: 'Images jointes'
             type: file
             multiple: true
-            commentaire: "Fichier permettant de mettre des images et/ou des pieces jointes. Utiliser cid:imageXX dans le mail HTML avec XX le numéro de l'image (commence à 0)"
+            commentaire: "Fichier permettant de mettre des images et/ou des pièces jointes. Utiliser cid:imageXX dans le mail HTML avec XX le numéro de l'image (commence à 0)"
         mailsec_content:
             name: 'Contenu du mail texte'
             type: textarea
-            commentaire: "Vous pouvez utiliser %ENTITE% (nom de l'entité), %TITRE% (titre du dossier Pastell), %LINK% (lien de récupération), %FLUX:element_du_flux% (élement du flux),\n%FLUX:@id_element_fichier_json:clé_i:clé_j:...:clé_n% (récupérer le contenu d'un fichier de type json)\nqui seront remplacés lors de l'envoi du mail"
+            commentaire: "Vous pouvez utiliser %ENTITE% (nom de l'entité), %TITRE% (titre du dossier Pastell), %LINK% (lien de récupération), %FLUX:element_du_flux% (élément du flux),\n%FLUX:@id_element_fichier_json:clé_i:clé_j:...:clé_n% (récupérer le contenu d'un fichier de type json)\nqui seront remplacés lors de l'envoi du mail"
             default: "Bonjour,\n\nLe serveur sécurisé Pastell de LIBRICIEL SCOP vous informe qu'un message recommandé mail\navec d'éventuelles pièces attachées vous a été posté.\n\nPour en prendre connaissance veuillez cliquer sur le lien suivant."
 action:
     test:

@@ -59,11 +59,11 @@ formulaire:
             default: 0
         no_change_statut_chorus:
             name: 'Ne pas remonter sur Chorus Pro la modification de statut'
-            commentaire: 'Champs temporaire pour indiquer que la modification de statut ne doit pas être remonté à Chorus (Remarque, La synchronisation continuera de remonter le statut Chorus sur Pastell).'
+            commentaire: 'Champ temporaire pour indiquer que la modification de statut ne doit pas être remontée à Chorus (remarque: la synchronisation continuera de remonter le statut Chorus sur Pastell).'
             type: checkbox
         no_recup_facture:
-            name: 'Ne pas récuperer les factures sur Chorus Pro'
-            commentaire: 'Doit-être mis à oui dans le cas ou le connecteur est utilisé pour le mode envoi.'
+            name: 'Ne pas récupérer les factures sur Chorus Pro'
+            commentaire: 'Doit être mis à oui dans le cas où le connecteur est utilisé pour le mode envoi.'
             type: checkbox
         fetch_invoices_option:
             name: 'Choix de synchronisation des factures'

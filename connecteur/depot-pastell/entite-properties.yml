@@ -18,14 +18,14 @@ formulaire:
             commentaire: "id_e de l'entité sur laquelle créer des dossiers sur le Pastell distant"
         pastell_type_dossier:
             name: 'Type de dossier'
-            commentaire: 'Type de dossier a créer sur le Pastell distant'
+            commentaire: 'Type de dossier à créer sur le Pastell distant'
         pastell_metadata:
             name: 'Tableau de correspondance des éléments'
             type: textarea
-            commentaire: "Un couple d'identiant par ligne de la forme : 'id_element_pastell_cible: %id_element_pastell_source%' ou bien 'id_element_pastell_cible: constante' "
+            commentaire: "Un couple d'identifiants par ligne de la forme : 'id_element_pastell_cible: %id_element_pastell_source%' ou bien 'id_element_pastell_cible: constante' "
         pastell_action:
             name: Action
-            commentaire: "Action à réaliser sur le Pastell cible.<br />\nUtiliser l'action \"NO_ACTION\" si vous ne souhaitez pas exéctuer d'action sur le pastell distant"
+            commentaire: "Action à réaliser sur le Pastell cible.<br />\nUtiliser l'action \"NO_ACTION\" si vous ne souhaitez pas exécuter d'action sur le pastell distant"
 action:
     test_connexion:
         name: 'Tester la connexion'
