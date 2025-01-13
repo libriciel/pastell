@@ -13,6 +13,8 @@
 - Corrections orthographiques #2183 #2184
 - Dans certains cas, le zip temporaire généré lors du téléchargement de tous les fichiers depuis l'interface
   n'était pas supprimé après récupération par l'utilisateur #2186
+- Le mot de passe n'apparaît plus lorsque l'on fait entrée sur la page de connexion #2146
+- Le bouton pour afficher le mot de passe sur la page de connexion ne déclenche plus l'authentification #2173
 
 # [4.1.4] - 2024-12-09
 
