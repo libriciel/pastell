@@ -88,7 +88,7 @@ class ConnecteurDefinitionFiles
         return $result;
     }
 
-    /** @deprecated Since 4.1.5, Unused */
+    /** @deprecated Since 4.1.6, Unused */
     /**
      * @param int<0,1> $global
      */

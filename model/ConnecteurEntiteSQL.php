@@ -18,7 +18,7 @@ class ConnecteurEntiteSQL extends SQL
         return $this->query($sql, $id_e);
     }
 
-    /** @deprecated Since 4.1.5, Use getAllGlobalByIde($id_e) instead */
+    /** @deprecated Since 4.1.6, Use getAllGlobalByIde($id_e) instead */
     public function getAllGlobal()
     {
         $sql = "SELECT * FROM connecteur_entite " .
@@ -27,7 +27,7 @@ class ConnecteurEntiteSQL extends SQL
         return $this->query($sql);
     }
 
-    /** @deprecated Since 4.1.5, Use getAllLocalByIde($id_e) instead  */
+    /** @deprecated Since 4.1.6, Use getAllLocalByIde($id_e) instead  */
     public function getAllLocal()
     {
         $sql = "SELECT * FROM connecteur_entite " .

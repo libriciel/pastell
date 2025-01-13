@@ -13,7 +13,7 @@ class DocumentTypeFactory
     ) {
     }
 
-    /** @deprecated Since 4.1.5, Use getGlobalDocumentType or getEntiteDocumentType instead */
+    /** @deprecated Since 4.1.6, Use getGlobalDocumentType or getEntiteDocumentType instead */
     public function getDocumentType($id_e, $id_connecteur): DocumentType
     {
         if ($id_e) {
