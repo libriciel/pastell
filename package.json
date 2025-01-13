@@ -8,10 +8,10 @@
     "@libriciel/ls-composants": "12.0.1",
     "bootstrap": "^4.6.1",
     "@libriciel/ls-jquery-password": "1.2.3",
-    "components-jqueryui": "^1.12.1",
     "fork-awesome": "^1.2.0",
     "hierarchy-select": "^2.3.0",
     "jquery": "^3.7.0",
+    "jquery-ui": "^1.14",
     "select2": "^4.0.13"
   }
 }
