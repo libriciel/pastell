@@ -6,6 +6,7 @@ namespace Pastell\Tests\Service\ImportExportConfig;
 
 use EntiteSQL;
 use FakeTdT;
+use TransformationGenerique;
 use FluxEntiteHeritageSQL;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\ImportExportConfig\ExportConfigService;
@@ -21,15 +22,15 @@ class ExportConfigServiceTest extends PastellTestCase
     {
         $fluxEntiteSQl = $this->getObjectInstancier()->getInstance(\FluxEntiteSQL::class);
         $fluxEntiteSQl->deleteConnecteur(1, 'fournisseur-invitation', 'mail-fournisseur-invitation');
-        $id_ce = $this->createConnector('test', "foo", 2)['id_ce'];
+        $id_ce = $this->createConnector('test', 'foo', 2)['id_ce'];
         $this->configureConnector($id_ce, [
             'champs1' => 'bar',
         ], 2);
         $connectorConfig = $this->getConnecteurFactory()->getConnecteurConfig($id_ce);
-        $connectorConfig->addFileFromData("champs6", "foo.txt", "barbaz");
+        $connectorConfig->addFileFromData('champs6', 'foo.txt', 'barbaz');
 
-        $this->associateFluxWithConnector($id_ce, "test", "test", 2);
-        $this->associateFluxWithConnector(2, "actes-generique", "TdT", 2);
+        $this->associateFluxWithConnector($id_ce, 'test', 'test', 2);
+        $this->associateFluxWithConnector(2, 'actes-generique', 'TdT', 2);
 
         $entityCreationService = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
         $id_e_herite = $entityCreationService->create(
@@ -88,11 +89,11 @@ class ExportConfigServiceTest extends PastellTestCase
         self::assertEquals('foo.txt', $connectorConfig->getFileName('champs6'));
 
         $connectorConfig = $this->getConnecteurFactory()
-            ->getConnecteurConfigByType($petiteFille[0]['id_e'], "test", "test");
+            ->getConnecteurConfigByType($petiteFille[0]['id_e'], 'test', 'test');
         self::assertEquals('bar', $connectorConfig->get('champs1'));
 
         $connector = $this->getConnecteurFactory()
-            ->getConnecteurByType($petiteFille[0]['id_e'], "actes-generique", "Tdt");
+            ->getConnecteurByType($petiteFille[0]['id_e'], 'actes-generique', 'Tdt');
         self::assertInstanceOf(FakeTdT::class, $connector);
         self::assertTrue($fluxEntiteHeritageSQL->hasInheritanceAllFlux($petiteFille[1]['id_e']));
         self::assertTrue($fluxEntiteHeritageSQL->hasInheritance($petiteFille[2]['id_e'], 'actes_generique'));
@@ -126,28 +127,33 @@ class ExportConfigServiceTest extends PastellTestCase
         );
     }
 
+    /**
+     * @throws \DonneesFormulaireException
+     * @throws \JsonException
+     */
     public function testWhenIdEntityNotFoundOnConnector(): void
     {
+        $id_e = 12;
         /** @var \ConnecteurEntiteSQL $connecteurEntiteSQL */
         $connecteurEntiteSQL = $this->getObjectInstancier()->getInstance(\ConnecteurEntiteSQL::class);
-        $numberOfConnectors = count($connecteurEntiteSQL->getAllLocal());
+        $numberOfConnectors = count($connecteurEntiteSQL->getAllLocalByIde($id_e));
         $importConfigService = $this->getObjectInstancier()->getInstance(ImportConfigService::class);
         $importConfigService->import(
             [
                 ExportConfigService::CONNECTOR_INFO => [
                     [
-                        'id_e' => 12,
+                        'id_e' => $id_e,
                         'libelle' => 'Bar',
                         'id_connecteur' => 'test',
                         'type' => 'test',
                         'id_ce' => 42,
-                        'data' => json_encode(['metadata' => ['champs1' => 'Foo']]),
+                        'data' => json_encode(['metadata' => ['champs1' => 'Foo']], JSON_THROW_ON_ERROR),
                     ]
                 ]
             ],
             0
         );
-        $this->assertCount($numberOfConnectors, $connecteurEntiteSQL->getAllLocal());
+        $this->assertCount($numberOfConnectors, $connecteurEntiteSQL->getAllLocalByIde($id_e));
         $this->assertEquals(
             [0 => "Le connecteur Bar est attaché à une entité inconnue : il n'a pas été importé."],
             $importConfigService->getLastErrors()
@@ -303,7 +309,7 @@ class ExportConfigServiceTest extends PastellTestCase
     {
         /** @var \ConnecteurEntiteSQL $connecteurEntiteSQL */
         $connecteurEntiteSQL = $this->getObjectInstancier()->getInstance(\ConnecteurEntiteSQL::class);
-        $numberOfConnectors = count($connecteurEntiteSQL->getAllLocal());
+        $numberOfConnectors = count($connecteurEntiteSQL->getAllGlobalByIde(0));
         $importConfigService = $this->getObjectInstancier()->getInstance(ImportConfigService::class);
         $importConfigService->import(
             [
@@ -320,7 +326,7 @@ class ExportConfigServiceTest extends PastellTestCase
             ],
             0
         );
-        static::assertCount($numberOfConnectors, $connecteurEntiteSQL->getAllLocal());
+        static::assertCount($numberOfConnectors + 1, $connecteurEntiteSQL->getAllGlobalByIde(0));
     }
 
     /**
@@ -329,9 +335,10 @@ class ExportConfigServiceTest extends PastellTestCase
      */
     public function testWhenImportingGlobalConnectorOnChild(): void
     {
+        $id_e_root = 1;
         /** @var \ConnecteurEntiteSQL $connecteurEntiteSQL */
         $connecteurEntiteSQL = $this->getObjectInstancier()->getInstance(\ConnecteurEntiteSQL::class);
-        $numberOfConnectors = count($connecteurEntiteSQL->getAllLocal());
+        $numberOfConnectors = count($connecteurEntiteSQL->getAllLocalByIde($id_e_root));
         $importConfigService = $this->getObjectInstancier()->getInstance(ImportConfigService::class);
         $importConfigService->import(
             [
@@ -346,9 +353,9 @@ class ExportConfigServiceTest extends PastellTestCase
                     ]
                 ]
             ],
-            1
+            $id_e_root
         );
-        static::assertCount($numberOfConnectors, $connecteurEntiteSQL->getAllLocal());
+        static::assertCount($numberOfConnectors, $connecteurEntiteSQL->getAllLocalByIde($id_e_root));
         static::assertSame(
             [0 => "Le connecteur global Bar ne peut pas être importé sur une entité fille : il n'a pas été importé."],
             $importConfigService->getLastErrors()
@@ -484,5 +491,74 @@ class ExportConfigServiceTest extends PastellTestCase
             [    0 => "Le type de dossier « unknown-module » n'existe pas."],
             $importConfigService->getLastErrors()
         );
+    }
+
+    /**
+     * @throws \DonneesFormulaireException
+     */
+    public function testWhenImportingEntityConnectorAndAssociationsByRacine(): void
+    {
+        $importConfigService = $this->getObjectInstancier()->getInstance(ImportConfigService::class);
+        $importConfigService->import(
+            [
+                ExportConfigService::ENTITY_INFO => [
+                    'denomination' => 'Foo',
+                    'id_e' => 12,
+                    'siren' => '000000000',
+                    'entite_mere' => 0,
+                    'type' => 'collectivite',
+                ],
+                ExportConfigService::CONNECTOR_INFO => [
+                    [
+                        'id_ce' => 15,
+                        'id_e' => 0,
+                        'libelle' => 'transformation-entite-racine',
+                        'id_connecteur' => 'transformation-generique',
+                        'type' => 'transformation',
+                        'global' => 0,
+                        'data' => '{"metadata":{"definition":["definition.json"]},"file":{"definition":["eyJh"]}}',
+                    ],
+                ],
+                ExportConfigService::ASSOCIATION_INFO => [
+                    12 => [
+                        'ls-document' => [
+                            'transformation' => [
+                                0 => [
+                                    'id_e' => 0,
+                                    'flux' => 'ls-document',
+                                    'id_ce' => 15,
+                                    'type' => 'transformation',
+                                    'libelle' => '',
+                                    'id_connecteur' => 'transformation-generique',
+                                    'num_same_type' => 0,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            1
+        );
+
+        static::assertSame(
+            [],
+            $importConfigService->getLastErrors()
+        );
+
+        /** @var EntiteSQL $entiteSQL */
+        $entiteSQL = $this->getObjectInstancier()->getInstance(EntiteSQL::class);
+        $allEntiteFille = $entiteSQL->getFille(1);
+        $newEntite = end($allEntiteFille);
+        self::assertEquals('Foo', $newEntite['denomination']);
+
+        /** @var \ConnecteurEntiteSQL $connecteurEntiteSQL */
+        $connecteurEntiteSQL = $this->getObjectInstancier()->getInstance(\ConnecteurEntiteSQL::class);
+        $connectorList = $connecteurEntiteSQL->getAll(1);
+        $newConnector = end($connectorList);
+        self::assertEquals('transformation-entite-racine', $newConnector['libelle']);
+
+        $connector = $this->getConnecteurFactory()
+            ->getConnecteurByType($newEntite['id_e'], 'ls-document', 'transformation');
+        self::assertInstanceOf(TransformationGenerique::class, $connector);
     }
 }

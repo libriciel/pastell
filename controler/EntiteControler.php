@@ -819,7 +819,6 @@ class EntiteControler extends PastellControler
         $fileUploader = new FileUploader();
         $file_content = $fileUploader->getFileContent('pser');
         $password = $this->getPostInfo()->get('password');
-        $id_e = $this->getPostInfo()->getInt('id_e');
         $message = $this->getInstance(Crypto::class)->decrypt($file_content, $password);
 
         $message = json_decode($message, true, 512, JSON_THROW_ON_ERROR);

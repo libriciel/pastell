@@ -113,28 +113,40 @@ final class ImportConfigService
         foreach ($exportedData[ExportConfigService::CONNECTOR_INFO] as $connecteurInfo) {
             if ($connecteurInfo['id_e'] !== 0 && empty($id_e_mapping[$connecteurInfo['id_e']])) {
                 if ($id_e_root === 0) {
-                    $this->lastErrors[] = "Le connecteur {$connecteurInfo['libelle']} est attaché à une entité inconnue : il n'a pas été importé.";
+                    $this->lastErrors[] = sprintf(
+                        "Le connecteur %s est attaché à une entité inconnue : il n'a pas été importé.",
+                        $connecteurInfo['libelle']
+                    );
                     continue;
                 }
-                $this->lastErrors[] = "Le connecteur {$connecteurInfo['libelle']} est attaché à une entité inconnue : il sera attaché à l'entité $id_e_root.";
+                $this->lastErrors[] = sprintf(
+                    "Le connecteur %s est attaché à une entité inconnue : il sera attaché à l'entité %s.",
+                    $connecteurInfo['libelle'],
+                    $id_e_root
+                );
                 $id_e_mapping[$connecteurInfo['id_e']] = $id_e_root;
             }
-            if ($connecteurInfo['id_e'] === 0) {
-                if ($id_e_root !== 0) {
-                    $this->lastErrors[] = "Le connecteur global {$connecteurInfo['libelle']} ne peut pas être importé sur une entité fille : il n'a pas été importé.";
+
+            $isGlobalConnecteur = $connecteurInfo['global'] ?? (($connecteurInfo['id_e'] === 0) ? 1 : 0);
+            $new_id_e_connecteur = $id_e_mapping[$connecteurInfo['id_e']];
+            if ($id_e_root !== 0) {
+                if ($isGlobalConnecteur) {
+                    $this->lastErrors[] = sprintf(
+                        "Le connecteur global %s ne peut pas être importé sur une entité fille : il n'a pas été importé.",
+                        $connecteurInfo['libelle']
+                    );
                     continue;
                 }
-                $global = 1;
-                $connecteurInfo['id_e'] = 0;
-            } else {
-                $global = 0;
-                $connecteurInfo['id_e'] = $id_e_mapping[$connecteurInfo['id_e']];
+                if ($connecteurInfo['id_e'] === 0) {
+                    $new_id_e_connecteur = $id_e_root;
+                }
             }
+
             $id_ce = $this->connecteurCreationService->createConnecteur(
                 $connecteurInfo['id_connecteur'],
                 $connecteurInfo['type'],
-                $global,
-                $connecteurInfo['id_e'],
+                $isGlobalConnecteur,
+                $new_id_e_connecteur,
                 0,
                 $connecteurInfo['libelle']
             );
