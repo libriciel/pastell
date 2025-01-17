@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\FeatureToggle\DisplayConnecteurEntiteRacine;
+
 class Gabarit
 {
     private array $viewParameter;
@@ -181,5 +183,11 @@ class Gabarit
     public function getSiteBase(): string
     {
         return $this->objectInstancier->getInstance('site_base');
+    }
+
+    /** @deprecated 4.1.5, to be removed in v5 */
+    public function isEnableConnecteurEntiteRacine(): bool
+    {
+        return $this->objectInstancier->getInstance(DisplayConnecteurEntiteRacine::class)->isEnabled();
     }
 }
