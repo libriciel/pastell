@@ -9,6 +9,7 @@ use Http\Discovery\Psr17FactoryDiscovery;
 use IparapheurV5Client\UrlEncoder;
 use Pastell\Client\S2low\Api\Actes;
 use Pastell\Client\S2low\Api\Connexion;
+use Pastell\Client\S2low\Api\Pes;
 use Pastell\Client\S2low\Normalizer\TransactionListDenormalizer;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
@@ -109,6 +110,10 @@ class S2lowClient
     public function actes(): Actes
     {
         return new Actes($this);
+    }
+    public function pes(): Pes
+    {
+        return new Pes($this);
     }
 
     public function connexion(): Connexion
