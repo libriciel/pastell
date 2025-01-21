@@ -10,20 +10,27 @@
  * @var bool $droitLectureAnnuaire;
  */
 
-$admninistration_menu["Entite/detail"] = "Informations (entités)";
+$admninistration_menu['Entite/detail'] = 'Informations (entités)';
 
 if ($droitLectureOnUtilisateur) {
-    $admninistration_menu["Entite/utilisateur"] = "Utilisateurs";
+    $admninistration_menu['Entite/utilisateur'] = 'Utilisateurs';
 }
 
 if ($droit_lecture_on_connecteur) {
-    $admninistration_menu["Entite/connecteur"] = "Connecteurs" . ($id_e ? "" : " globaux");
-    $admninistration_menu["Flux/index"] = $id_e ? "Types de dossier (association)" : 'Associations connecteurs globaux';
+    if ($id_e === 0) {
+        if ($this->isEnableConnecteurEntiteRacine()) {
+            $admninistration_menu['Entite/connecteur?global=0'] = "Connecteurs d'entités";
+        }
+        $admninistration_menu['Entite/connecteur?global=1'] = 'Connecteurs globaux';
+    } else {
+        $admninistration_menu['Entite/connecteur?global=0'] = 'Connecteurs';
+    }
+    $admninistration_menu['Flux/index'] = $id_e ? 'Types de dossier (association)' : 'Associations connecteurs globaux';
 }
 
 if (! empty($permission_on_import_export)) {
-    $admninistration_menu["Entite/exportConfig"] = "Export de la configuration";
-    $admninistration_menu["Entite/importConfig"] = "Import de la configuration";
+    $admninistration_menu['Entite/exportConfig'] = 'Export de la configuration';
+    $admninistration_menu['Entite/importConfig'] = 'Import de la configuration';
 }
 
 if ($droitLectureAnnuaire) {
@@ -47,7 +54,9 @@ $donnees_menu['Entite/agents'] = 'Agents (Actes)';
             <?php foreach ($admninistration_menu as $url => $libelle) : ?>
                 <li>
                     <a class="<?php echo $menu_gauche_select == $url ? "actif" : "" ?>"
-                       href='<?php $this->url(get_hecho($url . "?id_e=$id_e")); ?>'><?php echo $libelle ?></a>
+                       href='<?php $this->url(get_hecho($url . (parse_url($url, PHP_URL_QUERY) ? '&' : '?')) . "id_e=$id_e"); ?>'>
+                        <?php echo $libelle ?>
+                    </a>
                 </li>
             <?php endforeach; ?>
         </ul>

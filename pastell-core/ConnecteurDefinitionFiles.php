@@ -88,12 +88,19 @@ class ConnecteurDefinitionFiles
         return $result;
     }
 
-    public function getAllByIdE(int $id_e): array
+    /** @deprecated Since 4.1.6, Unused */
+    /**
+     * @param int<0,1> $global
+     */
+    public function getAllByIdE(int $id_e, int $global = 0): array
     {
-        return $id_e ? $this->getAll() : $this->getAllGlobal();
+        return $global ? $this->getAllGlobal() : $this->getAll();
     }
 
-    public function getInfo(string $id_connecteur, bool $global = false): bool|array
+    /**
+     * @param int<0,1> $global
+     */
+    public function getInfo(string $id_connecteur, int $global = 0): bool|array
     {
         if ($global) {
             return $this->getInfoGlobal($id_connecteur);

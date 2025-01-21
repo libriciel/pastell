@@ -1,8 +1,21 @@
 <?php
 
-/** @var Gabarit $this */
+/**
+ * @var Gabarit $this
+ * @var int $id_e
+ * @var string $flux
+ * @var string $type_connecteur
+ * @var int $num_same_type
+ * @var string $entite_denomination
+ * @var array $connecteur_disponible
+ * @var array $connecteur_info
+ * @var array $type_connecteur_info
+ * @var string $flux_name
+ * @var string $lien_retour
+ */
+
 ?>
-<a class='btn btn-link' href='Flux/index?id_e=<?php echo $id_e ?>'><i class="fa fa-arrow-left"></i>&nbsp;Retour à la liste des types de dossiers</a>
+<a class='btn btn-link' href='<?php echo $lien_retour ?>'><i class="fa fa-arrow-left"></i>&nbsp;Retour à la liste des associations</a>
 
 <div class="box">
 
@@ -67,7 +80,7 @@ aucun connecteur sélectionné
             <th>Hérité</th>
         </tr>
         <tr>
-            <td><input type='radio' name='id_ce' value='' <?php echo  $connecteur_info ? "" : "checked='checked'"?>/>
+            <td><input type='radio' name='id_ce' value='' <?php echo  $connecteur_info ? '' : "checked='checked'"?>/>
             &nbsp;&nbsp;Aucun</td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>

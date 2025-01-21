@@ -107,14 +107,15 @@ abstract class ChoiceActionExecutor extends ActionExecutor
             return;
         }
         $this->viewParameter['id_e_menu'] = $this->id_e;
-        $this->viewParameter['type_e_menu'] = "";
+        $this->viewParameter['type_e_menu'] = '';
         $this->setViewParameter(
             'droitLectureAnnuaire',
             $this->objectInstancier->getInstance(RoleUtilisateur::class)
                 ->hasDroit($this->id_u, 'annuaire:lecture', $this->id_e)
         );
-        $this->viewParameter['menu_gauche_template'] = "EntiteMenuGauche";
-        $this->viewParameter['menu_gauche_select'] = "Entite/connecteur";
+        $isGlobalConnecteur = $this->isGlobalConnecteur($this->id_ce);
+        $this->viewParameter['menu_gauche_template'] = 'EntiteMenuGauche';
+        $this->viewParameter['menu_gauche_select'] = "Entite/connecteur?global=$isGlobalConnecteur";
         $this->viewParameter['droit_lecture_on_connecteur'] = $this->objectInstancier
             ->getInstance(DroitService::class)
             ->hasDroitConnecteurLecture($this->id_e, $this->id_u);

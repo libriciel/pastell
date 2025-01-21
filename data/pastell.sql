@@ -70,6 +70,7 @@ CREATE TABLE `connecteur_entite` (
 	`type` varchar(32) NOT NULL,
 	`frequence_en_minute` int(11) NOT NULL DEFAULT '1',
 	`id_verrou` varchar(32) NOT NULL,
+	`global` tinyint(1),
 	PRIMARY KEY (`id_ce`)
 )  ENGINE=MyISAM  ;
 CREATE TABLE `connecteur_frequence` (

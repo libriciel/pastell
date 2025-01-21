@@ -136,7 +136,8 @@ class FluxEntiteHeritageSQLTest extends PastellTestCase
             2,
             'mailsec',
             'mailsec',
-            'connecteur mailsec de test'
+            'connecteur mailsec de test',
+            0
         );
         $this->getObjectInstancier()->getInstance(FluxEntiteSQL::class)->addConnecteur(2, 'mailsec', 'mailsec', $id_ce);
         $this->assertEquals($id_ce, $this->getFluxEntiteHeritageSQL()->getConnecteurId(2, 'mailsec', 'mailsec'));

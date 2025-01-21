@@ -211,11 +211,21 @@ abstract class ActionExecutor
         return $this->objectInstancier->getInstance(NotificationMail::class);
     }
 
+    public function isGlobalConnecteur(int $id_ce): int
+    {
+        return $this->objectInstancier->getInstance(ConnecteurEntiteSQL::class)->getInfo($id_ce)['global'];
+    }
+
     public function getDocumentType(): DocumentType
     {
-        return $this->isConnectorAction()
-            ? $this->getDocumentTypeFactory()->getDocumentType($this->id_e, $this->type)
-            : $this->getDocumentTypeFactory()->getFluxDocumentType($this->type);
+        if ($this->isConnectorAction()) {
+            $documentType = $this->isGlobalConnecteur($this->id_ce) ?
+                $this->getDocumentTypeFactory()->getGlobalDocumentType($this->type)
+                : $this->getDocumentTypeFactory()->getEntiteDocumentType($this->type);
+        } else {
+            $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($this->type);
+        }
+        return $documentType;
     }
 
     public function getActionName()

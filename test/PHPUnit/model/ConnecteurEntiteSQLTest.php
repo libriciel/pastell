@@ -18,15 +18,21 @@ class ConnecteurEntiteSQLTest extends PastellTestCase
         $this->assertEquals("Fake GED", $result[2]['libelle']);
     }
 
-    public function testGetAllLocal()
+    public function testGetAllLocalByIde()
     {
-        $result = $this->getConnecteurEntiteSQL()->getAllLocal();
+        $result = $this->getConnecteurEntiteSQL()->getAllLocalByIde(1);
         $this->assertEquals("Fake GED", $result[2]['libelle']);
     }
 
     public function testAddConnecteur()
     {
-        $id_ce = $this->getConnecteurEntiteSQL()->addConnecteur(1, 'mailsec', 'mailsec', 'Mail sécurisé');
+        $id_ce = $this->getConnecteurEntiteSQL()->addConnecteur(
+            1,
+            'mailsec',
+            'mailsec',
+            'Mail sécurisé',
+            0
+        );
         $this->assertEquals(14, $id_ce);
     }
 

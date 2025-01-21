@@ -87,9 +87,10 @@ class ConnecteurControlerTest extends ControlerTestCase
         $connecteurEntiteSQL = $this->getObjectInstancier()->getInstance(ConnecteurEntiteSQL::class);
         $id_ce = $connecteurEntiteSQL->addConnecteur(
             1,
-            "not_existing_connecteur",
-            "signature",
-            "foo"
+            'not_existing_connecteur',
+            'signature',
+            'foo',
+            0
         );
         $this->setGetInfo(['id_ce' => $id_ce]);
         $this->expectOutputRegex(
@@ -103,9 +104,10 @@ class ConnecteurControlerTest extends ControlerTestCase
         $connecteurEntiteSQL = $this->getObjectInstancier()->getInstance(ConnecteurEntiteSQL::class);
         $id_ce = $connecteurEntiteSQL->addConnecteur(
             1,
-            "not_existing_connecteur",
-            "signature",
-            "foo"
+            'not_existing_connecteur',
+            'signature',
+            'foo',
+            0
         );
         $result = $this->getInternalAPI()->patch("/entite/1/connecteur/$id_ce/content/", ["foo" => "bar"]);
         $this->assertEquals('foo', $result['libelle']);

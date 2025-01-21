@@ -18,7 +18,7 @@
 
 ?>
 <a class='btn btn-link'
-   href='Entite/connecteur?id_e=<?php echo $connecteur_entite_info['id_e']?>'
+   href='Entite/connecteur?global=<?php echo $connecteur_entite_info['global']?>&id_e=<?php echo $connecteur_entite_info['id_e']?>'
 ><i class="fa fa-arrow-left"></i>&nbsp;Retour à la liste des connecteurs</a>
 
 <div class="box">
