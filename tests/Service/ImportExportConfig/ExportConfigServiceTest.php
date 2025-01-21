@@ -545,17 +545,15 @@ class ExportConfigServiceTest extends PastellTestCase
             $importConfigService->getLastErrors()
         );
 
-        /** @var EntiteSQL $entiteSQL */
         $entiteSQL = $this->getObjectInstancier()->getInstance(EntiteSQL::class);
         $allEntiteFille = $entiteSQL->getFille(1);
         $newEntite = end($allEntiteFille);
-        self::assertEquals('Foo', $newEntite['denomination']);
+        self::assertSame('Foo', $newEntite['denomination']);
 
-        /** @var \ConnecteurEntiteSQL $connecteurEntiteSQL */
         $connecteurEntiteSQL = $this->getObjectInstancier()->getInstance(\ConnecteurEntiteSQL::class);
         $connectorList = $connecteurEntiteSQL->getAll(1);
         $newConnector = end($connectorList);
-        self::assertEquals('transformation-entite-racine', $newConnector['libelle']);
+        self::assertSame('transformation-entite-racine', $newConnector['libelle']);
 
         $connector = $this->getConnecteurFactory()
             ->getConnecteurByType($newEntite['id_e'], 'ls-document', 'transformation');
