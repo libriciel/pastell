@@ -3,7 +3,6 @@ TRUNCATE TABLE `annuaire`;
 TRUNCATE TABLE `annuaire_groupe`;
 TRUNCATE TABLE `annuaire_groupe_contact`;
 TRUNCATE TABLE `annuaire_role`;
-TRUNCATE TABLE `collectivite_fournisseur`;
 TRUNCATE TABLE `connecteur_entite`;
 TRUNCATE TABLE `connecteur_frequence`;
 TRUNCATE TABLE `document`;
