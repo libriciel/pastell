@@ -10,7 +10,8 @@ if (!empty(SENTRY_DSN)) {
     ]);
 }
 
-if (php_sapi_name() != "cli") {
-    ini_set("session.cookie_httponly", 1);
+if (php_sapi_name() != 'cli') {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.cookie_samesite', 'Lax');
     session_start();
 }

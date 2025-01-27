@@ -1,3 +1,9 @@
+# [4.0.20]
+
+## Correction
+
+- Passage des cookies de Samesite None à Lax #1440
+
 # [4.0.19] - 2025-01-13
 
 ## Correction
