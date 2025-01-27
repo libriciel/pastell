@@ -1,3 +1,9 @@
+# [5.0.0] - 
+
+## Suppression d'éléments dépréciés
+
+- Suppression de la table collectivite_fournisseur #2205
+
 # [4.1.5] - 2025-01-13
 
 ## Ajouts
