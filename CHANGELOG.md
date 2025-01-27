@@ -5,6 +5,10 @@
 - Il est maintenant possible de définir des connecteurs d'entités au niveau de l'entité racine #2157
   (fonctionnalité activable désactivée par défaut).
 
+## Corrections
+
+- Corrections orthographiques sur récupération des arriérés actes de s2low #2215
+
 # [4.1.5] - 2025-01-13
 
 ## Ajouts

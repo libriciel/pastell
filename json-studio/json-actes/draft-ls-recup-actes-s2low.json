@@ -1,13 +1,13 @@
 {
   "id_type_dossier": "draft-ls-recup-actes-s2low",
   "pastell-version": "%VERSION%",
-  "timestamp": 1735289060,
+  "timestamp": 1737643584,
   "raw_data": {
     "id_type_dossier": "draft-ls-recup-actes-s2low",
     "nom": "R\u00e9cup\u00e9ration arri\u00e9r\u00e9 actes s2low (Draft)",
     "type": "Actes administratifs",
     "description": "",
-    "nom_onglet": "onglet1",
+    "nom_onglet": "Informations",
     "affiche_one": false,
     "restriction_pack": "",
     "formulaireElement": [
