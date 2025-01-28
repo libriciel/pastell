@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Validator\UrlValidator;
+use Pastell\Validator\UrlValidatorInterface;
+
 class CurlWrapper
 {
     private const POST_DATA_SEPARATOR = "\r\n";
@@ -22,20 +25,24 @@ class CurlWrapper
     private $httpCode = 0;
     private $lastOutput;
 
-    /** @var  CurlFunctions */
-    private $curlFunctions;
-
     private $http_proxy_url;
     private $no_proxy;
 
     private $header  = [];
 
-    public function __construct(CurlFunctions $curlFunctions = null)
-    {
+    public function __construct(
+        private ?CurlFunctions $curlFunctions = null,
+        private ?UrlValidatorInterface $urlValidator = null,
+    ) {
         if (! $curlFunctions) {
             $curlFunctions = new CurlFunctions();
         }
         $this->curlFunctions = $curlFunctions;
+
+        if ($urlValidator === null) {
+            $urlValidator = new UrlValidator();
+        }
+        $this->setUrlValidator($urlValidator);
         $this->curlHandle = $this->curlFunctions->curl_init();
         $this->setProperties(CURLOPT_RETURNTRANSFER, 1);
         $this->setProperties(CURLOPT_FOLLOWLOCATION, 1);
@@ -55,6 +62,11 @@ class CurlWrapper
     public function setNoProxy(string $no_proxy)
     {
         $this->no_proxy = $no_proxy;
+    }
+
+    public function setUrlValidator(UrlValidatorInterface $urlValidator): void
+    {
+        $this->urlValidator = $urlValidator;
     }
 
     public function httpAuthentication($username, $password)
@@ -146,6 +158,7 @@ class CurlWrapper
 
     public function get($url)
     {
+        $this->urlValidator->validate($url);
         $this->setProperties(CURLOPT_URL, $url);
         if ($this->filePropertiesList || $this->postDataList) {
             $this->curlSetPostData();
