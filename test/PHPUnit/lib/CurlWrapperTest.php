@@ -216,4 +216,12 @@ class CurlWrapperTest extends PHPUnit\Framework\TestCase
         $curlWrapper->setNoProxy($no_proxy);
         $curlWrapper->get($url_called);
     }
+
+    public function testInvalidScheme(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Invalid URL: 'file://test'. Only 'http' and 'https' schemes are allowed.");
+        $curlWrapper = new CurlWrapper();
+        $curlWrapper->get('file://test');
+    }
 }
