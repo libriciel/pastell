@@ -71,7 +71,7 @@ class S2lowClient
             $body = mb_convert_encoding($body, 'UTF-8', 'UTF-8');
         }
 
-        if ($response->getStatusCode() !== 200 || str_starts_with($body, 'KO')) {
+        if ($this->isAnError($response->getStatusCode(), $body)) {
             throw new S2lowClientException($body, $response->getStatusCode());
         }
         return $body;
@@ -101,10 +101,24 @@ class S2lowClient
         $response = $this->clientInterface->sendRequest($request);
 
         $body = (string)$response->getBody();
-        if ($response->getStatusCode() !== 200) {
+        if ($this->isAnError($response->getStatusCode(), $body)) {
             throw new S2lowClientException($body, $response->getStatusCode());
         }
         return $body;
+    }
+
+    private function isAnError(int $statusCode, string $body): bool
+    {
+        if ($statusCode !== 200 || str_starts_with($body, 'KO')) {
+            return true;
+        }
+
+        $json = json_decode($body, true);
+        if (\json_last_error() === \JSON_ERROR_NONE && isset($json['status']) && $json['status'] === 'error') {
+            return true;
+        }
+
+        return false;
     }
 
     public function actes(): Actes

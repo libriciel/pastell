@@ -79,4 +79,13 @@ class RecupPesS2lowConnector extends \Connecteur
 
         return $this->client->pes()->getPesAllerList($query);
     }
+
+    /**
+     * @throws S2lowClientException
+     * @throws ClientExceptionInterface
+     */
+    public function changeStatus(string $transactionId, string $statusId): void
+    {
+        $this->client->pes()->changePesStatus($transactionId, $statusId);
+    }
 }
