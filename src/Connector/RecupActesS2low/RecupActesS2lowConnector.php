@@ -65,8 +65,9 @@ class RecupActesS2lowConnector extends \Connecteur
         $this->maxNumberOfDocumentsInEntity = (int)$donneesFormulaire->get('nb_documents') ?: 100;
 
         $auth = new S2lowClientAuth();
-        $auth->username = $donneesFormulaire->get('username') ?: '';
-        $auth->password = $donneesFormulaire->get('password') ?: '';
+        $auth->username = $donneesFormulaire->get('user_login') ?: '';
+        $auth->password = $donneesFormulaire->get('user_password') ?: '';
+
         $auth->user_certificat_password = $donneesFormulaire->get('certificate_password');
         $auth->user_key_pem = $donneesFormulaire->getFilePath('certificate_key');
         $auth->user_certificat_pem = $donneesFormulaire->getFilePath('certificate_pem');
