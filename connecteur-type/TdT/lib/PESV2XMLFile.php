@@ -23,4 +23,12 @@ class PESV2XMLFile
         $simpleXMLWrapper = new SimpleXMLWrapper();
         return $simpleXMLWrapper->loadFile($file_path);
     }
+
+    /**
+     * @throws SimpleXMLWrapperException
+     */
+    public function getFromContent(string $xml): SimpleXMLElement
+    {
+        return (new SimpleXMLWrapper())->loadString($xml);
+    }
 }

@@ -13,6 +13,8 @@ use Psr\Http\Client\ClientExceptionInterface;
 final class Pes
 {
     private const LIST_PES_API = '/modules/helios/api/list_pes_aller.php';
+    private const GET_PES_API = '/modules/helios/helios_download_file.php';
+    private const GET_PES_ACQUIT_API = '/modules/helios/helios_download_acquit.php';
     private const CHANGE_STATUS_API = '/modules/helios/helios_transac_change_status_sae.php';
 
     public function __construct(private readonly S2lowClient $client)
@@ -28,6 +30,24 @@ final class Pes
     ): PesAllerListResponse {
         $response = $this->client->get(self::LIST_PES_API, $actesListQuery);
         return $this->client->getSerializer()->deserialize($response, PesAllerListResponse::class, 'json');
+    }
+
+    /**
+     * @throws S2lowClientException
+     * @throws ClientExceptionInterface
+     */
+    public function getPes(string $transactionId): string
+    {
+        return $this->client->get(self::GET_PES_API, ['id' => $transactionId], false);
+    }
+
+    /**
+     * @throws S2lowClientException
+     * @throws ClientExceptionInterface
+     */
+    public function getPesAcquit(string $transactionId): string
+    {
+        return $this->client->get(self::GET_PES_ACQUIT_API, ['id' => $transactionId], false);
     }
 
     /**

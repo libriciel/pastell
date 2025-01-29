@@ -60,6 +60,9 @@ action:
   list_actes:
     name: 'Lister les pes aller archivables'
     action-class: Pastell\Connector\RecupPesS2low\Action\FetchPesAllerList
+  fetch_once:
+    name: 'Faire une boucle de récupération (synchrone)'
+    action-class: Pastell\Connector\RecupPesS2low\Action\FetchPesAller
 
   update-certificate:
     name: 'Mettre à jour les certificats'

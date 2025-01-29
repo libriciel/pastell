@@ -20,9 +20,13 @@ class PESAllerFile extends PESV2XMLFile
      * @return mixed
      * @throws Exception
      */
-    public function getAllInfo($pes_aller_path)
+    public function getAllInfo($pes_aller_path, bool $getFromPath = true)
     {
-        $xml = $this->getSimpleXMLFromFile($pes_aller_path);
+        if ($getFromPath) {
+            $xml = $this->getSimpleXMLFromFile($pes_aller_path);
+        } else {
+            $xml = $this->getFromContent($pes_aller_path);
+        }
 
         $info[self::ID_COLL] = $this->getValueFromXPath($xml, "//EnTetePES/IdColl/@V");
         $info[self::DTE_STR] = $this->getValueFromXPath($xml, "//EnTetePES/DteStr/@V");

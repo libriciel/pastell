@@ -11,7 +11,7 @@ class PesAllerListResponse
     public string $offset;
     public string $limit;
     /**
-     * @var array{array{id: string}}
+     * @var array<array{id: string}>
      */
     public array $transactions;
 }
