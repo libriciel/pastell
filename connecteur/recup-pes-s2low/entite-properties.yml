@@ -64,6 +64,16 @@ action:
     name: 'Faire une boucle de récupération (synchrone)'
     action-class: Pastell\Connector\RecupPesS2low\Action\FetchPesAller
 
+  fetch:
+    name: Traitement (immédiat)
+    action-class: Pastell\Connector\RecupPesS2low\Action\FetchPesAller
+    action-automatique: fetch
+
+  fetch-async:
+    name: Traitement (par le gestionnaire de tâches)
+    action-class: Pastell\Connector\RecupActesS2low\Action\FetchActesAsync
+
+
   update-certificate:
     name: 'Mettre à jour les certificats'
     rule:

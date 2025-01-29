@@ -89,6 +89,11 @@ class PastellPackTest extends PastellTestCase
             'ls-helios-pj',
             'Helios PES PJ',
         ],
+        'draft-ls-recup-pes-s2low' => [
+            'suppl_recup_pes_s2low',
+            'ls-recup-pes-s2low',
+            'Récupération arriéré PES s2low',
+        ],
         'draft-ls-mailsec' =>
             [
                 '',

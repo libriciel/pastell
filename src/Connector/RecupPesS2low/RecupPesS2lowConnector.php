@@ -17,7 +17,7 @@ use Recuperateur;
 
 class RecupPesS2lowConnector extends \Connecteur
 {
-    private const FLUX = 'draft-ls-recup-pes-s2low';
+    private const FLUX = 'ls-recup-pes-s2low';
     private const STATUS_ACK = 4;
     private const STATUS_SENT_TO_SAE = '19';
     private S2lowClient $client;
