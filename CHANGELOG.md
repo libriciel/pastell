@@ -1,3 +1,9 @@
+# [4.1.7] - 
+
+## Corrections
+
+- Le connecteur de récupération des arriérés actes de s2low ne fonctionnait pas avec un login/mdp #2221
+
 # [4.1.6] - 2025-01-28
 
 ## Évolutions
