@@ -1,8 +1,8 @@
 nom: Récupération PES S²low
 description: ""
 type: recup-pes-s2low
-#restriction_pack:
-#  - suppl_recup_pes_s2low
+restriction_pack:
+  - suppl_recup_pes_s2low
 
 formulaire:
   page:
@@ -57,7 +57,7 @@ action:
   test_auth:
     name: 'Tester la connectivité'
     action-class: Pastell\Connector\RecupActesS2low\Action\TestAuthentication
-  list_actes:
+  list_pes:
     name: 'Lister les pes aller archivables'
     action-class: Pastell\Connector\RecupPesS2low\Action\FetchPesAllerList
   fetch_once:
