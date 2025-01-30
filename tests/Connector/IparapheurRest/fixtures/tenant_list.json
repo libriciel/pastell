@@ -1,0 +1,41 @@
+{
+  "content": [
+    {
+      "id": "8a4dba5f-b034-4f92-8625-3aee7be97d46",
+      "name": "Pastell"
+    },
+    {
+      "id": "bc75c516-7fa6-4edd-8a3e-9318d3263996",
+      "name": "Pastell 2"
+    },
+    {
+      "id": "a19c2cc6-6923-45cb-9a26-771ea14cd995",
+      "name": "Pastell 3"
+    }
+  ],
+  "pageable": {
+    "sort": {
+      "empty": false,
+      "unsorted": false,
+      "sorted": true
+    },
+    "offset": 0,
+    "pageSize": 10,
+    "pageNumber": 0,
+    "unpaged": false,
+    "paged": true
+  },
+  "last": true,
+  "totalElements": 3,
+  "totalPages": 1,
+  "size": 10,
+  "number": 0,
+  "sort": {
+    "empty": false,
+    "unsorted": false,
+    "sorted": true
+  },
+  "numberOfElements": 3,
+  "first": true,
+  "empty": false
+}

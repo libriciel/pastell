@@ -1,0 +1,18 @@
+nom: iparapheur rest
+type: signature
+description: "Connecteur pour le iparapheur de Libriciel (api rest à partir de la V5)"
+
+formulaire:
+  page:
+    url:
+      name: "URL du parapheur"
+      commentaire: "Exemple: https://iparapheur.partenaire.libriciel.fr"
+    username:
+      name: "Nom d'utilisateur"
+    password:
+      name: "Mot de passe"
+      type: password
+action:
+  test_connexion:
+    name: Tester la connexion
+    action-class: Pastell\Connector\IparapheurRest\Action\TestConnexion
