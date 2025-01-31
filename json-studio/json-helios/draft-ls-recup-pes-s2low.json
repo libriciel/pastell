@@ -1,0 +1,131 @@
+{
+  "id_type_dossier": "draft-ls-recup-pes-s2low",
+  "pastell-version": "%VERSION%",
+  "timestamp": 1738161652,
+  "raw_data": {
+    "id_type_dossier": "draft-ls-recup-pes-s2low",
+    "nom": "R\u00e9cup\u00e9ration arri\u00e9r\u00e9 PES s2low (Draft)",
+    "type": "Finances",
+    "description": "",
+    "nom_onglet": "Informations",
+    "affiche_one": false,
+    "restriction_pack": "",
+    "formulaireElement": [
+      {
+        "element_id": "transaction_id",
+        "name": "Identifiant de transaction",
+        "type": "text",
+        "commentaire": "",
+        "requis": "on",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": false,
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "objet",
+        "name": "Objet",
+        "type": "text",
+        "commentaire": "",
+        "requis": "on",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "on",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "fichier_pes",
+        "name": "Fichier PES",
+        "type": "file",
+        "commentaire": "",
+        "requis": "on",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": "application\/xml"
+      },
+      {
+        "element_id": "pes_acquit",
+        "name": "PES Acquit",
+        "type": "file",
+        "commentaire": "",
+        "requis": "on",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      }
+    ],
+    "etape": [
+      {
+        "num_etape": 0,
+        "type": "update_status_pes_s2low",
+        "label": null,
+        "defaultChecked": true,
+        "requis": "",
+        "automatique": "on",
+        "specific_type_info": {
+          "transaction": "transaction_id"
+        },
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": true
+      },
+      {
+        "num_etape": 1,
+        "type": "sae",
+        "label": null,
+        "defaultChecked": true,
+        "requis": "",
+        "automatique": "on",
+        "specific_type_info": {
+          "sae_has_metadata_in_json": "",
+          "continue_after_refusal": "on"
+        },
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      },
+      {
+        "num_etape": 2,
+        "type": "transformation_fixe",
+        "label": null,
+        "defaultChecked": true,
+        "requis": "",
+        "automatique": "on",
+        "specific_type_info": {
+          "transformations": "update_status_pes_s2low_status_2:{%if sae_atr_comment matches '\/(.*)Archive refus\u00e9e(.*)\/' %}20{% else %}10{% endif %}"
+        },
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      },
+      {
+        "num_etape": 3,
+        "type": "update_status_pes_s2low",
+        "label": null,
+        "defaultChecked": true,
+        "requis": "",
+        "automatique": "on",
+        "specific_type_info": {
+          "transaction": "transaction_id"
+        },
+        "num_etape_same_type": 1,
+        "etape_with_same_type_exists": true
+      }
+    ]
+  }
+}

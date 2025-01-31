@@ -95,6 +95,7 @@ module-json-gfc: docker-compose-up ## Run make-module json-gfc
 module-json-helios: docker-compose-up ## Run make-module json-helios
 	$(MAKE_MODULE) ./json-studio/json-helios/draft-ls-helios.json ./module/ --id ls-helios --name "Helios"
 	$(MAKE_MODULE) ./json-studio/json-helios/draft-ls-helios-pj.json ./module/ --id ls-helios-pj --name "Helios PES PJ"
+	$(MAKE_MODULE) ./json-studio/json-helios/draft-ls-recup-pes-s2low.json ./module/ --id ls-recup-pes-s2low --name "Récupération arriéré PES s2low"  --restriction_pack 'suppl_recup_pes_s2low'
 
 module-json-mailsec: docker-compose-up ## Run make-module json-mailsec
 	$(MAKE_MODULE) ./json-studio/json-mailsec/draft-ls-mailsec.json ./module/ --id ls-mailsec --name "Mail sécurisé"

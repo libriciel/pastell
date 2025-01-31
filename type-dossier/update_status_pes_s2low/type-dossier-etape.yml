@@ -1,0 +1,38 @@
+libelle: 'Mise à jour du statut de la transaction PES sur s2low'
+restriction_pack :
+    - 'suppl_test'
+connecteur_type:
+    - recup-pes-s2low
+
+configuration_etape_formulaire:
+    transaction:
+        name: 'Identifiant de la transaction'
+        requis: true
+        type: text_select
+
+formulaire:
+    Statut s2low:
+        update_status_pes_s2low_status:
+            name: 'Statut de la transaction'
+page-condition:
+    'Statut s2low':
+        envoi_update_status_pes_s2low: true
+
+action:
+    preparation-change-status-transaction:
+        name: "Préparation du changement de statut de la transaction"
+        rule:
+            role_id_e: no-role
+        action-automatique: change-status-transaction
+    change-status-transaction:
+        name-action: 'Changer le statut de la transaction sur s2low'
+        name: 'Statut de la transaction changé'
+        rule:
+            last-action:
+                - preparation-change-status-transaction
+        action-class: StandardAction
+        connecteur-type: TdT
+        connecteur-type-action: Pastell\Step\UpdateStatusPesS2low\Action\ChangeStatusAction
+        connecteur-type-mapping:
+            status: update_status_pes_s2low_status
+        action-automatique: orientation

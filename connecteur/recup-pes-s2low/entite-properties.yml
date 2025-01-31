@@ -1,0 +1,86 @@
+nom: Récupération PES S²low
+description: ""
+type: recup-pes-s2low
+restriction_pack:
+  - suppl_recup_pes_s2low
+
+formulaire:
+  page:
+    url:
+      name: 'URL du service'
+    certificate:
+      name: 'Certificat utilisateur (format P12)'
+      type: file
+      content-type: application/octet-stream
+      onchange: update-certificate
+    certificate_password:
+      name: 'Mot de passe du certificat utilisateur'
+      type: password
+      onchange: update-certificate
+    certificate_pem:
+      type: file
+      no-show: true
+    certificate_key:
+      type: file
+      no-show: true
+    user_login:
+      name: "Login de l'utilisateur"
+    user_password:
+      type: password
+      name: "Mot de passe de l'utilisateur"
+    start_date:
+      name: 'Date la plus ancienne des pes à récupérer'
+      commentaire: 'Date de début de la période de récupération des pes'
+      type: date
+    end_date:
+      name: 'Date la plus récente des pes à récupérer'
+      commentaire: 'Date de fin de la période de récupération des pes'
+      type: date
+    transaction_status:
+      name: État des transactions à récupérer sur s2low
+      type: select
+      value:
+        8: 'Information disponible'
+        20: 'Erreur lors de l''archivage'
+      default: 8
+    nb_recup:
+      name: Nombre de dossiers à récupérer pour un passage du travail
+      commentaire: 10 par défaut
+      default: 10
+    nb_documents:
+      name: Nombre de dossiers maximum en cours de traitement
+      commentaire: 100 par défaut
+      default: 100
+action:
+  test_auth:
+    name: 'Tester la connectivité'
+    action-class: Pastell\Connector\RecupActesS2low\Action\TestAuthentication
+  list_pes:
+    name: 'Lister les pes aller archivables'
+    action-class: Pastell\Connector\RecupPesS2low\Action\FetchPesAllerList
+  fetch_once:
+    name: 'Faire une boucle de récupération (synchrone)'
+    action-class: Pastell\Connector\RecupPesS2low\Action\FetchPesAller
+
+  fetch:
+    name: Traitement (immédiat)
+    action-class: Pastell\Connector\RecupPesS2low\Action\FetchPesAller
+    action-automatique: fetch
+
+  fetch-async:
+    name: Traitement (par le gestionnaire de tâches)
+    action-class: Pastell\Connector\RecupActesS2low\Action\FetchActesAsync
+
+
+  update-certificate:
+    name: 'Mettre à jour les certificats'
+    rule:
+      internal-action: true
+    action-class: StandardAction
+    connecteur-type: utilities
+    connecteur-type-action: UpdateCertificate
+    connecteur-type-mapping:
+      certificat_connexion: certificate
+      certificat_password: certificate_password
+      certificat_connexion_cert_pem: certificate_pem
+      certificat_connexion_key_pem: certificate_key
