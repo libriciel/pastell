@@ -4,6 +4,19 @@
 
 - Suppression de la table collectivite_fournisseur #2205
 
+# [4.1.6] - 2025-01-28
+
+## Évolutions
+
+- Il est maintenant possible de définir des connecteurs d'entités au niveau de l'entité racine #2157
+  (fonctionnalité activable désactivée par défaut).
+
+## Corrections
+
+- Corrections orthographiques sur récupération des arriérés actes de s2low #2215
+- Passage des cookies de Samesite None à Lax #1440
+- Améliorations de sécurité #2196
+
 # [4.1.5] - 2025-01-13
 
 ## Ajouts
@@ -177,6 +190,13 @@
 - `pdf-generique` et `document-a-signer` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-document-pdf` #1870
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
+
+# [4.0.20] - 2025-01-28
+
+## Correction
+
+- Passage des cookies de Samesite None à Lax #1440
+- Améliorations de sécurité #2196
 
 # [4.0.19] - 2025-01-13
 

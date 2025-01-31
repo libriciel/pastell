@@ -13,26 +13,15 @@ use UnrecoverableException;
 
 class ConnecteurModificationService
 {
-    private $connecteurEntiteSQL;
-    private $documentTypeFactory;
-    private $donneesFormulaireFactory;
-    private $connecteurActionService;
-    private $actionExecutorFactory;
-
     private $lastMessage = '';
 
     public function __construct(
-        ConnecteurEntiteSQL $connecteurEntiteSQL,
-        DocumentTypeFactory $documentTypeFactory,
-        DonneesFormulaireFactory $donneesFormulaireFactory,
-        ActionExecutorFactory $actionExecutorFactory,
-        ConnecteurActionService $connecteurActionService
+        private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
+        private readonly DocumentTypeFactory $documentTypeFactory,
+        private readonly DonneesFormulaireFactory $donneesFormulaireFactory,
+        private readonly ActionExecutorFactory $actionExecutorFactory,
+        private readonly ConnecteurActionService $connecteurActionService
     ) {
-        $this->connecteurEntiteSQL = $connecteurEntiteSQL;
-        $this->documentTypeFactory = $documentTypeFactory;
-        $this->donneesFormulaireFactory = $donneesFormulaireFactory;
-        $this->actionExecutorFactory = $actionExecutorFactory;
-        $this->connecteurActionService = $connecteurActionService;
     }
 
     public function getLastMessage(): string
@@ -186,7 +175,10 @@ class ConnecteurModificationService
         $connecteur_info = $this->connecteurEntiteSQL->getInfo($id_ce);
         $id_e = $connecteur_info['id_e'];
 
-        $documentType = $this->documentTypeFactory->getDocumentType($id_e, $connecteur_info['id_connecteur']);
+        $documentType = ($connecteur_info['global']) ?
+            $this->documentTypeFactory->getGlobalDocumentType($connecteur_info['id_connecteur'])
+            : $this->documentTypeFactory->getEntiteDocumentType($connecteur_info['id_connecteur']);
+
         $theField = $documentType->getFormulaire()->getField($field_name);
         if (!$theField) {
             throw new UnrecoverableException("Type $field_name introuvable");

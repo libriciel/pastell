@@ -60,7 +60,8 @@ class FluxControlerTest extends ControlerTestCase
             1,
             'mailsec',
             'mailsec',
-            'mailsec-test'
+            'mailsec-test',
+            0
         );
         $this->setGetInfo(["id_e" => 1, "flux" => "mailsec", "type" => "mailsec"]);
         $this->expectOutputRegex("#mailsec-test#");
@@ -76,7 +77,8 @@ class FluxControlerTest extends ControlerTestCase
             1,
             'mailsec',
             'mailsec',
-            'mailsec-test'
+            'mailsec-test',
+            0
         );
         $this->getObjectInstancier()->getInstance(FluxEntiteSQL::class)->addConnecteur(1, 'mailsec', 'mailsec', $id_ce);
         $this->setGetInfo(["id_e" => 1, "flux" => "mailsec", "type" => "mailsec"]);
@@ -93,7 +95,8 @@ class FluxControlerTest extends ControlerTestCase
             0,
             'horodateur-interne',
             'horodateur',
-            'horodateur-test'
+            'horodateur-test',
+            1
         );
         $this->getObjectInstancier()->getInstance(FluxEntiteSQL::class)->addConnecteur(
             0,
@@ -115,7 +118,8 @@ class FluxControlerTest extends ControlerTestCase
             1,
             'mailsec',
             'mailsec',
-            'mailsec-test'
+            'mailsec-test',
+            0
         );
         $this->setPostInfo(["id_e" => 1, "flux" => 'mailsec', 'type' => 'mailsec', 'id_ce' => $id_ce]);
         $this->expectException(LastMessageException::class);
@@ -132,7 +136,8 @@ class FluxControlerTest extends ControlerTestCase
             1,
             'mailsec',
             'mailsec',
-            'mailsec-test'
+            'mailsec-test',
+            0
         );
         $this->setPostInfo(["id_e" => 1, "flux" => 'actes-generique', 'type' => 'signature', 'id_ce' => $id_ce]);
         $this->expectException(LastErrorException::class);
@@ -174,7 +179,8 @@ class FluxControlerTest extends ControlerTestCase
             1,
             'mailsec',
             'mailsec',
-            'mailsec-test'
+            'mailsec-test',
+            0
         );
         $connecteurAssociationService = $this->getObjectInstancier()->getInstance(ConnecteurAssociationService::class);
         $connecteurAssociationService->addConnecteurAssociation(

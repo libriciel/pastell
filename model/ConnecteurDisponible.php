@@ -1,45 +1,47 @@
 <?php
 
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\EntityUtilitiesService;
 
 class ConnecteurDisponible
 {
     public const DROIT_NEDEED = 'connecteur:edition';
 
-    private $entiteSQL;
-    private $roleUtilisateur;
-    private $connecteurEntiteSQL;
-    private $droitService;
+    public function __construct(
+        private readonly EntiteSQL $entiteSQL,
+        private readonly RoleUtilisateur $roleUtilisateur,
+        private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
+        private readonly DroitService $droitService,
+        private readonly EntityUtilitiesService $entityUtilitiesService,
+    ) {
+    }
 
-    public function __construct(EntiteSQL $entiteSQL, RoleUtilisateur $roleUtilisateur, ConnecteurEntiteSQL $connecteurEntiteSQL, DroitService $droitService)
+    /** @deprecated Since 4.1.6, Unused, Use getListByType instead */
+    public function getList(int $id_u, int $id_e, string $type): array
     {
-        $this->entiteSQL = $entiteSQL;
-        $this->roleUtilisateur = $roleUtilisateur;
-        $this->connecteurEntiteSQL = $connecteurEntiteSQL;
-        $this->droitService = $droitService;
+        return $this->getListByType($id_u, $id_e, $type);
     }
 
     /**
-     *
-     * @param int $id_u
-     * @param int $id_e
-     * @param string $type
-     * @return array liste des connecteurs disponible pour id_e avec les droits de id_u
+     * Liste des connecteurs disponibles de type globaux ou d'entité pour id_e avec les droits de id_u
      */
-    public function getList($id_u, $id_e, $type)
+    public function getListByType(int $id_u, int $id_e, string $type, bool $global = false): array
     {
         $ancetre = $this->entiteSQL->getAncetreId($id_e);
-        array_shift($ancetre);
+        if ($id_e === 0) {
+            array_shift($ancetre);
+        }
         $ancetre[] = $id_e;
         $ancetre = array_reverse($ancetre);
         $result = [];
 
         foreach ($ancetre as $entite_id_e) {
-            if (! $this->roleUtilisateur->hasDroit($id_u, self::DROIT_NEDEED, $entite_id_e)) {
-                continue;
+            if ($this->roleUtilisateur->hasDroit($id_u, self::DROIT_NEDEED, $entite_id_e)) {
+                $listDisponible = $this->entityUtilitiesService->addDenominationForEntiteRacine(
+                    $this->connecteurEntiteSQL->getDisponible($entite_id_e, $type, $global)
+                );
+                $result = array_merge($result, $listDisponible);
             }
-
-            $result = array_merge($result, $this->connecteurEntiteSQL->getDisponible($entite_id_e, $type));
         }
         return $this->droitService->clearRestrictedConnecteur($result);
     }

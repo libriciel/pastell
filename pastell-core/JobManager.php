@@ -110,11 +110,9 @@ class JobManager
 
         $info_connecteur = $this->connecteurEntiteSQL->getInfo($id_ce);
 
-        if ($info_connecteur['id_e']) {
-            $documentType = $this->documentTypeFactory->getEntiteDocumentType($info_connecteur['id_connecteur']);
-        } else {
-            $documentType = $this->documentTypeFactory->getGlobalDocumentType($info_connecteur['id_connecteur']);
-        }
+        $documentType = ($info_connecteur['global']) ?
+            $this->documentTypeFactory->getGlobalDocumentType($info_connecteur['id_connecteur'])
+            : $this->documentTypeFactory->getEntiteDocumentType($info_connecteur['id_connecteur']);
 
         $all_action = $documentType->getAction()->getAutoAction();
         if (empty($all_action[$action_name])) {
@@ -196,8 +194,8 @@ class JobManager
     {
         $connecteur_info = $this->connecteurEntiteSQL->getInfo($id_ce);
         $connecteurFrequence = new ConnecteurFrequence();
-
-        $connecteurFrequence->type_connecteur = ($connecteur_info['id_e'] == 0) ? ConnecteurFrequence::TYPE_GLOBAL : ConnecteurFrequence::TYPE_ENTITE;
+        $connecteurFrequence->type_connecteur = ($connecteur_info['global']) ?
+            ConnecteurFrequence::TYPE_GLOBAL : ConnecteurFrequence::TYPE_ENTITE;
         $connecteurFrequence->famille_connecteur = $connecteur_info['type'];
         $connecteurFrequence->id_connecteur = $connecteur_info['id_connecteur'];
         $connecteurFrequence->id_ce = $connecteur_info['id_ce'];
@@ -217,7 +215,7 @@ class JobManager
 
         $connecteurFrequenceByFlux = [];
 
-        if ($connecteurFrequence->type_connecteur == ConnecteurFrequence::TYPE_ENTITE) {
+        if ($connecteurFrequence->type_connecteur === ConnecteurFrequence::TYPE_ENTITE) {
             foreach ($all_flux as $flux) {
                 $connecteurFrequence->action_type = ConnecteurFrequence::TYPE_ACTION_DOCUMENT;
                 $connecteurFrequence->type_document = $flux;
@@ -250,12 +248,14 @@ class JobManager
         $connecteur_info = $this->getConnecteurEntiteId($job);
 
         if ($connecteur_info) {
-            $connecteurFrequence->type_connecteur = ($connecteur_info['id_e'] == 0) ? ConnecteurFrequence::TYPE_GLOBAL : ConnecteurFrequence::TYPE_ENTITE;
+            $connecteurFrequence->type_connecteur = ($connecteur_info['global']) ?
+                ConnecteurFrequence::TYPE_GLOBAL : ConnecteurFrequence::TYPE_ENTITE;
             $connecteurFrequence->famille_connecteur = $connecteur_info['type'];
             $connecteurFrequence->id_connecteur = $connecteur_info['id_connecteur'];
             $connecteurFrequence->id_ce = $connecteur_info['id_ce'];
         }
-        $connecteurFrequence->action_type = $job->type == Job::TYPE_CONNECTEUR ? ConnecteurFrequence::TYPE_ACTION_CONNECTEUR : ConnecteurFrequence::TYPE_ACTION_DOCUMENT;
+        $connecteurFrequence->action_type = $job->type === Job::TYPE_CONNECTEUR ?
+            ConnecteurFrequence::TYPE_ACTION_CONNECTEUR : ConnecteurFrequence::TYPE_ACTION_DOCUMENT;
 
         if ($job->id_d) {
             $infoDocument = $this->document->getInfo($job->id_d);

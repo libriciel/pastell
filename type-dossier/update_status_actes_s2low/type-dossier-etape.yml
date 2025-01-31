@@ -11,11 +11,11 @@ configuration_etape_formulaire:
         type: text_select
 
 formulaire:
-    Status s2low:
+    Statut s2low:
         update_status_actes_s2low_status:
             name: 'Statut de la transaction'
 page-condition:
-    'Status s2low':
+    'Statut s2low':
         envoi_update_status_actes_s2low: true
 
 action:

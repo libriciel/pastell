@@ -317,17 +317,17 @@ iparapheur_retour: Archive',
 
     /**
      * Creates and returns a connector
-     *
-     * @param string $id_connecteur
-     * @param string $libelle
-     * @param int $entite
-     * @return array The connector
      */
-    protected function createConnector($id_connecteur, $libelle, $entite = self::ID_E_COL): array
-    {
+    protected function createConnector(
+        string $id_connecteur,
+        string $libelle,
+        int $entite = self::ID_E_COL,
+        ?int $global = null
+    ): array {
         return $this->getInternalAPI()->post("/entite/$entite/connecteur/", [
             'id_connecteur' => $id_connecteur,
             'libelle' => $libelle,
+            'global' => $global,
         ]);
     }
 

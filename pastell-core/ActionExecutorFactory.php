@@ -272,15 +272,11 @@ class ActionExecutorFactory
     public function displayChoiceOnConnecteur($id_ce, $id_u, $action_name, $field, $is_api = false)
     {
         $connecteur_entite_info = $this->objectInstancier->getInstance(ConnecteurEntiteSQL::class)->getInfo($id_ce);
-        if ($connecteur_entite_info['id_e']) {
-            $documentType = $this->objectInstancier
-                ->getInstance(DocumentTypeFactory::class)
+        $documentType = ($connecteur_entite_info['global']) ?
+            $this->objectInstancier->getInstance(DocumentTypeFactory::class)
+                ->getGlobalDocumentType($connecteur_entite_info['id_connecteur'])
+            : $this->objectInstancier->getInstance(DocumentTypeFactory::class)
                 ->getEntiteDocumentType($connecteur_entite_info['id_connecteur']);
-        } else {
-            $documentType = $this->objectInstancier
-                ->getInstance(DocumentTypeFactory::class)
-                ->getGlobalDocumentType($connecteur_entite_info['id_connecteur']);
-        }
 
         $action_class_name = $this->getActionClassName($documentType, $action_name);
         /** @var ChoiceActionExecutor $actionClass */
@@ -331,15 +327,11 @@ class ActionExecutorFactory
 
         $connecteur_entite_info = $this->objectInstancier->getInstance(ConnecteurEntiteSQL::class)->getInfo($id_ce);
 
-        if ($connecteur_entite_info['id_e']) {
-            $documentType = $this->objectInstancier
-                ->getInstance(DocumentTypeFactory::class)
+        $documentType = ($connecteur_entite_info['global']) ?
+            $this->objectInstancier->getInstance(DocumentTypeFactory::class)
+                ->getGlobalDocumentType($connecteur_entite_info['id_connecteur'])
+            : $this->objectInstancier->getInstance(DocumentTypeFactory::class)
                 ->getEntiteDocumentType($connecteur_entite_info['id_connecteur']);
-        } else {
-            $documentType = $this->objectInstancier
-                ->getInstance(DocumentTypeFactory::class)
-                ->getGlobalDocumentType($connecteur_entite_info['id_connecteur']);
-        }
 
         $action_class_name = $this->getActionClassName($documentType, $action_name);
 
@@ -412,14 +404,11 @@ class ActionExecutorFactory
     private function executeOnConnecteurThrow($id_ce, $id_u, $action_name, $from_api = false, $action_params = [])
     {
         $connecteur_entite_info = $this->objectInstancier->getInstance(ConnecteurEntiteSQL::class)->getInfo($id_ce);
-        if ($connecteur_entite_info['id_e']) {
-            $documentType = $this->objectInstancier
-                ->getInstance(DocumentTypeFactory::class)
+        $documentType = ($connecteur_entite_info['global']) ?
+            $this->objectInstancier->getInstance(DocumentTypeFactory::class)
+                ->getGlobalDocumentType($connecteur_entite_info['id_connecteur'])
+            : $this->objectInstancier->getInstance(DocumentTypeFactory::class)
                 ->getEntiteDocumentType($connecteur_entite_info['id_connecteur']);
-        } else {
-            $documentType = $this->objectInstancier->getInstance(DocumentTypeFactory::class)
-                ->getGlobalDocumentType($connecteur_entite_info['id_connecteur']);
-        }
 
         $action_class_name = $this->getActionClassName($documentType, $action_name);
 

@@ -487,6 +487,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = new Recuperateur($_GET);
         $id_e = $recuperateur->getInt('id_e', 0);
+        $global = $this->getGetInfo()->getInt('global', 0);
         $this->hasConnecteurDroitLecture($id_e);
         $this->hasEntiteDroitLecture($id_e);
         $this->setViewParameter(
@@ -494,22 +495,24 @@ class EntiteControler extends PastellControler
             $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'connecteur:edition', $id_e)
         );
         $this->setViewParameter('id_e', $id_e);
-        $this->setViewParameter('all_connecteur', $this->getConnecteurEntiteSQL()->getAll($id_e));
-        if ($id_e) {
-            $this->setViewParameter(
-                'all_connecteur_definition',
-                $this->getObjectInstancier()->getInstance(ConnecteurDefinitionFiles::class)->getAll()
-            );
-        } else {
+        $this->setViewParameter('global', $global);
+        if ($global) {
+            $this->setViewParameter('all_connecteur', $this->getConnecteurEntiteSQL()->getAllGlobalByIde($id_e));
             $this->setViewParameter(
                 'all_connecteur_definition',
                 $this->getObjectInstancier()->getInstance(ConnecteurDefinitionFiles::class)->getAllGlobal()
             );
+        } else {
+            $this->setViewParameter('all_connecteur', $this->getConnecteurEntiteSQL()->getAllLocalByIde($id_e));
+            $this->setViewParameter(
+                'all_connecteur_definition',
+                $this->getObjectInstancier()->getInstance(ConnecteurDefinitionFiles::class)->getAll()
+            );
         }
-        $this->setViewParameter('template_milieu', "ConnecteurList");
-        $this->setViewParameter('menu_gauche_select', "Entite/connecteur");
-        $this->setPageTitle("Liste des connecteurs" . ($id_e ? "" : " globaux"));
-        $this->setNavigationInfo($id_e, "Entite/connecteur?");
+        $this->setViewParameter('template_milieu', 'ConnecteurList');
+        $this->setViewParameter('menu_gauche_select', "Entite/connecteur?global=$global");
+        $this->setPageTitle('Liste des connecteurs' . ($global ? ' globaux' : ''));
+        $this->setNavigationInfo($id_e, "Entite/connecteur?global=$global");
         $this->renderDefault();
     }
 
@@ -816,7 +819,6 @@ class EntiteControler extends PastellControler
         $fileUploader = new FileUploader();
         $file_content = $fileUploader->getFileContent('pser');
         $password = $this->getPostInfo()->get('password');
-        $id_e = $this->getPostInfo()->getInt('id_e');
         $message = $this->getInstance(Crypto::class)->decrypt($file_content, $password);
 
         $message = json_decode($message, true, 512, JSON_THROW_ON_ERROR);

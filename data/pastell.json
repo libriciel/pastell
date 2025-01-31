@@ -468,6 +468,14 @@
                 "Key": "",
                 "Default": null,
                 "Extra": ""
+            },
+            "global": {
+                "Field": "global",
+                "Type": "tinyint(1)",
+                "Null": "YES",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
             }
         },
         "Index": {

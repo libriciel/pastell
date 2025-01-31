@@ -16,6 +16,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
             'type' => 'horodateur',
             'frequence_en_minute' => '1',
             'id_verrou' => '',
+            'global' => 1,
         ], $list[0]);
     }
 
@@ -48,6 +49,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                 'type' => 'test',
                 'frequence_en_minute' => '1',
                 'id_verrou' => '',
+                'global' => 0,
                 'data' => [],
                 'action-possible' => [
                     'ok',
@@ -90,6 +92,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                 'type' => 'test',
                 'frequence_en_minute' => '1',
                 'id_verrou' => '',
+                'global' => 1,
                 'data' => [],
                 'action-possible' => [
                     'ok',
@@ -148,6 +151,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                 'type' => 'test',
                 'frequence_en_minute' => '1',
                 'id_verrou' => '',
+                'global' => 0,
                 'data' => [],
                 'action-possible' => [
                     'ok',
@@ -191,6 +195,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                 'type' => 'test',
                 'frequence_en_minute' => '1',
                 'id_verrou' => '',
+                'global' => 0,
                 'data' => [
                     'champs1' => 'foo',
                 ],
@@ -348,6 +353,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                     'type' => 'signature',
                     'frequence_en_minute' => '1',
                     'id_verrou' => '',
+                    'global' => 0,
                     'denomination' => 'Bourg-en-Bresse',
                 ],
                 [
@@ -358,6 +364,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                     'type' => 'TdT',
                     'frequence_en_minute' => '1',
                     'id_verrou' => '',
+                    'global' => 0,
                     'denomination' => 'Bourg-en-Bresse',
                 ],
                 [
@@ -368,6 +375,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                     'type' => 'Bordereau SEDA',
                     'frequence_en_minute' => '1',
                     'id_verrou' => '',
+                    'global' => 0,
                     'denomination' => 'Bourg-en-Bresse',
                 ],
                 [
@@ -378,6 +386,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                     'type' => 'SAE',
                     'frequence_en_minute' => '1',
                     'id_verrou' => '',
+                    'global' => 0,
                     'denomination' => 'Bourg-en-Bresse',
                 ],
                 [
@@ -388,6 +397,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                     'type' => 'GED',
                     'frequence_en_minute' => '1',
                     'id_verrou' => '',
+                    'global' => 0,
                     'denomination' => 'Bourg-en-Bresse',
                 ],
                 [
@@ -398,6 +408,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                     'type' => 'Bordereau SEDA',
                     'frequence_en_minute' => '1',
                     'id_verrou' => '',
+                    'global' => 0,
                     'denomination' => 'Bourg-en-Bresse',
                 ],
                 [
@@ -408,6 +419,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                     'type' => 'Bordereau SEDA',
                     'frequence_en_minute' => '1',
                     'id_verrou' => '',
+                    'global' => 0,
                     'denomination' => 'Bourg-en-Bresse',
                 ],
                 [
@@ -418,6 +430,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                     'type' => 'Bordereau SEDA',
                     'frequence_en_minute' => '1',
                     'id_verrou' => '',
+                    'global' => 0,
                     'denomination' => 'Bourg-en-Bresse',
                 ],
                 [
@@ -428,6 +441,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                     'type' => 'mail-fournisseur-invitation',
                     'frequence_en_minute' => '1',
                     'id_verrou' => '',
+                    'global' => 0,
                     'denomination' => 'Bourg-en-Bresse',
                 ],
                 [
@@ -438,6 +452,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                     'type' => 'horodateur',
                     'frequence_en_minute' => '1',
                     'id_verrou' => '',
+                    'global' => 1,
                     'denomination' => null,
                 ],
                 [
@@ -448,6 +463,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                     'type' => 'mailsec',
                     'frequence_en_minute' => '1',
                     'id_verrou' => '',
+                    'global' => 0,
                     'denomination' => 'Bourg-en-Bresse',
                 ],
                 [
@@ -458,6 +474,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                     'type' => 'test',
                     'frequence_en_minute' => '1',
                     'id_verrou' => '',
+                    'global' => 0,
                     'denomination' => 'Bourg-en-Bresse',
                 ],
                 [
@@ -468,6 +485,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
                     'type' => 'test',
                     'frequence_en_minute' => '1',
                     'id_verrou' => 'toto',
+                    'global' => 0,
                     'denomination' => 'Bourg-en-Bresse',
                 ],
 
