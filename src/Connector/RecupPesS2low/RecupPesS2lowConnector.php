@@ -18,7 +18,7 @@ use Recuperateur;
 class RecupPesS2lowConnector extends \Connecteur
 {
     private const FLUX = 'ls-recup-pes-s2low';
-    private const STATUS_ACK = 4;
+    private const STATUS_AVAILABLE = 8;
     private const STATUS_SENT_TO_SAE = '19';
     private S2lowClient $client;
     private string $startDate;
@@ -44,7 +44,7 @@ class RecupPesS2lowConnector extends \Connecteur
     public function setConnecteurConfig(DonneesFormulaire $donneesFormulaire): void
     {
         $url = $donneesFormulaire->get('url');
-        $this->transactionStatus = (int)$donneesFormulaire->get('transaction_status') ?: self::STATUS_ACK;
+        $this->transactionStatus = (int)$donneesFormulaire->get('transaction_status') ?: self::STATUS_AVAILABLE;
         $this->startDate = $donneesFormulaire->get('start_date');
         $this->endDate = $donneesFormulaire->get('end_date');
 

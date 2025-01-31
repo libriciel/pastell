@@ -1,5 +1,9 @@
 # [4.1.7] - 
 
+## Ajouts
+
+- Ajout du supplément de récupération des arriérés pes de s2low #2213
+
 ## Corrections
 
 - Le connecteur de récupération des arriérés actes de s2low ne fonctionnait pas avec un login/mdp #2221
