@@ -17,10 +17,11 @@ class EntiteControlerTest extends ControlerTestCase
 
     public function testConnecteurAction()
     {
-        $this->expectOutputRegex("#Liste des connecteurs#");
+        $this->expectOutputRegex('#Liste des connecteurs globaux#');
+        $this->setGetInfo(['global' => 1]);
         $this->entiteControler->connecteurAction();
         $all_connecteur = $this->entiteControler->getViewParameter();
-        $this->assertEquals("horodateur-interne", $all_connecteur['all_connecteur'][0]['id_connecteur']);
+        $this->assertEquals('horodateur-interne', $all_connecteur['all_connecteur'][0]['id_connecteur']);
     }
 
 

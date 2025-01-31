@@ -6,7 +6,7 @@ class HorodatageCest
     {
         $I->wantTo("m'assurer que l'horodatage est fonctionnel");
         $I->amLoggedAsAdmin();
-        $I->amOnPage("/Entite/connecteur?id_e=0");
+        $I->amOnPage("/Entite/connecteur?global=1&id_e=0");
         $I->see("Horodateur interne par défaut	");
         $I->amOnPage("/Flux/index?id_e=0");
         $I->see("Horodateur interne par défaut");

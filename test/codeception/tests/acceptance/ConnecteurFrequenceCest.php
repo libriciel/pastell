@@ -17,7 +17,7 @@ class ConnecteurFrequenceCest
         $I->see("Suspendre le travail");
         $I->see("VERROU");
 
-        $I->amOnPage("/Entite/connecteur?id_e=0");
+        $I->amOnPage("/Entite/connecteur?global=1&id_e=0");
         $I->see("Liste des connecteurs");
 
         $I->click("Ajouter");

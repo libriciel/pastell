@@ -5,18 +5,15 @@
 //(documents, entités, propriétés globales)
 class DocumentTypeFactory
 {
-    private $connecteurDefinitionFiles;
-    private $fluxDefinitionFiles;
     private $allType;
 
     public function __construct(
-        ConnecteurDefinitionFiles $connecteurDefinitionFiles,
-        FluxDefinitionFiles $fluxDefinitionFiles
+        private readonly ConnecteurDefinitionFiles $connecteurDefinitionFiles,
+        private readonly FluxDefinitionFiles $fluxDefinitionFiles
     ) {
-        $this->connecteurDefinitionFiles = $connecteurDefinitionFiles;
-        $this->fluxDefinitionFiles = $fluxDefinitionFiles;
     }
 
+    /** @deprecated Since 4.1.6, Use getGlobalDocumentType or getEntiteDocumentType instead */
     public function getDocumentType($id_e, $id_connecteur): DocumentType
     {
         if ($id_e) {

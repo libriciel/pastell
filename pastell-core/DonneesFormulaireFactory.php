@@ -6,31 +6,15 @@
  */
 class DonneesFormulaireFactory
 {
-    private $documentTypeFactory;
-    private $workspacePath;
-    private $connecteurEntiteSQL;
-    private $documentSQL;
-    private $documentIndexSQL;
-    /** @var  YMLLoader */
-    private $ymlLoader;
-    private $documentAction;
-
     public function __construct(
-        DocumentTypeFactory $documentTypeFactory,
-        $workspacePath,
-        ConnecteurEntiteSQL $connecteurEntiteSQL,
-        DocumentSQL $documentSQL,
-        DocumentIndexSQL $documentIndexSQL,
-        YMLLoader $ymlLoader,
-        DocumentActionSQL $documentAction
+        private readonly DocumentTypeFactory $documentTypeFactory,
+        private $workspacePath,
+        private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
+        private readonly DocumentSQL $documentSQL,
+        private readonly DocumentIndexSQL $documentIndexSQL,
+        private readonly YMLLoader $ymlLoader,
+        private readonly DocumentActionSQL $documentAction
     ) {
-        $this->documentTypeFactory = $documentTypeFactory;
-        $this->workspacePath = $workspacePath;
-        $this->connecteurEntiteSQL = $connecteurEntiteSQL;
-        $this->documentSQL = $documentSQL;
-        $this->documentIndexSQL = $documentIndexSQL;
-        $this->ymlLoader = $ymlLoader;
-        $this->documentAction = $documentAction;
     }
     /**
      *
@@ -62,11 +46,10 @@ class DonneesFormulaireFactory
     public function getConnecteurEntiteFormulaire($id_ce)
     {
         $connecteur_entite_info = $this->connecteurEntiteSQL->getInfo($id_ce);
-        if ($connecteur_entite_info['id_e']) {
-            $documentType = $this->documentTypeFactory->getEntiteDocumentType($connecteur_entite_info['id_connecteur']);
-        } else {
-            $documentType = $this->documentTypeFactory->getGlobalDocumentType($connecteur_entite_info['id_connecteur']);
-        }
+        $documentType = ($connecteur_entite_info['global']) ?
+            $this->documentTypeFactory->getGlobalDocumentType($connecteur_entite_info['id_connecteur'])
+            : $this->documentTypeFactory->getEntiteDocumentType($connecteur_entite_info['id_connecteur']);
+
         $id_document = "connecteur_$id_ce";
         return $this->getConnecteurFromCache($id_document, $documentType);
     }
