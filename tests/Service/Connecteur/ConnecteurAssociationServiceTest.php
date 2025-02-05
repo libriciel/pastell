@@ -6,6 +6,8 @@ use Exception;
 use FluxEntiteSQL;
 use Pastell\Service\Connecteur\ConnecteurActionService;
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
+use Pastell\Service\FeatureToggle\DisplayConnecteurEntiteRacine;
+use Pastell\Service\FeatureToggleService;
 use PastellTestCase;
 use UnrecoverableException;
 
@@ -127,13 +129,13 @@ class ConnecteurAssociationServiceTest extends PastellTestCase
      * @throws UnrecoverableException
      * @throws Exception
      */
-
-    /** @deprecated 4.1.7, to be removed in v5
-     * Ce test ne passe pas sans l'activation TOGGLE_DisplayConnecteurEntiteRacine
-     * Il faudra le décommenter lorsque la feature sera supprimé */
-
-    /*public function testHeritageConnecteurEntiteRacine(): void
+    public function testHeritageConnecteurEntiteRacine(): void
     {
+        /** @deprecated 4.1.7, to be removed in v5 */
+        $this->getObjectInstancier()
+            ->getInstance(FeatureToggleService::class)
+            ->enable(DisplayConnecteurEntiteRacine::class);
+
         $id_ce = $this->createConnector(
             'transformation-generique',
             'Connecteur transformation-generique entité racine',
@@ -180,5 +182,5 @@ class ConnecteurAssociationServiceTest extends PastellTestCase
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
         static::assertSame('bar', $donneesFormulaire->get('foo'));
-    }*/
+    }
 }
