@@ -29,14 +29,14 @@ formulaire:
       type: password
       name: "Mot de passe de l'utilisateur"
     start_date:
-      name: 'Date minimale des actes à récupérer'
+      name: 'Date la plus ancienne des actes à récupérer'
       commentaire: 'Date de début de la période de récupération des actes'
       type: date
     end_date:
-      name: 'Date maximale des actes à récupérer'
-      commentaire: 'Date de fin de la période de récupération des actes.<br/>
-      Si la date est comprise dans les 60 derniers jours, 
-      elle ne sera pas prise en compte au profit de la date J-60.'
+      name: 'Date la plus récente des actes à récupérer'
+      commentaire: "Date de fin de la période de récupération des actes.<br/>
+      Pour les actes dans l'état Acquittement reçu, si la date est comprise dans les 60 derniers jours, 
+      elle ne sera pas prise en compte au profit de la date J-60."
       type: date
     transaction_status:
       name: État des transactions à récupérer sur s2low
