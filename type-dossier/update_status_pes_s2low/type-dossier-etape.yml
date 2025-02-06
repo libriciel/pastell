@@ -30,9 +30,15 @@ action:
         rule:
             last-action:
                 - preparation-change-status-transaction
+                - change-status-error
         action-class: StandardAction
         connecteur-type: TdT
         connecteur-type-action: Pastell\Step\UpdateStatusPesS2low\Action\ChangeStatusAction
         connecteur-type-mapping:
             status: update_status_pes_s2low_status
+            change-status-error: change-status-error
         action-automatique: orientation
+    change-status-error:
+        name: 'Erreur lors du changement de statut de la transaction'
+        rule:
+            role_id_e: no-role

@@ -158,8 +158,10 @@ action:
                 - importation
                 - termine
                 - fatal-error
+                - change-status-error_1
                 - rejet-sae
                 - transformation-fixe-error
+                - change-status-error_2
         action-class: Supprimer
         warning: 'Êtes-vous sûr ?'
     importation:
@@ -209,11 +211,13 @@ action:
         rule:
             last-action:
                 - preparation-change-status-transaction_1
+                - change-status-error_1
         action-class: StandardAction
         connecteur-type: TdT
         connecteur-type-action: Pastell\Step\UpdateStatusPesS2low\Action\ChangeStatusAction
         connecteur-type-mapping:
             status: update_status_pes_s2low_status_1
+            change-status-error: change-status-error_1
             transaction: transaction_id
         action-automatique: orientation
         num-same-connecteur: '0'
@@ -236,6 +240,11 @@ action:
             - sae_atr_comment
             - update_status_pes_s2low_status_2
         modification-no-change-etat: true
+    change-status-error_1:
+        name: 'Erreur lors du changement de statut de la transaction #1'
+        rule:
+            role_id_e: no-role
+        num-same-connecteur: '0'
     preparation-send-sae:
         name: "Préparation de l'envoi au SAE"
         rule:
@@ -401,13 +410,20 @@ action:
         rule:
             last-action:
                 - preparation-change-status-transaction_2
+                - change-status-error_2
         action-class: StandardAction
         connecteur-type: TdT
         connecteur-type-action: Pastell\Step\UpdateStatusPesS2low\Action\ChangeStatusAction
         connecteur-type-mapping:
             status: update_status_pes_s2low_status_2
+            change-status-error: change-status-error_2
             transaction: transaction_id
         action-automatique: orientation
+        num-same-connecteur: '1'
+    change-status-error_2:
+        name: 'Erreur lors du changement de statut de la transaction #2'
+        rule:
+            role_id_e: no-role
         num-same-connecteur: '1'
 restriction_pack:
     - suppl_recup_pes_s2low
