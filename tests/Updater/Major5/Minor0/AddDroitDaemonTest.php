@@ -1,10 +1,11 @@
 <?php
 
-namespace Updater\Major4\Minor0;
+declare(strict_types=1);
 
-use Pastell\Updater\Major4\Minor0\AddDroitDaemon;
+namespace Pastell\Tests\Updater\Major5\Minor0;
+
+use Pastell\Updater\Major5\Minor0\AddDroitDaemon;
 use PastellTestCase;
-use PHPUnit\Framework\TestCase;
 use RoleDroit;
 use RoleSQL;
 

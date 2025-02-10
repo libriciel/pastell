@@ -198,14 +198,4 @@ class DroitService
     {
         return $this->documentTypeFactory->isRestrictedConnecteur($id_connecteur, $global);
     }
-
-    public function hasDroitDaemonLecture(int $id_e, int $id_u): bool
-    {
-        return $this->hasDroit($id_u, self::getDroitLecture(self::DROIT_DAEMON), $id_e);
-    }
-
-    public function hasDroitDaemonEdition(int $id_e, int $id_u): bool
-    {
-        return $this->hasDroit($id_u, self::getDroitEdition(self::DROIT_DAEMON), $id_e);
-    }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
 use Symfony\Component\Process\Process;
 
 class DaemonControler extends PastellControler
@@ -65,7 +66,7 @@ class DaemonControler extends PastellControler
      */
     public function verrouAction(): void
     {
-        $this->verifDroit(0, 'daemon:lecture');
+        $this->verifDroit(0, DroitService::getDroitLecture(DroitService::DROIT_DAEMON));
         $this->setViewParameter('job_queue_info_list', $this->getJobQueueSQL()->getCountJobByVerrouAndEtat());
         $this->setViewParameter('menu_gauche_select', "Daemon/verrou");
         $this->setViewParameter('template_milieu', "DaemonVerrou");
@@ -94,7 +95,7 @@ class DaemonControler extends PastellControler
      */
     private function indexData(): void
     {
-        $this->verifDroit(0, 'daemon:lecture');
+        $this->verifDroit(0, DroitService::getDroitLecture(DroitService::DROIT_DAEMON));
         $this->setViewParameter('nb_worker_actif', $this->getWorkerSQL()->getNbActif());
         $this->setViewParameter('job_stat_info', $this->getJobQueueSQL()->getStatInfo());
         $this->setViewParameter('daemon_pid', $this->getDaemonManager()->getDaemonPID());
@@ -110,7 +111,8 @@ class DaemonControler extends PastellControler
      */
     public function daemonStartAction(): void
     {
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
+        ;
         try {
             $this->getDaemonManager()->start();
             $this->getLogger()->info('Daemon start manually');
@@ -137,7 +139,7 @@ class DaemonControler extends PastellControler
      */
     public function daemonStopAction(): void
     {
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
         $this->getDaemonManager()->stop();
         if ($this->getDaemonManager()->status() == DaemonManager::IS_STOPPED) {
             $this->setLastMessage("Le gestionnaire de tâches a été arrêté");
@@ -153,7 +155,7 @@ class DaemonControler extends PastellControler
      */
     public function lockAction(): void
     {
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
 
         $id_job = $this->getGetInfo()->getInt('id_job');
         $id_verrou = $this->getGetInfo()->get('id_verrou');
@@ -177,7 +179,7 @@ class DaemonControler extends PastellControler
      */
     public function unlockAction(): void
     {
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
 
         $id_job = $this->getGetInfo()->getInt('id_job');
         $id_verrou = $this->getGetInfo()->get('id_verrou');
@@ -203,7 +205,7 @@ class DaemonControler extends PastellControler
     {
         $this->getWorkerSQL()->menageAll();
         $this->getJobQueueSQL()->unlockAll();
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
         $this->redirect('Daemon/index');
     }
 
@@ -213,7 +215,7 @@ class DaemonControler extends PastellControler
      */
     public function killAction(): void
     {
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
         $recuperateur = new Recuperateur($_GET);
         $id_worker = $recuperateur->getInt('id_worker');
         $return_url = $recuperateur->get('return_url', 'Daemon/index');
@@ -248,7 +250,7 @@ class DaemonControler extends PastellControler
         $recuperateur = $this->getGetInfo();
         $this->setViewParameter('menu_gauche_select', 'Daemon/job');
 
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
         $this->setViewParameter('twigTemplate', 'daemon/job.html.twig');
         $this->setViewParameter('page_title', 'Gestionnaire de tâches');
         $filtre = $recuperateur->get('filtre', '');
@@ -296,7 +298,7 @@ class DaemonControler extends PastellControler
      */
     public function detailAction(): void
     {
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
         $id_job = $this->getGetInfo()->get("id_job");
 
         $this->setViewParameter('page_title', "Détail du travail #{$id_job}");
@@ -315,7 +317,7 @@ class DaemonControler extends PastellControler
      */
     public function configAction(): void
     {
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
 
         $this->setViewParameter('page_title', "Configuration de la fréquence des connecteurs");
         $this->setViewParameter('template_milieu', "DaemonConfig");
@@ -332,7 +334,7 @@ class DaemonControler extends PastellControler
      */
     public function editFrequenceAction(): void
     {
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
         $id_cf = $this->getGetInfo()->getInt('id_cf');
         $connecteurFrequence = $this->getConnecteurFrequenceSQL()->getConnecteurFrequence($id_cf) ?: new ConnecteurFrequence();
 
@@ -406,7 +408,7 @@ class DaemonControler extends PastellControler
      */
     public function doEditFrequenceAction(): void
     {
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
         $connecteurFrequence = new ConnecteurFrequence($this->getPostInfo()->getAll());
         $id_cf = $this->getConnecteurFrequenceSQL()->edit($connecteurFrequence);
         $this->redirect("Daemon/connecteurFrequenceDetail?id_cf=$id_cf");
@@ -414,7 +416,7 @@ class DaemonControler extends PastellControler
 
     public function connecteurFrequenceDetailAction()
     {
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
         $id_cf = $this->getGetInfo()->getInt('id_cf');
         $connecteurFrequence = $this->verifConnecteur($id_cf);
         $this->setViewParameter('connecteurFrequence', $connecteurFrequence);
@@ -430,7 +432,7 @@ class DaemonControler extends PastellControler
      */
     private function verifConnecteur($id_cf): ConnecteurFrequence
     {
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
         $connecteurFrequence = $this->getConnecteurFrequenceSQL()->getConnecteurFrequence($id_cf);
 
         if (! $connecteurFrequence) {
@@ -446,7 +448,7 @@ class DaemonControler extends PastellControler
      */
     public function deleteFrequenceAction(): void
     {
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
         $id_cf = $this->getGetInfo()->get('id_cf');
         $this->getConnecteurFrequenceSQL()->delete($id_cf);
         $this->setLastMessage("La fréquence a été supprimée");
@@ -459,7 +461,7 @@ class DaemonControler extends PastellControler
      */
     public function deleteJobAction(): void
     {
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
         $id_job = $this->getGetInfo()->get('id_job');
         $id_connecteur = $this->getGetInfo()->get('id_ce');
         $this->getJobQueueSQL()->deleteJob($id_job);
@@ -472,7 +474,7 @@ class DaemonControler extends PastellControler
      */
     public function deleteJobDocumentAction(): void
     {
-        $this->verifDroit(0, 'daemon:edition');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
         $id_job = $this->getGetInfo()->get('id_job');
         $id_document = $this->getGetInfo()->get('id_d');
         $id_entite = $this->getGetInfo()->get('id_e');

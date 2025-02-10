@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\File\Chunk\ChunkUploader;
+use Pastell\Service\Droit\DroitService;
 
 class DocumentControler extends PastellControler
 {
@@ -134,10 +135,18 @@ class DocumentControler extends PastellControler
             $this->setViewParameter('all_action', $documentType->getAction()->getWorkflowAction());
         }
         $this->setViewParameter(
-            'is_daemon_admin',
+            'daemon_edition',
             $this->getRoleUtilisateur()->hasDroit(
                 $this->getId_u(),
-                'daemon:edition',
+                DroitService::getDroitEdition(DroitService::DROIT_DAEMON),
+                0
+            )
+        );
+        $this->setViewParameter(
+            'daemon_lecture',
+            $this->getRoleUtilisateur()->hasDroit(
+                $this->getId_u(),
+                DroitService::getDroitLecture(DroitService::DROIT_DAEMON),
                 0
             )
         );
@@ -157,7 +166,7 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('document_email_reponse_list', $document_email_reponse_list);
 
         $this->setViewParameter('recuperation_fichier_url', "Document/recuperationFichier?id_d=$id_d&id_e=$id_e");
-        if ($this->hasDroit($this->getViewParameterOrObject('id_e'), 'daemon:lecture')) {
+        if ($this->hasDroit($this->getViewParameterOrObject('id_e'), DroitService::getDroitLecture(DroitService::DROIT_DAEMON))) {
             $this->setViewParameter('job_list', $this->getWorkerSQL()->getJobListWithWorkerForDocument($this->getViewParameterOrObject('id_e'), $this->getViewParameterOrObject('id_d')));
         } else {
             $this->setViewParameter('job_list', false);

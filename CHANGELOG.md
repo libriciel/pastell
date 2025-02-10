@@ -1,5 +1,9 @@
 # [5.0.0] - 
 
+## Ajouts
+
+- Ajout d'un rôle pour la lecture et l'édition de daemons #2192
+
 ## Suppression d'éléments dépréciés
 
 - Suppression de la table collectivite_fournisseur #2205

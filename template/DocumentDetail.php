@@ -16,7 +16,8 @@
  * @var Action $theAction
  * @var array $document_email_reponse_list
  * @var bool $is_super_admin
- * @var bool $is_daemon_admin
+ * @var bool $daemon_edition
+ * @var bool $daemon_lecture
  * @var array|bool $job_list
  * @var string $return_url
  * @var bool $droit_erreur_fatale
@@ -281,45 +282,7 @@ if ($infoDocumentEmail) :
 
 </div>
 
-
-<?php if ($is_super_admin) : ?>
-    <div class="box">
-        <a class="collapse-link" data-bs-toggle="collapse" data-bs-target="#collapseExample">
-            <h2><i class="fa fa-plus-square"></i>&nbsp;Administration avancée</h2>
-        </a>
-
-        <div class="collapse" id="collapseExample">
-            <div class="box">
-                <h3>Modification manuelle de l'état</h3>
-
-                <div class='alert alert-danger'>
-                    <b>Attention !</b> Rien ne garantit la cohérence du nouvel état !
-                </div>
-                <form action='<?php $this->url('Document/changeEtat'); ?>' method='post'>
-                    <?php $this->displayCSRFInput(); ?>
-                    <input type='hidden' name='id_e' value='<?php echo $id_e; ?>'/>
-                    <input type='hidden' name='id_d' value='<?php echo $id_d; ?>'/>
-                    Nouvel état : <select name='action' class="form-select">
-                        <option value=''></option>
-                        <?php foreach ($all_action as $etat => $libelle_etat) : ?>
-                            <option value='<?php echo $etat; ?>'>
-                                <?php echo $libelle_etat; ?> [<?php echo $etat; ?>]
-                            </option>
-                        <?php endforeach; ?>
-                    </select><br/>
-                    Texte à mettre dans le journal : <input class="form-control" type='text' value='' name='message'>
-                    <br/>
-                    <button type="submit"
-                            class="btn btn-danger"><i class="fa fa-floppy-o"
-                        ></i>&nbsp;Valider le changement d'état
-                    </button>
-
-                </form>
-            </div>
-        </div>
-    </div>
-<?php endif; ?>
-<?php if ($is_daemon_admin && $job_list) : ?>
+<?php if (($daemon_lecture || $daemon_edition) && $job_list) : ?>
     <div class="box">
         <a class="collapse-link" data-bs-toggle="collapse" data-bs-target="#daemonCollapse">
             <h2><i class="fa fa-plus-square"></i>&nbsp;Travaux programmés</h2>
@@ -340,7 +303,9 @@ if ($infoDocumentEmail) :
                         <th>#ID processus</th>
                         <th>PID processus</th>
                         <th>Début processus</th>
-                        <th>Fonction</th>
+                        <?php if ($daemon_edition) : ?>
+                            <th>Fonction</th>
+                        <?php endif; ?>
                     </tr>
                     <?php foreach ($job_list as $job_info) : ?>
                         <tr>
@@ -359,20 +324,24 @@ if ($infoDocumentEmail) :
                                         Depuis le <?php
                                         echo $this->getFancyDate()->getDateFr($job_info['lock_since']);
                                         ?><br/>
-                                        <a href='<?php $this->url("Daemon/unlock?$daemonQueryParams"); ?>'
-                                           class=" btn-warning btn">
-                                            <i class="fa fa-unlock-alt"></i>&nbsp;
-                                            Reprendre
-                                        </a>
+                                        <?php if ($daemon_edition) : ?>
+                                            <a href='<?php $this->url("Daemon/unlock?$daemonQueryParams"); ?>'
+                                               class=" btn-warning btn">
+                                                <i class="fa fa-unlock-alt"></i>&nbsp;
+                                                Reprendre
+                                            </a>
+                                        <?php endif; ?>
                                     </p>
                                 <?php else : ?>
                                     <p>
                                         NON <br/>
-                                        <a href='<?php $this->url("Daemon/lock?$daemonQueryParams"); ?>'
-                                           class="btn btn-warning">
-                                            <i class="fa fa-lock"></i>&nbsp;
-                                            Suspendre
-                                        </a>
+                                        <?php if ($daemon_edition) : ?>
+                                            <a href='<?php $this->url("Daemon/lock?$daemonQueryParams"); ?>'
+                                               class="btn btn-warning">
+                                                <i class="fa fa-lock"></i>&nbsp;
+                                                Suspendre
+                                            </a>
+                                        <?php endif; ?>
                                     </p>
                                 <?php endif; ?>
                             </td>
@@ -416,21 +385,24 @@ if ($infoDocumentEmail) :
                                     <?php echo $this->getFancyDate()->getTimeElapsed($job_info['date_begin']); ?>
                                 <?php endif; ?>
                             </td>
-                            <td>
-                                <?php
-                                $deleteJobUrl = \sprintf(
-                                    'Daemon/deleteJobDocument?id_job=%s&id_e=%s&id_d=%s',
-                                    $job_info['id_job'],
-                                    $id_e,
-                                    $id_d,
-                                );
-                                ?>
-                                <a href="<?php echo $deleteJobUrl; ?>"
-                                   class="btn btn-danger">
-                                    <i class="fa fa-trash"></i>&nbsp;
-                                    Supprimer
-                                </a>
-                            </td>
+                            <?php if ($daemon_edition) : ?>
+                                <td>
+                                    <?php
+                                    $deleteJobUrl = \sprintf(
+                                        'Daemon/deleteJobDocument?id_job=%s&id_e=%s&id_d=%s',
+                                        $job_info['id_job'],
+                                        $id_e,
+                                        $id_d,
+                                    );
+                                    ?>
+
+                                        <a href="<?php echo $deleteJobUrl; ?>"
+                                           class="btn btn-danger">
+                                            <i class="fa fa-trash"></i>&nbsp;
+                                            Supprimer
+                                        </a>
+                                </td>
+                            <?php endif; ?>
                         </tr>
                     <?php endforeach; ?>
                 </table>
@@ -443,11 +415,51 @@ if ($infoDocumentEmail) :
                         <input type='hidden' name='page' value='<?php echo $page; ?>'/>
                         <input type='hidden' name='action' value='fatal-error'/>
 
-                        <button type='submit' class='btn btn-danger'>
-                            <i class="fa fa-exclamation-triangle"></i>&nbsp;Passer en erreur fatale
-                        </button>
+                        <?php if ($daemon_edition) : ?>
+                            <button type='submit' class='btn btn-danger'>
+                                <i class="fa fa-exclamation-triangle"></i>&nbsp;Passer en erreur fatale
+                            </button>
+                        <?php endif; ?>
                     </form>
                 <?php endif; ?>
             </div>
         </div>
+    </div>
+<?php endif; ?>
+<?php if ($is_super_admin) : ?>
+    <div class="box">
+        <a class="collapse-link" data-bs-toggle="collapse" data-bs-target="#collapseExample">
+            <h2><i class="fa fa-plus-square"></i>&nbsp;Administration avancée</h2>
+        </a>
+
+        <div class="collapse" id="collapseExample">
+            <div class="box">
+                <h3>Modification manuelle de l'état</h3>
+
+                <div class='alert alert-danger'>
+                    <b>Attention !</b> Rien ne garantit la cohérence du nouvel état !
+                </div>
+                <form action='<?php $this->url('Document/changeEtat'); ?>' method='post'>
+                    <?php $this->displayCSRFInput(); ?>
+                    <input type='hidden' name='id_e' value='<?php echo $id_e; ?>'/>
+                    <input type='hidden' name='id_d' value='<?php echo $id_d; ?>'/>
+                    Nouvel état : <select name='action' class="form-select">
+                        <option value=''></option>
+                        <?php foreach ($all_action as $etat => $libelle_etat) : ?>
+                            <option value='<?php echo $etat; ?>'>
+                                <?php echo $libelle_etat; ?> [<?php echo $etat; ?>]
+                            </option>
+                        <?php endforeach; ?>
+                    </select><br/>
+                    Texte à mettre dans le journal : <input class="form-control" type='text' value='' name='message'>
+                    <br/>
+                    <button type="submit"
+                            class="btn btn-danger"><i class="fa fa-floppy-o"
+                        ></i>&nbsp;Valider le changement d'état
+                    </button>
+
+                </form>
+            </div>
+        </div>
+    </div>
 <?php endif; ?>

@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pastell\Updater\Major4\Minor0;
+namespace Pastell\Updater\Major5\Minor0;
 
 use Pastell\Updater\Version;
+use PastellLogger;
 use RoleDroit;
 use RoleSQL;
 
@@ -13,6 +14,7 @@ final class AddDroitDaemon implements Version
     public function __construct(
         private readonly RoleSQL $roleSQL,
         private readonly RoleDroit $roleDroit,
+        private readonly ?PastellLogger $logger = null,
     ) {
     }
 
@@ -34,9 +36,21 @@ final class AddDroitDaemon implements Version
             foreach ($roles as $role) {
                 if ($roles_droits[$role['role']]['system:lecture']) {
                     $this->roleSQL->addDroit($role['role'], 'daemon:lecture');
+                    $this->logger?->info(
+                        sprintf(
+                            'Added daemon:lecture permission to role: `%s`',
+                            $role['role']
+                        )
+                    );
                 }
                 if ($roles_droits[$role['role']]['system:edition']) {
                     $this->roleSQL->addDroit($role['role'], 'daemon:edition');
+                    $this->logger?->info(
+                        sprintf(
+                            'Added daemon:edition permission to role: `%s`',
+                            $role['role']
+                        )
+                    );
                 }
             }
         }
