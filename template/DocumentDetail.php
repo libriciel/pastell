@@ -322,7 +322,7 @@ if ($infoDocumentEmail) :
 <?php if ($is_daemon_admin && $job_list) : ?>
     <div class="box">
         <a class="collapse-link" data-bs-toggle="collapse" data-bs-target="#daemonCollapse">
-            <h2><i class="fa fa-plus-square"></i>&nbsp; Tâches automatiques</h2>
+            <h2><i class="fa fa-plus-square"></i>&nbsp;Travaux programmés</h2>
         </a>
         <div class="collapse" id="daemonCollapse">
             <div class='box'>
