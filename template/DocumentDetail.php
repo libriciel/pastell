@@ -326,7 +326,6 @@ if ($infoDocumentEmail) :
         </a>
         <div class="collapse" id="daemonCollapse">
             <div class='box'>
-                <h3>Travaux programmés</h3>
                 <table class="table table-striped">
                     <tr>
                         <th>#ID travail</th>
