@@ -55,10 +55,10 @@ class RecupActesS2lowConnector extends \Connecteur
         $dateSixtyDaysAgo->sub(new \DateInterval('P62D'));
         $connectorDate = new \DateTime($donneesFormulaire->get('end_date'));
 
-        if ($dateSixtyDaysAgo > $connectorDate) {
-            $this->endDate = $connectorDate->format('Y-m-d');
-        } else {
+        if ($connectorDate > $dateSixtyDaysAgo  && $this->transactionStatus === self::STATUS_ACK) {
             $this->endDate = $dateSixtyDaysAgo->format('Y-m-d');
+        } else {
+            $this->endDate = $connectorDate->format('Y-m-d');
         }
 
         $this->numberOfDocumentsPerJob = (int)$donneesFormulaire->get('nb_recup') ?: 10;
