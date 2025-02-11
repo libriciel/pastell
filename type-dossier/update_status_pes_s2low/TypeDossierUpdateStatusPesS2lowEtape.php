@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-final class TypeDossierUpdateStatusActesS2lowEtape implements TypeDossierEtapeSetSpecificInformation
+final class TypeDossierUpdateStatusPesS2LowEtape implements TypeDossierEtapeSetSpecificInformation
 {
     use TypeDossierRemoveFromEditableContent;
 

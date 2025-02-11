@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<n:PES_ACQUIT xmlns:n="http://www.minefi.gouv.fr/cp/helios/pes_v2/Rev0/retour/v2">
+    <Enveloppe>
+        <Parametres>
+            <Version V="2"/>
+            <TypFic V="PESALR2"/>
+            <NomFic V="HELIOS_SIMU_ALR2_1714033963_820438897.xml"/>
+        </Parametres>
+        <Emetteur>
+            <Sigle V="A"/>
+            <Adresse V="B"/>
+        </Emetteur>
+        <Recepteur>
+            <Sigle V="HELIOS"/>
+        </Recepteur>
+    </Enveloppe>
+    <EnTetePES>
+        <DteStr V="2015-12-10"/>
+        <IdPost V="034000"/>
+        <IdColl V="20004910400025"/>
+        <CodCol V="123"/>
+        <CodBud V="12"/>
+        <LibelleColBud V="C"/>
+    </EnTetePES>
+    <ACQUIT>
+        <EnTeteAcquit>
+            <IdVer V="2"/>
+        </EnTeteAcquit>
+        <ElementACQUIT>
+            <DomaineAck V="5"/>
+            <EtatAck V="1"/>
+            <NumBord V="1847"/>
+            <ExerciceBord V="2015"/>
+        </ElementACQUIT>
+        <ElementACQUIT>
+            <DomaineAck V="4"/>
+            <EtatAck V="1"/>
+            <IdUnique V="200049104000252015DEPENSE0000087458"/>
+        </ElementACQUIT>
+        <ElementACQUIT>
+            <DomaineAck V="4"/>
+            <EtatAck V="1"/>
+            <IdUnique V="20004904000252015DEPENSE0000087460"/>
+        </ElementACQUIT>
+        <ElementACQUIT>
+            <DomaineAck V="4"/>
+            <EtatAck V="1"/>
+            <IdUnique V="200049104000252015DEPENSE0000087461"/>
+        </ElementACQUIT>
+        <ElementACQUIT>
+            <DomaineAck V="4"/>
+            <EtatAck V="1"/>
+            <IdUnique V="200049104000252015DEPENSE0000087459"/>
+        </ElementACQUIT>
+    </ACQUIT>
+</n:PES_ACQUIT>
