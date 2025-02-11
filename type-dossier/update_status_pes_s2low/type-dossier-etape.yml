@@ -1,8 +1,8 @@
-libelle: 'Mise à jour du statut de la transaction sur s2low'
+libelle: 'Mise à jour du statut de la transaction PES sur s2low'
 restriction_pack :
     - 'suppl_test'
 connecteur_type:
-    - recup-actes-s2low
+    - recup-pes-s2low
 
 configuration_etape_formulaire:
     transaction:
@@ -12,11 +12,11 @@ configuration_etape_formulaire:
 
 formulaire:
     Statut s2low:
-        update_status_actes_s2low_status:
+        update_status_pes_s2low_status:
             name: 'Statut de la transaction'
 page-condition:
     'Statut s2low':
-        envoi_update_status_actes_s2low: true
+        envoi_update_status_pes_s2low: true
 
 action:
     preparation-change-status-transaction:
@@ -33,9 +33,9 @@ action:
                 - change-status-error
         action-class: StandardAction
         connecteur-type: TdT
-        connecteur-type-action: Pastell\Step\UpdateStatusActesS2low\Action\ChangeStatusAction
+        connecteur-type-action: Pastell\Step\UpdateStatusPesS2low\Action\ChangeStatusAction
         connecteur-type-mapping:
-            status: update_status_actes_s2low_status
+            status: update_status_pes_s2low_status
             change-status-error: change-status-error
         action-automatique: orientation
     change-status-error:

@@ -1,8 +1,8 @@
-nom: Récupération Actes S²low
+nom: Récupération PES S²low
 description: ""
-type: recup-actes-s2low
+type: recup-pes-s2low
 restriction_pack:
-  - suppl_recup_actes_s2low
+  - suppl_recup_pes_s2low
 
 formulaire:
   page:
@@ -29,22 +29,20 @@ formulaire:
       type: password
       name: "Mot de passe de l'utilisateur"
     start_date:
-      name: 'Date la plus ancienne des actes à récupérer'
-      commentaire: 'Date de début de la période de récupération des actes'
+      name: 'Date la plus ancienne des pes à récupérer'
+      commentaire: 'Date de début de la période de récupération des pes'
       type: date
     end_date:
-      name: 'Date la plus récente des actes à récupérer'
-      commentaire: "Date de fin de la période de récupération des actes.<br/>
-      Pour les actes dans l'état Acquittement reçu, si la date est comprise dans les 60 derniers jours, 
-      elle ne sera pas prise en compte au profit de la date J-60."
+      name: 'Date la plus récente des pes à récupérer'
+      commentaire: 'Date de fin de la période de récupération des pes'
       type: date
     transaction_status:
       name: État des transactions à récupérer sur s2low
       type: select
       value:
-        4: 'Acquittement reçu'
-        14: 'Erreur lors de l''archivage'
-      default: 4
+        8: 'Information disponible'
+        20: 'Erreur lors de l''archivage'
+      default: 8
     nb_recup:
       name: Nombre de dossiers à récupérer pour un passage du travail
       commentaire: 10 par défaut
@@ -57,20 +55,22 @@ action:
   test_auth:
     name: 'Tester la connectivité'
     action-class: Pastell\Connector\RecupActesS2low\Action\TestAuthentication
-  list_actes:
-    name: 'Lister les actes archivables'
-    action-class: Pastell\Connector\RecupActesS2low\Action\FetchActesList
+  list_pes:
+    name: 'Lister les pes aller archivables'
+    action-class: Pastell\Connector\RecupPesS2low\Action\FetchPesAllerList
   fetch_once:
     name: 'Faire une boucle de récupération (synchrone)'
-    action-class: Pastell\Connector\RecupActesS2low\Action\FetchActes
+    action-class: Pastell\Connector\RecupPesS2low\Action\FetchPesAller
+
   fetch:
     name: Traitement (immédiat)
-    action-class: Pastell\Connector\RecupActesS2low\Action\FetchActes
+    action-class: Pastell\Connector\RecupPesS2low\Action\FetchPesAller
     action-automatique: fetch
 
   fetch-async:
     name: Traitement (par le gestionnaire de tâches)
     action-class: Pastell\Connector\RecupActesS2low\Action\FetchActesAsync
+
 
   update-certificate:
     name: 'Mettre à jour les certificats'

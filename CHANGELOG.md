@@ -4,6 +4,20 @@
 
 - Suppression de la table collectivite_fournisseur #2205
 
+# [4.1.7] - 2025-02-11
+
+## Ajouts
+
+- Ajout du supplément de récupération des arriérés pes de s2low #2213
+
+## Corrections
+
+- Le connecteur de récupération des arriérés actes de s2low ne fonctionnait pas avec un login/mdp #2221
+- Modification des libellés des dates du connecteur de récupération des arriérés actes de s2low #2217
+- Il manquait un état d'erreur dans le cas "Impossible de changer le status de la transaction"
+  lors de la récupération d'arriérés s2low #2225
+- Il était possible de créer un connecteur d'entité au niveau de l'entité racine même si la fonctionnalité était désactivée #2224
+
 # [4.1.6] - 2025-01-28
 
 ## Évolutions

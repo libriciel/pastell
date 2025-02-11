@@ -63,6 +63,7 @@ services:
             PACK_RECUP_PARAPHEUR_CORBEILLE_CONNECTOR: ${PACK_RECUP_PARAPHEUR_CORBEILLE_CONNECTOR:-false}
             PACK_RECUP_FIN_PARAPHEUR: ${PACK_RECUP_FIN_PARAPHEUR:-false}
             PACK_RECUP_ACTES_S2LOW: ${PACK_RECUP_ACTES_S2LOW:-false}
+            PACK_RECUP_PES_S2LOW: ${PACK_RECUP_PES_S2LOW:-false}
             PACK_FAST_CONNECTORS: ${PACK_FAST_CONNECTORS:-false}
             PACK_VITAM_CONNECTORS: ${PACK_VITAM_CONNECTORS:-false}
             TIMEZONE: ${TIMEZONE:-Europe/Paris}
@@ -85,7 +86,7 @@ services:
         user: "${UID:-33}:${GID:-33}"
 
     db:
-        image: 'hubdocker.libriciel.fr/mariadb:10.11.10-jammy'
+        image: 'hubdocker.libriciel.fr/mariadb:10.11.11-jammy'
         restart: unless-stopped
         command:
             - "--character-set-server=utf8mb4"
@@ -113,11 +114,11 @@ services:
         restart: unless-stopped
 
     cloudooo:
-        image: 'registry.libriciel.fr/public/actes/cloudooo:7.1.0'
+        image: 'registry.libriciel.fr/public/actes/cloudooo:24.8.4-PDFA'
         restart: unless-stopped
 
     pes-viewer:
-        image: 'registry.libriciel.fr/public/signature/pes-viewer:2.0.16'
+        image: 'registry.libriciel.fr/public/signature/pes-viewer:2.1.5'
         restart: unless-stopped
         deploy:
             resources:

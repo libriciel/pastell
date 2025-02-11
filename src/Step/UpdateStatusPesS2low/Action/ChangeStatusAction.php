@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Pastell\Step\UpdateStatusActesS2low\Action;
+namespace Pastell\Step\UpdateStatusPesS2low\Action;
 
 use ConnecteurTypeActionExecutor;
 use NotFoundException;
 use Pastell\Client\S2low\S2lowClientException;
-use Pastell\Connector\RecupActesS2low\RecupActesS2lowConnector;
+use Pastell\Connector\RecupPesS2low\RecupPesS2lowConnector;
 use Psr\Http\Client\ClientExceptionInterface;
 use UnrecoverableException;
 
@@ -24,8 +24,8 @@ final class ChangeStatusAction extends ConnecteurTypeActionExecutor
         $transactionField = $this->getMappingValue('transaction');
         $changeStatutErrorState = $this->getMappingValue('change-status-error');
 
-        /** @var RecupActesS2lowConnector $connector */
-        $connector = $this->getConnecteur('recup-actes-s2low');
+        /** @var RecupPesS2lowConnector $connector */
+        $connector = $this->getConnecteur('recup-pes-s2low');
 
         try {
             $connector->changeStatus(

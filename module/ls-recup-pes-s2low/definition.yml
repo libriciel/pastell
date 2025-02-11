@@ -1,11 +1,11 @@
-nom: 'Récupération arriéré actes s2low'
-type: 'Actes administratifs'
+nom: 'Récupération arriéré PES s2low'
+type: Finances
 description: ''
 connecteur:
-    - recup-actes-s2low
+    - recup-pes-s2low
     - 'Bordereau SEDA'
     - SAE
-    - recup-actes-s2low
+    - recup-pes-s2low
 affiche_one: false
 formulaire:
     Informations:
@@ -15,75 +15,29 @@ formulaire:
             requis: true
             multiple: false
             commentaire: ''
-        acte_nature:
-            name: "Nature de l'acte"
-            type: select
-            requis: true
-            multiple: false
-            commentaire: ''
-            value:
-                3: ' Actes individuels'
-                2: ' Actes réglementaires'
-                6: ' Autres'
-                4: ' Contrats, conventions et avenants'
-                1: ' Délibérations'
-                5: ' Documents budgétaires et financiers'
-        numero_de_lacte:
-            name: "Numéro de l'acte"
-            type: text
-            requis: true
-            multiple: false
-            commentaire: '15 caractères maximum (chiffres, lettres en majuscule ou _)'
-            preg_match: '#^[0-9A-Z_]{1,15}$#'
-            preg_match_error: '15 caractères maximum (chiffres, lettres en majuscule ou _)'
         objet:
             name: Objet
-            type: textarea
-            requis: true
-            multiple: false
-            commentaire: ''
-            preg_match: '#^.{1,499}$#us'
-            preg_match_error: "L'objet doit faire entre 1 et 499 caractères sans retour chariot"
-            title: true
-        date_de_lacte:
-            name: 'Date de la décision'
-            type: date
-            requis: true
-            multiple: false
-            commentaire: ''
-        classification:
-            name: 'Classification en matière et sous-matière'
             type: text
             requis: true
             multiple: false
             commentaire: ''
-        arrete:
-            name: Acte
-            type: file
-            requis: true
-            multiple: false
-            commentaire: 'format PDF ou XML'
-        autre_document_attache:
-            name: Annexe(s)
-            type: file
-            requis: false
-            multiple: true
-            commentaire: ''
-        aractes:
-            name: 'Accusé de réception technique'
+            title: true
+        fichier_pes:
+            name: 'Fichier PES'
             type: file
             requis: true
             multiple: false
             commentaire: ''
-        date_ar:
-            name: "Date de l'accusé de réception"
-            type: date
-            requis: false
+            content-type: application/xml
+        pes_acquit:
+            name: 'PES Acquit'
+            type: file
+            requis: true
             multiple: false
             commentaire: ''
     Cheminement:
-        envoi_update_status_actes_s2low_1:
-            name: 'Mise à jour du statut de la transaction sur s2low #1'
+        envoi_update_status_pes_s2low_1:
+            name: 'Mise à jour du statut de la transaction PES sur s2low #1'
             type: checkbox
             onchange: cheminement-change
             default: checked
@@ -100,14 +54,14 @@ formulaire:
             onchange: cheminement-change
             default: checked
             read-only: false
-        envoi_update_status_actes_s2low_2:
-            name: 'Mise à jour du statut de la transaction sur s2low #2'
+        envoi_update_status_pes_s2low_2:
+            name: 'Mise à jour du statut de la transaction PES sur s2low #2'
             type: checkbox
             onchange: cheminement-change
             default: checked
             read-only: false
     'Statut s2low #1':
-        update_status_actes_s2low_status_1:
+        update_status_pes_s2low_status_1:
             name: 'Statut de la transaction'
     SAE:
         sae_show:
@@ -153,7 +107,7 @@ formulaire:
             read-only: true
             visionneuse-no-link: true
     'Statut s2low #2':
-        update_status_actes_s2low_status_2:
+        update_status_pes_s2low_status_2:
             name: 'Statut de la transaction'
 champs-affiches:
     - titre
@@ -170,13 +124,13 @@ champs-recherche-avancee:
     - search
 page-condition:
     'Statut s2low #1':
-        envoi_update_status_actes_s2low_1: true
+        envoi_update_status_pes_s2low_1: true
     SAE:
         sae_show: true
     'Transformation Fixe':
         has_transformation_fixe: true
     'Statut s2low #2':
-        envoi_update_status_actes_s2low_2: true
+        envoi_update_status_pes_s2low_2: true
 action:
     creation:
         name-action: Créer
@@ -260,9 +214,9 @@ action:
                 - change-status-error_1
         action-class: StandardAction
         connecteur-type: TdT
-        connecteur-type-action: Pastell\Step\UpdateStatusActesS2low\Action\ChangeStatusAction
+        connecteur-type-action: Pastell\Step\UpdateStatusPesS2low\Action\ChangeStatusAction
         connecteur-type-mapping:
-            status: update_status_actes_s2low_status_1
+            status: update_status_pes_s2low_status_1
             change-status-error: change-status-error_1
             transaction: transaction_id
         action-automatique: orientation
@@ -270,7 +224,7 @@ action:
         editable-content:
             - envoi_sae
             - envoi_transformation_fixe
-            - envoi_update_status_actes_s2low_2
+            - envoi_update_status_pes_s2low_2
             - sae_show
             - journal
             - date_journal_debut
@@ -284,7 +238,7 @@ action:
             - reply_sae
             - sae_archival_identifier
             - sae_atr_comment
-            - update_status_actes_s2low_status_2
+            - update_status_pes_s2low_status_2
         modification-no-change-etat: true
     change-status-error_1:
         name: 'Erreur lors du changement de statut de la transaction #1'
@@ -407,8 +361,8 @@ action:
         action-automatique: orientation
         editable-content:
             - envoi_transformation_fixe
-            - envoi_update_status_actes_s2low_2
-            - update_status_actes_s2low_status_2
+            - envoi_update_status_pes_s2low_2
+            - update_status_pes_s2low_status_2
         modification-no-change-etat: true
     rejet-sae:
         name: 'Transfert rejeté par le SAE'
@@ -435,11 +389,11 @@ action:
             has_transformation_fixe: has_transformation_fixe
             transformation-fixe-error: transformation-fixe-error
         editable-content:
-            - envoi_update_status_actes_s2low_2
-            - update_status_actes_s2low_status_2
+            - envoi_update_status_pes_s2low_2
+            - update_status_pes_s2low_status_2
         modification-no-change-etat: true
         transformations:
-            update_status_actes_s2low_status_2: '{%if sae_atr_comment matches ''/(.*)\\(Archive refusée(.*)/'' %}14{% else %}13{% endif %}'
+            update_status_pes_s2low_status_2: "{%if sae_atr_comment matches '/(.*)Archive refusée(.*)/' %}20{% else %}10{% endif %}"
     transformation-fixe-error:
         name: 'Erreur lors de la transformation fixe du dossier'
         rule:
@@ -459,9 +413,9 @@ action:
                 - change-status-error_2
         action-class: StandardAction
         connecteur-type: TdT
-        connecteur-type-action: Pastell\Step\UpdateStatusActesS2low\Action\ChangeStatusAction
+        connecteur-type-action: Pastell\Step\UpdateStatusPesS2low\Action\ChangeStatusAction
         connecteur-type-mapping:
-            status: update_status_actes_s2low_status_2
+            status: update_status_pes_s2low_status_2
             change-status-error: change-status-error_2
             transaction: transaction_id
         action-automatique: orientation
@@ -472,5 +426,5 @@ action:
             role_id_e: no-role
         num-same-connecteur: '1'
 restriction_pack:
-    - suppl_recup_actes_s2low
-studio_definition: ewogICJpZF90eXBlX2Rvc3NpZXIiOiAiZHJhZnQtbHMtcmVjdXAtYWN0ZXMtczJsb3ciLAogICJwYXN0ZWxsLXZlcnNpb24iOiAiJVZFUlNJT04lIiwKICAidGltZXN0YW1wIjogMTczNzY0MzU4NCwKICAicmF3X2RhdGEiOiB7CiAgICAiaWRfdHlwZV9kb3NzaWVyIjogImRyYWZ0LWxzLXJlY3VwLWFjdGVzLXMybG93IiwKICAgICJub20iOiAiUlx1MDBlOWN1cFx1MDBlOXJhdGlvbiBhcnJpXHUwMGU5clx1MDBlOSBhY3RlcyBzMmxvdyAoRHJhZnQpIiwKICAgICJ0eXBlIjogIkFjdGVzIGFkbWluaXN0cmF0aWZzIiwKICAgICJkZXNjcmlwdGlvbiI6ICIiLAogICAgIm5vbV9vbmdsZXQiOiAiSW5mb3JtYXRpb25zIiwKICAgICJhZmZpY2hlX29uZSI6IGZhbHNlLAogICAgInJlc3RyaWN0aW9uX3BhY2siOiAiIiwKICAgICJmb3JtdWxhaXJlRWxlbWVudCI6IFsKICAgICAgewogICAgICAgICJlbGVtZW50X2lkIjogInRyYW5zYWN0aW9uX2lkIiwKICAgICAgICAibmFtZSI6ICJJZGVudGlmaWFudCBkZSB0cmFuc2FjdGlvbiIsCiAgICAgICAgInR5cGUiOiAidGV4dCIsCiAgICAgICAgImNvbW1lbnRhaXJlIjogIiIsCiAgICAgICAgInJlcXVpcyI6ICJvbiIsCiAgICAgICAgImNoYW1wc19hZmZpY2hlcyI6ICIiLAogICAgICAgICJjaGFtcHNfcmVjaGVyY2hlX2F2YW5jZWUiOiAiIiwKICAgICAgICAidGl0cmUiOiBmYWxzZSwKICAgICAgICAic2VsZWN0X3ZhbHVlIjogIiIsCiAgICAgICAgInByZWdfbWF0Y2giOiAiIiwKICAgICAgICAiZGVmYXVsdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoX2Vycm9yIjogIiIsCiAgICAgICAgImNvbnRlbnRfdHlwZSI6ICIiCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAiZWxlbWVudF9pZCI6ICJhY3RlX25hdHVyZSIsCiAgICAgICAgIm5hbWUiOiAiTmF0dXJlIGRlIGwnYWN0ZSIsCiAgICAgICAgInR5cGUiOiAic2VsZWN0IiwKICAgICAgICAiY29tbWVudGFpcmUiOiAiIiwKICAgICAgICAicmVxdWlzIjogIm9uIiwKICAgICAgICAiY2hhbXBzX2FmZmljaGVzIjogIiIsCiAgICAgICAgImNoYW1wc19yZWNoZXJjaGVfYXZhbmNlZSI6ICIiLAogICAgICAgICJ0aXRyZSI6IGZhbHNlLAogICAgICAgICJzZWxlY3RfdmFsdWUiOiAiMzogQWN0ZXMgaW5kaXZpZHVlbHNcclxuMjogQWN0ZXMgclx1MDBlOWdsZW1lbnRhaXJlc1xyXG42OiBBdXRyZXNcclxuNDogQ29udHJhdHMsIGNvbnZlbnRpb25zIGV0IGF2ZW5hbnRzXHJcbjE6IERcdTAwZTlsaWJcdTAwZTlyYXRpb25zXHJcbjU6IERvY3VtZW50cyBidWRnXHUwMGU5dGFpcmVzIGV0IGZpbmFuY2llcnMiLAogICAgICAgICJwcmVnX21hdGNoIjogIiIsCiAgICAgICAgImRlZmF1bHRfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaF9lcnJvciI6ICIiLAogICAgICAgICJjb250ZW50X3R5cGUiOiAiIgogICAgICB9LAogICAgICB7CiAgICAgICAgImVsZW1lbnRfaWQiOiAibnVtZXJvX2RlX2xhY3RlIiwKICAgICAgICAibmFtZSI6ICJOdW1cdTAwZTlybyBkZSBsJ2FjdGUiLAogICAgICAgICJ0eXBlIjogInRleHQiLAogICAgICAgICJjb21tZW50YWlyZSI6ICIxNSBjYXJhY3RcdTAwZThyZXMgbWF4aW11bSAoY2hpZmZyZXMsIGxldHRyZXMgZW4gbWFqdXNjdWxlIG91IF8pIiwKICAgICAgICAicmVxdWlzIjogIm9uIiwKICAgICAgICAiY2hhbXBzX2FmZmljaGVzIjogIiIsCiAgICAgICAgImNoYW1wc19yZWNoZXJjaGVfYXZhbmNlZSI6ICIiLAogICAgICAgICJ0aXRyZSI6IGZhbHNlLAogICAgICAgICJzZWxlY3RfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaCI6ICIjXlswLTlBLVpfXXsxLDE1fSQjIiwKICAgICAgICAiZGVmYXVsdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoX2Vycm9yIjogIjE1IGNhcmFjdFx1MDBlOHJlcyBtYXhpbXVtIChjaGlmZnJlcywgbGV0dHJlcyBlbiBtYWp1c2N1bGUgb3UgXykiLAogICAgICAgICJjb250ZW50X3R5cGUiOiAiIgogICAgICB9LAogICAgICB7CiAgICAgICAgImVsZW1lbnRfaWQiOiAib2JqZXQiLAogICAgICAgICJuYW1lIjogIk9iamV0IiwKICAgICAgICAidHlwZSI6ICJ0ZXh0YXJlYSIsCiAgICAgICAgImNvbW1lbnRhaXJlIjogIiIsCiAgICAgICAgInJlcXVpcyI6ICJvbiIsCiAgICAgICAgImNoYW1wc19hZmZpY2hlcyI6ICIiLAogICAgICAgICJjaGFtcHNfcmVjaGVyY2hlX2F2YW5jZWUiOiAiIiwKICAgICAgICAidGl0cmUiOiAib24iLAogICAgICAgICJzZWxlY3RfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaCI6ICIjXi57MSw0OTl9JCN1cyIsCiAgICAgICAgImRlZmF1bHRfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaF9lcnJvciI6ICJMJ29iamV0IGRvaXQgZmFpcmUgZW50cmUgMSBldCA0OTkgY2FyYWN0XHUwMGU4cmVzIHNhbnMgcmV0b3VyIGNoYXJpb3QiLAogICAgICAgICJjb250ZW50X3R5cGUiOiAiIgogICAgICB9LAogICAgICB7CiAgICAgICAgImVsZW1lbnRfaWQiOiAiZGF0ZV9kZV9sYWN0ZSIsCiAgICAgICAgIm5hbWUiOiAiRGF0ZSBkZSBsYSBkXHUwMGU5Y2lzaW9uIiwKICAgICAgICAidHlwZSI6ICJkYXRlIiwKICAgICAgICAiY29tbWVudGFpcmUiOiAiIiwKICAgICAgICAicmVxdWlzIjogIm9uIiwKICAgICAgICAiY2hhbXBzX2FmZmljaGVzIjogIiIsCiAgICAgICAgImNoYW1wc19yZWNoZXJjaGVfYXZhbmNlZSI6ICIiLAogICAgICAgICJ0aXRyZSI6IGZhbHNlLAogICAgICAgICJzZWxlY3RfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaCI6ICIiLAogICAgICAgICJkZWZhdWx0X3ZhbHVlIjogIiIsCiAgICAgICAgInByZWdfbWF0Y2hfZXJyb3IiOiAiIiwKICAgICAgICAiY29udGVudF90eXBlIjogIiIKICAgICAgfSwKICAgICAgewogICAgICAgICJlbGVtZW50X2lkIjogImNsYXNzaWZpY2F0aW9uIiwKICAgICAgICAibmFtZSI6ICJDbGFzc2lmaWNhdGlvbiBlbiBtYXRpXHUwMGU4cmUgZXQgc291cy1tYXRpXHUwMGU4cmUiLAogICAgICAgICJ0eXBlIjogInRleHQiLAogICAgICAgICJjb21tZW50YWlyZSI6ICIiLAogICAgICAgICJyZXF1aXMiOiAib24iLAogICAgICAgICJjaGFtcHNfYWZmaWNoZXMiOiAiIiwKICAgICAgICAiY2hhbXBzX3JlY2hlcmNoZV9hdmFuY2VlIjogIiIsCiAgICAgICAgInRpdHJlIjogZmFsc2UsCiAgICAgICAgInNlbGVjdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoIjogIiIsCiAgICAgICAgImRlZmF1bHRfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaF9lcnJvciI6ICIiLAogICAgICAgICJjb250ZW50X3R5cGUiOiAiIgogICAgICB9LAogICAgICB7CiAgICAgICAgImVsZW1lbnRfaWQiOiAiYXJyZXRlIiwKICAgICAgICAibmFtZSI6ICJBY3RlIiwKICAgICAgICAidHlwZSI6ICJmaWxlIiwKICAgICAgICAiY29tbWVudGFpcmUiOiAiZm9ybWF0IFBERiBvdSBYTUwiLAogICAgICAgICJyZXF1aXMiOiAib24iLAogICAgICAgICJjaGFtcHNfYWZmaWNoZXMiOiAiIiwKICAgICAgICAiY2hhbXBzX3JlY2hlcmNoZV9hdmFuY2VlIjogIiIsCiAgICAgICAgInRpdHJlIjogZmFsc2UsCiAgICAgICAgInNlbGVjdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoIjogIiIsCiAgICAgICAgImRlZmF1bHRfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaF9lcnJvciI6ICIiLAogICAgICAgICJjb250ZW50X3R5cGUiOiAiIgogICAgICB9LAogICAgICB7CiAgICAgICAgImVsZW1lbnRfaWQiOiAiYXV0cmVfZG9jdW1lbnRfYXR0YWNoZSIsCiAgICAgICAgIm5hbWUiOiAiQW5uZXhlKHMpIiwKICAgICAgICAidHlwZSI6ICJtdWx0aV9maWxlIiwKICAgICAgICAiY29tbWVudGFpcmUiOiAiIiwKICAgICAgICAicmVxdWlzIjogIiIsCiAgICAgICAgImNoYW1wc19hZmZpY2hlcyI6ICIiLAogICAgICAgICJjaGFtcHNfcmVjaGVyY2hlX2F2YW5jZWUiOiAiIiwKICAgICAgICAidGl0cmUiOiBmYWxzZSwKICAgICAgICAic2VsZWN0X3ZhbHVlIjogIiIsCiAgICAgICAgInByZWdfbWF0Y2giOiAiIiwKICAgICAgICAiZGVmYXVsdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoX2Vycm9yIjogIiIsCiAgICAgICAgImNvbnRlbnRfdHlwZSI6ICIiCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAiZWxlbWVudF9pZCI6ICJhcmFjdGVzIiwKICAgICAgICAibmFtZSI6ICJBY2N1c1x1MDBlOSBkZSByXHUwMGU5Y2VwdGlvbiB0ZWNobmlxdWUiLAogICAgICAgICJ0eXBlIjogImZpbGUiLAogICAgICAgICJjb21tZW50YWlyZSI6ICIiLAogICAgICAgICJyZXF1aXMiOiAib24iLAogICAgICAgICJjaGFtcHNfYWZmaWNoZXMiOiAiIiwKICAgICAgICAiY2hhbXBzX3JlY2hlcmNoZV9hdmFuY2VlIjogIiIsCiAgICAgICAgInRpdHJlIjogIiIsCiAgICAgICAgInNlbGVjdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoIjogIiIsCiAgICAgICAgImRlZmF1bHRfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaF9lcnJvciI6ICIiLAogICAgICAgICJjb250ZW50X3R5cGUiOiAiIgogICAgICB9LAogICAgICB7CiAgICAgICAgImVsZW1lbnRfaWQiOiAiZGF0ZV9hciIsCiAgICAgICAgIm5hbWUiOiAiRGF0ZSBkZSBsJ2FjY3VzXHUwMGU5IGRlIHJcdTAwZTljZXB0aW9uIiwKICAgICAgICAidHlwZSI6ICJkYXRlIiwKICAgICAgICAiY29tbWVudGFpcmUiOiAiIiwKICAgICAgICAicmVxdWlzIjogIiIsCiAgICAgICAgImNoYW1wc19hZmZpY2hlcyI6ICIiLAogICAgICAgICJjaGFtcHNfcmVjaGVyY2hlX2F2YW5jZWUiOiAiIiwKICAgICAgICAidGl0cmUiOiAiIiwKICAgICAgICAic2VsZWN0X3ZhbHVlIjogIiIsCiAgICAgICAgInByZWdfbWF0Y2giOiAiIiwKICAgICAgICAiZGVmYXVsdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoX2Vycm9yIjogIiIsCiAgICAgICAgImNvbnRlbnRfdHlwZSI6ICIiCiAgICAgIH0KICAgIF0sCiAgICAiZXRhcGUiOiBbCiAgICAgIHsKICAgICAgICAibnVtX2V0YXBlIjogMCwKICAgICAgICAidHlwZSI6ICJ1cGRhdGVfc3RhdHVzX2FjdGVzX3MybG93IiwKICAgICAgICAibGFiZWwiOiBudWxsLAogICAgICAgICJkZWZhdWx0Q2hlY2tlZCI6IHRydWUsCiAgICAgICAgInJlcXVpcyI6ICIiLAogICAgICAgICJhdXRvbWF0aXF1ZSI6ICJvbiIsCiAgICAgICAgInNwZWNpZmljX3R5cGVfaW5mbyI6IHsKICAgICAgICAgICJ0cmFuc2FjdGlvbiI6ICJ0cmFuc2FjdGlvbl9pZCIKICAgICAgICB9LAogICAgICAgICJudW1fZXRhcGVfc2FtZV90eXBlIjogMCwKICAgICAgICAiZXRhcGVfd2l0aF9zYW1lX3R5cGVfZXhpc3RzIjogdHJ1ZQogICAgICB9LAogICAgICB7CiAgICAgICAgIm51bV9ldGFwZSI6ICIxIiwKICAgICAgICAidHlwZSI6ICJzYWUiLAogICAgICAgICJsYWJlbCI6IG51bGwsCiAgICAgICAgImRlZmF1bHRDaGVja2VkIjogdHJ1ZSwKICAgICAgICAicmVxdWlzIjogIiIsCiAgICAgICAgImF1dG9tYXRpcXVlIjogIm9uIiwKICAgICAgICAic3BlY2lmaWNfdHlwZV9pbmZvIjogewogICAgICAgICAgInNhZV9oYXNfbWV0YWRhdGFfaW5fanNvbiI6ICIiLAogICAgICAgICAgImNvbnRpbnVlX2FmdGVyX3JlZnVzYWwiOiAib24iCiAgICAgICAgfSwKICAgICAgICAibnVtX2V0YXBlX3NhbWVfdHlwZSI6IDAsCiAgICAgICAgImV0YXBlX3dpdGhfc2FtZV90eXBlX2V4aXN0cyI6IGZhbHNlCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAibnVtX2V0YXBlIjogIjIiLAogICAgICAgICJ0eXBlIjogInRyYW5zZm9ybWF0aW9uX2ZpeGUiLAogICAgICAgICJsYWJlbCI6IG51bGwsCiAgICAgICAgImRlZmF1bHRDaGVja2VkIjogdHJ1ZSwKICAgICAgICAicmVxdWlzIjogIiIsCiAgICAgICAgImF1dG9tYXRpcXVlIjogIm9uIiwKICAgICAgICAic3BlY2lmaWNfdHlwZV9pbmZvIjogewogICAgICAgICAgInRyYW5zZm9ybWF0aW9ucyI6ICJ1cGRhdGVfc3RhdHVzX2FjdGVzX3MybG93X3N0YXR1c18yOnslaWYgc2FlX2F0cl9jb21tZW50IG1hdGNoZXMgJ1wvKC4qKVxcXFwoQXJjaGl2ZSByZWZ1c1x1MDBlOWUoLiopXC8nICV9MTR7JSBlbHNlICV9MTN7JSBlbmRpZiAlfSIKICAgICAgICB9LAogICAgICAgICJudW1fZXRhcGVfc2FtZV90eXBlIjogMCwKICAgICAgICAiZXRhcGVfd2l0aF9zYW1lX3R5cGVfZXhpc3RzIjogZmFsc2UKICAgICAgfSwKICAgICAgewogICAgICAgICJudW1fZXRhcGUiOiAzLAogICAgICAgICJ0eXBlIjogInVwZGF0ZV9zdGF0dXNfYWN0ZXNfczJsb3ciLAogICAgICAgICJsYWJlbCI6IG51bGwsCiAgICAgICAgImRlZmF1bHRDaGVja2VkIjogdHJ1ZSwKICAgICAgICAicmVxdWlzIjogIiIsCiAgICAgICAgImF1dG9tYXRpcXVlIjogIm9uIiwKICAgICAgICAic3BlY2lmaWNfdHlwZV9pbmZvIjogewogICAgICAgICAgInRyYW5zYWN0aW9uIjogInRyYW5zYWN0aW9uX2lkIgogICAgICAgIH0sCiAgICAgICAgIm51bV9ldGFwZV9zYW1lX3R5cGUiOiAxLAogICAgICAgICJldGFwZV93aXRoX3NhbWVfdHlwZV9leGlzdHMiOiB0cnVlCiAgICAgIH0KICAgIF0KICB9Cn0=
+    - suppl_recup_pes_s2low
+studio_definition: ewogICJpZF90eXBlX2Rvc3NpZXIiOiAiZHJhZnQtbHMtcmVjdXAtcGVzLXMybG93IiwKICAicGFzdGVsbC12ZXJzaW9uIjogIiVWRVJTSU9OJSIsCiAgInRpbWVzdGFtcCI6IDE3MzgxNjE2NTIsCiAgInJhd19kYXRhIjogewogICAgImlkX3R5cGVfZG9zc2llciI6ICJkcmFmdC1scy1yZWN1cC1wZXMtczJsb3ciLAogICAgIm5vbSI6ICJSXHUwMGU5Y3VwXHUwMGU5cmF0aW9uIGFycmlcdTAwZTlyXHUwMGU5IFBFUyBzMmxvdyAoRHJhZnQpIiwKICAgICJ0eXBlIjogIkZpbmFuY2VzIiwKICAgICJkZXNjcmlwdGlvbiI6ICIiLAogICAgIm5vbV9vbmdsZXQiOiAiSW5mb3JtYXRpb25zIiwKICAgICJhZmZpY2hlX29uZSI6IGZhbHNlLAogICAgInJlc3RyaWN0aW9uX3BhY2siOiAiIiwKICAgICJmb3JtdWxhaXJlRWxlbWVudCI6IFsKICAgICAgewogICAgICAgICJlbGVtZW50X2lkIjogInRyYW5zYWN0aW9uX2lkIiwKICAgICAgICAibmFtZSI6ICJJZGVudGlmaWFudCBkZSB0cmFuc2FjdGlvbiIsCiAgICAgICAgInR5cGUiOiAidGV4dCIsCiAgICAgICAgImNvbW1lbnRhaXJlIjogIiIsCiAgICAgICAgInJlcXVpcyI6ICJvbiIsCiAgICAgICAgImNoYW1wc19hZmZpY2hlcyI6ICIiLAogICAgICAgICJjaGFtcHNfcmVjaGVyY2hlX2F2YW5jZWUiOiAiIiwKICAgICAgICAidGl0cmUiOiBmYWxzZSwKICAgICAgICAic2VsZWN0X3ZhbHVlIjogIiIsCiAgICAgICAgInByZWdfbWF0Y2giOiAiIiwKICAgICAgICAiZGVmYXVsdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoX2Vycm9yIjogIiIsCiAgICAgICAgImNvbnRlbnRfdHlwZSI6ICIiCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAiZWxlbWVudF9pZCI6ICJvYmpldCIsCiAgICAgICAgIm5hbWUiOiAiT2JqZXQiLAogICAgICAgICJ0eXBlIjogInRleHQiLAogICAgICAgICJjb21tZW50YWlyZSI6ICIiLAogICAgICAgICJyZXF1aXMiOiAib24iLAogICAgICAgICJjaGFtcHNfYWZmaWNoZXMiOiAiIiwKICAgICAgICAiY2hhbXBzX3JlY2hlcmNoZV9hdmFuY2VlIjogIiIsCiAgICAgICAgInRpdHJlIjogIm9uIiwKICAgICAgICAic2VsZWN0X3ZhbHVlIjogIiIsCiAgICAgICAgInByZWdfbWF0Y2giOiAiIiwKICAgICAgICAiZGVmYXVsdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoX2Vycm9yIjogIiIsCiAgICAgICAgImNvbnRlbnRfdHlwZSI6ICIiCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAiZWxlbWVudF9pZCI6ICJmaWNoaWVyX3BlcyIsCiAgICAgICAgIm5hbWUiOiAiRmljaGllciBQRVMiLAogICAgICAgICJ0eXBlIjogImZpbGUiLAogICAgICAgICJjb21tZW50YWlyZSI6ICIiLAogICAgICAgICJyZXF1aXMiOiAib24iLAogICAgICAgICJjaGFtcHNfYWZmaWNoZXMiOiAiIiwKICAgICAgICAiY2hhbXBzX3JlY2hlcmNoZV9hdmFuY2VlIjogIiIsCiAgICAgICAgInRpdHJlIjogIiIsCiAgICAgICAgInNlbGVjdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoIjogIiIsCiAgICAgICAgImRlZmF1bHRfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaF9lcnJvciI6ICIiLAogICAgICAgICJjb250ZW50X3R5cGUiOiAiYXBwbGljYXRpb25cL3htbCIKICAgICAgfSwKICAgICAgewogICAgICAgICJlbGVtZW50X2lkIjogInBlc19hY3F1aXQiLAogICAgICAgICJuYW1lIjogIlBFUyBBY3F1aXQiLAogICAgICAgICJ0eXBlIjogImZpbGUiLAogICAgICAgICJjb21tZW50YWlyZSI6ICIiLAogICAgICAgICJyZXF1aXMiOiAib24iLAogICAgICAgICJjaGFtcHNfYWZmaWNoZXMiOiAiIiwKICAgICAgICAiY2hhbXBzX3JlY2hlcmNoZV9hdmFuY2VlIjogIiIsCiAgICAgICAgInRpdHJlIjogIiIsCiAgICAgICAgInNlbGVjdF92YWx1ZSI6ICIiLAogICAgICAgICJwcmVnX21hdGNoIjogIiIsCiAgICAgICAgImRlZmF1bHRfdmFsdWUiOiAiIiwKICAgICAgICAicHJlZ19tYXRjaF9lcnJvciI6ICIiLAogICAgICAgICJjb250ZW50X3R5cGUiOiAiIgogICAgICB9CiAgICBdLAogICAgImV0YXBlIjogWwogICAgICB7CiAgICAgICAgIm51bV9ldGFwZSI6IDAsCiAgICAgICAgInR5cGUiOiAidXBkYXRlX3N0YXR1c19wZXNfczJsb3ciLAogICAgICAgICJsYWJlbCI6IG51bGwsCiAgICAgICAgImRlZmF1bHRDaGVja2VkIjogdHJ1ZSwKICAgICAgICAicmVxdWlzIjogIiIsCiAgICAgICAgImF1dG9tYXRpcXVlIjogIm9uIiwKICAgICAgICAic3BlY2lmaWNfdHlwZV9pbmZvIjogewogICAgICAgICAgInRyYW5zYWN0aW9uIjogInRyYW5zYWN0aW9uX2lkIgogICAgICAgIH0sCiAgICAgICAgIm51bV9ldGFwZV9zYW1lX3R5cGUiOiAwLAogICAgICAgICJldGFwZV93aXRoX3NhbWVfdHlwZV9leGlzdHMiOiB0cnVlCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAibnVtX2V0YXBlIjogMSwKICAgICAgICAidHlwZSI6ICJzYWUiLAogICAgICAgICJsYWJlbCI6IG51bGwsCiAgICAgICAgImRlZmF1bHRDaGVja2VkIjogdHJ1ZSwKICAgICAgICAicmVxdWlzIjogIiIsCiAgICAgICAgImF1dG9tYXRpcXVlIjogIm9uIiwKICAgICAgICAic3BlY2lmaWNfdHlwZV9pbmZvIjogewogICAgICAgICAgInNhZV9oYXNfbWV0YWRhdGFfaW5fanNvbiI6ICIiLAogICAgICAgICAgImNvbnRpbnVlX2FmdGVyX3JlZnVzYWwiOiAib24iCiAgICAgICAgfSwKICAgICAgICAibnVtX2V0YXBlX3NhbWVfdHlwZSI6IDAsCiAgICAgICAgImV0YXBlX3dpdGhfc2FtZV90eXBlX2V4aXN0cyI6IGZhbHNlCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAibnVtX2V0YXBlIjogMiwKICAgICAgICAidHlwZSI6ICJ0cmFuc2Zvcm1hdGlvbl9maXhlIiwKICAgICAgICAibGFiZWwiOiBudWxsLAogICAgICAgICJkZWZhdWx0Q2hlY2tlZCI6IHRydWUsCiAgICAgICAgInJlcXVpcyI6ICIiLAogICAgICAgICJhdXRvbWF0aXF1ZSI6ICJvbiIsCiAgICAgICAgInNwZWNpZmljX3R5cGVfaW5mbyI6IHsKICAgICAgICAgICJ0cmFuc2Zvcm1hdGlvbnMiOiAidXBkYXRlX3N0YXR1c19wZXNfczJsb3dfc3RhdHVzXzI6eyVpZiBzYWVfYXRyX2NvbW1lbnQgbWF0Y2hlcyAnXC8oLiopQXJjaGl2ZSByZWZ1c1x1MDBlOWUoLiopXC8nICV9MjB7JSBlbHNlICV9MTB7JSBlbmRpZiAlfSIKICAgICAgICB9LAogICAgICAgICJudW1fZXRhcGVfc2FtZV90eXBlIjogMCwKICAgICAgICAiZXRhcGVfd2l0aF9zYW1lX3R5cGVfZXhpc3RzIjogZmFsc2UKICAgICAgfSwKICAgICAgewogICAgICAgICJudW1fZXRhcGUiOiAzLAogICAgICAgICJ0eXBlIjogInVwZGF0ZV9zdGF0dXNfcGVzX3MybG93IiwKICAgICAgICAibGFiZWwiOiBudWxsLAogICAgICAgICJkZWZhdWx0Q2hlY2tlZCI6IHRydWUsCiAgICAgICAgInJlcXVpcyI6ICIiLAogICAgICAgICJhdXRvbWF0aXF1ZSI6ICJvbiIsCiAgICAgICAgInNwZWNpZmljX3R5cGVfaW5mbyI6IHsKICAgICAgICAgICJ0cmFuc2FjdGlvbiI6ICJ0cmFuc2FjdGlvbl9pZCIKICAgICAgICB9LAogICAgICAgICJudW1fZXRhcGVfc2FtZV90eXBlIjogMSwKICAgICAgICAiZXRhcGVfd2l0aF9zYW1lX3R5cGVfZXhpc3RzIjogdHJ1ZQogICAgICB9CiAgICBdCiAgfQp9
