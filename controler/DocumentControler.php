@@ -139,7 +139,7 @@ class DocumentControler extends PastellControler
             $this->getRoleUtilisateur()->hasDroit(
                 $this->getId_u(),
                 DroitService::getDroitEdition(DroitService::DROIT_DAEMON),
-                0
+                $id_e
             )
         );
         $this->setViewParameter(
@@ -147,7 +147,7 @@ class DocumentControler extends PastellControler
             $this->getRoleUtilisateur()->hasDroit(
                 $this->getId_u(),
                 DroitService::getDroitLecture(DroitService::DROIT_DAEMON),
-                0
+                $id_e
             )
         );
 
