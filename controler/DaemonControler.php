@@ -155,8 +155,6 @@ class DaemonControler extends PastellControler
      */
     public function lockAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
-
         $id_job = $this->getGetInfo()->getInt('id_job');
         $id_verrou = $this->getGetInfo()->get('id_verrou');
         $etat_source = $this->getGetInfo()->get('etat_source');
@@ -164,13 +162,22 @@ class DaemonControler extends PastellControler
         $return_url = $this->getGetInfo()->get('return_url', 'Daemon/index');
 
         if ($id_job) {
-            $this->getJobQueueSQL()->lock($id_job);
+            $job = $this->getJobQueueSQL()->getJob($id_job);
+            if ($job === null) {
+                $this->setLastError('Impossible de trouver le travail à suspendre');
+            } else {
+                $this->verifDroit($job->id_e, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
+                $this->getJobQueueSQL()->lock($job->id_job);
+                $this->setLastMessage('Le travail a été suspendu');
+            }
+        } elseif ($id_verrou || $etat_source || $etat_cible) {
+            $this->getJobQueueSQL()->lockByVerrouAndEtat($id_verrou, $etat_source, $etat_cible);
+            $this->setLastMessage('Les travaux correspondants ont été suspendus');
+        } else {
+            $this->setLastError('Aucun travail à suspendre');
         }
 
-        if ($id_verrou || $etat_source || $etat_cible) {
-            $this->getJobQueueSQL()->lockByVerrouAndEtat($id_verrou, $etat_source, $etat_cible);
-        }
-        $this->redirect("$return_url");
+        $this->redirect($return_url);
     }
 
     /**
@@ -179,8 +186,6 @@ class DaemonControler extends PastellControler
      */
     public function unlockAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
-
         $id_job = $this->getGetInfo()->getInt('id_job');
         $id_verrou = $this->getGetInfo()->get('id_verrou');
         $etat_source = $this->getGetInfo()->get('etat_source');
@@ -188,12 +193,23 @@ class DaemonControler extends PastellControler
         $return_url = $this->getGetInfo()->get('return_url', 'Daemon/index');
 
         $this->getWorkerSQL()->menageAll();
+
         if ($id_job) {
-            $this->getJobQueueSQL()->unlock($id_job);
-        }
-        if ($id_verrou || $etat_source || $etat_cible) {
+            $job = $this->getJobQueueSQL()->getJob($id_job);
+            if ($job === null) {
+                $this->setLastError('Impossible de trouver le travail à réactiver');
+            } else {
+                $this->verifDroit($job->id_e, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
+                $this->getJobQueueSQL()->unlock($job->id_job);
+                $this->setLastMessage('Le travail a été réactivé');
+            }
+        } elseif ($id_verrou || $etat_source || $etat_cible) {
             $this->getJobQueueSQL()->unlockByVerrouAndEtat($id_verrou, $etat_source, $etat_cible);
+            $this->setLastMessage('Les travaux correspondants ont été réactivés');
+        } else {
+            $this->setLastError('Aucun travail à réactiver');
         }
+
         $this->redirect($return_url);
     }
 
@@ -215,28 +231,46 @@ class DaemonControler extends PastellControler
      */
     public function killAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
-        $recuperateur = new Recuperateur($_GET);
-        $id_worker = $recuperateur->getInt('id_worker');
-        $return_url = $recuperateur->get('return_url', 'Daemon/index');
+        $id_worker = $this->getGetInfo()->getInt('id_worker');
+        $return_url = $this->getGetInfo()->get('return_url', 'Daemon/index');
 
-        $info = $this->getWorkerSQL()->getInfo($id_worker);
-        if (!$info) {
-            $this->setLastError("Ce processus n'existe pas ou plus");
-            $this->redirect("$return_url");
+        if (!$id_worker) {
+            $this->setLastError('Aucun processus spécifié');
+            $this->redirect($return_url);
         }
 
-        $this->getJobQueueSQL()->lock($info['id_job']);
-        $process = new Process(['kill', '-9', $info['pid']]);
+        $workerInfo = $this->getWorkerSQL()->getInfo($id_worker);
+        if (!$workerInfo) {
+            $this->setLastError("Ce processus n'existe pas ou plus");
+            $this->redirect($return_url);
+        }
+
+        $id_job = $workerInfo['id_job'] ?? null;
+        if (!$id_job) {
+            $this->setLastError('Aucun travail associé à ce processus');
+            $this->redirect($return_url);
+        }
+
+        $job = $this->getJobQueueSQL()->getJob($id_job);
+        if (!$job) {
+            $this->setLastError('Impossible de trouver le travail associé à ce processus');
+            $this->redirect($return_url);
+        }
+
+        $this->verifDroit($job->id_e, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
+        $this->getJobQueueSQL()->lock($id_job);
+
+        $process = new Process(['kill', '-9', $workerInfo['pid']]);
         $process->run();
+
         if (!$process->isSuccessful()) {
             $this->setLastError("Le processus n'a pas été tué : " . $process->getErrorOutput());
             $this->redirect($return_url);
         }
-        $this->getWorkerSQL()->error($info['id_worker'], "Processus tué manuellement");
 
-        $this->setLastMessage("Le processus a été tué");
-        $this->redirect("$return_url");
+        $this->getWorkerSQL()->error($id_worker, 'Processus tué manuellement');
+        $this->setLastMessage('Le processus a été tué');
+        $this->redirect($return_url);
     }
 
     /**
@@ -461,12 +495,25 @@ class DaemonControler extends PastellControler
      */
     public function deleteJobAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
         $id_job = $this->getGetInfo()->get('id_job');
-        $id_connecteur = $this->getGetInfo()->get('id_ce');
-        $this->getJobQueueSQL()->deleteJob($id_job);
+        $id_connecteur = $this->getGetInfo()->get('id_ce', 'Connecteur/index');
+
+        if ($id_job) {
+            $job = $this->getJobQueueSQL()->getJob($id_job);
+            if ($job === null) {
+                $this->setLastError('Impossible de trouver le travail à supprimer');
+            } else {
+                $this->verifDroit($job->id_e, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
+                $this->getJobQueueSQL()->deleteJob($job->id_job);
+                $this->setLastMessage('Le travail a été supprimé');
+            }
+        } else {
+            $this->setLastError('Identifiant de travail manquant');
+        }
+
         $this->redirect("Connecteur/edition?id_ce=$id_connecteur");
     }
+
 
     /**
      * @throws LastMessageException
@@ -474,11 +521,22 @@ class DaemonControler extends PastellControler
      */
     public function deleteJobDocumentAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
         $id_job = $this->getGetInfo()->get('id_job');
         $id_document = $this->getGetInfo()->get('id_d');
-        $id_entite = $this->getGetInfo()->get('id_e');
-        $this->getJobQueueSQL()->deleteJob($id_job);
-        $this->redirect("Document/detail?id_d=$id_document&id_e=$id_entite");
+        $id_e = $this->getGetInfo()->get('id_e');
+
+        if ($id_job) {
+            $job = $this->getJobQueueSQL()->getJob($id_job);
+            if ($job === null) {
+                $this->setLastError('Impossible de trouver le travail à supprimer');
+            } else {
+                $this->verifDroit($job->id_e, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
+                $this->getJobQueueSQL()->deleteJob($job->id_job);
+                $this->setLastMessage('Le travail a été supprimé');
+            }
+        } else {
+            $this->setLastError('Identifiant de travail manquant');
+        }
+        $this->redirect("Document/detail?id_d=$id_document&id_e=$id_e");
     }
 }

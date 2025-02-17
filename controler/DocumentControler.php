@@ -143,6 +143,14 @@ class DocumentControler extends PastellControler
             )
         );
         $this->setViewParameter(
+            'daemon_racine_lecture',
+            $this->getRoleUtilisateur()->hasDroit(
+                $this->getId_u(),
+                DroitService::getDroitLecture(DroitService::DROIT_DAEMON),
+                0
+            )
+        );
+        $this->setViewParameter(
             'daemon_lecture',
             $this->getRoleUtilisateur()->hasDroit(
                 $this->getId_u(),

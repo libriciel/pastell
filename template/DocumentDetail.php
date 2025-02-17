@@ -17,6 +17,7 @@
  * @var array $document_email_reponse_list
  * @var bool $is_super_admin
  * @var bool $daemon_edition
+ * @var bool $daemon_racine_lecture
  * @var bool $daemon_lecture
  * @var array|bool $job_list
  * @var string $return_url
@@ -310,9 +311,13 @@ if ($infoDocumentEmail) :
                     <?php foreach ($job_list as $job_info) : ?>
                         <tr>
                             <td>
-                                <a href='<?php $this->url("Daemon/detail?id_job={$job_info['id_job']}"); ?>'>
-                                    <?php echo $job_info['id_job']; ?>
-                                </a>
+                                <?php if ($daemon_racine_lecture) : ?>
+                                    <a href='<?php $this->url("Daemon/detail?id_job={$job_info['id_job']}"); ?>'>
+                                        <?= $job_info['id_job'] ?>
+                                    </a>
+                                <?php else : ?>
+                                    <?= $job_info['id_job'] ?>
+                                <?php endif; ?>
                             </td>
                             <td>
                                 <?php
