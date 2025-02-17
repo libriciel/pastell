@@ -1,3 +1,9 @@
+# [4.0.21] - 2025-03-10
+
+## Correction
+
+- Remplacement du cookie de session après authentification #2198
+
 # [4.0.20] - 2025-01-28
 
 ## Correction

@@ -4,6 +4,9 @@ class Authentification
 {
     public function connexion($login, $id_u)
     {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_regenerate_id(true);
+        }
         $_SESSION['connexion']['login'] = $login;
         $_SESSION['connexion']['id_u'] = $id_u;
     }
