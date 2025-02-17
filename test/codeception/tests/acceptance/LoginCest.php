@@ -21,7 +21,7 @@ class LoginCest
     public function deconnexion(AcceptanceTester $I)
     {
         $I->wantTo('me déconnecter du site');
-        $I->amAnonymous();
+        $this->connexion($I);
         $I->amOnPage('/');
         $I->click(['xpath' => '//a[@href="/Connexion/logout"]']);
         $I->dontSee('Liste des dossiers');
