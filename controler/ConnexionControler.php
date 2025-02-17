@@ -410,7 +410,7 @@ class ConnexionControler extends PastellControler
                 $this->redirect($redirect_fail);
             }
             if (!$verificationConnecteur->verifLogin($login, $password)) {
-                $this->getLastError()->setLastError('Login ou mot de passe incorrect. (LDAP)');
+                $this->getLastError()->setLastError('Identifiant ou mot de passe incorrect. (LDAP)');
                 $this->redirect($redirect_fail);
             }
         } else {
@@ -422,7 +422,7 @@ class ConnexionControler extends PastellControler
             }
             if (!$this->getUtilisateur()->verifPassword($id_u, $password)) {
                 $loginAttemptLimit->consumeLoginAttempt($login);
-                $this->getLastError()->setLastError('Login ou mot de passe incorrect.');
+                $this->getLastError()->setLastError('Identifiant ou mot de passe incorrect.');
                 $this->redirect($redirect_fail);
             }
             $loginAttemptLimit->resetLoginAttempt($login);
