@@ -10,6 +10,7 @@
 
 - Passage des cookies de Samesite None à Lax #1440
 - Améliorations de sécurité #2196
+- Suppression de headers inutiles #2197
 
 # [4.0.19] - 2025-01-13
 
