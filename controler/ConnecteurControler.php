@@ -444,7 +444,7 @@ class ConnecteurControler extends PastellControler
             )
         );
         $this->setViewParameter(
-            'daemon_racine_lecture',
+            'daemon_global_lecture',
             $this->getRoleUtilisateur()->hasDroit(
                 $this->getId_u(),
                 DroitService::getDroitLecture(DroitService::DROIT_DAEMON),

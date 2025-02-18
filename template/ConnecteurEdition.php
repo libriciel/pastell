@@ -13,7 +13,7 @@
  * @var array $job_list
  * @var string $return_url
  * @var bool $daemon_edition
- * @var bool $daemon_racine_lecture
+ * @var bool $daemon_global_lecture
  * @var bool $daemon_lecture
  * @var int $id_ce
  * @var Action $action
@@ -98,7 +98,7 @@ if ($has_definition) {
             <th>Fréquence (action du connecteur)</th>
             <td>
                 <?php if ($connecteurFrequence->id_cf) : ?>
-                    <?php if ($daemon_racine_lecture) : ?>
+                    <?php if ($daemon_global_lecture) : ?>
                         <a href="<?php $this->url('Daemon/connecteurFrequenceDetail?id_cf=' . $connecteurFrequence->id_cf) ?>">
                             <?= $connecteurFrequence->getExpressionAsString() ?>
                         </a>
@@ -119,7 +119,7 @@ if ($has_definition) {
             <td>
 
                 <?php if ($connecteur->id_cf) : ?>
-                    <?php if ($daemon_racine_lecture) : ?>
+                    <?php if ($daemon_global_lecture) : ?>
                         <a href="<?php $this->url('Daemon/connecteurFrequenceDetail?id_cf=' . $connecteur->id_cf) ?>">
                             <?= nl2br($connecteur->getExpressionAsString()) ?>
                         </a>
@@ -178,7 +178,7 @@ if ($has_definition) {
     <?php foreach ($job_list as $job_info) : ?>
         <tr>
             <td>
-                <?php if ($daemon_racine_lecture) : ?>
+                <?php if ($daemon_global_lecture) : ?>
                     <a href='<?php $this->url("Daemon/detail?id_job={$job_info['id_job']}"); ?>'>
                         <?php echo $job_info['id_job']; ?>
                     </a>
