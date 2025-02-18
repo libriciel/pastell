@@ -3,6 +3,8 @@
 ## Correction
 
 - Remplacement du cookie de session après authentification #2198
+- Suppression de headers inutiles #2197
+- Le paramètre "id_token_hint" n'était pas envoyé lors d'une déconnexion avec un connecteur OIDC #2235
 
 # [4.0.20] - 2025-01-28
 
@@ -10,7 +12,6 @@
 
 - Passage des cookies de Samesite None à Lax #1440
 - Améliorations de sécurité #2196
-- Suppression de headers inutiles #2197
 
 # [4.0.19] - 2025-01-13
 
