@@ -2,7 +2,7 @@
 
 ## Ajouts
 
-- Ajout d'un rôle pour la lecture et l'édition de daemons #2192
+- Ajout des permissions daemon:lecture et daemon:edition permettant aux utilisateurs de voir l'état des dossiers en cours #2192
 
 ## Suppression d'éléments dépréciés
 
