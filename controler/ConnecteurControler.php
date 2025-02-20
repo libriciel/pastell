@@ -10,6 +10,7 @@ use Pastell\Service\Crypto;
 use Pastell\Service\Connecteur\ConnecteurCreationService;
 use Pastell\Service\Connecteur\ConnecteurActionService;
 use Pastell\Service\Connecteur\ConnecteurModificationService;
+use Pastell\Service\Droit\DroitService;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 
 class ConnecteurControler extends PastellControler
@@ -429,6 +430,35 @@ class ConnecteurControler extends PastellControler
         } else {
             $this->setViewParameter('action_possible', []);
         }
+
+        $id_ce = $this->getGetInfo()->getInt('id_ce');
+        $connecteur_entite_info = $this->getConnecteurEntiteSQL()->getInfo($id_ce);
+        $id_e = $connecteur_entite_info['id_e'];
+
+        $this->setViewParameter(
+            'daemon_edition',
+            $this->getRoleUtilisateur()->hasDroit(
+                $this->getId_u(),
+                DroitService::getDroitEdition(DroitService::DROIT_DAEMON),
+                $id_e
+            )
+        );
+        $this->setViewParameter(
+            'daemon_global_lecture',
+            $this->getRoleUtilisateur()->hasDroit(
+                $this->getId_u(),
+                DroitService::getDroitLecture(DroitService::DROIT_DAEMON),
+                0
+            )
+        );
+        $this->setViewParameter(
+            'daemon_lecture',
+            $this->getRoleUtilisateur()->hasDroit(
+                $this->getId_u(),
+                DroitService::getDroitLecture(DroitService::DROIT_DAEMON),
+                $id_e
+            )
+        );
 
         $this->renderDefault();
     }

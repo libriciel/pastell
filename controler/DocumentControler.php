@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\File\Chunk\ChunkUploader;
+use Pastell\Service\Droit\DroitService;
 
 class DocumentControler extends PastellControler
 {
@@ -133,6 +134,30 @@ class DocumentControler extends PastellControler
         if ($this->getViewParameterOrObject('is_super_admin')) {
             $this->setViewParameter('all_action', $documentType->getAction()->getWorkflowAction());
         }
+        $this->setViewParameter(
+            'daemon_edition',
+            $this->getRoleUtilisateur()->hasDroit(
+                $this->getId_u(),
+                DroitService::getDroitEdition(DroitService::DROIT_DAEMON),
+                $id_e
+            )
+        );
+        $this->setViewParameter(
+            'daemon_global_lecture',
+            $this->getRoleUtilisateur()->hasDroit(
+                $this->getId_u(),
+                DroitService::getDroitLecture(DroitService::DROIT_DAEMON),
+                0
+            )
+        );
+        $this->setViewParameter(
+            'daemon_lecture',
+            $this->getRoleUtilisateur()->hasDroit(
+                $this->getId_u(),
+                DroitService::getDroitLecture(DroitService::DROIT_DAEMON),
+                $id_e
+            )
+        );
 
         $this->setViewParameter('page_title', $info_document['titre'] . " (" . $documentType->getName() . ")");
 
@@ -149,7 +174,7 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('document_email_reponse_list', $document_email_reponse_list);
 
         $this->setViewParameter('recuperation_fichier_url', "Document/recuperationFichier?id_d=$id_d&id_e=$id_e");
-        if ($this->hasDroit($this->getViewParameterOrObject('id_e'), "system:lecture")) {
+        if ($this->hasDroit($this->getViewParameterOrObject('id_e'), DroitService::getDroitLecture(DroitService::DROIT_DAEMON))) {
             $this->setViewParameter('job_list', $this->getWorkerSQL()->getJobListWithWorkerForDocument($this->getViewParameterOrObject('id_e'), $this->getViewParameterOrObject('id_d')));
         } else {
             $this->setViewParameter('job_list', false);

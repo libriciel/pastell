@@ -1,5 +1,9 @@
 # [5.0.0] - 
 
+## Ajouts
+
+- Ajout des permissions daemon:lecture et daemon:edition permettant aux utilisateurs de voir l'état des dossiers en cours #2192
+
 ## Suppression d'éléments dépréciés
 
 - Suppression de la table collectivite_fournisseur #2205

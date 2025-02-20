@@ -25,7 +25,9 @@ class RoleDroit
             'annuaire:lecture',
             'annuaire:edition',
             'connecteur:lecture',
-            'connecteur:edition'
+            'connecteur:edition',
+            'daemon:lecture',
+            'daemon:edition',
         ];
         sort($droit);
         return array_merge($droit, $this->documentTypeFactory->getAllDroit());

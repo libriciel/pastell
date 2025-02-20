@@ -117,35 +117,35 @@ class FrequenceConnecteurAPIControllerTest extends PastellTestCase
     public function testGetAsEntiteAdministrator()
     {
         $this->expectException(ForbiddenException::class);
-        $this->expectExceptionMessage('Acces interdit id_e=0, droit=system:lecture,id_u=2');
+        $this->expectExceptionMessage('Acces interdit id_e=0, droit=daemon:lecture,id_u=2');
         $this->getInternalAPIAsUser(2)->get('/frequenceConnecteur');
     }
 
     public function testDetailAsEntiteAdministrator()
     {
         $this->expectException(ForbiddenException::class);
-        $this->expectExceptionMessage('Acces interdit id_e=0, droit=system:lecture,id_u=2');
+        $this->expectExceptionMessage('Acces interdit id_e=0, droit=daemon:lecture,id_u=2');
         $this->getInternalAPIAsUser(2)->get('/frequenceConnecteur/1');
     }
 
     public function testPostAsEntiteAdministrator()
     {
         $this->expectException(ForbiddenException::class);
-        $this->expectExceptionMessage('Acces interdit id_e=0, droit=system:edition,id_u=2');
+        $this->expectExceptionMessage('Acces interdit id_e=0, droit=daemon:edition,id_u=2');
         $this->getInternalAPIAsUser(2)->post('/frequenceConnecteur', []);
     }
 
     public function testPatchAsEntiteAdministrator()
     {
         $this->expectException(ForbiddenException::class);
-        $this->expectExceptionMessage('Acces interdit id_e=0, droit=system:edition,id_u=2');
+        $this->expectExceptionMessage('Acces interdit id_e=0, droit=daemon:edition,id_u=2');
         $this->getInternalAPIAsUser(2)->patch('/frequenceConnecteur/1', []);
     }
 
     public function testDeleteAsEntiteAdministrator()
     {
         $this->expectException(ForbiddenException::class);
-        $this->expectExceptionMessage('Acces interdit id_e=0, droit=system:edition,id_u=2');
+        $this->expectExceptionMessage('Acces interdit id_e=0, droit=daemon:edition,id_u=2');
         $this->getInternalAPIAsUser(2)->delete('/frequenceConnecteur/1');
     }
 }

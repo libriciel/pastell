@@ -12,6 +12,9 @@
  * @var array $action_possible
  * @var array $job_list
  * @var string $return_url
+ * @var bool $daemon_edition
+ * @var bool $daemon_global_lecture
+ * @var bool $daemon_lecture
  * @var int $id_ce
  * @var Action $action
  */
@@ -95,9 +98,13 @@ if ($has_definition) {
             <th>Fréquence (action du connecteur)</th>
             <td>
                 <?php if ($connecteurFrequence->id_cf) : ?>
-                <a href="<?php $this->url("Daemon/connecteurFrequenceDetail?id_cf=" . $connecteurFrequence->id_cf) ?>">
-                    <?php echo $connecteurFrequence->getExpressionAsString() ?>
-                </a>
+                    <?php if ($daemon_global_lecture) : ?>
+                        <a href="<?php $this->url('Daemon/connecteurFrequenceDetail?id_cf=' . $connecteurFrequence->id_cf) ?>">
+                            <?= $connecteurFrequence->getExpressionAsString() ?>
+                        </a>
+                    <?php else : ?>
+                        <?= nl2br($connecteurFrequence->getExpressionAsString()) ?>
+                    <?php endif ?>
                 <?php else : ?>
                     <?php echo nl2br($connecteurFrequence->getExpressionAsString()) ?>
                 <?php endif ?>
@@ -112,9 +119,13 @@ if ($has_definition) {
             <td>
 
                 <?php if ($connecteur->id_cf) : ?>
-                    <a href="<?php $this->url("Daemon/connecteurFrequenceDetail?id_cf=" . $connecteur->id_cf) ?>">
-                        <?php echo nl2br($connecteur->getExpressionAsString()) ?>
-                    </a>
+                    <?php if ($daemon_global_lecture) : ?>
+                        <a href="<?php $this->url('Daemon/connecteurFrequenceDetail?id_cf=' . $connecteur->id_cf) ?>">
+                            <?= nl2br($connecteur->getExpressionAsString()) ?>
+                        </a>
+                    <?php else : ?>
+                        <?= nl2br($connecteur->getExpressionAsString()) ?>
+                    <?php endif ?>
                 <?php else : ?>
                     <?php echo nl2br($connecteur->getExpressionAsString()) ?>
                 <?php endif ?>
@@ -167,10 +178,13 @@ if ($has_definition) {
     <?php foreach ($job_list as $job_info) : ?>
         <tr>
             <td>
-                <a href='<?php $this->url("Daemon/detail?id_job={$job_info['id_job']}"); ?>'>
+                <?php if ($daemon_global_lecture) : ?>
+                    <a href='<?php $this->url("Daemon/detail?id_job={$job_info['id_job']}"); ?>'>
+                        <?php echo $job_info['id_job']; ?>
+                    </a>
+                <?php else : ?>
                     <?php echo $job_info['id_job']; ?>
-                </a>
-
+                <?php endif ?>
             </td>
             <td>
                 <?php if ($job_info['is_lock']) : ?>
@@ -180,7 +194,11 @@ if ($has_definition) {
                        class=" btn-warning btn"> <i class="fa fa-unlock"></i>&nbsp;Reprendre</a></p>
                 <?php else : ?>
                     <?php
-                    $lockJobUrl = sprintf('Daemon/lock?id_job=%s&return_url=%s', $job_info['id_job'], $return_url);
+                    $lockJobUrl = sprintf(
+                        'Daemon/lock?id_job=%s&return_url=%s',
+                        $job_info['id_job'],
+                        $return_url
+                    );
                     ?>
                     <p>
                         NON<br/>
@@ -229,7 +247,7 @@ if ($has_definition) {
             </td>
             <td>
                 <?php
-                $deleteJobUrl = 'Daemon/deleteJob?id_job=' . $job_info['id_job'] . '&id_ce=' . $job_info['id_ce'];
+                $deleteJobUrl = "Daemon/deleteJob?id_job={$job_info['id_job']}&id_ce={$job_info['id_ce']}";
                 ?>
                 <a href="<?php echo $deleteJobUrl; ?>"
                    class="btn btn-danger"><i class="fa fa-trash"></i>&nbsp;Supprimer</a>
