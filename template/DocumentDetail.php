@@ -283,7 +283,7 @@ if ($infoDocumentEmail) :
 
 </div>
 
-<?php if (($daemon_lecture || $daemon_edition) && $job_list) : ?>
+<?php if ($daemon_lecture && $job_list) : ?>
     <div class="box">
         <a class="collapse-link" data-bs-toggle="collapse" data-bs-target="#daemonCollapse">
             <h2><i class="fa fa-plus-square"></i>&nbsp;Travaux programmés</h2>
@@ -367,18 +367,20 @@ if ($infoDocumentEmail) :
                             <td>
                                 <?php echo $job_info['pid']; ?>
                                 <?php if ($job_info['pid']) : ?>
-                                    <?php if (!$job_info['termine']) : ?>
-                                        <?php
-                                        $killUrl = \sprintf(
-                                            'Daemon/kill?id_worker=%s&return_url=%s',
-                                            $job_info['id_worker'],
-                                            $return_url
-                                        );
-                                        ?>
-                                        <a href='<?php $this->url($killUrl); ?>'
-                                           class='btn btn-danger'>
-                                            <i class="fa fa-power-off"></i>&nbsp;Tuer
-                                        </a>
+                                    <?php if (! $job_info['termine']) : ?>
+                                        <?php if ($daemon_edition) : ?>
+                                            <?php
+                                            $killUrl = \sprintf(
+                                                'Daemon/kill?id_worker=%s&return_url=%s',
+                                                $job_info['id_worker'],
+                                                $return_url
+                                            );
+                                            ?>
+                                            <a href='<?php $this->url($killUrl); ?>'
+                                               class='btn btn-danger'>
+                                                <i class="fa fa-power-off"></i>&nbsp;Tuer
+                                            </a>
+                                        <?php endif; ?>
                                     <?php else : ?>
                                         <br/><?php echo $job_info['message']; ?>
                                     <?php endif; ?>
@@ -420,11 +422,9 @@ if ($infoDocumentEmail) :
                         <input type='hidden' name='page' value='<?php echo $page; ?>'/>
                         <input type='hidden' name='action' value='fatal-error'/>
 
-                        <?php if ($daemon_edition) : ?>
-                            <button type='submit' class='btn btn-danger'>
-                                <i class="fa fa-exclamation-triangle"></i>&nbsp;Passer en erreur fatale
-                            </button>
-                        <?php endif; ?>
+                        <button type='submit' class='btn btn-danger'>
+                            <i class="fa fa-exclamation-triangle"></i>&nbsp;Passer en erreur fatale
+                        </button>
                     </form>
                 <?php endif; ?>
             </div>
