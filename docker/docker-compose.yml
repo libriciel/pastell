@@ -106,7 +106,7 @@ services:
             - '/etc/localtime:/etc/localtime:ro'
 
     cloudooo:
-        image: 'registry.libriciel.fr/public/actes/cloudooo:7.1.0'
+        image: 'registry.libriciel.fr/public/actes/cloudooo:24.8.4-PDFA'
         restart: unless-stopped
 
     pes-viewer:
