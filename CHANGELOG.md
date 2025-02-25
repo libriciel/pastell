@@ -1,5 +1,9 @@
 # [4.0.21] - 2025-03-10
 
+## Évolutions
+
+- Changement du commentaire et ajout d'une valeur par défaut sur la taille des blocs à envoyer à asalae #2214
+
 ## Correction
 
 - Remplacement du cookie de session après authentification #2198
