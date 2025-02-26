@@ -149,6 +149,8 @@ $objectInstancier->setInstance('upload_chunk_directory', UPLOAD_CHUNK_DIRECTORY)
 
 $objectInstancier->setInstance('loginPageConfigurationLocation', LOGIN_PAGE_CONFIGURATION_LOCATION);
 
+$objectInstancier->setInstance('connectorActionPermission', USE_CONNECTOR_ACTION_PERMISSION);
+
 $featureToggleService = $objectInstancier->getInstance(FeatureToggleService::class);
 
 /**
