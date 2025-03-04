@@ -266,6 +266,9 @@ class ConnecteurAPIController extends BaseAPIController
         $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_CONNECTEUR));
     }
 
+    /**
+     * @throws ForbiddenException
+     */
     private function checkConnecteurAction(int $id_e): void
     {
         $this->checkDroit($id_e, $this->droitService->getActionPermission(DroitService::DROIT_CONNECTEUR));

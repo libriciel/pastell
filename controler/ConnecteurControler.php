@@ -69,11 +69,6 @@ class ConnecteurControler extends PastellControler
         $this->hasConnecteurDroitEdition($id_e);
     }
 
-    private function hasActionPermission(int $entityId): void
-    {
-        $this->hasConnectorActionPermission($entityId);
-    }
-
     /**
      * @throws LastMessageException
      * @throws LastErrorException
@@ -106,7 +101,7 @@ class ConnecteurControler extends PastellControler
     private function checkActionPermissionOnConnector(int $connectorId): void
     {
         $connectorDetails = $this->getConnectorEntityDetails($connectorId);
-        $this->hasActionPermission($connectorDetails['id_e']);
+        $this->hasConnectorActionPermission($connectorDetails['id_e']);
     }
 
 
