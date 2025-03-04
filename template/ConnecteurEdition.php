@@ -14,49 +14,58 @@
  * @var string $return_url
  * @var int $id_ce
  * @var Action $action
+ * @var bool $actionPermissionOnConnector
  */
 
+$listConnectorsUrl = \sprintf(
+    'Entite/connecteur?global=%s&id_e=%s',
+    $connecteur_entite_info['global'],
+    $connecteur_entite_info['id_e'],
+);
+
 ?>
+
 <a class='btn btn-link'
-   href='Entite/connecteur?global=<?php echo $connecteur_entite_info['global']?>&id_e=<?php echo $connecteur_entite_info['id_e']?>'
+   href='<?php echo $listConnectorsUrl; ?>'
 ><i class="fa fa-arrow-left"></i>&nbsp;Retour à la liste des connecteurs</a>
 
 <div class="box">
-<h2>
-    Connecteur <?php hecho($connecteur_entite_info['type']) ?> -
-    <?php hecho($connecteur_entite_info['id_connecteur'])?> :
-    <?php hecho($connecteur_entite_info['libelle']) ?>
-</h2>
-<?php
-if ($has_definition) {
-    $this->render('DonneesFormulaireDetail');
-} else {
-    ?>
-    <div class="alert alert-danger">
-        Impossible d'afficher les propriétés du connecteur car celui-ci est inconnu sur cette plateforme Pastell
-        (<b><?php hecho($connecteur_entite_info['id_connecteur'])?></b>)
-    </div>
+    <h2>
+        Connecteur <?php hecho($connecteur_entite_info['type']) ?> -
+        <?php hecho($connecteur_entite_info['id_connecteur']) ?> :
+        <?php hecho($connecteur_entite_info['libelle']) ?>
+    </h2>
     <?php
-}
-
-?>
+    if ($has_definition) {
+        $this->render('DonneesFormulaireDetail');
+    } else {
+        ?>
+        <div class="alert alert-danger">
+            Impossible d'afficher les propriétés du connecteur car celui-ci est inconnu sur cette plateforme Pastell
+            (<b><?php hecho($connecteur_entite_info['id_connecteur'])?></b>)
+        </div>
+        <?php
+    }
+    ?>
     <?php if ($fieldDataList) : ?>
     &nbsp;<a class='btn btn-primary' href="<?php $this->url("Connecteur/editionModif?id_ce=$id_ce") ?>">
         <i class="fa fa-pencil"></i>&nbsp;Modifier
     </a>
     <?php endif ?>
-<?php foreach ($action_possible as $action_name) : ?>
-    <form action='Connecteur/action' method='post' style='margin-top:10px; ' >
-        <?php $this->displayCSRFInput(); ?>
-        <input type='hidden' name='id_ce' value='<?php echo $id_ce ?>' />
-        <input type='hidden' name='action' value='<?php echo $action_name ?>' />
 
-        <button type='submit' class='btn btn-outline-primary' >
-            <i class="fa fa-cogs"></i>&nbsp; <?php hecho($action->getActionName($action_name)) ?>
-        </button>
-    </form>
-<?php endforeach;?>
+    <?php if ($actionPermissionOnConnector) : ?>
+        <?php foreach ($action_possible as $action_name) : ?>
+            <form action='Connecteur/action' method='post' style='margin-top:10px; '>
+                <?php $this->displayCSRFInput(); ?>
+                <input type='hidden' name='id_ce' value='<?php echo $id_ce ?>'/>
+                <input type='hidden' name='action' value='<?php echo $action_name ?>'/>
 
+                <button type='submit' class='btn btn-outline-primary'>
+                    <i class="fa fa-cogs"></i>&nbsp; <?php hecho($action->getActionName($action_name)) ?>
+                </button>
+            </form>
+        <?php endforeach; ?>
+    <?php endif; ?>
 </div>
 
 

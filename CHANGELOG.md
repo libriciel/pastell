@@ -1,3 +1,9 @@
+# [4.1.8] - 2025-03-10
+
+## Ajouts
+
+- Droit `connecteur:action` permettant d'exécuter des actions sur les connecteurs. Désactivé par défaut #2194
+
 # [4.1.7] - 2025-02-11
 
 ## Ajouts
