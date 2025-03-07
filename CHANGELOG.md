@@ -9,6 +9,7 @@
 - Remplacement du cookie de session après authentification #2198
 - Suppression de headers inutiles #2197
 - Le paramètre "id_token_hint" n'était pas envoyé lors d'une déconnexion avec un connecteur OIDC #2235
+- Il était possible de modifier l'entité mère d'une entité via l'API #2240
 
 # [4.0.20] - 2025-01-28
 
