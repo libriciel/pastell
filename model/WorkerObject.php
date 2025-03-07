@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model;
-
-class Worker
+class WorkerObject
 {
     public int $id_worker;
     public int $pid;

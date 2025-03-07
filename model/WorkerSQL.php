@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use Model\Worker;
-
 class WorkerSQL extends SQL
 {
     public function create($pid)
@@ -13,14 +11,14 @@ class WorkerSQL extends SQL
         return $this->lastInsertId();
     }
 
-    public function getWorker($id_worker): ?Worker
+    public function getWorker($id_worker): ?WorkerObject
     {
         $sql = 'SELECT * FROM worker WHERE id_worker=?';
         $info = $this->queryOne($sql, $id_worker);
         if (! $info) {
             return null;
         }
-        return new Worker(
+        return new WorkerObject(
             $info['id_worker'],
             $info['pid'],
             $info['date_begin'],

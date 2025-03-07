@@ -12,17 +12,16 @@ class Job
     public $id_e;
     public $id_d;
     public $id_u;
-    /** @var int */
-    public $id_ce;
+    public int $id_ce;
     public $etat_source;
     public $etat_cible;
     public $last_message;
     public $lock;
-    public $lock_since;
+    public string $lock_since;
     public $id_verrou;
     public $is_lock;
-    public $id_daemon;
-    public $daemon;
+    public int $id_daemon;
+    public Daemon $daemon;
 
     public $nb_try;
     public $first_try;
@@ -30,7 +29,7 @@ class Job
     public $next_try;
 
     public $id_job;
-    public $worker;
+    public WorkerObject $worker;
 
     public function __construct()
     {
