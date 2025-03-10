@@ -81,7 +81,7 @@ class EntityValidatorTest extends PastellTestCase
     public function testCheckEntiteMereKO(): void
     {
         $this->expectException(UnrecoverableException::class);
-        $this->expectExceptionMessage("L'entité mère id_e=10 ne peut pas être remplacé par une autre entité id_e=11");
+        $this->expectExceptionMessage("L'entité mère id_e=10 ne peut pas être remplacée par une autre entité id_e=11");
         $this->entityValidator()->checkEntiteMere(10, 11);
     }
 }

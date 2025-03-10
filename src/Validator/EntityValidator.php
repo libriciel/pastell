@@ -57,7 +57,7 @@ final class EntityValidator
         if ($idEntiteMereDefini !== $idEntiteMereParametre) {
             throw new UnrecoverableException(
                 sprintf(
-                    "L'entité mère id_e=%d ne peut pas être remplacé par une autre entité id_e=%d",
+                    "L'entité mère id_e=%d ne peut pas être remplacée par une autre entité id_e=%d",
                     $idEntiteMereDefini,
                     $idEntiteMereParametre
                 )
