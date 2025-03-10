@@ -137,7 +137,7 @@ fichier premis du iparapheur à partir des versions 5.0.25 et 5.1.3 est ignoré 
 
 # [4.0.11] - 2024-01-15
 
-## Corrections 
+## Corrections
 
 - Correction d'erreur à l'importation de configuration d'une entité comportant des connecteurs globaux #1961
 - Permettre la modification du niveau d'entropie des mots de passe #1985
