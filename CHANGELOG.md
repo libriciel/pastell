@@ -4,6 +4,17 @@
 
 - Droit `connecteur:action` permettant d'exécuter des actions sur les connecteurs. Désactivé par défaut #2194
 
+## Évolutions
+
+- Changement du commentaire et ajout d'une valeur par défaut sur la taille des blocs à envoyer à asalae #2214
+
+## Correction
+
+- Remplacement du cookie de session après authentification #2198
+- Suppression de headers inutiles #2197
+- Le paramètre "id_token_hint" n'était pas envoyé lors d'une déconnexion avec un connecteur OIDC #2235
+- Il était possible de modifier l'entité mère d'une entité via l'API #2240
+
 # [4.1.7] - 2025-02-11
 
 ## Ajouts
@@ -204,6 +215,19 @@
 - `pdf-generique` et `document-a-signer` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-document-pdf` #1870
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
+
+# [4.0.21] - 2025-03-10
+
+## Évolutions
+
+- Changement du commentaire et ajout d'une valeur par défaut sur la taille des blocs à envoyer à asalae #2214
+
+## Correction
+
+- Remplacement du cookie de session après authentification #2198
+- Suppression de headers inutiles #2197
+- Le paramètre "id_token_hint" n'était pas envoyé lors d'une déconnexion avec un connecteur OIDC #2235
+- Il était possible de modifier l'entité mère d'une entité via l'API #2240
 
 # [4.0.20] - 2025-01-28
 

@@ -7,6 +7,7 @@ use Pastell\Security\Authentication\OpenIDConnectClientFactory;
 final class OidcAuthentication extends AuthenticationConnecteur
 {
     private const OIDC_REDIRECT_URI = '/Connexion/oidc';
+    private const OIDC_ID_TOKEN = 'oidc_id_token';
 
     private string $loginAttribute;
     private string $givenNameAttribute;
@@ -94,6 +95,7 @@ final class OidcAuthentication extends AuthenticationConnecteur
     {
         $this->oidc->setRedirectURL($redirectUrl);
         $this->oidc->authenticate();
+        $_SESSION[self::OIDC_ID_TOKEN] = $this->oidc->getIdToken();
         return $this->oidc->requestUserInfo($this->loginAttribute);
     }
 
@@ -108,6 +110,7 @@ final class OidcAuthentication extends AuthenticationConnecteur
         }
 
         $this->oidc->authenticate();
+        $_SESSION[self::OIDC_ID_TOKEN] = $this->oidc->getIdToken();
         return json_decode(
             json_encode($this->oidc->requestUserInfo(), JSON_THROW_ON_ERROR),
             true,
@@ -139,7 +142,7 @@ final class OidcAuthentication extends AuthenticationConnecteur
 
     public function logout($redirectUrl = false)
     {
-        $this->oidc->signOut($this->oidc->getIdToken(), $redirectUrl ?: $this->site_base);
+        $this->oidc->signOut($_SESSION[self::OIDC_ID_TOKEN], $redirectUrl ?: $this->site_base);
     }
 
     public function getExternalSystemName(): string

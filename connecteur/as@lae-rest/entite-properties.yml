@@ -13,7 +13,9 @@ formulaire:
             type: password
         chunk_size_in_bytes:
             name: 'Taille maximum des blocs a envoyer (en octets)'
-            commentaire: "asalae &lt;v2 ne prend pas les pièces de plus de 2Go, il faut les envoyer en plusieurs fois.\n0 indique pas de taille maximum et c'est la valeur par défaut.\nMettre moins de 2000000000 pour un asalae &lt;v2."
+            commentaire: "asalae ne prend pas les pièces de plus de 2Mo. 2097152 (valeur par défaut) indique un envoi par bloc de 2Mo maximum."
+            default: 2097152
+
 action:
     ping:
         name: 'Tester la connexion (réseau)'
