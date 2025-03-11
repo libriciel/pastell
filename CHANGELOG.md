@@ -4,6 +4,17 @@
 
 - Droit `connecteur:action` permettant d'exécuter des actions sur les connecteurs. Désactivé par défaut #2194
 
+## Évolutions
+
+- Changement du commentaire et ajout d'une valeur par défaut sur la taille des blocs à envoyer à asalae #2214
+
+## Correction
+
+- Remplacement du cookie de session après authentification #2198
+- Suppression de headers inutiles #2197
+- Le paramètre "id_token_hint" n'était pas envoyé lors d'une déconnexion avec un connecteur OIDC #2235
+- Il était possible de modifier l'entité mère d'une entité via l'API #2240
+
 # [4.1.7] - 2025-02-11
 
 ## Ajouts
