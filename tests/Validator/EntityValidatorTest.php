@@ -69,4 +69,19 @@ class EntityValidatorTest extends PastellTestCase
         );
         $this->entityValidator()->validate('name', '', EntiteSQL::TYPE_COLLECTIVITE, 0, self::ID_E_COL);
     }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function testCheckEntiteMereOK(): void
+    {
+        static::assertTrue($this->entityValidator()->checkEntiteMere(10, 10));
+    }
+
+    public function testCheckEntiteMereKO(): void
+    {
+        $this->expectException(UnrecoverableException::class);
+        $this->expectExceptionMessage("L'entité mère id_e=10 ne peut pas être remplacée par une autre entité id_e=11");
+        $this->entityValidator()->checkEntiteMere(10, 11);
+    }
 }

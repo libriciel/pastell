@@ -1,22 +1,19 @@
 # Docker keycloak
 
-Basé sur : https://gitlab.libriciel.fr/webACTES/webACTES/tree/master
-
-Voir `docker-compose.yml` et `keycloak_pastell.json`
-
+Voir `compose.yaml` et `keycloak_pastell.json`
 
 # Configuration du connecteur
 
-* Provider url (url avant le `.well-known/openid-configuration`):  http://keycloak.tld:port/auth/realms/pastell/
+* Provider url (url avant le `.well-known/openid-configuration`):  http://keycloak.tld:port/realms/pastell/
 * client id :  `account`
-* client secret : `132ff39b-eedd-4fa6-993d-a3ffe63b6b0b`. Sur keycloak : Menu Clients > chosir le client id > onglet Credentials
+* client secret : `132ff39b-eedd-4fa6-993d-a3ffe63b6b0b`. Sur keycloak : Menu Clients > choisir le client id > onglet Credentials
 * Attribut pour le login : `preferred_username` pour keycloak
 
 # Users
 
 ## Administrateur keycloak (realm master)
 
-* admin:password
+* admin:admin
 
 # realm pastell
 
