@@ -60,6 +60,7 @@ class ConnecteurControler extends PastellControler
         $this->setViewParameter('menu_gauche_template', "EntiteMenuGauche");
         $this->setViewParameter('menu_gauche_select', "Entite/connecteur?global=$global");
         $this->setDroitLectureOnConnecteur($id_e);
+        $this->setActionPermissionOnConnector($id_e);
         $this->setDroitImportExportConfig($id_e);
         $this->setDroitLectureOnUtilisateur($id_e);
     }
@@ -70,21 +71,40 @@ class ConnecteurControler extends PastellControler
     }
 
     /**
-     * @param $id_ce
-     * @return array|bool|mixed
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    private function getConnectorEntityDetails(int $entityId): array
+    {
+        $details = $this->getConnecteurEntiteSQL()->getInfo($entityId);
+        if (!$details) {
+            $this->setLastError("Ce connecteur n'existe pas");
+            $this->redirect('/Entite/detail?page=3');
+        }
+        return $details;
+    }
+
+    /**
      * @throws LastErrorException
      * @throws LastMessageException
      */
     public function verifDroitOnConnecteur($id_ce)
     {
-        $connecteur_entite_info = $this->getConnecteurEntiteSQL()->getInfo($id_ce);
-        if (! $connecteur_entite_info) {
-            $this->setLastError("Ce connecteur n'existe pas");
-            $this->redirect("/Entite/detail?page=3");
-        }
+        $connecteur_entite_info = $this->getConnectorEntityDetails($id_ce);
         $this->hasDroitEdition($connecteur_entite_info['id_e']);
         return $connecteur_entite_info;
     }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    private function checkActionPermissionOnConnector(int $connectorId): void
+    {
+        $connectorDetails = $this->getConnectorEntityDetails($connectorId);
+        $this->hasConnectorActionPermission($connectorDetails['id_e']);
+    }
+
 
     /**
      * @throws LastErrorException
@@ -668,7 +688,7 @@ class ConnecteurControler extends PastellControler
         $action = $recuperateur->get('action');
         $id_ce = $recuperateur->getInt('id_ce', 0);
 
-        $this->verifDroitOnConnecteur($id_ce);
+        $this->checkActionPermissionOnConnector($id_ce);
 
         $actionPossible = $this->getActionPossible();
 

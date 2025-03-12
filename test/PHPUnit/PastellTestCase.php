@@ -111,6 +111,8 @@ abstract class PastellTestCase extends TestCase
         $this->objectInstancier->setInstance('pastell_admin_email', 'test@libriciel.invalid');
         $this->objectInstancier->setInstance('password_min_entropy', 80);
 
+        $this->objectInstancier->setInstance('connectorActionPermission', false);
+
         $this->objectInstancier->setInstance('unlock_job_error_at_startup', false);
 
         $symfonyContainer = SymfonyContainerFactory::getSymfonyContainer();
