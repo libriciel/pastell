@@ -34,6 +34,17 @@ class PastellControler extends Controler
         ));
     }
 
+    protected function setActionPermissionOnConnector(int $entityId): void
+    {
+        $this->setViewParameter(
+            'actionPermissionOnConnector',
+            $this->getDroitService()->hasConnectorActionPermission(
+                $entityId,
+                $this->getId_u(),
+            )
+        );
+    }
+
     protected function setDroitLectureOnUtilisateur(int $id_e): void
     {
         $this->setViewParameter('droitLectureOnUtilisateur', $this->getDroitService()->hasDroitUtilisateurLecture(
@@ -66,6 +77,20 @@ class PastellControler extends Controler
     public function hasConnecteurDroitLecture(int $id_e): void
     {
         $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_CONNECTEUR));
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function hasConnectorActionPermission(int $entityId): void
+    {
+        $this->verifDroit(
+            $entityId,
+            $this->getObjectInstancier()
+                ->getInstance(DroitService::class)
+                ->getActionPermission(DroitService::DROIT_CONNECTEUR),
+        );
     }
 
     /**

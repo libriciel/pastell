@@ -1,0 +1,14 @@
+services:
+  keycloak:
+    image: keycloak/keycloak:26.1
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=${KEYCLOAK_USER:-admin}
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=${KEYCLOAK_PASSWORD:-admin}
+    volumes:
+      - ./keycloak_pastell.json:/opt/keycloak/data/import/keycloak.json
+    command:
+      - 'start-dev'
+      - '--import-realm'
+    ports:
+      - "9090:8080"
+

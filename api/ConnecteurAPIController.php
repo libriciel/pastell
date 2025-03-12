@@ -21,6 +21,7 @@ class ConnecteurAPIController extends BaseAPIController
         private readonly ConnecteurDeletionService $connecteurDeletionService,
         private readonly ConnecteurModificationService $connecteurModificationService,
         private readonly ChunkUploader $chunkUploader,
+        private readonly DroitService $droitService,
     ) {
     }
 
@@ -250,7 +251,6 @@ class ConnecteurAPIController extends BaseAPIController
     }
 
     /**
-     * @param int $id_e
      * @throws ForbiddenException
      */
     private function checkConnecteurLecture(int $id_e): void
@@ -259,12 +259,19 @@ class ConnecteurAPIController extends BaseAPIController
     }
 
     /**
-     * @param int $id_e
      * @throws ForbiddenException
      */
     private function checkConnecteurEdition(int $id_e): void
     {
         $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_CONNECTEUR));
+    }
+
+    /**
+     * @throws ForbiddenException
+     */
+    private function checkConnecteurAction(int $id_e): void
+    {
+        $this->checkDroit($id_e, $this->droitService->getActionPermission(DroitService::DROIT_CONNECTEUR));
     }
 
     /**
@@ -276,7 +283,6 @@ class ConnecteurAPIController extends BaseAPIController
     public function post(): mixed
     {
         $id_e = $this->checkedEntite();
-        $this->checkConnecteurEdition($id_e);
         $id_connecteur = $this->getFromRequest('id_connecteur');
         $global = $this->getFromRequest('global', null);
 
@@ -296,6 +302,7 @@ class ConnecteurAPIController extends BaseAPIController
             return $this->postFile($id_e, $id_ce);
         }
 
+        $this->checkConnecteurEdition($id_e);
         $libelle = $this->getFromRequest('libelle');
 
         if (!$libelle) {
@@ -435,6 +442,7 @@ class ConnecteurAPIController extends BaseAPIController
             return $this->postAction($id_e, $id_ce);
         }
 
+        $this->checkConnecteurEdition($id_e);
         $field_name = $this->getFromQueryArgs(4);
         $file_number = $this->getFromQueryArgs(5) ?: 0;
 
@@ -468,6 +476,8 @@ class ConnecteurAPIController extends BaseAPIController
      */
     public function postAction($id_e, $id_ce): array
     {
+        $this->checkConnecteurAction($id_e);
+
         $action_name = $this->getFromQueryArgs(4);
         $action_params = $this->getFromRequest('action_params', []);
 
@@ -515,6 +525,8 @@ class ConnecteurAPIController extends BaseAPIController
      */
     public function postChunk(string $id_e, string $id_ce): array
     {
+        $this->checkConnecteurEdition((int)$id_e);
+
         $field_name = $this->getFromQueryArgs(4);
         $file_number = $this->getFromQueryArgs(5);
         $file_number = $file_number === '' || $file_number === false ? 0 : (int)$file_number;

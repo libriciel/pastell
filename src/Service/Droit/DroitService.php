@@ -9,6 +9,7 @@ class DroitService
 {
     public const DROIT_LECTURE = 'lecture';
     public const DROIT_ECRITURE = 'edition';
+    public const DROIT_ACTION = 'action';
 
     public const DROIT_CONNECTEUR = 'connecteur';
     public const DROIT_SYSTEM = 'system';
@@ -16,23 +17,39 @@ class DroitService
     public const DROIT_UTILISATEUR = 'utilisateur';
     public const DROIT_DAEMON = 'daemon';
 
+    public function __construct(
+        private readonly RoleUtilisateur $roleUtilisateur,
+        private readonly DocumentTypeFactory $documentTypeFactory,
+        private readonly bool $connectorActionPermission,
+    ) {
+    }
+
+    private static function getPermission(string $part, string $action): string
+    {
+        return \sprintf('%s:%s', $part, $action);
+    }
+
     public static function getDroitLecture(string $part): string
     {
-        return sprintf("%s:%s", $part, self::DROIT_LECTURE);
+        return self::getPermission($part, self::DROIT_LECTURE);
     }
 
     public static function getDroitEdition(string $part): string
     {
-        return sprintf("%s:%s", $part, self::DROIT_ECRITURE);
+        return self::getPermission($part, self::DROIT_ECRITURE);
     }
 
-    private $roleUtilisateur;
-    private $documentTypeFactory;
-
-    public function __construct(RoleUtilisateur $roleUtilisateur, DocumentTypeFactory $documentTypeFactory)
+    /**
+     * @deprecated 4.1.8
+     * In 5.0, make it static
+     */
+    public function getActionPermission(string $part): string
     {
-        $this->roleUtilisateur = $roleUtilisateur;
-        $this->documentTypeFactory = $documentTypeFactory;
+        if ($this->connectorActionPermission) {
+            return self::getPermission($part, self::DROIT_ACTION);
+        }
+
+        return self::getPermission($part, self::DROIT_ECRITURE);
     }
 
     /**
@@ -52,11 +69,6 @@ class DroitService
         return $this->roleUtilisateur->hasDroit($id_u, $droit, $id_e);
     }
 
-    /**
-     * @param int $id_u
-     * @param string $droit
-     * @return bool
-     */
     public function hasOneDroit(int $id_u, string $droit): bool
     {
         if ($this->isRestrictedDroit($droit)) {
@@ -65,11 +77,6 @@ class DroitService
         return $this->roleUtilisateur->hasOneDroit($id_u, $droit);
     }
 
-    /**
-     * @param int $id_u
-     * @param int $id_e
-     * @return array
-     */
     public function getAllDocumentLecture(int $id_u, int $id_e): array
     {
         $liste_type = $this->roleUtilisateur->getAllDocumentLecture($id_u, $id_e);
@@ -97,10 +104,6 @@ class DroitService
         return array_values($data);
     }
 
-    /**
-     * @param int $id_u
-     * @return array
-     */
     public function getAllDroit(int $id_u): array
     {
         $data = $this->roleUtilisateur->getAllDroit($id_u);
@@ -112,40 +115,30 @@ class DroitService
         return array_values($data);
     }
 
-    /**
-     * @param int $id_e
-     * @param int $id_u
-     * @return bool
-     */
     public function hasDroitConnecteurLecture(int $id_e, int $id_u): bool
     {
         return $this->hasDroit($id_u, self::getDroitLecture(self::DROIT_CONNECTEUR), $id_e);
     }
 
-    /**
-     * @param int $id_e
-     * @param int $id_u
-     * @return bool
-     */
     public function hasDroitConnecteurEdition(int $id_e, int $id_u): bool
     {
         return $this->hasDroit($id_u, self::getDroitEdition(self::DROIT_CONNECTEUR), $id_e);
     }
 
-    /**
-     * @param int $id_e
-     * @param int $id_u
-     * @return bool
-     */
+    public function hasConnectorActionPermission(int $entityId, int $userId): bool
+    {
+        return $this->hasDroit(
+            $userId,
+            $this->getActionPermission(self::DROIT_CONNECTEUR),
+            $entityId,
+        );
+    }
+
     public function hasDroitUtilisateurLecture(int $id_e, int $id_u): bool
     {
         return $this->hasDroit($id_u, self::getDroitLecture(self::DROIT_UTILISATEUR), $id_e);
     }
 
-    /**
-     * @param array $all_droit
-     * @return array
-     */
     public function clearRestrictedDroit(array $all_droit): array
     {
         foreach ($all_droit as $sql_droit => $checked) {
@@ -156,21 +149,12 @@ class DroitService
         return $all_droit;
     }
 
-    /**
-     * @param string $droit
-     * @return bool
-     */
     public function isRestrictedDroit(string $droit): bool
     {
         list($part) = explode(":", $droit);
         return $this->documentTypeFactory->isRestrictedFlux($part);
     }
 
-    /**
-     * @param array $list_connecteur
-     * @param bool $global
-     * @return array
-     */
     public function clearRestrictedConnecteur(array $list_connecteur, bool $global = false): array
     {
         if ($global) {
@@ -189,11 +173,6 @@ class DroitService
         return $list_connecteur;
     }
 
-    /**
-     * @param string $id_connecteur
-     * @param bool $global
-     * @return bool
-     */
     public function isRestrictedConnecteur(string $id_connecteur, bool $global = false): bool
     {
         return $this->documentTypeFactory->isRestrictedConnecteur($id_connecteur, $global);

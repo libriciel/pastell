@@ -49,6 +49,7 @@ class ConnecteurControlerTest extends ControlerTestCase
      */
     public function testEditionAction()
     {
+        $this->connecteurControler->_beforeAction();
         $this->setGetInfo(['id_ce' => 11]);
         $this->expectOutputRegex("#Connecteur mailsec -\\n(\s*)mailsec :\\n(\s*)Mail securise#");
         $this->connecteurControler->editionAction();
@@ -84,6 +85,7 @@ class ConnecteurControlerTest extends ControlerTestCase
      */
     public function testEditionActionWhenConnecteurDefinitionDoesNotExists()
     {
+        $this->connecteurControler->_beforeAction();
         $connecteurEntiteSQL = $this->getObjectInstancier()->getInstance(ConnecteurEntiteSQL::class);
         $id_ce = $connecteurEntiteSQL->addConnecteur(
             1,

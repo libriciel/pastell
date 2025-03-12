@@ -32,6 +32,7 @@ final class EntityUpdateService
         $this->validator->validate($name, $siren, $type, $parent, $cdg);
 
         $oldEntity = $this->entiteSQL->getInfo($entityId);
+        $this->validator->checkEntiteMere((int)$oldEntity['entite_mere'], $parent);
         $this->entiteSQL->update($entityId, $name, $siren, $type, $parent, $cdg);
 
         $newEntity = $this->entiteSQL->getInfo($entityId);

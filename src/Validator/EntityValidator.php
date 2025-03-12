@@ -48,4 +48,21 @@ final class EntityValidator
 
         return true;
     }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function checkEntiteMere(int $idEntiteMereDefini, int $idEntiteMereParametre): bool
+    {
+        if ($idEntiteMereDefini !== $idEntiteMereParametre) {
+            throw new UnrecoverableException(
+                sprintf(
+                    "L'entité mère id_e=%d ne peut pas être remplacée par une autre entité id_e=%d",
+                    $idEntiteMereDefini,
+                    $idEntiteMereParametre
+                )
+            );
+        }
+        return true;
+    }
 }
