@@ -59,6 +59,22 @@ class WorkerSQLTest extends PastellTestCase
         static::assertEquals($id_worker, $all_info[0]['id_worker']);
     }
 
+    /**
+     * @throws Exception
+     */
+    public function testGetAllRunningWorkerForDaemon(): void
+    {
+        $id_worker_1 = $this->workerSQL->create(42);
+        $id_job_1 = $this->addJobWithDaemon($this->globalDaemon->id_daemon);
+        $this->workerSQL->attachJob($id_worker_1, $id_job_1);
+
+        $id_worker_2 = $this->workerSQL->create(43);
+        $id_job_2 = $this->addJobWithDaemon(2);
+        $this->workerSQL->attachJob($id_worker_2, $id_job_2);
+        $all_info = $this->workerSQL->getAllRunningWorkerForDaemon($this->globalDaemon->id_daemon);
+        static::assertCount(1, $all_info);
+    }
+
     public function testGetJobToLauchLimit(): void
     {
         static::assertEmpty($this->workerSQL->getJobsToLaunch(0, 0));
@@ -261,6 +277,35 @@ class WorkerSQLTest extends PastellTestCase
         $this->addJobWithVerrou();
         $job_list = $this->workerSQL->getJobsToLaunch(4, $this->globalDaemon->id_daemon);
         static::assertCount(2, $job_list);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function addJobWithDaemon(int $id_daemon): string
+    {
+        $jobQueueSQL = new JobQueueSQL(static::getSQLQuery());
+        $job = new Job();
+        $job->type = Job::TYPE_DOCUMENT;
+        $job->etat_source = 'source';
+        $job->etat_cible = 'cible';
+        $job->id_d = 'XYZT';
+        $job->id_e = 1;
+        $job->id_verrou = 'VERROU';
+        $job->next_try = date('Y-M-d', strtotime('yesterday'));
+        $job->id_daemon = $id_daemon;
+        return $jobQueueSQL->createJob($job);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetJobToLaunchWithMultipleDaemons(): void
+    {
+        $this->addJobWithDaemon($this->globalDaemon->id_daemon);
+        $this->addJobWithDaemon(2);
+        $job_list = $this->workerSQL->getJobsToLaunch(4, $this->globalDaemon->id_daemon);
+        static::assertCount(1, $job_list);
     }
 
     /**
