@@ -1,3 +1,9 @@
+# [4.0.22] - 
+
+## Correction
+
+- Il n'y avait que 10 bureaux disponnibles pour la séléction dans le connecteur `recup-fin-parapheur` #2243
+
 # [4.0.21] - 2025-03-10
 
 ## Évolutions

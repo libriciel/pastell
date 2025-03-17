@@ -75,4 +75,45 @@ class RecupFinParapheurTest extends PastellTestCase
             $donneesFormulaire->getFilePath('premis')
         );
     }
+
+    public function testGetAllDesks(): void
+    {
+        $clientInterface = $this->getMockBuilder(ClientInterface::class)->getMock();
+        $clientInterface->method('sendRequest')
+            ->willReturnCallback(function (Request $request): Response {
+                return match ($request->getUri()->getPath()) {
+                    '/auth/realms/api/protocol/openid-connect/token' => new Response(
+                        200,
+                        ['Content-type' => 'application/json'],
+                        file_get_contents(__DIR__ . '/fixtures/authenticate_ok.json')
+                    ),
+                    '/api/standard/v1/tenant/8a4dba5f-b034-4f92-8625-3aee7be97d46/desk' => new Response(
+                        200,
+                        ['Content-type' => 'application/json'],
+                        file_get_contents(__DIR__ . '/fixtures/list_user_desks.json')
+                    ),
+                    default => throw new UnrecoverableException('Unknown path : ' . $request->getUri()->getPath()),
+                };
+            });
+        $clientFactory = $this->getObjectInstancier()->getInstance(ClientFactory::class);
+        $clientFactory->setClientInterface($clientInterface);
+
+        $id_ce = $this->createConnector('recup-fin-parapheur', 'Recup fin parapheur')['id_ce'];
+        $this->configureConnector($id_ce, [
+            'url' => 'https://aaaa.bbb',
+            'pastell_module_id' => 'ls-recup-parapheur',
+            'tenant_id' => '8a4dba5f-b034-4f92-8625-3aee7be97d46'
+            ]);
+
+        $deskNameAction = new DeskNameAction($this->getObjectInstancier());
+        $deskNameAction->setConnecteurId('recup-fin-parapheur', $id_ce);
+
+        $result = $deskNameAction->displayAPI();
+
+        static::assertEquals([
+            '429db3e9-c419-4e6a-87d9-1348c63cf2b7' => 'bureau1',
+            '71903116-a21a-4304-949a-9e63ec1c7935' => 'bureau2',
+            '812a615a-05b1-48d9-8e68-71d96087ed0e' => 'bureau3',
+            ], $result);
+    }
 }
