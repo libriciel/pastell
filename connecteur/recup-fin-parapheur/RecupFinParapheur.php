@@ -14,9 +14,11 @@ use IparapheurV5Client\TokenQuery;
 use Pastell\Client\IparapheurV5\ClientFactory;
 use Pastell\Client\IparapheurV5\ZipContent;
 use IparapheurV5Client\Model\State;
+use Pastell\Connector\IparapheurRest\IpRestDeskInterface;
+use Pastell\Connector\IparapheurRest\IpRestTenantInterface;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
-class RecupFinParapheur extends Connecteur
+class RecupFinParapheur extends Connecteur implements IpRestTenantInterface, IpRestDeskInterface
 {
     private const USERNAME = 'username';
     private const PASSWORD = 'password';
@@ -235,14 +237,15 @@ class RecupFinParapheur extends Connecteur
      * @throws \Http\Client\Exception
      * @throws IparapheurV5Exception
      */
-    public function getAllDesks(): array
+    public function getDeskList(): array
     {
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
         $listUserDesksQuery = new ListUserDesksQuery();
         $listUserDesksQuery->page = 0;
         $desks = [];
         do {
-            $result = (new Desk($this->getAuthentificatedClient()))->listUserDesks($tenantId, $listUserDesksQuery);
+            $result = (new Desk($this->getAuthentificatedClient()))
+                ->listUserDesks($tenantId, $listUserDesksQuery);
             foreach ($result->content as $desk) {
                 $desks[$desk->id] = $desk->name;
             }

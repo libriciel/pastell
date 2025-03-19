@@ -6,16 +6,16 @@ namespace Pastell\Connector\IparapheurRest\Action;
 
 use ConnecteurTypeActionExecutor;
 use Exception;
-use Pastell\Connector\IparapheurRest\IparapheurRestConnector;
+use IparapheurRest;
 
-final class TestConnexion extends ConnecteurTypeActionExecutor
+final class IpRestTestConnexion extends ConnecteurTypeActionExecutor
 {
     /**
      * @throws Exception
      */
     public function go(): bool
     {
-        /** @var IparapheurRestConnector $connector */
+        /** @var IparapheurRest $connector */
         $connector = $this->getMyConnecteur();
         $message = $connector->testConnexion();
         $this->setLastMessage($message);

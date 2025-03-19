@@ -10,8 +10,9 @@ use IparapheurV5Client\Model\ListTrashBinFoldersQuery;
 use IparapheurV5Client\TokenQuery;
 use Pastell\Client\IparapheurV5\ClientFactory;
 use Pastell\Client\IparapheurV5\ZipContent;
+use Pastell\Connector\IparapheurRest\IpRestTenantInterface;
 
-class RecupParapheurCorbeille extends Connecteur
+class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterface
 {
     private const USERNAME = 'username';
     private const PASSWORD = 'password';

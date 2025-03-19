@@ -5,11 +5,11 @@ declare(strict_types=1);
 use IparapheurV5Client\Exception\IparapheurV5Exception;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
-class RecupFinParapheurTestConnexion extends ActionExecutor
+class RecupFinParapheurGetFinishedFolders extends ActionExecutor
 {
     /**
-     * @throws \Http\Client\Exception
      * @throws ExceptionInterface
+     * @throws \Http\Client\Exception
      * @throws IparapheurV5Exception
      * @throws Exception
      */
@@ -17,7 +17,14 @@ class RecupFinParapheurTestConnexion extends ActionExecutor
     {
         /** @var RecupFinParapheur $recupParapheur */
         $recupParapheur = $this->getMyConnecteur();
-        $message = $recupParapheur->testConnexion();
+        $listDossier = $recupParapheur->getFinishedFolders();
+
+        $message = 'Nombre de dossiers : ' . count($listDossier) . '<br/><ul>';
+        foreach ($listDossier as $dossierId => $dossierName) {
+            $message .= "<li>$dossierName ($dossierId)</li>";
+        }
+        $message .= '</ul>';
+
         $this->setLastMessage($message);
         return true;
     }

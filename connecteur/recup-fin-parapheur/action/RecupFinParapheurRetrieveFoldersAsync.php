@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class RetrieveFoldersAsync extends ActionExecutor
+class RecupFinParapheurRetrieveFoldersAsync extends ActionExecutor
 {
     public function go(): bool
     {

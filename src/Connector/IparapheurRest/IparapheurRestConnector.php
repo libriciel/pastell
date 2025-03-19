@@ -7,6 +7,11 @@ namespace Pastell\Connector\IparapheurRest;
 use DonneesFormulaire;
 use Fichier;
 use FileToSign;
+use IparapheurV5Client\Api\Desk;
+use IparapheurV5Client\Api\Typology;
+use IparapheurV5Client\Model\ListTenantsQuery;
+use IparapheurV5Client\Model\ListTypesQuery;
+use IparapheurV5Client\Model\ListUserDesksQuery;
 use SignatureConnecteur;
 use Http\Client\Exception;
 use IparapheurV5Client\Api\Tenant;
@@ -17,8 +22,13 @@ use Pastell\Client\IparapheurV5\ClientFactory;
 use stdClass;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
-class IparapheurRestConnector extends SignatureConnecteur
+class IparapheurRestConnector extends SignatureConnecteur implements IpRestTenantInterface, IpRestDeskInterface
 {
+    private const URL = 'url';
+    private const USERNAME = 'username';
+    private const PASSWORD = 'password';
+    private const TENANT_ID = 'tenant_id';
+    private DonneesFormulaire $connecteurConfig;
     private Client $client;
 
     public function __construct(
@@ -33,22 +43,13 @@ class IparapheurRestConnector extends SignatureConnecteur
      */
     public function setConnecteurConfig(DonneesFormulaire $donneesFormulaire): void
     {
-        $url = $donneesFormulaire->get('url');
+        $this->connecteurConfig = $donneesFormulaire;
+        $url = $donneesFormulaire->get(self::URL);
         $auth = new TokenQuery();
-        $auth->username = $donneesFormulaire->get('username') ?: '';
-        $auth->password = $donneesFormulaire->get('password') ?: '';
+        $auth->username = $donneesFormulaire->get(self::USERNAME) ?: '';
+        $auth->password = $donneesFormulaire->get(self::PASSWORD) ?: '';
         $this->client = $this->clientFactory->getInstance();
         $this->client->authenticate($url, $auth);
-    }
-
-    public function getTenantList(): array
-    {
-        $result = [];
-        $pageTenant = (new Tenant($this->client))->listTenants();
-        foreach ($pageTenant->content as $tenant) {
-            $result[$tenant->id] = $tenant->name;
-        }
-        return $result;
     }
 
     public function testConnexion(): string
@@ -58,6 +59,39 @@ class IparapheurRestConnector extends SignatureConnecteur
             return "Connexion réussie, mais aucune entité n'est associée à ce compte";
         }
         return 'Liste des entités iparapheur : ' . implode(', ', $result);
+    }
+
+    public function getTenantList(): array
+    {
+        $listTenantsQuery = new ListTenantsQuery();
+        $listTenantsQuery->page = 0;
+        $tenants = [];
+        do {
+            $result = (new Tenant($this->client))->listTenants($listTenantsQuery);
+            foreach ($result->content as $tenant) {
+                $tenants[$tenant->id] = $tenant->name;
+            }
+            $listTenantsQuery->page++;
+        } while ($result->pageable->pageNumber + 1 < $result->totalPages);
+
+        return $tenants;
+    }
+
+    public function getDeskList(): array
+    {
+        $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
+        $listUserDesksQuery = new ListUserDesksQuery();
+        $listUserDesksQuery->page = 0;
+        $desks = [];
+        do {
+            $result = (new Desk($this->client))->listUserDesks($tenantId, $listUserDesksQuery);
+            foreach ($result->content as $desk) {
+                $desks[$desk->id] = $desk->name;
+            }
+            $listUserDesksQuery->page++;
+        } while ($result->pageable->pageNumber + 1 < $result->totalPages);
+
+        return $desks;
     }
 
     public function getNbJourMaxInConnecteur()

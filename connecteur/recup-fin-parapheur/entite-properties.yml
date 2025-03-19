@@ -54,11 +54,17 @@ formulaire:
             default: 10
 
 action:
+    test_connexion:
+        name: Tester la connexion
+        action-class: Pastell\Connector\IparapheurRest\Action\IpRestTestConnexion
     tenant_name:
-        action-class: TenantNameAction
+        action-class: Pastell\Connector\IparapheurRest\Action\IpRestGetTenantList
         rule:
             internal-action: true
-
+    desk_name:
+        action-class: Pastell\Connector\IparapheurRest\Action\IpRestGetDeskList
+        rule:
+            internal-action: true
     pastell_module_name:
         rule:
             internal-action: true
@@ -69,30 +75,16 @@ action:
             page_title: 'Choix du type de dossier'
             module_type: pastell_module_id
             module_type_label: pastell_module_name
-
-    desk_name:
-        action-class: DeskNameAction
-        rule:
-            internal-action: true
-
-    test_connexion:
-        name: Tester la connexion
-        action-class: RecupFinParapheurTestConnexion
-
     list_dossier:
         name: Lister les dossiers à récupérer
-        action-class: GetFinishedFolders
-
+        action-class: RecupFinParapheurGetFinishedFolders
     recup_one:
         name: Faire une boucle de récupération (synchrone)
-        action-class: RetrieveFolders
-
+        action-class: RecupFinParapheurRetrieveFolders
     recup:
         name: Traitement (immédiat)
-        action-class: RetrieveFolders
+        action-class: RecupFinParapheurRetrieveFolders
         action-automatique: recup
-
     recup-async:
         name: Traitement (par le gestionnaire de tâches)
-        action-class: RetrieveFoldersAsync
-
+        action-class: RecupFinParapheurRetrieveFoldersAsync

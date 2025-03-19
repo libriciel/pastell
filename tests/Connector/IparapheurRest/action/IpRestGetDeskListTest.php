@@ -2,19 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Pastell\Tests\Connector\IparapheurRest;
+namespace Pastell\Tests\Connector\IparapheurRest\action;
 
-use ActionExecutorFactory;
+use Exception;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Pastell\Client\IparapheurV5\ClientFactory;
+use Pastell\Connector\IparapheurRest\Action\IpRestGetDeskList;
 use PastellTestCase;
 use Psr\Http\Client\ClientInterface;
 use UnrecoverableException;
 
-class IparapheurRestConnectorTest extends PastellTestCase
+class IpRestGetDeskListTest extends PastellTestCase
 {
-    public function getConnectorId(): int
+    /**
+     * @throws Exception
+     */
+    public function testIpRestGetDeskList(): void
     {
         $clientInterface = $this->getMockBuilder(ClientInterface::class)->getMock();
         $clientInterface->method('sendRequest')
@@ -23,16 +27,18 @@ class IparapheurRestConnectorTest extends PastellTestCase
                     '/auth/realms/api/protocol/openid-connect/token' => new Response(
                         200,
                         ['Content-type' => 'application/json'],
-                        file_get_contents(__DIR__ . '/fixtures/authenticate_ok.json')
+                        file_get_contents(__DIR__ . '/../fixtures/authenticate_ok.json')
                     ),
-                    '/api/standard/v1/tenant' => new Response(
+                    '/api/standard/v1/tenant/8a4dba5f-b034-4f92-8625-3aee7be97d46/desk' => new Response(
                         200,
                         ['Content-type' => 'application/json'],
-                        file_get_contents(__DIR__ . '/fixtures/list_tenants.json')
+                        file_get_contents(__DIR__ . '/../fixtures/list_user_desks.json')
                     ),
                     default => throw new UnrecoverableException('Unknown path : ' . $request->getUri()->getPath()),
                 };
             });
+
+        /** @var ClientFactory $clientFactory */
         $clientFactory = $this->getObjectInstancier()->getInstance(ClientFactory::class);
         $clientFactory->setClientInterface($clientInterface);
 
@@ -43,17 +49,19 @@ class IparapheurRestConnectorTest extends PastellTestCase
                 'url' => 'https://url',
                 'username' => 'username-iparapheur',
                 'password' => 'password-iparapheur',
+                'tenant_id' => '8a4dba5f-b034-4f92-8625-3aee7be97d46'
             ]
         );
-        return (int)$connectorId;
-    }
 
-    public function testConnexion(): void
-    {
-        $connectorId = $this->getConnectorId();
-        $this->triggerActionOnConnector($connectorId, 'test-connexion');
+        $ipRestGetDeskList = new IpRestGetDeskList($this->getObjectInstancier());
+        $ipRestGetDeskList->setConnecteurId('iparapheur-rest', $connectorId);
 
-        $lastMessage = $this->getObjectInstancier()->getInstance(ActionExecutorFactory::class)->getLastMessage();
-        self::assertSame('Liste des entités iparapheur : Pastell, Pastell 2, Pastell 3', $lastMessage);
+        $result = $ipRestGetDeskList->displayAPI();
+
+        static::assertEquals([
+            '429db3e9-c419-4e6a-87d9-1348c63cf2b7' => 'bureau1',
+            '71903116-a21a-4304-949a-9e63ec1c7935' => 'bureau2',
+            '812a615a-05b1-48d9-8e68-71d96087ed0e' => 'bureau3',
+        ], $result);
     }
 }

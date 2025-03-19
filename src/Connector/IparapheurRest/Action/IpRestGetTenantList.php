@@ -2,7 +2,13 @@
 
 declare(strict_types=1);
 
-class TenantNameAction extends DictionnaryChoice
+namespace Pastell\Connector\IparapheurRest\Action;
+
+use DictionnaryChoice;
+use Exception;
+use IparapheurRest;
+
+class IpRestGetTenantList extends DictionnaryChoice
 {
     public function getElementId(): string
     {
@@ -24,8 +30,8 @@ class TenantNameAction extends DictionnaryChoice
      */
     public function displayAPI(): array
     {
-        /** @var RecupParapheurCorbeille $recupParapheur */
-        $recupParapheur = $this->getMyConnecteur();
-        return $recupParapheur->getTenantList();
+        /** @var IparapheurRest $connector */
+        $connector = $this->getMyConnecteur();
+        return $connector->getTenantList();
     }
 }

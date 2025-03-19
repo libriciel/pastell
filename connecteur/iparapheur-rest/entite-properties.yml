@@ -12,7 +12,32 @@ formulaire:
     password:
       name: "Mot de passe"
       type: password
+    tenant_name:
+      name: "Nom de l'entité iparapheur"
+      type: externalData
+      choice-action: tenant-name
+      link_name: "Sélectionner l'entité"
+    tenant_id:
+      name: "Identifiant de l'entité iparapheur"
+      no-show: true
+    desk_name:
+      name: "Nom du bureau iparapheur"
+      type: externalData
+      choice-action: desk-name
+      link_name: "Sélectionner le bureau"
+    desk_id:
+      name: "Identifiant du bureau iparapheur"
+      no-show: true
+
 action:
-  test_connexion:
+  test-connexion:
     name: Tester la connexion
-    action-class: Pastell\Connector\IparapheurRest\Action\TestConnexion
+    action-class: Pastell\Connector\IparapheurRest\Action\IpRestTestConnexion
+  tenant-name:
+    action-class: Pastell\Connector\IparapheurRest\Action\IpRestGetTenantList
+    rule:
+      internal-action: true
+  desk-name:
+    action-class: Pastell\Connector\IparapheurRest\Action\IpRestGetDeskList
+    rule:
+      internal-action: true
