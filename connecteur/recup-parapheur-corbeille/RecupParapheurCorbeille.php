@@ -5,6 +5,7 @@ declare(strict_types=1);
 use IparapheurV5Client\Api\AdminTrashBin;
 use IparapheurV5Client\Api\Tenant;
 use IparapheurV5Client\Client;
+use IparapheurV5Client\Model\ListTenantsQuery;
 use IparapheurV5Client\Model\ListTrashBinFoldersQuery;
 use IparapheurV5Client\TokenQuery;
 use Pastell\Client\IparapheurV5\ClientFactory;
@@ -65,12 +66,18 @@ class RecupParapheurCorbeille extends Connecteur
 
     public function getTenantList(): array
     {
-        $result = [];
-        $pageTenant = (new Tenant($this->getAuthenticatedClient()))->listTenants();
-        foreach ($pageTenant->content as $tenant) {
-            $result[$tenant->id] = $tenant->name;
-        }
-        return $result;
+        $listTenantsQuery = new ListTenantsQuery();
+        $listTenantsQuery->page = 0;
+        $tenants = [];
+        do {
+            $result = (new Tenant($this->getAuthenticatedClient()))->listTenants($listTenantsQuery);
+            foreach ($result->content as $tenant) {
+                $tenants[$tenant->id] = $tenant->name;
+            }
+            $listTenantsQuery->page++;
+        } while ($result->pageable->pageNumber + 1 < $result->totalPages);
+
+        return $tenants;
     }
 
     public function testConnexion(): string
