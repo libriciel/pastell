@@ -31,6 +31,10 @@ abstract class DictionnaryChoice extends ChoiceActionExecutor
     {
         $this->setViewParameter('dictionnary', $this->displayAPI());
         $this->setViewParameter('element_id', $this->getElementId());
+        $this->setViewParameter(
+            'element_name_libelle',
+            $this->getConnecteurProperties()->getFieldData($this->getElementName())->getField()->getLibelle()
+        );
         $this->setViewParameter('selected_id', $this->getConnecteurProperties()->get($this->getElementId()));
         $this->renderPage(
             $this->getTitle(),
