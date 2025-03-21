@@ -4,37 +4,36 @@ declare(strict_types=1);
 
 namespace Pastell\Connector\IparapheurRest\Action;
 
-use DictionnaryChoice;
+use ChoiceActionExecutor;
 use Exception;
 use IparapheurRest;
 use Pastell\Connector\IparapheurRest\IpRestException;
 
-class IpRestGetDeskList extends DictionnaryChoice
+class IpRestGetSubTypeList extends ChoiceActionExecutor
 {
-    public function getElementId(): string
+    /**
+     * @throws Exception
+     */
+    public function go(): bool
     {
-        return 'desk_id';
+        throw new IpRestException('Not implemented');
     }
-
-    public function getElementName(): string
-    {
-        return 'desk_name';
-    }
-
-    public function getTitle(): string
-    {
-        return 'Sélectionner un bureau';
-    }
-
 
     /**
-     * @throws IpRestException
+     * @throws Exception
+     */
+    public function display(): bool
+    {
+        throw new IpRestException('Not implemented');
+    }
+
+    /**
      * @throws Exception
      */
     public function displayAPI(): array
     {
         /** @var IparapheurRest $connector */
         $connector = $this->getMyConnecteur();
-        return $connector->getDeskList();
+        return $connector->getSubTypeList();
     }
 }

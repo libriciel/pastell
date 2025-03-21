@@ -9,6 +9,7 @@ use Fichier;
 use FileToSign;
 use IparapheurV5Client\Api\Desk;
 use IparapheurV5Client\Api\Typology;
+use IparapheurV5Client\Model\ListSubtypesQuery;
 use IparapheurV5Client\Model\ListTenantsQuery;
 use IparapheurV5Client\Model\ListTypesQuery;
 use IparapheurV5Client\Model\ListUserDesksQuery;
@@ -28,6 +29,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements IpRestTenan
     private const USERNAME = 'username';
     private const PASSWORD = 'password';
     private const TENANT_ID = 'tenant_id';
+    private const TYPE_ID = 'iparapheur_type_id';
     private DonneesFormulaire $connecteurConfig;
     private Client $client;
 
@@ -77,9 +79,15 @@ class IparapheurRestConnector extends SignatureConnecteur implements IpRestTenan
         return $tenants;
     }
 
+    /**
+     * @throws IpRestException
+     */
     public function getDeskList(): array
     {
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
+        if (! $tenantId) {
+            throw new IpRestException("L'entité iparapheur est obligatoire pour voir la liste des bureaux");
+        }
         $listUserDesksQuery = new ListUserDesksQuery();
         $listUserDesksQuery->page = 0;
         $desks = [];
@@ -92,6 +100,55 @@ class IparapheurRestConnector extends SignatureConnecteur implements IpRestTenan
         } while ($result->pageable->pageNumber + 1 < $result->totalPages);
 
         return $desks;
+    }
+
+    /**
+     * @throws IpRestException
+     */
+    public function getTypeList(): array
+    {
+        $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
+        if (! $tenantId) {
+            throw new IpRestException("L'entité iparapheur est obligatoire pour voir la liste des types");
+        }
+        $listTypesQuery = new ListTypesQuery();
+        $listTypesQuery->page = 0;
+        $types = [];
+        do {
+            $result = (new Typology($this->client))->listTypes($tenantId, $listTypesQuery);
+            foreach ($result->content as $type) {
+                $types[$type->id] = $type->name;
+            }
+            $listTypesQuery->page++;
+        } while ($result->pageable->pageNumber + 1 < $result->totalPages);
+
+        return $types;
+    }
+
+    /**
+     * @throws IpRestException
+     */
+    public function getSubTypeList(): array
+    {
+        $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
+        $typeId = $this->connecteurConfig->get(self::TYPE_ID);
+        if ((! $tenantId) || (! $typeId)) {
+            throw new IpRestException(
+                "L'entité et le type iparapheur sont obligatoires pour voir la liste des sous-types"
+            );
+        }
+        $listSubtypesQuery = new ListSubtypesQuery();
+        $listSubtypesQuery->page = 0;
+        $subTypes = [];
+        do {
+            $result = (new Typology($this->client))->listSubtypes($tenantId, $typeId, $listSubtypesQuery);
+            foreach ($result->content as $subType) {
+                $subTypes[$subType->id] = $subType->name;
+            }
+            $listSubtypesQuery->page++;
+        } while ($result->pageable->pageNumber + 1 < $result->totalPages);
+
+        return $subTypes;
     }
 
     public function getNbJourMaxInConnecteur()

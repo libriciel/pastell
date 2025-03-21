@@ -8,13 +8,13 @@ use Exception;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Pastell\Client\IparapheurV5\ClientFactory;
-use Pastell\Connector\IparapheurRest\Action\IpRestGetDeskList;
+use Pastell\Connector\IparapheurRest\Action\IpRestGetSubTypeList;
 use Pastell\Connector\IparapheurRest\IpRestException;
 use PastellTestCase;
 use Psr\Http\Client\ClientInterface;
 use UnrecoverableException;
 
-class IpRestGetDeskListTest extends PastellTestCase
+class IpRestGetSubTypeListTest extends PastellTestCase
 {
     private function setClient(): void
     {
@@ -27,10 +27,11 @@ class IpRestGetDeskListTest extends PastellTestCase
                         ['Content-type' => 'application/json'],
                         file_get_contents(__DIR__ . '/../fixtures/authenticate_ok.json')
                     ),
-                    '/api/standard/v1/tenant/8a4dba5f-b034-4f92-8625-3aee7be97d46/desk' => new Response(
+                    '/api/standard/v1/tenant/8a4dba5f-b034-4f92-8625-3aee7be97d46/types/233f806c-9fc3-44db-ab36-739c4909cdc9/subtypes'
+                    => new Response(
                         200,
                         ['Content-type' => 'application/json'],
-                        file_get_contents(__DIR__ . '/../fixtures/list_user_desks.json')
+                        file_get_contents(__DIR__ . '/../fixtures/list_subtypes.json')
                     ),
                     default => throw new UnrecoverableException('Unknown path : ' . $request->getUri()->getPath()),
                 };
@@ -44,7 +45,7 @@ class IpRestGetDeskListTest extends PastellTestCase
     /**
      * @throws Exception
      */
-    public function testIpRestGetDeskList(): void
+    public function testIpRestGetSubTypeList(): void
     {
         $this->setClient();
 
@@ -55,26 +56,28 @@ class IpRestGetDeskListTest extends PastellTestCase
                 'url' => 'https://url',
                 'username' => 'username-iparapheur',
                 'password' => 'password-iparapheur',
-                'tenant_id' => '8a4dba5f-b034-4f92-8625-3aee7be97d46'
+                'tenant_id' => '8a4dba5f-b034-4f92-8625-3aee7be97d46',
+                'iparapheur_type_id' => '233f806c-9fc3-44db-ab36-739c4909cdc9'
             ]
         );
 
-        $ipRestGetDeskList = new IpRestGetDeskList($this->getObjectInstancier());
-        $ipRestGetDeskList->setConnecteurId('iparapheur-rest', $connectorId);
+        $ipRestGetSubTypeList = new IpRestGetSubTypeList($this->getObjectInstancier());
+        $ipRestGetSubTypeList->setConnecteurId('iparapheur-rest', $connectorId);
 
-        $result = $ipRestGetDeskList->displayAPI();
+        $result = $ipRestGetSubTypeList->displayAPI();
 
         static::assertEquals([
-            '429db3e9-c419-4e6a-87d9-1348c63cf2b7' => 'bureau1',
-            '71903116-a21a-4304-949a-9e63ec1c7935' => 'bureau2',
-            '812a615a-05b1-48d9-8e68-71d96087ed0e' => 'bureau3',
+            '12eff029-ee61-4b9a-816d-1af5cedce3f1' => 'Cachet auto',
+            '61c84105-5d7a-4e6e-b673-5bf2fff73563' => 'Cachet manuel',
+            'abb28258-6965-4725-8570-ff64a2a02745' => 'Signature',
+            '741948ac-855e-4081-9dae-ccc2492a5d54' => 'Visa'
         ], $result);
     }
 
     /**
      * @throws Exception
      */
-    public function testCheckAddTenantId(): void
+    public function testCheckAddIParapeurTypeId(): void
     {
         $this->setClient();
 
@@ -85,15 +88,16 @@ class IpRestGetDeskListTest extends PastellTestCase
                 'url' => 'https://url',
                 'username' => 'username-iparapheur',
                 'password' => 'password-iparapheur',
+                'tenant_id' => '8a4dba5f-b034-4f92-8625-3aee7be97d46',
             ]
         );
 
-        $ipRestGetDeskList = new IpRestGetDeskList($this->getObjectInstancier());
-        $ipRestGetDeskList->setConnecteurId('iparapheur-rest', $connectorId);
+        $ipRestGetSubTypeList = new IpRestGetSubTypeList($this->getObjectInstancier());
+        $ipRestGetSubTypeList->setConnecteurId('iparapheur-rest', $connectorId);
 
         $this->expectException(IpRestException::class);
-        $this->expectExceptionMessage("L'entité iparapheur est obligatoire pour voir la liste des bureaux");
+        $this->expectExceptionMessage("L'entité et le type iparapheur sont obligatoires pour voir la liste des sous-types");
 
-        $ipRestGetDeskList->displayAPI();
+        $ipRestGetSubTypeList->displayAPI();
     }
 }

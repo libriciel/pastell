@@ -9,23 +9,22 @@ use Exception;
 use IparapheurRest;
 use Pastell\Connector\IparapheurRest\IpRestException;
 
-class IpRestGetDeskList extends DictionnaryChoice
+class IpRestGetTypeList extends DictionnaryChoice
 {
     public function getElementId(): string
     {
-        return 'desk_id';
+        return 'iparapheur_type_id';
     }
 
     public function getElementName(): string
     {
-        return 'desk_name';
+        return 'iparapheur_type';
     }
 
     public function getTitle(): string
     {
-        return 'Sélectionner un bureau';
+        return 'Sélectionner un type';
     }
-
 
     /**
      * @throws IpRestException
@@ -35,6 +34,6 @@ class IpRestGetDeskList extends DictionnaryChoice
     {
         /** @var IparapheurRest $connector */
         $connector = $this->getMyConnecteur();
-        return $connector->getDeskList();
+        return $connector->getTypeList();
     }
 }

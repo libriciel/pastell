@@ -8,13 +8,13 @@ use Exception;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Pastell\Client\IparapheurV5\ClientFactory;
-use Pastell\Connector\IparapheurRest\Action\IpRestGetDeskList;
+use Pastell\Connector\IparapheurRest\Action\IpRestGetTypeList;
 use Pastell\Connector\IparapheurRest\IpRestException;
 use PastellTestCase;
 use Psr\Http\Client\ClientInterface;
 use UnrecoverableException;
 
-class IpRestGetDeskListTest extends PastellTestCase
+class IpRestGetTypeListTest extends PastellTestCase
 {
     private function setClient(): void
     {
@@ -27,10 +27,10 @@ class IpRestGetDeskListTest extends PastellTestCase
                         ['Content-type' => 'application/json'],
                         file_get_contents(__DIR__ . '/../fixtures/authenticate_ok.json')
                     ),
-                    '/api/standard/v1/tenant/8a4dba5f-b034-4f92-8625-3aee7be97d46/desk' => new Response(
+                    '/api/standard/v1/tenant/8a4dba5f-b034-4f92-8625-3aee7be97d46/types' => new Response(
                         200,
                         ['Content-type' => 'application/json'],
-                        file_get_contents(__DIR__ . '/../fixtures/list_user_desks.json')
+                        file_get_contents(__DIR__ . '/../fixtures/list_types.json')
                     ),
                     default => throw new UnrecoverableException('Unknown path : ' . $request->getUri()->getPath()),
                 };
@@ -44,7 +44,7 @@ class IpRestGetDeskListTest extends PastellTestCase
     /**
      * @throws Exception
      */
-    public function testIpRestGetDeskList(): void
+    public function testIpRestGetTypeList(): void
     {
         $this->setClient();
 
@@ -59,15 +59,16 @@ class IpRestGetDeskListTest extends PastellTestCase
             ]
         );
 
-        $ipRestGetDeskList = new IpRestGetDeskList($this->getObjectInstancier());
-        $ipRestGetDeskList->setConnecteurId('iparapheur-rest', $connectorId);
+        $ipRestGetTypeList = new IpRestGetTypeList($this->getObjectInstancier());
+        $ipRestGetTypeList->setConnecteurId('iparapheur-rest', $connectorId);
 
-        $result = $ipRestGetDeskList->displayAPI();
+        $result = $ipRestGetTypeList->displayAPI();
 
         static::assertEquals([
-            '429db3e9-c419-4e6a-87d9-1348c63cf2b7' => 'bureau1',
-            '71903116-a21a-4304-949a-9e63ec1c7935' => 'bureau2',
-            '812a615a-05b1-48d9-8e68-71d96087ed0e' => 'bureau3',
+            '83cf8658-8bef-4e22-84b2-db119d04811d' => 'Cades',
+            '233f806c-9fc3-44db-ab36-739c4909cdc9' => 'Pades',
+            '80dd7f2e-58c4-4e99-818c-040642f23326' => 'Visa',
+            '5d2854db-fae0-4ce9-81df-5e209b7a657c' => 'Xades'
         ], $result);
     }
 
@@ -88,12 +89,12 @@ class IpRestGetDeskListTest extends PastellTestCase
             ]
         );
 
-        $ipRestGetDeskList = new IpRestGetDeskList($this->getObjectInstancier());
-        $ipRestGetDeskList->setConnecteurId('iparapheur-rest', $connectorId);
+        $ipRestGetTypeList = new IpRestGetTypeList($this->getObjectInstancier());
+        $ipRestGetTypeList->setConnecteurId('iparapheur-rest', $connectorId);
 
         $this->expectException(IpRestException::class);
-        $this->expectExceptionMessage("L'entité iparapheur est obligatoire pour voir la liste des bureaux");
+        $this->expectExceptionMessage("L'entité iparapheur est obligatoire pour voir la liste des types");
 
-        $ipRestGetDeskList->displayAPI();
+        $ipRestGetTypeList->displayAPI();
     }
 }

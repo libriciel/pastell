@@ -1,0 +1,45 @@
+{
+  "totalPages": 1,
+  "totalElements": 4,
+  "pageable": {
+    "unpaged": false,
+    "pageNumber": 0,
+    "pageSize": 10,
+    "paged": true,
+    "offset": 0,
+    "sort": {
+      "unsorted": false,
+      "sorted": true,
+      "empty": false
+    }
+  },
+  "numberOfElements": 4,
+  "size": 10,
+  "content": [
+    {
+      "id": "12eff029-ee61-4b9a-816d-1af5cedce3f1",
+      "name": "Cachet auto"
+    },
+    {
+      "id": "61c84105-5d7a-4e6e-b673-5bf2fff73563",
+      "name": "Cachet manuel"
+    },
+    {
+      "id": "abb28258-6965-4725-8570-ff64a2a02745",
+      "name": "Signature"
+    },
+    {
+      "id": "741948ac-855e-4081-9dae-ccc2492a5d54",
+      "name": "Visa"
+    }
+  ],
+  "number": 0,
+  "sort": {
+    "unsorted": false,
+    "sorted": true,
+    "empty": false
+  },
+  "first": true,
+  "last": true,
+  "empty": false
+}

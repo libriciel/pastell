@@ -28,10 +28,23 @@ formulaire:
     desk_id:
       name: "Identifiant du bureau iparapheur"
       no-show: true
+    iparapheur_type:
+      name: "Type iparapheur"
+      type: externalData
+      choice-action: iparapheur-type
+      link_name: "Sélectionner le type"
+    iparapheur_type_id:
+      name: "Identifiant du type iparapheur"
+      no-show: true
+    iparapheur_subtype:
+      name: "Sous-type iparapheur"
+      type: externalData
+      choice-action: iparapheur-subtype
+      no-show: true
 
 action:
   test-connexion:
-    name: Tester la connexion
+    name: "Tester la connexion"
     action-class: Pastell\Connector\IparapheurRest\Action\IpRestTestConnexion
   tenant-name:
     action-class: Pastell\Connector\IparapheurRest\Action\IpRestGetTenantList
@@ -41,3 +54,15 @@ action:
     action-class: Pastell\Connector\IparapheurRest\Action\IpRestGetDeskList
     rule:
       internal-action: true
+  iparapheur-type:
+    action-class: Pastell\Connector\IparapheurRest\Action\IpRestGetTypeList
+    rule:
+      internal-action: true
+  iparapheur-subtype:
+    action-class: Pastell\Connector\IparapheurRest\Action\IpRestGetSubTypeList
+    rule:
+      internal-action: true
+  display-subtype:
+    name: "Voir les sous-types"
+    action-class: Pastell\Connector\IparapheurRest\Action\IpRestDisplaySubType
+
