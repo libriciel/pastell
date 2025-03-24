@@ -8,6 +8,8 @@ use IparapheurV5Client\Api\Tenant;
 use IparapheurV5Client\Client;
 use IparapheurV5Client\Exception\IparapheurV5Exception;
 use IparapheurV5Client\Model\ListFoldersQuery;
+use IparapheurV5Client\Model\ListTenantsQuery;
+use IparapheurV5Client\Model\ListUserDesksQuery;
 use IparapheurV5Client\TokenQuery;
 use Pastell\Client\IparapheurV5\ClientFactory;
 use Pastell\Client\IparapheurV5\ZipContent;
@@ -79,12 +81,18 @@ class RecupFinParapheur extends Connecteur
      */
     public function getTenantList(): array
     {
-        $result = [];
-        $pageTenant = (new Tenant($this->getAuthentificatedClient()))->listTenants();
-        foreach ($pageTenant->content as $tenant) {
-            $result[$tenant->id] = $tenant->name;
-        }
-        return $result;
+        $listTenantsQuery = new ListTenantsQuery();
+        $listTenantsQuery->page = 0;
+        $tenants = [];
+        do {
+            $result = (new Tenant($this->getAuthentificatedClient()))->listTenants($listTenantsQuery);
+            foreach ($result->content as $tenant) {
+                $tenants[$tenant->id] = $tenant->name;
+            }
+            $listTenantsQuery->page++;
+        } while ($result->pageable->pageNumber + 1 < $result->totalPages);
+
+        return $tenants;
     }
 
     /**
@@ -229,11 +237,18 @@ class RecupFinParapheur extends Connecteur
      */
     public function getAllDesks(): array
     {
-        $result = (new Desk($this->getAuthentificatedClient()))->listUserDesks($this->connecteurConfig->get(self::TENANT_ID));
+        $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
+        $listUserDesksQuery = new ListUserDesksQuery();
+        $listUserDesksQuery->page = 0;
         $desks = [];
-        foreach ($result->content as $desk) {
-            $desks[$desk->id] = $desk->name;
-        }
+        do {
+            $result = (new Desk($this->getAuthentificatedClient()))->listUserDesks($tenantId, $listUserDesksQuery);
+            foreach ($result->content as $desk) {
+                $desks[$desk->id] = $desk->name;
+            }
+            $listUserDesksQuery->page++;
+        } while ($result->pageable->pageNumber + 1 < $result->totalPages);
+
         return $desks;
     }
 }
