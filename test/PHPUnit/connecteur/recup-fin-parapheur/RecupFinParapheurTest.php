@@ -110,7 +110,7 @@ class RecupFinParapheurTest extends PastellTestCase
 
         $result = $deskNameAction->displayAPI();
 
-        static::assertEquals([
+        static::assertSame([
             '429db3e9-c419-4e6a-87d9-1348c63cf2b7' => 'bureau1',
             '71903116-a21a-4304-949a-9e63ec1c7935' => 'bureau2',
             '812a615a-05b1-48d9-8e68-71d96087ed0e' => 'bureau3',
