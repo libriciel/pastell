@@ -7,7 +7,6 @@ use ConnecteurException;
 use ConnecteurFactory;
 use DonneesFormulaireFactory;
 use Exception;
-use Pastell\Service\FeatureToggle\DisplayConnecteurEntiteRacine;
 
 class ConnecteurCreationService
 {
@@ -17,7 +16,6 @@ class ConnecteurCreationService
         private readonly ConnecteurActionService $connecteurActionService,
         private readonly ConnecteurAssociationService $connecteurAssociationService,
         private readonly DonneesFormulaireFactory $donneesFormulaireFactory,
-        private readonly DisplayConnecteurEntiteRacine $displayConnecteurEntiteRacine,
     ) {
     }
 
@@ -125,12 +123,6 @@ class ConnecteurCreationService
      */
     private function checkCreateConnector(int $id_e, int $global): void
     {
-        /** @deprecated 4.1.7, to be removed in v5 */
-        if (($id_e === 0) && ($global === 0) && !($this->displayConnecteurEntiteRacine->isEnabled())) {
-            throw new ConnecteurException(
-                "Il n'est pas possible de créer un connecteur d'entité au niveau de l'entité racine"
-            );
-        }
         if (($id_e !== 0) && ($global === 1)) {
             throw new ConnecteurException(
                 "Il n'est pas possible de créer un connecteur global au niveau d'une entité"

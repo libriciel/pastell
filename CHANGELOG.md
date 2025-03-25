@@ -4,6 +4,10 @@
 
 - Ajout des permissions daemon:lecture et daemon:edition permettant aux utilisateurs de voir l'état des dossiers en cours #2192
 
+## Évolutions
+
+- La possibilité de définir des connecteurs d'entités au niveau de l'entité racine ne dépend plus d'une activation #2206
+
 ## Suppression d'éléments dépréciés
 
 - Suppression de la table collectivite_fournisseur #2205

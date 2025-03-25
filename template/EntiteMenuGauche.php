@@ -17,13 +17,9 @@ if ($droitLectureOnUtilisateur) {
 }
 
 if ($droit_lecture_on_connecteur) {
+    $admninistration_menu['Entite/connecteur?global=0'] = 'Connecteurs' . ($id_e ? '' : " d'entités");
     if ($id_e === 0) {
-        if ($this->isEnableConnecteurEntiteRacine()) {
-            $admninistration_menu['Entite/connecteur?global=0'] = "Connecteurs d'entités";
-        }
         $admninistration_menu['Entite/connecteur?global=1'] = 'Connecteurs globaux';
-    } else {
-        $admninistration_menu['Entite/connecteur?global=0'] = 'Connecteurs';
     }
     $admninistration_menu['Flux/index'] = $id_e ? 'Types de dossier (association)' : 'Associations connecteurs globaux';
 }
