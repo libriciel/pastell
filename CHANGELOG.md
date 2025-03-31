@@ -3,6 +3,7 @@
 ## Correction
 
 - Il n'y avait que 10 entités et bureaux disponibles pour la sélection dans le connecteur `recup-fin-parapheur` #2243
+- Le lien de téléchargement d'un fichier était incorrect #2229
 
 # [4.0.21] - 2025-03-10
 
