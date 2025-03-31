@@ -116,7 +116,7 @@
                                 <?php if ($formulaire->getField($champs)->getType() == 'file') : ?>
                                     <?php
                                     $downloadFileUrl = \sprintf(
-                                        'Document/RecuperationFichier?id_d=%s&id_e=%s&field=%s&num=0',
+                                        'Document/recuperationFichier?id_d=%s&id_e=%s&field=%s&num=0',
                                         $document['id_d'],
                                         $document['id_e'],
                                         $champs,
