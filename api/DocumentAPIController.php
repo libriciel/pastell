@@ -178,7 +178,7 @@ class DocumentAPIController extends BaseAPIController
      */
     private function internalDetail($id_e, $id_d): array
     {
-        $info = $this->GetDocument($id_d, $id_e);
+        $info = $this->getDocument($id_d, $id_e);
         $result['info'] = $info;
         $donneesFormulaire = $this->donneesFormulaireFactory->get($id_d, $info['type']);
 
@@ -236,7 +236,7 @@ class DocumentAPIController extends BaseAPIController
         $id_e = $this->checkedEntite();
 
         $id_d = $this->getFromQueryArgs(2);
-        if ($id_d && $this->GetDocument($id_d, $id_e)) {
+        if ($id_d && $this->getDocument($id_d, $id_e)) {
             $file_type = $this->getFromQueryArgs(3);
             if ($file_type === 'chunk') {
                 return $this->postChunk($id_e, $id_d);
@@ -359,9 +359,7 @@ class DocumentAPIController extends BaseAPIController
         if ($mode_receive) {
             return $this->receiveFileAction($id_e, $id_d, $field, $num);
         }
-        $info = $this->document->getInfo($id_d);
-
-        $this->checkDroit($id_e, "{$info['type']}:edition");
+        $info = $this->getDocument($id_d, $id_e);
 
         $donneesFormulaire = $this->donneesFormulaireFactory->get($id_d, $info['type']);
 

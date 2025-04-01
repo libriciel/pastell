@@ -1,3 +1,9 @@
+# [4.1.9] -
+
+## Correction
+
+- La récupération d'un fichier par API renvoyait une mauvaise erreur sur un dossier inexistant #2247
+
 # [4.1.8] - 2025-03-10
 
 ## Ajouts
