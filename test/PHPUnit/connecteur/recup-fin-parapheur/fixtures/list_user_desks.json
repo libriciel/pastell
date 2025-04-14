@@ -1,0 +1,44 @@
+{
+  "totalPages": 1,
+  "totalElements": 3,
+  "pageable": {
+    "unpaged": false,
+    "pageNumber": 0,
+    "pageSize": 10,
+    "paged": true,
+    "offset": 0,
+    "sort": {
+      "unsorted": false,
+      "sorted": true,
+      "empty": false
+    }
+  },
+  "numberOfElements": 3,
+  "size": 10,
+  "content": [
+    {
+      "id": "429db3e9-c419-4e6a-87d9-1348c63cf2b7",
+      "name": "bureau1",
+      "tenantId": "8a4dba5f-b034-4f92-8625-3aee7be97d46"
+    },
+    {
+      "id": "71903116-a21a-4304-949a-9e63ec1c7935",
+      "name": "bureau2",
+      "tenantId": "8a4dba5f-b034-4f92-8625-3aee7be97d46"
+    },
+    {
+      "id": "812a615a-05b1-48d9-8e68-71d96087ed0e",
+      "name": "bureau3",
+      "tenantId": "8a4dba5f-b034-4f92-8625-3aee7be97d46"
+    }
+  ],
+  "number": 0,
+  "sort": {
+    "unsorted": false,
+    "sorted": true,
+    "empty": false
+  },
+  "first": true,
+  "last": true,
+  "empty": false
+}
