@@ -1,8 +1,11 @@
-# [4.1.9] -
+# [4.1.9] - 2025-04-14
 
 ## Correction
 
 - La récupération d'un fichier par API renvoyait une mauvaise erreur sur un dossier inexistant #2247
+- Il n'y avait que 10 entités et bureaux disponibles pour la sélection dans le connecteur `recup-fin-parapheur` #2243
+- Le lien de téléchargement d'un fichier était incorrect #2229
+- La génération d'une archive SEDA qui prenait plus de 60 secondes renvoyait une erreur #2249
 
 # [4.1.8] - 2025-03-10
 
