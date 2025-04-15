@@ -12,6 +12,15 @@
 
 - Suppression de la table collectivite_fournisseur #2205
 
+# [4.1.9] - 2025-04-14
+
+## Correction
+
+- La récupération d'un fichier par API renvoyait une mauvaise erreur sur un dossier inexistant #2247
+- Il n'y avait que 10 entités et bureaux disponibles pour la sélection dans le connecteur `recup-fin-parapheur` #2243
+- Le lien de téléchargement d'un fichier était incorrect #2229
+- La génération d'une archive SEDA qui prenait plus de 60 secondes renvoyait une erreur #2249
+
 # [4.1.8] - 2025-03-10
 
 ## Ajouts
@@ -229,6 +238,14 @@
 - `pdf-generique` et `document-a-signer` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-document-pdf` #1870
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
+
+# [4.0.22] - 2025-04-14
+
+## Correction
+
+- Il n'y avait que 10 entités et bureaux disponibles pour la sélection dans le connecteur `recup-fin-parapheur` #2243
+- Le lien de téléchargement d'un fichier était incorrect #2229
+- La génération d'une archive SEDA qui prenait plus de 60 secondes renvoyait une erreur #2249
 
 # [4.0.21] - 2025-03-10
 

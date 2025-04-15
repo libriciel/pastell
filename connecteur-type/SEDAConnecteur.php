@@ -7,6 +7,9 @@ use Symfony\Component\Process\Process;
 
 abstract class SEDAConnecteur extends Connecteur
 {
+    // 1200 is 20 minutes
+    private const ARCHIVE_CREATION_TIMEOUT = 1200;
+
     /**
      * Crée le bordereau en fonction des informations provenant du flux
      */
@@ -56,6 +59,7 @@ abstract class SEDAConnecteur extends Connecteur
                 $archive_path,
             )
         );
+        $process->setTimeout(self::ARCHIVE_CREATION_TIMEOUT);
         $process->run();
 
         if (!$process->isSuccessful()) {
