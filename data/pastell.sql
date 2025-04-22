@@ -87,7 +87,7 @@ CREATE TABLE `daemon` (
 	`state` tinyint(1) NOT NULL,
 	`nb_workers` int(11) NOT NULL DEFAULT '0',
 	PRIMARY KEY (`id_daemon`)
-)  ENGINE=InnoDB  ;
+)  ENGINE=MyISAM  ;
 CREATE TABLE `document` (
 	`id_d` varchar(64) NOT NULL,
 	`type` varchar(64) NOT NULL,

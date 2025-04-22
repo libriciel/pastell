@@ -583,7 +583,7 @@
         }
     },
     "daemon": {
-        "Engine": "InnoDB",
+        "Engine": "MyISAM",
         "Column": {
             "id_daemon": {
                 "Field": "id_daemon",

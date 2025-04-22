@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 class DaemonSQL extends SQL
 {
+    public const GLOBAL_DAEMON = 1;
     public function getNbAllocatedWorkers(): int
     {
-        $sql = 'SELECT SUM(nb_workers) FROM daemon where id_daemon != 1';
-        return (int)$this->queryOne($sql);
+        $sql = 'SELECT SUM(nb_workers) FROM daemon where id_daemon != ?';
+        return (int)$this->queryOne($sql, self::GLOBAL_DAEMON);
     }
 
     public function getNbSharedWorkers(): int
     {
-        $sql = 'SELECT nb_workers FROM daemon WHERE id_daemon = 1';
-        return (int)$this->queryOne($sql);
+        $sql = 'SELECT nb_workers FROM daemon WHERE id_daemon = ?';
+        return $this->queryOne($sql, self::GLOBAL_DAEMON);
     }
 
     public function getDaemon(int $id_daemon): ?Daemon
@@ -35,8 +36,8 @@ class DaemonSQL extends SQL
 
     public function getRunningDaemons(): array
     {
-        $sql = 'SELECT * FROM daemon WHERE state = 1';
-        return $this->query($sql);
+        $sql = 'SELECT * FROM daemon WHERE state = ?';
+        return $this->query($sql, Daemon::STATE_ACTIVE);
     }
 
     public function insertDaemon(int $id_e): int
@@ -56,8 +57,8 @@ class DaemonSQL extends SQL
     {
         $nb_allocated_workers = $this->getNbAllocatedWorkers();
         $shared_workers = NB_WORKERS - $nb_allocated_workers;
-        $sql = 'UPDATE daemon SET nb_workers = ? WHERE id_daemon = 1';
-        $this->query($sql, $shared_workers);
+        $sql = 'UPDATE daemon SET nb_workers = ? WHERE id_daemon = ?';
+        $this->query($sql, [$shared_workers, self::GLOBAL_DAEMON]);
     }
 
     public function deleteDaemon(int $id_daemon): void
@@ -74,14 +75,14 @@ class DaemonSQL extends SQL
 
     public function getGlobalDaemon(): ?Daemon
     {
-        return $this->getDaemon(1);
+        return $this->getDaemon(self::GLOBAL_DAEMON);
     }
 
 
     public function insertGlobalDaemon(): bool
     {
-        $sql = 'INSERT INTO daemon (id_daemon, id_e, nb_workers) VALUES (1, ?, ?)';
-        $this->query($sql, [null, NB_WORKERS]);
+        $sql = 'INSERT INTO daemon (id_daemon, id_e, nb_workers) VALUES (?, ?, ?)';
+        $this->query($sql, [self::GLOBAL_DAEMON, null, NB_WORKERS]);
 
         return $this->lastInsertId() !== false;
     }

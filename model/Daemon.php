@@ -12,8 +12,12 @@ class Daemon
     public int $state;
     public int $nb_workers;
 
-    public function __construct(int $id_daemon, ?int $id_e = null, int $state = self::STATE_INACTIVE, int $nb_workers = 0)
-    {
+    public function __construct(
+        int $id_daemon,
+        ?int $id_e = null,
+        int $state = self::STATE_INACTIVE,
+        int $nb_workers = 0
+    ) {
         $this->id_daemon = $id_daemon;
         $this->id_e = $id_e;
         $this->state = $state;
