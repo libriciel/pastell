@@ -26,18 +26,17 @@ class PastellDaemon
         // terminés correctement suite à un arrêt brutal du serveur
         // (ex: restart apache sans avoir arrêté le daemon avec des worker actifs). (r1992)
         if ($this->unlock_job_error_at_startup) {
-            foreach ($this->workerSQL->getAllRunningWorker() as $info) {
-                if (! posix_getpgid($info['pid'])) {
-                    $this->workerSQL->success($info['id_worker']); // supprime le worker
-                    $this->logger->alert('Daemon detects and cleans a worker that did not end correctly', $info);
+            foreach ($this->workerSQL->getAllRunningWorker() as $worker) {
+                if (! posix_getpgid($worker->pid)) {
+                    $this->workerSQL->success($worker->id_worker); // supprime le worker
+                    $this->logger->alert('Daemon detects and cleans a worker that did not end correctly', $worker->toArray());
                 }
             }
         }
 
         /** @phpstan-ignore-next-line */
         while (true) {
-            foreach ($this->daemonSQL->getRunningDaemons() as $daemonInfo) {
-                $daemon = new Daemon($daemonInfo['id_daemon'], $daemonInfo['id_e'], $daemonInfo['state'], $daemonInfo['nb_workers']);
+            foreach ($this->daemonSQL->getRunningDaemons() as $daemon) {
                 $this->jobMasterOneRun($daemon);
             }
             pcntl_signal_dispatch();
@@ -52,11 +51,10 @@ class PastellDaemon
     private function jobMasterOneRun(Daemon $daemon): void
     {
         $workerSQL = $this->workerSQL;
-        foreach ($workerSQL->getAllRunningWorkerForDaemon($daemon->id_daemon) as $workerInfo) {
-            if (! posix_getpgid($workerInfo['pid'])) {
-                $worker = $workerSQL->getWorker($workerInfo['id_worker']);
-                if ($worker === null || $worker->termine === 1) {
-                    $this->logger->warning('Worker has already finished his job, Skipping...', $workerInfo);
+        foreach ($workerSQL->getRunningWorkersForDaemon($daemon->id_daemon) as $worker) {
+            if (! posix_getpgid($worker->pid)) {
+                if ($worker->termine === 1) {
+                    $this->logger->warning("Worker $worker->id_worker has already finished his job, Skipping...", $worker->toArray());
                     continue;
                 }
                 $this->jobQueueSQL->lock($worker->id_job);
@@ -64,10 +62,10 @@ class PastellDaemon
                     $worker->id_worker,
                     "Message du gestionnaire de tâches : ce travail ne s'est pas terminé correctement"
                 );
-                $this->logger->error("Daemon $daemon->id_daemon detected a dead worker", $workerInfo);
+                $this->logger->error("Daemon $daemon->id_daemon detected a dead worker", $worker->toArray());
             }
         }
-        $nb_worker_alive = count($workerSQL->getAllRunningWorkerForDaemon($daemon->id_daemon));
+        $nb_worker_alive = count($workerSQL->getRunningWorkersForDaemon($daemon->id_daemon));
         $nb_worker_to_launch = max(0, $daemon->nb_workers - $nb_worker_alive);
         $job_id_list = $workerSQL->getJobsToLaunch($nb_worker_to_launch, $daemon->id_daemon);
 
@@ -90,9 +88,9 @@ class PastellDaemon
             throw new Exception("Ce type de travail n'est pas traité par tâche automatique");
         }
 
-        $another_worker_info = $this->workerSQL->getRunningWorkerInfo($id_job);
-        if ($another_worker_info) {
-            throw new Exception("Le travail $id_job est déjà attaché à la tâche automatique  #{$another_worker_info['id_worker']}");
+        $existingWorker = $this->workerSQL->getRunningWorkerInfo($id_job);
+        if ($existingWorker !== null) {
+            throw new RuntimeException("Le travail $id_job est déjà attaché à la tâche automatique  #{$existingWorker->id_worker}");
         }
 
         //Le master lock le job jusqu'à ce que son worker le délock pour éviter que le master ne sélectionne à nouveau
@@ -166,9 +164,9 @@ class PastellDaemon
 
         $workerSQL = $this->workerSQL;
 
-        $another_worker_info = $workerSQL->getRunningWorkerInfo($id_job);
-        if ($another_worker_info) {
-            throw new Exception("Le travail $id_job est déjà attaché à la tâche automatique  #{$another_worker_info['id_worker']}");
+        $existingWorker = $workerSQL->getRunningWorkerInfo($id_job);
+        if ($existingWorker !== null) {
+            throw new RuntimeException("Le travail $id_job est déjà attaché à la tâche automatique  #{$existingWorker->id_worker}");
         }
 
         $pid = getmypid();

@@ -4,6 +4,20 @@ declare(strict_types=1);
 
 class WorkerSQL extends SQL
 {
+    private function mapToWorkerObject(array $info): WorkerObject
+    {
+        return new WorkerObject(
+            $info['id_worker'],
+            $info['pid'],
+            $info['date_begin'],
+            $info['id_job'],
+            $info['date_end'],
+            $info['message'],
+            $info['termine'],
+            $info['success']
+        );
+    }
+
     public function create($pid)
     {
         $sql = "INSERT INTO worker (pid,date_begin) VALUES (?,now())";
@@ -18,16 +32,7 @@ class WorkerSQL extends SQL
         if (! $info) {
             return null;
         }
-        return new WorkerObject(
-            $info['id_worker'],
-            $info['pid'],
-            $info['date_begin'],
-            $info['id_job'],
-            $info['date_end'],
-            $info['message'],
-            $info['termine'],
-            $info['success']
-        );
+        return $this->mapToWorkerObject($info);
     }
 
     public function error($id_worker, $message)
@@ -36,10 +41,14 @@ class WorkerSQL extends SQL
         $this->query($sql, $message, $id_worker);
     }
 
-    public function getRunningWorkerInfo($id_job)
+    public function getRunningWorkerInfo($id_job): ?WorkerObject
     {
-        $sql = "SELECT * FROM worker WHERE id_job=? AND termine=0";
-        return $this->queryOne($sql, $id_job);
+        $sql = 'SELECT * FROM worker WHERE id_job=? AND termine=0';
+        $info = $this->queryOne($sql, $id_job);
+        if (!$info) {
+            return null;
+        }
+        return $this->mapToWorkerObject($info);
     }
 
     public function attachJob($id_worker, $id_job)
@@ -54,18 +63,32 @@ class WorkerSQL extends SQL
         $this->query($sql, $id_worker);
     }
 
-    public function getAllRunningWorker()
+    /**
+     * @return WorkerObject[]
+     */
+    public function getAllRunningWorker(): array
     {
         $sql = 'SELECT * FROM worker WHERE termine=0';
-        return $this->query($sql);
+        $result = [];
+        foreach ($this->query($sql) as $info) {
+            $result[] = $this->mapToWorkerObject($info);
+        }
+        return $result;
     }
 
-    public function getAllRunningWorkerForDaemon(int $id_daemon)
+    /**
+     * @return WorkerObject[]
+     */
+    public function getRunningWorkersForDaemon(int $id_daemon): array
     {
         $sql = 'SELECT * FROM worker 
          JOIN job_queue jq ON worker.id_job=jq.id_job
          WHERE termine=0 AND jq.id_daemon=?';
-        return $this->query($sql, $id_daemon);
+        $result = [];
+        foreach ($this->query($sql, $id_daemon) as $info) {
+            $result[] = $this->mapToWorkerObject($info);
+        }
+        return $result;
     }
 
     public function getJobsToLaunch(int $limit, int $id_daemon): array
@@ -86,7 +109,7 @@ class WorkerSQL extends SQL
             }
         }
 
-        usort($job_list, fn($a, $b) => strtotime($a['next_try']) - strtotime($b['next_try']));
+        usort($job_list, static fn($a, $b) => strtotime($a['next_try']) - strtotime($b['next_try']));
         return array_slice(array_column($job_list, 'id_job'), 0, $limit);
     }
 
@@ -97,8 +120,7 @@ class WorkerSQL extends SQL
             JOIN worker ON worker.id_job=jq.id_job
             WHERE termine=0 
             AND id_verrou = ? 
-            AND jq.id_daemon = ?
-            ';
+            AND jq.id_daemon = ?';
         $nb_job_par_verrou_en_cours = $this->queryOne($sql, $verrou_id, $id_daemon);
         if ($nb_job_par_verrou_en_cours >= NB_JOB_PAR_VERROU) {
             return [];
@@ -112,7 +134,7 @@ class WorkerSQL extends SQL
             AND id_verrou = ? 
             AND jq.id_daemon = ?
             ORDER BY next_try  
-            LIMIT $nb_job_par_verrou ";
+            LIMIT $nb_job_par_verrou";
         return $this->query($sql, $verrou_id, $id_daemon);
     }
 
@@ -222,7 +244,7 @@ class WorkerSQL extends SQL
     {
         $sql = "SELECT *, job_queue.id_job as id_job FROM job_queue " .
                 " LEFT JOIN worker ON job_queue.id_job = worker.id_job " .
-                " WHERE job_queue.id_e=? AND id_d=?";
+                " WHERE id_e=? AND id_d=?";
         return $this->query($sql, $id_e, $id_d);
     }
 
@@ -230,7 +252,7 @@ class WorkerSQL extends SQL
     {
         $sql = "SELECT id_worker FROM job_queue " .
                 " JOIN worker ON job_queue.id_job = worker.id_job " .
-                " WHERE job_queue.id_e=? AND id_d=? AND termine=0";
+                " WHERE id_e=? AND id_d=? AND termine=0";
         return $this->queryOne($sql, $id_e, $id_d);
     }
 

@@ -6,7 +6,6 @@ class JobManager
     public const DEFAULT_ID_VERROU = "DEFAULT_VERROU_ID";
 
     private $jobQueueSQL;
-    private DaemonSQL $daemonSQL;
     private $document;
     private $documentActionEntite;
     private $documentTypeFactory;
@@ -20,7 +19,6 @@ class JobManager
 
     public function __construct(
         JobQueueSQL $jobQueueSQL,
-        DaemonSQL $daemonSQL,
         DocumentSQL $document,
         DocumentActionEntite $documentActionEntite,
         DocumentTypeFactory $documentTypeFactory,
@@ -31,7 +29,6 @@ class JobManager
         $disable_job_queue = false
     ) {
         $this->jobQueueSQL = $jobQueueSQL;
-        $this->daemonSQL = $daemonSQL;
         $this->document = $document;
         $this->documentActionEntite = $documentActionEntite;
         $this->documentTypeFactory = $documentTypeFactory;
@@ -134,7 +131,6 @@ class JobManager
 
     private function createJobForDocument($id_e, $id_d, $id_u = 0, $last_message = '', $action = '', string $verrou = '')
     {
-
         $job = new Job();
         $job->type = Job::TYPE_DOCUMENT;
         $job->id_e = $id_e;
@@ -147,14 +143,9 @@ class JobManager
         $job->next_try = $now;
         $connecteurFrequence = $this->getConnecteurFrequence($job);
         $job->id_verrou = $verrou ?: $connecteurFrequence->id_verrou;
+        $job->id_daemon = $this->jobQueueSQL->getClosestDaemon($job->id_e);
         $this->deleteDocument($id_e, $id_d);
-        $id_job = $this->jobQueueSQL->createJob($job);
-        $job->id_daemon = $this->jobQueueSQL->getClosestDaemon($id_job);
-        $daemon = $this->daemonSQL->getDaemon($job->id_daemon);
-        if ($daemon !== null) {
-            $job->daemon = $daemon;
-        }
-        return $id_job;
+        return $this->jobQueueSQL->createJob($job);
     }
 
     private function createJobForConnecteur($id_ce, $action_name)
@@ -170,13 +161,8 @@ class JobManager
         $job->next_try = $now;
         $connecteurFrequence = $this->getConnecteurFrequence($job);
         $job->id_verrou = $connecteurFrequence->id_verrou;
-        $id_job = $this->jobQueueSQL->createJob($job);
-        $job->id_daemon = $this->jobQueueSQL->getClosestDaemon($id_job);
-        $daemon = $this->daemonSQL->getDaemon($job->id_daemon);
-        if ($daemon !== null) {
-            $job->daemon = $daemon;
-        }
-        return $id_job;
+        $job->id_daemon = $this->jobQueueSQL->getClosestDaemon($job->id_e);
+        return $this->jobQueueSQL->createJob($job);
     }
 
     private function updateJob($id_job, $last_message)

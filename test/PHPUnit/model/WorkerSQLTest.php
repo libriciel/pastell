@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 class WorkerSQLTest extends PastellTestCase
 {
-    /** @var  WorkerSQL */
     private WorkerSQL $workerSQL;
     private Daemon $globalDaemon;
 
@@ -41,8 +40,8 @@ class WorkerSQLTest extends PastellTestCase
     {
         $id_worker = $this->workerSQL->create(42);
         $this->workerSQL->attachJob($id_worker, 12);
-        $info = $this->workerSQL->getRunningWorkerInfo(12);
-        static::assertEquals(12, $info['id_job']);
+        $worker = $this->workerSQL->getRunningWorkerInfo(12);
+        static::assertEquals(12, $worker->id_job);
     }
 
     public function testSuccess(): void
@@ -55,8 +54,8 @@ class WorkerSQLTest extends PastellTestCase
     public function testGetAllRunningWorker(): void
     {
         $id_worker = $this->workerSQL->create(42);
-        $all_info = $this->workerSQL->getAllRunningWorker();
-        static::assertEquals($id_worker, $all_info[0]['id_worker']);
+        $workers = $this->workerSQL->getAllRunningWorker();
+        static::assertEquals($id_worker, $workers[0]->id_worker);
     }
 
     /**
@@ -71,8 +70,8 @@ class WorkerSQLTest extends PastellTestCase
         $id_worker_2 = $this->workerSQL->create(43);
         $id_job_2 = $this->addJobWithDaemon(2);
         $this->workerSQL->attachJob($id_worker_2, $id_job_2);
-        $all_info = $this->workerSQL->getAllRunningWorkerForDaemon($this->globalDaemon->id_daemon);
-        static::assertCount(1, $all_info);
+        $workers = $this->workerSQL->getRunningWorkersForDaemon($this->globalDaemon->id_daemon);
+        static::assertCount(1, $workers);
     }
 
     public function testGetJobToLauchLimit(): void
