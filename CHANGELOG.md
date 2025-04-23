@@ -11,6 +11,7 @@
 ## Suppression d'éléments dépréciés
 
 - Suppression de la table collectivite_fournisseur #2205
+- Suppression de la fonction WorkerSQL::getInfo remplacé par WorkerSQL::getWorker #2195
 
 # [4.1.9] - 2025-04-14
 

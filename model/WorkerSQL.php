@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class WorkerSQL extends SQL
 {
     public function create($pid)
@@ -9,10 +11,23 @@ class WorkerSQL extends SQL
         return $this->lastInsertId();
     }
 
-    public function getInfo($id_worker)
+    public function getWorker($id_worker): ?WorkerObject
     {
-        $sql = "SELECT * FROM worker WHERE id_worker=?";
-        return $this->queryOne($sql, $id_worker);
+        $sql = 'SELECT * FROM worker WHERE id_worker=?';
+        $info = $this->queryOne($sql, $id_worker);
+        if (! $info) {
+            return null;
+        }
+        return new WorkerObject(
+            $info['id_worker'],
+            $info['pid'],
+            $info['date_begin'],
+            $info['id_job'],
+            $info['date_end'],
+            $info['message'],
+            $info['termine'],
+            $info['success']
+        );
     }
 
     public function error($id_worker, $message)

@@ -128,7 +128,14 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('documentActionEntite', $this->getDocumentActionEntite());
 
         $this->setViewParameter('next_action_automatique', $this->getViewParameterOrObject('theAction')->getActionAutomatique($true_last_action));
-        $this->setViewParameter('droit_erreur_fatale', $this->getDroitService()->hasDroit($this->getId_u(), $this->getDroitService()->getDroitEdition($info_document['type']), 0));
+        $this->setViewParameter(
+            'droit_erreur_fatale',
+            $this->getRoleUtilisateur()->hasDroit(
+                $this->getId_u(),
+                DroitService::getDroitEdition(DroitService::DROIT_SYSTEM),
+                $id_e
+            )
+        );
 
         $this->setViewParameter('is_super_admin', $this->getRoleUtilisateur()->hasDroit($this->getId_u(), "system:edition", 0));
         if ($this->getViewParameterOrObject('is_super_admin')) {

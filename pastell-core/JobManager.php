@@ -144,6 +144,7 @@ class JobManager
         $job->next_try = $now;
         $connecteurFrequence = $this->getConnecteurFrequence($job);
         $job->id_verrou = $verrou ?: $connecteurFrequence->id_verrou;
+        $job->id_daemon = 1;
         $this->deleteDocument($id_e, $id_d);
         return $this->jobQueueSQL->createJob($job);
     }
@@ -161,6 +162,7 @@ class JobManager
         $job->next_try = $now;
         $connecteurFrequence = $this->getConnecteurFrequence($job);
         $job->id_verrou = $connecteurFrequence->id_verrou;
+        $job->id_daemon = 1;
         return $this->jobQueueSQL->createJob($job);
     }
 

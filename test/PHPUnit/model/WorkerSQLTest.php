@@ -19,16 +19,16 @@ class WorkerSQLTest extends PastellTestCase
     public function testGetInfo()
     {
         $id_worker = $this->workerSQL->create(42);
-        $info = $this->workerSQL->getInfo($id_worker);
-        $this->assertEquals(42, $info['pid']);
+        $worker = $this->workerSQL->getWorker($id_worker);
+        static::assertEquals(42, $worker->pid);
     }
 
     public function testError()
     {
         $id_worker = $this->workerSQL->create(42);
         $this->workerSQL->error($id_worker, "Message d'erreur");
-        $info = $this->workerSQL->getInfo($id_worker);
-        $this->assertEquals(1, $info['termine']);
+        $worker = $this->workerSQL->getWorker($id_worker);
+        static::assertEquals(1, $worker->termine);
     }
 
     public function testRunningWorkerInfo()
@@ -43,7 +43,7 @@ class WorkerSQLTest extends PastellTestCase
     {
         $id_worker = $this->workerSQL->create(42);
         $this->workerSQL->success($id_worker);
-        $this->assertEmpty($this->workerSQL->getInfo($id_worker));
+        static::assertNull($this->workerSQL->getWorker($id_worker));
     }
 
     public function testGetAllRunningWorker()
