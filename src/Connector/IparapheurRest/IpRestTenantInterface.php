@@ -6,6 +6,5 @@ namespace Pastell\Connector\IparapheurRest;
 
 interface IpRestTenantInterface
 {
-    public function testConnexion(): string;
     public function getTenantList(): array;
 }

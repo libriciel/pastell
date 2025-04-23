@@ -6,7 +6,7 @@ namespace Pastell\Connector\IparapheurRest\Action;
 
 use DictionnaryChoice;
 use Exception;
-use IparapheurRest;
+use Pastell\Connector\IparapheurRest\IpRestTenantInterface;
 
 class IpRestGetTenantList extends DictionnaryChoice
 {
@@ -30,7 +30,7 @@ class IpRestGetTenantList extends DictionnaryChoice
      */
     public function displayAPI(): array
     {
-        /** @var IparapheurRest $connector */
+        /** @var IpRestTenantInterface $connector */
         $connector = $this->getMyConnecteur();
         return $connector->getTenantList();
     }

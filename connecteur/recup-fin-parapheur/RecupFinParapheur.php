@@ -11,6 +11,7 @@ use IparapheurV5Client\Model\ListFoldersQuery;
 use IparapheurV5Client\Model\ListTenantsQuery;
 use IparapheurV5Client\Model\ListUserDesksQuery;
 use IparapheurV5Client\TokenQuery;
+use Pastell\Action\TestConnectionInterface;
 use Pastell\Client\IparapheurV5\ClientFactory;
 use Pastell\Client\IparapheurV5\ZipContent;
 use IparapheurV5Client\Model\State;
@@ -18,7 +19,10 @@ use Pastell\Connector\IparapheurRest\IpRestDeskInterface;
 use Pastell\Connector\IparapheurRest\IpRestTenantInterface;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
-class RecupFinParapheur extends Connecteur implements IpRestTenantInterface, IpRestDeskInterface
+class RecupFinParapheur extends Connecteur implements
+    IpRestTenantInterface,
+    IpRestDeskInterface,
+    TestConnectionInterface
 {
     private const USERNAME = 'username';
     private const PASSWORD = 'password';

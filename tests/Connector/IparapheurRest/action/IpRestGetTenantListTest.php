@@ -18,7 +18,7 @@ class IpRestGetTenantListTest extends PastellTestCase
     /**
      * @throws Exception
      */
-    public function testIpRestGetDeskList(): void
+    public function testIpRestGetTenantList(): void
     {
         $clientInterface = $this->getMockBuilder(ClientInterface::class)->getMock();
         $clientInterface->method('sendRequest')
@@ -57,7 +57,7 @@ class IpRestGetTenantListTest extends PastellTestCase
 
         $result = $ipRestGetTenantList->displayAPI();
 
-        static::assertEquals([
+        static::assertSame([
             '8a4dba5f-b034-4f92-8625-3aee7be97d46' => 'Pastell',
             'bc75c516-7fa6-4edd-8a3e-9318d3263996' => 'Pastell 2',
             'a19c2cc6-6923-45cb-9a26-771ea14cd995' => 'Pastell 3',

@@ -64,7 +64,7 @@ class IpRestGetTypeListTest extends PastellTestCase
 
         $result = $ipRestGetTypeList->displayAPI();
 
-        static::assertEquals([
+        static::assertSame([
             '83cf8658-8bef-4e22-84b2-db119d04811d' => 'Cades',
             '233f806c-9fc3-44db-ab36-739c4909cdc9' => 'Pades',
             '80dd7f2e-58c4-4e99-818c-040642f23326' => 'Visa',

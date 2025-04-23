@@ -13,6 +13,7 @@ use IparapheurV5Client\Model\ListSubtypesQuery;
 use IparapheurV5Client\Model\ListTenantsQuery;
 use IparapheurV5Client\Model\ListTypesQuery;
 use IparapheurV5Client\Model\ListUserDesksQuery;
+use Pastell\Action\TestConnectionInterface;
 use SignatureConnecteur;
 use Http\Client\Exception;
 use IparapheurV5Client\Api\Tenant;
@@ -23,7 +24,10 @@ use Pastell\Client\IparapheurV5\ClientFactory;
 use stdClass;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
-class IparapheurRestConnector extends SignatureConnecteur implements IpRestTenantInterface, IpRestDeskInterface
+class IparapheurRestConnector extends SignatureConnecteur implements
+    IpRestTenantInterface,
+    IpRestDeskInterface,
+    TestConnectionInterface
 {
     private const URL = 'url';
     private const USERNAME = 'username';

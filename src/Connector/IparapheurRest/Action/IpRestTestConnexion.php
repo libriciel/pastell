@@ -6,7 +6,7 @@ namespace Pastell\Connector\IparapheurRest\Action;
 
 use ConnecteurTypeActionExecutor;
 use Exception;
-use IparapheurRest;
+use Pastell\Action\TestConnectionInterface;
 
 final class IpRestTestConnexion extends ConnecteurTypeActionExecutor
 {
@@ -15,7 +15,7 @@ final class IpRestTestConnexion extends ConnecteurTypeActionExecutor
      */
     public function go(): bool
     {
-        /** @var IparapheurRest $connector */
+        /** @var TestConnectionInterface $connector */
         $connector = $this->getMyConnecteur();
         $message = $connector->testConnexion();
         $this->setLastMessage($message);

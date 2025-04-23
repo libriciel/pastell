@@ -8,11 +8,12 @@ use IparapheurV5Client\Client;
 use IparapheurV5Client\Model\ListTenantsQuery;
 use IparapheurV5Client\Model\ListTrashBinFoldersQuery;
 use IparapheurV5Client\TokenQuery;
+use Pastell\Action\TestConnectionInterface;
 use Pastell\Client\IparapheurV5\ClientFactory;
 use Pastell\Client\IparapheurV5\ZipContent;
 use Pastell\Connector\IparapheurRest\IpRestTenantInterface;
 
-class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterface
+class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterface, TestConnectionInterface
 {
     private const USERNAME = 'username';
     private const PASSWORD = 'password';

@@ -6,7 +6,7 @@ namespace Pastell\Connector\IparapheurRest\Action;
 
 use DictionnaryChoice;
 use Exception;
-use IparapheurRest;
+use Pastell\Connector\IparapheurRest\IpRestDeskInterface;
 use Pastell\Connector\IparapheurRest\IpRestException;
 
 class IpRestGetDeskList extends DictionnaryChoice
@@ -33,7 +33,7 @@ class IpRestGetDeskList extends DictionnaryChoice
      */
     public function displayAPI(): array
     {
-        /** @var IparapheurRest $connector */
+        /** @var IpRestDeskInterface $connector */
         $connector = $this->getMyConnecteur();
         return $connector->getDeskList();
     }
