@@ -41,7 +41,7 @@ class WorkerSQL extends SQL
         $this->query($sql, $message, $id_worker);
     }
 
-    public function getRunningWorkerInfo($id_job): ?WorkerObject
+    public function getRunningWorker($id_job): ?WorkerObject
     {
         $sql = 'SELECT * FROM worker WHERE id_job=? AND termine=0';
         $info = $this->queryOne($sql, $id_job);

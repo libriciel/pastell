@@ -13,6 +13,7 @@ class GlobalDaemonInstall implements InstallableBootstrap
     public function __construct(
         private readonly DaemonManager $daemonManager,
         private readonly JobQueueSQL $jobQueueSQL,
+        private readonly DaemonSQL $daemonSQL,
     ) {
     }
 
@@ -20,7 +21,7 @@ class GlobalDaemonInstall implements InstallableBootstrap
     {
         $this->daemonManager->globalDaemonInstall();
         foreach ($this->jobQueueSQL->getJobsByDaemon(DaemonSQL::UNASSIGNED_DAEMON) as $job) {
-            $this->jobQueueSQL->updateClosestDaemon($job->id_job);
+            $this->jobQueueSQL->updateDaemon($job->id_job, $this->daemonSQL->getClosestDaemon($job->id_e));
         }
         return InstallResult::InstallOk;
     }

@@ -99,4 +99,15 @@ class DaemonSQL extends SQL
 
         return $this->lastInsertId() !== false;
     }
+
+    public function getClosestDaemon(int $id_e): int
+    {
+        $sql = 'SELECT d.id_daemon
+            FROM entite_ancetre ea
+            JOIN daemon d ON d.id_e = ea.id_e_ancetre
+            WHERE ea.id_e = ?
+            ORDER BY ea.niveau
+            LIMIT 1';
+        return $this->queryOne($sql, [$id_e]) ?: self::GLOBAL_DAEMON;
+    }
 }

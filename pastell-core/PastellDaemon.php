@@ -87,7 +87,7 @@ class PastellDaemon
             throw new Exception("Ce type de travail n'est pas traité par tâche automatique");
         }
 
-        $existingWorker = $this->workerSQL->getRunningWorkerInfo($job->id_job);
+        $existingWorker = $this->workerSQL->getRunningWorker($job->id_job);
         if ($existingWorker !== null) {
             throw new RuntimeException("Le travail $job->id_job est déjà attaché à la tâche automatique  #{$existingWorker->id_worker}");
         }
@@ -163,7 +163,7 @@ class PastellDaemon
 
         $workerSQL = $this->workerSQL;
 
-        $existingWorker = $workerSQL->getRunningWorkerInfo($id_job);
+        $existingWorker = $workerSQL->getRunningWorker($id_job);
         if ($existingWorker !== null) {
             throw new RuntimeException("Le travail $id_job est déjà attaché à la tâche automatique  #{$existingWorker->id_worker}");
         }

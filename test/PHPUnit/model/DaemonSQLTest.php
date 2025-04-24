@@ -83,4 +83,17 @@ class DaemonSQLTest extends PastellTestCase
         $this->daemonSQL->allocateWorkers($id_daemon, 5);
         static::assertSame(15, $this->daemonSQL->getNbAllocatedWorkers());
     }
+
+    public function testGetClosestDaemonDefault(): void
+    {
+        $closestDaemon = $this->daemonSQL->getClosestDaemon(1);
+        static::assertSame(DaemonSQL::GLOBAL_DAEMON, $closestDaemon);
+    }
+
+    public function testGetClosestDaemon(): void
+    {
+        $id_close_daemon = $this->daemonSQL->insertDaemon(1);
+        $closestDaemon = $this->daemonSQL->getClosestDaemon(1);
+        static::assertSame($id_close_daemon, $closestDaemon);
+    }
 }

@@ -198,25 +198,12 @@ class JobQueueSQL extends SQL
         return $this->query($sql);
     }
 
-    public function getClosestDaemon(int $id_e): int
+    public function updateDaemon(int $job_id, int $id_daemon): void
     {
-        $sql = 'SELECT d.id_daemon 
-            FROM entite_ancetre ea
-            JOIN daemon d ON d.id_e = ea.id_e_ancetre
-            WHERE ea.id_e = ?
-            ORDER BY ea.niveau
-            LIMIT 1';
-        $result = $this->queryOne($sql, [$id_e]);
-        return $result ?: 1;
-    }
-
-    public function updateClosestDaemon(int $job_id): void
-    {
-        $id_e = $this->queryOne('SELECT id_e FROM job_queue WHERE id_job = ?', [$job_id]);
         $sql = 'UPDATE job_queue
             SET id_daemon = ?
             WHERE id_job = ?';
-        $this->query($sql, [$this->getClosestDaemon($id_e), $job_id]);
+        $this->query($sql, [$id_daemon, $job_id]);
     }
 
     /**

@@ -40,7 +40,7 @@ class WorkerSQLTest extends PastellTestCase
     {
         $id_worker = $this->workerSQL->create(42);
         $this->workerSQL->attachJob($id_worker, 12);
-        $worker = $this->workerSQL->getRunningWorkerInfo(12);
+        $worker = $this->workerSQL->getRunningWorker(12);
         static::assertEquals(12, $worker->id_job);
     }
 
