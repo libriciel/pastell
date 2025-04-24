@@ -49,6 +49,7 @@ class DaemonManager
         }
         $command = 'supervisorctl stop pastell-daemon';
         exec($command);
+        $this->daemonSQL->setDaemonState(DaemonSQL::GLOBAL_DAEMON, self::IS_STOPPED);
         return $this->status();
     }
 

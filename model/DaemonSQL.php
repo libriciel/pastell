@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 class DaemonSQL extends SQL
 {
+    public const UNASSIGNED_DAEMON = 0;
     public const GLOBAL_DAEMON = 1;
 
     private function mapToDaemon(array $info): Daemon

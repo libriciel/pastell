@@ -2,6 +2,29 @@
 
 class JobQueueSQL extends SQL
 {
+    private function mapToJob(array $info): Job
+    {
+        $job = new Job();
+        $job->id_e = $info['id_e'];
+        $job->id_d = $info['id_d'];
+        $job->id_u = $info['id_u'];
+        $job->id_ce = $info['id_ce'];
+        $job->etat_source = $info['etat_source'];
+        $job->etat_cible = $info['etat_cible'];
+        $job->type = $info['type'];
+        $job->last_message = $info['last_message'];
+        $job->is_lock = $info['is_lock'];
+        $job->lock_since = $info['lock_since'];
+        $job->id_verrou = $info['id_verrou'];
+        $job->nb_try = $info['nb_try'];
+        $job->first_try = $info['first_try'];
+        $job->last_try = $info['last_try'];
+        $job->next_try = $info['next_try'];
+        $job->id_job = $info['id_job'];
+        $job->id_daemon = $info['id_daemon'];
+        return $job;
+    }
+
     public function deleteConnecteur($id_ce)
     {
         if ($id_ce == 0) {
@@ -81,25 +104,7 @@ class JobQueueSQL extends SQL
         if (! $info) {
             return null;
         }
-        $job = new Job();
-        $job->id_e = $info['id_e'];
-        $job->id_d = $info['id_d'];
-        $job->id_u = $info['id_u'];
-        $job->id_ce = $info['id_ce'];
-        $job->etat_source = $info['etat_source'];
-        $job->etat_cible = $info['etat_cible'];
-        $job->type = $info['type'];
-        $job->last_message = $info['last_message'];
-        $job->is_lock = $info['is_lock'];
-        $job->lock_since = $info['lock_since'];
-        $job->id_verrou = $info['id_verrou'];
-        $job->nb_try = $info['nb_try'];
-        $job->first_try = $info['first_try'];
-        $job->last_try = $info['last_try'];
-        $job->next_try = $info['next_try'];
-        $job->id_job = $info['id_job'];
-        $job->id_daemon = $info['id_daemon'];
-        return $job;
+        return $this->mapToJob($info);
     }
 
     public function lock($id_job)
@@ -143,8 +148,6 @@ class JobQueueSQL extends SQL
         $sql = "SELECT count(*) FROM job_queue " .
             " WHERE next_try<now()";
         $info['nb_wait'] = $this->queryOne($sql);
-
-
 
         $info['nb_lock_one_hour'] = $this->getNbLockSinceOneHour();
 
@@ -214,5 +217,18 @@ class JobQueueSQL extends SQL
             SET id_daemon = ?
             WHERE id_job = ?';
         $this->query($sql, [$this->getClosestDaemon($id_e), $job_id]);
+    }
+
+    /**
+     * @return Job[]
+     */
+    public function getJobsByDaemon(int $id_daemon): array
+    {
+        $sql = 'SELECT * FROM job_queue WHERE id_daemon = ?';
+        $result = [];
+        foreach ($this->query($sql, $id_daemon) as $info) {
+            $result[] = $this->mapToJob($info);
+        }
+        return $result;
     }
 }
