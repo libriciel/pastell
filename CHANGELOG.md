@@ -7,11 +7,18 @@
 ## Évolutions
 
 - La possibilité de définir des connecteurs d'entités au niveau de l'entité racine ne dépend plus d'une activation #2206
+- WorkerSQL::getAllRunningWorker retourne désormais WorkerObject[] au lieu d'un array brut (#2237)
+
+## Suppressions
+
+- Suppression de la fonction WorkerSQL::getInfo remplacé par WorkerSQL::getWorker #2195
+- Suppression de la fonction WorkerSQL::getFirstJobToLaunch remplacé par WorkerSQL::getJobsToLaunchByLock #2237
+- Suppression de la fonction WorkerSQL::getJobToLaunch remplacé par WorkerSQL::getJobsToLaunch #2237
+- Suppression de la fonction WorkerSQL::getRunningWorkerInfo remplacé par WorkerSQL::getRunningWorker #2237
 
 ## Suppression d'éléments dépréciés
 
 - Suppression de la table collectivite_fournisseur #2205
-- Suppression de la fonction WorkerSQL::getInfo remplacé par WorkerSQL::getWorker #2195
 
 # [4.1.9] - 2025-04-14
 

@@ -81,7 +81,7 @@ class WorkerSQL extends SQL
      */
     public function getRunningWorkersForDaemon(int $id_daemon): array
     {
-        $sql = 'SELECT * FROM worker 
+        $sql = 'SELECT * FROM worker
          JOIN job_queue jq ON worker.id_job=jq.id_job
          WHERE termine=0 AND jq.id_daemon=?';
         $result = [];
@@ -95,12 +95,12 @@ class WorkerSQL extends SQL
     {
         $sql = "SELECT jq.id_job,next_try FROM job_queue jq
             LEFT JOIN worker ON jq.id_job=worker.id_job AND worker.termine=0
-            WHERE worker.id_worker IS NULL 
-            AND next_try<=now() 
-            AND is_lock=0 
-            AND id_verrou = '' 
+            WHERE worker.id_worker IS NULL
+            AND next_try<=now()
+            AND is_lock=0
+            AND id_verrou = ''
             AND jq.id_daemon = ?
-            ORDER BY next_try 
+            ORDER BY next_try
             LIMIT $limit";
         $job_list = $this->query($sql, $id_daemon);
         foreach ($this->getAllVerrou() as $verrou_id) {
@@ -116,10 +116,10 @@ class WorkerSQL extends SQL
 
     public function getJobsToLaunchByLock($verrou_id, $id_daemon)
     {
-        $sql = 'SELECT count(*) FROM job_queue jq 
+        $sql = 'SELECT count(*) FROM job_queue jq
             JOIN worker ON worker.id_job=jq.id_job
-            WHERE termine=0 
-            AND id_verrou = ? 
+            WHERE termine=0
+            AND id_verrou = ?
             AND jq.id_daemon = ?';
         $nb_job_par_verrou_en_cours = $this->queryOne($sql, $verrou_id, $id_daemon);
         if ($nb_job_par_verrou_en_cours >= NB_JOB_PAR_VERROU) {
@@ -128,12 +128,12 @@ class WorkerSQL extends SQL
         $nb_job_par_verrou = NB_JOB_PAR_VERROU - $nb_job_par_verrou_en_cours;
         $sql = "SELECT jq.id_job,next_try FROM job_queue jq
             LEFT JOIN worker ON jq.id_job=worker.id_job AND worker.termine=0
-            WHERE worker.id_worker IS NULL 
+            WHERE worker.id_worker IS NULL
             AND next_try<now()
             AND is_lock=0
-            AND id_verrou = ? 
+            AND id_verrou = ?
             AND jq.id_daemon = ?
-            ORDER BY next_try  
+            ORDER BY next_try
             LIMIT $nb_job_par_verrou";
         return $this->query($sql, $verrou_id, $id_daemon);
     }

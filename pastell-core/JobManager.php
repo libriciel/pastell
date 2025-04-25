@@ -6,7 +6,7 @@ class JobManager
     public const DEFAULT_ID_VERROU = "DEFAULT_VERROU_ID";
 
     private JobQueueSQL $jobQueueSQL;
-    private DaemonSQL $DaemonSQL;
+    private DaemonSQL $daemonSQL;
     private $document;
     private $documentActionEntite;
     private $documentTypeFactory;
@@ -20,7 +20,7 @@ class JobManager
 
     public function __construct(
         JobQueueSQL $jobQueueSQL,
-        DaemonSQL $DaemonSQL,
+        DaemonSQL $daemonSQL,
         DocumentSQL $document,
         DocumentActionEntite $documentActionEntite,
         DocumentTypeFactory $documentTypeFactory,
@@ -31,7 +31,7 @@ class JobManager
         $disable_job_queue = false
     ) {
         $this->jobQueueSQL = $jobQueueSQL;
-        $this->DaemonSQL = $DaemonSQL;
+        $this->daemonSQL = $daemonSQL;
         $this->document = $document;
         $this->documentActionEntite = $documentActionEntite;
         $this->documentTypeFactory = $documentTypeFactory;
@@ -146,7 +146,7 @@ class JobManager
         $job->next_try = $now;
         $connecteurFrequence = $this->getConnecteurFrequence($job);
         $job->id_verrou = $verrou ?: $connecteurFrequence->id_verrou;
-        $job->id_daemon = $this->DaemonSQL->getClosestDaemon($job->id_e);
+        $job->id_daemon = $this->daemonSQL->getClosestDaemon($job->id_e);
         $this->deleteDocument($id_e, $id_d);
         return $this->jobQueueSQL->createJob($job);
     }
@@ -164,7 +164,7 @@ class JobManager
         $job->next_try = $now;
         $connecteurFrequence = $this->getConnecteurFrequence($job);
         $job->id_verrou = $connecteurFrequence->id_verrou;
-        $job->id_daemon = $this->DaemonSQL->getClosestDaemon($job->id_e);
+        $job->id_daemon = $this->daemonSQL->getClosestDaemon($job->id_e);
         return $this->jobQueueSQL->createJob($job);
     }
 
