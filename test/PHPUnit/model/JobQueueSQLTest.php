@@ -88,4 +88,35 @@ class JobQueueSQLTest extends PastellTestCase
             )
         );
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetJobsByDaemon(): void
+    {
+        static::assertCount(0, $this->jobQueueSQL->getJobsByDaemon(DaemonSQL::GLOBAL_DAEMON));
+        $job = new Job();
+        $job->type = Job::TYPE_DOCUMENT;
+        $job->etat_cible = 'cible';
+        $job->etat_source = 'source';
+        $job->id_daemon = DaemonSQL::GLOBAL_DAEMON;
+        $this->jobQueueSQL->createJob($job);
+        static::assertCount(1, $this->jobQueueSQL->getJobsByDaemon(DaemonSQL::GLOBAL_DAEMON));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testUpdateDaemon(): void
+    {
+        $job = new Job();
+        $job->type = Job::TYPE_DOCUMENT;
+        $job->etat_cible = 'cible';
+        $job->etat_source = 'source';
+        $job->id_daemon = DaemonSQL::GLOBAL_DAEMON;
+        $job_id = $this->jobQueueSQL->createJob($job);
+        static::assertCount(1, $this->jobQueueSQL->getJobsByDaemon(DaemonSQL::GLOBAL_DAEMON));
+        $this->jobQueueSQL->updateDaemon((int)$job_id, 2);
+        static::assertCount(0, $this->jobQueueSQL->getJobsByDaemon(DaemonSQL::GLOBAL_DAEMON));
+    }
 }

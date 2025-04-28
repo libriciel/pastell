@@ -112,7 +112,6 @@ class DaemonControler extends PastellControler
     public function daemonStartAction(): void
     {
         $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
-        ;
         try {
             $this->getDaemonManager()->start();
             $this->getLogger()->info('Daemon start manually');
@@ -241,15 +240,14 @@ class DaemonControler extends PastellControler
             $this->setLastError("Ce processus n'existe pas ou plus");
             $this->redirect($return_url);
         }
-        $id_job = $worker->id_job ?? null;
-        $job = $this->getJobQueueSQL()->getJob($id_job);
-        if (!$job) {
+        $job = $this->getJobQueueSQL()->getJob($worker->id_job);
+        if ($job === null) {
             $this->setLastError('Impossible de trouver le travail associé à ce processus');
             $this->redirect($return_url);
         }
 
         $this->verifDroit($job->id_e, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
-        $this->getJobQueueSQL()->lock($id_job);
+        $this->getJobQueueSQL()->lock($job->id_job);
 
         $process = new Process(['kill', '-9', $worker->pid]);
         $process->run();

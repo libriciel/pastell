@@ -32,4 +32,18 @@ class WorkerObject
         $this->termine = $termine;
         $this->success = $success;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'id_worker' => $this->id_worker,
+            'pid' => $this->pid,
+            'date_begin' => $this->date_begin,
+            'id_job' => $this->id_job,
+            'date_end' => $this->date_end,
+            'message' => $this->message,
+            'termine' => $this->termine,
+            'success' => $this->success,
+        ];
+    }
 }

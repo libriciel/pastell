@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 class DaemonSQL extends SQL
 {
+    public const UNASSIGNED_DAEMON = 0;
     public const GLOBAL_DAEMON = 1;
+
+    private function mapToDaemon(array $info): Daemon
+    {
+        return new Daemon($info['id_daemon'], $info['id_e'], $info['state'], $info['nb_workers']);
+    }
     public function getNbAllocatedWorkers(): int
     {
         $sql = 'SELECT SUM(nb_workers) FROM daemon where id_daemon != ?';
@@ -25,7 +31,7 @@ class DaemonSQL extends SQL
             return null;
         }
 
-        return new Daemon($info['id_daemon'], $info['id_e'], $info['state'], $info['nb_workers']);
+        return $this->mapToDaemon($info);
     }
 
     public function setDaemonState(int $id_daemon, int $state): void
@@ -34,10 +40,17 @@ class DaemonSQL extends SQL
         $this->query($sql, $state, $id_daemon);
     }
 
+    /**
+     * @return Daemon[]
+     */
     public function getRunningDaemons(): array
     {
         $sql = 'SELECT * FROM daemon WHERE state = ?';
-        return $this->query($sql, Daemon::STATE_ACTIVE);
+        $result = [];
+        foreach ($this->query($sql, Daemon::STATE_ACTIVE) as $info) {
+            $result[] = $this->mapToDaemon($info);
+        }
+        return $result;
     }
 
     public function insertDaemon(int $id_e): int
@@ -85,5 +98,16 @@ class DaemonSQL extends SQL
         $this->query($sql, [self::GLOBAL_DAEMON, null, NB_WORKERS]);
 
         return $this->lastInsertId() !== false;
+    }
+
+    public function getClosestDaemon(int $id_e): int
+    {
+        $sql = 'SELECT d.id_daemon
+            FROM entite_ancetre ea
+            JOIN daemon d ON d.id_e = ea.id_e_ancetre
+            WHERE ea.id_e = ?
+            ORDER BY ea.niveau
+            LIMIT 1';
+        return $this->queryOne($sql, [$id_e]) ?: self::GLOBAL_DAEMON;
     }
 }
