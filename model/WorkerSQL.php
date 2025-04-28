@@ -41,7 +41,7 @@ class WorkerSQL extends SQL
         $this->query($sql, $message, $id_worker);
     }
 
-    public function getRunningWorker($id_job): ?WorkerObject
+    public function getRunningWorker(int $id_job): ?WorkerObject
     {
         $sql = 'SELECT * FROM worker WHERE id_job=? AND termine=0';
         $info = $this->queryOne($sql, $id_job);
@@ -114,7 +114,7 @@ class WorkerSQL extends SQL
     }
 
 
-    public function getJobsToLaunchByLock($verrou_id, $id_daemon)
+    public function getJobsToLaunchByLock(string $verrou_id, int $id_daemon): array
     {
         $sql = 'SELECT count(*) FROM job_queue jq
             JOIN worker ON worker.id_job=jq.id_job

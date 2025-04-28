@@ -163,7 +163,7 @@ class PastellDaemon
 
         $workerSQL = $this->workerSQL;
 
-        $existingWorker = $workerSQL->getRunningWorker($id_job);
+        $existingWorker = $workerSQL->getRunningWorker((int) $id_job);
         if ($existingWorker !== null) {
             throw new RuntimeException("Le travail $id_job est déjà attaché à la tâche automatique  #{$existingWorker->id_worker}");
         }
