@@ -629,7 +629,7 @@
         }
     },
     "daemon_config": {
-        "Engine": "InnoDB",
+        "Engine": "MyISAM",
         "Column": {
             "nb_workers": {
                 "Field": "nb_workers",

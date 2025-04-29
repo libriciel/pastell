@@ -90,7 +90,7 @@ CREATE TABLE `daemon` (
 )  ENGINE=MyISAM  ;
 CREATE TABLE `daemon_config` (
 	`nb_workers` int(11) NOT NULL
-)  ENGINE=InnoDB  ;
+)  ENGINE=MyISAM  ;
 CREATE TABLE `document` (
 	`id_d` varchar(64) NOT NULL,
 	`type` varchar(64) NOT NULL,

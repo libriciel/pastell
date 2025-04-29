@@ -12,6 +12,7 @@ class WorkerSQLTest extends PastellTestCase
         parent::setUp();
         $this->workerSQL = new WorkerSQL(static::getSQLQuery());
         $daemonSQL = $this->getObjectInstancier()->getInstance(DaemonSQL::class);
+        $daemonSQL->checkConfig();
         $daemonSQL->insertGlobalDaemon();
         $this->globalDaemon = $daemonSQL->getGlobalDaemon();
     }

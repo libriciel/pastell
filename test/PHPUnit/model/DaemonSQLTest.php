@@ -10,6 +10,7 @@ class DaemonSQLTest extends PastellTestCase
     {
         parent::setUp();
         $this->daemonSQL = $this->getObjectInstancier()->getInstance(DaemonSQL::class);
+        $this->daemonSQL->checkConfig();
         $this->daemonSQL->insertGlobalDaemon();
     }
 
@@ -98,11 +99,6 @@ class DaemonSQLTest extends PastellTestCase
         $id_close_daemon = $this->daemonSQL->insertDaemon(1);
         $closestDaemon = $this->daemonSQL->getClosestDaemon(1);
         static::assertSame($id_close_daemon, $closestDaemon);
-    }
-
-    public function testGetNbTotalWorkers(): void
-    {
-        static::assertEquals(NB_WORKERS, $this->daemonSQL->getNbTotalWorkers());
     }
 
     public function testSetNbWorkers(): void

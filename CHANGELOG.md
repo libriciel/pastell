@@ -8,6 +8,8 @@
 
 - La possibilité de définir des connecteurs d'entités au niveau de l'entité racine ne dépend plus d'une activation #2206
 - WorkerSQL::getAllRunningWorker retourne désormais WorkerObject[] au lieu d'un array brut (#2237)
+- Stockage du nombre maximal de processus simultanés du gestionnaire de tâches 
+  en base de données (au lieu d'une variable d'environnement) #2232
 
 ## Suppressions
 

@@ -58,11 +58,4 @@ class DaemonManager
         $this->stop();
         $this->start();
     }
-
-    public function globalDaemonInstall(): void
-    {
-        if ($this->daemonSQL->getGlobalDaemon() === null) {
-            $this->daemonSQL->insertGlobalDaemon();
-        }
-    }
 }

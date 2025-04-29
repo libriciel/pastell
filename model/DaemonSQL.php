@@ -92,8 +92,8 @@ class DaemonSQL extends SQL
     public function refreshAvailableWorkers(): void
     {
         $shared_workers = $this->getNbTotalWorkers() - $this->getNbAllocatedWorkers();
-        $sql = 'UPDATE daemon SET nb_workers = ? WHERE id_daemon = 1';
-        $this->query($sql, $shared_workers);
+        $sql = 'UPDATE daemon SET nb_workers = ? WHERE id_daemon = ?';
+        $this->query($sql, [$shared_workers, self::GLOBAL_DAEMON]);
     }
 
     public function deleteDaemon(int $id_daemon): void
@@ -116,7 +116,6 @@ class DaemonSQL extends SQL
     public function insertGlobalDaemon(): bool
     {
         $sql = 'INSERT INTO daemon (id_daemon, id_e, nb_workers) VALUES (?, ?, ?)';
-        $this->checkConfig();
         $this->query($sql, [self::GLOBAL_DAEMON, null, $this->getNbTotalWorkers()]);
         return $this->lastInsertId() !== false;
     }
