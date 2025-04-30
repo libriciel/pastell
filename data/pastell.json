@@ -658,20 +658,6 @@
             }
         }
     },
-    "daemon_config": {
-        "Engine": "InnoDB",
-        "Column": {
-            "nb_workers": {
-                "Field": "nb_workers",
-                "Type": "int(11)",
-                "Null": "NO",
-                "Key": "",
-                "Default": null,
-                "Extra": ""
-            }
-        },
-        "Index": []
-    },
     "document": {
         "Engine": "MyISAM",
         "Column": {

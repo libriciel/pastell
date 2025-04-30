@@ -102,7 +102,7 @@
 
         </table>
 
-        <a class='btn btn-outline-primary' href='<?php $this->url("Daemon/frequenceConfig") ?>'>
+        <a class='btn btn-outline-primary' href='<?php $this->url("Daemon/frequenceConfiguration") ?>'>
             <i class="fa fa-times-circle"></i>&nbsp;
             Annuler</a>
 

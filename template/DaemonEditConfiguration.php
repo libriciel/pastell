@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+/** @var Gabarit $this */
 /**
  * @var int $nb_workers
  */
@@ -9,7 +10,7 @@ declare(strict_types=1);
 ?>
 
 <div class="box">
-    <form action='<?php $this->url('Daemon/doEditConfig') ?>' method='post' >
+    <form action='<?php $this->url('Daemon/doEditConfiguration') ?>' method='post' >
         <?php $this->displayCSRFInput() ?>
         <table class='table table-striped'>
             <tr>
@@ -21,7 +22,7 @@ declare(strict_types=1);
                 </td>
             </tr>
         </table>
-        <a class='btn btn-outline-primary' href='<?php $this->url('Daemon/config') ?>'>
+        <a class='btn btn-outline-primary' href='<?php $this->url('Daemon/configuration') ?>'>
             <i class="fa fa-times-circle"></i>&nbsp;
             Annuler</a>
 

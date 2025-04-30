@@ -6,7 +6,7 @@ class ConnecteurFrequenceCest
     {
         $I->wantTo("vérifier que la fréquence du connecteur s'affiche sur la page connecteur");
         $I->amLoggedAsAdmin();
-        $I->amOnPage("Daemon/frequenceConfig");
+        $I->amOnPage("Daemon/frequenceConfiguration");
         $I->click("Ajouter");
         $I->fillField("Expression", "10 X 2");
         $I->selectOption("Type de connecteur", "Connecteurs globaux");

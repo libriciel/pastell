@@ -2,6 +2,18 @@
 
 class JobQueueSQL extends SQL
 {
+    private WorkerSQL $workerSQL;
+    private DaemonSQL $daemonSQL;
+
+    public function __construct(
+        SQLQuery $sqlQuery,
+        WorkerSQL $workerSQL,
+        DaemonSQL $daemonSQL,
+    ) {
+        parent::__construct($sqlQuery);
+        $this->workerSQL = $workerSQL;
+        $this->daemonSQL = $daemonSQL;
+    }
     private function mapToJob(array $info): Job
     {
         $job = new Job();
@@ -22,6 +34,8 @@ class JobQueueSQL extends SQL
         $job->next_try = $info['next_try'];
         $job->id_job = $info['id_job'];
         $job->id_daemon = $info['id_daemon'];
+        $job->daemon = $this->daemonSQL->getDaemon($job->id_daemon);
+        $job->worker = $this->workerSQL->getWorker($job->id_job);
         return $job;
     }
 
@@ -238,41 +252,34 @@ class JobQueueSQL extends SQL
         return $result;
     }
 
-    public function getJobsByDaemon(int $id_daemon): array
-    {
-        $sql = 'SELECT id_job
-        FROM job_queue jq
-        WHERE id_daemon = ?';
-        $results = $this->query($sql, [$id_daemon]);
-        $job_list = [];
-        foreach ($results as $job_info) {
-            $job_list[] = $this->getJob($job_info['id_job']);
-        }
-        return $job_list;
-    }
-
+    /**
+     * @return Job[]
+     */
     public function getJobsByAncestor(int $id_e): array
     {
-        $sql = 'SELECT id_job
+        $sql = 'SELECT *
         FROM job_queue jq
         JOIN entite_ancetre ea ON ea.id_e = jq.id_e
         WHERE id_e_ancetre = ?';
         $results = $this->query($sql, [$id_e]);
         $job_list = [];
         foreach ($results as $job_info) {
-            $job_list[] = $this->getJob($job_info['id_job']);
+            $job_list[] = $this->mapToJob($job_info);
         }
         return $job_list;
     }
 
+    /**
+     * @return Job[]
+     */
     public function getAllJobs(): array
     {
-        $sql = 'SELECT id_job
+        $sql = 'SELECT *
         FROM job_queue jq';
         $results = $this->query($sql);
         $job_list = [];
         foreach ($results as $job_info) {
-            $job_list[] = $this->getJob($job_info['id_job']);
+            $job_list[] = $this->mapToJob($job_info);
         }
         return $job_list;
     }

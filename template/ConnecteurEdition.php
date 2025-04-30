@@ -174,7 +174,7 @@ $listConnectorsUrl = \sprintf(
         <tr>
             <th>#ID travail</th>
             <th>Suspendu</th>
-            <th>Daemon</th>
+            <th>#ID gestionnaire de tâche</th>
             <th>Action</th>
             <th>Premier essai</th>
             <th>Dernier essai</th>

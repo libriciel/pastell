@@ -41,10 +41,6 @@ class DaemonManager
         if ($this->status() === self::IS_RUNNING) {
             return self::IS_RUNNING;
         }
-
-        if (!$this->daemonSQL->getDaemon(0)) {
-            $this->addDaemon(0, (int) NB_WORKERS);
-        }
         $command = 'supervisorctl start pastell-daemon';
         exec($command);
         return $this->status();
@@ -77,6 +73,11 @@ class DaemonManager
     public function startDaemon(int $id_daemon): void
     {
         $daemon = $this->daemonSQL->getDaemon($id_daemon);
+        if ($id_daemon === DaemonSQL::GLOBAL_DAEMON) {
+            throw new UnrecoverableException(
+                'Impossible de démarrer le gestionnaire de tâches global individuellement.'
+            );
+        }
         if ($daemon === null) {
             throw new UnrecoverableException('Démarrage impossible, le gestionnaire de tâches n\'existe pas.');
         }
@@ -89,6 +90,11 @@ class DaemonManager
     public function stopDaemon(int $id_daemon): void
     {
         $daemon = $this->daemonSQL->getDaemon($id_daemon);
+        if ($id_daemon === DaemonSQL::GLOBAL_DAEMON) {
+            throw new UnrecoverableException(
+                'Impossible d\'arrêter le gestionnaire de tâches global individuellement.'
+            );
+        }
         if ($daemon === null) {
             throw new UnrecoverableException('Arrêt impossible, le gestionnaire de tâches n\'existe pas.');
         }
@@ -110,10 +116,9 @@ class DaemonManager
 
         $id_daemon = $this->daemonSQL->insertDaemon($id_e);
         foreach ($this->jobQueueSQL->getJobsByAncestor($id_e) as $job) {
-            $this->jobQueueSQL->updateClosestDaemon($job->id_job);
+            $this->updateClosestDaemon($job);
         }
-        $this->daemonSQL->allocateWorkers($id_daemon, $nb_allocated_workers);
-        $this->daemonSQL->refreshAvailableWorkers();
+        $this->allocateWorkers($id_daemon, $nb_allocated_workers);
     }
 
     /**
@@ -121,7 +126,7 @@ class DaemonManager
      */
     public function removeDaemon(int $id_daemon): void
     {
-        if ($id_daemon === 1) {
+        if ($id_daemon === DaemonSQL::GLOBAL_DAEMON) {
             throw new UnrecoverableException('Impossible de supprimer le gestionnaire de tâches global.');
         }
         $daemon = $this->daemonSQL->getDaemon($id_daemon);
@@ -129,30 +134,21 @@ class DaemonManager
             throw new UnrecoverableException('Suppression impossible, le gestionnaire de tâches n\'existe pas.');
         }
         $this->daemonSQL->deleteDaemon($daemon->id_daemon);
-        foreach ($this->jobQueueSQL->getJobsByDaemon($id_daemon) as $job) {
-            $this->jobQueueSQL->updateClosestDaemon($job->id_job);
+        foreach ($this->jobQueueSQL->getJobsByDaemon($daemon->id_daemon) as $job) {
+            $this->updateClosestDaemon($job);
         }
         $this->daemonSQL->refreshAvailableWorkers();
     }
 
-    public function allocateWorkers(int $id_e_daemin, int $nb_allocated_workers): void
+    public function allocateWorkers(int $id_daemon, int $nb_allocated_workers): void
     {
-        $this->daemonSQL->allocateWorkers($id_e_daemin, $nb_allocated_workers);
+        $this->daemonSQL->allocateWorkers($id_daemon, $nb_allocated_workers);
         $this->daemonSQL->refreshAvailableWorkers();
     }
 
-    public function getNbWorkers(): int
+    public function updateClosestDaemon(Job $job): void
     {
-        return $this->daemonSQL->getNbTotalWorkers();
-    }
-
-    public function globalDaemonInstall(): void
-    {
-        if ($this->daemonSQL->getGlobalDaemon() === null) {
-            $this->daemonSQL->insertGlobalDaemon();
-            foreach ($this->jobQueueSQL->getAllJobs() as $job) {
-                $this->jobQueueSQL->updateClosestDaemon($job->id_job);
-            }
-        }
+        $closestDaemonId = $this->daemonSQL->getClosestDaemon($job->id_e);
+        $this->jobQueueSQL->updateDaemon($job->id_job, $closestDaemonId);
     }
 }

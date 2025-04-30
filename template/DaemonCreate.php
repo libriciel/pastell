@@ -11,7 +11,7 @@ declare(strict_types=1);
 ?>
 
 <div class="box">
-    <form action='<?php $this->url('Daemon/doCreate?id_e=' . $id_e); ?>' method='post' >
+    <form action='<?php $this->url("Daemon/doCreate?id_e=$id_e"); ?>' method='post' >
         <table class='table table-striped'>
             <tr>
                 <th class='w300'>
@@ -27,7 +27,7 @@ declare(strict_types=1);
         </table>
         <?php $this->displayCSRFInput() ?>
         <input type='hidden' name='id_e' value='<?= $id_e?>' />
-        <a class='btn btn-outline-primary' href='<?php $this->url('Daemon/config')?>'>
+        <a class='btn btn-outline-primary' href='<?php $this->url('Daemon/configuration')?>'>
             <i class="fa fa-times-circle"></i>&nbsp;Annuler
         </a>
         <button type="submit" class="btn btn-primary">

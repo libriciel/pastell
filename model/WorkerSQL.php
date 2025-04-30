@@ -158,15 +158,6 @@ class WorkerSQL extends SQL
         return $this->queryOne($sql);
     }
 
-    public function getNbActifForDaemon(int $id_daemon)
-    {
-        $sql = 'SELECT count(*) 
-            FROM worker w 
-            JOIN job_queue jq ON jq.id_job = w.id_job 
-            WHERE termine=0 AND jq.id_daemon = ?';
-        return $this->queryOne($sql, $id_daemon);
-    }
-
     public function getActif($offset = 0, $limit = 20)
     {
         $offset = intval($offset);
@@ -179,7 +170,7 @@ class WorkerSQL extends SQL
         return $this->query($sql);
     }
 
-    public function getJobListWithWorker(int $offset, int $limit, string $filtre, int $id_daemon = null): array
+    public function getJobListWithWorker(int $offset, int $limit = 20, string $filtre = '', int $id_daemon = null): array
     {
         if (! in_array($filtre, ['lock', 'actif', 'wait'])) {
             $filtre = '';

@@ -294,7 +294,7 @@ if ($infoDocumentEmail) :
                     <tr>
                         <th>#ID travail</th>
                         <th>Suspendu</th>
-                        <th>Daemon</th>
+                        <th>#ID gestionnaire de tâche</th>
                         <th>État source<br/>État cible</th>
                         <th>Premier essai</th>
                         <th>Dernier essai</th>

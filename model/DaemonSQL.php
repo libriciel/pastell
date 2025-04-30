@@ -41,7 +41,6 @@ class DaemonSQL extends SQL
         if (!$info) {
             return null;
         }
-
         return $this->mapToDaemon($info);
     }
 
@@ -49,7 +48,7 @@ class DaemonSQL extends SQL
     {
         $sql = 'SELECT * FROM daemon WHERE id_e=?';
         $info = $this->queryOne($sql, $id_e);
-        if (! $info) {
+        if (!$info) {
             return null;
         }
         return $this->mapToDaemon($info);
@@ -105,12 +104,13 @@ class DaemonSQL extends SQL
         return $this->getDaemon(self::GLOBAL_DAEMON);
     }
 
-
     public function insertGlobalDaemon(): bool
     {
-        $sql = 'INSERT INTO daemon (id_daemon, id_e, nb_workers) VALUES (1, ?, ?)';
-        $this->query($sql, [null, NB_WORKERS]);
-
+        $sql = 'INSERT INTO daemon (id_daemon, id_e, nb_workers) VALUES (?, ?, ?)';
+        $this->query(
+            $sql,
+            [self::GLOBAL_DAEMON, null, $this->getNbWorkers()]
+        );
         return $this->lastInsertId() !== false;
     }
 
@@ -125,8 +125,14 @@ class DaemonSQL extends SQL
         return $this->queryOne($sql, [$id_e]) ?: self::GLOBAL_DAEMON;
     }
 
-    private function getNbWorkers(): int
+    public function getNbWorkers(): int
     {
         return (int) $this->configurationSQL->getConfiguration(ConfigurationSQL::NB_WORKERS);
+    }
+
+    public function setNbWorkers(int $nb_workers): void
+    {
+        $this->configurationSQL->setConfiguration(ConfigurationSQL::NB_WORKERS, (string) $nb_workers);
+        $this->refreshAvailableWorkers();
     }
 }
