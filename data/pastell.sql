@@ -44,6 +44,11 @@ CREATE TABLE `annuaire_role` (
 	`partage` tinyint(1) NOT NULL,
 	PRIMARY KEY (`id_r`)
 )  ENGINE=MyISAM  ;
+CREATE TABLE `configuration` (
+	`config_key` varchar(32) NOT NULL,
+	`config_value` varchar(128) NOT NULL,
+	PRIMARY KEY (`config_key`)
+)  ENGINE=MyISAM  ;
 CREATE TABLE `connecteur_action` (
 	`id_a` int(11) NOT NULL AUTO_INCREMENT,
 	`id_e` int(11) NOT NULL,

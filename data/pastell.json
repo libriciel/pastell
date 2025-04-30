@@ -317,6 +317,36 @@
             }
         }
     },
+    "configuration": {
+        "Engine": "MyISAM",
+        "Column": {
+            "config_key": {
+                "Field": "config_key",
+                "Type": "varchar(32)",
+                "Null": "NO",
+                "Key": "PRI",
+                "Default": null,
+                "Extra": ""
+            },
+            "config_value": {
+                "Field": "config_value",
+                "Type": "varchar(128)",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            }
+        },
+        "Index": {
+            "PRIMARY": {
+                "type": "BTREE",
+                "col": [
+                    "config_key"
+                ],
+                "unique": true
+            }
+        }
+    },
     "connecteur_action": {
         "Engine": "MyISAM",
         "Column": {

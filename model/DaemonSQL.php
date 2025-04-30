@@ -7,10 +7,21 @@ class DaemonSQL extends SQL
     public const UNASSIGNED_DAEMON = 0;
     public const GLOBAL_DAEMON = 1;
 
+    private ConfigurationSQL $configurationSQL;
+
+    public function __construct(
+        SQLQuery $sqlQuery,
+        ConfigurationSQL $configurationSQL
+    ) {
+        parent::__construct($sqlQuery);
+        $this->configurationSQL = $configurationSQL;
+    }
+
     private function mapToDaemon(array $info): Daemon
     {
         return new Daemon($info['id_daemon'], $info['id_e'], $info['state'], $info['nb_workers']);
     }
+
     public function getNbAllocatedWorkers(): int
     {
         $sql = 'SELECT SUM(nb_workers) FROM daemon where id_daemon != ?';
@@ -27,7 +38,7 @@ class DaemonSQL extends SQL
     {
         $sql = 'SELECT * FROM daemon WHERE id_daemon=?';
         $info = $this->queryOne($sql, $id_daemon);
-        if (! $info) {
+        if (!$info) {
             return null;
         }
 
@@ -57,7 +68,7 @@ class DaemonSQL extends SQL
     {
         $sql = 'INSERT INTO daemon(id_e) VALUES (?);';
         $this->query($sql, [$id_e]);
-        return (int) $this->lastInsertId();
+        return (int)$this->lastInsertId();
     }
 
     public function allocateWorkers(int $id_daemon, $nb_allocated_workers): void
@@ -68,8 +79,7 @@ class DaemonSQL extends SQL
 
     public function refreshAvailableWorkers(): void
     {
-        $nb_allocated_workers = $this->getNbAllocatedWorkers();
-        $shared_workers = NB_WORKERS - $nb_allocated_workers;
+        $shared_workers = $this->getNbWorkers() - $this->getNbAllocatedWorkers();
         $sql = 'UPDATE daemon SET nb_workers = ? WHERE id_daemon = ?';
         $this->query($sql, [$shared_workers, self::GLOBAL_DAEMON]);
     }
@@ -91,12 +101,13 @@ class DaemonSQL extends SQL
         return $this->getDaemon(self::GLOBAL_DAEMON);
     }
 
-
     public function insertGlobalDaemon(): bool
     {
         $sql = 'INSERT INTO daemon (id_daemon, id_e, nb_workers) VALUES (?, ?, ?)';
-        $this->query($sql, [self::GLOBAL_DAEMON, null, NB_WORKERS]);
-
+        $this->query(
+            $sql,
+            [self::GLOBAL_DAEMON, null, $this->getNbWorkers()]
+        );
         return $this->lastInsertId() !== false;
     }
 
@@ -109,5 +120,10 @@ class DaemonSQL extends SQL
             ORDER BY ea.niveau
             LIMIT 1';
         return $this->queryOne($sql, [$id_e]) ?: self::GLOBAL_DAEMON;
+    }
+
+    private function getNbWorkers(): int
+    {
+        return (int) $this->configurationSQL->getConfiguration(ConfigurationSQL::NB_WORKERS);
     }
 }
