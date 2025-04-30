@@ -3,6 +3,7 @@
 ## Ajouts
 
 - Ajout des permissions daemon:lecture et daemon:edition permettant aux utilisateurs de voir l'état des dossiers en cours #2192
+- Création de la table `configuration` pour stocker les paramètres applicatifs. #2232
 
 ## Évolutions
 

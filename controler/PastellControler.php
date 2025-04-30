@@ -450,6 +450,11 @@ class PastellControler extends Controler
         return $this->getInstance(DaemonSQL::class);
     }
 
+    public function getConfigurationSQL(): ConfigurationSQL
+    {
+        return $this->getInstance(ConfigurationSQL::class);
+    }
+
     /**
      * @return Journal
      */

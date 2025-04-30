@@ -16,6 +16,7 @@ INSERT INTO `annuaire_groupe` (`id_g`, `id_e`, `nom`, `partage`) VALUES
 
 TRUNCATE TABLE `annuaire_groupe_contact`;
 TRUNCATE TABLE `annuaire_role`;
+TRUNCATE TABLE `configuration`;
 TRUNCATE TABLE `connecteur_entite`;
 INSERT INTO `connecteur_entite` (`id_ce`, `id_e`, `libelle`, `id_connecteur`, `type`, `frequence_en_minute`, `id_verrou`, `global`) VALUES
 (1, 1, 'Fake iParapheur', 'fakeIparapheur', 'signature', 1, '', 0),
@@ -38,7 +39,6 @@ INSERT INTO `connecteur_frequence` (`id_cf`, `type_connecteur`, `famille_connect
 (2, 'entite', '', 'i-parapheur', 42, 'document', 'actes-generique', 'verif-tdt', '30', '');
 
 TRUNCATE TABLE `daemon`;
-TRUNCATE TABLE `daemon_config`;
 TRUNCATE TABLE `document`;
 TRUNCATE TABLE `document_action`;
 TRUNCATE TABLE `document_action_entite`;

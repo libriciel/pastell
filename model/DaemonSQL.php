@@ -7,31 +7,19 @@ class DaemonSQL extends SQL
     public const UNASSIGNED_DAEMON = 0;
     public const GLOBAL_DAEMON = 1;
 
+    private ConfigurationSQL $configurationSQL;
+
+    public function __construct(
+        SQLQuery $sqlQuery,
+        ConfigurationSQL $configurationSQL
+    ) {
+        parent::__construct($sqlQuery);
+        $this->configurationSQL = $configurationSQL;
+    }
+
     private function mapToDaemon(array $info): Daemon
     {
         return new Daemon($info['id_daemon'], $info['id_e'], $info['state'], $info['nb_workers']);
-    }
-
-    public function getNbTotalWorkers(): int
-    {
-        $sql = 'SELECT nb_workers FROM daemon_config LIMIT 1';
-        return $this->queryOne($sql);
-    }
-
-    public function setNbWorkers($nb_workers): void
-    {
-        $sql = 'UPDATE daemon_config SET nb_workers = ?';
-        $this->query($sql, $nb_workers);
-    }
-
-    public function checkConfig(): void
-    {
-        $sql = 'SELECT COUNT(*) as total FROM daemon_config';
-        $total = $this->queryOne($sql);
-        if ($total !== 1) {
-            $this->query('TRUNCATE TABLE daemon_config');
-            $this->query('INSERT INTO daemon_config(nb_workers) VALUES (?)', NB_WORKERS);
-        }
     }
 
     public function getNbAllocatedWorkers(): int
@@ -50,7 +38,7 @@ class DaemonSQL extends SQL
     {
         $sql = 'SELECT * FROM daemon WHERE id_daemon=?';
         $info = $this->queryOne($sql, $id_daemon);
-        if (! $info) {
+        if (!$info) {
             return null;
         }
 
@@ -80,7 +68,7 @@ class DaemonSQL extends SQL
     {
         $sql = 'INSERT INTO daemon(id_e) VALUES (?);';
         $this->query($sql, [$id_e]);
-        return (int) $this->lastInsertId();
+        return (int)$this->lastInsertId();
     }
 
     public function allocateWorkers(int $id_daemon, $nb_allocated_workers): void
@@ -91,7 +79,9 @@ class DaemonSQL extends SQL
 
     public function refreshAvailableWorkers(): void
     {
-        $shared_workers = $this->getNbTotalWorkers() - $this->getNbAllocatedWorkers();
+        $shared_workers = (int) $this->configurationSQL->getConfiguration(
+            ConfigurationSQL::NB_WORKERS
+        ) - $this->getNbAllocatedWorkers();
         $sql = 'UPDATE daemon SET nb_workers = ? WHERE id_daemon = ?';
         $this->query($sql, [$shared_workers, self::GLOBAL_DAEMON]);
     }
@@ -116,7 +106,10 @@ class DaemonSQL extends SQL
     public function insertGlobalDaemon(): bool
     {
         $sql = 'INSERT INTO daemon (id_daemon, id_e, nb_workers) VALUES (?, ?, ?)';
-        $this->query($sql, [self::GLOBAL_DAEMON, null, $this->getNbTotalWorkers()]);
+        $this->query(
+            $sql,
+            [self::GLOBAL_DAEMON, null, $this->configurationSQL->getConfiguration(ConfigurationSQL::NB_WORKERS)]
+        );
         return $this->lastInsertId() !== false;
     }
 
