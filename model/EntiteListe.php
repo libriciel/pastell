@@ -86,16 +86,4 @@ class EntiteListe extends SQL
         $sql = "SELECT * FROM entite WHERE siren=?";
         return $this->query($sql, $siren);
     }
-
-    public function getAllDaemonsInfo($offset, $search): array
-    {
-        $sql = "SELECT *, e.id_e as id_e 
-            FROM entite e 
-            LEFT JOIN daemon d ON d.id_e = e.id_e 
-            WHERE is_active = 1 
-              AND denomination LIKE ? 
-            ORDER BY state DESC 
-            LIMIT $offset, " . self::NB_AFFICHABLE;
-        return $this->query($sql, "%$search%");
-    }
 }

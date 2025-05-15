@@ -170,7 +170,7 @@ class WorkerSQL extends SQL
         return $this->query($sql);
     }
 
-    public function getJobListWithWorker(int $offset, int $limit = 20, string $filtre = '', int $id_daemon = null): array
+    public function getJobListWithWorker(int $offset = 0, int $limit = 20, string $filtre = '', int $id_daemon = null): array
     {
         if (! in_array($filtre, ['lock', 'actif', 'wait'])) {
             $filtre = '';

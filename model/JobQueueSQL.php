@@ -272,10 +272,12 @@ class JobQueueSQL extends SQL
     /**
      * @return Job[]
      */
-    public function getAllJobs(): array
+    public function getAllJobs(int $offset = 0, int $limit = 20): array
     {
-        $sql = 'SELECT *
-        FROM job_queue jq';
+        $sql = "SELECT *
+        FROM job_queue jq
+        ORDER BY next_try DESC
+        LIMIT $offset, $limit";
         $results = $this->query($sql);
         $job_list = [];
         foreach ($results as $job_info) {

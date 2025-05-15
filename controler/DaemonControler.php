@@ -574,7 +574,7 @@ class DaemonControler extends PastellControler
         $search = $recuperateur->get('search', '');
         $this->setViewParameter('search', $search);
         $this->setViewParameter('offset', $offset);
-        $entity_list = $this->getEntiteListe()->getAllDaemonsInfo($offset, $search);
+        $entity_list = $this->getDaemonSQL()->getAllEntiteInfo($offset, $search);
         $this->setViewParameter('entity_list', $entity_list);
 
         $nb_workers = $this->getDaemonSQL()->getNbWorkers();
@@ -701,7 +701,8 @@ class DaemonControler extends PastellControler
             EntiteSQL::ID_E_ENTITE_RACINE,
             DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
         );
-        $id_daemon = $this->getGetInfo()->getInt('id_daemon');
+        $recuperateur = $this->getPostInfo();
+        $id_daemon = $recuperateur->getInt('id_d');
         $daemon = $this->getDaemonSQL()->getDaemon($id_daemon);
         if ($daemon === null) {
             $this->setLastError('Impossible de trouver le gestionnaire de tâches');
@@ -774,21 +775,42 @@ class DaemonControler extends PastellControler
      */
     public function createAction(): void
     {
+        $tree = $this->getRoleUtilisateur()->getEntityTree($this->getId_u(), 'entite:edition');
+
+        $this->replaceArrayKeyRecursive($tree, 'denomination', 'name');
+        $this->replaceArrayKeyRecursive($tree, 'id_e', 'value');
+        array_unshift($tree, [
+            'name' => 'Entité Racine',
+            'value' => '0',
+        ]);
+        $this->setViewParameter(
+            'tree',
+            \json_encode($tree, \JSON_THROW_ON_ERROR)
+        );
         $this->verifDroit(
             EntiteSQL::ID_E_ENTITE_RACINE,
             DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
         );
-        $recuperateur = $this->getGetInfo();
-        $id_e = $recuperateur->getInt('id_e');
-        if ($id_e === EntiteSQL::ID_E_ENTITE_RACINE || $this->getDaemonSQL()->getDaemonByEntity($id_e) !== null) {
-            $this->setLastError('Un gestionnaire de tâches existe déjà pour cette entité');
-            $this->redirect('Daemon/configuration');
-        }
-        $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('nb_free_workers', $this->getDaemonSQL()->getNbSharedWorkers() - 1);
         $this->setViewParameter('template_milieu', 'DaemonCreate');
         $this->setViewParameter('page_title', 'Création d\'un gestionnaire de tâches');
         $this->renderDefault();
+    }
+
+    private function replaceArrayKeyRecursive(array &$array, string $oldName, string $newName): void
+    {
+        foreach ($array as &$element) {
+            if (\is_array($element)) {
+                $this->replaceArrayKeyRecursive($element, $oldName, $newName);
+            }
+            if (isset($element[$oldName])) {
+                $element[$newName] = $element[$oldName];
+                unset($element[$oldName]);
+            }
+            if (isset($element['children']) && \is_array($element['children'])) {
+                $this->replaceArrayKeyRecursive($element['children'], $oldName, $newName);
+            }
+        }
     }
 
     /**

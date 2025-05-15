@@ -46,14 +46,19 @@ declare(strict_types=1);
     </table>
 
     <a class='btn btn-primary' href="Daemon/editConfiguration">
-        <i class="fa fa-pencil"></i>&nbsp;
+        <i class="fa fa-pencil"></i> 
         Modifier
+    </a>
+    <br>
+    <a class="btn btn-outline-primary"  href="<?= "Daemon/create" ?>" style="margin-top:10px;">
+        <i class="fa fa-plus"></i>
+         Créer un nouveau gestionnaire de tâches
     </a>
 </div>
 
 <div class="box">
     <div style='width:100%;'>
-        <h2>Liste des gestionnaires de tâches par entité</h2>
+        <h2>Liste des gestionnaires de tâches</h2>
     </div>
     <div class="row">
         <form action='<?php $this->url('Daemon/configuration') ?>' method='get' class="pt-3 input-group col-md-4">
@@ -70,9 +75,6 @@ declare(strict_types=1);
     <h3 id="title-result" class="ls-off title-result">Résultat(s) de la recherche</h3>
     <form action='<?php $this->url('Daemon/allocate'); ?>' method='post' class="pt-3 input-group col-md-4">
         <?php $this->displayCSRFInput(); ?>
-        <button type="submit" class="btn btn-primary">
-            <i class="fa fa-floppy-o"></i>&nbsp;Enregistrer
-        </button>
         <table class="table table-striped">
             <tr>
                 <th class='w200'>Entité</th>
@@ -122,11 +124,6 @@ declare(strict_types=1);
                             <a class='btn btn-danger'
                                href='Daemon/deleteDaemon?id_daemon=<?=$entity['id_daemon']?>'
                             ><i class="fa fa-trash"></i>&nbsp;Supprimer</a>
-                        <?php elseif ($entity['id_daemon'] === null) : ?>
-                            <a href="<?= "Daemon/create?id_e={$entity['id_e']}" ?>" class="btn btn-primary"
-                               id="arreter_deamon"
-                               name="arreter_deamon"><i class="fa fa-plus"></i>&nbsp; Créer
-                            </a>
                         <?php endif ?>
                     </td>
                 </tr>

@@ -6,6 +6,7 @@ class DaemonSQL extends SQL
 {
     public const UNASSIGNED_DAEMON = 0;
     public const GLOBAL_DAEMON = 1;
+    public const NB_AFFICHABLE = 20;
 
     private ConfigurationSQL $configurationSQL;
 
@@ -134,5 +135,17 @@ class DaemonSQL extends SQL
     {
         $this->configurationSQL->setConfiguration(ConfigurationSQL::NB_WORKERS, (string) $nb_workers);
         $this->refreshAvailableWorkers();
+    }
+
+    public function getAllEntiteInfo($offset, $search): array
+    {
+        $sql = "SELECT *, e.id_e as id_e
+            FROM daemon d
+            JOIN entite e ON d.id_e = e.id_e
+            WHERE is_active = 1
+              AND denomination LIKE ?
+            ORDER BY state DESC
+            LIMIT $offset, " . self::NB_AFFICHABLE;
+        return $this->query($sql, "%$search%");
     }
 }

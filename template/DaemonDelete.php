@@ -15,9 +15,9 @@ declare(strict_types=1);
         <b><?php hecho($entite['denomination']) ?></b>
     </div>
 
-    <form action='<?php $this->url("Daemon/doDeleteDaemon?id_daemon=$daemon->id_daemon"); ?>' method='post' >
+    <form action='<?php $this->url('Daemon/doDeleteDaemon'); ?>' method='post' >
         <?php $this->displayCSRFInput() ?>
-        <input type='hidden' name='id_t' value='<?php hecho((string)$daemon->id_e)?>' />
+        <input type='hidden' name='id_d' value='<?php hecho((string)$daemon->id_daemon)?>' />
 
         <a class='btn btn-outline-primary' href='<?php $this->url('Daemon/configuration')?>'>
             <i class="fa fa-times-circle"></i>&nbsp;Annuler
