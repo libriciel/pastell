@@ -6,7 +6,7 @@ class DaemonSQL extends SQL
 {
     public const UNASSIGNED_DAEMON = 0;
     public const GLOBAL_DAEMON = 1;
-    public const NB_AFFICHABLE = 20;
+    public const DISPLAY_LIMIT = 20;
 
     private ConfigurationSQL $configurationSQL;
 
@@ -137,7 +137,7 @@ class DaemonSQL extends SQL
         $this->refreshAvailableWorkers();
     }
 
-    public function getAllEntiteInfo($offset, $search): array
+    public function getAllEntiteInfo(int $offset, string $search): array
     {
         $sql = "SELECT *, e.id_e as id_e
             FROM daemon d
@@ -145,7 +145,7 @@ class DaemonSQL extends SQL
             WHERE is_active = 1
               AND denomination LIKE ?
             ORDER BY state DESC
-            LIMIT $offset, " . self::NB_AFFICHABLE;
-        return $this->query($sql, "%$search%");
+            LIMIT $offset," . self::DISPLAY_LIMIT;
+        return $this->query($sql, ["%$search%"]);
     }
 }

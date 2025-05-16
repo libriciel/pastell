@@ -54,8 +54,8 @@
                 </td>
                 <td>{{ job.id_e }}</td>
                 <td>
-                    {% if daemon_pid is defined %}
-                        {{ job.id_daemon }}
+                    {% if job.daemon is defined %}
+                        {{ job.daemon.id_daemon }}
                     {% endif %}
                 </td>
                 <td>

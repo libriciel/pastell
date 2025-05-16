@@ -308,9 +308,9 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('count', $this->getWorkerSQL()->getNbJob($filtre));
         $this->setViewParameter(
             'job_list',
-            $this->getWorkerSQL()->getJobListWithWorker(
-                $this->getViewParameterByKey('offset'),
+            $this->getJobQueueSQL()->getFilteredJobList(
                 $this->getViewParameterByKey('limit'),
+                $this->getViewParameterByKey('offset'),
                 $filtre
             )
         );
@@ -644,7 +644,8 @@ class DaemonControler extends PastellControler
             EntiteSQL::ID_E_ENTITE_RACINE,
             DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
         );
-        $allocatedWorkers = $_POST['data'] ?? [];
+        $recuperateur = $this->getPostInfo();
+        $allocatedWorkers = $recuperateur->get('data', []);
         $nb_workers_to_allocate = array_sum($allocatedWorkers);
         $nb_workers = $this->getDaemonSQL()->getNbWorkers();
         if ($nb_workers_to_allocate >= $nb_workers) {

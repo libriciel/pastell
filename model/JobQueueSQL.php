@@ -285,4 +285,49 @@ class JobQueueSQL extends SQL
         }
         return $job_list;
     }
+
+    /**
+     * @return Job[]
+     */
+    public function getFilteredJobList(
+        int $limit = 20,
+        int $offset = 0,
+        string $filtre = '',
+        ?int $id_daemon = null
+    ): array {
+        if (!in_array($filtre, ['lock', 'actif', 'wait'])) {
+            $filtre = '';
+        }
+
+        $sql = 'SELECT *, job_queue.id_job as id_job 
+            FROM job_queue 
+            LEFT JOIN worker ON job_queue.id_job = worker.id_job
+            WHERE 1=1';
+
+        $params = [];
+        if ($id_daemon !== null) {
+            $sql .= ' AND job_queue.id_daemon=?';
+            $params[] = $id_daemon;
+        }
+        if ($filtre === 'lock') {
+            $sql .= ' AND is_lock=1 ';
+        }
+        if ($filtre === 'wait') {
+            $sql .= ' AND next_try < now() ';
+        }
+        if ($filtre === 'actif') {
+            $sql .= ' AND worker.termine=0 ';
+        }
+
+        $sql .= " ORDER BY job_queue.is_lock, job_queue.next_try 
+              LIMIT $offset, $limit";
+
+        $result = $this->query($sql, $params);
+        $job_list = [];
+        foreach ($result as $job_info) {
+            $job = $this->mapToJob($job_info);
+            $job_list[] = $job;
+        }
+        return $job_list;
+    }
 }

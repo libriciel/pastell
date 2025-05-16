@@ -138,32 +138,32 @@ class WorkerSQLTest extends PastellTestCase
     public function testGetJobListWithWorker(): void
     {
         $id_worker = $this->launchWorker();
-        $info = $this->workerSQL->getJobListWithWorker(0, 20, 'toto');
-        static::assertEquals($id_worker, $info[0]['id_worker']);
+        $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'toto');
+        static::assertEquals($id_worker, $job_list[0]->worker->id_worker);
         static::assertEquals(1, $this->workerSQL->getNbJob('toto'));
     }
 
     public function testGetJobLock(): void
     {
         $this->launchWorker();
-        $info = $this->workerSQL->getJobListWithWorker(0, 20, 'lock');
-        static::assertEmpty($info);
+        $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'lock');
+        static::assertEmpty($job_list);
         static::assertEquals(0, $this->workerSQL->getNbJob('lock'));
     }
 
     public function testGetJobWait(): void
     {
         $id_worker = $this->launchWorker();
-        $info = $this->workerSQL->getJobListWithWorker(0, 20, 'wait');
-        static::assertEquals($id_worker, $info[0]['id_worker']);
+        $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'wait');
+        static::assertEquals($id_worker, $job_list[0]->worker->id_worker);
         static::assertEquals(1, $this->workerSQL->getNbJob('wait'));
     }
 
     public function testGetJobActif(): void
     {
         $id_worker = $this->launchWorker();
-        $info = $this->workerSQL->getJobListWithWorker(0, 20, 'actif');
-        static::assertEquals($id_worker, $info[0]['id_worker']);
+        $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'actif');
+        static::assertEquals($id_worker, $job_list[0]->worker->id_worker);
         static::assertEquals(1, $this->workerSQL->getNbJob('actif'));
     }
 
