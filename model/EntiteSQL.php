@@ -2,6 +2,7 @@
 
 class EntiteSQL extends SQL
 {
+    public const STATE_ACTIVE = 1;
     public const TYPE_COLLECTIVITE = "collectivite";
     public const TYPE_CENTRE_DE_GESTION = "centre_de_gestion";
 
@@ -165,10 +166,10 @@ class EntiteSQL extends SQL
         $sql = "SELECT * FROM entite " .
                 " WHERE entite_mere=? " .
                 " AND type IN (" . implode(",", $type) . ")" .
-                " AND is_active = 1 " .
+                " AND is_active = ? " .
                 " ORDER BY denomination";
 
-        return $this->query($sql, $id_e);
+        return $this->query($sql, [$id_e, self::STATE_ACTIVE]);
     }
 
     public function getAncetreNav($id_e, $listeCollectivite)

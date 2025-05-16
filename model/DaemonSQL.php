@@ -66,9 +66,9 @@ class DaemonSQL extends SQL
      */
     public function getRunningDaemons(): array
     {
-        $sql = 'SELECT * FROM daemon WHERE state = ?';
+        $sql = 'SELECT * FROM daemon d JOIN entite e ON d.id_e = e.id_e WHERE state = ? AND is_active = ?';
         $result = [];
-        foreach ($this->query($sql, Daemon::STATE_ACTIVE) as $info) {
+        foreach ($this->query($sql, [Daemon::STATE_ACTIVE, EntiteSQL::STATE_ACTIVE]) as $info) {
             $result[] = $this->mapToDaemon($info);
         }
         return $result;

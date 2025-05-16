@@ -4,7 +4,11 @@
     </h2>
 
     {% if filtre is defined and filtre == 'lock' %}
-        <a class='btn btn-warning mb-2' href="{{ path('app.legacy.daemon_unlockAll') }}">
+        {% if id_e is defined %}
+            <a class='btn btn-warning mb-2' href="{{ path(unlock_all_action, {'id_e': id_e}) }}">
+        {% else %}
+            <a class='btn btn-warning mb-2' href="{{ path(unlock_all_action) }}">
+        {% endif %}
             <i class="fa fa-unlock-alt"></i>&nbsp;Reprendre l'exécution de tous les travaux
         </a>
     {% endif %}
@@ -106,7 +110,11 @@
     </table>
 
     {% if filtre is defined and filtre == 'lock' %}
-        <a class='btn btn-warning mb-2' href="{{ path('app.legacy.daemon_unlockAll') }}">
+        {% if id_e is defined %}
+            <a class='btn btn-warning mb-2' href="{{ path(unlock_all_action, {'id_e': id_e}) }}">
+        {% else %}
+            <a class='btn btn-warning mb-2' href="{{ path(unlock_all_action) }}">
+        {% endif %}
             <i class="fa fa-unlock-alt"></i>&nbsp;Reprendre l'exécution de tous les travaux
         </a>
     {% endif %}

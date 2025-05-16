@@ -128,6 +128,13 @@ class WorkerSQLTest extends PastellTestCase
         static::assertEquals(1, $this->workerSQL->getNbActif());
     }
 
+    public function testGetNbActifForDameon(): void
+    {
+        $this->launchWorker();
+        static::assertEquals(1, $this->workerSQL->getNbActifForDaemon(1));
+        static::assertEquals(0, $this->workerSQL->getNbActifForDaemon(2));
+    }
+
     public function testGetActif(): void
     {
         $id_worker = $this->launchWorker();
@@ -140,7 +147,7 @@ class WorkerSQLTest extends PastellTestCase
         $id_worker = $this->launchWorker();
         $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'toto');
         static::assertEquals($id_worker, $job_list[0]->worker->id_worker);
-        static::assertEquals(1, $this->workerSQL->getNbJob('toto'));
+        static::assertEquals(1, $this->jobQueueSQL->getNbJob('toto'));
     }
 
     public function testGetJobLock(): void
@@ -148,7 +155,7 @@ class WorkerSQLTest extends PastellTestCase
         $this->launchWorker();
         $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'lock');
         static::assertEmpty($job_list);
-        static::assertEquals(0, $this->workerSQL->getNbJob('lock'));
+        static::assertEquals(0, $this->jobQueueSQL->getNbJob('lock'));
     }
 
     public function testGetJobWait(): void
@@ -156,7 +163,7 @@ class WorkerSQLTest extends PastellTestCase
         $id_worker = $this->launchWorker();
         $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'wait');
         static::assertEquals($id_worker, $job_list[0]->worker->id_worker);
-        static::assertEquals(1, $this->workerSQL->getNbJob('wait'));
+        static::assertEquals(1, $this->jobQueueSQL->getNbJob('wait'));
     }
 
     public function testGetJobActif(): void
@@ -164,7 +171,7 @@ class WorkerSQLTest extends PastellTestCase
         $id_worker = $this->launchWorker();
         $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'actif');
         static::assertEquals($id_worker, $job_list[0]->worker->id_worker);
-        static::assertEquals(1, $this->workerSQL->getNbJob('actif'));
+        static::assertEquals(1, $this->jobQueueSQL->getNbJob('actif'));
     }
 
     public function testGetJobListWithWorkerForConnecteur(): void

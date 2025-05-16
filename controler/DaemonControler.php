@@ -218,12 +218,12 @@ class DaemonControler extends PastellControler
      */
     public function unlockAllAction(): void
     {
-        $this->getWorkerSQL()->menageAll();
-        $this->getJobQueueSQL()->unlockAll();
         $this->verifDroit(
             EntiteSQL::ID_E_ENTITE_RACINE,
             DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
         );
+        $this->getWorkerSQL()->menageAll();
+        $this->getJobQueueSQL()->unlockAll();
         $this->redirect('Daemon/index');
     }
 
@@ -295,6 +295,7 @@ class DaemonControler extends PastellControler
         ];
 
         $this->setViewParameter('sub_title', $sub_title_array[$filtre] ?? 'Liste de tous les travaux');
+        $this->setViewParameter('unlock_all_action', 'app.legacy.daemon_unlockAll');
 
         $this->setViewParameter('offset', $recuperateur->getInt('offset', 0));
         $this->setViewParameter('limit', self::NB_JOB_DISPLAYING);
@@ -305,7 +306,7 @@ class DaemonControler extends PastellControler
             "Daemon/job?filtre=$filtre&offset=" . $this->getViewParameterByKey('offset')
         );
 
-        $this->setViewParameter('count', $this->getWorkerSQL()->getNbJob($filtre));
+        $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob($filtre));
         $this->setViewParameter(
             'job_list',
             $this->getJobQueueSQL()->getFilteredJobList(

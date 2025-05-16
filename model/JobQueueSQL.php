@@ -133,10 +133,15 @@ class JobQueueSQL extends SQL
         $this->query($sql, $id_verrou, $etat_source, $etat_cible);
     }
 
-    public function unlockAll()
+    public function unlockAll(?int $id_daemon = null): void
     {
-        $sql = "UPDATE job_queue SET is_lock=0";
-        $this->query($sql);
+        $sql = 'UPDATE job_queue SET is_lock=0';
+        $params = [];
+        if ($id_daemon !== null) {
+            $sql .= ' WHERE id_daemon=?';
+            $params[] = $id_daemon;
+        }
+        $this->query($sql, $params);
     }
 
     public function unlock($id_job)
@@ -242,9 +247,14 @@ class JobQueueSQL extends SQL
     /**
      * @return Job[]
      */
-    public function getJobsByDaemon(int $id_daemon): array
+    public function getJobsByDaemon(int $id_daemon, ?int $limit = null, ?int $offset = null): array
     {
-        $sql = 'SELECT * FROM job_queue WHERE id_daemon = ?';
+        $sql = 'SELECT * FROM job_queue WHERE id_daemon = ? ORDER BY next_try DESC';
+
+        if ($limit !== null) {
+            $sql .= ' LIMIT ' . ($offset !== null ? "$offset, $limit" : "$limit");
+        }
+
         $result = [];
         foreach ($this->query($sql, $id_daemon) as $info) {
             $result[] = $this->mapToJob($info);
@@ -329,5 +339,32 @@ class JobQueueSQL extends SQL
             $job_list[] = $job;
         }
         return $job_list;
+    }
+
+    public function getNbJob($filtre, ?int $id_daemon = null)
+    {
+        $sql = <<<SQL
+SELECT count(*)
+FROM job_queue
+LEFT JOIN worker ON job_queue.id_job = worker.id_job
+WHERE 1=1 
+SQL;
+
+        $params = [];
+        if ($id_daemon !== null) {
+            $sql .= ' AND job_queue.id_daemon=?';
+            $params[] = $id_daemon;
+        }
+        if ($filtre === 'lock') {
+            $sql .= ' AND job_queue.is_lock=1';
+        }
+        if ($filtre === 'wait') {
+            $sql .= ' AND job_queue.next_try < NOW()';
+        }
+        if ($filtre === 'actif') {
+            $sql .= ' AND worker.termine = 0';
+        }
+
+        return $this->queryOne($sql, $params);
     }
 }

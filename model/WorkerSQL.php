@@ -191,27 +191,6 @@ class WorkerSQL extends SQL
         $this->query($sql);
     }
 
-
-    public function getNbJob($filtre)
-    {
-        $sql = "SELECT count(*) " .
-                " FROM job_queue" .
-                " LEFT JOIN worker ON job_queue.id_job = worker.id_job " .
-                " WHERE 1=1 ";
-
-        if ($filtre === 'lock') {
-            $sql .= ' AND job_queue.is_lock=1';
-        }
-        if ($filtre === 'wait') {
-            $sql .= ' AND job_queue.next_try < NOW()';
-        }
-        if ($filtre === 'actif') {
-            $sql .= ' AND worker.termine = 0';
-        }
-
-        return $this->queryOne($sql);
-    }
-
     public function getJobListWithWorkerForConnecteur($id_ce)
     {
         $sql = "SELECT *, job_queue.id_job as id_job FROM job_queue " .
