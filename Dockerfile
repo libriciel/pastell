@@ -3,29 +3,6 @@ WORKDIR /var/www/pastell/
 COPY package*.json ./
 RUN npm install
 
-# TODO il faudra passer en PHP 8.1 une fois que scoper suportera cette version
-FROM php:7.4-cli AS extensions_builder
-WORKDIR /app
-
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
-    unzip \
-    zip \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN curl \
-    --location \
-    --output /usr/bin/php-scoper \
-    --url https://github.com/humbug/php-scoper/releases/download/0.17.0/php-scoper.phar \
-    && chmod +x /usr/bin/php-scoper
-
-COPY ./extensions/pastell-depot-cmis/ /app/
-RUN composer install --ignore-platform-reqs \
-    && php-scoper add-prefix --force \
-    && composer dump-autoload --working-dir=build
-
 FROM ubuntu:22.04 AS pastell_base
 
 ARG UID=33
@@ -64,7 +41,6 @@ RUN --mount=type=secret,id=composer_auth,dst=/var/www/pastell/auth.json \
 
 # Pastell sources
 COPY --chown=${USERNAME}:${GROUPNAME} ./ /var/www/pastell/
-COPY --chown=${USERNAME}:${GROUPNAME} --from=extensions_builder /app/build /var/www/pastell/extensions/pastell-depot-cmis/build
 
 RUN chown ${USERNAME}:${GROUPNAME} /var/www/pastell/
 
