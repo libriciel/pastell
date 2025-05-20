@@ -23,14 +23,11 @@ class DepotCMIS extends DepotConnecteur
     private FolderInterface $folder;
     private Session $session;
 
-    private Client $client;
-
     public function __construct(
         private readonly DonneesFormulaireFactory $donneesFormulaireFactory,
         private readonly string $http_proxy_url = '',
         private readonly string $no_proxy = ''
     ) {
-        $this->client = new Client();
     }
 
     public function listDirectory()
@@ -196,7 +193,9 @@ class DepotCMIS extends DepotConnecteur
         $repositories = $sessionFactory->getRepositories($parameters);
         $parameters[SessionParameter::REPOSITORY_ID] = $repositories[0]->getId();
         $this->session = $sessionFactory->createSession($parameters);
-        $this->folder = $this->session->getObjectByPath($this->connecteurConfig->get(self::DEPOT_CMIS_DIRECTORY));
+        /** @var FolderInterface $folder */
+        $folder = $this->session->getObjectByPath($this->connecteurConfig->get(self::DEPOT_CMIS_DIRECTORY));
+        $this->folder = $folder;
         return $this->folder;
     }
 }

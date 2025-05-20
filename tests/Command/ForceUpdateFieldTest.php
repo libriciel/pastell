@@ -146,11 +146,11 @@ final class ForceUpdateFieldTest extends PastellTestCase
         $this->createConnector('test', 'Connecteur Test entité');
         $this->expectException(UnrecoverableException::class);
         $this->expectExceptionMessage('Erreur de syntaxe sur le template twig ligne 1<br />
-Message d\'erreur : Unexpected end of template.<br />
+Message d\'erreur : Unexpected token "end of template" of value "".<br />
 <br />
 <br />
 <br />
-<b>1. {% if champs2 == "" %</b><em>^^^ Unexpected end of template.</em><br />
+<b>1. {% if champs2 == "" %</b><em>^^^ Unexpected token "end of template" of value "".</em><br />
 <br />
 ');
         $this->executeCommand(

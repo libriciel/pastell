@@ -15,7 +15,6 @@
     <file>./connecteur-type</file>
     <file>./controler</file>
     <file>./docker</file>
-    <file>./extensions</file>
     <file>./installation</file>
     <file>./lib</file>
     <file>./mailsec</file>
