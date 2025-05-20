@@ -29,21 +29,6 @@ parameters:
     - test/codeception/tests/_support/_generated/ApiTesterActions.php
   ignoreErrors:
     -
-      # Le mécanisme d'extension empêche d'analyser le contenu du build de chaque extension.
-      # Techniquement, il ne devrait plus y avoir d'extension dans le core une fois que CMIS aura été extrait dans un
-      # projet à part
-      message: '/Class PastellExtension\\PastellDepotCmis\\GuzzleHttp\\Client not found\./'
-      paths:
-        - test/PHPUnit/extensions
-    -
-      message: '/PHPDoc tag @var for variable \$class contains unknown class DepotCMIS/'
-      paths:
-        - test/PHPUnit/extensions/pastell-depot-cmis/DepotCMISTest.php
-    -
-      message: '/Call to method getClient\(\) on an unknown class DepotCMIS/'
-      paths:
-        - test/PHPUnit/extensions/pastell-depot-cmis/DepotCMISTest.php
-    -
       # Il s'agit de symboles externes utilisés par l'extension PHP Soap, donc pas corrigeables
       message: '/Access to an undefined property NotBuggySoapClient::\$__last_request(.*)/'
       paths:

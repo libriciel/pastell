@@ -36,6 +36,7 @@
     "guzzlehttp/psr7": "^2.2",
     "jumbojett/openid-connect-php": "^0.9.0",
     "libriciel/iparapheur-v5-api-php": "^0.2.0",
+    "libriciel/php-cmis": "^2.0",
     "libriciel/php-office-clients": "1.0.0-alpha.5",
     "libriciel/php-password": "^3.0",
     "libriciel/vitam-api-php": "^1.1",
