@@ -1,7 +1,9 @@
 <?php
 
-/** @var Gabarit $this
+/**
+ * @var Gabarit $this
  * @var bool $droit_edition
+ * @var bool $droit_lecture_on_connecteur
  * @var array $all_connecteur
  * @var int $id_e
  * @var int $global
@@ -30,9 +32,16 @@
         <td><?php hecho($connecteur['libelle']);?></td>
         <td>
             <?php if ($droit_edition) : ?>
-                <a class='btn btn-primary' href='<?php $this->url("Connecteur/edition?id_ce={$connecteur['id_ce']}") ?>'>
-                    <i class="fa fa-pencil"></i>
-                    Modifier
+                <a class='btn btn-primary'
+                   href='<?php $this->url("Connecteur/edition?id_ce={$connecteur['id_ce']}") ?>'
+                >
+                    <i class="fa fa-pencil"></i> Modifier
+                </a>
+            <?php elseif ($droit_lecture_on_connecteur) : ?>
+                <a class='btn btn-primary'
+                   href='<?php $this->url("Connecteur/edition?id_ce={$connecteur['id_ce']}") ?>'
+                >
+                    <i class="fa fa-eye"></i> Voir
                 </a>
             <?php endif;?>
         </td>

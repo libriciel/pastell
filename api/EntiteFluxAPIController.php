@@ -11,6 +11,7 @@ class EntiteFluxAPIController extends BaseAPIController
         private readonly FluxEntiteSQL $fluxEntiteSQL,
         private readonly ActionExecutorFactory $actionExecutorFactory,
         private readonly ConnecteurAssociationService $connecteurAssociationService,
+        private readonly DroitService $droitService,
     ) {
     }
 
@@ -132,9 +133,8 @@ class EntiteFluxAPIController extends BaseAPIController
     public function postAction(): array
     {
         $id_e = $this->checkedEntite();
-        $this->checkConnecteurEdition($id_e);
+        $this->checkDroit($id_e, $this->droitService->getActionPermission(DroitService::DROIT_CONNECTEUR));
         $flux = $this->getFromQueryArgs(2);
-
 
         $type_connecteur = $this->getFromRequest('type');
         //WTF ! Il faut que le connecteur soit associé à un flux ??
