@@ -34,11 +34,22 @@ class PastellControler extends Controler
         ));
     }
 
-    protected function setActionPermissionOnConnector(int $entityId): void
+    protected function setCanActOnConnector(int $entityId): void
     {
         $this->setViewParameter(
-            'actionPermissionOnConnector',
+            'canActOnConnector',
             $this->getDroitService()->hasConnectorActionPermission(
+                $entityId,
+                $this->getId_u(),
+            )
+        );
+    }
+
+    protected function setCanEditConnector(int $entityId): void
+    {
+        $this->setViewParameter(
+            'canEditConnector',
+            $this->getDroitService()->hasDroitConnecteurEdition(
                 $entityId,
                 $this->getId_u(),
             )

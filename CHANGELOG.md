@@ -1,3 +1,9 @@
+# [4.1.10] - 2025-06-09
+
+## Correction
+
+- La permission `connecteur:action` n'était pas utilisée sur l'API `/api/v2/entite/:entityId/flux/:fluxId/action` #2253
+
 # [4.1.9] - 2025-04-14
 
 ## Correction
