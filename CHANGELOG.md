@@ -1,8 +1,9 @@
-# [4.1.10] - 2025-06-09
+# [4.1.10] - 2025-06-10
 
 ## Correction
 
 - La permission `connecteur:action` n'était pas utilisée sur l'API `/api/v2/entite/:entityId/flux/:fluxId/action` #2253
+- Améliorations de sécurité #2260 #2261 #2262
 
 # [4.1.9] - 2025-04-14
 
@@ -231,7 +232,7 @@
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
 
-# [4.0.22] - 2025-06-10
+# [4.0.23] - 2025-06-10
 
 ## Correction
 
