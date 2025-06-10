@@ -153,7 +153,7 @@ class DonneesFormulaireControler extends PastellControler
     {
         $id_e = $this->getPostOrGetInfo()->getInt('id_e');
         $id_d = $this->getPostOrGetInfo()->get('id_d');
-        $id_ce = $this->getPostOrGetInfo()->get('id_ce');
+        $id_ce = $this->getPostOrGetInfo()->getInt('id_ce');
         $field = $this->getPostOrGetInfo()->get('field');
 
         $this->verifDroitEditionOnDocumentOrConnecteur($id_e, $id_d, $id_ce);

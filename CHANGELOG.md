@@ -2,7 +2,7 @@
 
 ## Correction
 
-- Améliorations de sécurité #2260 #2262
+- Améliorations de sécurité #2260 #2261 #2262
 
 # [4.0.22] - 2025-04-14
 
