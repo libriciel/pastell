@@ -1,3 +1,9 @@
+# [4.0.22] - 2025-06-10
+
+## Correction
+
+- Améliorations de sécurité #2260
+
 # [4.0.22] - 2025-04-14
 
 ## Correction
