@@ -231,6 +231,12 @@
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
 
+# [4.0.22] - 2025-06-10
+
+## Correction
+
+- Améliorations de sécurité #2260 #2261 #2262
+
 # [4.0.22] - 2025-04-14
 
 ## Correction

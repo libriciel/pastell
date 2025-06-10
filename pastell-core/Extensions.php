@@ -190,13 +190,18 @@ class Extensions
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function getInfo($id_e, $path = null)
     {
-
         if ($path) {
             $info = $this->getInfoFromPath($path);
         } else {
             $info = $this->extensionSQL->getInfo($id_e);
+            if ($info === false) {
+                throw new Exception("L'extension $id_e n'existe pas");
+            }
             $info = $this->getInfoFromPath($info['path']);
         }
         $info['error'] = false;
