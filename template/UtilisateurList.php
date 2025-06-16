@@ -16,9 +16,9 @@
 $exportUserUrl = sprintf(
     'Entite/exportUtilisateur?id_e=%s&descendance=%s&role_selected=%s&search=%s',
     $id_e,
-    get_hecho($descendance),
+    $descendance,
     $role_selected,
-    get_hecho($search)
+    $search
 );
 ?>
 <div class="box">
@@ -68,7 +68,9 @@ $exportUserUrl = sprintf(
 
 <h2>Liste des utilisateurs - résultats de la recherche</h2>
 
-<a class='btn btn-outline-primary' href='<?php echo $exportUserUrl; ?>'><i class='fa fa-download'></i>&nbsp;Exporter</a>
+<a class='btn btn-outline-primary'
+   href='<?php hecho($exportUserUrl); ?>'
+><i class='fa fa-download'></i>&nbsp;Exporter</a>
 
     <?php
     $this->suivantPrecedent(
@@ -162,6 +164,6 @@ $exportUserUrl = sprintf(
     ); ?>
 
     <a class='btn btn-outline-primary'
-       href='<?php echo $exportUserUrl; ?>'
+       href='<?php hecho($exportUserUrl); ?>'
     ><i class='fa fa-download'></i>&nbsp;Exporter</a>
 </div>
