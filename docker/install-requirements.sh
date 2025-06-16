@@ -36,7 +36,6 @@ apt-get install -y --no-install-recommends \
     php-mysql \
     php-redis \
     php-soap \
-    php-solr \
     php-uuid \
     php-xml \
     php-zip \
