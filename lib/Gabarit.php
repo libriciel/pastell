@@ -178,6 +178,16 @@ class Gabarit
         return $this->objectInstancier->getInstance(DocumentIndexSQL::class);
     }
 
+    public function getConnecteurDefinitionFiles(): ConnecteurDefinitionFiles
+    {
+        return $this->objectInstancier->getInstance(ConnecteurDefinitionFiles::class);
+    }
+
+    public function getFluxDefinitionFiles(): FluxDefinitionFiles
+    {
+        return $this->objectInstancier->getInstance(FluxDefinitionFiles::class);
+    }
+
     public function getSiteBase(): string
     {
         return $this->objectInstancier->getInstance('site_base');

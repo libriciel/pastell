@@ -17,7 +17,8 @@
  * @var bool $daemon_lecture
  * @var int $id_ce
  * @var Action $action
- * @var bool $actionPermissionOnConnector
+ * @var bool $canActOnConnector
+ * @var bool $canEditConnector
  */
 
 $listConnectorsUrl = \sprintf(
@@ -50,13 +51,13 @@ $listConnectorsUrl = \sprintf(
         <?php
     }
     ?>
-    <?php if ($fieldDataList) : ?>
+    <?php if ($canEditConnector && $fieldDataList) : ?>
     &nbsp;<a class='btn btn-primary' href="<?php $this->url("Connecteur/editionModif?id_ce=$id_ce") ?>">
         <i class="fa fa-pencil"></i>&nbsp;Modifier
     </a>
     <?php endif ?>
 
-    <?php if ($actionPermissionOnConnector) : ?>
+    <?php if ($canActOnConnector) : ?>
         <?php foreach ($action_possible as $action_name) : ?>
             <form action='Connecteur/action' method='post' style='margin-top:10px; '>
                 <?php $this->displayCSRFInput(); ?>

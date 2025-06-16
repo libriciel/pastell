@@ -60,7 +60,8 @@ class ConnecteurControler extends PastellControler
         $this->setViewParameter('menu_gauche_template', "EntiteMenuGauche");
         $this->setViewParameter('menu_gauche_select', "Entite/connecteur?global=$global");
         $this->setDroitLectureOnConnecteur($id_e);
-        $this->setActionPermissionOnConnector($id_e);
+        $this->setCanActOnConnector($id_e);
+        $this->setCanEditConnector($id_e);
         $this->setDroitImportExportConfig($id_e);
         $this->setDroitLectureOnUtilisateur($id_e);
     }
@@ -93,6 +94,16 @@ class ConnecteurControler extends PastellControler
         $connecteur_entite_info = $this->getConnectorEntityDetails($id_ce);
         $this->hasDroitEdition($connecteur_entite_info['id_e']);
         return $connecteur_entite_info;
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    private function checkCanReadConnector(int $connectorId): void
+    {
+        $connecteur_entite_info = $this->getConnectorEntityDetails($connectorId);
+        $this->hasConnecteurDroitLecture($connecteur_entite_info['id_e']);
     }
 
     /**
@@ -318,7 +329,6 @@ class ConnecteurControler extends PastellControler
     private function setConnecteurInfo()
     {
         $id_ce = $this->getGetInfo()->getInt('id_ce');
-        $this->verifDroitOnConnecteur($id_ce);
         $connecteur_entite_info = $this->getConnecteurEntiteSQL()->getInfo($id_ce);
         $id_e = $connecteur_entite_info['id_e'];
         $global = $connecteur_entite_info['global'];
@@ -372,6 +382,7 @@ class ConnecteurControler extends PastellControler
     public function editionModifAction()
     {
         $this->setConnecteurInfo();
+        $this->verifDroitOnConnecteur($this->getViewParameterByKey('id_ce'));
         $this->setViewParameter(
             'page_title',
             sprintf(
@@ -405,6 +416,7 @@ class ConnecteurControler extends PastellControler
      */
     public function editionAction()
     {
+        $this->checkCanReadConnector($this->getGetInfo()->getInt('id_ce'));
         $this->setConnecteurInfo();
         $this->setViewParameter(
             'page_title',
