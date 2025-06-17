@@ -1,3 +1,9 @@
+# [4.0.24] - 
+
+## Évolutions
+
+- L'email de l'agent n'est plus obligatoire dans le flux "Bulletin de salaire" du pack RH #2265
+
 # [4.0.23] - 2025-06-10
 
 ## Correction

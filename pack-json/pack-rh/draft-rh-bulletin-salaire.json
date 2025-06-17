@@ -178,7 +178,7 @@
         "name": "Adresse email de l'agent",
         "type": "text",
         "titre": false,
-        "requis": "on",
+        "requis": "",
         "element_id": "email_agent",
         "preg_match": "",
         "commentaire": "",

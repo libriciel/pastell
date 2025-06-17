@@ -120,7 +120,7 @@
         "name": "Adresse email de l'agent",
         "type": "text",
         "commentaire": "",
-        "requis": "on",
+        "requis": "",
         "champs_affiches": "",
         "champs_recherche_avancee": "",
         "titre": false,
