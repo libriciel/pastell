@@ -248,8 +248,7 @@ class RecupFinParapheur extends Connecteur implements
         $listUserDesksQuery->page = 0;
         $desks = [];
         do {
-            $result = (new Desk($this->getAuthentificatedClient()))
-                ->listUserDesks($tenantId, $listUserDesksQuery);
+            $result = (new Desk($this->getAuthentificatedClient()))->listUserDesks($tenantId, $listUserDesksQuery);
             foreach ($result->content as $desk) {
                 $desks[$desk->id] = $desk->name;
             }
