@@ -27,9 +27,6 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
     {
         $info_connecteur = $this->createConnector("mailsec", "Mail sécurisé");
         $this->associateFluxWithConnector($info_connecteur['id_ce'], $type, "mailsec");
-
-        $info_connecteur = $this->createConnector("pdf-relance", "PDF Relance");
-        $this->associateFluxWithConnector($info_connecteur['id_ce'], $type, "pdf-relance");
     }
 
     /**
@@ -107,7 +104,7 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
         $connecteurFrequenceSQL = $this->getObjectInstancier()->getInstance(ConnecteurFrequenceSQL::class);
         $connecteurFrequence = new ConnecteurFrequence();
         $connecteurFrequence->type_connecteur = ConnecteurFrequence::TYPE_ENTITE;
-        $connecteurFrequence->famille_connecteur = 'pdf-relance';
+        $connecteurFrequence->famille_connecteur = 'mailsec';
         $connecteurFrequence->action_type = ConnecteurFrequence::TYPE_ACTION_DOCUMENT;
         $connecteurFrequence->type_document = self::MAILSEC_ONLY;
         $connecteurFrequence->action = 'mailsec-relance';
