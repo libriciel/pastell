@@ -27,7 +27,7 @@ composer-install: ## Run composer install
 npm-install: ## Run npm install
 	$(EXEC_NODE) npm --prefix $(PASTELL_PATH) install
 
-install: npm-install composer-install build-extensions ## Install the project NPM and PHP dependencies
+install: npm-install composer-install ## Install the project NPM and PHP dependencies
 
 clean: ## Clear and remove dependencies
 	rm -f web/node_modules web-mailsec/node_modules
@@ -119,10 +119,6 @@ module-json-urbanisme: docker-compose-up ## Run make-module json-urbanisme
 	$(MAKE_MODULE) ./json-studio/json-urbanisme/draft-dossier-autorisation-urbanisme.json ./module/ --id dossier-autorisation-urbanisme --name "Dossier d'autorisation d'urbanisme (archivage)" --restriction_pack 'pack_urbanisme'
 
 all-module: module-json-actes module-json-document module-json-gfc module-json-helios module-json-mailsec module-json-rh module-json-urbanisme
-
-build-extensions: ## Build extensions
-	$(EXEC_COMPOSER) composer install --ignore-platform-reqs --working-dir=./extensions/pastell-depot-cmis/
-	docker compose -f ./extensions/pastell-depot-cmis/docker-compose.yml run app bash -c "php-scoper add-prefix --force && composer dump-autoload --working-dir=build"
 
 build: ## Build the container
 	$(DOCKER_COMPOSE) build web
