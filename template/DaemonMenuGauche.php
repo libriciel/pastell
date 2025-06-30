@@ -5,7 +5,7 @@
  * @var string $menu_gauche_select
  */
 
-$onglet_tab  = [
+$taches_automatiques_tab  = [
     'Daemon/index' => 'Gestionnaire de tâches',
     'Daemon/verrou' => "Files d'attente",
     'Daemon/job' => 'Tous les travaux',
@@ -13,41 +13,55 @@ $onglet_tab  = [
     'Daemon/job?filtre=lock' => 'Travaux suspendus',
     'Daemon/job?filtre=wait' => 'Travaux en attente',
 ];
+$collapse_taches_automatiques = !array_key_exists($menu_gauche_select, $taches_automatiques_tab);
+
+$configuration_tab = [
+    'Daemon/frequenceConfiguration' => 'Fréquence des connecteurs',
+    'Daemon/configuration' => 'Configuration des gestionnaires de tâches',
+];
+$collapse_configuration = !array_key_exists($menu_gauche_select, $configuration_tab);
+
 ?>
 
 <div id="main_gauche" class="ls-on">
 
-    <h3 data-bs-toggle="collapse"
-        data-bs-target="#collapse-0" aria-expanded="false" aria-controls="collapse-0"
+    <h3 class="<?= ($collapse_taches_automatiques) ? 'collapsed' : '' ?>"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapse-0"
+        aria-expanded="<?= $collapse_taches_automatiques ? 'false' : 'true' ?>"
+        aria-controls="collapse-0"
     >Tâches automatiques</h3>
-    <div class="menu collapse <?php hecho(array_key_exists($menu_gauche_select, $onglet_tab) ? 'show' : ''); ?>"
+    <div class="menu collapse <?php hecho(array_key_exists($menu_gauche_select, $taches_automatiques_tab) ? 'show' : ''); ?>"
          id="collapse-0">
         <ul>
-            <?php foreach ($onglet_tab as $onglet_url => $onglet_name) : ?>
+            <?php foreach ($taches_automatiques_tab as $onglet_url => $onglet_name) : ?>
                 <li >
-                    <a <?php echo ($onglet_url == $menu_gauche_select) ? 'class="actif"' : '' ?>
-                        href='<?php echo $onglet_url?>'>
-                        <?php echo $onglet_name?>
+                    <a <?= ($onglet_url === $menu_gauche_select) ? 'class="actif"' : '' ?>
+                            href='<?= $onglet_url ?>'>
+                        <?= $onglet_name ?>
                     </a>
                 </li>
             <?php endforeach; ?>
         </ul>
     </div>
 
-    <h3 data-bs-toggle="collapse"
+    <h3 class=" <?= ($collapse_configuration) ? 'collapsed' : '' ?>"
+        data-bs-toggle="collapse"
         data-bs-target="#collapse-1"
-        aria-expanded="false"
+        aria-expanded="<?= $collapse_configuration ? 'false' : 'true'?>"
         aria-controls="collapse-1"
     >Configuration</h3>
-    <div class="menu collapse <?php hecho('Daemon/config' == $menu_gauche_select ? 'show' : ''); ?>"
-         id="collapse-1"
-    >
+    <div class="menu collapse <?= ($collapse_configuration) ? '' : 'show' ?>"
+         id="collapse-1">
         <ul>
-            <li>
-                <a <?php echo ('Daemon/config' == $menu_gauche_select) ? 'class="actif"' : '' ?>
-                    href="<?php $this->url('Daemon/config'); ?>"
-                >Fréquence des connecteurs</a>
-            </li>
+            <?php foreach ($configuration_tab as $onglet_url => $onglet_name) : ?>
+                <li>
+                    <a <?= ($onglet_url === $menu_gauche_select) ? 'class="actif"' : '' ?>
+                            href='<?= $onglet_url?>'>
+                        <?= $onglet_name?>
+                    </a>
+                </li>
+            <?php endforeach; ?>
         </ul>
     </div>
 

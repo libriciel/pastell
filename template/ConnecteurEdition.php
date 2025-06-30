@@ -174,6 +174,7 @@ $listConnectorsUrl = \sprintf(
         <tr>
             <th>#ID travail</th>
             <th>Suspendu</th>
+            <th>#ID gestionnaire de tâche</th>
             <th>Action</th>
             <th>Premier essai</th>
             <th>Dernier essai</th>
@@ -223,6 +224,7 @@ $listConnectorsUrl = \sprintf(
                             <?php endif;?>
                     <?php endif;?>
                 </td>
+                <td><?php hecho($job_info['id_daemon'])?></td>
                 <td><?php hecho($job_info['etat_cible'])?></td>
                 <td><?php echo $this->getFancyDate()->getDateFr($job_info['first_try']) ?></td>
                 <td><?php echo $this->getFancyDate()->getDateFr($job_info['last_try']) ?></td>

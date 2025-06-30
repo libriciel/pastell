@@ -21,7 +21,7 @@ class Job
     public $id_verrou;
     public $is_lock;
     public int $id_daemon;
-    public Daemon $daemon;
+    public ?Daemon $daemon;
 
     public $nb_try;
     public $first_try;
@@ -29,7 +29,7 @@ class Job
     public $next_try;
 
     public $id_job;
-    public WorkerObject $worker;
+    public ?WorkerObject $worker;
 
     public function __construct()
     {

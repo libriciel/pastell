@@ -4,6 +4,7 @@
 
 - Ajout des permissions daemon:lecture et daemon:edition permettant aux utilisateurs de voir l'état des dossiers en cours #2192
 - Création de la table `configuration` pour stocker les paramètres applicatifs. #2232
+- Possibilité de créer des gestionnaires de tâches spécifiques à chaque entité via l'interface de configuration #2233
 
 ## Évolutions
 
@@ -18,6 +19,7 @@
 - Suppression de la fonction WorkerSQL::getFirstJobToLaunch remplacé par WorkerSQL::getJobsToLaunchByLock #2237
 - Suppression de la fonction WorkerSQL::getJobToLaunch remplacé par WorkerSQL::getJobsToLaunch #2237
 - Suppression de la fonction WorkerSQL::getRunningWorkerInfo remplacé par WorkerSQL::getRunningWorker #2237
+- Suppression de la fonction WorkerSQL::getJobListWithWorker remplacé par JobQueueSQL::getFilteredJobList #2233
 
 ## Suppression d'éléments dépréciés
 

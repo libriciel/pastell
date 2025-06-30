@@ -6,16 +6,21 @@ class WorkerSQLTest extends PastellTestCase
 {
     private WorkerSQL $workerSQL;
     private Daemon $globalDaemon;
+    private JobQueueSQL $jobQueueSQL;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->workerSQL = new WorkerSQL(static::getSQLQuery());
         $daemonSQL = $this->getObjectInstancier()->getInstance(DaemonSQL::class);
-        $configurationSQL = $this->getObjectInstancier()->getInstance(ConfigurationSQL::class);
-        $configurationSQL->setConfiguration(ConfigurationSQL::NB_WORKERS, (string) NB_WORKERS);
+        $daemonSQL->setNbWorkers((int)NB_WORKERS);
         $daemonSQL->insertGlobalDaemon();
         $this->globalDaemon = $daemonSQL->getGlobalDaemon();
+        $this->jobQueueSQL = new JobQueueSQL(
+            static::getSQLQuery(),
+            $this->workerSQL,
+            $daemonSQL
+        );
     }
 
     public function testCreate(): void
@@ -86,13 +91,12 @@ class WorkerSQLTest extends PastellTestCase
      */
     private function createJob(): string
     {
-        $jobQueueSQL = new JobQueueSQL(static::getSQLQuery());
         $job = new Job();
         $job->type = Job::TYPE_DOCUMENT;
         $job->etat_source = 'source';
         $job->etat_cible = 'cible';
         $job->next_try = date('Y-M-d', strtotime('yesterday'));
-        return $jobQueueSQL->createJob($job);
+        return $this->jobQueueSQL->createJob($job);
     }
 
     /**
@@ -134,32 +138,32 @@ class WorkerSQLTest extends PastellTestCase
     public function testGetJobListWithWorker(): void
     {
         $id_worker = $this->launchWorker();
-        $info = $this->workerSQL->getJobListWithWorker(0, 20, 'toto');
-        static::assertEquals($id_worker, $info[0]['id_worker']);
+        $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'toto');
+        static::assertEquals($id_worker, $job_list[0]->worker->id_worker);
         static::assertEquals(1, $this->workerSQL->getNbJob('toto'));
     }
 
     public function testGetJobLock(): void
     {
         $this->launchWorker();
-        $info = $this->workerSQL->getJobListWithWorker(0, 20, 'lock');
-        static::assertEmpty($info);
+        $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'lock');
+        static::assertEmpty($job_list);
         static::assertEquals(0, $this->workerSQL->getNbJob('lock'));
     }
 
     public function testGetJobWait(): void
     {
         $id_worker = $this->launchWorker();
-        $info = $this->workerSQL->getJobListWithWorker(0, 20, 'wait');
-        static::assertEquals($id_worker, $info[0]['id_worker']);
+        $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'wait');
+        static::assertEquals($id_worker, $job_list[0]->worker->id_worker);
         static::assertEquals(1, $this->workerSQL->getNbJob('wait'));
     }
 
     public function testGetJobActif(): void
     {
         $id_worker = $this->launchWorker();
-        $info = $this->workerSQL->getJobListWithWorker(0, 20, 'actif');
-        static::assertEquals($id_worker, $info[0]['id_worker']);
+        $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'actif');
+        static::assertEquals($id_worker, $job_list[0]->worker->id_worker);
         static::assertEquals(1, $this->workerSQL->getNbJob('actif'));
     }
 
@@ -183,7 +187,6 @@ class WorkerSQLTest extends PastellTestCase
      */
     public function testNoLaunchWithIdVerrou(): void
     {
-        $jobQueueSQL = new JobQueueSQL(static::getSQLQuery());
         $job = new Job();
         $job->type = Job::TYPE_DOCUMENT;
         $job->etat_source = 'source';
@@ -192,7 +195,7 @@ class WorkerSQLTest extends PastellTestCase
         $job->id_e = 1;
         $job->id_verrou = 'VERROU';
         $job->next_try = date('Y-M-d', strtotime('yesterday'));
-        $id_job_1 = $jobQueueSQL->createJob($job);
+        $id_job_1 = $this->jobQueueSQL->createJob($job);
 
         $id_job_list = $this->workerSQL->getJobsToLaunch(5, $this->globalDaemon->id_daemon);
         $this->assertEquals([$id_job_1], $id_job_list);
@@ -204,7 +207,7 @@ class WorkerSQLTest extends PastellTestCase
         static::assertEquals(['VERROU'], $all_verrou);
 
         $job->id_d = 'ABCD';
-        $jobQueueSQL->createJob($job);
+        $this->jobQueueSQL->createJob($job);
         $id_job_list = $this->workerSQL->getJobsToLaunch(5, $this->globalDaemon->id_daemon);
         static::assertEmpty($id_job_list);
     }
@@ -214,7 +217,6 @@ class WorkerSQLTest extends PastellTestCase
      */
     public function testNoLaunchSimultaneousWithIdVerrou(): void
     {
-        $jobQueueSQL = new JobQueueSQL(static::getSQLQuery());
         $job = new Job();
         $job->type = Job::TYPE_DOCUMENT;
         $job->etat_source = 'source';
@@ -223,10 +225,10 @@ class WorkerSQLTest extends PastellTestCase
         $job->id_e = 1;
         $job->id_verrou = 'VERROU';
         $job->next_try = date('Y-M-d', strtotime('yesterday'));
-        $id_job_1 = $jobQueueSQL->createJob($job);
+        $id_job_1 = $this->jobQueueSQL->createJob($job);
 
         $job->id_d = 'ABCD';
-        $jobQueueSQL->createJob($job);
+        $this->jobQueueSQL->createJob($job);
 
         $id_job_list = $this->workerSQL->getJobsToLaunch(5, $this->globalDaemon->id_daemon);
         $this->assertEquals([$id_job_1], $id_job_list);
@@ -237,7 +239,6 @@ class WorkerSQLTest extends PastellTestCase
      */
     private function addJobWithVerrou(): void
     {
-        $jobQueueSQL = new JobQueueSQL(static::getSQLQuery());
         $job = new Job();
         $job->type = Job::TYPE_DOCUMENT;
         $job->etat_source = 'source';
@@ -246,7 +247,7 @@ class WorkerSQLTest extends PastellTestCase
         $job->id_e = 1;
         $job->id_verrou = 'VERROU';
         $job->next_try = date('Y-M-d', strtotime('yesterday'));
-        $jobQueueSQL->createJob($job);
+        $this->jobQueueSQL->createJob($job);
     }
 
     /**
@@ -285,7 +286,6 @@ class WorkerSQLTest extends PastellTestCase
      */
     private function addJobWithDaemon(int $id_daemon): string
     {
-        $jobQueueSQL = new JobQueueSQL(static::getSQLQuery());
         $job = new Job();
         $job->type = Job::TYPE_DOCUMENT;
         $job->etat_source = 'source';
@@ -295,7 +295,7 @@ class WorkerSQLTest extends PastellTestCase
         $job->id_verrou = 'VERROU';
         $job->next_try = date('Y-M-d', strtotime('yesterday'));
         $job->id_daemon = $id_daemon;
-        return $jobQueueSQL->createJob($job);
+        return $this->jobQueueSQL->createJob($job);
     }
 
     /**
@@ -314,14 +314,13 @@ class WorkerSQLTest extends PastellTestCase
      */
     public function testgetActionEnCoursForConnecteur(): void
     {
-        $jobQueueSQL = new JobQueueSQL(static::getSQLQuery());
         $job = new Job();
         $job->type = Job::TYPE_CONNECTEUR;
         $job->etat_source = 'source';
         $job->etat_cible = 'cible';
         $job->next_try = date('Y-M-d', strtotime('yesterday'));
         $job->id_ce = 1;
-        $id_job = $jobQueueSQL->createJob($job);
+        $id_job = $this->jobQueueSQL->createJob($job);
         $id_worker = $this->workerSQL->create(42);
         $this->workerSQL->attachJob($id_worker, $id_job);
 

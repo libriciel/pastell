@@ -20,7 +20,7 @@ class DaemonConfiguration implements InstallableBootstrap
     public function install(): InstallResult
     {
         if (!$this->configurationSQL->hasConfiguration(ConfigurationSQL::NB_WORKERS)) {
-            $this->configurationSQL->setConfiguration(ConfigurationSQL::NB_WORKERS, (string) NB_WORKERS);
+            $this->daemonSQL->setNbWorkers((int)NB_WORKERS);
         }
 
         if ($this->daemonSQL->getGlobalDaemon() === null) {

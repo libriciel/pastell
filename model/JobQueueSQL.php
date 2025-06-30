@@ -2,6 +2,18 @@
 
 class JobQueueSQL extends SQL
 {
+    private WorkerSQL $workerSQL;
+    private DaemonSQL $daemonSQL;
+
+    public function __construct(
+        SQLQuery $sqlQuery,
+        WorkerSQL $workerSQL,
+        DaemonSQL $daemonSQL,
+    ) {
+        parent::__construct($sqlQuery);
+        $this->workerSQL = $workerSQL;
+        $this->daemonSQL = $daemonSQL;
+    }
     private function mapToJob(array $info): Job
     {
         $job = new Job();
@@ -22,6 +34,8 @@ class JobQueueSQL extends SQL
         $job->next_try = $info['next_try'];
         $job->id_job = $info['id_job'];
         $job->id_daemon = $info['id_daemon'];
+        $job->daemon = $this->daemonSQL->getDaemon($job->id_daemon);
+        $job->worker = $this->workerSQL->getWorker($job->id_job);
         return $job;
     }
 
@@ -154,11 +168,30 @@ class JobQueueSQL extends SQL
         return $info;
     }
 
+    public function getStatInfoForDaemon(int $id_daemon): array
+    {
+        $sql = 'SELECT count(*) FROM job_queue WHERE id_daemon = ?';
+        $info['nb_job'] = $this->queryOne($sql, $id_daemon);
+        $sql = 'SELECT count(*) FROM job_queue WHERE is_lock=1 AND id_daemon = ?';
+        $info['nb_lock'] = $this->queryOne($sql, $id_daemon);
+        $sql = 'SELECT count(*) FROM job_queue WHERE next_try<now() AND id_daemon = ?';
+        $info['nb_wait'] = $this->queryOne($sql, $id_daemon);
+        $info['nb_lock_one_hour'] = $this->getNbLockSinceOneHourForDaemon($id_daemon);
+        return $info;
+    }
+
     public function getNbLockSinceOneHour(): ?int
     {
         $last_hour = date("Y-m-d H:i:s", strtotime("-1 hour"));
         $sql = "SELECT count(*) FROM job_queue WHERE is_lock=1 AND lock_since < ?";
         return $this->queryOne($sql, $last_hour);
+    }
+
+    public function getNbLockSinceOneHourForDaemon(int $id_daemon): ?int
+    {
+        $last_hour = date('Y-m-d H:i:s', strtotime('-1 hour'));
+        $sql = 'SELECT count(*) FROM job_queue WHERE is_lock=1 AND lock_since < ? AND id_daemon = ?';
+        return $this->queryOne($sql, [$last_hour, $id_daemon]);
     }
 
     public function getMaxLastTryOneHourLate(): ?string
@@ -217,5 +250,84 @@ class JobQueueSQL extends SQL
             $result[] = $this->mapToJob($info);
         }
         return $result;
+    }
+
+    /**
+     * @return Job[]
+     */
+    public function getJobsByAncestor(int $id_e): array
+    {
+        $sql = 'SELECT *
+        FROM job_queue jq
+        JOIN entite_ancetre ea ON ea.id_e = jq.id_e
+        WHERE id_e_ancetre = ?';
+        $results = $this->query($sql, [$id_e]);
+        $job_list = [];
+        foreach ($results as $job_info) {
+            $job_list[] = $this->mapToJob($job_info);
+        }
+        return $job_list;
+    }
+
+    /**
+     * @return Job[]
+     */
+    public function getAllJobs(int $offset = 0, int $limit = 20): array
+    {
+        $sql = "SELECT *
+        FROM job_queue jq
+        ORDER BY next_try DESC
+        LIMIT $offset, $limit";
+        $results = $this->query($sql);
+        $job_list = [];
+        foreach ($results as $job_info) {
+            $job_list[] = $this->mapToJob($job_info);
+        }
+        return $job_list;
+    }
+
+    /**
+     * @return Job[]
+     */
+    public function getFilteredJobList(
+        int $limit = 20,
+        int $offset = 0,
+        string $filtre = '',
+        ?int $id_daemon = null
+    ): array {
+        if (!in_array($filtre, ['lock', 'actif', 'wait'])) {
+            $filtre = '';
+        }
+
+        $sql = 'SELECT *, job_queue.id_job as id_job 
+            FROM job_queue 
+            LEFT JOIN worker ON job_queue.id_job = worker.id_job
+            WHERE 1=1';
+
+        $params = [];
+        if ($id_daemon !== null) {
+            $sql .= ' AND job_queue.id_daemon=?';
+            $params[] = $id_daemon;
+        }
+        if ($filtre === 'lock') {
+            $sql .= ' AND is_lock=1 ';
+        }
+        if ($filtre === 'wait') {
+            $sql .= ' AND next_try < now() ';
+        }
+        if ($filtre === 'actif') {
+            $sql .= ' AND worker.termine=0 ';
+        }
+
+        $sql .= " ORDER BY job_queue.is_lock, job_queue.next_try 
+              LIMIT $offset, $limit";
+
+        $result = $this->query($sql, $params);
+        $job_list = [];
+        foreach ($result as $job_info) {
+            $job = $this->mapToJob($job_info);
+            $job_list[] = $job;
+        }
+        return $job_list;
     }
 }

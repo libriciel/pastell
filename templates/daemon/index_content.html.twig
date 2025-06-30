@@ -3,14 +3,15 @@
         <tr>
             <th class="w300">État</th>
             <td>
-                {% if daemonManager.status() %}
-                    <span class='alert alert-success'>Le gestionnaire de tâches est actif</span>
-                    <a href="{{ path('app.legacy.daemon_daemonStop') }}" class="btn btn-danger" id="arreter_deamon"
-                       name="arreter_deamon"><i class="fa fa-stop"></i>&nbsp; Arrêter</a>
+                {% if daemon_pid %}
+                    <span class="alert alert-success">Les gestionnaires de tâches sont actifs</span>
+                    <a href="{{ path('app.legacy.daemon_globalDaemonStop') }}" class="btn btn-danger" id="arreter_deamon" name="arreter_deamon">
+                        <i class="fa fa-stop"></i>&nbsp; Tout arrêter
+                    </a>
                 {% else %}
-                    <span class='alert alert-danger'>Le gestionnaire de tâches est arrêté</span>
-                    <a href="{{ path('app.legacy.daemon_daemonStart') }}" class="btn btn-success">
-                        <i class="fa fa-play"></i>&nbsp;Démarrer
+                    <span class="alert alert-danger">Les gestionnaires de tâches sont arrêtés</span>
+                    <a href="{{ path('app.legacy.daemon_globalDaemonStart') }}" class="btn btn-success" id="demarrer_daemon" name="demarrer_daemon">
+                        <i class="fa fa-play"></i>&nbsp; Tout reprendre
                     </a>
                 {% endif %}
             </td>
@@ -21,7 +22,7 @@
         </tr>
         <tr>
             <th>Processus simultanés maximum</th>
-            <td>{{ nb_total_workers }}</td>
+            <td>{{ nb_workers }}</td>
         </tr>
         <tr>
             <th>Processus en cours d'exécution</th>
@@ -37,7 +38,7 @@
             <th>Travaux suspendus</th>
             <td>
                 {{ job_stat_info.nb_lock }}
-                {% if (job_stat_info.nb_lock_one_hour) %}
+                {% if (job_stat_info.nb_lock_one_hour and daemon_global_lecture) %}
                     <span class='alert alert-warning'>
                         <a href="{{ path('app.legacy.daemon_job', {'filtre': 'lock'}) }}">
                             {{ job_stat_info.nb_lock_one_hour }} depuis plus d'une heure !

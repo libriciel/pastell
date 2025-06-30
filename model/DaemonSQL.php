@@ -6,6 +6,7 @@ class DaemonSQL extends SQL
 {
     public const UNASSIGNED_DAEMON = 0;
     public const GLOBAL_DAEMON = 1;
+    public const DISPLAY_LIMIT = 20;
 
     private ConfigurationSQL $configurationSQL;
 
@@ -41,7 +42,16 @@ class DaemonSQL extends SQL
         if (!$info) {
             return null;
         }
+        return $this->mapToDaemon($info);
+    }
 
+    public function getDaemonByEntity(int $id_e): ?Daemon
+    {
+        $sql = 'SELECT * FROM daemon WHERE id_e=?';
+        $info = $this->queryOne($sql, $id_e);
+        if (!$info) {
+            return null;
+        }
         return $this->mapToDaemon($info);
     }
 
@@ -90,12 +100,6 @@ class DaemonSQL extends SQL
         $this->query($sql, $id_daemon);
     }
 
-    public function getAllDaemonsInfo(): array
-    {
-        $sql = 'SELECT * FROM daemon d JOIN entite e ON d.id_e = e.id_e ';
-        return $this->query($sql);
-    }
-
     public function getGlobalDaemon(): ?Daemon
     {
         return $this->getDaemon(self::GLOBAL_DAEMON);
@@ -122,8 +126,26 @@ class DaemonSQL extends SQL
         return $this->queryOne($sql, [$id_e]) ?: self::GLOBAL_DAEMON;
     }
 
-    private function getNbWorkers(): int
+    public function getNbWorkers(): int
     {
         return (int) $this->configurationSQL->getConfiguration(ConfigurationSQL::NB_WORKERS);
+    }
+
+    public function setNbWorkers(int $nb_workers): void
+    {
+        $this->configurationSQL->setConfiguration(ConfigurationSQL::NB_WORKERS, (string) $nb_workers);
+        $this->refreshAvailableWorkers();
+    }
+
+    public function getAllEntiteInfo(int $offset, string $search): array
+    {
+        $sql = "SELECT *, e.id_e as id_e
+            FROM daemon d
+            JOIN entite e ON d.id_e = e.id_e
+            WHERE is_active = 1
+              AND denomination LIKE ?
+            ORDER BY state DESC
+            LIMIT $offset," . self::DISPLAY_LIMIT;
+        return $this->query($sql, ["%$search%"]);
     }
 }

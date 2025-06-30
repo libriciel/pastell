@@ -170,35 +170,6 @@ class WorkerSQL extends SQL
         return $this->query($sql);
     }
 
-    public function getJobListWithWorker($offset = 0, $limit = 20, $filtre = "")
-    {
-        if (! in_array($filtre, ["lock","actif","wait"])) {
-            $filtre = "";
-        }
-
-        $sql = "SELECT *, job_queue.id_job as id_job FROM job_queue " .
-                " LEFT JOIN worker ON job_queue.id_job = worker.id_job " .
-                " WHERE 1=1 ";
-
-        if ($filtre == 'lock') {
-            $sql .= " AND is_lock=1 ";
-        }
-        if ($filtre == 'wait') {
-            $sql .= " AND next_try < now() ";
-        }
-        if ($filtre == 'actif') {
-            $sql .= " AND worker.termine=0 ";
-        }
-
-        $sql .= " ORDER BY job_queue.is_lock,job_queue.next_try " .
-                " LIMIT $offset,$limit " ;
-        $result = $this->query($sql);
-        foreach ($result as $i => $line) {
-            $result[$i]['time_since_next_try'] = time() - strtotime($line['next_try']);
-        }
-        return $result;
-    }
-
     public function menage($id_job)
     {
         $sql = "DELETE FROM worker WHERE id_job=? AND termine=1";
@@ -219,14 +190,14 @@ class WorkerSQL extends SQL
                 " LEFT JOIN worker ON job_queue.id_job = worker.id_job " .
                 " WHERE 1=1 ";
 
-        if ($filtre == 'lock') {
-            $sql .= " AND is_lock=1 ";
+        if ($filtre === 'lock') {
+            $sql .= ' AND job_queue.is_lock=1';
         }
-        if ($filtre == 'wait') {
-            $sql .= " AND next_try < now() ";
+        if ($filtre === 'wait') {
+            $sql .= ' AND job_queue.next_try < NOW()';
         }
-        if ($filtre == 'actif') {
-            $sql .= " AND worker.termine=0 ";
+        if ($filtre === 'actif') {
+            $sql .= ' AND worker.termine = 0';
         }
 
         return $this->queryOne($sql);

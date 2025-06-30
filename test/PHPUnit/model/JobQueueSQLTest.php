@@ -17,7 +17,13 @@ class JobQueueSQLTest extends PastellTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->jobQueueSQL = new JobQueueSQL($this->getSQLQuery());
+        $daemonSQL = $this->getObjectInstancier()->getInstance(DaemonSQL::class);
+        $workerSQL = new WorkerSQL(static::getSQLQuery());
+        $this->jobQueueSQL = new JobQueueSQL(
+            static::getSQLQuery(),
+            $workerSQL,
+            $daemonSQL,
+        );
         $this->job = new Job();
     }
 
