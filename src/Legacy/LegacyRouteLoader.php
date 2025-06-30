@@ -13,7 +13,7 @@ use Symfony\Component\Routing\RouteCollection;
 
 final class LegacyRouteLoader extends Loader
 {
-    public function load(mixed $resource, string $type = null): RouteCollection
+    public function load(mixed $resource, ?string $type = null): RouteCollection
     {
         $collection = new RouteCollection();
         $finder = new Finder();
@@ -47,7 +47,7 @@ final class LegacyRouteLoader extends Loader
         return $collection;
     }
 
-    public function supports(mixed $resource, string $type = null): bool
+    public function supports(mixed $resource, ?string $type = null): bool
     {
         return $type === 'legacy';
     }

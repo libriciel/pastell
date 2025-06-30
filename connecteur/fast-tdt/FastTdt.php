@@ -513,7 +513,7 @@ class FastTdt extends TdtConnecteur
      * @return ?string
      * @throws Exception
      */
-    public function getActeTamponne(string $id_transaction, string $date_affichage = null): ?string
+    public function getActeTamponne(string $id_transaction, ?string $date_affichage = null): ?string
     {
         $pdf_file = null;
         foreach ($this->webDavWrapper->listFolder('') as $doc) {

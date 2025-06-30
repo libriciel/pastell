@@ -48,7 +48,7 @@ class JobManager
     }
 
 
-    public function setJobForDocument($id_e, $id_d, $last_message, string $action_name = null)
+    public function setJobForDocument($id_e, $id_d, $last_message, ?string $action_name = null)
     {
         if ($this->disable_job_queue) {
             return true;
@@ -85,7 +85,7 @@ class JobManager
         return $id_job;
     }
 
-    public function deleteJobForDocument(int $id_e, string $id_d, string $action_name = null): void
+    public function deleteJobForDocument(int $id_e, string $id_d, ?string $action_name = null): void
     {
         if (isset($action_name)) {
             $id_job = $this->jobQueueSQL->getJobIdForDocumentAndAction($id_e, $id_d, $action_name);

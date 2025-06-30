@@ -34,7 +34,7 @@ class DonneesFormulaire
      * @param DocumentType $documentType
      * @param YMLLoader|null $ymlLoader
      */
-    public function __construct($filePath, DocumentType $documentType, YMLLoader $ymlLoader = null)
+    public function __construct($filePath, DocumentType $documentType, ?YMLLoader $ymlLoader = null)
     {
         $this->filePath = $filePath;
         $this->documentType = $documentType;

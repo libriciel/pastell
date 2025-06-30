@@ -119,7 +119,7 @@ class ConnecteurAssociationService
      */
     public function deleteConnecteurAssociationById_fe(
         int $id_fe,
-        int $id_e = null,
+        ?int $id_e = null,
         int $id_u = 0
     ): void {
 

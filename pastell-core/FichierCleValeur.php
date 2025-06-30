@@ -14,7 +14,7 @@ class FichierCleValeur
 
     private $ymlLoader;
 
-    public function __construct($filePath, YMLLoader $ymlLoader = null)
+    public function __construct($filePath, ?YMLLoader $ymlLoader = null)
     {
         if (! $ymlLoader) {
             $ymlLoader = new YMLLoader(new StaticWrapper());

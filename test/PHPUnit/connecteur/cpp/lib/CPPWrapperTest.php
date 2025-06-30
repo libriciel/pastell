@@ -47,7 +47,7 @@ class CPPWrapperTest extends ExtensionCppTestCase
      * @return CPPWrapper
      * @throws CPPException
      */
-    private function getCPPWrapper(CPPWrapperConfig $cppWrapperConfig = null): CPPWrapper
+    private function getCPPWrapper(?CPPWrapperConfig $cppWrapperConfig = null): CPPWrapper
     {
         $cppWrapper = new CPPWrapper(
             $this->getObjectInstancier()->getInstance(CurlWrapperFactory::class),
