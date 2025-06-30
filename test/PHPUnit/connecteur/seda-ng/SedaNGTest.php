@@ -21,8 +21,6 @@ class SedaNGTest extends PastellTestCase
         ]
         ]);
 
-        /** @var FluxData $fluxData */
-
         $sedaNG = new SedaNG();
         $sedaNG->generateArchive($fluxData, $archive_path);
 
@@ -53,8 +51,6 @@ class SedaNGTest extends PastellTestCase
             'filepath' => __DIR__ . '/fixtures/connecteur_exemple.yml',
         ]
         ]);
-
-        /** @var FluxData $fluxData */
 
         $sedaNG = new SedaNG();
         $sedaNG->generateArchive($fluxData, $archive_path);

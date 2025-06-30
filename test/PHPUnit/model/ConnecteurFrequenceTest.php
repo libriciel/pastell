@@ -117,7 +117,6 @@ class ConnecteurFrequenceTest extends PastellTestCase
         if ($expected_time - strtotime($date) > 1) {
             throw new Exception("Failed that $date is " . date("Y-m-d H:i:s", $expected_time));
         }
-        $this->assertTrue(true);
     }
 
     /**

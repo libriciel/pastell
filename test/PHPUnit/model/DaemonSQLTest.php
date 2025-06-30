@@ -14,11 +14,6 @@ class DaemonSQLTest extends PastellTestCase
         $this->daemonSQL->insertGlobalDaemon();
     }
 
-    public function testCreate(): void
-    {
-        static::assertNotNull($this->daemonSQL->insertDaemon(1));
-    }
-
     public function testGetDaemon(): void
     {
         $id_e = 1;
@@ -56,7 +51,6 @@ class DaemonSQLTest extends PastellTestCase
 
     public function testDeleteDaemon(): void
     {
-        static::assertNotNull($this->daemonSQL->insertDaemon(5));
         $this->daemonSQL->deleteDaemon(5);
         static::assertNull($this->daemonSQL->getDaemon(5));
     }

@@ -8,14 +8,13 @@ class DepotWebDAVTest extends PastellTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $webdavWrapper = $this->createMock('WebdavWrapper');
+        $webdavWrapper = $this->createMock(WebdavWrapper::class);
         $webdavWrapper->method('listFolder')->willReturn(['foo']);
         $webdavWrapper->method('exists')->willReturn(false);
 
         $connecteurConfig = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
         $connecteurConfig->setData(DepotWebDAV::DEPOT_WEBDAV_URL, 'https://foo/');
 
-        /** @var WebdavWrapper $webdavWrapper*/
         $this->depotWebDAV = new DepotWebDAV($webdavWrapper);
         $this->depotWebDAV->setConnecteurConfig($connecteurConfig);
     }

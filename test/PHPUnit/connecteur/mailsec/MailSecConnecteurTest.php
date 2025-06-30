@@ -77,9 +77,6 @@ class MailSecConnecteurTest extends PastellTestCase
         return $mailsec;
     }
 
-    /**
-     * @throws DonneesFormulaireException
-     */
     private function addContentHTML(string $filepath): void
     {
         $this->contentHTML = $filepath;
@@ -88,7 +85,6 @@ class MailSecConnecteurTest extends PastellTestCase
     /**
      * @param string $filename
      * @param int $filenum
-     * @throws DonneesFormulaireException
      */
     private function addEmbededImage(string $filename = 'image.png', int $filenum = 0): void
     {

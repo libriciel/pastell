@@ -99,13 +99,13 @@ class NotBuggySoapClient extends SoapClient
 
         $ch = curl_init($location);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3600);
@@ -189,7 +189,7 @@ class NotBuggySoapClient extends SoapClient
         if (preg_match('/boundary="?(.*)"?/Ui', $headers, $boundary) === 1 && preg_match('/start="(.*)"/Ui', $headers, $start) === 1) {
             $parts = explode($CRLF . $BHYP . $boundary[1], $response);
 
-            if (isset($parts[0]) && empty($parts[0])) {
+            if (empty($parts[0])) {
                 array_shift($parts);
             }
 

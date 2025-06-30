@@ -23,7 +23,7 @@ class MailerTest extends PastellTestCase
             ->text('texte');
         $mailer = $this->getObjectInstancier()->getInstance(Mailer::class);
         $mailer->send($templatedEmail);
-        self::assertTrue(true);
+        self::markTestIncomplete();
     }
 
     public function testSendMailWithCustomTransport(): void

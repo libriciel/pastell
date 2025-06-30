@@ -83,10 +83,6 @@ class GlaneurSFTPTest extends PastellTestCase
             ->method('getInstance')
             ->willReturn($sftp);
 
-
-        /** @var SFTPFactory $sftpFactory */
-
-
         mkdir($this->tmp_folder . "/" . "test1");
         copy(__DIR__ . "/fixtures/actes-automatique/vide1.pdf", $this->tmp_folder . "/vide1.pdf");
         $this->assertNotFalse(
@@ -276,7 +272,6 @@ class GlaneurSFTPTest extends PastellTestCase
         $sftpFactory->expects($this->any())
             ->method('getInstance')
             ->willReturn($sftp);
-        /** @var SFTPFactory $sftpFactory */
         return $sftpFactory;
     }
 

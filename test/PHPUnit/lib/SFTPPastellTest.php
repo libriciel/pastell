@@ -21,7 +21,7 @@ class SFTPPastellTest extends PHPUnit\Framework\TestCase
 
     private function setSFTP()
     {
-        $netSFTP = $this->createMock("\phpseclib\Net\SFTP");
+        $netSFTP = $this->createMock(\phpseclib\Net\SFTP::class);
 
         $closure = function ($a) {
             if ($a == 'foo bar') {
@@ -42,7 +42,6 @@ class SFTPPastellTest extends PHPUnit\Framework\TestCase
         $netSFTP
             ->method('getServerPublicHostKey')
             ->willReturn(file_get_contents(__DIR__ . "/fixtures/ssh_server_public_key.txt"));
-        /** @var \phpseclib\Net\SFTP $netSFTP */
         $this->sftp = new SFTP($netSFTP, $this->sftpProperties);
     }
 
