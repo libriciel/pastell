@@ -19,6 +19,7 @@
 - Suppression de la fonction WorkerSQL::getFirstJobToLaunch remplacé par WorkerSQL::getJobsToLaunchByLock #2237
 - Suppression de la fonction WorkerSQL::getJobToLaunch remplacé par WorkerSQL::getJobsToLaunch #2237
 - Suppression de la fonction WorkerSQL::getRunningWorkerInfo remplacé par WorkerSQL::getRunningWorker #2237
+- Suppression de la fonction WorkerSQL::getJobListWithWorker remplacé par JobQueueSQL::getFilteredJobList #2233
 
 ## Suppression d'éléments dépréciés
 
