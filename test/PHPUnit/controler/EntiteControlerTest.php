@@ -219,7 +219,6 @@ class EntiteControlerTest extends ControlerTestCase
                 self::getObjectInstancier()->getInstance(FluxEntiteHeritageSQL::class)->setInheritance($parametres['id_e'], 'flux-fake');
                 break;
             default:
-
         }
 
         ob_start();
