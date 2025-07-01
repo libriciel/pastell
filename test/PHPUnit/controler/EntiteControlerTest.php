@@ -194,22 +194,29 @@ class EntiteControlerTest extends ControlerTestCase
     {
         $this->setGetInfo(['id_e' => $parametres['id_e']]);
 
-        switch ($parametres['condition']) {
+        switch ($parametres['condition-empechant-la-suppression']) {
             case 'has-document-entite':
+                $id_d = 'IDENTIFIANT-FAKE';
+                self::getObjectInstancier()->getInstance(DocumentSQL::class)->save($id_d, 'type');
+                self::getObjectInstancier()->getInstance(DocumentEntite::class)->addRole($id_d, $parametres['id_e'], 'ROLE-FAKE');
                 break;
             case 'has-entite-fille':
+                self::getObjectInstancier()->getInstance(EntiteSQL::class)->create('name-fake', 'siren-fake', EntiteSQL::TYPE_COLLECTIVITE, $parametres['id_e']);
                 break;
             case 'has-users-with-entite-de-base':
+                self::getObjectInstancier()->getInstance(UtilisateurSQL::class)->query('UPDATE utilisateur SET id_e = ? WHERE id_u = 1', $parametres['id_e']);
                 break;
             case 'has-user':
+                self::getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole(1, 'role-fake', $parametres['id_e']);
                 break;
             case 'has-connector':
+                self::getObjectInstancier()->getInstance(ConnecteurEntiteSQL::class)->addConnecteur($parametres['id_e'], 4, 'type-fake', 'libelle-fake');
                 break;
             case 'has-flux-entite':
-                self::getObjectInstancier()->getInstance(FluxEntiteSQL::class)->addConnecteur($parametres['id_e'], 'flux', );
+                self::getObjectInstancier()->getInstance(FluxEntiteSQL::class)->addConnecteur($parametres['id_e'], 'flux-fake', 'type-fake', 4);
                 break;
             case 'has-flux-entite-heritage':
-                self::getObjectInstancier()->getInstance(FluxEntiteHeritageSQL::class)->setInheritance($parametres['id_e'], 'flux');
+                self::getObjectInstancier()->getInstance(FluxEntiteHeritageSQL::class)->setInheritance($parametres['id_e'], 'flux-fake');
                 break;
             default:
 
@@ -220,7 +227,7 @@ class EntiteControlerTest extends ControlerTestCase
         $this->entiteControler->detailEntite();
         $isSupprimable = $this->entiteControler->getViewParameterByKey('is_supprimable');
         ob_end_clean();
-        self::assertSame($parametres['isSupprimable'], $isSupprimable);
+        self::assertSame($parametres['condition-empechant-la-suppression'] === null, $isSupprimable);
     }
 
     public function isSupprimable(): array
@@ -229,49 +236,49 @@ class EntiteControlerTest extends ControlerTestCase
             [
                 [
                     'id_e' => 2,
-                    'condition' => null
+                    'condition-empechant-la-suppression' => null
                 ]
             ],
             [
                 [
                     'id_e' => 2,
-                    'condition' => 'has-document-entite'
+                    'condition-empechant-la-suppression' => 'has-document-entite'
                 ]
             ],
             [
                 [
                     'id_e' => 2,
-                    'condition' => 'has-entite-fille'
+                    'condition-empechant-la-suppression' => 'has-entite-fille'
                 ]
             ],
             [
                 [
                     'id_e' => 2,
-                    'condition' => 'has-users-with-entite-de-base'
+                    'condition-empechant-la-suppression' => 'has-users-with-entite-de-base'
                 ]
             ],
             [
                 [
                     'id_e' => 2,
-                    'condition' => 'has-user'
+                    'condition-empechant-la-suppression' => 'has-user'
                 ]
             ],
             [
                 [
                     'id_e' => 2,
-                    'condition' => 'has-connector'
+                    'condition-empechant-la-suppression' => 'has-connector'
                 ]
             ],
             [
                 [
                     'id_e' => 2,
-                    'condition' => 'has-flux-entite'
+                    'condition-empechant-la-suppression' => 'has-flux-entite'
                 ]
             ],
             [
                 [
                     'id_e' => 2,
-                    'condition' => 'has-flux-entite-heritage'
+                    'condition-empechant-la-suppression' => 'has-flux-entite-heritage'
                 ]
             ]
         ];
