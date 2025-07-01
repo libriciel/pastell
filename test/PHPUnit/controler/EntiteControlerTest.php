@@ -186,4 +186,94 @@ class EntiteControlerTest extends ControlerTestCase
         $info = $this->getObjectInstancier()->getInstance(EntiteSQL::class)->getInfo(1);
         static::assertSame('TEST ENTITIES', $info['denomination']);
     }
+
+    /**
+     * @dataProvider isSupprimable
+     */
+    public function testIsSupprimable($parametres): void
+    {
+        $this->setGetInfo(['id_e' => $parametres['id_e']]);
+
+        switch ($parametres['condition']) {
+            case 'has-document-entite':
+                break;
+            case 'has-entite-fille':
+                break;
+            case 'has-users-with-entite-de-base':
+                break;
+            case 'has-user':
+                break;
+            case 'has-connector':
+                break;
+            case 'has-flux-entite':
+                self::getObjectInstancier()->getInstance(FluxEntiteSQL::class)->addConnecteur($parametres['id_e'], 'flux', );
+                break;
+            case 'has-flux-entite-heritage':
+                self::getObjectInstancier()->getInstance(FluxEntiteHeritageSQL::class)->setInheritance($parametres['id_e'], 'flux');
+                break;
+            default:
+
+        }
+
+        ob_start();
+        $this->entiteControler->_beforeAction();
+        $this->entiteControler->detailEntite();
+        $isSupprimable = $this->entiteControler->getViewParameterByKey('is_supprimable');
+        ob_end_clean();
+        self::assertSame($parametres['isSupprimable'], $isSupprimable);
+    }
+
+    public function isSupprimable(): array
+    {
+        return [
+            [
+                [
+                    'id_e' => 2,
+                    'condition' => null
+                ]
+            ],
+            [
+                [
+                    'id_e' => 2,
+                    'condition' => 'has-document-entite'
+                ]
+            ],
+            [
+                [
+                    'id_e' => 2,
+                    'condition' => 'has-entite-fille'
+                ]
+            ],
+            [
+                [
+                    'id_e' => 2,
+                    'condition' => 'has-users-with-entite-de-base'
+                ]
+            ],
+            [
+                [
+                    'id_e' => 2,
+                    'condition' => 'has-user'
+                ]
+            ],
+            [
+                [
+                    'id_e' => 2,
+                    'condition' => 'has-connector'
+                ]
+            ],
+            [
+                [
+                    'id_e' => 2,
+                    'condition' => 'has-flux-entite'
+                ]
+            ],
+            [
+                [
+                    'id_e' => 2,
+                    'condition' => 'has-flux-entite-heritage'
+                ]
+            ]
+        ];
+    }
 }

@@ -472,6 +472,12 @@ class EntiteControler extends PastellControler
         if ($this->getConnecteurEntiteSQL()->getAll($id_e)) {
             return false;
         }
+        if (count($this->getFluxEntiteSQL()->getAllFluxEntite($id_e)) > 0) {
+            return false;
+        }
+        if (count($this->getFluxEntiteHeritageSQL()->getInheritance($id_e)) > 0) {
+            return false;
+        }
         return true;
     }
 
@@ -757,5 +763,10 @@ class EntiteControler extends PastellControler
         $lastErrors = $importConfigService->getLastErrors();
         $this->setLastMessage('Les données ont été importées<br/>' . implode('<br/>', $lastErrors));
         $this->redirect("/Entite/detail?id_e=$id_e");
+    }
+
+    public function getFluxEntiteHeritageSQL(): FluxEntiteHeritageSQL
+    {
+        return $this->getObjectInstancier()->getInstance(FluxEntiteHeritageSQL::class);
     }
 }
