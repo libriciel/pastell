@@ -52,8 +52,8 @@ class FastParapheur extends SignatureConnecteur
     public function __construct(
         SoapClientFactory $soapClientFactory,
         CurlWrapperFactory $curlWrapperFactory,
-        TmpFolder $tmpFolder = null,
-        ZipArchive $zipArchive = null
+        ?TmpFolder $tmpFolder = null,
+        ?ZipArchive $zipArchive = null
     ) {
         $this->soapClientFactory = $soapClientFactory;
         $this->curlWrapperFactory = $curlWrapperFactory;

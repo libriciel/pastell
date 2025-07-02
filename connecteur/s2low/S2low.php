@@ -573,7 +573,7 @@ class S2low extends TdtConnecteur
      * @throws JsonException
      * @throws S2lowException
      */
-    public function getActeTamponne($id_transaction, string $date_affichage = null): ?string
+    public function getActeTamponne($id_transaction, ?string $date_affichage = null): ?string
     {
         $file_list = $this->getActeTamponneS2lowFileList($id_transaction);
         return $this->getActeTamponneS2low($file_list, $date_affichage);

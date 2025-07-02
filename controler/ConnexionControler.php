@@ -90,7 +90,7 @@ class ConnexionControler extends PastellControler
      * @throws Exception
      */
     public function apiExternalConnexion(
-        AuthenticationConnecteur $authenticationConnecteur = null,
+        ?AuthenticationConnecteur $authenticationConnecteur = null,
         bool $redirect = true
     ) {
         if (is_null($authenticationConnecteur)) {

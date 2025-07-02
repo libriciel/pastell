@@ -45,7 +45,7 @@ class GlaneurSFTPTest extends PastellTestCase
      * @param $collectivite_properties
      * @return string
      * @throws Exception */
-    private function glanerWithProperties(array $collectivite_properties, SFTPFactory $sftpFactory = null)
+    private function glanerWithProperties(array $collectivite_properties, ?SFTPFactory $sftpFactory = null)
     {
 
         if (! $sftpFactory) {
