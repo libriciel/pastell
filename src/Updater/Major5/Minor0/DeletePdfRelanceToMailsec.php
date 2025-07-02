@@ -6,6 +6,7 @@ namespace Pastell\Updater\Major5\Minor0;
 
 use ConnecteurEntiteSQL;
 use ConnecteurFactory;
+use ConnecteurFrequenceSQL;
 use Exception;
 use FluxEntiteSQL;
 use Pastell\Service\Connecteur\ConnecteurDeletionService;
@@ -24,6 +25,7 @@ final class DeletePdfRelanceToMailsec implements Version
         private readonly ConnecteurFactory $connecteurFactory,
         private readonly FluxEntiteSQL $fluxEntiteSQL,
         private readonly ConnecteurDeletionService $connecteurDeletionService,
+        private readonly ConnecteurFrequenceSQL $connecteurFrequenceSQL,
         private readonly ?PastellLogger $logger = null,
     ) {
     }
@@ -59,7 +61,7 @@ final class DeletePdfRelanceToMailsec implements Version
                 );
                 $this->logger?->info(
                     sprintf(
-                        "Usage id_e `%s` flux `%s` : Update connector %s id_ce = '%s' whith values connector %s id_ce = '%s'",
+                        "Usage id_e `%s` flux `%s` : Update connector %s id_ce = '%s' with values connector %s id_ce = '%s'",
                         $usage['id_e'],
                         $usage['flux'],
                         self::MAILSEC_CONNECTOR,
@@ -78,6 +80,16 @@ final class DeletePdfRelanceToMailsec implements Version
                     $pdfRelanceId,
                 )
             );
+        }
+        //MAJ Frequence
+        $allFrequencies = $this->connecteurFrequenceSQL->getAll();
+        foreach ($allFrequencies as $frequency) {
+            if ($frequency->famille_connecteur === self::PDF_RELANCE_CONNECTOR) {
+                $frequency->famille_connecteur = self::MAILSEC_CONNECTOR;
+                $frequency->id_connecteur = self::MAILSEC_CONNECTOR;
+                $this->connecteurFrequenceSQL->edit($frequency);
+                $this->logger?->info('Update frequence mailsec with values pdf-relance');
+            }
         }
     }
 }
