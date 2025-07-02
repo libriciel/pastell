@@ -34,8 +34,5 @@ parameters:
       paths:
         - lib/NotBuggySoapClient.php
     -
-      message: '/Access to an undefined property object::(\$nom|\$NomDocPrincipal)/'
-      path: connecteur/iParapheur/IParapheur.php
-    -
       message: '/PHPDoc tag @throws with type (.*) is not subtype of Throwable/'
       path: test/codeception/tests/_support/_generated/

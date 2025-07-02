@@ -218,7 +218,7 @@ class Purge extends Connecteur
         $modification_list = explode("\n", $modification_definition);
         foreach ($modification_list as $modifiction_item) {
             $modification_explode = explode(':', $modifiction_item, 2);
-            $modification_key = trim($modification_explode[0] ?? '');
+            $modification_key = trim($modification_explode[0]);
             $modification_value = trim($modification_explode[1] ?? '');
             if (! $modification_key) {
                 continue;

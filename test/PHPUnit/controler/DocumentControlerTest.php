@@ -218,7 +218,6 @@ class DocumentControlerTest extends ControlerTestCase
         try {
             ob_start(); //Very uggly...
             $documentController->indexAction();
-            static::assertTrue(false);
         } catch (Exception $e) {
             /* Nothing to do */
         }

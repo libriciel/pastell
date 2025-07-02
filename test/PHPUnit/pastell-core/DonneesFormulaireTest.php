@@ -337,7 +337,6 @@ class DonneesFormulaireTest extends PastellTestCase
         $donneesFormulaire = new DonneesFormulaire("/tmp/toto.yml", $documentType);
         $donneesFormulaire->setDocumentIndexor(new DocumentIndexor(new DocumentIndexSQL($this->getSQLQuery()), '1'));
         $donneesFormulaire->saveTab(new Recuperateur(), new FileUploader(), 0);
-        $this->assertTrue(true);
     }
 
     /**

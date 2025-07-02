@@ -56,12 +56,11 @@ class IParapheurUnitTest extends PastellTestCase
 
     private function callWithMetadata($value)
     {
-        $connecteurProperties = $this->createMock('DonneesFormulaire');
+        $connecteurProperties = $this->createMock(DonneesFormulaire::class);
 
         $connecteurProperties->expects($this->any())
             ->method('get')
             ->willReturn($value);
-        /** @var DonneesFormulaire $connecteurProperties */
         $iParapheur = $this->getIParapheurConnecteur();
         $iParapheur->setConnecteurConfig($connecteurProperties);
 
