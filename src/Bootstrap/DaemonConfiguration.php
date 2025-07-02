@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Pastell\Bootstrap;
 
 use ConfigurationSQL;
+use DaemonManager;
 use DaemonSQL;
 use JobQueueSQL;
+use ObjectInstancier;
 
 class DaemonConfiguration implements InstallableBootstrap
 {
@@ -14,13 +16,22 @@ class DaemonConfiguration implements InstallableBootstrap
         private readonly JobQueueSQL $jobQueueSQL,
         private readonly DaemonSQL $daemonSQL,
         private readonly ConfigurationSQL $configurationSQL,
+        private readonly ObjectInstancier $objectInstancier
     ) {
     }
 
     public function install(): InstallResult
     {
-        if (!$this->configurationSQL->hasConfiguration(ConfigurationSQL::NB_WORKERS)) {
+        if (!$this->configurationSQL->hasConfiguration(DaemonManager::NB_WORKERS)) {
             $this->daemonSQL->setNbWorkers((int)NB_WORKERS);
+        }
+
+        if (!$this->configurationSQL->hasConfiguration(DaemonManager::DAEMON_ADMIN_EMAIL)) {
+            $this->configurationSQL->setConfiguration(
+                DaemonManager::DAEMON_ADMIN_EMAIL,
+                implode(',', $this->objectInstancier->getInstance('admin_email')),
+                0
+            );
         }
 
         if ($this->daemonSQL->getGlobalDaemon() === null) {

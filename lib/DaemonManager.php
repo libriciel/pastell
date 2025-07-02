@@ -6,10 +6,13 @@ class DaemonManager
 {
     public const IS_RUNNING = 1;
     public const IS_STOPPED = 0;
+    public const NB_WORKERS = 'NB_WORKERS';
+    public const DAEMON_ADMIN_EMAIL = 'DAEMON_ADMIN_EMAIL';
 
     public function __construct(
         private readonly DaemonSQL $daemonSQL,
         private readonly JobQueueSQL $jobQueueSQL,
+        private readonly ConfigurationSQL $configurationSQL
     ) {
     }
 
@@ -104,7 +107,7 @@ class DaemonManager
     /**
      * @throws UnrecoverableException
      */
-    public function addDaemon(int $id_e, int $nb_allocated_workers = 0): void
+    public function addDaemon(int $id_e, int $nb_allocated_workers = 0): Daemon
     {
         if ($this->daemonSQL->getDaemonByEntity($id_e)) {
             throw new UnrecoverableException('Création impossible, un daemon existe déjà pour cette entité.');
@@ -119,6 +122,7 @@ class DaemonManager
             $this->updateClosestDaemon($job);
         }
         $this->allocateWorkers($id_daemon, $nb_allocated_workers);
+        return $this->daemonSQL->getDaemon($id_daemon);
     }
 
     /**
@@ -150,5 +154,52 @@ class DaemonManager
     {
         $closestDaemonId = $this->daemonSQL->getClosestDaemon($job->id_e);
         $this->jobQueueSQL->updateDaemon($job->id_job, $closestDaemonId);
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function getAdminEmails(int $id_daemon): array
+    {
+        $daemon = $this->daemonSQL->getDaemon($id_daemon);
+        if ($daemon === null) {
+            throw new UnrecoverableException(
+                'Impossible de récupérer les emails administrateurs, le daemon n\'existe pas.'
+            );
+        }
+        return explode(
+            ',',
+            $this->configurationSQL->getConfiguration(self::DAEMON_ADMIN_EMAIL, $daemon->id_e ?? 0)
+        );
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function setAdminEmails(int $id_daemon, string $emails): void
+    {
+        $daemon = $this->daemonSQL->getDaemon($id_daemon);
+        if ($daemon === null) {
+            throw new UnrecoverableException(
+                'Impossible de récupérer les emails administrateurs, le daemon n\'existe pas.'
+            );
+        }
+        $this->checkRFC2822Email($emails);
+        $this->configurationSQL->setConfiguration(self::DAEMON_ADMIN_EMAIL, $emails, $daemon->id_e ?? 0);
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function checkRFC2822Email(string $emails): void
+    {
+        $emailList = array_filter(array_map('trim', explode(',', $emails)));
+        foreach ($emailList as $email) {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new UnrecoverableException(
+                    \sprintf('Email "%s" invalide : non conforme à la norme RFC 2822.', $email)
+                );
+            }
+        }
     }
 }

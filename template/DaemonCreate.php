@@ -34,6 +34,18 @@ declare(strict_types=1);
                     />
                 </td>
             </tr>
+            <tr>
+                <th class='w300'>
+                    <label for="daemon_admin_email">Mail d'administration</label>
+                    <p class="form_commentaire">
+                        Ce mail sert à notifier les erreurs des tâches automatiques de l'entité. <br>
+                        Plusieurs mails peuvent être renseignés, séparés par des virgules.
+                    </p>
+                </th>
+                <td>
+                    <input class="form-control col-md-4" id='daemon_admin_email' type="text" name='daemon_admin_email' value=''/>
+                </td>
+            </tr>
         </table>
         <?php $this->displayCSRFInput() ?>
         <a class='btn btn-outline-primary' href='<?php $this->url('Daemon/configuration')?>'>

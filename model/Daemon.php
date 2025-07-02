@@ -23,4 +23,14 @@ class Daemon
         $this->state = $state;
         $this->nb_workers = $nb_workers;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'id_daemon' => $this->id_daemon,
+            'id_e' => $this->id_e,
+            'state' => $this->state,
+            'nb_workers' => $this->nb_workers,
+        ];
+    }
 }

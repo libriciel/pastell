@@ -74,6 +74,16 @@ class DaemonSQL extends SQL
         return $result;
     }
 
+    public function getAllDaemons(): array
+    {
+        $sql = 'SELECT * FROM daemon d LEFT JOIN entite e ON d.id_e = e.id_e WHERE is_active = ? OR d.id_e IS NULL';
+        $result = [];
+        foreach ($this->query($sql, [EntiteSQL::STATE_ACTIVE]) as $info) {
+            $result[] = $this->mapToDaemon($info);
+        }
+        return $result;
+    }
+
     public function insertDaemon(int $id_e): int
     {
         $sql = 'INSERT INTO daemon(id_e) VALUES (?);';
@@ -128,12 +138,12 @@ class DaemonSQL extends SQL
 
     public function getNbWorkers(): int
     {
-        return (int) $this->configurationSQL->getConfiguration(ConfigurationSQL::NB_WORKERS);
+        return (int) $this->configurationSQL->getConfiguration(DaemonManager::NB_WORKERS);
     }
 
     public function setNbWorkers(int $nb_workers): void
     {
-        $this->configurationSQL->setConfiguration(ConfigurationSQL::NB_WORKERS, (string) $nb_workers);
+        $this->configurationSQL->setConfiguration(DaemonManager::NB_WORKERS, (string) $nb_workers);
         $this->refreshAvailableWorkers();
     }
 

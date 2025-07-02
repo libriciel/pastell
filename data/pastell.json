@@ -335,13 +335,22 @@
                 "Key": "",
                 "Default": null,
                 "Extra": ""
+            },
+            "id_e": {
+                "Field": "id_e",
+                "Type": "int(11)",
+                "Null": "NO",
+                "Key": "PRI",
+                "Default": null,
+                "Extra": ""
             }
         },
         "Index": {
-            "PRIMARY": {
+            "idx_config_key_id_e": {
                 "type": "BTREE",
                 "col": [
-                    "config_key"
+                    "config_key",
+                    "id_e"
                 ],
                 "unique": true
             }
