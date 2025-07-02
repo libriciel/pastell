@@ -27,11 +27,11 @@ class EntiteDeletionService
     public function __construct(
         EntiteSQL $entiteSQL,
         Journal $journal,
-        private readonly DocumentEntite  $documentEntite,
+        private readonly DocumentEntite $documentEntite,
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
         private readonly FluxEntiteSQL $fluxEntiteSQL,
         private readonly FluxEntiteHeritageSQL $fluxEntiteHeritageSQL,
-        private readonly UtilisateurListe  $utilisateurListe,
+        private readonly UtilisateurListe $utilisateurListe,
     ) {
         $this->entiteSQL = $entiteSQL;
         $this->journal = $journal;
@@ -44,7 +44,7 @@ class EntiteDeletionService
     public function delete(int $id_e): void
     {
         $canDelete = $this->canDelete($id_e);
-        if (!$canDelete->isGranted()){
+        if (!$canDelete->isGranted()) {
             throw new UnrecoverableException($canDelete->getRaisonRefus());
         }
         $info = $this->entiteSQL->getInfo($id_e);

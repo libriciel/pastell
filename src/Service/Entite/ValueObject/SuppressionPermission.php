@@ -7,7 +7,8 @@ final class SuppressionPermission
     public function __construct(
         private readonly bool $authorise,
         private readonly ?string $raison = null,
-    ){}
+    ) {
+    }
 
     public function isGranted(): bool
     {
