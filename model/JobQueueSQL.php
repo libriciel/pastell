@@ -341,7 +341,7 @@ class JobQueueSQL extends SQL
         return $job_list;
     }
 
-    public function getNbJob($filtre, ?int $id_daemon = null)
+    public function getNbJob($filtre, ?int $id_daemon = null): int
     {
         $sql = <<<SQL
 SELECT count(*)

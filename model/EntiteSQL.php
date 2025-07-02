@@ -232,6 +232,12 @@ class EntiteSQL extends SQL
             throw new UnrecoverableException("Suppression impossible : des connecteurs sont définis sur l'entité {id_e=$id_e}");
         }
 
+        $sql = 'SELECT id_e FROM daemon WHERE id_e = ?';
+        $daemonSurEntite = $this->queryOne($sql, $id_e);
+        if ($daemonSurEntite) {
+            throw new UnrecoverableException("Suppression impossible : un daemon est défini sur l'entité {id_e=$id_e}");
+        }
+
         $this->deleteEntite($id_e);
     }
 

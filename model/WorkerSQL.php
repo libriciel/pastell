@@ -152,13 +152,13 @@ class WorkerSQL extends SQL
         return $this->queryOneCol($sql);
     }
 
-    public function getNbActif()
+    public function getNbActif(): int
     {
-        $sql = "SELECT count(*) FROM worker WHERE termine=0";
+        $sql = 'SELECT count(*) FROM worker WHERE termine=0';
         return $this->queryOne($sql);
     }
 
-    public function getNbActifForDaemon(int $id_daemon)
+    public function getNbActifForDaemon(int $id_daemon): int
     {
         $sql = 'SELECT count(*) 
             FROM worker w 

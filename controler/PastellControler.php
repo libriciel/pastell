@@ -305,7 +305,7 @@ class PastellControler extends Controler
         $daemonManager = $this->getInstance(DaemonManager::class);
 
         if (
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'system:lecture', 0)
+            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitLecture(DroitService::DROIT_DAEMON), 0)
         ) {
             $this->setViewParameter(
                 'nb_job_lock',
@@ -314,11 +314,7 @@ class PastellControler extends Controler
                     ->getNbLockSinceOneHour()
             );
 
-            if ($daemonManager->status() == DaemonManager::IS_STOPPED) {
-                $this->setViewParameter('daemon_stopped_warning', true);
-            } else {
-                $this->setViewParameter('daemon_stopped_warning', false);
-            }
+            $this->setViewParameter('daemon_stopped_warning', $daemonManager->status() === DaemonManager::IS_STOPPED);
         }
         $this->setViewParameter('helpURL', $this->getHelpURL());
         parent::renderDefault();

@@ -778,6 +778,10 @@ class DaemonControler extends PastellControler
      */
     public function createAction(): void
     {
+        $this->verifDroit(
+            EntiteSQL::ID_E_ENTITE_RACINE,
+            DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
+        );
         $tree = $this->getRoleUtilisateur()->getEntityTree($this->getId_u(), 'entite:edition');
 
         $this->replaceArrayKeyRecursive($tree, 'denomination', 'name');
@@ -789,10 +793,6 @@ class DaemonControler extends PastellControler
         $this->setViewParameter(
             'tree',
             \json_encode($tree, \JSON_THROW_ON_ERROR)
-        );
-        $this->verifDroit(
-            EntiteSQL::ID_E_ENTITE_RACINE,
-            DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
         );
         $this->setViewParameter('nb_free_workers', $this->getDaemonSQL()->getNbSharedWorkers() - 1);
         $this->setViewParameter('template_milieu', 'DaemonCreate');

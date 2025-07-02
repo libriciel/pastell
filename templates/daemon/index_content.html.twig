@@ -5,14 +5,18 @@
             <td>
                 {% if daemon_pid %}
                     <span class="alert alert-success">Les gestionnaires de tâches sont actifs</span>
-                    <a href="{{ path('app.legacy.daemon_globalDaemonStop') }}" class="btn btn-danger" id="arreter_deamon" name="arreter_deamon">
-                        <i class="fa fa-stop"></i>&nbsp; Tout arrêter
-                    </a>
+                    {% if daemon_edition %}
+                        <a href="{{ path('app.legacy.daemon_globalDaemonStop') }}" class="btn btn-danger" id="arreter_deamon" name="arreter_deamon">
+                            <i class="fa fa-stop"></i>&nbsp; Tout arrêter
+                        </a>
+                    {% endif %}
                 {% else %}
                     <span class="alert alert-danger">Les gestionnaires de tâches sont arrêtés</span>
-                    <a href="{{ path('app.legacy.daemon_globalDaemonStart') }}" class="btn btn-success" id="demarrer_daemon" name="demarrer_daemon">
-                        <i class="fa fa-play"></i>&nbsp; Tout reprendre
-                    </a>
+                    {% if daemon_edition %}
+                        <a href="{{ path('app.legacy.daemon_globalDaemonStart') }}" class="btn btn-success" id="demarrer_daemon" name="demarrer_daemon">
+                            <i class="fa fa-play"></i>&nbsp; Tout reprendre
+                        </a>
+                    {% endif %}
                 {% endif %}
             </td>
         </tr>

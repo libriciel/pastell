@@ -535,6 +535,9 @@ class EntiteControler extends PastellControler
         if ($this->getConnecteurEntiteSQL()->getAll($id_e)) {
             return false;
         }
+        if ($this->getDaemonSQL()->getDaemonByEntity($id_e) !== null) {
+            return false;
+        }
         return true;
     }
 
@@ -562,10 +565,6 @@ class EntiteControler extends PastellControler
             'Suppression',
             "Suppression de l'entité $id_e qui contenait : \n" . implode("\n,", $info)
         );
-        $daemon = $this->getDaemonSQL()->getDaemonByEntity($id_e);
-        if ($daemon !== null) {
-            $this->getDaemonManager()->removeDaemon($daemon->id_daemon);
-        }
         $this->getEntiteSQL()->delete($id_e);
 
         $this->setLastMessage("L'entité « {$info['denomination']} » a été supprimée");
@@ -878,10 +877,14 @@ class EntiteControler extends PastellControler
      * @throws LastMessageException
      * @throws LastErrorException
      */
-    public function daemonData(): void
+    private function daemonData(): void
     {
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e');
+        $this->verifDroit(
+            $id_e,
+            DroitService::getDroitLecture(DroitService::DROIT_DAEMON)
+        );
         $this->setViewParameter('id_e', $id_e);
         $this->setDroitsDaemon($id_e);
 
