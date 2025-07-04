@@ -218,12 +218,12 @@ class DaemonControler extends PastellControler
      */
     public function unlockAllAction(): void
     {
-        $this->getWorkerSQL()->menageAll();
-        $this->getJobQueueSQL()->unlockAll();
         $this->verifDroit(
             EntiteSQL::ID_E_ENTITE_RACINE,
             DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
         );
+        $this->getWorkerSQL()->menageAll();
+        $this->getJobQueueSQL()->unlockAll();
         $this->redirect('Daemon/index');
     }
 
@@ -295,6 +295,7 @@ class DaemonControler extends PastellControler
         ];
 
         $this->setViewParameter('sub_title', $sub_title_array[$filtre] ?? 'Liste de tous les travaux');
+        $this->setViewParameter('unlock_all_action', 'app.legacy.daemon_unlockAll');
 
         $this->setViewParameter('offset', $recuperateur->getInt('offset', 0));
         $this->setViewParameter('limit', self::NB_JOB_DISPLAYING);
@@ -305,7 +306,7 @@ class DaemonControler extends PastellControler
             "Daemon/job?filtre=$filtre&offset=" . $this->getViewParameterByKey('offset')
         );
 
-        $this->setViewParameter('count', $this->getWorkerSQL()->getNbJob($filtre));
+        $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob($filtre));
         $this->setViewParameter(
             'job_list',
             $this->getJobQueueSQL()->getFilteredJobList(
@@ -345,7 +346,7 @@ class DaemonControler extends PastellControler
      * @throws NotFoundException
      * @throws LastErrorException
      */
-    public function frequenceConfigurationAction()
+    public function frequenceConfigurationAction(): void
     {
         $this->verifDroit(
             EntiteSQL::ID_E_ENTITE_RACINE,
@@ -629,6 +630,7 @@ class DaemonControler extends PastellControler
             );
         } else {
             $this->getDaemonSQL()->setNbWorkers($nb_workers);
+            $this->getDaemonSQL()->refreshAvailableWorkers();
             $this->setLastMessage('La configuration des processus à été mise à jour');
         }
         $this->redirect('Daemon/configuration');
@@ -776,6 +778,10 @@ class DaemonControler extends PastellControler
      */
     public function createAction(): void
     {
+        $this->verifDroit(
+            EntiteSQL::ID_E_ENTITE_RACINE,
+            DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
+        );
         $tree = $this->getRoleUtilisateur()->getEntityTree($this->getId_u(), 'entite:edition');
 
         $this->replaceArrayKeyRecursive($tree, 'denomination', 'name');
@@ -787,10 +793,6 @@ class DaemonControler extends PastellControler
         $this->setViewParameter(
             'tree',
             \json_encode($tree, \JSON_THROW_ON_ERROR)
-        );
-        $this->verifDroit(
-            EntiteSQL::ID_E_ENTITE_RACINE,
-            DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
         );
         $this->setViewParameter('nb_free_workers', $this->getDaemonSQL()->getNbSharedWorkers() - 1);
         $this->setViewParameter('template_milieu', 'DaemonCreate');

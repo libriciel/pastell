@@ -21,6 +21,7 @@ class FluxControler extends PastellControler
         $this->setDroitLectureOnConnecteur($id_e);
         $this->setDroitImportExportConfig($id_e);
         $this->setDroitLectureOnUtilisateur($id_e);
+        $this->setDroitsDaemon($id_e);
     }
 
     public function hasDroitEdition($id_e): void
