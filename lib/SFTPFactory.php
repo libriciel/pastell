@@ -9,7 +9,7 @@ class SFTPFactory
 
     public function getInstance(SFTPProperties $sftpProperties): SFTP
     {
-        $netSFTP = new phpseclib\Net\SFTP(
+        $netSFTP = new phpseclib3\Net\SFTP(
             $sftpProperties->host ?: self::DEFAULT_HOST,
             $sftpProperties->port ?: self::DEFAULT_PORT,
             $sftpProperties->timeout
