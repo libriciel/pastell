@@ -8,10 +8,9 @@
         </div>
         <div class="bloc_mentions">
             <p> Pastell&nbsp;{{ manifest_info.version }}
-                |
-                <a href="{{ path('app.legacy.accessibilite_index')  }}">Accessibilité</a>
-                : partiellement conforme
-            </p>
+                -
+                <a href="https://www.libriciel.fr" target="_blank">Libriciel SCOP</a>
+                - <em>{{ timer.getElapsedTime | round(3) }}s</em></p>
         </div>
 
         <div id="bloc_left"></div>
