@@ -5,7 +5,6 @@ connecteur:
     - signature
     - GED
     - mailsec
-    - pdf-relance
     - TdT
 affiche_one: false
 formulaire:
@@ -634,7 +633,7 @@ action:
                 - renvoi
                 - reception-partielle
         action-class: StandardAction
-        connecteur-type: pdf-relance
+        connecteur-type: mailsec
         connecteur-type-action: MailsecRelance
         connecteur-type-mapping:
             reception-partielle: reception-partielle

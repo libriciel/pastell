@@ -14,7 +14,7 @@
   {
     "id_cf": 6,
     "type_connecteur": "entite",
-    "famille_connecteur": "pdf-relance",
+    "famille_connecteur": "mailsec",
     "id_connecteur": "",
     "id_ce": "",
     "action_type": "document",

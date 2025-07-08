@@ -7,7 +7,6 @@ connecteur:
     - ParametragePieceMarche
     - signature
     - mailsec
-    - pdf-relance
     - GED
     - 'Bordereau SEDA'
     - SAE
@@ -473,7 +472,7 @@ action:
                 - send-mailsec
                 - renvoi
         action-class: StandardAction
-        connecteur-type: pdf-relance
+        connecteur-type: mailsec
         connecteur-type-action: MailsecRelance
         connecteur-type-mapping:
             prepare-renvoi: prepare-renvoi

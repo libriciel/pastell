@@ -28,6 +28,12 @@ formulaire:
             type: textarea
             commentaire: "Vous pouvez utiliser %ENTITE% (nom de l'entité), %TITRE% (titre du dossier Pastell), %LINK% (lien de récupération), %FLUX:element_du_flux% (élément du flux),\n%FLUX:@id_element_fichier_json:clé_i:clé_j:...:clé_n% (récupérer le contenu d'un fichier de type json)\nqui seront remplacés lors de l'envoi du mail"
             default: "Bonjour,\n\nLe serveur sécurisé Pastell de LIBRICIEL SCOP vous informe qu'un message recommandé mail\navec d'éventuelles pièces attachées vous a été posté.\n\nPour en prendre connaissance veuillez cliquer sur le lien suivant."
+        nb_day_relance:
+            name: 'Nombre de jour avant relance du mail securisé'
+            commentaire: '30 jours si non renseigné'
+        nb_day_next_state:
+            name: 'Nombre de jour avant passage au prochain état du dossier'
+            commentaire: '60 jours si non renseigné'
 action:
     test:
         name: "Tester l'envoi à Reply-To"

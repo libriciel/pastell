@@ -257,10 +257,10 @@ class PastellBootstrap
             'action_type' => ConnecteurFrequence::TYPE_ACTION_DOCUMENT,
             'id_verrou' => 'SAE',
         ];
-        yield 'pdf relance' => [
+        yield 'mailsec' => [
             'expression' => '1440',
             'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
-            'famille_connecteur' => 'pdf-relance',
+            'famille_connecteur' => 'mailsec',
             'action_type' => ConnecteurFrequence::TYPE_ACTION_DOCUMENT,
             'id_verrou' => 'MAILSEC_RELANCE',
         ];

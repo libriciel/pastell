@@ -8,7 +8,8 @@ use Symfony\Component\Mime\Part\DataPart;
 class MailSec extends MailsecConnecteur
 {
     public const CONNECTEUR_ID = 'mailsec';
-
+    public const DEFAULT_NB_DAY_RELANCE = 30;
+    public const DEFAULT_NB_DAY_NEXT_STATE = 60;
     public const TITRE_REPLACEMENT_REGEXP = "#%TITRE%#";
     public const ENTITE_REPLACEMENT_REGEXP = "#%ENTITE%#";
     public const LINK_REPLACEMENT_REGEXP = "#%LINK%#";
@@ -26,7 +27,7 @@ class MailSec extends MailsecConnecteur
     ) {
     }
 
-    public function setConnecteurConfig(DonneesFormulaire $connecteurConfig)
+    public function setConnecteurConfig(DonneesFormulaire $connecteurConfig): void
     {
         $this->connecteurConfig = $connecteurConfig;
     }
@@ -210,5 +211,37 @@ class MailSec extends MailsecConnecteur
         ) ?: $this->plateforme_mail;
         $this->send($mailsec_reply_to);
         return $mailsec_reply_to;
+    }
+
+    public function mustRelance($first_mail_date): bool
+    {
+        return time() > $this->geTimeRelance($first_mail_date);
+    }
+
+    public function mustGoToNextState($first_mail_date): bool
+    {
+        return time() > $this->geTimeNextState($first_mail_date);
+    }
+
+    public function getDateRelance($first_mail_date): string
+    {
+        return date('Y-m-d H:i:s', $this->geTimeRelance($first_mail_date));
+    }
+
+    public function getDateNextState($first_mail_date): string
+    {
+        return date('Y-m-d H:i:s', $this->geTimeNextState($first_mail_date));
+    }
+
+    public function geTimeRelance($first_mail_date): int
+    {
+        return strtotime($first_mail_date) +
+            ($this->connecteurConfig->get('nb_day_relance') ?: self::DEFAULT_NB_DAY_RELANCE) * 86400;
+    }
+
+    public function geTimeNextState($first_mail_date): int
+    {
+        return strtotime($first_mail_date) +
+            ($this->connecteurConfig->get('nb_day_next_state') ?: self::DEFAULT_NB_DAY_NEXT_STATE) * 86400;
     }
 }

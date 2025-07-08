@@ -3,7 +3,6 @@ type: 'Flux Généraux'
 description: ''
 connecteur:
     - mailsec
-    - pdf-relance
 affiche_one: false
 formulaire:
     onglet1:
@@ -200,7 +199,7 @@ action:
                 - renvoi
                 - reception-partielle
         action-class: StandardAction
-        connecteur-type: pdf-relance
+        connecteur-type: mailsec
         connecteur-type-action: MailsecRelance
         connecteur-type-mapping:
             reception-partielle: reception-partielle
