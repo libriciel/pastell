@@ -1,5 +1,10 @@
 # [5.0.0] - 
 
+## Correction
+
+- **BREAKING** : Correction du calcul des empreintes dans les connecteurs SFTP (dépôt et glaneur) : les empreintes
+doivent être mises à jour #1667
+
 ## Ajouts
 
 - Ajout des permissions daemon:lecture et daemon:edition permettant aux utilisateurs de voir l'état des dossiers en cours #2192

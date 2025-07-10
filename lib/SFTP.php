@@ -4,16 +4,12 @@ declare(strict_types=1);
 
 class SFTP
 {
-    private \phpseclib\Net\SFTP $netSFTP;
-    private SFTPProperties $sftpProperties;
     private bool $isLogged = false;
 
     public function __construct(
-        phpseclib\Net\SFTP $netSFTP,
-        SFTPProperties $sftpProperties
+        private readonly phpseclib3\Net\SFTP $netSFTP,
+        private readonly SFTPProperties $sftpProperties,
     ) {
-        $this->netSFTP = $netSFTP;
-        $this->sftpProperties = $sftpProperties;
     }
 
     /**
@@ -48,7 +44,7 @@ class SFTP
         $this->netSFTP->put(
             $remote_path,
             $local_path,
-            phpseclib\Net\SFTP::SOURCE_LOCAL_FILE
+            phpseclib3\Net\SFTP::SOURCE_LOCAL_FILE
         );
         $this->throwErrorIfNeeded();
         return true;
@@ -92,7 +88,6 @@ class SFTP
      */
     private function login(): void
     {
-        $this->netSFTP->sftp_errors = [];
         if ($this->isLogged) {
             return;
         }
@@ -133,12 +128,17 @@ class SFTP
     private function getFingerprint(): string
     {
         $serverPublicHostKey = $this->netSFTP->getServerPublicHostKey();
-        if ($serverPublicHostKey === null) {
+        if ($serverPublicHostKey === false) {
             throw new UnrecoverableException('Impossible de récupérer la clé publique du serveur');
         }
-        $hostKey = substr($serverPublicHostKey, 8);
-        $hostKey = sha1($hostKey) ;
-        return  strtoupper($hostKey);
+        $parts = explode(' ', trim($serverPublicHostKey), 3);
+        if (count($parts) < 2) {
+            throw new UnrecoverableException("Invalid SSH key : $serverPublicHostKey");
+        }
+        $base64Key = $parts[1];
+        $decodedKey = base64_decode($base64Key);
+        $fingerprint = 'SHA256:' . base64_encode(hash('sha256', $decodedKey, true));
+        return rtrim($fingerprint, '=');
     }
 
     /**
