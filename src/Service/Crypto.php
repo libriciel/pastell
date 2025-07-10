@@ -20,7 +20,7 @@ use UnrecoverableException;
 class Crypto
 {
     /** @var string */
-    public const LIBSODIUM_MINIMUM_VERSION_EXPECTED = '1.0.13';
+    public const LIBSODIUM_MINIMUM_VERSION_EXPECTED = '1.0.18';
 
     /** @var int */
     public const PASSWORD_MINIMUM_LENGTH = 8;

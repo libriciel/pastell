@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "99e4ce35d39f0b0fae6f7d173ed72376",
+    "content-hash": "7362f9fe9c330af38998acd8aaf8daeb",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -1008,28 +1008,28 @@
         },
         {
             "name": "flowjs/flow-php-server",
-            "version": "v1.2.0",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/flowjs/flow-php-server.git",
-                "reference": "fe8890c25e835d0b4f58d8bd91331326ab1808ba"
+                "reference": "24ba9aca022410095f781532b38a8e52adc1b22e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/flowjs/flow-php-server/zipball/fe8890c25e835d0b4f58d8bd91331326ab1808ba",
-                "reference": "fe8890c25e835d0b4f58d8bd91331326ab1808ba",
+                "url": "https://api.github.com/repos/flowjs/flow-php-server/zipball/24ba9aca022410095f781532b38a8e52adc1b22e",
+                "reference": "24ba9aca022410095f781532b38a8e52adc1b22e",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4"
+                "php": ">=8.0"
             },
             "require-dev": {
                 "ext-mongodb": "*",
-                "fabpot/php-cs-fixer": "~2.2",
-                "league/phpunit-coverage-listener": "~1.1",
-                "mikey179/vfsstream": "v1.2.0",
+                "friendsofphp/php-cs-fixer": "^3.65",
+                "mikey179/vfsstream": "^1.2",
                 "mongodb/mongodb": "^1.4.0",
-                "phpunit/phpunit": "4.*"
+                "phpstan/phpstan": "^2.0",
+                "phpunit/phpunit": ">=9.0"
             },
             "suggest": {
                 "mongodb/mongodb": "Required to use this package with Mongo DB"
@@ -1063,9 +1063,9 @@
             ],
             "support": {
                 "issues": "https://github.com/flowjs/flow-php-server/issues",
-                "source": "https://github.com/flowjs/flow-php-server/tree/v1.2.0"
+                "source": "https://github.com/flowjs/flow-php-server/tree/v2.0.0"
             },
-            "time": "2022-08-26T15:50:37+00:00"
+            "time": "2024-12-09T12:14:15+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1917,18 +1917,17 @@
         },
         {
             "name": "libriciel/php-office-clients",
-            "version": "1.0.0-alpha.5",
+            "version": "1.9.1",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.adullact.net/Libriciel/php-office-clients",
-                "reference": "a22bd8cfab1f4e6e6d708d121d0dd320a0f260c3"
+                "reference": "8b46aae5dcd63537720f6f7a5de91f3b7f14116b"
             },
             "require": {
                 "composer/installers": "*",
                 "ext-curl": "*",
                 "ext-fileinfo": "*",
                 "ext-json": "*",
-                "ext-soap": "*",
                 "guzzlehttp/guzzle": "^7.7",
                 "php": ">=7.4.0",
                 "phpxmlrpc/phpxmlrpc": "^4.5",
@@ -1938,6 +1937,7 @@
                 "ext-zip": "*",
                 "phpmd/phpmd": "^2.14",
                 "phpunit/phpunit": "^9.6",
+                "rector/rector": "^2.1",
                 "sebastian/phpcpd": "^6.0",
                 "squizlabs/php_codesniffer": "^3.7",
                 "wapmorgan/php-deprecation-detector": "^2.0"
@@ -1985,7 +1985,7 @@
                 }
             ],
             "description": "Clients PHP pour les services liés à la fusion documentaire.",
-            "time": "2024-06-13T14:58:28+00:00"
+            "time": "2025-07-08T07:21:09+00:00"
         },
         {
             "name": "libriciel/php-password",
@@ -2244,16 +2244,16 @@
         },
         {
             "name": "nicolab/php-ftp-client",
-            "version": "v1.6.1",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nicolab/php-ftp-client.git",
-                "reference": "9fced0e9efcfaca8b7283adfab479fb7dd1edfe6"
+                "reference": "a1d007c8b203895611f68b0da314281d4a5c3d49"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nicolab/php-ftp-client/zipball/9fced0e9efcfaca8b7283adfab479fb7dd1edfe6",
-                "reference": "9fced0e9efcfaca8b7283adfab479fb7dd1edfe6",
+                "url": "https://api.github.com/repos/Nicolab/php-ftp-client/zipball/a1d007c8b203895611f68b0da314281d4a5c3d49",
+                "reference": "a1d007c8b203895611f68b0da314281d4a5c3d49",
                 "shasum": ""
             },
             "require": {
@@ -2290,30 +2290,30 @@
                 "ssl-ftp"
             ],
             "support": {
-                "source": "https://github.com/Nicolab/php-ftp-client/tree/v1.6.1"
+                "source": "https://github.com/Nicolab/php-ftp-client/tree/v2.0.2"
             },
-            "time": "2022-03-22T15:42:45+00:00"
+            "time": "2022-08-10T11:09:32+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
-            "version": "v2.7.0",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/constant_time_encoding.git",
-                "reference": "52a0d99e69f56b9ec27ace92ba56897fe6993105"
+                "reference": "df1e7fde177501eee2037dd159cf04f5f301a512"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/constant_time_encoding/zipball/52a0d99e69f56b9ec27ace92ba56897fe6993105",
-                "reference": "52a0d99e69f56b9ec27ace92ba56897fe6993105",
+                "url": "https://api.github.com/repos/paragonie/constant_time_encoding/zipball/df1e7fde177501eee2037dd159cf04f5f301a512",
+                "reference": "df1e7fde177501eee2037dd159cf04f5f301a512",
                 "shasum": ""
             },
             "require": {
-                "php": "^7|^8"
+                "php": "^8"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6|^7|^8|^9",
-                "vimeo/psalm": "^1|^2|^3|^4"
+                "phpunit/phpunit": "^9",
+                "vimeo/psalm": "^4|^5"
             },
             "type": "library",
             "autoload": {
@@ -2359,31 +2359,32 @@
                 "issues": "https://github.com/paragonie/constant_time_encoding/issues",
                 "source": "https://github.com/paragonie/constant_time_encoding"
             },
-            "time": "2024-05-08T12:18:48+00:00"
+            "time": "2024-05-08T12:36:18+00:00"
         },
         {
             "name": "paragonie/halite",
-            "version": "v4.8.0",
+            "version": "v5.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/halite.git",
-                "reference": "7596d5cb25154092b524c34cb9ce2201db612ffc"
+                "reference": "ef9c72278377d634cd4e08f8ec30198feb7ad167"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/halite/zipball/7596d5cb25154092b524c34cb9ce2201db612ffc",
-                "reference": "7596d5cb25154092b524c34cb9ce2201db612ffc",
+                "url": "https://api.github.com/repos/paragonie/halite/zipball/ef9c72278377d634cd4e08f8ec30198feb7ad167",
+                "reference": "ef9c72278377d634cd4e08f8ec30198feb7ad167",
                 "shasum": ""
             },
             "require": {
-                "paragonie/constant_time_encoding": "^2",
+                "ext-json": "*",
+                "paragonie/constant_time_encoding": "^2|^3",
                 "paragonie/hidden-string": "^1|^2",
-                "paragonie/sodium_compat": "^1.15",
-                "php": "^7.2|^8"
+                "paragonie/sodium_compat": "^1|^2",
+                "php": "^8.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^8|^9",
-                "vimeo/psalm": "^3|^4"
+                "phpunit/phpunit": "^9",
+                "vimeo/psalm": "^4"
             },
             "type": "library",
             "autoload": {
@@ -2427,9 +2428,9 @@
             "support": {
                 "docs": "https://github.com/paragonie/halite/tree/master/doc",
                 "issues": "https://github.com/paragonie/halite/issues",
-                "source": "https://github.com/paragonie/halite/tree/v4.8.0"
+                "source": "https://github.com/paragonie/halite/tree/v5.1.3"
             },
-            "time": "2021-04-18T19:24:56+00:00"
+            "time": "2025-01-23T21:33:58+00:00"
         },
         {
             "name": "paragonie/hidden-string",
@@ -2535,30 +2536,35 @@
         },
         {
             "name": "paragonie/sodium_compat",
-            "version": "v1.21.1",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/sodium_compat.git",
-                "reference": "bb312875dcdd20680419564fe42ba1d9564b9e37"
+                "reference": "a673d5f310477027cead2e2f2b6db5d8368157cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/bb312875dcdd20680419564fe42ba1d9564b9e37",
-                "reference": "bb312875dcdd20680419564fe42ba1d9564b9e37",
+                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/a673d5f310477027cead2e2f2b6db5d8368157cb",
+                "reference": "a673d5f310477027cead2e2f2b6db5d8368157cb",
                 "shasum": ""
             },
             "require": {
-                "paragonie/random_compat": ">=1",
-                "php": "^5.2.4|^5.3|^5.4|^5.5|^5.6|^7|^8"
+                "php": "^8.1",
+                "php-64bit": "*"
             },
             "require-dev": {
-                "phpunit/phpunit": "^3|^4|^5|^6|^7|^8|^9"
+                "phpunit/phpunit": "^7|^8|^9",
+                "vimeo/psalm": "^4|^5"
             },
             "suggest": {
-                "ext-libsodium": "PHP < 7.0: Better performance, password hashing (Argon2i), secure memory management (memzero), and better security.",
-                "ext-sodium": "PHP >= 7.0: Better performance, password hashing (Argon2i), secure memory management (memzero), and better security."
+                "ext-sodium": "Better performance, password hashing (Argon2i), secure memory management (memzero), and better security."
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
             "autoload": {
                 "files": [
                     "autoload.php"
@@ -2615,9 +2621,9 @@
             ],
             "support": {
                 "issues": "https://github.com/paragonie/sodium_compat/issues",
-                "source": "https://github.com/paragonie/sodium_compat/tree/v1.21.1"
+                "source": "https://github.com/paragonie/sodium_compat/tree/v2.1.0"
             },
-            "time": "2024-04-22T22:05:04+00:00"
+            "time": "2024-09-04T12:51:01+00:00"
         },
         {
             "name": "php-http/client-common",
@@ -4403,16 +4409,16 @@
         },
         {
             "name": "softcreatr/jsonpath",
-            "version": "0.9.1",
+            "version": "0.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SoftCreatR/JSONPath.git",
-                "reference": "272173a65fd16b25010dbd54d04dd34c0c5a8500"
+                "reference": "74f0b330a98135160db947ba7bc65216b64a0c86"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SoftCreatR/JSONPath/zipball/272173a65fd16b25010dbd54d04dd34c0c5a8500",
-                "reference": "272173a65fd16b25010dbd54d04dd34c0c5a8500",
+                "url": "https://api.github.com/repos/SoftCreatR/JSONPath/zipball/74f0b330a98135160db947ba7bc65216b64a0c86",
+                "reference": "74f0b330a98135160db947ba7bc65216b64a0c86",
                 "shasum": ""
             },
             "require": {
@@ -4468,7 +4474,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-06-01T09:15:21+00:00"
+            "time": "2025-03-22T00:28:17+00:00"
         },
         {
             "name": "symfony/asset",
@@ -11130,16 +11136,16 @@
         },
         {
             "name": "rector/rector",
-            "version": "2.1.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "d513dea45a94394b660e15c155d1fa27826f8e30"
+                "reference": "d0917c069bb0d9bb06ed111cf052510f609015a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/d513dea45a94394b660e15c155d1fa27826f8e30",
-                "reference": "d513dea45a94394b660e15c155d1fa27826f8e30",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/d0917c069bb0d9bb06ed111cf052510f609015a4",
+                "reference": "d0917c069bb0d9bb06ed111cf052510f609015a4",
                 "shasum": ""
             },
             "require": {
@@ -11178,7 +11184,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/2.1.0"
+                "source": "https://github.com/rectorphp/rector/tree/2.1.1"
             },
             "funding": [
                 {
@@ -11186,7 +11192,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-06-24T20:26:57+00:00"
+            "time": "2025-07-10T11:31:31+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -12737,9 +12743,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "libriciel/php-office-clients": 15
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
