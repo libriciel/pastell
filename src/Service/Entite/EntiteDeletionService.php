@@ -8,7 +8,6 @@ use EntiteSQL;
 use FluxEntiteHeritageSQL;
 use FluxEntiteSQL;
 use Journal;
-use Pastell\Service\Entite\ValueObject\SuppressionPermission;
 use UnrecoverableException;
 use UtilisateurListe;
 
@@ -43,10 +42,7 @@ class EntiteDeletionService
      */
     public function delete(int $id_e): void
     {
-        $canDelete = $this->canDelete($id_e);
-        if (!$canDelete->isGranted()) {
-            throw new UnrecoverableException($canDelete->getRaisonRefus());
-        }
+        $this->canDeleteOrThrow($id_e);
         $info = $this->entiteSQL->getInfo($id_e);
         $this->entiteSQL->removeEntite($id_e);
         $this->journal->add(
@@ -58,31 +54,42 @@ class EntiteDeletionService
         );
     }
 
+    public function canDelete(int $id_e): bool
+    {
+        try {
+            $this->canDeleteOrThrow($id_e);
+        } catch (UnrecoverableException $e) {
+            return false;
+        }
 
-    public function canDelete(int $id_e): SuppressionPermission
+        return true;
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    private function canDeleteOrThrow(int $id_e): void
     {
         if ($this->documentEntite->getNbAll($id_e)) {
-            return new SuppressionPermission(false, "Suppression impossible : des documents sont définis sur l'entité {id_e=$id_e}");
+            throw new UnrecoverableException("Suppression impossible : des documents sont définis sur l'entité {id_e=$id_e}");
         }
         if (count($this->entiteSQL->getFille($id_e))) {
-            return new SuppressionPermission(false, "Suppression impossible : l'entité {id_e=$id_e} possède des entités filles");
+            throw new UnrecoverableException("Suppression impossible : l'entité {id_e=$id_e} possède des entités filles");
         }
         if ($this->utilisateurListe->getNbUtilisateurWithEntiteDeBase($id_e)) {
-            return new SuppressionPermission(false, "Suppression impossible : des utilisateurs sont définis sur l'entité {id_e=$id_e}");
+            throw new UnrecoverableException("Suppression impossible : des utilisateurs sont définis sur l'entité {id_e=$id_e}");
         }
         if ($this->utilisateurListe->getNbUtilisateur($id_e)) {
-            return new SuppressionPermission(false, "Suppression impossible : des utilisateurs sont définis sur l'entité {id_e=$id_e}");
+            throw new UnrecoverableException("Suppression impossible : des utilisateurs sont définis sur l'entité {id_e=$id_e}");
         }
         if ($this->connecteurEntiteSQL->getAll($id_e)) {
-            return new SuppressionPermission(false, "Suppression impossible : des connecteurs sont définis sur l'entité {id_e=$id_e}");
+            throw new UnrecoverableException("Suppression impossible : des connecteurs sont définis sur l'entité {id_e=$id_e}");
         }
         if (count($this->fluxEntiteSQL->getAllFluxEntite($id_e)) > 0) {
-            return new SuppressionPermission(false, "Suppression impossible : des flux sont définis sur l'entité {id_e=$id_e}");
+            throw new UnrecoverableException("Suppression impossible : des flux sont définis sur l'entité {id_e=$id_e}");
         }
         if (count($this->fluxEntiteHeritageSQL->getInheritance($id_e)) > 0) {
-            return new SuppressionPermission(false, "Suppression impossible : des flux herités sont définis sur l'entité {id_e=$id_e}");
+            throw new UnrecoverableException("Suppression impossible : des flux herités sont définis sur l'entité {id_e=$id_e}");
         }
-
-        return new SuppressionPermission(true);
     }
 }

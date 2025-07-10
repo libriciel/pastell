@@ -159,8 +159,8 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('droit_edition', $this->getRoleUtilisateur()->hasDroit($this->getId_u(), "entite:edition", $id_e));
         $this->setViewParameter('droit_lecture_cdg', isset($info['cdg']['id_e']) && $this->getRoleUtilisateur()->hasDroit($this->getId_u(), "entite:lecture", $info['cdg']['id_e']));
         $this->setViewParameter('entiteExtendedInfo', $this->getEntiteSQL()->getExtendedInfo($id_e));
-        $suppresionPermission = $this->getInstance(EntiteDeletionService::class)->canDelete($id_e);
-        $this->setViewParameter('is_supprimable', $suppresionPermission->isGranted());
+        $canDelete = $this->getInstance(EntiteDeletionService::class)->canDelete($id_e);
+        $this->setViewParameter('is_supprimable', $canDelete);
 
         $this->setPageTitle("Informations");
 
@@ -464,8 +464,8 @@ class EntiteControler extends PastellControler
         $this->hasDroitEdition($id_e);
         $entiteDeletionService = $this->getInstance(EntiteDeletionService::class);
 
-        $suppressionPermission = $entiteDeletionService->canDelete($id_e);
-        if (! $suppressionPermission->isGranted()) {
+        $canDelete = $entiteDeletionService->canDelete($id_e);
+        if (! $canDelete) {
             $this->setLastError("L'entité ne peut pas être supprimée");
             $this->redirect("/Entite/detail?id_e=$id_e");
         }
@@ -740,10 +740,5 @@ class EntiteControler extends PastellControler
         $lastErrors = $importConfigService->getLastErrors();
         $this->setLastMessage('Les données ont été importées<br/>' . implode('<br/>', $lastErrors));
         $this->redirect("/Entite/detail?id_e=$id_e");
-    }
-
-    public function getFluxEntiteHeritageSQL(): FluxEntiteHeritageSQL
-    {
-        return $this->getObjectInstancier()->getInstance(FluxEntiteHeritageSQL::class);
     }
 }
