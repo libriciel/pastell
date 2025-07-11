@@ -7,6 +7,7 @@
 ## Correction
 
 - Empêche la suppression d'une entité si elle possède encore des associations #2270
+- Empêche la recuperation des factures travaux via Chorus pro lorsqu'elles sont au statut 'suspendu' ou 'À recycler' #2273
 
 # [4.0.23] - 2025-06-10
 
