@@ -1,6 +1,9 @@
 <?php
 
+namespace lib;
+
 use Pastell\Service\ChorusPro\ChorusProImportUtilService;
+use PortailFactureConnecteur;
 
 class CPPCheckIfCanCreateFacture
 {
@@ -9,30 +12,48 @@ class CPPCheckIfCanCreateFacture
         PortailFactureConnecteur::STATUT_SUSPENDUE
     ];
 
-    public function canCreateFacture(array $factureChorus, string $dateLimiteDePriseEnCharge, array $statusCourants): bool
-    {
-        if ($this->dateStatusCourantOlderThanDateLimite($factureChorus['date_statut_courant'], $dateLimiteDePriseEnCharge)) {
+    public function canCreateFacture(
+        array $factureChorus,
+        string $dateLimiteDePriseEnCharge,
+        array $statusCourants
+    ): bool {
+        if ($this->dateStatusCourantOlderThanDateLimite(
+            $factureChorus['date_statut_courant'],
+            $dateLimiteDePriseEnCharge
+        )) {
             return false;
         }
 
-        if ($this->isFactureRecuAndHasNotStatutCourant($factureChorus['type_integration'], $factureChorus['statut'], $statusCourants)) {
+        if ($this->isFactureRecuAndHasNotStatutCourant(
+            $factureChorus['type_integration'],
+            $factureChorus['statut'],
+            $statusCourants
+        )) {
             return false;
         }
 
-        if ($this->isFactureTravauxAndFactureHasBannedStatus($factureChorus['type_integration'], $factureChorus['statut'])) {
+        if ($this->isFactureTravauxAndFactureHasBannedStatus(
+            $factureChorus['type_integration'],
+            $factureChorus['statut']
+        )) {
             return false;
         }
 
         return true;
     }
 
-    private function dateStatusCourantOlderThanDateLimite(string $dateStatutCourant, string $dateLimiteDePriseEnCharge): bool
-    {
+    private function dateStatusCourantOlderThanDateLimite(
+        string $dateStatutCourant,
+        string $dateLimiteDePriseEnCharge
+    ): bool {
         return $dateStatutCourant < $dateLimiteDePriseEnCharge;
     }
 
-    private function isFactureRecuAndHasNotStatutCourant(string $typeIntegration, string $statutFacture, array $statusCourants): bool
-    {
+    private function isFactureRecuAndHasNotStatutCourant(
+        string $typeIntegration,
+        string $statutFacture,
+        array $statusCourants
+    ): bool {
         $isFactureRecu = $typeIntegration == ChorusProImportUtilService::TYPE_INTEGRATION_CPP_CLE;
         $hasNotStatutCourant = !in_array($statutFacture, $statusCourants);
 

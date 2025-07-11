@@ -1,21 +1,12 @@
 <?php
 
+use lib\CPPCheckIfCanCreateFacture;
 use Pastell\Service\ChorusPro\ChorusProImportCreationService;
 use Pastell\Service\ChorusPro\ChorusProImportSynchroService;
 use Pastell\Service\ChorusPro\ChorusProImportUtilService;
 
 class CPPImporterFacture extends ActionExecutor
 {
-    private CPPCheckIfCanCreateFacture $checkIfCanCreateFactureService;
-
-    public function __construct(
-        ObjectInstancier $objectInstancier
-    ) {
-        parent::__construct($objectInstancier);
-
-        $this->checkIfCanCreateFactureService = new CPPCheckIfCanCreateFacture();
-    }
-
     /**
      * @return ChorusProImportCreationService
      */
@@ -38,6 +29,11 @@ class CPPImporterFacture extends ActionExecutor
     private function getChorusProUtilService()
     {
         return $this->objectInstancier->getInstance(ChorusProImportUtilService::class);
+    }
+
+    private function getCPPCheckIfCanCreateFacture(): CPPCheckIfCanCreateFacture
+    {
+        return $this->objectInstancier->getInstance(CPPCheckIfCanCreateFacture::class);
     }
 
     /**
@@ -122,6 +118,7 @@ class CPPImporterFacture extends ActionExecutor
         $connecteur_chorus = $this->getMyConnecteur();
         $dateLimiteDePriseEnCharge = $connecteur_chorus->getDateDepuisLe();
         $statusCourant = $connecteur_chorus->getListeStatutCourant();
+        $cppCheckIfCanCreateFactureService = $this->getCPPCheckIfCanCreateFacture();
 
         foreach ($liste_facture_chorus as $facture_chorus) {
             // Le document existe-t-il déjà sur le bus
@@ -129,7 +126,7 @@ class CPPImporterFacture extends ActionExecutor
                 $facture_chorus['id_facture_cpp'],
                 $liste_facture_bus
             );
-            $canCreateFacture = $this->checkIfCanCreateFactureService->canCreateFacture($facture_chorus, $dateLimiteDePriseEnCharge, $statusCourant);
+            $canCreateFacture = $cppCheckIfCanCreateFactureService->canCreateFacture($facture_chorus, $dateLimiteDePriseEnCharge, $statusCourant);
 
             if ($facture_bus !== false) {
                 // La facture existe. Il faut l'actualiser
