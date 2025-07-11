@@ -4,6 +4,10 @@
 
 - L'email de l'agent n'est plus obligatoire dans le flux "Bulletin de salaire" du pack RH #2265
 
+## Correction
+
+- Empêche la suppression d'une entité si elle possède encore des associations #2270
+
 # [4.0.23] - 2025-06-10
 
 ## Correction
