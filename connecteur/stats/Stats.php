@@ -87,7 +87,10 @@ class Stats extends Connecteur
         );
 
         $file = new SplFileObject($this->connecteurConfig->getFilePath(self::CSV_FILE_FIELD), 'wb');
-        $file->fputcsv(['id_e', 'Entité', 'Nombre', 'Taille en octet', 'Taille arrondie', 'État', 'État label']);
+        $file->fputcsv(
+            ['id_e', 'Entité', 'Nombre', 'Taille en octet', 'Taille arrondie', 'État', 'État label'],
+            escape: ''
+        );
 
         $this->writeEntityUsageToFile($this->entityId, $documentType, $file);
 
@@ -124,7 +127,8 @@ class Stats extends Connecteur
                     $this->documentSize->getHumanReadableSize($documentsInfo['size']),
                     $state,
                     $documentsInfo['action_label'],
-                ]
+                ],
+                escape: ''
             );
         }
     }

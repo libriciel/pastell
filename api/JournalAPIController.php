@@ -94,7 +94,7 @@ class JournalAPIController extends BaseAPIController
                 // Compatibilité avec l'existant et journal->getAll() : ajout de 2 colonnes supplémentaires
                 $entetes[] = 'document_type_libelle';
                 $entetes[] = 'action_libelle';
-                fputcsv($handle, $entetes);
+                fputcsv($handle, $entetes, escape: '');
                 $csv_entete_colonne = false;
             }
             $row['message'] = preg_replace("/(\r\n|\n|\r)/", " ", $row['message']);
@@ -104,7 +104,7 @@ class JournalAPIController extends BaseAPIController
             // Compatibilité avec l'existant et journal->getAll() : ajout de 2 colonnes supplémentaires
             $row['document_type_libelle'] = $documentType->getName();
             $row['action_libelle'] = $documentType->getAction()->getActionName($row['action']);
-            fputcsv($handle, $row);
+            fputcsv($handle, $row, escape: '');
         }
 
         fclose($handle);
