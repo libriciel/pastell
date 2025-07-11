@@ -13,6 +13,8 @@ doivent être mises à jour #1667
 
 ## Évolutions
 
+- **BREAKING** : Amélioration de la cryptographie des exports de connecteurs. Un connecteur exporté en v5 ne pourra pas
+être importé sur une v4 (message : "Le mot de passe est incorrect"). Un connecteur exporté en v4 peut être importé en v5.
 - La possibilité de définir des connecteurs d'entités au niveau de l'entité racine ne dépend plus d'une activation #2206
 - WorkerSQL::getAllRunningWorker retourne désormais WorkerObject[] au lieu d'un array brut (#2237)
 - Stockage du nombre maximal de processus simultanés du gestionnaire de tâches 
