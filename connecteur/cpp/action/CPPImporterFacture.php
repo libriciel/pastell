@@ -6,6 +6,17 @@ use Pastell\Service\ChorusPro\ChorusProImportUtilService;
 
 class CPPImporterFacture extends ActionExecutor
 {
+    private CPPCheckIfCanCreateFacture $checkIfCanCreateFactureService;
+
+    public function __construct(
+        ObjectInstancier $objectInstancier
+    )
+    {
+        parent::__construct($objectInstancier);
+
+        $this->checkIfCanCreateFactureService = new CPPCheckIfCanCreateFacture();
+    }
+
     /**
      * @return ChorusProImportCreationService
      */
@@ -108,17 +119,24 @@ class CPPImporterFacture extends ActionExecutor
 
         $liste_facture_a_creer = [];
         $result_all = [];
+        /** @var CPP $connecteur_chorus */
+        $connecteur_chorus = $this->getMyConnecteur();
+        $dateLimiteDePriseEnCharge = $connecteur_chorus->getDateDepuisLe();
+        $statusCourant = $connecteur_chorus->getListeStatutCourant();
+
         foreach ($liste_facture_chorus as $facture_chorus) {
             // Le document existe-t-il déjà sur le bus
             $facture_bus = $this->getChorusProUtilService()->rechercherDocumentPastell(
                 $facture_chorus['id_facture_cpp'],
                 $liste_facture_bus
             );
+            $canCreateFacture = $this->checkIfCanCreateFactureService->canCreateFacture($facture_chorus, $dateLimiteDePriseEnCharge, $statusCourant);
+
             if ($facture_bus !== false) {
                 // La facture existe. Il faut l'actualiser
                 $result = $this->getChorusProSynchroService()->analyseOneFactureSynchro($facture_chorus, $facture_bus);
                 $result_all[] = $result;
-            } elseif ($this->isFactureACreer($facture_chorus)) {
+            } elseif ($canCreateFacture) {
                 // La facture n'existe pas et répond aux conditions de création. Il faudra la créer.
                 $liste_facture_a_creer[] = $facture_chorus;
                 $this->getLogger()->info("Facture à créer", $facture_chorus);
@@ -134,30 +152,5 @@ class CPPImporterFacture extends ActionExecutor
             $result_all[] = $result;
         }
         return $result_all;
-    }
-
-    /**
-     * @param array $facture_chorus
-     * @return bool
-     */
-    private function isFactureACreer(array $facture_chorus): bool
-    {
-        /** @var CPP $connecteur_chorus */
-        $connecteur_chorus = $this->getMyConnecteur();
-
-        // Si la date de statut courant est plus ancienne que "Factures ayant changé de statut depuis les X derniers jours"
-        // alors il ne faut pas la créer
-        if ($facture_chorus['date_statut_courant'] < $connecteur_chorus->getDateDepuisLe()) {
-            return false;
-        }
-        // Si la facture vient de l'espace factures reçues et qu'elle n'est pas en statut courant
-        // alors il ne faut pas la créer
-        if (
-            ($facture_chorus['type_integration'] == ChorusProImportUtilService::TYPE_INTEGRATION_CPP_CLE)
-            && !(in_array($facture_chorus['statut'], $connecteur_chorus->getListeStatutCourant()))
-        ) {
-            return false;
-        }
-        return true;
     }
 }
