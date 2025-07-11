@@ -10,8 +10,7 @@ class CPPImporterFacture extends ActionExecutor
 
     public function __construct(
         ObjectInstancier $objectInstancier
-    )
-    {
+    ) {
         parent::__construct($objectInstancier);
 
         $this->checkIfCanCreateFactureService = new CPPCheckIfCanCreateFacture();

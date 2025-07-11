@@ -15,18 +15,19 @@ class CPPCheckIfCanCreateFacture
             return false;
         }
 
-        if ( $this->isFactureRecuAndHasNotStatutCourant($factureChorus['type_integration'], $factureChorus['statut'], $statusCourants) ) {
+        if ($this->isFactureRecuAndHasNotStatutCourant($factureChorus['type_integration'], $factureChorus['statut'], $statusCourants)) {
             return false;
         }
 
-        if($this->isFactureTravauxAndFactureHasBannedStatus($factureChorus['type_integration'], $factureChorus['statut'])) {
+        if ($this->isFactureTravauxAndFactureHasBannedStatus($factureChorus['type_integration'], $factureChorus['statut'])) {
             return false;
         }
 
         return true;
     }
 
-    private function dateStatusCourantOlderThanDateLimite(string $dateStatutCourant, string $dateLimiteDePriseEnCharge): bool {
+    private function dateStatusCourantOlderThanDateLimite(string $dateStatutCourant, string $dateLimiteDePriseEnCharge): bool
+    {
         return $dateStatutCourant < $dateLimiteDePriseEnCharge;
     }
 
