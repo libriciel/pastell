@@ -63,7 +63,7 @@ class CSVoutput
 
     public function displayLine($line)
     {
-        fputcsv($this->outputStream, $line, self::DEFAULT_DELIMITER);
+        fputcsv($this->outputStream, $line, self::DEFAULT_DELIMITER, escape: '');
     }
 
     public function end()

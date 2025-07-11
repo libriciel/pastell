@@ -199,7 +199,7 @@ class SedaMessageBuilder
             if (!$keywordLine) {
                 continue;
             }
-            $keywordProperties = \str_getcsv($keywordLine);
+            $keywordProperties = \str_getcsv($keywordLine, escape: '');
             $this->message->addKeyword(
                 $keywordProperties[0],
                 $keywordProperties[1] ?? null,
@@ -409,7 +409,7 @@ class SedaMessageBuilder
             if (!$keyword_line) {
                 continue;
             }
-            $keyword_properties = \str_getcsv($keyword_line);
+            $keyword_properties = \str_getcsv($keyword_line, escape: '');
             $keyword = new Keyword();
             $keyword->keywordContent = $keyword_properties[0];
             $keyword->keywordReference = $keyword_properties[1] ?? null;
