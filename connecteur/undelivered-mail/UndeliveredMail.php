@@ -120,7 +120,7 @@ class UndeliveredMail extends Connecteur
         $result = "";
         foreach ($decodedParts as $part) {
             if ($part->charset == 'UTF-8') {
-                $result  .= utf8_decode($part->text);
+                $result  .= mb_convert_encoding($part->text, 'ISO-8859-1');
             } else {
                 $result  .= $part->text;
             }

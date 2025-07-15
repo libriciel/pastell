@@ -210,7 +210,7 @@ class FastTdt extends TdtConnecteur
         $regexClassificationFiles = $this->getRegexClassificationFiles();
         foreach ($files as $file) {
             if (preg_match($regexClassificationFiles, $file)) {
-                $currentClassificationFile = utf8_decode($this->webDavWrapper->get($file));
+                $currentClassificationFile = mb_convert_encoding($this->webDavWrapper->get($file), 'ISO-8859-1');
                 $simpleXMLWrapper = new SimpleXMLWrapper();
                 $xmlDocument = $simpleXMLWrapper->loadString($currentClassificationFile);
                 $currentClassificationDate = (string)$xmlDocument->xpath('//actes:DateClassification')[0];

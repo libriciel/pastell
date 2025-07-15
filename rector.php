@@ -25,5 +25,6 @@ return RectorConfig::configure()
     ->withRules([
         \Rector\Php84\Rector\Param\ExplicitNullableParamTypeRector::class,
         \Rector\Php84\Rector\FuncCall\AddEscapeArgumentRector::class,
+        \Rector\Php82\Rector\FuncCall\Utf8DecodeEncodeToMbConvertEncodingRector::class
     ])
 ;

@@ -157,10 +157,10 @@ class HttpApi
             foreach ($_FILES as $index => $files) {
                 if (is_array($_FILES[$index]['name'])) {
                     foreach ($_FILES[$index]['name'] as $i => $name) {
-                        $_FILES[$index]['name'][$i] = utf8_encode($name);
+                        $_FILES[$index]['name'][$i] = mb_convert_encoding($name, 'UTF-8', 'ISO-8859-1');
                     }
                 } else {
-                    $_FILES[$index]['name'] = utf8_encode($files['name']);
+                    $_FILES[$index]['name'] = mb_convert_encoding($files['name'], 'UTF-8', 'ISO-8859-1');
                 }
             }
 
