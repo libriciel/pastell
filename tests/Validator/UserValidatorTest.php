@@ -32,7 +32,6 @@ class UserValidatorTest extends PastellTestCase
                 'lastname',
                 $this->getObjectInstancier()->getInstance(TokenGenerator::class)->generate(),
                 0,
-                null
             )
         );
     }
@@ -42,7 +41,15 @@ class UserValidatorTest extends PastellTestCase
      */
     public function newUserProvider(): \Generator
     {
-        yield 'empty login' => ['', 'mail', 'firstname', 'lastname', '', 0, null, 'Le login est obligatoire'];
+        yield 'empty login' => [
+            '',
+            'mail',
+            'firstname',
+            'lastname',
+            '',
+            0,
+            'Le login est obligatoire'
+        ];
         yield 'invalid mail' => [
             'login',
             'mail',
@@ -50,11 +57,26 @@ class UserValidatorTest extends PastellTestCase
             'lastname',
             '',
             0,
-            null,
             'Votre adresse email ne semble pas valide'
         ];
-        yield 'empty firstname' => ['login', 'mail', '', 'lastname', '', 0, null, 'Le prénom est obligatoire'];
-        yield 'empty lastname' => ['login', 'mail', 'firstname', '', '', 0, null, 'Le nom est obligatoire'];
+        yield 'empty firstname' => [
+            'login',
+            'mail',
+            '',
+            'lastname',
+            '',
+            0,
+            'Le prénom est obligatoire'
+        ];
+        yield 'empty lastname' => [
+            'login',
+            'mail',
+            'firstname',
+            '',
+            '',
+            0,
+            'Le nom est obligatoire'
+        ];
         yield 'not existing entity' => [
             'login',
             'mail@example.org',
@@ -62,18 +84,7 @@ class UserValidatorTest extends PastellTestCase
             'lastname',
             '',
             500,
-            null,
             "L'entité 500 n'existe pas"
-        ];
-        yield 'invalid certificate' => [
-            'login',
-            'mail@example.org',
-            'firstname',
-            'lastname',
-            '',
-            0,
-            'not a certificate',
-            'Le certificat ne semble pas être valide'
         ];
         yield 'invalid password' => [
             'login',
@@ -82,7 +93,6 @@ class UserValidatorTest extends PastellTestCase
             'lastname',
             '',
             0,
-            null,
             "Le mot de passe n'est pas assez fort. (trop court ou pas assez de caractères différents)"
         ];
         yield 'existing user' => [
@@ -92,7 +102,6 @@ class UserValidatorTest extends PastellTestCase
             'lastname',
             $this->getObjectInstancier()->getInstance(TokenGenerator::class)->generate(),
             0,
-            null,
             'Un utilisateur avec le même login existe déjà.'
         ];
     }
@@ -109,7 +118,6 @@ class UserValidatorTest extends PastellTestCase
         string $lastname,
         string $password,
         int $entityId,
-        ?string $certificate,
         string $expectedMessage
     ): void {
         $this->expectExceptionMessage($expectedMessage);
@@ -120,7 +128,6 @@ class UserValidatorTest extends PastellTestCase
             $lastname,
             $password,
             $entityId,
-            $certificate
         );
     }
 
@@ -139,7 +146,6 @@ class UserValidatorTest extends PastellTestCase
                 'lastname',
                 0,
                 null,
-                null
             )
         );
     }
@@ -160,7 +166,6 @@ class UserValidatorTest extends PastellTestCase
             'lastname',
             0,
             null,
-            null
         );
     }
 }

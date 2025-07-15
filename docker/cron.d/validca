@@ -1,1 +1,0 @@
-10 10 * * * %USERNAME% curl -s https://validca.libriciel.fr/retrieve-validca.sh | bash -s /data/certificate > /data/log/valica.log 2>&1 && supervisorctl apache2 reload >>/data/log/valica.log 2>&1

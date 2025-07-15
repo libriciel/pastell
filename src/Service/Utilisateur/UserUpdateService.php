@@ -6,7 +6,6 @@ namespace Pastell\Service\Utilisateur;
 
 use ConflictException;
 use Journal;
-use Pastell\Utilities\Certificate;
 use Pastell\Validator\UserValidator;
 use RoleUtilisateur;
 use UnrecoverableException;
@@ -34,7 +33,6 @@ final class UserUpdateService
         string $lastname,
         int $entityId = 0,
         ?string $password = null,
-        ?string $certificateContent = null,
     ): int {
         $this->userValidator->validateExistingUser(
             $userId,
@@ -44,14 +42,10 @@ final class UserUpdateService
             $lastname,
             $entityId,
             $password,
-            $certificateContent
         );
 
         $oldInfo = $this->utilisateurSQL->getInfo($userId);
 
-        if ($certificateContent !== null) {
-            $this->utilisateurSQL->setCertificat($userId, new Certificate($certificateContent));
-        }
         if ($password !== null) {
             $this->utilisateurSQL->setPassword($userId, $password);
         }
@@ -82,7 +76,6 @@ final class UserUpdateService
         string $firstname,
         string $lastname,
         int $entityId = 0,
-        ?string $certificateContent = null,
     ): int {
         $this->userValidator->validateExistingUserAPI(
             $userId,
@@ -94,9 +87,6 @@ final class UserUpdateService
 
         $oldInfo = $this->utilisateurSQL->getInfo($userId);
 
-        if ($certificateContent !== null) {
-            $this->utilisateurSQL->setCertificat($userId, new Certificate($certificateContent));
-        }
         $this->utilisateurSQL->validMailAuto($userId);
         $this->utilisateurSQL->setNomPrenom($userId, $lastname, $firstname);
         $this->utilisateurSQL->setLogin($userId, $login);

@@ -58,7 +58,6 @@ lint:
   image : "$CONTAINER_IMAGE"
   variables:
     DONT_INIT_DATABASE: "true"
-    DONT_RETRIEVE_VALIDCA: "true"
   script:
     - cd /var/www/pastell
     - composer phpcs
@@ -68,7 +67,6 @@ phpstan:
   image : "$CONTAINER_IMAGE"
   variables:
     DONT_INIT_DATABASE: "true"
-    DONT_RETRIEVE_VALIDCA: "true"
   script:
     - cd /var/www/pastell
     - composer phpstan
@@ -83,7 +81,6 @@ unit_test:
     variables:
       GIT_STRATEGY: none
       COMPOSER_PROCESS_TIMEOUT: 1200
-      DONT_RETRIEVE_VALIDCA: "true"
     services:
         - name: hubdocker.libriciel.fr/mariadb:10.11.13-jammy
           alias: mariadb

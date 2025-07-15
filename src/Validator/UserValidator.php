@@ -7,7 +7,6 @@ namespace Pastell\Validator;
 use ConflictException;
 use EntiteSQL;
 use Pastell\Service\PasswordEntropy;
-use Pastell\Utilities\Certificate;
 use UnrecoverableException;
 use UtilisateurSQL;
 
@@ -31,9 +30,8 @@ final class UserValidator
         string $lastname,
         string $password,
         int $entityId,
-        ?string $certificateContent
     ): bool {
-        $this->validate($login, $lastname, $firstname, $email, $entityId, $certificateContent);
+        $this->validate($login, $lastname, $firstname, $email, $entityId);
         $this->validatePassword($password);
 
         if ($this->utilisateurSQL->getIdFromLogin($login)) {
@@ -73,9 +71,8 @@ final class UserValidator
         string $lastname,
         int $entityId,
         ?string $password,
-        ?string $certificateContent
     ): bool {
-        $this->validate($login, $lastname, $firstname, $email, $entityId, $certificateContent);
+        $this->validate($login, $lastname, $firstname, $email, $entityId);
         if ($password !== null) {
             $this->validatePassword($password);
         }
@@ -116,7 +113,6 @@ final class UserValidator
         string $firstname,
         string $email,
         int $entityId,
-        ?string $certificateContent
     ): void {
         if ($login === '') {
             throw new UnrecoverableException('Le login est obligatoire');
@@ -134,13 +130,6 @@ final class UserValidator
 
         if ($entityId !== 0 && !$this->entiteSQL->exists($entityId)) {
             throw new UnrecoverableException("L'entité $entityId n'existe pas");
-        }
-
-        if ($certificateContent !== null) {
-            $certificate = new Certificate($certificateContent);
-            if (!$certificate->isValid()) {
-                throw new UnrecoverableException('Le certificat ne semble pas être valide');
-            }
         }
     }
 

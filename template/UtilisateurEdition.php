@@ -4,8 +4,6 @@
  * @var Gabarit $this
  * @var int $id_u
  * @var array $infoUtilisateur
- * @var bool $enable_certificate_authentication
- * @var Certificate $certificat
  * @var RoleUtilisateur $roleUtilisateur
  * @var SQLQuery $sqlQuery
  * @var array $arbre
@@ -60,19 +58,6 @@ use Pastell\Utilities\Certificate;
                            value='<?php hecho($infoUtilisateur['prenom']); ?>'/>
                 </td>
             </tr>
-            <?php if ($enable_certificate_authentication) : ?>
-                <tr>
-                    <th><label for='certificat'>Certificat (PEM)</label></th>
-                    <td><input class="btn btn-outline-primary col-md-4" type='file' name='certificat'/><br/>
-                        <?php if ($certificat->isValid()) : ?>
-                            <?php echo $certificat->getName() ?>&nbsp;-&nbsp;
-                            <a class='btn btn-mini btn-danger'
-                               href="Utilisateur/supprimerCertificat?id_u=<?php echo $id_u ?>"
-                            >Supprimer</a>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-            <?php endif; ?>
 
             <?php
             $tabEntite = $roleUtilisateur->getEntite($this->getAuthentification()->getId(), 'entite:edition');
