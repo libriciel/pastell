@@ -120,7 +120,7 @@ acceptance_test:
     services:
         - name: hubdocker.libriciel.fr/mariadb:10.11.13-jammy
           alias: mariadb
-        - name: hubdocker.libriciel.fr/redis:7.2.9
+        - name: hubdocker.libriciel.fr/redis:7.2.10
           alias: redis
     script:
         - cd /var/www/pastell
