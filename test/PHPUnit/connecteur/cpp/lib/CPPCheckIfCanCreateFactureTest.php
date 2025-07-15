@@ -21,7 +21,7 @@ class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->checkIfCanCreateFacture = new CPPCheckIfCanCreateFacture();
+        $this->checkIfCanCreateFacture = $this->getObjectInstancier()->getInstance(CPPCheckIfCanCreateFacture::class);
         $this->dateLimiteDePriseEnCharge = date('Y-m-d', strtotime('-30 days'));
     }
 
