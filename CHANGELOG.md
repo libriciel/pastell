@@ -1,3 +1,13 @@
+# [4.1.11] - 2025-07-15
+
+## Évolutions
+
+- L'email de l'agent n'est plus obligatoire dans le flux "Bulletin de salaire" du pack RH #2265
+
+## Correction
+
+- Empêche la suppression d'une entité si elle possède encore des associations #2270
+ 
 # [4.1.10] - 2025-06-10
 
 ## Correction
@@ -232,7 +242,6 @@
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
 
-# [4.0.23] - 2025-06-10
 # [4.0.24] - 2025-07-15
 
 ## Évolutions

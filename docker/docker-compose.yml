@@ -105,13 +105,13 @@ services:
         restart: unless-stopped
 
     seda-generator:
-        image: 'registry.libriciel.fr:443/public/plateforme/seda-generator:1.1.0'
+        image: 'registry.libriciel.fr:443/public/plateforme/seda-generator:1.1.1'
         restart: unless-stopped
         volumes:
             - '/etc/localtime:/etc/localtime:ro'
 
     flow:
-        image: 'registry.libriciel.fr:443/public/libriciel/outils-documentaires/flow:1.3.2'
+        image: 'registry.libriciel.fr:443/public/libriciel/outils-documentaires/flow:1.4.2'
         restart: unless-stopped
 
     cloudooo:
