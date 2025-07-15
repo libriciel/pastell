@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Crypto;
+use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Entite\EntityUpdateService;
 use Pastell\Service\FeatureToggleService;
@@ -183,7 +184,8 @@ class EntiteControler extends PastellControler
             )
         );
         $this->setViewParameter('entiteExtendedInfo', $this->getEntiteSQL()->getExtendedInfo($id_e));
-        $this->setViewParameter('is_supprimable', $this->isSupprimable($id_e));
+        $canDelete = $this->getInstance(EntiteDeletionService::class)->canDelete($id_e);
+        $this->setViewParameter('is_supprimable', $canDelete);
 
         $this->setPageTitle("Informations");
 
@@ -516,46 +518,21 @@ class EntiteControler extends PastellControler
         $this->renderDefault();
     }
 
-    private function isSupprimable($id_e)
-    {
-        if ($this->getDocumentEntite()->getNbAll($id_e)) {
-            return false;
-        }
-        if (count($this->getEntiteSQL()->getFille($id_e))) {
-            return false;
-        }
-        if ($this->getUtilisateurListe()->getNbUtilisateurWithEntiteDeBase($id_e)) {
-            return false;
-        }
-        if ($this->getUtilisateurListe()->getNbUtilisateur($id_e)) {
-            return false;
-        }
-        if ($this->getConnecteurEntiteSQL()->getAll($id_e)) {
-            return false;
-        }
-        return true;
-    }
-
     public function supprimerAction()
     {
         $recuperateur = new Recuperateur($_GET);
         $id_e = $recuperateur->getInt('id_e', 0);
         $this->hasDroitEdition($id_e);
+        $entiteDeletionService = $this->getInstance(EntiteDeletionService::class);
 
-        if (!$this->isSupprimable($id_e)) {
+        $canDelete = $entiteDeletionService->canDelete($id_e);
+        if (! $canDelete) {
             $this->setLastError("L'entité ne peut pas être supprimée");
             $this->redirect("/Entite/detail?id_e=$id_e");
         }
 
         $info = $this->getEntiteSQL()->getInfo($id_e);
-        $this->getJournal()->add(
-            Journal::MODIFICATION_ENTITE,
-            $info['entite_mere'],
-            $this->getId_u(),
-            "Suppression",
-            "Suppression de l'entité $id_e qui contenait : \n" . implode("\n,", $info)
-        );
-        $this->getEntiteSQL()->delete($id_e);
+        $entiteDeletionService->delete($id_e);
 
         $this->setLastMessage("L'entité « {$info['denomination']} » a été supprimée");
         $this->redirect("/Entite/detail?id_e={$info['entite_mere']}");

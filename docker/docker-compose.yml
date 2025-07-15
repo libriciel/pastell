@@ -101,7 +101,7 @@ services:
             - ${MARIADB_DATADIR:-mariadb_datadir}:/var/lib/mysql/
 
     redis:
-        image: 'hubdocker.libriciel.fr/redis:7.2.9'
+        image: 'hubdocker.libriciel.fr/redis:7.2.10'
         restart: unless-stopped
 
     seda-generator:
@@ -119,7 +119,7 @@ services:
         restart: unless-stopped
 
     pes-viewer:
-        image: 'registry.libriciel.fr/public/signature/pes-viewer:2.1.5'
+        image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.3'
         restart: unless-stopped
         deploy:
             resources:
@@ -135,7 +135,7 @@ services:
             - ${LOCAL_CACERTS_PATH:-local_cacerts}:/usr/local/share/ca-certificates
 
     libriciel-feedback:
-        image: 'registry.libriciel.fr:443/public/libriciel/deploiement/libriciel-feedback:1.1.1'
+        image: 'registry.libriciel.fr:443/public/libriciel/deploiement/libriciel-feedback:2.0.1'
         restart: unless-stopped
         user: "10001:10001"
         read_only: true

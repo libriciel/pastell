@@ -59,7 +59,7 @@ formulaire:
         email_agent:
             name: "Adresse email de l'agent"
             type: text
-            requis: true
+            requis: false
             multiple: false
             commentaire: ''
         telephone_agent:
