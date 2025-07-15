@@ -31,7 +31,11 @@ class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
             'statut' => PortailFactureConnecteur::STATUT_COMPLETEE
         ];
 
-        $canCreateFacture = $this->checkIfCanCreateFacture->canCreateFacture($fakeFactureChorus, $this->dateLimiteDePriseEnCharge, $this->statusCourant);
+        $canCreateFacture = $this->checkIfCanCreateFacture->canCreateFacture(
+            $fakeFactureChorus,
+            $this->dateLimiteDePriseEnCharge,
+            $this->statusCourant
+        );
 
         self::assertTrue($canCreateFacture);
     }
@@ -46,7 +50,11 @@ class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
             'statut' => PortailFactureConnecteur::STATUT_COMPLETEE
         ];
 
-        $canCreateFacture = $this->checkIfCanCreateFacture->canCreateFacture($fakeFactureChorus, $this->dateLimiteDePriseEnCharge, $this->statusCourant);
+        $canCreateFacture = $this->checkIfCanCreateFacture->canCreateFacture(
+            $fakeFactureChorus,
+            $this->dateLimiteDePriseEnCharge,
+            $this->statusCourant
+        );
 
         self::assertFalse($canCreateFacture);
     }
@@ -61,7 +69,11 @@ class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
             'statut' => PortailFactureConnecteur::STATUT_A_RECYCLER
         ];
 
-        $canCreateFacture = $this->checkIfCanCreateFacture->canCreateFacture($fakeFactureChorus, $this->dateLimiteDePriseEnCharge, $this->statusCourant);
+        $canCreateFacture = $this->checkIfCanCreateFacture->canCreateFacture(
+            $fakeFactureChorus,
+            $this->dateLimiteDePriseEnCharge,
+            $this->statusCourant
+        );
 
         self::assertFalse($canCreateFacture);
     }
@@ -76,7 +88,11 @@ class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
             'statut' => PortailFactureConnecteur::STATUT_A_RECYCLER
         ];
 
-        $canCreateFacture = $this->checkIfCanCreateFacture->canCreateFacture($fakeFactureChorus, $this->dateLimiteDePriseEnCharge, $this->statusCourant);
+        $canCreateFacture = $this->checkIfCanCreateFacture->canCreateFacture(
+            $fakeFactureChorus,
+            $this->dateLimiteDePriseEnCharge,
+            $this->statusCourant
+        );
 
         self::assertFalse($canCreateFacture);
     }
