@@ -195,4 +195,17 @@ class DaemonManagerTest extends PastellTestCase
         $trimmed = array_map('trim', $result);
         static::assertSame(['admin@example.com', 'root@example.com'], $trimmed);
     }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function testSetAdminEmailsThrowsOnInvalidEmail(): void
+    {
+        $daemon = $this->daemonManager->addDaemon(4, 2);
+
+        $this->expectException(UnrecoverableException::class);
+        $this->expectExceptionMessage('Email "invalid-email" invalide : non conforme à la norme RFC 2822.');
+
+        $this->daemonManager->setAdminEmails($daemon->id_daemon, 'admin@example.com,invalid-email');
+    }
 }

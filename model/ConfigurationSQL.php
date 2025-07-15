@@ -6,7 +6,8 @@ use Pastell\Exception\ConfigurationNotFoundException;
 
 class ConfigurationSQL extends SQL
 {
-    public function setConfiguration(string $config_key, string $config_value, int $id_e = 0): void
+    public const NULL_ID_E = -1;
+    public function setConfiguration(string $config_key, string $config_value, int $id_e): void
     {
         $sql = <<<SQL
 INSERT INTO configuration (`config_key`, `config_value`, `id_e`)
@@ -16,7 +17,7 @@ SQL;
         $this->query($sql, [$config_key, $config_value, $id_e]);
     }
 
-    public function getConfiguration(string $config_key, int $id_e = 0): string
+    public function getConfiguration(string $config_key, int $id_e): string
     {
         $sql = <<<SQL
 SELECT config_value FROM configuration WHERE config_key = ? AND id_e = ? LIMIT 1;
@@ -28,7 +29,7 @@ SQL;
         return $result;
     }
 
-    public function hasConfiguration(string $key, int $id_e = 0): bool
+    public function hasConfiguration(string $key, int $id_e): bool
     {
         $sql = <<<SQL
 SELECT COUNT(*) FROM configuration WHERE config_key = ? AND id_e = ? LIMIT 1;

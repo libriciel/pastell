@@ -14,7 +14,7 @@ declare(strict_types=1);
         <table class='table table-striped'>
             <tr>
                 <th class='w300'>
-                    <label for="type_connecteur">Entité</label>
+                    <label for="type_connecteur">Entité <span class="obl">*</span></label>
                 </th>
                 <td>
                     <input id='role-entity_id' type='hidden' name='id_e' value=''/>
@@ -23,7 +23,7 @@ declare(strict_types=1);
             </tr>
             <tr>
                 <th class='w300'>
-                    <label for="type_connecteur">Nombre de processus à allouer</label>
+                    <label for="type_connecteur">Nombre de processus à allouer <span class="obl">*</span></label>
                     <p class="form_commentaire">
                         <?=$nb_free_workers . ($nb_free_workers > 1 ? ' workers disponibles' : ' worker disponible')?>
                     </p>
@@ -36,14 +36,14 @@ declare(strict_types=1);
             </tr>
             <tr>
                 <th class='w300'>
-                    <label for="daemon_admin_email">Mail d'administration</label>
+                    <label for="daemon_admin_email">Mail d'administration <span class="obl">*</span></label>
                     <p class="form_commentaire">
                         Ce mail sert à notifier les erreurs des tâches automatiques de l'entité. <br>
                         Plusieurs mails peuvent être renseignés, séparés par des virgules.
                     </p>
                 </th>
                 <td>
-                    <input class="form-control col-md-4" id='daemon_admin_email' type="text" name='daemon_admin_email' value=''/>
+                    <input class="form-control col-md-4" id='daemon_admin_email' type="text" name='daemon_admin_email' value='' required/>
                 </td>
             </tr>
         </table>

@@ -169,7 +169,10 @@ class DaemonManager
         }
         return explode(
             ',',
-            $this->configurationSQL->getConfiguration(self::DAEMON_ADMIN_EMAIL, $daemon->id_e ?? 0)
+            $this->configurationSQL->getConfiguration(
+                self::DAEMON_ADMIN_EMAIL,
+                $daemon->id_e ?? EntiteSQL::ID_E_ENTITE_RACINE
+            )
         );
     }
 
@@ -185,7 +188,11 @@ class DaemonManager
             );
         }
         $this->checkRFC2822Email($emails);
-        $this->configurationSQL->setConfiguration(self::DAEMON_ADMIN_EMAIL, $emails, $daemon->id_e ?? 0);
+        $this->configurationSQL->setConfiguration(
+            self::DAEMON_ADMIN_EMAIL,
+            $emails,
+            $daemon->id_e ?? EntiteSQL::ID_E_ENTITE_RACINE
+        );
     }
 
     /**

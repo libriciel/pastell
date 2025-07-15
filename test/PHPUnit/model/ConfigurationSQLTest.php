@@ -19,8 +19,8 @@ class ConfigurationSQLTest extends PastellTestCase
         $key = 'test_key';
         $value = '5';
 
-        $this->configurationSQL->setConfiguration($key, $value);
-        $result = $this->configurationSQL->getConfiguration($key);
+        $this->configurationSQL->setConfiguration($key, $value, ConfigurationSQL::NULL_ID_E);
+        $result = $this->configurationSQL->getConfiguration($key, ConfigurationSQL::NULL_ID_E);
         static::assertSame($value, $result);
     }
 
@@ -30,9 +30,9 @@ class ConfigurationSQLTest extends PastellTestCase
         $initialValue = '5';
         $updatedValue = '10';
 
-        $this->configurationSQL->setConfiguration($key, $initialValue);
-        $this->configurationSQL->setConfiguration($key, $updatedValue);
-        $result = $this->configurationSQL->getConfiguration($key);
+        $this->configurationSQL->setConfiguration($key, $initialValue, ConfigurationSQL::NULL_ID_E);
+        $this->configurationSQL->setConfiguration($key, $updatedValue, ConfigurationSQL::NULL_ID_E);
+        $result = $this->configurationSQL->getConfiguration($key, ConfigurationSQL::NULL_ID_E);
         static::assertSame($updatedValue, $result);
     }
 
@@ -40,15 +40,15 @@ class ConfigurationSQLTest extends PastellTestCase
     {
         $key = 'non_existing_key';
         $this->expectException(ConfigurationNotFoundException::class);
-        $this->configurationSQL->getConfiguration($key);
+        $this->configurationSQL->getConfiguration($key, ConfigurationSQL::NULL_ID_E);
     }
 
     public function testHasConfiguration(): void
     {
         $key = 'existing_key';
-        $this->configurationSQL->setConfiguration($key, 'value');
+        $this->configurationSQL->setConfiguration($key, 'value', ConfigurationSQL::NULL_ID_E);
 
-        static::assertTrue($this->configurationSQL->hasConfiguration($key));
-        static::assertFalse($this->configurationSQL->hasConfiguration('missing_key'));
+        static::assertTrue($this->configurationSQL->hasConfiguration($key, ConfigurationSQL::NULL_ID_E));
+        static::assertFalse($this->configurationSQL->hasConfiguration('missing_key', ConfigurationSQL::NULL_ID_E));
     }
 }

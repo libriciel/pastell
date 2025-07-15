@@ -838,6 +838,10 @@ class DaemonControler extends PastellControler
             $this->redirect('Daemon/configuration');
         }
         $daemon_admin_email = $recuperateur->get('daemon_admin_email');
+        if ($daemon_admin_email === '') {
+            $this->setLastError('L\'email de l\'administrateur du gestionnaire de tâches est requis');
+            $this->redirect('Daemon/create');
+        }
         try {
             $this->getDaemonManager()->checkRFC2822Email($daemon_admin_email);
         } catch (UnrecoverableException $e) {

@@ -138,12 +138,16 @@ class DaemonSQL extends SQL
 
     public function getNbWorkers(): int
     {
-        return (int) $this->configurationSQL->getConfiguration(DaemonManager::NB_WORKERS);
+        return (int)$this->configurationSQL->getConfiguration(DaemonManager::NB_WORKERS, ConfigurationSQL::NULL_ID_E);
     }
 
     public function setNbWorkers(int $nb_workers): void
     {
-        $this->configurationSQL->setConfiguration(DaemonManager::NB_WORKERS, (string) $nb_workers);
+        $this->configurationSQL->setConfiguration(
+            DaemonManager::NB_WORKERS,
+            (string)$nb_workers,
+            ConfigurationSQL::NULL_ID_E
+        );
         $this->refreshAvailableWorkers();
     }
 

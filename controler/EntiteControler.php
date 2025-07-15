@@ -903,7 +903,6 @@ class EntiteControler extends PastellControler
         $daemon = $this->resolveDaemonForEntity($id_e);
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('menu_gauche_select', 'Entite/job');
-        $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_DAEMON));
         $this->setViewParameter('twigTemplate', 'daemon/entity/job.html.twig');
         $this->setViewParameter('page_title', 'Gestionnaire de tâches local');
         $filtre = $recuperateur->get('filtre', '');
@@ -986,10 +985,14 @@ class EntiteControler extends PastellControler
             DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
         );
         $daemon = $this->resolveDaemonForEntity($id_e);
+        $this->setViewParameter('id_e', $id_e);
 
         $recuperateur = $this->getPostInfo();
         $daemon_admin_email = $recuperateur->get('daemon_admin_email', '');
-        $this->setViewParameter('id_e', $id_e);
+        if ($daemon_admin_email === '') {
+            $this->setLastError('L\'email de l\'administrateur du gestionnaire de tâches est requis');
+            $this->redirect("Entite/daemonAdmin?id_e=$id_e");
+        }
         try {
             $this->getDaemonManager()->setAdminEmails($daemon->id_daemon, $daemon_admin_email);
             $this->setLastMessage('Les adresses email ont été mises à jour.');

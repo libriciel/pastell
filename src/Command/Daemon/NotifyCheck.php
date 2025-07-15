@@ -17,7 +17,7 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 #[AsCommand(
     name: 'app:daemon:notify-check',
-    description: 'Notify ADMIN_EMAIL when daemon check is KO and notify each daemon admin email when a daemon is KO',
+    description: 'Notify ADMIN_EMAIL when daemon check is KO and notify each DAEMON_ADMIN_EMAIL when a daemon is KO',
 )]
 final class NotifyCheck extends BaseCommand
 {
