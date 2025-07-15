@@ -9,13 +9,14 @@ use PortailFactureConnecteur;
 
 class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
 {
-    private CPPCheckIfCanCreateFacture $checkIfCanCreateFacture;
-    private string $dateLimiteDePriseEnCharge;
-    private array $statusCourant;
+    private readonly CPPCheckIfCanCreateFacture $checkIfCanCreateFacture;
+    private readonly string $dateLimiteDePriseEnCharge;
+    private readonly array $statusCourant;
 
-    public function setUp(): void
+
+    public function __construct($name = null, array $data = [], $dataName = '')
     {
-        parent::setUp();
+        parent::__construct($name, $data, $dataName);
         $this->checkIfCanCreateFacture = $this->getObjectInstancier()->getInstance(CPPCheckIfCanCreateFacture::class);
         $this->dateLimiteDePriseEnCharge = date('Y-m-d', strtotime('-30 days'));
         $this->statusCourant = PortailFactureConnecteur::getListeStatutCourant();
