@@ -144,9 +144,9 @@ INSERT INTO `role_droit` (`role`, `droit`) VALUES
 
 
 TRUNCATE TABLE `utilisateur`;
-INSERT INTO `utilisateur` (`id_u`, `email`, `login`, `password`, `mail_verif_password`, `date_inscription`, `mail_verifie`, `nom`, `prenom`, `certificat`, `certificat_verif_number`, `id_e`) VALUES
-(1, 'eric@sigmalis.com', 'admin', '$2y$10$EzBRHHhgaJ.PPbAsMp0OXOl3LstyyGnOi4rD6vj361z7dXAg6kxKG', '', '0000-00-00 00:00:00', 1, 'Pommateau', 'Eric', '', '', 0),
-(2, 'eric2@sigmalis.com', 'eric', 'gee4Zoom', '', '0000-00-00 00:00:00', 1, 'Pommateau', 'Eric', '', '', 0);
+INSERT INTO `utilisateur` (`id_u`, `email`, `login`, `password`, `mail_verif_password`, `date_inscription`, `mail_verifie`, `nom`, `prenom`, `id_e`) VALUES
+(1, 'eric@sigmalis.com', 'admin', '$2y$10$EzBRHHhgaJ.PPbAsMp0OXOl3LstyyGnOi4rD6vj361z7dXAg6kxKG', '', '0000-00-00 00:00:00', 1, 'Pommateau', 'Eric', 0),
+(2, 'eric2@sigmalis.com', 'eric', 'gee4Zoom', '', '0000-00-00 00:00:00', 1, 'Pommateau', 'Eric', 0);
 
 TRUNCATE TABLE `utilisateur_new_email`;
 TRUNCATE TABLE `utilisateur_role`;
