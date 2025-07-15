@@ -36,6 +36,7 @@ class EntiteControler extends PastellControler
                 ->isEnabled(CDGFeature::class)
         );
         $this->setDroitLectureOnUtilisateur($id_e);
+        $this->setDroitsDaemon($id_e);
     }
 
     private function getAgentSQL()
