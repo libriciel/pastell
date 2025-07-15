@@ -9,9 +9,9 @@ use PortailFactureConnecteur;
 
 class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
 {
-    private readonly CPPCheckIfCanCreateFacture $checkIfCanCreateFacture;
-    private readonly string $dateLimiteDePriseEnCharge;
-    private readonly array $statusCourant;
+    private CPPCheckIfCanCreateFacture $checkIfCanCreateFacture;
+    private string $dateLimiteDePriseEnCharge;
+    private array $statusCourant;
 
     public function setUp(): void
     {
