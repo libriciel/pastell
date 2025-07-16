@@ -1,6 +1,5 @@
 <?php
 
-use lib\CPPCheckIfCanCreateFacture;
 use Pastell\Service\ChorusPro\ChorusProImportCreationService;
 use Pastell\Service\ChorusPro\ChorusProImportSynchroService;
 use Pastell\Service\ChorusPro\ChorusProImportUtilService;

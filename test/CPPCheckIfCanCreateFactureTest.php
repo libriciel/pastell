@@ -1,11 +1,6 @@
 <?php
 
-namespace PHPUnit\connecteur\cpp\lib;
-
-use ExtensionCppTestCase;
-use lib\CPPCheckIfCanCreateFacture;
 use Pastell\Service\ChorusPro\ChorusProImportUtilService;
-use PortailFactureConnecteur;
 
 class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
 {
@@ -22,7 +17,7 @@ class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
         $this->statusCourant = PortailFactureConnecteur::getListeStatutCourant();
     }
 
-    public function testCanCreateFacture()
+    public function testCanCreateFacture(): void
     {
         $dateStatutCourant = date('Y-m-d', strtotime('+5 days'));
 
@@ -41,7 +36,7 @@ class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
         self::assertTrue($canCreateFacture);
     }
 
-    public function testCannotCreateFactureBecauseStatusCourantOlderThanDateLimite()
+    public function testCannotCreateFactureBecauseStatusCourantOlderThanDateLimite(): void
     {
         $dateStatutCourant = date('Y-m-d', strtotime('-50 days'));
 
@@ -60,7 +55,7 @@ class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
         self::assertFalse($canCreateFacture);
     }
 
-    public function testCannotCreateFactureBecauseisFactureRecuAndHasNotStatutCourant()
+    public function testCannotCreateFactureBecauseIsFactureRecuAndHasNotStatutCourant(): void
     {
         $dateStatutCourant = date('Y-m-d', strtotime('+5 days'));
 
@@ -79,7 +74,7 @@ class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
         self::assertFalse($canCreateFacture);
     }
 
-    public function testCannotCreateFactureBecauseisFactureTravauxAndFactureHasBannedStatus()
+    public function testCannotCreateFactureBecauseisFactureTravauxAndFactureHasBannedStatus(): void
     {
         $dateStatutCourant = date('Y-m-d', strtotime('+5 days'));
 
