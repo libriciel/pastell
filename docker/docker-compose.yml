@@ -74,7 +74,6 @@ services:
             HTTP_PROXY_URL: ${HTTP_PROXY_URL:-}
             NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1,::1,seda-generator,pes-viewer}
             TOGGLE_CDGFeature: ${TOGGLE_CDGFeature:-false}
-            TOGGLE_CertificateAuthentication: ${TOGGLE_CertificateAuthentication:-false}
             OPENSSL_CIPHER_STRING_SECURITY_LEVEL: ${OPENSSL_CIPHER_STRING_SECURITY_LEVEL:-2}
             USE_UUID_FOR_DOCUMENT: ${USE_UUID_FOR_DOCUMENT:-false}
             PASSWORD_MIN_ENTROPY: ${PASSWORD_MIN_ENTROPY:-80}

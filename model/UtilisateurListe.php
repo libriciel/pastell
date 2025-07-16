@@ -10,20 +10,6 @@ class UtilisateurListe extends SQL
         return $this->queryOne($sql, $login);
     }
 
-    public function getUtilisateurByCertificat($verif_number, $offset, $limit)
-    {
-        $sql = "SELECT * FROM utilisateur" .
-                " WHERE certificat_verif_number = ? " .
-                " ORDER BY utilisateur.nom,prenom,login LIMIT $offset,$limit";
-        return $this->query($sql, $verif_number);
-    }
-
-    public function getNbUtilisateurByCertificat($verif_number)
-    {
-        $sql = "SELECT count(*) FROM utilisateur WHERE certificat_verif_number=?";
-        return $this->queryOne($sql, $verif_number);
-    }
-
     public function getByLoginOrEmail($login, $email)
     {
         $sql = "SELECT id_u FROM utilisateur WHERE (login = ? OR email=?) AND mail_verifie=1";
