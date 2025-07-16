@@ -11,25 +11,21 @@ class CPPCheckIfCanCreateFacture
 
     public function canCreateFacture(array $factureChorus, string $dateLimiteDePriseEnCharge, array $statusCourants): bool
     {
-        if ($this->dateStatusCourantOlderThanDateLimite(
-            $factureChorus['date_statut_courant'],
-            $dateLimiteDePriseEnCharge
-        )) {
+        if (
+            $this->dateStatusCourantOlderThanDateLimite($factureChorus['date_statut_courant'], $dateLimiteDePriseEnCharge)
+        ) {
             return false;
         }
 
-        if ($this->isFactureRecuAndHasNotStatutCourant(
-            $factureChorus['type_integration'],
-            $factureChorus['statut'],
-            $statusCourants
-        )) {
+        if (
+            $this->isFactureRecuAndHasNotStatutCourant($factureChorus['type_integration'], $factureChorus['statut'], $statusCourants)
+        ) {
             return false;
         }
 
-        if ($this->isFactureTravauxAndFactureHasBannedStatus(
-            $factureChorus['type_integration'],
-            $factureChorus['statut']
-        )) {
+        if (
+            $this->isFactureTravauxAndFactureHasBannedStatus($factureChorus['type_integration'], $factureChorus['statut'])
+        ) {
             return false;
         }
 
