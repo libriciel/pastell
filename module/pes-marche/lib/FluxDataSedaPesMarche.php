@@ -60,7 +60,7 @@ class FluxDataSedaPesMarche extends FluxDataSedaDefault
         if (! $result && $info['is_pj']) {
             $result[] = "PES_PJ";
         }
-        return utf8_encode(implode(", ", $result));
+        return mb_convert_encoding(implode(", ", $result), 'UTF-8', 'ISO-8859-1');
     }
 
     public function get_IdContrat()

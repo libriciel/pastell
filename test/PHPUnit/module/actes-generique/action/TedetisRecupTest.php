@@ -210,7 +210,7 @@ class TedetisRecupTest extends PastellTestCase
             }
 
             if ($url === '/modules/actes/actes_transac_get_status.php?transaction=42') {
-                return utf8_decode("OK\n-1\nEnveloppe invalide : raison de l'erreur hyper détaillé");
+                return mb_convert_encoding("OK\n-1\nEnveloppe invalide : raison de l'erreur hyper détaillé", 'ISO-8859-1');
             }
 
             throw new Exception("$url inatendu");

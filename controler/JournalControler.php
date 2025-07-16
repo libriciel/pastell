@@ -83,7 +83,7 @@ class JournalControler extends PastellControler
                 try {
                     //OK, c'est pas terrible, mais ca permet d'éviter la gestiond d'une constante supplémentaire
                     //pour noter la position du journal au moment de la bascule iso-8859-1 => utf-8
-                    $horodateur->verify(utf8_decode($this->getViewParameterOrObject('info')['message_horodate']), $this->getViewParameterOrObject('info')['preuve']);
+                    $horodateur->verify(mb_convert_encoding($this->getViewParameterOrObject('info')['message_horodate'], 'ISO-8859-1'), $this->getViewParameterOrObject('info')['preuve']);
                     $this->setViewParameter('preuve_is_ok', true);
                 } catch (Exception $e) {
                     $this->setViewParameter('preuve_is_ok', false);

@@ -200,11 +200,11 @@ function tick()
 function utf8_encode_array($array)
 {
     if (!is_array($array) && !is_object($array)) {
-        return utf8_encode($array);
+        return mb_convert_encoding($array, 'UTF-8', 'ISO-8859-1');
     }
     $result = [];
     foreach ($array as $cle => $value) {
-        $result[utf8_encode($cle)] = utf8_encode_array($value);
+        $result[mb_convert_encoding($cle, 'UTF-8', 'ISO-8859-1')] = utf8_encode_array($value);
     }
     return $result;
 }
