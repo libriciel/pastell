@@ -1,3 +1,9 @@
+# [4.0.25]
+
+## Correction
+
+- Empêcher la recuperation des factures Chorus pro de l'espace factures de travaux lorsqu'elles sont au statut 'suspendu' ou 'À recycler' #2273
+
 # [4.0.24] - 2025-07-15
 
 ## Évolutions
