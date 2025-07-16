@@ -62,9 +62,6 @@ if (${PACK_RH:-false}) {
 if (${PACK_TEST:-false}) {
   \$packs["suppl_test"]=true;
 }
-if (${PACK_LIBERSIGN:-false}) {
-  \$packs["pack_libersign"]=true;
-}
 
 if (${PACK_RECUP_PARAPHEUR_CORBEILLE_CONNECTOR:-false}) {
   \$packs["suppl_recup_parapheur_corbeille_connector"]=true;

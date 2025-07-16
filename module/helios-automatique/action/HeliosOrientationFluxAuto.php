@@ -37,16 +37,8 @@ class HeliosOrientationFluxAuto extends ActionExecutor
                     $this->notifyAndExit("Impossible de faire avancer le document depuis l'état : $last_action");
                 }
                 if ($envoi_signature_check == true) {
-                    /** @var SignatureConnecteur $connector */
-                    $connector = $this->getConnecteur('signature');
-                    $localSignature = $connector->isLocalSignature();
-                    $donneesFormulaire->setData('envoi_signature', !$localSignature);
-                    $donneesFormulaire->setData('has_signature_locale', $localSignature);
-                    if ($localSignature) {
-                        $action_cible = 'prepare-signature-locale';
-                    } else {
-                        $action_cible = 'prepare-iparapheur';
-                    }
+                    $donneesFormulaire->setData('envoi_signature', true);
+                    $action_cible = 'prepare-iparapheur';
                 } elseif ($envoi_tdt == true) {
                     $action_cible = 'prepare-tdt';
                 } elseif ($envoi_ged == true) {
