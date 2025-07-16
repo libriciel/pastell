@@ -5,14 +5,12 @@
  * @var array $role_authorized
  * @var array $info
  * @var string $denominationEntiteDeBase
- * @var Certificate $certificat
  * @var bool $utilisateur_edition
  * @var array $arbre
  * @var array $notification_list
  * @var array $all_module
  * @var int $id_u
  * @var int $id_current_u
- * @var bool $enable_certificate_authentication
  * @var Authentification $authentification
  * @var array $tokens
  * @var array $tree
@@ -79,16 +77,6 @@ use Pastell\Utilities\Certificate;
                 </a>
             </td>
         </tr>
-
-        <?php if ($enable_certificate_authentication && $certificat->isValid()) : ?>
-            <tr>
-                <th>Certificat</th>
-                <td>
-                    <a href='Utilisateur/certificat?verif_number=<?php echo $certificat->getMD5() ?>'
-                    ><?php echo $certificat->getName() ?></a>
-                </td>
-            </tr>
-        <?php endif; ?>
 
         <?php
         if (

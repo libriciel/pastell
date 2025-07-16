@@ -1,13 +1,11 @@
 <?php
 
 use Pastell\Mailer\Mailer;
-use Pastell\Service\FeatureToggle\CertificateAuthentication;
 use Pastell\Service\PasswordEntropy;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Utilisateur\UserUpdateService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
-use Pastell\Utilities\Certificate;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
 class UtilisateurControler extends PastellControler
@@ -218,46 +216,6 @@ class UtilisateurControler extends PastellControler
      * @throws LastMessageException
      * @throws NotFoundException
      */
-    public function certificatAction()
-    {
-        $recuperateur = new Recuperateur($_GET);
-        $this->setViewParameter('verif_number', $recuperateur->get('verif_number'));
-        $this->setViewParameter('offset', $recuperateur->getInt('offset', 0));
-
-        $this->setViewParameter('limit', 20);
-
-        $this->setViewParameter(
-            'count',
-            $this->getUtilisateurListe()->getNbUtilisateurByCertificat($this->getViewParameterOrObject('verif_number'))
-        );
-        $this->setViewParameter(
-            'liste',
-            $this->getUtilisateurListe()->getUtilisateurByCertificat(
-                $this->getViewParameterOrObject('verif_number'),
-                $this->getViewParameterOrObject('offset'),
-                $this->getViewParameterOrObject('limit')
-            )
-        );
-
-        if (!$this->getViewParameterOrObject('count')) {
-            $this->redirect('/index.php');
-        }
-
-        $this->setViewParameter(
-            'certificat',
-            new Certificate($this->getViewParameterOrObject('liste')[0]['certificat'])
-        );
-
-        $this->setViewParameter('page_title', 'Certificat');
-        $this->setViewParameter('template_milieu', 'UtilisateurCertificat');
-        $this->renderDefault();
-    }
-
-    /**
-     * @throws LastErrorException
-     * @throws LastMessageException
-     * @throws NotFoundException
-     */
     public function editionAction()
     {
         $recuperateur = $this->getGetInfo();
@@ -269,7 +227,6 @@ class UtilisateurControler extends PastellControler
             'nom' => $this->getLastError()->getLastInput('nom'),
             'prenom' => $this->getLastError()->getLastInput('prenom'),
             'email' => $this->getLastError()->getLastInput('email'),
-            'certificat' => '',
             'id_e' => $id_e,
             'is_api' => $is_api,
         ];
@@ -282,7 +239,6 @@ class UtilisateurControler extends PastellControler
         }
 
         $this->setViewParameter('infoEntite', $this->getEntiteSQL()->getInfo($infoUtilisateur['id_e']));
-        $this->setViewParameter('certificat', new Certificate($infoUtilisateur['certificat']));
         $this->setViewParameter(
             'arbre',
             $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), 'entite:edition')
@@ -302,10 +258,6 @@ class UtilisateurControler extends PastellControler
             $this->setViewParameter('new_user', true);
             $this->setViewParameter('is_api', false);
         }
-        $this->setViewParameter(
-            'enable_certificate_authentication',
-            $this->getObjectInstancier()->getInstance(CertificateAuthentication::class)->isEnabled()
-        );
         $this->setViewParameter('id_u', $id_u);
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('infoUtilisateur', $infoUtilisateur);
@@ -331,7 +283,6 @@ class UtilisateurControler extends PastellControler
         }
 
         $this->setViewParameter('id_current_u', $this->getId_u());
-        $this->setViewParameter('certificat', new Certificate($info['certificat']));
         $this->setViewParameter('page_title', 'Utilisateur ' . $info['prenom'] . ' ' . $info['nom']);
         $this->setViewParameter('entiteListe', $this->getEntiteListe());
         $this->setViewParameter(
@@ -381,10 +332,6 @@ class UtilisateurControler extends PastellControler
                 $this->getViewParameterOrObject('infoEntiteDeBase')['denomination']
             );
         }
-        $this->setViewParameter(
-            'enable_certificate_authentication',
-            $this->getObjectInstancier()->getInstance(CertificateAuthentication::class)->isEnabled()
-        );
         $this->setViewParameter('info', $info);
         $this->setViewParameter('id_u', $id_u);
         $this->setViewParameter(
@@ -444,7 +391,6 @@ class UtilisateurControler extends PastellControler
     {
         $id_u = $this->getId_u();
         $info = $this->getUtilisateur()->getInfo($id_u);
-        $this->setViewParameter('certificat', new Certificate($info['certificat']));
 
         $this->setViewParameter('page_title', 'Espace utilisateur : ' . $info['prenom'] . ' ' . $info['nom']);
 
@@ -513,7 +459,6 @@ class UtilisateurControler extends PastellControler
         $firstname = $recuperateur->get('prenom');
         $lastname = $recuperateur->get('nom');
         $is_api = $recuperateur->get('api_user');
-        $certficate = $this->getInstance(FileUploader::class)->getFileContent('certificat') ?: null;
 
         try {
             if ($id_u) {
@@ -525,7 +470,6 @@ class UtilisateurControler extends PastellControler
                         $firstname,
                         $lastname,
                         $id_e,
-                        $certficate,
                     );
                 } else {
                     $this->getInstance(UserUpdateService::class)->update(
@@ -535,8 +479,6 @@ class UtilisateurControler extends PastellControler
                         $firstname,
                         $lastname,
                         $id_e,
-                        null,
-                        $certficate
                     );
                 }
             } elseif ($is_api) {
@@ -553,8 +495,6 @@ class UtilisateurControler extends PastellControler
                     $firstname,
                     $lastname,
                     $id_e,
-                    null,
-                    $certficate
                 );
             }
         } catch (Exception $e) {
@@ -881,33 +821,6 @@ class UtilisateurControler extends PastellControler
         $this->redirectToPageUtilisateur($id_u, $page_moi);
     }
 
-    public function getCertificatAction()
-    {
-        $recuperateur = new Recuperateur($_GET);
-        $verif_number = $recuperateur->get('verif_number');
-
-        $utilisateurListe = $this->getUtilisateurListe();
-
-        $liste = $utilisateurListe->getUtilisateurByCertificat($verif_number, 0, 1);
-
-        if (count($liste) < 1) {
-            header('Location: index.php');
-            exit;
-        }
-
-
-        $certificat = new Certificate($liste[0]['certificat']);
-
-
-        header('Content-type: text/plain');
-        header('Content-disposition: attachment; filename=' . $verif_number . '.pem');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate, post-check=0,pre-check=0');
-        header('Pragma: public');
-
-        echo $certificat->getContent();
-    }
-
     /**
      * @throws LastErrorException
      * @throws LastMessageException
@@ -943,24 +856,6 @@ class UtilisateurControler extends PastellControler
 
         $this->setLastMessage('Votre mot de passe a été modifié');
         $this->redirect('/Utilisateur/moi');
-    }
-
-    /**
-     * @throws LastErrorException
-     * @throws LastMessageException
-     */
-    public function supprimerCertificatAction()
-    {
-        $recuperateur = new Recuperateur($_GET);
-        $id_u = $recuperateur->get('id_u');
-
-        $info = $this->getUtilisateur()->getInfo($id_u);
-
-        $this->verifDroit($info['id_e'], 'utilisateur:edition');
-
-        $this->getUtilisateur()->removeCertificat($id_u);
-
-        $this->redirect("/Utilisateur/edition?id_u=$id_u");
     }
 
     /**

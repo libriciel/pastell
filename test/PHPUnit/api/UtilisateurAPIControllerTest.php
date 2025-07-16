@@ -23,7 +23,6 @@ class UtilisateurAPIControllerTest extends PastellTestCase
                 'nom' => 'foo',
                 'prenom' => 'bar',
                 'email' => 'foo@bar.baz',
-                'certificat' => '',
                 'id_e' => '0',
                 'active' => true,
             ],
@@ -106,27 +105,6 @@ class UtilisateurAPIControllerTest extends PastellTestCase
         $this->getInternalAPI()->patch("utilisateur/{$info['id_u']}", ['login' => 'admin']);
     }
 
-    public function testSetCertificateKO(): void
-    {
-        $fileUploader = new FileUploaderMock();
-        $fileUploader->setFiles(['certificat' => 'toto']);
-        $this->getInternalAPI()->setFileUploader($fileUploader);
-        $this->expectException(UnrecoverableException::class);
-        $this->expectExceptionMessage('Le certificat ne semble pas être valide');
-        $this->getInternalAPI()->patch('/utilisateur/1');
-    }
-
-    public function testSetCertificate(): void
-    {
-        $cert_content = file_get_contents(__DIR__ . '/../fixtures/autorite-cert.pem');
-        $fileUploader = new FileUploaderMock();
-        $fileUploader->setFiles(['certificat' => $cert_content]);
-        $this->getInternalAPI()->setFileUploader($fileUploader);
-
-        $info = $this->getInternalAPI()->patch('/utilisateur/1');
-        static::assertSame($cert_content, $info['certificat']);
-    }
-
     public function testList(): void
     {
         $info = $this->getInternalAPI()->get('/utilisateur');
@@ -157,7 +135,6 @@ class UtilisateurAPIControllerTest extends PastellTestCase
                 'nom' => 'Pommateau',
                 'prenom' => 'Eric',
                 'email' => 'eric@sigmalis.com',
-                'certificat' => '',
                 'id_e' => '0',
                 'active' => true,
             ],
@@ -188,7 +165,6 @@ class UtilisateurAPIControllerTest extends PastellTestCase
                 'nom' => 'Pommateau',
                 'prenom' => 'Eric',
                 'email' => 'eric@sigmalis.com',
-                'certificat' => '',
                 'id_e' => '0',
                 'active' => true,
                 'result' => 'ok',
@@ -229,7 +205,6 @@ class UtilisateurAPIControllerTest extends PastellTestCase
                 'nom' => 'foo',
                 'prenom' => 'bar',
                 'email' => 'foo@bar.baz',
-                'certificat' => '',
                 'id_e' => '0',
                 'active' => true,
             ],

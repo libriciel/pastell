@@ -6,7 +6,6 @@ declare(strict_types=1);
  * @var Gabarit $this
  * @var array $info
  * @var string $denominationEntiteDeBase
- * @var Certificate $certificat
  * @var int $id_u
  * @var array $notification_list
  * @var array $arbre
@@ -14,8 +13,6 @@ declare(strict_types=1);
  * @var array $tokens
  * @var bool $droit_entite_racine
  */
-
-use Pastell\Utilities\Certificate;
 
 ?>
 <div class="box">
@@ -58,17 +55,6 @@ use Pastell\Utilities\Certificate;
                 </a>
             </td>
         </tr>
-
-        <?php if ($certificat->isValid()) : ?>
-            <tr>
-                <th>Certificat</th>
-                <td>
-                    <a href='Utilisateur/certificat?verif_number=<?php echo $certificat->getMD5(); ?>'>
-                        <?php echo $certificat->getName(); ?>
-                    </a>
-                </td>
-            </tr>
-        <?php endif; ?>
     </table>
 
 

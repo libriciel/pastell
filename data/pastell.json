@@ -2518,22 +2518,6 @@
                 "Default": null,
                 "Extra": ""
             },
-            "certificat": {
-                "Field": "certificat",
-                "Type": "mediumtext",
-                "Null": "NO",
-                "Key": "",
-                "Default": null,
-                "Extra": ""
-            },
-            "certificat_verif_number": {
-                "Field": "certificat_verif_number",
-                "Type": "varchar(32)",
-                "Null": "NO",
-                "Key": "",
-                "Default": null,
-                "Extra": ""
-            },
             "id_e": {
                 "Field": "id_e",
                 "Type": "int(11)",

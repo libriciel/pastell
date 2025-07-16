@@ -96,7 +96,6 @@ class UtilisateurAPIController extends BaseAPIController
         $result['nom'] = $infoUtilisateur['nom'];
         $result['prenom'] = $infoUtilisateur['prenom'];
         $result['email'] = $infoUtilisateur['email'];
-        $result['certificat'] = $infoUtilisateur['certificat'];
         $result['id_e'] = (string)$infoUtilisateur['id_e'];
         $result['active'] = (bool)$infoUtilisateur['is_enabled'];
 
@@ -147,7 +146,6 @@ class UtilisateurAPIController extends BaseAPIController
             $this->getFromRequest('nom'),
             (int)$id_e,
             $this->getFromRequest('password', null),
-            $this->getFileUploader()->getFileContent('certificat') ?: null,
         );
         return $this->getDetailInfoForAPI($id_u);
     }
@@ -188,8 +186,6 @@ class UtilisateurAPIController extends BaseAPIController
         $prenom = $infoUtilisateurExistant['prenom'];
         $email = $infoUtilisateurExistant['email'];
 
-        $certificat_content = $this->getFileUploader()->getFileContent('certificat');
-
         $id_u = $this->userUpdateService->update(
             $infoUtilisateurExistant['id_u'],
             $login,
@@ -198,14 +194,7 @@ class UtilisateurAPIController extends BaseAPIController
             $nom,
             (int)$id_e,
             $password,
-            $certificat_content ?: null
         );
-
-        // Si le certificat n'est pas passé, il faut le supprimer de l'utilisateur
-        // Faut-il garder ce comportement ou faire des webservices dédiés à la gestion des certificats (au moins la suppression) ?
-        if (!$certificat_content && ! $this->getFromRequest('dont_delete_certificate_if_empty', false)) {
-            $this->utilisateur->removeCertificat($infoUtilisateurExistant['id_u']);
-        }
 
         $result = $this->getDetailInfoForAPI($id_u);
         $result['result'] = self::RESULT_OK;

@@ -8,7 +8,6 @@ use ConflictException;
 use Exception;
 use Journal;
 use Pastell\Service\TokenGenerator;
-use Pastell\Utilities\Certificate;
 use Pastell\Validator\UserValidator;
 use RoleUtilisateur;
 use UnrecoverableException;
@@ -37,7 +36,6 @@ final class UserCreationService
         string $lastname,
         int $entityId = 0,
         ?string $password = null,
-        ?string $certificateContent = null,
     ): int {
         if ($password === null) {
             $password = $this->tokenGenerator->generate();
@@ -49,16 +47,12 @@ final class UserCreationService
             $lastname,
             $password,
             $entityId,
-            $certificateContent
         );
 
         $emailPasswordValidation = $this->tokenGenerator->generate();
 
         $userId = $this->utilisateurSQL->create($login, $password, $email, $emailPasswordValidation);
 
-        if ($certificateContent !== null) {
-            $this->utilisateurSQL->setCertificat($userId, new Certificate($certificateContent));
-        }
         $this->utilisateurSQL->validMailAuto($userId);
         $this->utilisateurSQL->setNomPrenom($userId, $lastname, $firstname);
         $this->utilisateurSQL->setEmail($userId, $email);

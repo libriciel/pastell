@@ -229,12 +229,6 @@ class ConnexionControler extends PastellControler
                 $this->redirect($this->getGetInfo()->get('request_uri'));
             }
         }
-        $certificatConnexion = $this->getObjectInstancier()->getInstance(CertificatConnexion::class);
-        $userId = $certificatConnexion->autoConnect();
-        if ($userId) {
-            $utilisateurInfo = $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->getInfo($userId);
-            $this->setViewParameter('login', $utilisateurInfo['login']);
-        }
 
         $this->setViewParameter(
             'login_page_configuration',
@@ -428,13 +422,6 @@ class ConnexionControler extends PastellControler
             $loginAttemptLimit->resetLoginAttempt($login);
         }
 
-        $certificatConnexion = $this->getInstance(CertificatConnexion::class);
-
-        if (!$certificatConnexion->connexionGranted($id_u)) {
-            $this->setLastError('Vous devez avoir un certificat valide pour ce compte');
-            $this->redirect($redirect_fail);
-        }
-
         $this->getJournal()->setId($id_u);
         $infoUtilisateur = $this->getUtilisateur()->getInfo($id_u);
         $nom = $infoUtilisateur['prenom'] . ' ' . $infoUtilisateur['nom'];
@@ -455,32 +442,6 @@ class ConnexionControler extends PastellControler
         $request_uri = $this->getPostInfo()->get('request_uri');
 
         $this->redirect(urldecode($request_uri));
-    }
-
-    public function autoConnectAction()
-    {
-        $certificatConnexion = new CertificatConnexion($this->getSQLQuery());
-        $id_u = $certificatConnexion->autoConnect();
-
-        if (!$id_u) {
-            $this->redirect('/Connexion/index');
-        }
-
-        $utilisateur = new UtilisateurSQL($this->getSQLQuery());
-        $utilisateurInfo = $utilisateur->getInfo($id_u);
-
-        $this->getJournal()->setId($id_u);
-        $nom = $utilisateurInfo['prenom'] . ' ' . $utilisateurInfo['nom'];
-        $this->getJournal()->add(
-            Journal::CONNEXION,
-            $utilisateurInfo['id_e'],
-            0,
-            'Connecté',
-            "$nom s'est connecté automatiquement depuis l'adresse " . $_SERVER['REMOTE_ADDR']
-        );
-
-        $this->setSessionInfo($utilisateurInfo['login'], $id_u);
-        $this->redirect();
     }
 
     private function getId_uFromTokenOrFailed(string $mail_verif_password)

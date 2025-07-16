@@ -61,19 +61,14 @@ class ApiAuthentication
             $id_u = $this->connexionControler->apiExternalConnexion(null, false);
         }
 
-        $certificatConnexion = new CertificatConnexion($this->sqlQuery);
         $utilisateur = new UtilisateurSQL($this->sqlQuery);
         $utilisateurListe = new UtilisateurListe($this->sqlQuery);
-
-        if (!$id_u) {
-            $id_u = $certificatConnexion->autoConnect();
-        }
 
         if (!$id_u) {
             if (!empty($this->server['HTTP_AUTHORIZATION']) && $this->isBearer($this->server['HTTP_AUTHORIZATION'])) {
                 $id_u = $this->authenticateByToken();
             } elseif (!empty($this->server['PHP_AUTH_USER'])) {
-                $id_u = $this->authenticateByPassword($utilisateurListe, $utilisateur, $certificatConnexion);
+                $id_u = $this->authenticateByPassword($utilisateurListe, $utilisateur);
             }
         }
 
@@ -103,16 +98,12 @@ class ApiAuthentication
     private function authenticateByPassword(
         UtilisateurListe $utilisateurListe,
         UtilisateurSQL $utilisateur,
-        CertificatConnexion $certificatConnexion
     ): ?int {
         $this->checkRateLimit();
         $userId = $utilisateurListe->getUtilisateurByLogin($this->server['PHP_AUTH_USER']);
         if ($userId && $utilisateur->verifPassword($userId, $this->server['PHP_AUTH_PW'])) {
             $this->resetRateLimit();
         } else {
-            $userId = null;
-        }
-        if (!$certificatConnexion->connexionGranted($userId)) {
             $userId = null;
         }
 

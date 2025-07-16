@@ -33,6 +33,7 @@ doivent être mises à jour #1667
 ## Suppression d'éléments dépréciés
 
 - Suppression de la table collectivite_fournisseur #2205
+- Suppression de validca et du code lié à l'authentification par certificat #1983
 
 # [4.1.11] - 2025-07-15
 

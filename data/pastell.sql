@@ -360,8 +360,6 @@ CREATE TABLE `utilisateur` (
 	`mail_verifie` tinyint(1) NOT NULL,
 	`nom` varchar(128) NOT NULL,
 	`prenom` varchar(128) NOT NULL,
-	`certificat` mediumtext NOT NULL,
-	`certificat_verif_number` varchar(32) NOT NULL,
 	`id_e` int(11) NOT NULL,
 	`password_reset_requested_at` datetime NOT NULL,
 	`is_enabled` tinyint(1) NOT NULL DEFAULT '1',

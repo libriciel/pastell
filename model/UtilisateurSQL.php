@@ -1,7 +1,5 @@
 <?php
 
-use Pastell\Utilities\Certificate;
-
 class UtilisateurSQL extends SQL
 {
     public function setNomPrenom($id_u, $nom, $prenom)
@@ -73,31 +71,6 @@ class UtilisateurSQL extends SQL
     {
         $sql = "UPDATE utilisateur SET id_e = ? WHERE id_u = ?";
         $this->query($sql, $id_e, $id_u);
-    }
-
-    public function removeCertificat($id_u)
-    {
-        $this->updateCertificat($id_u, "", "");
-    }
-
-    public function setCertificat($id_u, Certificate $certificat)
-    {
-
-        if (! $certificat->isValid()) {
-            return false;
-        }
-
-        $certificatContent = $certificat->getContent();
-        $certificatVerifNumber = $certificat->getMD5();
-
-        $this->updateCertificat($id_u, $certificatContent, $certificatVerifNumber);
-        return true;
-    }
-
-    private function updateCertificat($id_u, $content, $verif_number)
-    {
-        $sql = "UPDATE utilisateur SET certificat = ?, certificat_verif_number=? WHERE id_u = ?";
-        $this->query($sql, $content, $verif_number, $id_u);
     }
 
     public function reinitPassword($id_u, $mailVerifPassword)

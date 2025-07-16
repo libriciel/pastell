@@ -26,13 +26,6 @@ fi
 
 /bin/bash /var/www/pastell/docker/wait-for-cacert.sh
 
-if [ -z "$DONT_RETRIEVE_VALIDCA" ] ; then
-  if [ ! -d /data/certificate/validca ] ; then
-      echo "Récupération des CRL"
-      curl -s https://validca.libriciel.fr/retrieve-validca.sh | bash -s /data/certificate
-  fi
-fi
-
 if [ -z "$DONT_INIT_DATABASE" ] ; then
   php /var/www/pastell/docker/init-docker.php
   /var/www/pastell/bin/console app:bootstrap -vv
