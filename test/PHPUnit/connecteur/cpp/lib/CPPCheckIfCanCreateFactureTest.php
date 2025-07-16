@@ -1,11 +1,6 @@
 <?php
 
-namespace PHPUnit\connecteur\cpp\lib;
-
-use CPPCheckIfCanCreateFacture;
-use ExtensionCppTestCase;
 use Pastell\Service\ChorusPro\ChorusProImportUtilService;
-use PortailFactureConnecteur;
 
 class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
 {
