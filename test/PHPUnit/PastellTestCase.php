@@ -125,7 +125,6 @@ abstract class PastellTestCase extends TestCase
             'pack_chorus_pro' => true,
             'pack_marche' => true,
             'suppl_test' => true,
-            'pack_libersign' => true,
             'suppl_recup_parapheur_corbeille_connector' => true,
             'suppl_recup_fin_parapheur' => true,
             'suppl_recup_actes_s2low' => true,

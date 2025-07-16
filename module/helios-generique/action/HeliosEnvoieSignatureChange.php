@@ -21,26 +21,19 @@ class HeliosEnvoieSignatureChange extends ActionExecutor
     {
         if ($this->getDonneesFormulaire()->get('envoi_signature_check')) {
             $this->getDonneesFormulaire()->setData('envoi_signature', true);
-            $localSignature = $this->getConnecteurSignature()->isLocalSignature();
             $fast_parapheur = $this->getConnecteurSignature()->isFastSignature();
 
-            $this->getDonneesFormulaire()->setData('envoi_signature', !($fast_parapheur || $localSignature));
+            $this->getDonneesFormulaire()->setData('envoi_signature', !$fast_parapheur);
             $this->getDonneesFormulaire()->setData('envoi_signature_fast', $fast_parapheur);
-            $this->getDonneesFormulaire()->setData('has_signature_locale', $localSignature);
         } else {
             $this->getDonneesFormulaire()->setData('envoi_signature', false);
             $this->getDonneesFormulaire()->setData('envoi_signature_fast', false);
-            $this->getDonneesFormulaire()->setData('signature_locale_display', false);
-            $this->getDonneesFormulaire()->setData('has_signature_locale', false);
 
             return;
         }
 
         $recuperateur = new Recuperateur($_POST);
         if ($recuperateur->get('suivant') || $recuperateur->get('precedent')) {
-            return;
-        }
-        if ($localSignature) {
             return;
         }
 

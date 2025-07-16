@@ -79,21 +79,6 @@ formulaire:
         fast_parapheur_agents:
             name: 'Emails des agents'
             commentaire: "Les emails des utilisateurs à rajouter en tant qu’agent. Séparé par des virgules<br />\nUniquement avec le mode \"circuit à la volée\""
-    'Signature locale':
-        has_signature_locale:
-            no-show: true
-        signature_locale_display:
-            no-show: true
-        signature_link:
-            name: 'Signature du fichier PES'
-            type: externalData
-            choice-action: signature-locale
-            link_name: 'Signer le fichier PES'
-        fichier_pes_signe:
-            name: 'Fichier PES signé'
-            read-only: true
-            type: file
-            requis: true
     'Information PES Aller':
         id_coll:
             name: 'Établissement émetteur'
@@ -230,8 +215,6 @@ page-condition:
         sae_transfert_id: true
     'Informations complémentaires':
         has_information_complementaire: true
-    'Signature locale':
-        signature_locale_display: true
 champs-affiches:
     - titre
     - dernier_etat
@@ -273,7 +256,6 @@ action:
                 - importation
                 - creation
                 - modification
-                - send-signature-local
                 - send-signature-error
                 - recu-iparapheur
                 - acquiter-tdt
@@ -289,7 +271,6 @@ action:
                 - creation
                 - modification
                 - importation
-                - send-signature-local
                 - send-signature-error
                 - recu-iparapheur
                 - rejet-iparapheur
@@ -323,22 +304,6 @@ action:
         editable-content:
             - envoi_sae
         modification-no-change-etat: true
-    send-signature-local:
-        name-action: Signer
-        name: 'Document à faire signer'
-        rule:
-            last-action:
-                - creation
-                - modification
-            no-action:
-                - recu-iparapheur
-            document_is_valide: true
-            content:
-                has_signature_locale: true
-        editable-content:
-            - fichier_pes_signe
-            - signature_link
-        action-class: HeliosSignatureLocaleNotif
     prepare-iparapheur:
         name-action: "Préparation de l'envoi au parapheur"
         name: "Préparation de l'envoi au iparapheur"
@@ -431,7 +396,6 @@ action:
                     content:
                         envoi_signature: false
                         envoi_signature_fast: false
-                        has_signature_locale: false
                 and_2:
                     last-action:
                         - recu-iparapheur
@@ -652,12 +616,6 @@ action:
         rule:
             role_id_e: no-role
         action-class: HeliosGeneriqueCheminementChange
-    signature-locale:
-        name: 'Signature locale'
-        no-workflow: true
-        rule:
-            role_id_e: no-role
-        action-class: HeliosGeneriqueSignatureLocale
     fichier_pes_change:
         name: 'Modification fichier_pes'
         no-workflow: true
