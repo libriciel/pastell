@@ -17,7 +17,7 @@ class DaemonConfiguration implements InstallableBootstrap
         private readonly JobQueueSQL $jobQueueSQL,
         private readonly DaemonSQL $daemonSQL,
         private readonly ConfigurationSQL $configurationSQL,
-        private readonly ObjectInstancier $objectInstancier
+        private readonly array $admin_email,
     ) {
     }
 
@@ -30,7 +30,7 @@ class DaemonConfiguration implements InstallableBootstrap
         if (!$this->configurationSQL->hasConfiguration(DaemonManager::DAEMON_ADMIN_EMAIL, EntiteSQL::ID_E_ENTITE_RACINE)) {
             $this->configurationSQL->setConfiguration(
                 DaemonManager::DAEMON_ADMIN_EMAIL,
-                implode(',', $this->objectInstancier->getInstance('admin_email')),
+                implode(',', $this->admin_email),
                 EntiteSQL::ID_E_ENTITE_RACINE
             );
         }

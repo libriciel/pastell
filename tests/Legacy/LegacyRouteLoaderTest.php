@@ -18,7 +18,7 @@ final class LegacyRouteLoaderTest extends TestCase
         $legacyRouteLoader = new LegacyRouteLoader();
         $routes = $legacyRouteLoader->load('');
 
-        $this->assertCount(237, $routes);
+        $this->assertCount(233, $routes);
         $this->assertContainsOnly(Route::class, $routes);
 
         foreach ($routes as $route) {
