@@ -41,9 +41,6 @@ class CPPWrapper
     /** @var MemoryCache */
     private $memoryCache;
 
-    /** @var  UTF8Encoder */
-    private $utf8Encoder;
-
     /** @var  CPPWrapperConfig */
     private $cppWrapperConfig;
 
@@ -53,18 +50,15 @@ class CPPWrapper
      * CPPWrapper constructor.
      * @param CurlWrapperFactory $curlWrapperFactory
      * @param MemoryCache $memoryCache
-     * @param UTF8Encoder $utf8Encoder
      * @param Logger $logger
      */
     public function __construct(
         CurlWrapperFactory $curlWrapperFactory,
         MemoryCache $memoryCache,
-        UTF8Encoder $utf8Encoder,
         Logger $logger
     ) {
         $this->curlWrapperFactory = $curlWrapperFactory;
         $this->memoryCache = $memoryCache;
-        $this->utf8Encoder = $utf8Encoder;
         $this->logger = $logger;
     }
 
@@ -153,7 +147,7 @@ class CPPWrapper
             );
         }
         $this->logger->debug($msg_response, [mb_substr($result, 0, 100)]);
-        return $this->utf8Encoder->decode(json_decode($result));
+        return json_decode($result, true);
     }
 
     /**
@@ -221,7 +215,7 @@ class CPPWrapper
             );
         }
 
-        $array_result = $this->utf8Encoder->decode(json_decode($result));
+        $array_result = json_decode($result, true);
         if (! is_array($array_result)) {
             throw new CPPWrapperExceptionGetToken("PISTE impossible de déchiffrer le token");
         }

@@ -52,7 +52,6 @@ class CPPWrapperTest extends ExtensionCppTestCase
         $cppWrapper = new CPPWrapper(
             $this->getObjectInstancier()->getInstance(CurlWrapperFactory::class),
             $this->getObjectInstancier()->getInstance(MemoryCache::class),
-            $this->getObjectInstancier()->getInstance(UTF8Encoder::class),
             $this->getObjectInstancier()->getInstance(Logger::class)
         );
         $cppWrapper->setCppWrapperConfig($cppWrapperConfig ?? $this->getDefaultWrapperConfig());

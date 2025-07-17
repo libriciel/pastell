@@ -1,32 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 class CPPListeFactureTravaux extends ActionExecutor
 {
     /**
-     * @return UTF8Encoder
-     */
-    public function getUTF8Encoder(): UTF8Encoder
-    {
-        return $this->objectInstancier->getInstance(UTF8Encoder::class);
-    }
-
-    /**
-     * @return array|mixed
      * @throws Exception
      */
-    public function metier()
+    public function metier(): string
     {
         /** @var CPP $cpp */
         $cpp = $this->getMyConnecteur();
-        return $this->getUTF8Encoder()->decode(
-            json_encode($this->getUTF8Encoder()->encode(
-                $cpp->rechercheFactureTravaux($cpp->getDateDepuisLe(), $cpp->getDateJusquAu())
-            ))
+        return json_encode(
+            mb_convert_encoding(
+                $cpp->rechercheFactureTravaux($cpp->getDateDepuisLe(), $cpp->getDateJusquAu()),
+                'UTF-8',
+                'ISO-8859-1'
+            )
         );
     }
 
     /**
-     * @return bool
      * @throws Exception
      */
     public function go(): bool
@@ -41,11 +35,17 @@ class CPPListeFactureTravaux extends ActionExecutor
         }
         $result = $this->metier();
         if (! $result) {
-            $this->setLastMessage("La connexion cpp a échoué : " . $cpp->getLastError());
+            $this->setLastMessage('La connexion cpp a échoué : ' . $cpp->getLastError());
             return false;
         }
-        $this->setLastMessage("Liste des factures de travaux ayant changé de statut entre le " .
-            $cpp->getDateDepuisLe() . " et le " . $cpp->getDateJusquAu() . ": " . $result);
+        $this->setLastMessage(
+            sprintf(
+                'Liste des factures de travaux ayant changé de statut entre le %s et le %s : %s',
+                $cpp->getDateDepuisLe(),
+                $cpp->getDateJusquAu(),
+                $result
+            )
+        );
         return true;
     }
 }
