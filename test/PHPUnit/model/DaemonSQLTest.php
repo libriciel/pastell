@@ -108,4 +108,12 @@ class DaemonSQLTest extends PastellTestCase
         $this->daemonSQL->setNbWorkers(10);
         static::assertSame(10, $this->daemonSQL->getNbWorkers());
     }
+
+    public function testGetAllDaemons(): void
+    {
+        $this->daemonSQL->insertDaemon(1);
+        $this->daemonSQL->insertDaemon(2);
+        $allDaemons = $this->daemonSQL->getAllDaemons();
+        static::assertGreaterThanOrEqual(2, count($allDaemons));
+    }
 }

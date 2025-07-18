@@ -56,7 +56,9 @@
                                 Suspendre</a></p>
                     {% endif %}
                 </td>
-                <td>{{ job.id_e }}</td>
+                <td>
+                    <a href="{{ path('app.legacy.entite_detail', {'id_e': job.id_e}) }}">{{ job.id_e }}</a>
+                </td>
                 <td>
                     {% if job.daemon is defined %}
                         {{ job.daemon.id_daemon }}

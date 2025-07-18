@@ -857,23 +857,15 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('id_e', $id_e);
         $this->setDroitsDaemon($id_e);
 
-        $daemon = $id_e === EntiteSQL::ID_E_ENTITE_RACINE ?
-            $this->getDaemonSQL()->getGlobalDaemon() :
-            $this->getDaemonSQL()->getDaemonByEntity($id_e);
-
-        if ($daemon === null) {
-            $this->setLastError('Aucun gestionnaire de tâche lié à cette entité.');
-            $this->redirect("Entite/detail?id_e=1$id_e");
-        } else {
-            $this->setViewParameter('menu_gauche_select', 'Entite/daemon');
-            $this->setViewParameter('nb_worker_actif', $this->getWorkerSQL()->getNbActifForDaemon($daemon->id_daemon));
-            $this->setViewParameter('job_stat_info', $this->getJobQueueSQL()->getStatInfoForDaemon($daemon->id_daemon));
-            $this->setViewParameter('sub_title', 'Liste de tous les travaux');
-            $this->setViewParameter('return_url', "Entite/daemon?id_e=$daemon->id_e");
-            $job_list = $this->getJobQueueSQL()->getJobsByDaemon($daemon->id_daemon, 20, 0);
-            $this->setViewParameter('job_list', $job_list);
-            $this->setViewParameter('daemon', $daemon);
-        }
+        $daemon = $this->resolveDaemonForEntity($id_e);
+        $this->setViewParameter('menu_gauche_select', 'Entite/daemon');
+        $this->setViewParameter('nb_worker_actif', $this->getWorkerSQL()->getNbActifForDaemon($daemon->id_daemon));
+        $this->setViewParameter('job_stat_info', $this->getJobQueueSQL()->getStatInfoForDaemon($daemon->id_daemon));
+        $this->setViewParameter('sub_title', 'Liste de tous les travaux');
+        $this->setViewParameter('return_url', "Entite/daemon?id_e=$daemon->id_e");
+        $job_list = $this->getJobQueueSQL()->getJobsByDaemon($daemon->id_daemon, 20, 0);
+        $this->setViewParameter('job_list', $job_list);
+        $this->setViewParameter('daemon', $daemon);
     }
 
     /**
@@ -888,18 +880,9 @@ class EntiteControler extends PastellControler
             $id_e,
             DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
         );
-
-        $daemon = $id_e === EntiteSQL::ID_E_ENTITE_RACINE ?
-            $this->getDaemonSQL()->getGlobalDaemon() :
-            $this->getDaemonSQL()->getDaemonByEntity($id_e);
-        if ($daemon === null) {
-            $this->setLastError('Aucun gestionnaire de tâche lié à cette entité.');
-            $this->redirect("Entite/detail?id_e=$id_e");
-        } else {
-            $this->getWorkerSQL()->menageAll();
-            $this->getJobQueueSQL()->unlockAll($daemon->id_daemon);
-        }
-
+        $daemon = $this->resolveDaemonForEntity($id_e);
+        $this->getWorkerSQL()->menageAll();
+        $this->getJobQueueSQL()->unlockAll($daemon->id_daemon);
         $this->redirect('Entite/daemon?id_e=' . $id_e);
     }
 
@@ -913,57 +896,121 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e');
+        $this->verifDroit(
+            $id_e,
+            DroitService::getDroitLecture(DroitService::DROIT_DAEMON)
+        );
+        $daemon = $this->resolveDaemonForEntity($id_e);
+        $this->setViewParameter('id_e', $id_e);
+        $this->setViewParameter('menu_gauche_select', 'Entite/job');
+        $this->setViewParameter('twigTemplate', 'daemon/entity/job.html.twig');
+        $this->setViewParameter('page_title', 'Gestionnaire de tâches local');
+        $filtre = $recuperateur->get('filtre', '');
+        if ($filtre) {
+            $this->setViewParameter('page_url', "job?filtre=$filtre");
+            $this->setViewParameter('menu_gauche_select', "Entite/job?filtre=$filtre");
+        } else {
+            $this->setViewParameter('page_url', 'job');
+        }
+
+        $sub_title_array = [
+            'actif' => 'Liste des travaux actifs',
+            'lock' => 'Liste des travaux suspendus',
+            'wait' => 'Liste des travaux en retard',
+        ];
+
+        $this->setViewParameter('sub_title', $sub_title_array[$filtre] ?? 'Liste de tous les travaux');
+        $this->setViewParameter('unlock_all_action', 'app.legacy.entite_daemonUnlockAll');
+
+        $this->setViewParameter('offset', $recuperateur->getInt('offset', 0));
+        $this->setViewParameter('limit', 50);
+        $this->setViewParameter('filtre', $filtre);
+        $this->setViewParameter('id_e', $id_e);
+
+        $this->setViewParameter(
+            'return_url',
+            "Entite/job?filtre=$filtre&offset=" . $this->getViewParameterByKey('offset') . "&id_e=$id_e"
+        );
+
+        $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob($filtre, $daemon->id_daemon));
+        $this->setViewParameter(
+            'job_list',
+            $this->getJobQueueSQL()->getFilteredJobList(
+                $this->getViewParameterByKey('limit'),
+                $this->getViewParameterByKey('offset'),
+                $filtre,
+                $daemon->id_daemon
+            )
+        );
+
+        $this->renderDefault();
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws NotFoundException
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function daemonAdminAction(): void
+    {
+        $recuperateur = $this->getGetInfo();
+        $id_e = $recuperateur->getInt('id_e');
+        $this->verifDroit(
+            $id_e,
+            DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
+        );
+        $daemon = $this->resolveDaemonForEntity($id_e);
+
+        $daemon_admin_email = $this->getDaemonManager()->getAdminEmails($daemon->id_daemon);
+        $this->setViewParameter('page_title', 'Administration du gestionnaire de tâches');
+        $this->setViewParameter('id_e', $id_e);
+        $this->setViewParameter('daemon_admin_email', implode(',', $daemon_admin_email));
+        $this->setViewParameter('menu_gauche_select', 'Entite/daemonAdmin');
+        $this->setViewParameter('template_milieu', 'EntiteDaemonAdmin');
+        $this->renderDefault();
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function doDaemonAdminAction(): void
+    {
+        $recuperateur = $this->getGetInfo();
+        $id_e = $recuperateur->getInt('id_e');
+        $this->verifDroit(
+            $id_e,
+            DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
+        );
+        $daemon = $this->resolveDaemonForEntity($id_e);
+        $this->setViewParameter('id_e', $id_e);
+
+        $recuperateur = $this->getPostInfo();
+        $daemon_admin_email = $recuperateur->get('daemon_admin_email', '');
+        if ($daemon_admin_email === '') {
+            $this->setLastError('L\'email de l\'administrateur du gestionnaire de tâches est requis');
+            $this->redirect("Entite/daemonAdmin?id_e=$id_e");
+        }
+        try {
+            $this->getDaemonManager()->setAdminEmails($daemon->id_daemon, $daemon_admin_email);
+            $this->setLastMessage('Les adresses email ont été mises à jour.');
+        } catch (UnrecoverableException $e) {
+            $this->setLastError($e->getMessage());
+        }
+        $this->redirect("Entite/daemonAdmin?id_e=$id_e");
+    }
+
+    private function resolveDaemonForEntity(int $id_e): Daemon
+    {
         $daemon = $id_e === EntiteSQL::ID_E_ENTITE_RACINE ?
             $this->getDaemonSQL()->getGlobalDaemon() :
             $this->getDaemonSQL()->getDaemonByEntity($id_e);
         if ($daemon === null) {
-            $this->setLastError('Aucun gestionnaire de tâche lié à cette entité.');
+            $this->setLastError('Aucun gestionnaire de tâches lié à cette entité.');
             $this->redirect("Entite/detail?id_e=$id_e");
-        } else {
-            $this->setViewParameter('id_e', $id_e);
-            $this->setViewParameter('menu_gauche_select', 'Entite/job');
-
-            $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_DAEMON));
-            $this->setViewParameter('twigTemplate', 'daemon/entity/job.html.twig');
-            $this->setViewParameter('page_title', 'Gestionnaire de tâches local');
-            $filtre = $recuperateur->get('filtre', '');
-            if ($filtre) {
-                $this->setViewParameter('page_url', "job?filtre=$filtre");
-                $this->setViewParameter('menu_gauche_select', "Entite/job?filtre=$filtre");
-            } else {
-                $this->setViewParameter('page_url', 'job');
-            }
-
-            $sub_title_array = [
-                'actif' => 'Liste des travaux actifs',
-                'lock' => 'Liste des travaux suspendus',
-                'wait' => 'Liste des travaux en retard',
-            ];
-
-            $this->setViewParameter('sub_title', $sub_title_array[$filtre] ?? 'Liste de tous les travaux');
-            $this->setViewParameter('unlock_all_action', 'app.legacy.entite_daemonUnlockAll');
-
-            $this->setViewParameter('offset', $recuperateur->getInt('offset', 0));
-            $this->setViewParameter('limit', 50);
-            $this->setViewParameter('filtre', $filtre);
-            $this->setViewParameter('id_e', $id_e);
-
-            $this->setViewParameter(
-                'return_url',
-                "Entite/job?filtre=$filtre&offset=" . $this->getViewParameterByKey('offset') . "&id_e=$id_e"
-            );
-
-            $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob($filtre, $daemon->id_daemon));
-            $this->setViewParameter(
-                'job_list',
-                $this->getJobQueueSQL()->getFilteredJobList(
-                    $this->getViewParameterByKey('limit'),
-                    $this->getViewParameterByKey('offset'),
-                    $filtre,
-                    $daemon->id_daemon
-                )
-            );
         }
-        $this->renderDefault();
+        return $daemon;
     }
 }

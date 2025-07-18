@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pastell\System;
 
 class HealthCheckItem
@@ -15,6 +17,7 @@ class HealthCheckItem
     public ?string $expectedValue;
     /** @var HealthCheckItem[]|null */
     private ?array $details;
+    private ?array $context;
 
     public function __construct(
         string $label,
@@ -71,6 +74,17 @@ class HealthCheckItem
     public function setDetails(?array $details): self
     {
         $this->details = $details;
+        return $this;
+    }
+
+    public function getContext(): ?array
+    {
+        return $this->context;
+    }
+
+    public function setContext(?array $context): self
+    {
+        $this->context = $context;
         return $this;
     }
 }

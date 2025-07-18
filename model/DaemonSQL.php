@@ -66,9 +66,19 @@ class DaemonSQL extends SQL
      */
     public function getRunningDaemons(): array
     {
-        $sql = 'SELECT * FROM daemon d JOIN entite e ON d.id_e = e.id_e WHERE state = ? AND is_active = ?';
+        $sql = 'SELECT * FROM daemon d LEFT JOIN entite e ON d.id_e = e.id_e WHERE (is_active = ? OR d.id_e IS NULL) AND state = ?';
         $result = [];
         foreach ($this->query($sql, [Daemon::STATE_ACTIVE, EntiteSQL::STATE_ACTIVE]) as $info) {
+            $result[] = $this->mapToDaemon($info);
+        }
+        return $result;
+    }
+
+    public function getAllDaemons(): array
+    {
+        $sql = 'SELECT * FROM daemon d LEFT JOIN entite e ON d.id_e = e.id_e WHERE is_active = ? OR d.id_e IS NULL';
+        $result = [];
+        foreach ($this->query($sql, [EntiteSQL::STATE_ACTIVE]) as $info) {
             $result[] = $this->mapToDaemon($info);
         }
         return $result;
@@ -128,12 +138,16 @@ class DaemonSQL extends SQL
 
     public function getNbWorkers(): int
     {
-        return (int) $this->configurationSQL->getConfiguration(ConfigurationSQL::NB_WORKERS);
+        return (int)$this->configurationSQL->getConfiguration(DaemonManager::NB_WORKERS, ConfigurationSQL::NULL_ID_E);
     }
 
     public function setNbWorkers(int $nb_workers): void
     {
-        $this->configurationSQL->setConfiguration(ConfigurationSQL::NB_WORKERS, (string) $nb_workers);
+        $this->configurationSQL->setConfiguration(
+            DaemonManager::NB_WORKERS,
+            (string)$nb_workers,
+            ConfigurationSQL::NULL_ID_E
+        );
         $this->refreshAvailableWorkers();
     }
 

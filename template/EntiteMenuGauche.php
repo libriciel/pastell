@@ -40,6 +40,7 @@ if (($daemon_exists || $id_e === 0) && $daemon_lecture) {
         'Entite/job?filtre=actif' => 'Travaux actifs',
         'Entite/job?filtre=lock' => 'Travaux suspendus',
         'Entite/job?filtre=wait' => 'Travaux en attente',
+        'Entite/daemonAdmin' => 'Administration du gestionnaire de tâches',
     ];
 }
 $collapse_daemon = !array_key_exists($menu_gauche_select, $daemon_tabs);

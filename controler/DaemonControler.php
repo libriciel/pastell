@@ -837,8 +837,21 @@ class DaemonControler extends PastellControler
             $this->setLastError('Un gestionnaire de tâches existe déjà pour cette entité');
             $this->redirect('Daemon/configuration');
         }
-        $this->getDaemonManager()->addDaemon($id_e, $nb_allocated_workers);
+        $daemon_admin_email = $recuperateur->get('daemon_admin_email');
+        if ($daemon_admin_email === '') {
+            $this->setLastError('L\'email de l\'administrateur du gestionnaire de tâches est requis');
+            $this->redirect('Daemon/create');
+        }
+        try {
+            $this->getDaemonManager()->checkRFC2822Email($daemon_admin_email);
+        } catch (UnrecoverableException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect('Daemon/create');
+        }
+
+        $daemon = $this->getDaemonManager()->addDaemon($id_e, $nb_allocated_workers);
+        $this->getDaemonManager()->setAdminEmails($daemon->id_daemon, $daemon_admin_email);
         $this->setLastMessage('Le gestionnaire de tâches a été créé avec succès');
-        $this->redirect("/Daemon/configuration?id_e=$id_e");
+        $this->redirect("Daemon/configuration?id_e=$id_e");
     }
 }

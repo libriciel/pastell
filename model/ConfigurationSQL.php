@@ -6,35 +6,35 @@ use Pastell\Exception\ConfigurationNotFoundException;
 
 class ConfigurationSQL extends SQL
 {
-    public const NB_WORKERS = 'nb_workers';
-    public function setConfiguration(string $config_key, string $config_value): void
+    public const NULL_ID_E = -1;
+    public function setConfiguration(string $config_key, string $config_value, int $id_e): void
     {
         $sql = <<<SQL
-INSERT INTO configuration (`config_key`, `config_value`)
-VALUES (?, ?)
+INSERT INTO configuration (`config_key`, `config_value`, `id_e`)
+VALUES (?, ?, ?)
 ON DUPLICATE KEY UPDATE `config_value` = VALUES(`config_value`)
 SQL;
-        $this->query($sql, [$config_key, $config_value]);
+        $this->query($sql, [$config_key, $config_value, $id_e]);
     }
 
-    public function getConfiguration(string $config_key): ?string
+    public function getConfiguration(string $config_key, int $id_e): string
     {
         $sql = <<<SQL
-SELECT config_value FROM configuration WHERE config_key = ?;
+SELECT config_value FROM configuration WHERE config_key = ? AND id_e = ? LIMIT 1;
 SQL;
-        $result = $this->queryOne($sql, [$config_key]);
-        if (!$result) {
+        $result = $this->queryOne($sql, [$config_key, $id_e]);
+        if ($result === false) {
             throw new ConfigurationNotFoundException($config_key);
         }
-        return $this->queryOne($sql, [$config_key]) ?: null;
+        return $result;
     }
 
-    public function hasConfiguration(string $key): bool
+    public function hasConfiguration(string $key, int $id_e): bool
     {
         $sql = <<<SQL
-SELECT COUNT(*) FROM configuration WHERE config_key = ?;
+SELECT COUNT(*) FROM configuration WHERE config_key = ? AND id_e = ? LIMIT 1;
 SQL;
-        $result = $this->queryOne($sql, [$key]);
+        $result = $this->queryOne($sql, [$key, $id_e]);
         return $result > 0;
     }
 }
