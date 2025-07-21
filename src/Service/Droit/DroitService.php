@@ -20,7 +20,6 @@ class DroitService
     public function __construct(
         private readonly RoleUtilisateur $roleUtilisateur,
         private readonly DocumentTypeFactory $documentTypeFactory,
-        private readonly bool $connectorActionPermission,
     ) {
     }
 
@@ -39,17 +38,9 @@ class DroitService
         return self::getPermission($part, self::DROIT_ECRITURE);
     }
 
-    /**
-     * @deprecated 4.1.8
-     * In 5.0, make it static
-     */
-    public function getActionPermission(string $part): string
+    public static function getActionPermission(string $part): string
     {
-        if ($this->connectorActionPermission) {
-            return self::getPermission($part, self::DROIT_ACTION);
-        }
-
-        return self::getPermission($part, self::DROIT_ECRITURE);
+        return self::getPermission($part, self::DROIT_ACTION);
     }
 
     /**
