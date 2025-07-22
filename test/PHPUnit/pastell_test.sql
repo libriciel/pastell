@@ -46,7 +46,6 @@ TRUNCATE TABLE `document_email`;
 TRUNCATE TABLE `document_email_reponse`;
 TRUNCATE TABLE `document_entite`;
 TRUNCATE TABLE `document_index`;
-TRUNCATE TABLE `droit`;
 TRUNCATE TABLE `entite`;
 INSERT INTO `entite` (`id_e`, `type`, `denomination`, `siren`, `date_inscription`, `entite_mere`, `centre_de_gestion`, `is_active`) VALUES
 (1, 'collectivite', 'Bourg-en-Bresse', '000000000', '0000-00-00 00:00:00', '0', 0, 1),

@@ -1187,44 +1187,6 @@
             }
         }
     },
-    "droit": {
-        "Engine": "MyISAM",
-        "Column": {
-            "id_u": {
-                "Field": "id_u",
-                "Type": "int(11)",
-                "Null": "NO",
-                "Key": "",
-                "Default": null,
-                "Extra": ""
-            },
-            "droit": {
-                "Field": "droit",
-                "Type": "varchar(16)",
-                "Null": "NO",
-                "Key": "",
-                "Default": null,
-                "Extra": ""
-            },
-            "type_objet": {
-                "Field": "type_objet",
-                "Type": "varchar(16)",
-                "Null": "NO",
-                "Key": "",
-                "Default": null,
-                "Extra": ""
-            },
-            "id_o": {
-                "Field": "id_o",
-                "Type": "varchar(16)",
-                "Null": "NO",
-                "Key": "",
-                "Default": null,
-                "Extra": ""
-            }
-        },
-        "Index": []
-    },
     "entite": {
         "Engine": "MyISAM",
         "Column": {

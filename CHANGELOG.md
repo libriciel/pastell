@@ -33,6 +33,7 @@ doivent être mises à jour #1667
 ## Suppression d'éléments dépréciés
 
 - Suppression de la table collectivite_fournisseur #2205
+- Suppression de la table droit #2276
 - Suppression de validca et du code lié à l'authentification par certificat #1983
 - Suppression du code lié à libersign et la signature locale #1983
 
