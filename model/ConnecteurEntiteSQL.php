@@ -18,24 +18,6 @@ class ConnecteurEntiteSQL extends SQL
         return $this->query($sql, $id_e);
     }
 
-    /** @deprecated Since 4.1.6, Use getAllGlobalByIde($id_e) instead */
-    public function getAllGlobal()
-    {
-        $sql = "SELECT * FROM connecteur_entite " .
-            " WHERE id_e = 0" .
-            " ORDER BY libelle";
-        return $this->query($sql);
-    }
-
-    /** @deprecated Since 4.1.6, Use getAllLocalByIde($id_e) instead  */
-    public function getAllLocal()
-    {
-        $sql = "SELECT * FROM connecteur_entite " .
-            " WHERE id_e != 0" .
-            " ORDER BY libelle";
-        return $this->query($sql);
-    }
-
     public function getAllGlobalByIde(int $id_e): array
     {
         $sql = "SELECT * FROM connecteur_entite " .

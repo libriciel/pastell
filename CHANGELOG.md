@@ -39,6 +39,7 @@ doivent être mises à jour #1667
 - Suppression dans batch : pastell-job-master.php et pastell-job-worker.php #2211
 - Suppression dans installation : test-last-job.php, force-delete-module.php, create-admin.php et create-role-admin.php #2211
 - Suppression de UtilisateurControler::notificationToogleDailyDigestAction #2211
+- Suppression de ConnecteurDisponible::getList, ConnecteurEntiteSQL::getAllGlobal et ConnecteurEntiteSQL::getAllLocal #2211
 
 # [4.1.11] - 2025-07-15
 
