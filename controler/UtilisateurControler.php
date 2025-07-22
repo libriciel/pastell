@@ -798,32 +798,6 @@ class UtilisateurControler extends PastellControler
     /**
      * @throws LastErrorException
      * @throws LastMessageException
-     * @deprecated 4.0.0
-     */
-    public function notificationToogleDailyDigestAction()
-    {
-        $recuperateur = $this->getPostInfo();
-        $id_n = $recuperateur->getInt('id_n');
-        $page_moi = false;
-        $infoNotification = $this->getNotification()->getInfo($id_n);
-        $id_u = $infoNotification['id_u'];
-        $id_e = $infoNotification['id_e'];
-        $type = $infoNotification['type'];
-
-        if ($id_u === $this->getId_u()) {
-            $this->verifEditMesNotifications($id_e, $type);
-            $page_moi = true;
-        } else {
-            $this->verifEditNotification($id_u, $id_e, $type);
-        }
-        $this->getNotification()->toogleDailyDigest($id_u, $id_e, $type);
-        $this->setLastMessage('La notification a été modifié');
-        $this->redirectToPageUtilisateur($id_u, $page_moi);
-    }
-
-    /**
-     * @throws LastErrorException
-     * @throws LastMessageException
      */
     public function doModifPasswordAction()
     {
