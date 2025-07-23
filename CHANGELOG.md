@@ -43,6 +43,7 @@ doivent être mises à jour #1667
 - Suppression de FluxEntiteHeritageSQL::getAll, FluxEntiteSQL::getAll et FluxEntiteSQL::isUsed #2211
 - Suppression de ActionExecutor::checkIntf, Connecteur::isGlobal, ConnecteurDefinitionFiles::getAllByIdE, DocumentTypeFactory::getDocumentType #2211
 - Suppression de la classe /pastell-core/DocumentTypeValidation.php (Use Pastell\Configuration\DocumentTypeValidation instead) #2211
+- Suppression de TransformationViewer, Use JsonViewer instead #2211
 
 # [4.1.11] - 2025-07-15
 
