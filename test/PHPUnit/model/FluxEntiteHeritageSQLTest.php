@@ -10,22 +10,10 @@ class FluxEntiteHeritageSQLTest extends PastellTestCase
         return new FluxEntiteHeritageSQL($sqlQuery, new FluxEntiteSQL($sqlQuery), new EntiteSQL($sqlQuery));
     }
 
-    public function testGetAll()
-    {
-        $all_flux = $this->getFluxEntiteHeritageSQL()->getAll(1);
-        $this->assertEquals("Fake iParapheur", $all_flux['actes-generique']['signature']['libelle']);
-    }
-
     public function testGetAllWithSameType()
     {
         $all_flux = $this->getFluxEntiteHeritageSQL()->getAllWithSameType(1);
         $this->assertEquals("Fake iParapheur", $all_flux['actes-generique']['signature'][0]['libelle']);
-    }
-
-    public function testGetAllNoFlux()
-    {
-        $all_flux = $this->getFluxEntiteHeritageSQL()->getAll(2);
-        $this->assertEmpty($all_flux);
     }
 
     public function testGetAllNoFluxWithSameType()
@@ -48,13 +36,6 @@ class FluxEntiteHeritageSQLTest extends PastellTestCase
         $this->assertEmpty($result);
     }
 
-    public function testInherit()
-    {
-        $this->getFluxEntiteHeritageSQL()->setInheritance(2, "actes-generique");
-        $all_flux = $this->getFluxEntiteHeritageSQL()->getAll(2);
-        $this->assertEquals("Fake iParapheur", $all_flux['actes-generique']['signature']['libelle']);
-    }
-
     public function testInheritWithSameType()
     {
         $this->getFluxEntiteHeritageSQL()->setInheritance(2, "actes-generique");
@@ -62,26 +43,11 @@ class FluxEntiteHeritageSQLTest extends PastellTestCase
         $this->assertEquals("Fake iParapheur", $all_flux['actes-generique']['signature'][0]['libelle']);
     }
 
-    public function testInheritAll()
-    {
-        $this->getFluxEntiteHeritageSQL()->setInheritanceAllFlux(2);
-        $all_flux = $this->getFluxEntiteHeritageSQL()->getAll(2);
-        $this->assertEquals("Fake iParapheur", $all_flux['actes-generique']['signature']['libelle']);
-    }
-
     public function testInheritAllWithSameType()
     {
         $this->getFluxEntiteHeritageSQL()->setInheritanceAllFlux(2);
         $all_flux = $this->getFluxEntiteHeritageSQL()->getAllWithSameType(2);
         $this->assertEquals("Fake iParapheur", $all_flux['actes-generique']['signature'][0]['libelle']);
-    }
-
-    public function testDeleteInheritAll()
-    {
-        $this->getFluxEntiteHeritageSQL()->setInheritanceAllFlux(2);
-        $this->getFluxEntiteHeritageSQL()->deleteInheritanceAllFlux(2);
-        $all_flux = $this->getFluxEntiteHeritageSQL()->getAll(2);
-        $this->assertEmpty($all_flux);
     }
 
     public function testDeleteInheritAllSameType()
