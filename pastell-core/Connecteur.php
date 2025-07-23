@@ -52,14 +52,6 @@ abstract class Connecteur
         $this->connecteurInfo = $connecteur_info;
     }
 
-    /**
-     * @deprecated 4.0.4, unused
-     */
-    public function isGlobal()
-    {
-        return $this->connecteurInfo['id_e'] == 0;
-    }
-
     public function setLogger(Logger $logger): void
     {
         $this->logger = $logger;

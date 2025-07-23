@@ -41,6 +41,7 @@ doivent être mises à jour #1667
 - Suppression de UtilisateurControler::notificationToogleDailyDigestAction #2211
 - Suppression de ConnecteurDisponible::getList, ConnecteurEntiteSQL::getAllGlobal et ConnecteurEntiteSQL::getAllLocal #2211
 - Suppression de FluxEntiteHeritageSQL::getAll, FluxEntiteSQL::getAll et FluxEntiteSQL::isUsed #2211
+- Suppression de ActionExecutor::checkIntf, Connecteur::isGlobal, ConnecteurDefinitionFiles::getAllByIdE, DocumentTypeFactory::getDocumentType #2211
 
 # [4.1.11] - 2025-07-15
 
