@@ -8,9 +8,6 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
 
     private $action_name;
 
-    /** @deprecated Since 4.1.3, Unused, Use file 'iparapheur_metadata_sortie' instead */
-    private $iparapheur_metadata_sortie;
-
     /**
      * @return bool
      * @throws Exception
@@ -281,23 +278,6 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
     }
 
     /**
-     * @param $nomMetaDonnee
-     * @return bool|string
-     */
-    /** @deprecated Since 4.1.3, Unused, Use file 'iparapheur_metadata_sortie' instead */
-    public function getMetaDonnee($nomMetaDonnee)
-    {
-        if ($this->iparapheur_metadata_sortie) {
-            foreach ($this->iparapheur_metadata_sortie as $metaDonnee) {
-                if (($metaDonnee['nom']) === $nomMetaDonnee) {
-                    return $metaDonnee['valeur'];
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
      * @throws UnrecoverableException
      * @throws NotFoundException
      * @throws Exception
@@ -350,11 +330,6 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 $metadataSortie->content
             );
         }
-        /** @deprecated Since 4.1.3, Unused */
-        if (isset($info['meta_donnees'])) {
-            $this->iparapheur_metadata_sortie = $info['meta_donnees'];
-        }
-
         return true;
     }
 

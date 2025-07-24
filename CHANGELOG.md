@@ -46,6 +46,7 @@ doivent être mises à jour #1667
 - Suppression de TransformationViewer, Use JsonViewer instead #2211
 - Suppression des classes HeliosIparapheurSousType et FactureCPPIparapheurSousType, Use IparapheurSousType instead #2211
 - Suppression de HeliosGeneriqueXMLFile, TdTExtractionHelios #2211
+- Suppression de IParapheur::getMetaDonnee et SignatureRecuperation::getMetaDonnee #2211
 
 
 # [4.1.11] - 2025-07-15
