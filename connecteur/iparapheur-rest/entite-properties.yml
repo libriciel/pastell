@@ -41,6 +41,10 @@ formulaire:
       type: externalData
       choice-action: iparapheur-subtype
       no-show: true
+    iparapheur_multi_doc:
+      name: 'Appliquer le multi-document'
+      type: checkbox
+      commentaire: 'Si le sous-type iparapheur le permet (Signature multi-document), alors les fichiers multiples envoyés seront des multi-documents signés'
 
 action:
   test-connexion:

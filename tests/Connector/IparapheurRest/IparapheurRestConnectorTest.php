@@ -7,7 +7,7 @@ namespace Pastell\Tests\Connector\IparapheurRest;
 use ActionExecutorFactory;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Pastell\Client\IparapheurV5\ClientFactory;
+use Pastell\Client\IparapheurV5\ApiClientFactory;
 use PastellTestCase;
 use Psr\Http\Client\ClientInterface;
 use UnrecoverableException;
@@ -33,7 +33,7 @@ class IparapheurRestConnectorTest extends PastellTestCase
                     default => throw new UnrecoverableException('Unknown path : ' . $request->getUri()->getPath()),
                 };
             });
-        $clientFactory = $this->getObjectInstancier()->getInstance(ClientFactory::class);
+        $clientFactory = $this->getObjectInstancier()->getInstance(ApiClientFactory::class);
         $clientFactory->setClientInterface($clientInterface);
 
         $connectorId = $this->createConnector('iparapheur-rest', 'iparapheur REST')['id_ce'];

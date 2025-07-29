@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Pastell\Client\IparapheurV5\ClientFactory;
+use Pastell\Client\IparapheurV5\ApiClientFactory;
 use Psr\Http\Client\ClientInterface;
 
 class RecupParapheurCorbeilleTest extends PastellTestCase
@@ -57,8 +57,8 @@ class RecupParapheurCorbeilleTest extends PastellTestCase
                     default => throw new UnrecoverableException('Unknown path : ' . $request->getUri()->getPath()),
                 };
             });
-        /** @var ClientFactory $clientFactory */
-        $clientFactory = $this->getObjectInstancier()->getInstance(ClientFactory::class);
+        /** @var ApiClientFactory $clientFactory */
+        $clientFactory = $this->getObjectInstancier()->getInstance(ApiClientFactory::class);
         $clientFactory->setClientInterface($clientInterface);
 
         $id_ce = $this->createConnector('recup-parapheur-corbeille', 'Recup parapheur')['id_ce'];

@@ -2,16 +2,15 @@
 
 declare(strict_types=1);
 
-use IparapheurV5Client\Api\AdminTrashBin;
-use IparapheurV5Client\Api\Tenant;
-use IparapheurV5Client\Client;
-use IparapheurV5Client\Model\ListTenantsQuery;
-use IparapheurV5Client\Model\ListTrashBinFoldersQuery;
-use IparapheurV5Client\TokenQuery;
+use OpenAPI\Client\Api\AdminTrashBinApi;
+use OpenAPI\Client\Api\TenantApi;
 use Pastell\Action\TestConnectionInterface;
-use Pastell\Client\IparapheurV5\ClientFactory;
+use Pastell\Client\IparapheurV5\IparapheurAuthConfig;
+use Pastell\Client\IparapheurV5\ApiClientFactory;
 use Pastell\Client\IparapheurV5\ZipContent;
+use OpenAPI\Client\Configuration;
 use Pastell\Connector\IparapheurRest\IpRestTenantInterface;
+use Psr\Http\Client\ClientInterface;
 
 class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterface, TestConnectionInterface
 {
@@ -22,13 +21,19 @@ class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterfac
     private const TENANT_ID = 'tenant_id';
     private array $elementIdDictionnary;
     private DonneesFormulaire $connecteurConfig;
+    private ClientInterface $client;
+    private Configuration $configuration;
 
     public function __construct(
         private readonly GlaneurDocumentCreator $glaneurDocumentCreator,
-        private readonly ClientFactory $clientFactory,
+        private readonly ApiClientFactory $apiClientFactory,
     ) {
     }
 
+    /**
+     * @throws JsonException
+     * @throws \Psr\Http\Client\ClientExceptionInterface
+     */
     public function setConnecteurConfig(DonneesFormulaire $donneesFormulaire)
     {
         $this->connecteurConfig = $donneesFormulaire;
@@ -44,7 +49,7 @@ class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterfac
             'premis' => 'premis'
         ];
         foreach (explode("\n", $pastell_dictionnary) as $line) {
-            $part = explode(":", $line, 2);
+            $part = explode(':', $line, 2);
             if (! isset($part[1])) {
                 continue;
             }
@@ -53,31 +58,35 @@ class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterfac
             }
             $this->elementIdDictionnary[trim($part[0])] = trim($part[1]);
         }
-    }
 
-    private function getAuthenticatedClient(): Client
-    {
-        $tokenQuery = new TokenQuery();
-        $tokenQuery->username = $this->connecteurConfig->get(self::USERNAME, '');
-        $tokenQuery->password = $this->connecteurConfig->get(self::PASSWORD, '');
-        $client = $this->clientFactory->getInstance();
-        $client->authenticate($this->connecteurConfig->get(self::URL, ''), $tokenQuery);
-
-        return $client;
+        $iparapheurAuthConfig = new IparapheurAuthConfig(
+            $donneesFormulaire->get(self::USERNAME) ?: '',
+            $donneesFormulaire->get(self::PASSWORD) ?: '',
+            $donneesFormulaire->get(self::URL) ?: '',
+        );
+        [$httpClient, $config] = $this->apiClientFactory->createAuthenticatedClient($iparapheurAuthConfig);
+        $this->client = $httpClient;
+        $this->configuration = $config;
     }
 
     public function getTenantList(): array
     {
-        $listTenantsQuery = new ListTenantsQuery();
-        $listTenantsQuery->page = 0;
         $tenants = [];
+        $page = 0;
+
         do {
-            $result = (new Tenant($this->getAuthenticatedClient()))->listTenants($listTenantsQuery);
-            foreach ($result->content as $tenant) {
-                $tenants[$tenant->id] = $tenant->name;
+            $result = (new TenantApi($this->client, $this->configuration))->listTenants($page);
+
+            foreach ($result->getContent() as $tenant) {
+                $tenants[$tenant->getId()] = $tenant->getName();
             }
-            $listTenantsQuery->page++;
-        } while ($result->pageable->pageNumber + 1 < $result->totalPages);
+
+            $pageable = $result->getPageable();
+            $currentPage = $pageable ? $pageable->getPageNumber() : $page;
+            $totalPages = $result->getTotalPages() ?? 1;
+
+            $page++;
+        } while ($currentPage + 1 < $totalPages);
 
         return $tenants;
     }
@@ -88,27 +97,23 @@ class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterfac
         if (! $result) {
             return "La connexion est ok, mais il n'existe aucune entité associée à ce compte";
         }
-        return 'Liste des entités parapheurs : ' . implode(", ", $result);
+        return 'Liste des entités parapheurs : ' . implode(', ', $result);
     }
 
     public function listDossier(): array
     {
-        $adminTrashBin = new AdminTrashBin($this->getAuthenticatedClient());
-
-        $listTrashBinFolderQuery = new ListTrashBinFoldersQuery();
-        $listTrashBinFolderQuery->size = (int)$this->connecteurConfig->get(self::NB_RECUP);
-        $listTrashBinFolderQuery->page = 0;
-        $pageFolderRepresentation =  $adminTrashBin->listTrashBinFolders(
+        $result = (new AdminTrashBinApi($this->client, $this->configuration))->listTrashBinFolders(
             $this->connecteurConfig->get(self::TENANT_ID, ''),
-            $listTrashBinFolderQuery
+            0,
+            (int)$this->connecteurConfig->get(self::NB_RECUP)
         );
-        $result = [];
-        foreach ($pageFolderRepresentation->content as $folder) {
-            $result[$folder->id] = $folder->name;
+        $folders = [];
+        foreach ($result->getContent() as $folder) {
+            $folders[$folder->getId()] = $folder->getName();
         }
         return [
-            'number' => $pageFolderRepresentation->totalElements,
-            'first' => $result,
+            'number' => $result->getTotalElements(),
+            'first' => $folders,
         ];
     }
 
@@ -129,24 +134,20 @@ class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterfac
      * @throws UnrecoverableException
      * @throws Exception
      */
-    private function retrieveOneDossier(string $dossierId): string
+    private function retrieveOneDossier(string $folderId): string
     {
+        $tenantId = $this->connecteurConfig->get(self::TENANT_ID, '');
         $tmpFolder = new TmpFolder();
         $tmp_folder = $tmpFolder->create();
         try {
-            $client = $this->getAuthenticatedClient();
-            $adminTrashBin = new AdminTrashBin($client);
-            $response = $adminTrashBin->downloadTrashBinFolderZip(
-                $this->connecteurConfig->get(self::TENANT_ID, ''),
-                $dossierId
+            $adminTrashBinApi = new AdminTrashBinApi($this->client, $this->configuration);
+            $zipData = $adminTrashBinApi->downloadTrashBinFolderZip(
+                $tenantId,
+                $folderId
             );
-            $body = $response->getBody();
-            $zipFilePath = $tmp_folder . '/response.zip';
-            $file = fopen($zipFilePath, 'wb');
-            while (!$body->eof()) {
-                fwrite($file, $body->read(1024));
-            }
-            fclose($file);
+            $zipFilePath = $tmp_folder . '/result.zip';
+            file_put_contents($zipFilePath, $zipData);
+
             $zipContent = new ZipContent();
             $zipContentModel = $zipContent->extract($zipFilePath, $tmp_folder);
             $glaneurLocalDocumentInfo = new GlaneurDocumentInfo($this->getConnecteurInfo()['id_e']);
@@ -174,9 +175,9 @@ class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterfac
             $tmpFolder->delete($tmp_folder);
         }
 
-        $adminTrashBin->deleteTrashBinFolder(
-            $this->connecteurConfig->get(self::TENANT_ID, ''),
-            $dossierId
+        $adminTrashBinApi->deleteTrashBinFolder(
+            $tenantId,
+            $folderId
         );
 
         return $id_d;

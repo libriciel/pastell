@@ -280,6 +280,9 @@ class FastParapheur extends SignatureConnecteur
         }
     }
 
+    /**
+     * @param $history - output of FastParapheur::getAllHistoriqueInfo()
+     */
     public function getLastHistorique($history): string
     {
         $lastLog = end($history);
@@ -290,6 +293,9 @@ class FastParapheur extends SignatureConnecteur
         );
     }
 
+    /**
+     * @param $history - output of FastParapheur::getAllHistoriqueInfo()
+     */
     public function getDateSignature(stdClass|array $history): string
     {
         foreach (array_reverse($history) as $log) {
@@ -355,20 +361,23 @@ class FastParapheur extends SignatureConnecteur
         return $zipPath;
     }
 
-    public function isFinalState(string $lastState): bool
+    public function isFinalState(string $lastHistorique): bool
     {
-        return str_contains($lastState, '[Classé]')
-            || str_contains($lastState, '[Signé]')
-            || str_contains($lastState, '[Archivé]');
+        return str_contains($lastHistorique, '[Classé]')
+            || str_contains($lastHistorique, '[Signé]')
+            || str_contains($lastHistorique, '[Archivé]');
     }
 
-    public function isRejected(string $lastState): bool
+    public function isRejected(string $lastHistorique): bool
     {
-        return str_contains($lastState, '[Refusé]')
-            || str_contains($lastState, '[Visa désapprouvé]');
+        return str_contains($lastHistorique, '[Refusé]')
+            || str_contains($lastHistorique, '[Visa désapprouvé]');
     }
 
-    public function isDetached($signature): bool
+    /**
+     * @param $info - output of FastParapheur::getSignature()
+     */
+    public function isDetached($info): bool
     {
         return false;
     }
@@ -376,33 +385,33 @@ class FastParapheur extends SignatureConnecteur
     /**
      * Workaround because IParapheur::getSignature() does not return only the signature
      *
-     * @param $file
+     * @param $info - output of FastParapheur::getSignature()
      * @return mixed
      */
-    public function getDetachedSignature($file)
+    public function getDetachedSignature($info)
     {
-        return $file;
+        return $info;
     }
 
     /**
      * Workaround because IParapheur::getSignature() does not return only the signature
      *
-     * @param $file
+     * @param $info - output of FastParapheur::getSignature()
      * @return mixed
      */
-    public function getSignedFile($file)
+    public function getSignedFile($info)
     {
-        return $file;
+        return $info;
     }
 
 
     /**
      * Workaround because it is embedded in IParapheur::getSignature()
-     * @param $signature
+     * @param $info - output of FastParapheur::getSignature()
      * @param string $documentId
      * @return ?Fichier
      */
-    public function getBordereauFromSignature($signature, string $documentId = ''): ?Fichier
+    public function getBordereauFromSignature($info, string $documentId = ''): ?Fichier
     {
         try {
             $return = new Fichier();
@@ -415,7 +424,10 @@ class FastParapheur extends SignatureConnecteur
         return $return;
     }
 
-    public function getMetadataSortie($signature): ?Fichier
+    /**
+     * @param $info - output of FastParapheur::getSignature()
+     */
+    public function getMetadataSortie($info): ?Fichier
     {
         return null;
     }

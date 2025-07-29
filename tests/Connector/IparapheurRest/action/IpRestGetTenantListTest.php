@@ -7,7 +7,7 @@ namespace Pastell\Tests\Connector\IparapheurRest\action;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Pastell\Client\IparapheurV5\ClientFactory;
+use Pastell\Client\IparapheurV5\ApiClientFactory;
 use Pastell\Connector\IparapheurRest\Action\IpRestGetTenantList;
 use PastellTestCase;
 use Psr\Http\Client\ClientInterface;
@@ -38,8 +38,8 @@ class IpRestGetTenantListTest extends PastellTestCase
                 };
             });
 
-        /** @var ClientFactory $clientFactory */
-        $clientFactory = $this->getObjectInstancier()->getInstance(ClientFactory::class);
+        /** @var ApiClientFactory $clientFactory */
+        $clientFactory = $this->getObjectInstancier()->getInstance(ApiClientFactory::class);
         $clientFactory->setClientInterface($clientInterface);
 
         $connectorId = $this->createConnector('iparapheur-rest', 'iparapheur REST')['id_ce'];

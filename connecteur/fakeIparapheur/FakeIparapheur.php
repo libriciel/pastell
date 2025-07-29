@@ -148,6 +148,9 @@ class FakeIparapheur extends SignatureConnecteur
         throw new Exception('Erreur provoquée par le simulateur du iParapheur');
     }
 
+    /**
+     * @param $history - output of FakeIparapheur::getAllHistoriqueInfo()
+     */
     public function getLastHistorique($history): string
     {
         $lastLog = end($history->LogDossier);
@@ -159,6 +162,9 @@ class FakeIparapheur extends SignatureConnecteur
         );
     }
 
+    /**
+     * @param $history - output of FakeIparapheur::getAllHistoriqueInfo()
+     */
     public function getDateSignature(stdClass|array $history): string
     {
         foreach (array_reverse($history->LogDossier) as $log) {
@@ -180,60 +186,72 @@ class FakeIparapheur extends SignatureConnecteur
         return "ok";
     }
 
-    public function isFinalState(string $lastState): bool
+    /**
+     * @param $lastHistorique - output of FakeIparapheur::getLastHistorique()
+     */
+    public function isFinalState(string $lastHistorique): bool
     {
-        return strstr($lastState, '[Archive]');
+        return strstr($lastHistorique, '[Archive]');
     }
 
-    public function isRejected(string $lastState): bool
+    /**
+     * @param $lastHistorique - output of FakeIparapheur::getLastHistorique()
+     */
+    public function isRejected(string $lastHistorique): bool
     {
-        return strstr($lastState, '[RejetVisa]') || strstr($lastState, '[RejetSignataire]');
+        return strstr($lastHistorique, '[RejetVisa]') || strstr($lastHistorique, '[RejetSignataire]');
     }
 
-    public function isDetached($signature): bool
+    /**
+     * @param $info - output of FakeIparapheur::getSignature()
+     */
+    public function isDetached($info): bool
     {
-        return $signature['signature'] && !$signature['is_pes'];
+        return $info['signature'] && !$info['is_pes'];
     }
 
     /**
      * Workaround because IParapheur::getSignature() does not return only the signature
      *
-     * @param $file
+     * @param $info - output of FakeIparapheur::getSignature()
      * @return mixed
      */
-    public function getDetachedSignature($file)
+    public function getDetachedSignature($info)
     {
-        return $file['signature'];
+        return $info['signature'];
     }
 
     /**
      * Workaround because IParapheur::getSignature() does not return only the signature
      *
-     * @param $file
+     * @param $info - output of FakeIparapheur::getSignature()
      * @return mixed
      */
-    public function getSignedFile($file)
+    public function getSignedFile($info)
     {
-        return $file['signature'] ?: $file['document_signe']['document'];
+        return $info['signature'] ?: $info['document_signe']['document'];
     }
 
 
     /**
      * Workaround because it is embedded in IParapheur::getSignature()
      *
-     * @param $signature
+     * @param $info - output of FakeIparapheur::getSignature()
      * @param string $documentId
      * @return Fichier|null
      */
-    public function getBordereauFromSignature($signature, string $documentId = ''): ?Fichier
+    public function getBordereauFromSignature($info, string $documentId = ''): ?Fichier
     {
         $file = new Fichier();
-        $file->filename = $signature['nom_document'];
-        $file->content = $signature['document'];
+        $file->filename = $info['nom_document'];
+        $file->content = $info['document'];
         return $file;
     }
 
-    public function getMetadataSortie($signature): ?Fichier
+    /**
+     * @param $info - output of FakeIparapheur::getSignature()
+     */
+    public function getMetadataSortie($info): ?Fichier
     {
         return null;
     }

@@ -161,14 +161,14 @@ class IParapheurRecup extends ActionExecutor
         $actes->setData('has_historique', true);
         $actes->addFileFromData('iparapheur_historique', "iparapheur_historique.xml", $historique_xml);
 
-        $result = $signature->getLastHistorique($all_historique);
-        $actes->setData('parapheur_last_message', $result);
+        $lastHistorique = $signature->getLastHistorique($all_historique);
+        $actes->setData('parapheur_last_message', $lastHistorique);
 
-        if (strstr($result, "[Archive]")) {
+        if (strstr($lastHistorique, "[Archive]")) {
             return $this->retrieveDossier();
-        } elseif ($signature->isRejected($result)) {
-            $this->rejeteDossier($dossierID, $result);
-            $this->setLastMessage($result);
+        } elseif ($signature->isRejected($lastHistorique)) {
+            $this->rejeteDossier($dossierID, $lastHistorique);
+            $this->setLastMessage($lastHistorique);
             return true;
         }
         $nb_jour_max = $signature->getNbJourMaxInConnecteur();
@@ -181,7 +181,7 @@ class IParapheurRecup extends ActionExecutor
         }
 
         if (! $erreur) {
-            $this->setLastMessage($result);
+            $this->setLastMessage($lastHistorique);
             return true;
         }
 
@@ -207,11 +207,11 @@ class IParapheurRecup extends ActionExecutor
         $acte->setData('has_historique', true);
         $acte->addFileFromData('iparapheur_historique', "history.xml", $xmlHistory);
 
-        $lastDocumentHistory = $signature->getLastHistorique($history);
-        if ($signature->isFinalState($lastDocumentHistory)) {
+        $lastHistorique = $signature->getLastHistorique($history);
+        if ($signature->isFinalState($lastHistorique)) {
             $this->retrieveFile($signature, $acte, $documentId);
         }
-        if ($signature->isRejected($lastDocumentHistory)) {
+        if ($signature->isRejected($lastHistorique)) {
             $signature->effacerDossierRejete($documentId);
             $this->notify('rejet-iparapheur', $this->type, "Le document a été rejeté dans le parapheur");
             $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'rejet-iparapheur', "Le document a été rejeté dans le parapheur");
@@ -227,7 +227,7 @@ class IParapheurRecup extends ActionExecutor
         }
 
         if (!$error) {
-            $this->setLastMessage($lastDocumentHistory);
+            $this->setLastMessage($lastHistorique);
             return true;
         }
 

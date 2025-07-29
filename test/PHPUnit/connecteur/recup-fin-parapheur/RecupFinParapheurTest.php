@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Pastell\Client\IparapheurV5\ClientFactory;
+use Pastell\Client\IparapheurV5\ApiClientFactory;
 use Psr\Http\Client\ClientInterface;
 
 class RecupFinParapheurTest extends PastellTestCase
@@ -57,7 +57,7 @@ class RecupFinParapheurTest extends PastellTestCase
                     default => throw new UnrecoverableException('Unknown path : ' . $request->getUri()->getPath()),
                 };
             });
-        $clientFactory = $this->getObjectInstancier()->getInstance(ClientFactory::class);
+        $clientFactory = $this->getObjectInstancier()->getInstance(ApiClientFactory::class);
         $clientFactory->setClientInterface($clientInterface);
 
         $id_ce = $this->createConnector('recup-fin-parapheur', 'Recup fin parapheur')['id_ce'];

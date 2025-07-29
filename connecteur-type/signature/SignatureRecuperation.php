@@ -75,14 +75,13 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 $this->getComputedFileName('iparapheur_historique.xml'),
                 $historique_xml
             );
-            $lastState = $signature->getLastHistorique($all_historique);
-            $donneesFormulaire->setData($parapheur_last_message_element, $lastState);
+            $lastHistorique = $signature->getLastHistorique($all_historique);
+            $donneesFormulaire->setData($parapheur_last_message_element, $lastHistorique);
         } else {
-            $lastState = false;
+            $lastHistorique = false;
         }
 
-        $return = false;
-        if ($signature->isFinalState($lastState)) {
+        if ($signature->isFinalState($lastHistorique)) {
             $donneesFormulaire->setData(
                 $parapheur_date_signature_element,
                 $signature->getDateSignature($all_historique)
@@ -109,11 +108,11 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
             }
             return $return;
         }
-        if ($signature->isRejected($lastState)) {
+        if ($signature->isRejected($lastHistorique)) {
             $refusal_message = $signature->getRefusalMessage($dossierID);
-            $lastState = trim("$lastState $refusal_message");
-            $this->setLastMessage($lastState);
-            $donneesFormulaire->setData($parapheur_last_message_element, $lastState);
+            $lastHistorique = trim("$lastHistorique $refusal_message");
+            $this->setLastMessage($lastHistorique);
+            $donneesFormulaire->setData($parapheur_last_message_element, $lastHistorique);
             $return = $this->addFinalElements(
                 $dossierID,
                 $bordereau_element,
@@ -122,7 +121,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 $iparapheur_metadata_sortie_element
             );
             if ($return === true) {
-                $return = $this->rejeteDossier($dossierID, $lastState);
+                $return = $this->rejeteDossier($dossierID, $lastHistorique);
             }
             return $return;
         }
@@ -145,7 +144,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         }
 
         if (! $erreur) {
-            $this->setLastMessage($lastState);
+            $this->setLastMessage($lastHistorique);
             return true;
         }
 

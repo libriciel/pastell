@@ -7,7 +7,7 @@ namespace Pastell\Tests\Connector\IparapheurRest\action;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Pastell\Client\IparapheurV5\ClientFactory;
+use Pastell\Client\IparapheurV5\ApiClientFactory;
 use Pastell\Connector\IparapheurRest\Action\IpRestGetTypeList;
 use Pastell\Connector\IparapheurRest\IpRestException;
 use PastellTestCase;
@@ -36,8 +36,8 @@ class IpRestGetTypeListTest extends PastellTestCase
                 };
             });
 
-        /** @var ClientFactory $clientFactory */
-        $clientFactory = $this->getObjectInstancier()->getInstance(ClientFactory::class);
+        /** @var ApiClientFactory $clientFactory */
+        $clientFactory = $this->getObjectInstancier()->getInstance(ApiClientFactory::class);
         $clientFactory->setClientInterface($clientInterface);
     }
 

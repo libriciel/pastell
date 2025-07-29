@@ -4,25 +4,42 @@ declare(strict_types=1);
 
 namespace Pastell\Connector\IparapheurRest;
 
+use BadMethodCallException;
 use DonneesFormulaire;
 use Fichier;
 use FileToSign;
-use IparapheurV5Client\Api\Desk;
-use IparapheurV5Client\Api\Typology;
-use IparapheurV5Client\Model\ListSubtypesQuery;
-use IparapheurV5Client\Model\ListTenantsQuery;
-use IparapheurV5Client\Model\ListTypesQuery;
-use IparapheurV5Client\Model\ListUserDesksQuery;
+use JsonException;
+use OpenAPI\Client\Api\DeskApi;
+use OpenAPI\Client\Api\FolderApi;
+use OpenAPI\Client\Api\TenantApi;
+use OpenAPI\Client\Api\TypologyApi;
+use OpenAPI\Client\Api\WorkflowApi;
+use OpenAPI\Client\Configuration;
+use OpenAPI\Client\Model\Action;
+use OpenAPI\Client\Model\SimpleTaskParams;
 use Pastell\Action\TestConnectionInterface;
+use Pastell\Client\IparapheurV5\IparapheurAuthConfig;
+use Pastell\Client\IparapheurV5\ApiClientFactory;
+use Pastell\Client\IparapheurV5\Model\Premis;
+use Pastell\Client\IparapheurV5\Model\PremisObject;
+use Pastell\Client\IparapheurV5\Model\SignificantProperties;
+use Psr\Http\Client\ClientExceptionInterface;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RuntimeException;
 use SignatureConnecteur;
 use Http\Client\Exception;
-use IparapheurV5Client\Api\Tenant;
-use IparapheurV5Client\Client;
-use IparapheurV5Client\Exception\IparapheurV5Exception;
-use IparapheurV5Client\TokenQuery;
-use Pastell\Client\IparapheurV5\ClientFactory;
 use stdClass;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
+use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
+use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
+use TmpFolder;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
+use ZipArchive;
 
 class IparapheurRestConnector extends SignatureConnecteur implements
     IpRestTenantInterface,
@@ -33,29 +50,37 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     private const USERNAME = 'username';
     private const PASSWORD = 'password';
     private const TENANT_ID = 'tenant_id';
+    private const DESK_ID = 'desk_id';
     private const TYPE_ID = 'iparapheur_type_id';
+    public const IPARAPHEUR_NB_JOUR_MAX_DEFAULT = SignatureConnecteur::PARAPHEUR_NB_JOUR_MAX_DEFAULT;
     private DonneesFormulaire $connecteurConfig;
-    private Client $client;
+    private ClientInterface $client;
+    private Configuration $configuration;
+    private int $iparapheur_nb_jour_max;
+    private bool $iparapheur_multi_doc;
 
     public function __construct(
-        private readonly ClientFactory $clientFactory,
+        private readonly ApiClientFactory $apiClientFactory,
     ) {
     }
 
     /**
-     * @throws ExceptionInterface
-     * @throws Exception
-     * @throws IparapheurV5Exception
+     * @throws ClientExceptionInterface
+     * @throws JsonException
      */
     public function setConnecteurConfig(DonneesFormulaire $donneesFormulaire): void
     {
         $this->connecteurConfig = $donneesFormulaire;
-        $url = $donneesFormulaire->get(self::URL);
-        $auth = new TokenQuery();
-        $auth->username = $donneesFormulaire->get(self::USERNAME) ?: '';
-        $auth->password = $donneesFormulaire->get(self::PASSWORD) ?: '';
-        $this->client = $this->clientFactory->getInstance();
-        $this->client->authenticate($url, $auth);
+        $this->iparapheur_nb_jour_max = (int)$donneesFormulaire->get('iparapheur_nb_jour_max');
+        $this->iparapheur_multi_doc =  $donneesFormulaire->get('iparapheur_multi_doc') === true;
+        $iparapheurAuthConfig = new IparapheurAuthConfig(
+            $donneesFormulaire->get(self::USERNAME) ?: '',
+            $donneesFormulaire->get(self::PASSWORD) ?: '',
+            $donneesFormulaire->get(self::URL) ?: '',
+        );
+        [$httpClient, $config] = $this->apiClientFactory->createAuthenticatedClient($iparapheurAuthConfig);
+        $this->client = $httpClient;
+        $this->configuration = $config;
     }
 
     public function testConnexion(): string
@@ -69,16 +94,22 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
     public function getTenantList(): array
     {
-        $listTenantsQuery = new ListTenantsQuery();
-        $listTenantsQuery->page = 0;
         $tenants = [];
+        $page = 0;
+
         do {
-            $result = (new Tenant($this->client))->listTenants($listTenantsQuery);
-            foreach ($result->content as $tenant) {
-                $tenants[$tenant->id] = $tenant->name;
+            $result = (new TenantApi($this->client, $this->configuration))->listTenants($page);
+
+            foreach ($result->getContent() as $tenant) {
+                $tenants[$tenant->getId()] = $tenant->getName();
             }
-            $listTenantsQuery->page++;
-        } while ($result->pageable->pageNumber + 1 < $result->totalPages);
+
+            $pageable = $result->getPageable();
+            $currentPage = $pageable ? $pageable->getPageNumber() : $page;
+            $totalPages = $result->getTotalPages() ?? 1;
+
+            $page++;
+        } while ($currentPage + 1 < $totalPages);
 
         return $tenants;
     }
@@ -92,20 +123,29 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         if (! $tenantId) {
             throw new IpRestException("L'entité iparapheur est obligatoire pour voir la liste des bureaux");
         }
-        $listUserDesksQuery = new ListUserDesksQuery();
-        $listUserDesksQuery->page = 0;
+
         $desks = [];
+        $page = 0;
+
         do {
-            $result = (new Desk($this->client))->listUserDesks($tenantId, $listUserDesksQuery);
-            foreach ($result->content as $desk) {
-                $desks[$desk->id] = $desk->name;
+            $result = (new DeskApi($this->client, $this->configuration))->listUserDesks($tenantId, $page);
+
+            foreach ($result->getContent() as $desk) {
+                $desks[$desk->getId()] = $desk->getName();
             }
-            $listUserDesksQuery->page++;
-        } while ($result->pageable->pageNumber + 1 < $result->totalPages);
+
+            $pageable = $result->getPageable();
+            $currentPage = $pageable ? $pageable->getPageNumber() : $page;
+            $totalPages = $result->getTotalPages() ?? 1;
+
+            $page++;
+        } while ($currentPage + 1 < $totalPages);
 
         return $desks;
     }
-
+    /**
+     * @throws IpRestException
+     */
     /**
      * @throws IpRestException
      */
@@ -115,16 +155,23 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         if (! $tenantId) {
             throw new IpRestException("L'entité iparapheur est obligatoire pour voir la liste des types");
         }
-        $listTypesQuery = new ListTypesQuery();
-        $listTypesQuery->page = 0;
+
         $types = [];
+        $page = 0;
+
         do {
-            $result = (new Typology($this->client))->listTypes($tenantId, $listTypesQuery);
-            foreach ($result->content as $type) {
-                $types[$type->id] = $type->name;
+            $result = (new TypologyApi($this->client, $this->configuration))->listTypes($tenantId, $page);
+
+            foreach ($result->getContent() as $type) {
+                $types[$type->getId()] = $type->getName();
             }
-            $listTypesQuery->page++;
-        } while ($result->pageable->pageNumber + 1 < $result->totalPages);
+
+            $pageable = $result->getPageable();
+            $currentPage = $pageable ? $pageable->getPageNumber() : $page;
+            $totalPages = $result->getTotalPages() ?? 1;
+
+            $page++;
+        } while ($currentPage + 1 < $totalPages);
 
         return $types;
     }
@@ -136,119 +183,483 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     {
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
         $typeId = $this->connecteurConfig->get(self::TYPE_ID);
+
         if ((! $tenantId) || (! $typeId)) {
             throw new IpRestException(
                 "L'entité et le type iparapheur sont obligatoires pour voir la liste des sous-types"
             );
         }
-        $listSubtypesQuery = new ListSubtypesQuery();
-        $listSubtypesQuery->page = 0;
+
         $subTypes = [];
+        $page = 0;
+
         do {
-            $result = (new Typology($this->client))->listSubtypes($tenantId, $typeId, $listSubtypesQuery);
-            foreach ($result->content as $subType) {
-                $subTypes[$subType->id] = $subType->name;
+            $result = (new TypologyApi($this->client, $this->configuration))->listSubtypes($tenantId, $typeId, $page);
+
+            foreach ($result->getContent() as $subType) {
+                $subTypes[$subType->getId()] = $subType->getName();
             }
-            $listSubtypesQuery->page++;
-        } while ($result->pageable->pageNumber + 1 < $result->totalPages);
+
+            $pageable = $result->getPageable();
+            $currentPage = $pageable ? $pageable->getPageNumber() : $page;
+            $totalPages = $result->getTotalPages() ?? 1;
+
+            $page++;
+        } while ($currentPage + 1 < $totalPages);
 
         return $subTypes;
     }
 
-    public function getNbJourMaxInConnecteur()
+    private function getPremis(string $folderId): Premis
     {
-        // TODO: Implement getNbJourMaxInConnecteur() method.
+        $tenantId = $this->connecteurConfig->get(self::TENANT_ID, '');
+        $deskId = $this->connecteurConfig->get(self::DESK_ID, '');
+
+        $tmpFolder = new TmpFolder();
+        $tmp_folder = $tmpFolder->create();
+
+        try {
+            $premisXml = (new FolderApi($this->client, $this->configuration))
+                ->downloadFolderPremis($tenantId, $deskId, $folderId);
+
+            $propertyInfo = new PropertyInfoExtractor([], [new PhpDocExtractor(), new ReflectionExtractor()]);
+            $normalizer = new ObjectNormalizer(null, null, null, $propertyInfo);
+
+            $serializer = new Serializer(
+                [ $normalizer, new ArrayDenormalizer() ],
+                [ new XmlEncoder() ]
+            );
+
+            /** @var Premis $premis */
+            $premis = $serializer->deserialize($premisXml, Premis::class, 'xml');
+            $dom = new \DOMDocument();
+            $dom->loadXML($premisXml);
+            $xpath = new \DOMXPath($dom);
+            $xpath->registerNamespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+            $objectNodes = $dom->getElementsByTagName('object');
+            foreach ($objectNodes as $index => $node) {
+                $type = $node->getAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'type');
+                if (isset($premis->object[$index])) {
+                    $premis->object[$index]->type = $type;
+                }
+            }
+
+            return $premis;
+        } finally {
+            $tmpFolder->delete($tmp_folder);
+        }
     }
 
-    public function getSousType()
+    public function getNbJourMaxInConnecteur(): int
     {
-        // TODO: Implement getSousType() method.
+        if ($this->iparapheur_nb_jour_max) {
+            return $this->iparapheur_nb_jour_max;
+        }
+        return self::IPARAPHEUR_NB_JOUR_MAX_DEFAULT;
     }
 
-    public function getDossierID($id, $name)
+    /**
+     * @throws IpRestException
+     */
+    public function getSousType(): array
     {
-        // TODO: Implement getDossierID() method.
+        return $this->getSubTypeList();
     }
 
-    public function sendDossier(FileToSign $dossier)
+    public function getDossierID($id, $name): string
     {
-        // TODO: Implement sendDossier() method.
+        $name = preg_replace('#[^A-Za-z0-9éèçàêîâôûùüÉÈÇÀÊÎÂÔÛÙÜ_]#u', '_', $name);
+        $name = mb_substr($name, 0, 100);
+        return "$id $name";
     }
 
-    public function getSignature($dossierID, $archive = true)
+    public function sendDossier(FileToSign $dossier): string|false
     {
-        // TODO: Implement getSignature() method.
+        $tempFiles = [];
+        try {
+            $premis = Premis::fromFileToSign($dossier, $this->iparapheur_multi_doc);
+            $xml = $premis->generateDraftPremis();
+
+            $premisPath = tempnam(sys_get_temp_dir(), 'folder-premis-') . '.xml';
+            file_put_contents($premisPath, $xml);
+            $folderFile = new \SplFileObject($premisPath, 'r');
+            $tempFiles[] = $premisPath;
+
+            $mainPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $dossier->document->filename;
+            file_put_contents($mainPath, $dossier->document->content);
+            $documents = [new \SplFileObject($mainPath, 'r')];
+            $tempFiles[] = $mainPath;
+
+            foreach ($dossier->annexes as $annexe) {
+                $annexePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $annexe->filename;
+                file_put_contents($annexePath, $annexe->content);
+                $documents[] = new \SplFileObject($annexePath, 'r');
+                $tempFiles[] = $annexePath;
+            }
+
+            $tenantId = $this->connecteurConfig->get(self::TENANT_ID, '');
+            $deskId = $this->connecteurConfig->get(self::DESK_ID, '');
+            $response = (new FolderApi($this->client, $this->configuration))->createFolder($tenantId, $deskId, $folderFile, $documents, false);
+            $folderId = $response->getId();
+            if ($folderId === null) {
+                return false;
+            }
+            $created_premis = $this->getPremis($folderId);
+            $start_task_id = $created_premis->getStartEvent()->eventIdentifier->eventIdentifierValue;
+            $simple_task_params = $this->createSimpleTaskParamsFromFileToSign($dossier);
+            (new WorkflowApi($this->client, $this->configuration))->start($tenantId, $deskId, $folderId, $start_task_id, $simple_task_params);
+            return $folderId;
+        } finally {
+            foreach ($tempFiles as $path) {
+                if (file_exists($path)) {
+                    unlink($path);
+                }
+            }
+        }
     }
 
-    public function getAllHistoriqueInfo($dossierID)
+    public function createSimpleTaskParamsFromFileToSign(FileToSign $fileToSign): SimpleTaskParams
     {
-        // TODO: Implement getAllHistoriqueInfo() method.
+        $taskParams = new SimpleTaskParams();
+
+        $taskParams->setPublicAnnotation($fileToSign->annotationPublic ?? '');
+        $taskParams->setPrivateAnnotation($fileToSign->annotationPrivee ?? '');
+        if (\is_array($fileToSign->metadata)) {
+            $taskParams->setMetadata(array_map(static fn($value) => $value, $fileToSign->metadata));
+        }
+
+        return $taskParams;
     }
 
+
+    /**
+     * @throws \Exception
+     */
+    public function getSignature($dossierID, $archive = true): array
+    {
+        $premis = $this->getPremis($dossierID);
+        $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
+        $deskId = $this->connecteurConfig->get(self::DESK_ID, '');
+        $zipData = (new FolderApi($this->client, $this->configuration))->downloadFolderZip($tenantId, $deskId, $dossierID);
+
+        $tmpFolder = new TmpFolder();
+        $tmp_folder = $tmpFolder->create();
+        $tmp_path = $tmp_folder . "/$dossierID.zip";
+        file_put_contents($tmp_path, $zipData);
+
+        $zip = new ZipArchive();
+        if ($zip->open($tmp_path) === true) {
+            $zip->extractTo($tmp_folder);
+            $zip->close();
+        } else {
+            throw new RuntimeException("Impossible d'extraire l'archive ZIP.");
+        }
+
+        $info = [];
+        $info['bordereau'] = null;
+        $info['meta_donnees'] = [];
+        $info['documents'] = [];
+        $info['detached_signatures'] = [];
+        $info['annexes'] = [];
+        $info['premis'] = $premis;
+        $info['is_pes'] = false;
+        $info['is_detached'] = false;
+
+        foreach ($premis->object as $object) {
+            if ($object->type === PremisObject::FILE && isset($object->signatureInformation)) {
+                $info['is_detached'] = true;
+                break;
+            }
+        }
+
+        $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($tmp_folder));
+        $filesMap = [];
+        foreach ($rii as $file) {
+            if ($file->isFile()) {
+                $filesMap[$file->getFilename()] = [
+                    'content' => file_get_contents($file->getPathname()),
+                    'path' => $file->getPathname(),
+                ];
+            }
+        }
+
+        $entity = $premis->getIntellectualEntity();
+        $bordereauFilename = $entity->originalName . '_bordereau.pdf';
+        if (isset($filesMap[$bordereauFilename])) {
+            $fichier = new Fichier();
+            $fichier->filename = $bordereauFilename;
+            $fichier->content =  $filesMap[$bordereauFilename]['content'];
+            $info['bordereau'] = $fichier;
+            unset($filesMap[$bordereauFilename]);
+        }
+
+        foreach ($premis->object as $object) {
+            if ($object->type !== PremisObject::FILE) {
+                continue;
+            }
+            $filename = $object->originalName;
+            if (!isset($filesMap[$filename])) {
+                continue;
+            }
+            $fichier = new Fichier();
+            $fichier->filename = $filename;
+            $fichier->content = $filesMap[$filename]['content'];
+            foreach ($object->significantProperties as $prop) {
+                if ($prop->significantPropertiesType === SignificantProperties::MAIN_DOCUMENT) {
+                    $target = strtolower($prop->significantPropertiesValue) === SignificantProperties::TRUE
+                        ? 'documents'
+                        : 'annexes';
+                    $info[$target][] = $fichier;
+                    break;
+                }
+            }
+            if (isset($object->signatureInformation)) {
+                $info['is_detached'] = true;
+            }
+            unset($filesMap[$filename]);
+        }
+
+        if ($info['is_detached']) {
+            foreach ($filesMap as $filename => $data) {
+                if (str_contains($data['path'], DIRECTORY_SEPARATOR . 'Documents principaux' . DIRECTORY_SEPARATOR)) {
+                    $fichier = new Fichier();
+                    $fichier->filename = $filename;
+                    $fichier->content = $data['content'];
+                    $info['detached_signatures'][] = $fichier;
+                }
+            }
+        }
+        return $info;
+    }
+
+    public function getAllHistoriqueInfo($dossierID): \stdClass
+    {
+        $premis = $this->getPremis($dossierID);
+        $events = $premis->getAllCurrentEvents();
+
+        $logDossier = [];
+
+        foreach ($events as $event) {
+            $timestamp = $event->eventDateTime ?? '';
+            $agentName = '';
+            if (
+                !empty($event->linkingAgentIdentifier) &&
+                !empty($event->linkingAgentIdentifier->linkingAgentIdentifierValue)
+            ) {
+                $agentName = $premis->getAgent($event->linkingAgentIdentifier->linkingAgentIdentifierValue)->agentName;
+            }
+
+            $annotation = $event->eventOutcomeInformation->eventOutcomeDetail->eventOutcomeDetailNote ?? '';
+
+            $logDossier[] = (object)[
+                'timestamp'  => $timestamp,
+                'nom'        => $agentName,
+                'status'     => $event->eventType,
+                'annotation' => $annotation,
+            ];
+        }
+
+
+        $result = new \stdClass();
+        $result->LogDossier = $logDossier;
+
+        return $result;
+    }
+
+    /**
+     * @param $history - output of IparapheurRestConnector::getAllHistoriqueInfo()
+     * @throws \Exception
+     */
     public function getLastHistorique($history): string
     {
-        // TODO: Implement getLastHistorique() method.
-        return '';
+        $lastLog = end($history->LogDossier);
+        return \sprintf(
+            'Étape en cours : [%s] %s',
+            $lastLog->status,
+            $lastLog->annotation
+        );
     }
 
-    public function getRefusalMessage($dossierID)
+
+    public function getRefusalMessage($dossierID): string
     {
-        // TODO: Implement getRefusalMessage() method.
+        return $this->getPremis($dossierID)->getRefusalMessage();
     }
 
+    /**
+     * @param $history - output of IparapheurRestConnector::getAllHistoriqueInfo()
+     * @throws \Exception
+     */
     public function getDateSignature(array|stdClass $history): string
     {
-        // TODO: Implement getDateSignature() method.
-        return '';
+        foreach (array_reverse($history->LogDossier) as $log) {
+            if (\in_array($log->status, [Action::SIGNATURE, Action::EXTERNAL_SIGNATURE], true)) {
+                $logSignature = $log;
+                break;
+            }
+        }
+        return isset($logSignature) ? date('Y-m-d', strtotime($logSignature->timestamp)) : '';
     }
 
-    public function effacerDossierRejete($dossierID)
+    /**
+     * @throws JsonException
+     */
+    public function effacerDossierRejete($dossierID): bool|string
     {
-        // TODO: Implement effacerDossierRejete() method.
+        try {
+            $this->getLogger()->debug("Effacement du dossier $dossierID rejeté");
+            $tenantId = $this->connecteurConfig->get(self::TENANT_ID, '');
+            $deskId = $this->connecteurConfig->get(self::DESK_ID, '');
+            (new FolderApi($this->client, $this->configuration))->deleteFolder(
+                $tenantId,
+                $deskId,
+                $dossierID
+            );
+            $this->getLogger()->debug("Dossier $dossierID supprimé");
+        } catch (Exception $e) {
+            $this->lastError = $e->getMessage();
+            $this->getLogger()->notice("Impossible d'effacer le dossier $dossierID : " . $e->getMessage());
+            return false;
+        }
+        return true;
     }
 
-    public function exercerDroitRemordDossier($dossierID)
+    public function exercerDroitRemordDossier($dossierID): bool
     {
-        // TODO: Implement exercerDroitRemordDossier() method.
+        throw new BadMethodCallException('Not implemented');
     }
 
-    public function isFinalState(string $lastState): bool
+    /**
+     * @param $lastHistorique - output of IparapheurRestConnector::getLastHistorique()
+     */
+    public function isFinalState(string $lastHistorique): bool
     {
-        // TODO: Implement isFinalState() method.
-        return false;
+        return str_contains($lastHistorique, '[' . Action::ARCHIVE . ']');
     }
 
-    public function isRejected(string $lastState): bool
+    /**
+     * @param $lastHistorique - output of IparapheurRestConnector::getLastHistorique()
+     */
+    public function isRejected(string $lastHistorique): bool
     {
-        // TODO: Implement isRejected() method.
-        return false;
+        return str_contains($lastHistorique, '[' . Action::DELETE . ']');
     }
 
-    public function isDetached($signature): bool
+    /**
+     * @param array $info output of IparapheurRestConnector::getSignature()
+     */
+    public function hasMultiDocumentSigne($info): bool
     {
-        // TODO: Implement isDetached() method.
-        return false;
+        return ($this->iparapheur_multi_doc && count($info['documents']) > 1);
     }
 
-    public function getDetachedSignature($file)
+    /**
+     * @param array $info output of IparapheurRestConnector::getSignature()
+     */
+    public function isDetached($info): bool
     {
-        // TODO: Implement getDetachedSignature() method.
+        return $info['is_detached'];
     }
 
-    public function getSignedFile($file)
+    /**
+     * @param array $info output of IparapheurRestConnector::getSignature()
+     */
+    public function getDetachedSignature($info): string
     {
-        // TODO: Implement getSignedFile() method.
+        $zipPath = tempnam(sys_get_temp_dir(), 'detached-signature-zip-');
+        $zip = new \ZipArchive();
+
+        if ($zip->open($zipPath, \ZipArchive::CREATE) !== true) {
+            throw new \RuntimeException("Impossible de créer l'archive ZIP");
+        }
+
+        /** @var Fichier $file */
+        foreach ($info['detached_signatures'] as $file) {
+            $zip->addFromString($file->filename, $file->content);
+        }
+
+        $zip->close();
+
+        $zipContent = file_get_contents($zipPath);
+        unlink($zipPath);
+
+        return $zipContent ?: '';
     }
 
-    public function getBordereauFromSignature($signature, string $documentId = ''): ?Fichier
+    /**
+     * @param array $info output of IparapheurRestConnector::getSignature()
+     */
+    public function getSignedFile($info)
     {
-        // TODO: Implement getBordereauFromSignature() method.
-        return new Fichier();
+        /** @var Fichier $signedFile */
+        $signedFile = $info['documents'][0];
+        return $signedFile->content;
     }
 
-    public function getMetadataSortie($signature): ?Fichier
+    /**
+     * @param array $info output of IparapheurRestConnector::getSignature()
+     */
+    public function getBordereauFromSignature($info, string $documentId = ''): ?Fichier
     {
-        // TODO: Implement getMetadataSortie() method.
-        return new Fichier();
+        /** @var Fichier $bordereau */
+        $bordereau = $info['bordereau'];
+        return $bordereau;
+    }
+
+    /**
+     * @param array $info output of IparapheurRestConnector::getSignature()
+     * @throws JsonException
+     */
+    public function getMetadataSortie($info): ?Fichier
+    {
+        /** @var Premis $premis */
+        $premis = $info['premis'];
+        foreach ($premis->object as $object) {
+            if ($object->type === PremisObject::INTELLECTUAL_ENTITY) {
+                $metadata = [];
+                foreach ($object->significantProperties as $property) {
+                    $metadata[$property->significantPropertiesType] = $property->significantPropertiesValue;
+                }
+
+                $file = new Fichier();
+                $file->filename = 'metadonneesSortieParapheur.json';
+                $file->content = json_encode($metadata, JSON_THROW_ON_ERROR);
+                return $file;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param array $info output of IparapheurRestConnector::getSignature()
+     */
+    public function getAllDocumentSigne(array $info): array
+    {
+        $documents = [];
+        foreach ($info['documents'] as $document) {
+            /** @var Fichier $document */
+            $documents[] = [
+                'nom_document' => $document->filename,
+                'document' => $document->content,
+            ];
+        }
+        return $documents;
+    }
+
+    /**
+     * @param array $info output of IparapheurRestConnector::getSignature()
+     */
+    public function getOutputAnnexe($info, int $ignore_count): array
+    {
+        if (empty($info['annexes'])) {
+            return [];
+        }
+
+        return array_map(static function ($fichier) {
+            return [
+                'nom_document' => $fichier->filename,
+                'document' => $fichier->content,
+            ];
+        }, array_slice($info['annexes'], $ignore_count));
     }
 }
