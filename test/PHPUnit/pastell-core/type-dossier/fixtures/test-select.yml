@@ -261,10 +261,10 @@ formulaire:
             visionneuse-no-link: true
         type_acte:
             no-show: true
-            onchange: typology-change-by-api
+            read-only: true
         type_pj:
             no-show: true
-            onchange: typology-change-by-api
+            read-only: true
     'Retour Tdt':
         has_bordereau:
             no-show: true
@@ -536,8 +536,6 @@ action:
             - document_papier
             - classification
             - type_piece
-            - type_acte
-            - type_pj
             - acte_publication_date
         modification-no-change-etat: true
     rejet-iparapheur:
@@ -587,8 +585,6 @@ action:
             - document_papier
             - classification
             - type_piece
-            - type_acte
-            - type_pj
             - acte_publication_date
         modification-no-change-etat: true
     error-ged:
@@ -676,8 +672,6 @@ action:
             - document_papier
             - classification
             - type_piece
-            - type_acte
-            - type_pj
             - acte_publication_date
         modification-no-change-etat: true
     reception-partielle:
@@ -712,8 +706,6 @@ action:
             - document_papier
             - classification
             - type_piece
-            - type_acte
-            - type_pj
             - acte_publication_date
         modification-no-change-etat: true
     reponse:
@@ -932,21 +924,6 @@ action:
         action-class: StandardAction
         connecteur-type: TdT
         connecteur-type-action: TdtAnnexeTypologieAnnexeChange
-    typology-change-by-api:
-        no-workflow: true
-        rule:
-            role_id_e: no-role
-        action-class: StandardAction
-        connecteur-type: TdT
-        connecteur-type-action: TdtTypologieChangeByApi
-        connecteur-type-mapping:
-            type_acte: type_acte
-            type_pj: type_pj
-            type_piece: type_piece
-            type_piece_fichier: type_piece_fichier
-            acte_nature: acte_nature
-            arrete: document
-            autre_document_attache: annexe
     duplicate:
         name-action: "Dupliquer l'acte"
         rule:

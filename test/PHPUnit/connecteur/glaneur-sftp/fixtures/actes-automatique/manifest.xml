@@ -7,7 +7,7 @@
   <data name='classification' value="1.1 - Marchés publics"/>
   <data name='type_acte' value="99_DC"/>
   <data name='type_pj' value='["12_DA","17_GA"]'/>
-  <data name='type_piece' value="ok"/>
+  <data name='type_piece' value="3 fichier(s) typé(s)"/>
   <data name='envoi_signature' value="on"/>
   <data name='envoi_signature_check' value="on"/>
   <data name='envoi_tdt' value="on"/>
@@ -19,5 +19,8 @@
   <files name='autre_document_attache'>
     <file content='vide1.pdf'/>
     <file content='vide2.pdf'/>
+  </files>
+  <files name='type_piece_fichier'>
+    <file content='type_piece_3.json'/>
   </files>
 </flux>

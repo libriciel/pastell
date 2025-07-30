@@ -77,8 +77,8 @@ class ActesGeneriqueSignatureVerifTest extends PastellTestCase
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
         $this->assertTrue($donneesFormulaire->isEditable('date_de_lacte'));
-        $this->assertTrue($donneesFormulaire->isEditable('type_acte'));
-        $this->assertTrue($donneesFormulaire->isEditable('type_pj'));
+        static::assertFalse($donneesFormulaire->isEditable('type_acte'));
+        static::assertFalse($donneesFormulaire->isEditable('type_pj'));
     }
 
     /**

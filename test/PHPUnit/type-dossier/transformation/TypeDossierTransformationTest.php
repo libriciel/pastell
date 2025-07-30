@@ -301,6 +301,7 @@ EOT;
                 'date_de_lacte' => '2000-01-01',
                 'classification' => '3.1',
                 'type_acte' => '99_AI',
+                'type_piece' => '1 fichier(s) typé(s)'
             ])
         );
         $this->associateFluxWithConnector($transfoConnector['id_ce'], self::TRANSFORMATION, 'transformation');
@@ -313,6 +314,14 @@ EOT;
             'envoi_transformation' => true,
         ]);
         $donneesFormulaire->addFileFromData('fichier', 'arrete.pdf', 'foo');
+        $donneesFormulaire->addFileFromData(
+            'type_piece_fichier',
+            'type_piece.json',
+            '{
+                        "filename": "arrete.pdf",
+                        "typologie": "Acte individuel (99_AI)"
+                       }'
+        );
 
         $this->assertTrue(
             $this->triggerActionOnDocument($document['id_d'], 'orientation')

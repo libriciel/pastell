@@ -83,8 +83,8 @@ class ActesGeneriqueTest extends PastellTestCase
         $donnesFormulaire->addFileFromData('autre_document_attache', 'annexe1.pdf', "baz", 1);
 
         $this->getInternalAPI()->patch(
-            "/entite/1/document/$id_d",
-            ['type_acte' => '99_AI','type_pj' => json_encode(['99_AU', '22_ZZ'])]
+            "/entite/1/document/$id_d/externalData/type_piece",
+            ['type_pj' => ['99_AI','99_AU', '22_ZZ']]
         );
 
         $donnesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);

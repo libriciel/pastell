@@ -1,29 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 class TdtTypologieChangeByApiTest extends PastellTestCase
 {
     /**
      * @throws NotFoundException
      * @throws Exception
      */
-    public function testAddTypeActe()
+    public function testAddTypeActe(): void
     {
 
         $id_d = $this->createActeGenerique();
         $donneesFormulaire = $this->setActeData($id_d);
 
-        $info = $this->getInternalAPI()->patch("/Entite/1/document/$id_d/", ['type_acte' => '22_NE']);
-        $this->assertEquals("22_NE", $info['content']['data']['type_acte']);
-        $this->assertEquals("1 fichier(s) typé(s)", $info['content']['data']['type_piece']);
-        $this->assertEquals(
-            '[{"filename":"arrete.pdf","typologie":"Notice explicative (22_NE)"}]',
-            $donneesFormulaire->getFileContent('type_piece_fichier')
+        $info = $this->getInternalAPI()->patch(
+            "/Entite/1/document/$id_d/externalData/type_piece",
+            ['type_pj' => ['22_NE', '41_NC', '22_DP']]
         );
 
-        $info = $this->getInternalAPI()->patch("/Entite/1/document/$id_d/", ['type_pj' => '["41_NC","22_DP"]']);
-        $this->assertEquals("22_NE", $info['content']['data']['type_acte']);
-        $this->assertEquals('["41_NC","22_DP"]', $info['content']['data']['type_pj']);
-        $this->assertEquals("3 fichier(s) typé(s)", $info['content']['data']['type_piece']);
+        static::assertSame('22_NE', $info['data']['type_acte']);
+        static::assertSame('["41_NC","22_DP"]', $info['data']['type_pj']);
+        static::assertSame('3 fichier(s) typé(s)', $info['data']['type_piece']);
         static::assertJsonFileEqualsJsonFile(
             __DIR__ . '/fixtures/type_piece_fichier.json',
             $donneesFormulaire->getFilePath('type_piece_fichier')
@@ -34,74 +32,83 @@ class TdtTypologieChangeByApiTest extends PastellTestCase
      * @throws NotFoundException
      * @throws Exception
      */
-    public function testAddWrongTypeActe()
+    public function testAddWrongTypeActe(): void
     {
 
         $id_d = $this->createActeGenerique();
         $this->setActeData($id_d);
         $this->expectException(UnrecoverableException::class);
-        $this->expectExceptionMessage("Le type de pièce «22_XX» ne correspond pas pour la nature et la classification selectionnée");
-        $this->configureDocument($id_d, ['type_acte' => '22_XX']);
+        $this->expectExceptionMessage(
+            'Le type_pj «22_XX» ne correspond pas pour la nature et la classification sélectionnée'
+        );
+        $this->getInternalAPI()->patch(
+            "/Entite/1/document/$id_d/externalData/type_piece",
+            ['type_pj' => ['22_XX', '41_NC', '22_DP']]
+        );
     }
 
     /**
      * @throws NotFoundException
      * @throws Exception
      */
-    public function testAddWrongTypePJ()
+    public function testAddWrongTypePJ(): void
     {
 
         $id_d = $this->createActeGenerique();
         $this->setActeData($id_d);
         $this->expectException(UnrecoverableException::class);
-        $this->expectExceptionMessage("Le type de pièce «99_XX» ne correspond pas pour la nature et la classification selectionnée");
-        $this->configureDocument($id_d, ['type_pj' => '["41_NC","99_XX"]']);
+        $this->expectExceptionMessage(
+            'Le type_pj «99_XX» ne correspond pas pour la nature et la classification sélectionnée'
+        );
+        $this->getInternalAPI()->patch(
+            "/Entite/1/document/$id_d/externalData/type_piece",
+            ['type_pj' => ['22_NE','41_NC', '99_XX']]
+        );
     }
 
     /**
      * @throws NotFoundException
      * @throws Exception
      */
-    public function testFailCountTypePJ()
+    public function testFailCountTypePJ(): void
     {
         $id_d = $this->createActeGenerique();
         $this->setActeData($id_d);
         $this->expectException(UnrecoverableException::class);
-        $this->expectExceptionMessage("Le nombre de type de pièce «1» ne correspond pas au nombre d'annexe «2»");
-        $this->configureDocument($id_d, ['type_pj' => '["41_NC"]']);
+        $this->expectExceptionMessage('Le nombre de type_pj fourni «2» ne correspond pas au nombre de documents (acte et annexes) «3»');
+        $this->getInternalAPI()->patch(
+            "/Entite/1/document/$id_d/externalData/type_piece",
+            ['type_pj' => ['22_NE','41_NC']]
+        );
     }
 
 
     /**
-     * @return mixed
      * @throws Exception
      */
-    private function createActeGenerique()
+    private function createActeGenerique(): string
     {
-        $connecteur_info = $this->createConnector("fakeTdt", "Bouchon tdt");
+        $connecteur_info = $this->createConnector('fakeTdt', 'Bouchon tdt');
 
         $connecteurDonneesFormulaire = $this->getDonneesFormulaireFactory()
             ->getConnecteurEntiteFormulaire($connecteur_info['id_ce']);
 
         $connecteurDonneesFormulaire->addFileFromCopy(
             'classification_file',
-            "classification.xml",
-            __DIR__ . "/../../module/actes-generique/fixtures/classification.xml"
+            'classification.xml',
+            __DIR__ . '/../../module/actes-generique/fixtures/classification.xml'
         );
-        $this->associateFluxWithConnector($connecteur_info['id_ce'], "actes-generique", "TdT");
+        $this->associateFluxWithConnector($connecteur_info['id_ce'], 'actes-generique', 'TdT');
 
-        $document_info = $this->createDocument("actes-generique");
-        $id_d = $document_info['id_d'];
-        return $id_d;
+        $document_info = $this->createDocument('actes-generique');
+        return $document_info['id_d'];
     }
 
     /**
-     * @param $id_d
-     * @return DonneesFormulaire
      * @throws NotFoundException
      * @throws Exception
      */
-    private function setActeData($id_d)
+    private function setActeData(string $id_d): DonneesFormulaire
     {
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
 
@@ -111,18 +118,18 @@ class TdtTypologieChangeByApiTest extends PastellTestCase
         ]);
 
 
-        $donneesFormulaire->addFileFromData('arrete', "arrete.pdf", "foo");
+        $donneesFormulaire->addFileFromData('arrete', 'arrete.pdf', 'foo');
 
         $donneesFormulaire->addFileFromData(
             'autre_document_attache',
-            "annexe1.pdf",
-            "bar",
+            'annexe1.pdf',
+            'bar',
             0
         );
         $donneesFormulaire->addFileFromData(
             'autre_document_attache',
-            "annexe2.pdf",
-            "baz",
+            'annexe2.pdf',
+            'baz',
             1
         );
         return $donneesFormulaire;

@@ -77,6 +77,8 @@ doivent être mises à jour #1667
 - Suppression de IParapheur::getMetaDonnee et SignatureRecuperation::getMetaDonnee #2211
 - Suppression de FluxDataStandard, use FluxDataSedaDefault instead #2211
 - Suppression de SignatureConnecteur::getDossierID($id, $name) #2289
+- Suppression de `TdtTypologieChangeByApi` (@deprecated PA 3.0.0, Pour modifier la typologie des actes, il faut utiliser 
+  la fonction de l'API externalData `type_piece` et ne pas modifier directement `type_acte` et `type_pj`) #2283
 
 ## Dépréciations
 

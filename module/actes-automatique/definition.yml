@@ -83,10 +83,10 @@ formulaire:
             visionneuse-no-link: true
         type_acte:
             no-show: true
-            onchange: type-acte-change-by-api
+            read-only: true
         type_pj:
             no-show: true
-            onchange: type-acte-change-by-api
+            read-only: true
         envoi_signature_check:
             name: 'Transmission à la signature'
             type: checkbox
@@ -469,8 +469,6 @@ action:
             - envoi_ged
             - envoi_sae
             - type_piece
-            - type_acte
-            - type_pj
         rule:
             role_id_e: no-role
         action-automatique: orientation
@@ -841,10 +839,3 @@ action:
         action-class: StandardAction
         connecteur-type: TdT
         connecteur-type-action: TdtAnnexeTypologieAnnexeChange
-    type-acte-change-by-api:
-        no-workflow: true
-        rule:
-            role_id_e: no-role
-        action-class: StandardAction
-        connecteur-type: TdT
-        connecteur-type-action: TdtTypologieChangeByApi

@@ -113,7 +113,7 @@ class GlaneurActesTest extends PastellTestCase
             "flux_name" => "actes-automatique",
             "action_ok" => "prepare-iparapheur",
             "action_ko" => "fatal-error",
-            "file_preg_match" => "arrete: #^vide1.pdf#\nautre_document_attache:  #^vide2.pdf#",
+            "file_preg_match" => "arrete: #^vide1.pdf#\nautre_document_attache:  #^vide2.pdf#\ntype_piece_fichier: #^type_piece_2.json#",
             'metadata_static' => <<<EOT
 acte_nature: 3
 numero_de_lacte: 20200520
@@ -122,6 +122,7 @@ date_de_lacte: 2020-05-20
 classification: 4.2 - Personnel contractuel
 type_acte: 99_AI
 type_pj: ["99_AI"]
+type_piece: 2 fichier(s) typé(s)
 envoi_tdt: true
 EOT,
         ]);
