@@ -1,19 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 class TypeDossierTransformationTest extends PastellTestCase
 {
     public const TRANSFORMATION = 'studio-transformation';
-    public const PATH_CONFIG_JSON = __DIR__ . "/../../connecteur/transformation-generique/fixtures/definition.json";
+    public const PATH_CONFIG_JSON = __DIR__ . '/../../connecteur/transformation-generique/fixtures/definition.json';
     public const PATH_CONFIG_JSON_WITH_TWIG_ERROR
         = __DIR__ . '/../../connecteur/transformation-generique/fixtures/definition_with_twig_error.json';
 
-    /** @var TypeDossierLoader */
-    private $typeDossierLoader;
+    private TypeDossierLoader $typeDossierLoader;
 
     private ?TmpFolder $tmpFolder;
 
-    /** @var string */
-    private $workspace_path;
+    private string $workspace_path;
 
     /**
      * @throws Exception
@@ -22,7 +22,7 @@ class TypeDossierTransformationTest extends PastellTestCase
     {
         parent::setUp();
         $this->typeDossierLoader = $this->getObjectInstancier()->getInstance(TypeDossierLoader::class);
-        // pour le glaneur:
+        // pour le glaneur :
         $this->tmpFolder = new TmpFolder();
         $this->workspace_path = $this->tmpFolder->create();
         $this->getObjectInstancier()->setInstance('workspacePath', $this->workspace_path);
@@ -40,42 +40,41 @@ class TypeDossierTransformationTest extends PastellTestCase
      * @throws DonneesFormulaireException
      * @throws Exception
      */
-    private function createAndAssociateTdtConnector(string $typeDossierId): void
+    private function createAndAssociateTdtConnector(): void
     {
-        $connector = $this->createConnector("fakeTdt", "Bouchon tdt");
+        $connector = $this->createConnector('fakeTdt', 'Bouchon tdt');
         $connecteurConfig = $this->getDonneesFormulaireFactory()->getConnecteurEntiteFormulaire(
             $connector['id_ce']
         );
         $connecteurConfig->addFileFromCopy(
             'classification_file',
-            "classification.xml",
-            __DIR__ . "/../../module/actes-generique/fixtures/classification.xml"
+            'classification.xml',
+            __DIR__ . '/../../module/actes-generique/fixtures/classification.xml'
         );
-        $this->associateFluxWithConnector($connector['id_ce'], $typeDossierId, "TdT");
+        $this->associateFluxWithConnector($connector['id_ce'], self::TRANSFORMATION, 'TdT');
     }
 
     /**
-     * @param string $typeDossierId
-     * @param string $pathJsonConfig
-     * @return array
      * @throws DonneesFormulaireException
      * @throws NotFoundException
      * @throws TypeDossierException
+     * @throws Exception
      */
-    private function createConnectorAndDocument(string $typeDossierId, string $pathJsonConfig): array
+    private function createConnectorAndDocument(string $pathJsonConfig): array
     {
-        $this->typeDossierLoader->createTypeDossierDefinitionFile($typeDossierId);
+        $this->typeDossierLoader->createTypeDossierDefinitionFile(self::TRANSFORMATION);
 
-        $info_connecteur = $this->createConnector("transformation-generique", "Transformation");
-        $connecteurConfig = $this->getDonneesFormulaireFactory()->getConnecteurEntiteFormulaire($info_connecteur['id_ce']);
+        $info_connecteur = $this->createConnector('transformation-generique', 'Transformation');
+        $connecteurConfig = $this->getDonneesFormulaireFactory()
+            ->getConnecteurEntiteFormulaire($info_connecteur['id_ce']);
         $connecteurConfig->addFileFromCopy(
             'definition',
-            "definition.json",
+            'definition.json',
             $pathJsonConfig
         );
-        $this->associateFluxWithConnector($info_connecteur['id_ce'], $typeDossierId, "transformation");
+        $this->associateFluxWithConnector($info_connecteur['id_ce'], self::TRANSFORMATION, 'transformation');
 
-        $info_connecteur = $this->createConnector("fakeIparapheur", "Bouchon i-parapheur");
+        $info_connecteur = $this->createConnector('fakeIparapheur', 'Bouchon i-parapheur');
         $this->configureConnector(
             $info_connecteur['id_ce'],
             [
@@ -85,11 +84,11 @@ class TypeDossierTransformationTest extends PastellTestCase
                 'iparapheur_temps_reponse' => 0
             ]
         );
-        $this->associateFluxWithConnector($info_connecteur['id_ce'], $typeDossierId, "signature");
+        $this->associateFluxWithConnector($info_connecteur['id_ce'], self::TRANSFORMATION, 'signature');
 
-        $this->createAndAssociateTdtConnector($typeDossierId);
+        $this->createAndAssociateTdtConnector();
 
-        $info = $this->createDocument($typeDossierId);
+        $info = $this->createDocument(self::TRANSFORMATION);
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($info['id_d']);
         $donneesFormulaire->setTabData([
             'titre' => 'Foo',
@@ -100,7 +99,7 @@ class TypeDossierTransformationTest extends PastellTestCase
             'date_de_lacte' => '2021-06-22',
             'classification' => '2.1',
         ]);
-        $donneesFormulaire->addFileFromData('fichier', 'arrete.pdf', "foo");
+        $donneesFormulaire->addFileFromData('fichier', 'arrete.pdf', 'foo');
 
         $this->getInternalAPI()->patch(
             "/entite/1/document/{$info['id_d']}/externalData/type_piece",
@@ -110,9 +109,7 @@ class TypeDossierTransformationTest extends PastellTestCase
         return $info;
     }
 
-
     /**
-     * @return void
      * @throws DonneesFormulaireException
      * @throws NotFoundException
      * @throws TypeDossierException
@@ -120,11 +117,10 @@ class TypeDossierTransformationTest extends PastellTestCase
     public function testEtapeTransformationNotValidateByTwigError(): void
     {
         $info = $this->createConnectorAndDocument(
-            self::TRANSFORMATION,
             self::PATH_CONFIG_JSON_WITH_TWIG_ERROR
         );
 
-        $this->assertTrue(
+        static::assertTrue(
             $this->triggerActionOnDocument($info['id_d'], 'orientation')
         );
         $this->assertLastMessage("sélection automatique de l'action suivante");
@@ -140,7 +136,7 @@ Message d'erreur : Unexpected "notelsle" tag (expecting closing tag for the "if"
 <br />
 
 EOT;
-        $this->assertSame(
+        static::assertSame(
             $expectedMessage,
             $this->getObjectInstancier()->getInstance(ActionExecutorFactory::class)->getLastMessage()
         );
@@ -152,27 +148,29 @@ EOT;
      * @throws NotFoundException
      * @throws TypeDossierException
      */
-    public function testEtapeTransformationNotValidateByOnChange()
+    public function testEtapeTransformationNotValidateByOnChange(): void
     {
         // transformation avec "envoi_signature": "true"
-        $info = $this->createConnectorAndDocument(self::TRANSFORMATION, self::PATH_CONFIG_JSON);
+        $info = $this->createConnectorAndDocument(self::PATH_CONFIG_JSON);
 
-        $this->assertTrue(
-            $this->triggerActionOnDocument($info['id_d'], "orientation")
+        static::assertTrue(
+            $this->triggerActionOnDocument($info['id_d'], 'orientation')
         );
         $this->assertLastMessage("sélection automatique de l'action suivante");
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($info['id_d']);
-        $this->assertFalse($donneesFormulaire->get('envoi_signature'));
+        static::assertFalse($donneesFormulaire->get('envoi_signature'));
 
-        $this->assertFalse(
-            $this->triggerActionOnDocument($info['id_d'], "transformation")
+        static::assertFalse(
+            $this->triggerActionOnDocument($info['id_d'], 'transformation')
         );
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($info['id_d']);
-        $this->assertTrue($donneesFormulaire->get('envoi_signature'));
+        static::assertTrue($donneesFormulaire->get('envoi_signature'));
 
-        $this->assertLastMessage("[transformation] Le dossier n'est pas valide : Le formulaire est incomplet : le champ «Sous-type iparapheur» est obligatoire.");
+        $this->assertLastMessage(
+            "[transformation] Le dossier n'est pas valide : Le formulaire est incomplet : le champ «Sous-type iparapheur» est obligatoire."
+        );
 
         $this->assertLastDocumentAction('transformation-error', $info['id_d']);
     }
@@ -185,7 +183,7 @@ EOT;
     public function testEtapeTransformationValidateByOnChange(): void
     {
         // transformation avec "envoi_signature": "true"
-        $info = $this->createConnectorAndDocument(self::TRANSFORMATION, self::PATH_CONFIG_JSON);
+        $info = $this->createConnectorAndDocument(self::PATH_CONFIG_JSON);
 
         static::assertTrue(
             $this->triggerActionOnDocument($info['id_d'], 'orientation')
@@ -220,10 +218,11 @@ EOT;
      * @throws DonneesFormulaireException
      * @throws NotFoundException
      * @throws TypeDossierException
+     * @throws Exception
      */
-    public function testEtapeTransformationAfterGlaneur()
+    public function testEtapeTransformationAfterGlaneur(): void
     {
-        $this->createConnectorAndDocument(self::TRANSFORMATION, self::PATH_CONFIG_JSON);
+        $this->createConnectorAndDocument(self::PATH_CONFIG_JSON);
 
         $glaneurSFTP = $this->getObjectInstancier()->getInstance(GlaneurSFTP::class);
 
@@ -248,34 +247,39 @@ EOT;
 
         $glaneurSFTP->setConnecteurConfig($glaneurConfig);
         $id_d = $glaneurSFTP->glanerFicExemple();
-        $this->assertSame("Création du document $id_d", $glaneurSFTP->getLastMessage()[0]);
+        static::assertSame("Création du document $id_d", $glaneurSFTP->getLastMessage()[0]);
 
-        $this->triggerActionOnDocument($id_d, "transformation");
-        $this->assertLastMessage("Transformation terminée");
+        $this->triggerActionOnDocument($id_d, 'transformation');
+        $this->assertLastMessage('Transformation terminée');
     }
 
-    public function testChangeTitle()
+    /**
+     * @throws TypeDossierException
+     * @throws NotFoundException
+     * @throws DonneesFormulaireException
+     */
+    public function testChangeTitle(): void
     {
-        $info = $this->createConnectorAndDocument(self::TRANSFORMATION, self::PATH_CONFIG_JSON);
+        $info = $this->createConnectorAndDocument(self::PATH_CONFIG_JSON);
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($info['id_d']);
         $donneesFormulaire->setData('iparapheur_type', 'PADES');
         $donneesFormulaire->setData('iparapheur_sous_type', 'Document');
 
-        $this->assertTrue(
-            $this->triggerActionOnDocument($info['id_d'], "orientation")
+        static::assertTrue(
+            $this->triggerActionOnDocument($info['id_d'], 'orientation')
         );
         $this->assertLastMessage("sélection automatique de l'action suivante");
 
-        $this->assertTrue(
-            $this->triggerActionOnDocument($info['id_d'], "transformation")
+        static::assertTrue(
+            $this->triggerActionOnDocument($info['id_d'], 'transformation')
         );
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($info['id_d']);
-        $this->assertEquals("Ceci est mon titre", $donneesFormulaire->get('titre'));
+        static::assertSame('Ceci est mon titre', $donneesFormulaire->get('titre'));
 
         $documentSQL = $this->getObjectInstancier()->getInstance(DocumentSQL::class);
         $document_info = $documentSQL->getInfo($info['id_d']);
-        $this->assertEquals("Ceci est mon titre", $document_info['titre']);
+        static::assertSame('Ceci est mon titre', $document_info['titre']);
     }
 
     /**
@@ -305,7 +309,7 @@ EOT;
             ])
         );
         $this->associateFluxWithConnector($transfoConnector['id_ce'], self::TRANSFORMATION, 'transformation');
-        $this->createAndAssociateTdtConnector(self::TRANSFORMATION);
+        $this->createAndAssociateTdtConnector();
 
         $document = $this->createDocument(self::TRANSFORMATION);
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document['id_d']);
@@ -323,12 +327,12 @@ EOT;
                        }'
         );
 
-        $this->assertTrue(
+        static::assertTrue(
             $this->triggerActionOnDocument($document['id_d'], 'orientation')
         );
         $this->assertLastMessage("sélection automatique de l'action suivante");
 
-        $this->assertTrue(
+        static::assertTrue(
             $this->triggerActionOnDocument($document['id_d'], 'transformation')
         );
         $this->assertLastMessage('Transformation terminée');
@@ -349,12 +353,12 @@ EOT;
             'envoi_transformation' => true,
         ]);
 
-        $this->assertTrue(
+        static::assertTrue(
             $this->triggerActionOnDocument($document['id_d'], 'orientation')
         );
         $this->assertLastMessage("sélection automatique de l'action suivante");
 
-        $this->assertTrue(
+        static::assertTrue(
             $this->triggerActionOnDocument($document['id_d'], 'transformation')
         );
         $this->assertLastMessage(

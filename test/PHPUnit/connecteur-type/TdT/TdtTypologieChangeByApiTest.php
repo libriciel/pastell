@@ -75,7 +75,9 @@ class TdtTypologieChangeByApiTest extends PastellTestCase
         $id_d = $this->createActeGenerique();
         $this->setActeData($id_d);
         $this->expectException(UnrecoverableException::class);
-        $this->expectExceptionMessage('Le nombre de type_pj fourni «2» ne correspond pas au nombre de documents (acte et annexes) «3»');
+        $this->expectExceptionMessage(
+            'Le nombre de type_pj fourni «2» ne correspond pas au nombre de documents (acte et annexes) «3»'
+        );
         $this->getInternalAPI()->patch(
             "/Entite/1/document/$id_d/externalData/type_piece",
             ['type_pj' => ['22_NE','41_NC']]
