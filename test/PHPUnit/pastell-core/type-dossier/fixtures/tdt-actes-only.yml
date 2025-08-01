@@ -410,7 +410,7 @@ action:
             role_id_e: no-role
         action-class: StandardChoiceAction
         connecteur-type: TdT
-        connecteur-type-action: TdtChoiceTypologieActes
+        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\TdtChoiceTypologieActes
         connecteur-type-mapping:
             acte_nature: acte_nature
             classification: classification

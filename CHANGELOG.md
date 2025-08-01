@@ -29,6 +29,7 @@ doivent être mises à jour #1667
 - Le flux `ls-actes-publication` présente de nouvelles données #2179
 - **BREAKING** : Le type de dossier "Reprise arriéré actes (TdT versant)" `actes-preversement-seda` 
     alimente maintenant `ls-actes-tdt-versant-sae`, il fait partie du `suppl_actes_tdt_versant_sae` #2015
+- La classe `TdtChoiceTypologieActes` est déplacée Pastell\Step\Tdt\Acte\ChoiceAction\TdtChoiceTypologieActes #2283
 
 ## Suppressions
 

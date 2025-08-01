@@ -1,24 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Pastell\Step\Tdt\Acte\lib;
+
+use Exception;
+use SimpleXMLWrapper;
+use UnrecoverableException;
+
 class ActesTypePJ
 {
     /**
-     * @param ActesTypePJData $actesTypePJData
-     * @return array
      * @throws Exception
      */
-    public function getTypePJListe(ActesTypePJData $actesTypePJData)
+    public function getTypePJListe(ActesTypePJData $actesTypePJData): array
     {
 
         $simpleXMLWrapper = new SimpleXMLWrapper();
 
-        $xml = $simpleXMLWrapper->loadFile($actesTypePJData->classification_file_path);
+        $xml = $simpleXMLWrapper->loadFile($actesTypePJData->classificationFilePath);
 
         $all_type = [];
-        foreach ($xml->xpath("//actes:TypePJNatureActe") as $type_pj) {
-            $code = strval($type_pj->xpath("@actes:CodeTypePJ")[0]);
-            $libelle = strval($type_pj->xpath("@actes:Libelle")[0]) . " ($code)";
-            $nature_id = strval($type_pj->xpath("parent::actes:NatureActe/@actes:CodeNatureActe")[0]);
+        foreach ($xml->xpath('//actes:TypePJNatureActe') as $type_pj) {
+            $code = strval($type_pj->xpath('@actes:CodeTypePJ')[0]);
+            $libelle = strval($type_pj->xpath('@actes:Libelle')[0]) . " ($code)";
+            $nature_id = strval($type_pj->xpath('parent::actes:NatureActe/@actes:CodeNatureActe')[0]);
             $all_type[$nature_id][$code] = $libelle;
         }
 
@@ -27,7 +33,7 @@ class ActesTypePJ
         foreach ($result as $nature => $typologie_list) {
             $to_add = [];
             foreach ($typologie_list as $code => $libelle) {
-                if (substr($code, 0, 3) == '99_') {
+                if (str_starts_with($code, '99_')) {
                     unset($result[$nature][$code]);
                     $to_add[$code] = $libelle;
                 }
@@ -40,10 +46,10 @@ class ActesTypePJ
             $result[$nature] = array_reverse($result[$nature]);
         }
 
-        if (empty($result[$actesTypePJData->acte_nature])) {
+        if (empty($result[$actesTypePJData->acteNature])) {
             throw new UnrecoverableException("La typologie n'est pas présente dans la classification");
         }
 
-        return $result[$actesTypePJData->acte_nature];
+        return $result[$actesTypePJData->acteNature];
     }
 }

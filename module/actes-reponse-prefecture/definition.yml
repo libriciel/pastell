@@ -290,7 +290,7 @@ action:
             role_id_e: no-role
         action-class: StandardChoiceAction
         connecteur-type: TdT
-        connecteur-type-action: TdtChoiceTypologieActes
+        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\TdtChoiceTypologieActes
         connecteur-type-mapping:
             arrete: reponse
             autre_document_attache: empty
@@ -304,7 +304,7 @@ action:
             role_id_e: no-role
         action-class: StandardChoiceAction
         connecteur-type: TdT
-        connecteur-type-action: TdtChoiceTypologieActes
+        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\TdtChoiceTypologieActes
         connecteur-type-mapping:
             arrete: reponse
             autre_document_attache: empty
@@ -318,7 +318,7 @@ action:
             role_id_e: no-role
         action-class: StandardChoiceAction
         connecteur-type: TdT
-        connecteur-type-action: TdtChoiceTypologieActes
+        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\TdtChoiceTypologieActes
         connecteur-type-mapping:
             arrete: reponse
             autre_document_attache: reponse_pj_demande_piece_complementaire

@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Step\Tdt\Acte\lib\ActesTypePJ;
+use Pastell\Step\Tdt\Acte\lib\ActesTypePJData;
+
 abstract class TdtConnecteur extends Connecteur
 {
     public const FAMILLE_CONNECTEUR = 'TdT';
@@ -133,8 +136,8 @@ abstract class TdtConnecteur extends Connecteur
 
         $actesTypePJData = new ActesTypePJData();
 
-        $actesTypePJData->acte_nature = $nature;
-        $actesTypePJData->classification_file_path = $classification_file_path;
+        $actesTypePJData->acteNature = $nature;
+        $actesTypePJData->classificationFilePath = $classification_file_path;
 
         $piece_list = $actesTypePJ->getTypePJListe($actesTypePJData);
 

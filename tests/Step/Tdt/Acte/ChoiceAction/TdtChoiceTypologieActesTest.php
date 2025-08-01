@@ -2,8 +2,36 @@
 
 declare(strict_types=1);
 
-class TdtTypologieChangeByApiTest extends PastellTestCase
+namespace Pastell\Tests\Step\Tdt\Acte\ChoiceAction;
+
+use DonneesFormulaire;
+use Exception;
+use NotFoundException;
+use PastellTestCase;
+use UnrecoverableException;
+use TypeDossierLoader;
+
+final class TdtChoiceTypologieActesTest extends PastellTestCase
 {
+    public const TDT_ACTES_ONLY = 'tdt-actes-only';
+    private TypeDossierLoader $typeDossierLoader;
+
+    /**
+     * @throws \TypeDossierException
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->typeDossierLoader = $this->getObjectInstancier()->getInstance(TypeDossierLoader::class);
+        $this->typeDossierLoader->createTypeDossierDefinitionFile(self::TDT_ACTES_ONLY);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->typeDossierLoader->unload();
+        parent::tearDown();
+    }
+
     /**
      * @throws NotFoundException
      * @throws Exception
@@ -11,7 +39,7 @@ class TdtTypologieChangeByApiTest extends PastellTestCase
     public function testAddTypeActe(): void
     {
 
-        $id_d = $this->createActeGenerique();
+        $id_d = $this->createActe();
         $donneesFormulaire = $this->setActeData($id_d);
 
         $info = $this->getInternalAPI()->patch(
@@ -19,11 +47,11 @@ class TdtTypologieChangeByApiTest extends PastellTestCase
             ['type_pj' => ['22_NE', '41_NC', '22_DP']]
         );
 
-        static::assertSame('22_NE', $info['data']['type_acte']);
-        static::assertSame('["41_NC","22_DP"]', $info['data']['type_pj']);
-        static::assertSame('3 fichier(s) typé(s)', $info['data']['type_piece']);
-        static::assertJsonFileEqualsJsonFile(
-            __DIR__ . '/fixtures/type_piece_fichier.json',
+        self::assertSame('22_NE', $info['data']['type_acte']);
+        self::assertSame('["41_NC","22_DP"]', $info['data']['type_pj']);
+        self::assertSame('3 fichier(s) typé(s)', $info['data']['type_piece']);
+        self::assertJsonFileEqualsJsonFile(
+            __DIR__ . '/../fixtures/type_piece_fichier.json',
             $donneesFormulaire->getFilePath('type_piece_fichier')
         );
     }
@@ -35,7 +63,7 @@ class TdtTypologieChangeByApiTest extends PastellTestCase
     public function testAddWrongTypeActe(): void
     {
 
-        $id_d = $this->createActeGenerique();
+        $id_d = $this->createActe();
         $this->setActeData($id_d);
         $this->expectException(UnrecoverableException::class);
         $this->expectExceptionMessage(
@@ -54,7 +82,7 @@ class TdtTypologieChangeByApiTest extends PastellTestCase
     public function testAddWrongTypePJ(): void
     {
 
-        $id_d = $this->createActeGenerique();
+        $id_d = $this->createActe();
         $this->setActeData($id_d);
         $this->expectException(UnrecoverableException::class);
         $this->expectExceptionMessage(
@@ -62,7 +90,7 @@ class TdtTypologieChangeByApiTest extends PastellTestCase
         );
         $this->getInternalAPI()->patch(
             "/Entite/1/document/$id_d/externalData/type_piece",
-            ['type_pj' => ['22_NE','41_NC', '99_XX']]
+            ['type_pj' => ['22_NE', '41_NC', '99_XX']]
         );
     }
 
@@ -72,7 +100,7 @@ class TdtTypologieChangeByApiTest extends PastellTestCase
      */
     public function testFailCountTypePJ(): void
     {
-        $id_d = $this->createActeGenerique();
+        $id_d = $this->createActe();
         $this->setActeData($id_d);
         $this->expectException(UnrecoverableException::class);
         $this->expectExceptionMessage(
@@ -80,15 +108,14 @@ class TdtTypologieChangeByApiTest extends PastellTestCase
         );
         $this->getInternalAPI()->patch(
             "/Entite/1/document/$id_d/externalData/type_piece",
-            ['type_pj' => ['22_NE','41_NC']]
+            ['type_pj' => ['22_NE', '41_NC']]
         );
     }
-
 
     /**
      * @throws Exception
      */
-    private function createActeGenerique(): string
+    private function createActe(): string
     {
         $connecteur_info = $this->createConnector('fakeTdt', 'Bouchon tdt');
 
@@ -98,11 +125,11 @@ class TdtTypologieChangeByApiTest extends PastellTestCase
         $connecteurDonneesFormulaire->addFileFromCopy(
             'classification_file',
             'classification.xml',
-            __DIR__ . '/../../module/actes-generique/fixtures/classification.xml'
+            __DIR__ . '/../fixtures/classification.xml'
         );
-        $this->associateFluxWithConnector($connecteur_info['id_ce'], 'actes-generique', 'TdT');
+        $this->associateFluxWithConnector($connecteur_info['id_ce'], self::TDT_ACTES_ONLY, 'TdT');
 
-        $document_info = $this->createDocument('actes-generique');
+        $document_info = $this->createDocument(self::TDT_ACTES_ONLY);
         return $document_info['id_d'];
     }
 
@@ -120,16 +147,16 @@ class TdtTypologieChangeByApiTest extends PastellTestCase
         ]);
 
 
-        $donneesFormulaire->addFileFromData('arrete', 'arrete.pdf', 'foo');
+        $donneesFormulaire->addFileFromData('actes', 'actes.pdf', 'foo');
 
         $donneesFormulaire->addFileFromData(
-            'autre_document_attache',
+            'annexe',
             'annexe1.pdf',
             'bar',
             0
         );
         $donneesFormulaire->addFileFromData(
-            'autre_document_attache',
+            'annexe',
             'annexe2.pdf',
             'baz',
             1
