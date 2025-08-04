@@ -168,12 +168,6 @@ CREATE TABLE `document_index` (
 	PRIMARY KEY (`id_d`,`field_name`),
 	KEY `document_index_field_name_field_value` (`field_name`,`field_value`)
 )  ENGINE=MyISAM  ;
-CREATE TABLE `droit` (
-	`id_u` int(11) NOT NULL,
-	`droit` varchar(16) NOT NULL,
-	`type_objet` varchar(16) NOT NULL,
-	`id_o` varchar(16) NOT NULL
-)  ENGINE=MyISAM  ;
 CREATE TABLE `entite` (
 	`id_e` int(11) NOT NULL AUTO_INCREMENT,
 	`type` varchar(32) NOT NULL,

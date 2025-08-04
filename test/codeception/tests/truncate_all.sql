@@ -11,7 +11,6 @@ TRUNCATE TABLE `document_action_entite`;
 TRUNCATE TABLE `document_email`;
 TRUNCATE TABLE `document_entite`;
 TRUNCATE TABLE `document_index`;
-TRUNCATE TABLE `droit`;
 TRUNCATE TABLE `entite`;
 TRUNCATE TABLE `entite_ancetre`;
 TRUNCATE TABLE `entite_properties`;
