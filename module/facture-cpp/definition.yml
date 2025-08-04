@@ -645,7 +645,7 @@ action:
         no-workflow: true
         rule:
             role_id_e: no-role
-        action-class: FactureCPPIparapheurSousType
+        action-class: IparapheurSousType
     prepare-ged:
         name: "Préparation de l'envoi à\_l'entrepôt"
         rule:

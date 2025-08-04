@@ -36,6 +36,19 @@ doivent être mises à jour #1667
 - Suppression de la table droit #2276
 - Suppression de validca et du code lié à l'authentification par certificat #1983
 - Suppression du code lié à libersign et la signature locale #1983
+- Suppression dans batch : pastell-job-master.php et pastell-job-worker.php #2211
+- Suppression dans installation : test-last-job.php, force-delete-module.php, create-admin.php et create-role-admin.php #2211
+- Suppression de UtilisateurControler::notificationToogleDailyDigestAction #2211
+- Suppression de ConnecteurDisponible::getList, ConnecteurEntiteSQL::getAllGlobal et ConnecteurEntiteSQL::getAllLocal #2211
+- Suppression de FluxEntiteHeritageSQL::getAll, FluxEntiteSQL::getAll et FluxEntiteSQL::isUsed #2211
+- Suppression de ActionExecutor::checkIntf, Connecteur::isGlobal, ConnecteurDefinitionFiles::getAllByIdE, DocumentTypeFactory::getDocumentType #2211
+- Suppression de la classe /pastell-core/DocumentTypeValidation.php (Use Pastell\Configuration\DocumentTypeValidation instead) #2211
+- Suppression de TransformationViewer, Use JsonViewer instead #2211
+- Suppression des classes HeliosIparapheurSousType et FactureCPPIparapheurSousType, Use IparapheurSousType instead #2211
+- Suppression de HeliosGeneriqueXMLFile, TdTExtractionHelios #2211
+- Suppression de IParapheur::getMetaDonnee et SignatureRecuperation::getMetaDonnee #2211
+- Suppression de FluxDataStandard, use FluxDataSedaDefault instead #2211
+
 
 # [4.1.11] - 2025-07-15
 

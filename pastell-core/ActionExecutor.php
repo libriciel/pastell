@@ -397,21 +397,6 @@ abstract class ActionExecutor
     }
 
     /**
-     * @deprecated since 4.0, no alternative
-     * @param $object
-     * @param $intf
-     * @return bool
-     * @throws Exception
-     */
-    public function checkIntf($object, $intf)
-    {
-        if (! ($object instanceof $intf)) {
-            throw new Exception('L\'objet ' . get_class($object) . ' n\'implémente pas le contrat d\'interface ' . $intf);
-        }
-        return true;
-    }
-
-    /**
      * Méthode standard pour le traitement par lot : on enregistre dans la job queue les travaux qui s'éxecuteront de manière asynchrone
      * @param array $all_id_d
      */

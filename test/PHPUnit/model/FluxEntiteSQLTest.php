@@ -32,12 +32,6 @@ class FluxEntiteSQLTest extends PastellTestCase
         $this->assertEquals(1, $connecteur['id_ce']);
     }
 
-    public function testGetAll()
-    {
-        $result = $this->getFluxEntiteSQL()->getAll(1);
-        $this->assertEquals("Fake iParapheur", $result['actes-generique']['signature']['libelle']);
-    }
-
     public function testGetAllWithSameType()
     {
         $result = $this->getFluxEntiteSQL()->getAllWithSameType(1);

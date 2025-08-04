@@ -51,24 +51,6 @@ class FluxEntiteSQL extends SQL
         return $result;
     }
 
-    /**
-     * @param $id_e
-     * @return array
-     * @deprecated 3.0 use getAllWithSameType() instead
-     */
-    public function getAll($id_e)
-    {
-        $sql = "SELECT flux_entite.*,connecteur_entite.*,entite.denomination FROM flux_entite" .
-                " JOIN connecteur_entite ON flux_entite.id_ce=connecteur_entite.id_ce " .
-                " LEFT JOIN entite ON connecteur_entite.id_e=entite.id_e " .
-                " WHERE flux_entite.id_e=?";
-        $result = [];
-        foreach ($this->query($sql, $id_e) as $line) {
-            $result[$line['flux']][$line['type']] = $line;
-        }
-        return $result;
-    }
-
     public function getAllFluxEntite($id_e, $flux = null, $type = null)
     {
         $sql = "SELECT * FROM flux_entite WHERE id_e=? ";
@@ -88,8 +70,6 @@ class FluxEntiteSQL extends SQL
     public function addConnecteur($id_e, $flux, $type, $id_ce, $num_same_type = 0)
     {
         $flux = $this->getFluxName($id_e, $flux);
-        /* @deprecated - en V1.3.9 (#1346) c'est ConnecteurAssociationService::addConnecteurAssociation qui se charge de faire deleteConnecteurAssociation avant INSERT */
-        $this->deleteConnecteur($id_e, $flux, $type, $num_same_type); // À supprimer
         $sql = "INSERT INTO flux_entite(id_e,flux,type,id_ce,num_same_type) VALUES (?,?,?,?,?)";
         $this->query($sql, $id_e, $flux, $type, $id_ce, $num_same_type);
         return $this->lastInsertId();
@@ -140,16 +120,6 @@ class FluxEntiteSQL extends SQL
             $data[] = $id_e;
         }
         return $this->query($sql, $data);
-    }
-
-    /**
-     * @param $id_ce
-     * @return array
-     * @deprecated use getFluxByConnecteur() instead
-     */
-    public function isUsed($id_ce)
-    {
-        return $this->getFluxByConnecteur($id_ce);
     }
 
     public function getEntiteByFlux($flux)

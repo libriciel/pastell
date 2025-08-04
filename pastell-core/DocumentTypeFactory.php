@@ -13,16 +13,6 @@ class DocumentTypeFactory
     ) {
     }
 
-    /** @deprecated Since 4.1.6, Use getGlobalDocumentType or getEntiteDocumentType instead */
-    public function getDocumentType($id_e, $id_connecteur): DocumentType
-    {
-        if ($id_e) {
-            return $this->getEntiteDocumentType($id_connecteur);
-        } else {
-            return $this->getGlobalDocumentType($id_connecteur);
-        }
-    }
-
     public function getGlobalDocumentType($id_connecteur): DocumentType
     {
         $connecteur_definition = $this->connecteurDefinitionFiles->getInfoGlobal($id_connecteur);

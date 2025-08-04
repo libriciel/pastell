@@ -597,7 +597,7 @@ action:
         no-workflow: true
         rule:
             role_id_e: no-role
-        action-class: HeliosIparapheurSousType
+        action-class: IparapheurSousType
     envoi-signature-change:
         name: 'Modification envoi-signature'
         no-workflow: true

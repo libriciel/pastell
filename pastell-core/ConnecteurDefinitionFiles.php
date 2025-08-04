@@ -88,15 +88,6 @@ class ConnecteurDefinitionFiles
         return $result;
     }
 
-    /** @deprecated Since 4.1.6, Unused */
-    /**
-     * @param int<0,1> $global
-     */
-    public function getAllByIdE(int $id_e, int $global = 0): array
-    {
-        return $global ? $this->getAllGlobal() : $this->getAll();
-    }
-
     /**
      * @param int<0,1> $global
      */

@@ -226,19 +226,6 @@ class IParapheur extends SignatureConnecteur
         return $info;
     }
 
-    /** @deprecated 4.1.3, unused */
-    public function getMetaDonnee($metaDonnees, $nom)
-    {
-        if ($metaDonnees) {
-            foreach ($metaDonnees as $metaDonnee) {
-                if (($metaDonnee["nom"]) == $nom) {
-                    return $metaDonnee["valeur"];
-                }
-            }
-        }
-        return false;
-    }
-
     /**
      * @param $dossierID
      * @param bool $archiver => Il faut toujours mettre false et appellé archiver() après avoir enregistré la signature

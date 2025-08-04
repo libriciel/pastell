@@ -16,12 +16,6 @@ class ConnecteurDisponible
     ) {
     }
 
-    /** @deprecated Since 4.1.6, Unused, Use getListByType instead */
-    public function getList(int $id_u, int $id_e, string $type): array
-    {
-        return $this->getListByType($id_u, $id_e, $type);
-    }
-
     /**
      * Liste des connecteurs disponibles de type globaux ou d'entité pour id_e avec les droits de id_u
      */
