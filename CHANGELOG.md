@@ -19,6 +19,7 @@ doivent être mises à jour #1667
 - WorkerSQL::getAllRunningWorker retourne désormais WorkerObject[] au lieu d'un array brut (#2237)
 - Stockage du nombre maximal de processus simultanés du gestionnaire de tâches 
   en base de données (au lieu d'une variable d'environnement) #2232
+- Généralisation du droit `connecteur:action` permettant d'exécuter des actions sur les connecteurs #2241
 
 ## Suppressions
 

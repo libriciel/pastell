@@ -4,7 +4,6 @@ class RoleDroit
 {
     public function __construct(
         private readonly DocumentTypeFactory $documentTypeFactory,
-        private readonly bool $connectorActionPermission,
     ) {
     }
 
@@ -25,12 +24,10 @@ class RoleDroit
             'annuaire:edition',
             'connecteur:lecture',
             'connecteur:edition',
+            'connecteur:action',
             'daemon:lecture',
             'daemon:edition',
         ];
-        if ($this->connectorActionPermission) {
-            $droit[] = 'connecteur:action';
-        }
         sort($droit);
         return array_merge($droit, $this->documentTypeFactory->getAllDroit());
     }

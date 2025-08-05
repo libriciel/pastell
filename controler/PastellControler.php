@@ -129,9 +129,7 @@ class PastellControler extends Controler
     {
         $this->verifDroit(
             $entityId,
-            $this->getObjectInstancier()
-                ->getInstance(DroitService::class)
-                ->getActionPermission(DroitService::DROIT_CONNECTEUR),
+            DroitService::getActionPermission(DroitService::DROIT_CONNECTEUR),
         );
     }
 

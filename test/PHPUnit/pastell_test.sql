@@ -104,6 +104,7 @@ INSERT INTO `role_droit` (`role`, `droit`) VALUES
 ('admin', 'entite:lecture'),
 ('admin', 'connecteur:edition'),
 ('admin', 'connecteur:lecture'),
+('admin', 'connecteur:action'),
 ('admin', 'fournisseur-invitation:edition'),
 ('admin', 'fournisseur-invitation:lecture'),
 ('admin', 'journal:lecture'),

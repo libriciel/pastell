@@ -21,7 +21,6 @@ class ConnecteurAPIController extends BaseAPIController
         private readonly ConnecteurDeletionService $connecteurDeletionService,
         private readonly ConnecteurModificationService $connecteurModificationService,
         private readonly ChunkUploader $chunkUploader,
-        private readonly DroitService $droitService,
     ) {
     }
 
@@ -271,7 +270,7 @@ class ConnecteurAPIController extends BaseAPIController
      */
     private function checkConnecteurAction(int $id_e): void
     {
-        $this->checkDroit($id_e, $this->droitService->getActionPermission(DroitService::DROIT_CONNECTEUR));
+        $this->checkDroit($id_e, DroitService::getActionPermission(DroitService::DROIT_CONNECTEUR));
     }
 
     /**
