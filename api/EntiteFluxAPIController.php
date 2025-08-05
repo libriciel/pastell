@@ -11,7 +11,6 @@ class EntiteFluxAPIController extends BaseAPIController
         private readonly FluxEntiteSQL $fluxEntiteSQL,
         private readonly ActionExecutorFactory $actionExecutorFactory,
         private readonly ConnecteurAssociationService $connecteurAssociationService,
-        private readonly DroitService $droitService,
     ) {
     }
 
@@ -133,7 +132,7 @@ class EntiteFluxAPIController extends BaseAPIController
     public function postAction(): array
     {
         $id_e = $this->checkedEntite();
-        $this->checkDroit($id_e, $this->droitService->getActionPermission(DroitService::DROIT_CONNECTEUR));
+        $this->checkDroit($id_e, DroitService::getActionPermission(DroitService::DROIT_CONNECTEUR));
         $flux = $this->getFromQueryArgs(2);
 
         $type_connecteur = $this->getFromRequest('type');

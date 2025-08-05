@@ -120,7 +120,7 @@ class DroitService
     {
         return $this->hasDroit(
             $userId,
-            $this->getActionPermission(self::DROIT_CONNECTEUR),
+            self::getActionPermission(self::DROIT_CONNECTEUR),
             $entityId,
         );
     }
