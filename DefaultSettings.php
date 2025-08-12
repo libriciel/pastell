@@ -117,7 +117,7 @@ if (!defined("NB_WORKERS")) {
 }
 
 if (!defined("PHP_PATH")) {
-    define("PHP_PATH", '/usr/bin/php');
+    define("PHP_PATH", '/usr/local/bin/php');
 }
 
 if (!defined("TESTING_ENVIRONNEMENT")) {

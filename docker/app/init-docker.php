@@ -9,7 +9,7 @@ try {
     echo "Initialisation de Pastell [DOCKER]\n";
 
 # Première étape : Sans la connexion BD vu que celle-ci n'existe pas encore...
-    require_once __DIR__ . '/../init-no-db.php';
+    require_once __DIR__ . '/../../init-no-db.php';
 
     echo \sprintf("Utilisation de la base %s avec l'utilisateur %s\n", BD_DSN, BD_USER);
 
@@ -29,7 +29,7 @@ try {
     }
 
 # Deuxième étape : initialisation normale de Pastell
-    require_once __DIR__ . '/../init.php';
+    require_once __DIR__ . '/../../init.php';
     ObjectInstancierFactory::getObjetInstancier()->getInstance(DatabaseUpdater::class)->update();
     $pastellBootstrap = ObjectInstancierFactory::getObjetInstancier()->getInstance(PastellBootstrap::class);
     $pastellBootstrap->bootstrap();

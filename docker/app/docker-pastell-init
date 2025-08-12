@@ -6,19 +6,19 @@ set -e
 cat <<EOF
 <?php
 
-define("SITE_BASE","${PASTELL_SITE_BASE}");
-define("WEBSEC_BASE","${WEBSEC_BASE}");
+define("SITE_BASE","https://${APP_HOST}:${HTTPS_PORT}");
+define("WEBSEC_BASE","https://${MAILSEC_HOST}:${HTTPS_PORT}");
 
-define("TIMEZONE", "${TIMEZONE:-Europe/Paris}");
-define("BD_DSN","mysql:dbname=${MYSQL_DATABASE:-pastell};host=${MYSQL_HOST:-localhost};port=${MYSQL_PORT:-3306};charset=utf8mb4");
-define("BD_DBNAME","${MYSQL_DATABASE:-pastell}");
-define("BD_USER","${MYSQL_USER:-user}");
-define("BD_PASS","${MYSQL_PASSWORD:-user}");
+define("TIMEZONE", "${TZ:-Europe/Paris}");
+define("BD_DSN","mysql:dbname=${DATABASE_NAME:-pastell};host=${DATABASE_HOST:-db};port=${DATABASE_PORT:-3306};charset=utf8mb4");
+define("BD_DBNAME","${DATABASE_NAME:-pastell}");
+define("BD_USER","${DATABASE_USER}");
+define("BD_PASS","${DATABASE_PASSWORD}");
 
-define("BD_DSN_TEST","mysql:dbname=${MYSQL_DATABASE_TEST:-pastell_test};host=${MYSQL_HOST_TEST:-localhost};port=${MYSQL_PORT_TEST:-3306};charset=utf8mb4");
-define("BD_DBNAME_TEST","${MYSQL_DATABASE_TEST:-pastell_test}");
-define("BD_USER_TEST","${MYSQL_USER_TEST:-user}");
-define("BD_PASS_TEST","${MYSQL_PASSWORD_TEST:-user}");
+define("BD_DSN_TEST","mysql:dbname=${DATABASE_NAME_TEST:-pastell_test};host=${DATABASE_HOST_TEST:-db_test};port=${DATABASE_PORT_TEST:-3306};charset=utf8mb4");
+define("BD_DBNAME_TEST","${DATABASE_NAME_TEST:-pastell_test}");
+define("BD_USER_TEST","${DATABASE_USER_TEST:-user}");
+define("BD_PASS_TEST","${DATABASE_PASSWORD_TEST:-user}");
 
 define("WORKSPACE_PATH" , "/data/workspace");
 

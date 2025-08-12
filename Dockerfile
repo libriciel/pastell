@@ -1,66 +1,134 @@
-FROM node:22-slim AS node_modules
-WORKDIR /var/www/pastell/
+FROM hubdocker.libriciel.fr/node:22-alpine3.22 AS node_modules
+WORKDIR /app/
 COPY package*.json ./
 RUN npm install
 
-FROM ubuntu:22.04 AS pastell_base
+FROM hubdocker.libriciel.fr/php:8.4.11-fpm-alpine3.22 AS base
 
-ARG UID=33
-ARG GID=33
-ARG USERNAME=www-data
-ARG GROUPNAME=www-data
+ARG UID=10001
+ARG GID=10001
 
 ENV PHP_OPCACHE_VALIDATE_TIMESTAMPS="0" \
     PHP_OPCACHE_MAX_ACCELERATED_FILES="10000" \
     PHP_OPCACHE_MEMORY_CONSUMPTION="192" \
     PHP_OPCACHE_MAX_WASTED_PERCENTAGE="10"
 
-EXPOSE 443 80
+WORKDIR /app
 
-WORKDIR /var/www/pastell/
-ENV PATH="${PATH}:/var/www/pastell/vendor/bin/"
+EXPOSE 9000
 
-# Install requirements
-COPY ./docker/install-requirements.sh /var/www/pastell/docker/
-RUN /bin/bash /var/www/pastell/docker/install-requirements.sh
+RUN apk add --no-cache $PHPIZE_DEPS \
+    bash \
+    bash-completion \
+    ca-certificates \
+    curl \
+    curl-dev \
+    git \
+    graphviz \
+    icu-data-full \
+    icu-dev \
+    imap-dev \
+    krb5-dev \
+    libxml2-dev \
+    libxslt \
+    libxslt-dev \
+    libzip-dev \
+    logrotate \
+    musl-locales \
+    musl-locales-lang \
+    oniguruma-dev \
+    openldap-dev \
+    supercronic \
+    supervisor \
+    tzdata \
+    wget \
+    xmlstarlet
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+RUN pecl install imap redis uuid
 
-# Create Pastell needs
-COPY ./docker /var/www/pastell/docker
+RUN docker-php-ext-install \
+    bcmath \
+    ftp \
+    intl \
+    ldap \
+    mbstring \
+    opcache \
+    pcntl \
+    pdo_mysql \
+    soap \
+    xml \
+    xsl \
+    zip
 
-RUN /bin/bash /var/www/pastell/docker/docker-construction.sh
+RUN docker-php-ext-enable \
+    bcmath \
+    imap \
+    ftp \
+    imap \
+    intl \
+    ldap \
+    mbstring \
+    opcache \
+    pcntl \
+    pdo_mysql \
+    redis \
+    soap \
+    uuid \
+    xml \
+    xsl \
+    zip
 
-COPY --chown=${USERNAME}:${GROUPNAME} --from=node_modules /var/www/pastell/node_modules /var/www/pastell/node_modules
+RUN addgroup -S app -g "$GID" && adduser -S app -G app -u "$UID"
 
-# Composer stuff
-COPY ./composer.* /var/www/pastell/
-RUN --mount=type=secret,id=composer_auth,dst=/var/www/pastell/auth.json \
-    /bin/bash -c 'mkdir -p /var/www/pastell/{web,web-mailsec}' && \
-    COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --no-autoloader
+COPY ./docker /app/docker
+COPY ./docker/app/entrypoint.sh /usr/local/bin/
+COPY ./docker/logrotate.d/pastell.conf /etc/logrotate.d/
 
-# Pastell sources
-COPY --chown=${USERNAME}:${GROUPNAME} ./ /var/www/pastell/
+RUN mkdir /etc/ldap
+COPY ./docker/app/ldap/ldap.conf /etc/ldap/
 
-RUN chown ${USERNAME}:${GROUPNAME} /var/www/pastell/
+RUN bash -c "mkdir -p /data/{config,html_purifier,log,run,session,upload_chunk,workspace}" \
+ && chown "$UID":"$GID" -R /data/
 
-RUN COMPOSER_ALLOW_SUPERUSER=1 composer dump-autoload --no-dev --optimize
+COPY --from=node_modules /app/node_modules/ /app/node_modules/
+COPY --from=hubdocker.libriciel.fr/composer:2.8.10 /usr/bin/composer /usr/local/bin/composer
+COPY ./composer.* /app/
+RUN --mount=type=secret,id=composer_auth,dst=/app/auth.json \
+    /bin/bash -c 'mkdir -p /app/{web,web-mailsec}' && \
+    composer install --no-ansi --no-dev --no-interaction --no-progress --no-scripts --no-autoloader
 
-USER "${USERNAME}"
+COPY ./docker/app/php/ /usr/local/etc/php/conf.d/
 
-HEALTHCHECK CMD curl --fail -k https://localhost/ --noproxy '*' || exit 1
+COPY --chown=app:app ./ /app/
+RUN chown app:app /app/
 
-ENTRYPOINT ["docker-pastell-entrypoint"]
+RUN cp /app/docker/app/supervisord/supervisord.conf /etc/supervisord.conf
+
+RUN composer run-script --no-dev post-install-cmd && composer dump-autoload --no-dev --optimize
+
+RUN rm /usr/local/bin/composer
+USER "app"
+
+HEALTHCHECK CMD supervisorctl status | grep -q "php-fpm.*RUNNING" && supervisorctl status | grep -q "supercronic.*RUNNING"
+
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["/usr/bin/supervisord"]
 
-FROM pastell_base AS pastell_dev
+FROM base AS dev
 
-ARG UID=33
-ARG GID=33
-ARG USERNAME=www-data
-ARG GROUPNAME=www-data
+USER "root"
 
-USER root
-RUN /bin/bash /var/www/pastell/docker/install-dev-requirements.sh
-USER "${USERNAME}"
-FROM pastell_base AS pastell_prod
+COPY --from=hubdocker.libriciel.fr/composer:2.8.10 /usr/bin/composer /usr/local/bin/composer
+
+RUN apk add --no-cache $PHPIZE_DEPS \
+    linux-headers \
+    nodejs \
+    npm
+
+RUN pecl install pcov xdebug
+RUN docker-php-ext-enable pcov xdebug
+RUN composer install
+
+USER "app"
+
+FROM base AS prod

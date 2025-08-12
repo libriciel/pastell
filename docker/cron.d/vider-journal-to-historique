@@ -1,1 +1,0 @@
-0 20 * * * %USERNAME% /usr/bin/php /var/www/pastell/installation/vider-journal-to-historique.php >> /data/log/vider-journal.log 2>&1

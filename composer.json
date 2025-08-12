@@ -3,7 +3,7 @@
   "description": "Pastell est un bus logiciel permettant de créer des documents (flux) et de les faire cheminer entre différents systèmes externe par le biais de connecteur",
   "license": "AGPL-3.0-only",
   "require": {
-    "php": "8.1.*",
+    "php": "8.4.*",
     "ext-bcmath": "*",
     "ext-curl": "*",
     "ext-dom": "*",
