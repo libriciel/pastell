@@ -109,7 +109,7 @@ class MailSec extends MailsecConnecteur
         $v = $metadata;
         for ($i = 1, $iMax = count($fields); $i < $iMax; $i++) {
             if (!array_key_exists($fields[$i], $v)) {
-                throw new Exception("La clé ${fields[$i]} de $data n'existe pas, vérifier la syntaxe.");
+                throw new Exception("La clé {$fields[$i]} de $data n'existe pas, vérifier la syntaxe.");
             }
             $v = $v[$fields[$i]];
         }
