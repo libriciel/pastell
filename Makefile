@@ -1,20 +1,23 @@
 DOCKER=docker
-PASTELL_PATH=/var/www/pastell
-EXEC_NODE=$(DOCKER) run --rm --volume ${PWD}:$(PASTELL_PATH) -it node:22-slim
-EXEC_COMPOSER=$(DOCKER) run --rm --volume ${PWD}:/app --volume ${HOME}/.composer:/tmp -it composer:2
-MAKE_MODULE=$(DOCKER_COMPOSE_EXEC) php ./bin/console app:studio:make-module
-DOCKER_COMPOSE=docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml
+DOCKER_COMPOSE=docker compose \
+-f docker/compose.yaml \
+-f docker/compose.dev.yaml \
+$(if $(wildcard docker/compose.override.yaml),-f docker/compose.override.yaml)
+
+MAKE_MODULE=$(DOCKER_COMPOSE_EXEC) bin/console app:studio:make-module
 EXEC_TRIVY=$(DOCKER) run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v ~/.cache:/root/.cache -v ${PWD}/.trivyignore:/.trivyignore aquasec/trivy image --severity HIGH,CRITICAL pastell-local-dev
 
+IN_CONTAINER := $(shell [ -f /.dockerenv ] && echo 1 || echo 0)
 .DEFAULT_GOAL := help
 .PHONY: help
 
-
-ifneq ($(SKIP_DOCKER),true)
-    DOCKER_COMPOSE_EXEC=$(DOCKER_COMPOSE) exec web
-    DOCKER_COMPOSE_UP=$(DOCKER_COMPOSE)  up -d
+ifneq ($(IN_CONTAINER),1)
+    DOCKER_COMPOSE_EXEC=$(DOCKER_COMPOSE) exec app
+    DOCKER_COMPOSE_RUN=$(DOCKER_COMPOSE) run --rm --entrypoint /bin/sh app
+    DOCKER_COMPOSE_UP=$(DOCKER_COMPOSE) up -d
 else
 	DOCKER_COMPOSE_EXEC=
+	DOCKER_COMPOSE_RUN=
 	DOCKER_COMPOSE_UP=
 endif
 
@@ -22,10 +25,10 @@ help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 composer-install: ## Run composer install
-	$(EXEC_COMPOSER) composer install --ignore-platform-reqs
+	$(DOCKER_COMPOSE_RUN) -c "composer install"
 
 npm-install: ## Run npm install
-	$(EXEC_NODE) npm --prefix $(PASTELL_PATH) install
+	$(DOCKER_COMPOSE_RUN) -c "npm install"
 
 install: npm-install composer-install ## Install the project NPM and PHP dependencies
 
@@ -51,8 +54,8 @@ coverage: docker-compose-up ## Run unit test through docker-compsose with covera
 	$(DOCKER_COMPOSE_EXEC) composer test-cover
 
 codeception:  ## Run acceptance tests
-	$(DOCKER_COMPOSE) -f docker/docker-compose.codeception.yml up -d
-	$(DOCKER_COMPOSE) -f docker/docker-compose.codeception.yml exec web composer codecept
+	$(DOCKER_COMPOSE) -f docker/compose.codeception.yaml up -d
+	$(DOCKER_COMPOSE) -f docker/compose.codeception.yaml exec app composer codecept
 	$(DOCKER_COMPOSE_UP)
 
 phpstan: docker-compose-up ## Run phpstan
@@ -65,13 +68,13 @@ start:  ## Start all services
 	$(DOCKER_COMPOSE) up -d --remove-orphans
 
 start-minio:  ## Start all services with minio
-	$(DOCKER_COMPOSE) -f docker/docker-compose.minio.yml up -d --remove-orphans
+	$(DOCKER_COMPOSE) -f docker/compose.minio.yaml up -d --remove-orphans
 
 stop: ## Stop all services
 	$(DOCKER_COMPOSE) down
 
 stop-minio:  ## Start all services with minio
-	$(DOCKER_COMPOSE) -f docker/docker-compose.minio.yml down
+	$(DOCKER_COMPOSE) -f docker/compose.minio.yaml down
 
 module-json-actes: docker-compose-up ## Run make-module json-actes
 	$(MAKE_MODULE) ./json-studio/json-actes/draft-ls-actes.json ./module/ --id ls-actes --name "Actes"
@@ -120,11 +123,16 @@ module-json-urbanisme: docker-compose-up ## Run make-module json-urbanisme
 
 all-module: module-json-actes module-json-document module-json-gfc module-json-helios module-json-mailsec module-json-rh module-json-urbanisme
 
-build: ## Build the container
+build-app: ## Build app container
+	$(DOCKER_COMPOSE) build app
+
+build-web: ## Build web container
 	$(DOCKER_COMPOSE) build web
 
+build: build-app build-web ## Build containers
+
 bash: docker-compose-up ## Get a bash console
-	$(DOCKER_COMPOSE) exec web bash
+	$(DOCKER_COMPOSE) exec app bash
 
 logs: docker-compose-up ## Display last application logs (in follow mode)
-	$(DOCKER_COMPOSE) logs -t 50 -f web
+	$(DOCKER_COMPOSE) logs -f --tail 50 app

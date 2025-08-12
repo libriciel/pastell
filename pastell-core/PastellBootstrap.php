@@ -18,8 +18,6 @@ class PastellBootstrap
     public function bootstrap(): void
     {
         try {
-            $this->installCertificate();
-            $this->installCertificate(true);
             $this->installHorodateur();
             $this->installCloudooo();
             $this->installPESViewerConnecteur();
@@ -38,48 +36,6 @@ class PastellBootstrap
             $this->objectInstancier->getInstance($isMailsec ? 'websec_base' : 'site_base'),
             PHP_URL_HOST
         );
-    }
-
-    /**
-     * TODO: Paths should be injected instead of being hardcoded
-     * @throws UnrecoverableException
-     */
-    private function installCertificate(bool $isMailsec = false): void
-    {
-        if ($isMailsec) {
-            $keyName = 'mailsec_privkey.pem';
-            $certName = 'mailsec_fullchain.pem';
-        } else {
-            $keyName = 'privkey.pem';
-            $certName = 'fullchain.pem';
-        }
-
-        $keyLocation = '/data/certificate/' . $keyName;
-        $certLocation = '/data/certificate/' . $certName;
-
-        if (file_exists($keyLocation)) {
-            $this->pastellLogger->info('Le certificat du site est déjà présent.');
-            return;
-        }
-        $hostname = $this->getHostname($isMailsec);
-
-        $letsencrypt_cert_path = "/etc/letsencrypt/live/$hostname";
-        $privkey_path  = "$letsencrypt_cert_path/privkey.pem";
-        $cert_path  = "$letsencrypt_cert_path/fullchain.pem";
-        if (file_exists($privkey_path)) {
-            $this->pastellLogger->info('Certificat letsencrypt trouvé !');
-            symlink($privkey_path, $keyLocation);
-            symlink($cert_path, $certLocation);
-            return;
-        }
-
-        $script = $this->pastell_path . '/docker/generate-key-pair.sh';
-
-        exec("$script $hostname /data/certificate $keyName $certName", $output, $return_var);
-        $this->pastellLogger->info(implode("\n", $output));
-        if ($return_var !== 0) {
-            throw new UnrecoverableException('Impossible de générer ou de trouver le certificat du site !');
-        }
     }
 
     /**
