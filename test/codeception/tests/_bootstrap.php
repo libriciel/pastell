@@ -15,7 +15,7 @@ require_once __DIR__ . '/../../../init.php';
 $sqlQuery = $objectInstancier->getInstance(SQLQuery::class);
 $sqlQuery->query(file_get_contents(__DIR__ . '/truncate_all.sql'));
 
-require_once __DIR__ . '/../../../docker/init-docker.php';
+require_once __DIR__ . '/../../../docker/app/init-docker.php';
 
 $objectInstancier->setInstance('pastell_admin_login', 'admin');
 $objectInstancier->setInstance('pastell_admin_email', 'test@libriciel.invalid');

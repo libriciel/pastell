@@ -32,6 +32,15 @@ doivent être mises à jour #1667
 - Suppression de la fonction WorkerSQL::getNbJob remplacé par JobQueueSQL::getNbJob #2239
 - Le connecteur `pdf-relance` est supprimé. Il est intégré au connecteur `mailsec` #2269
 - Suppression de la classe /connecteur/cpp/lib/UTF8Encoder.php #2274
+- Variable d'environnement PASTELL_SITE_BASE remplacé par APP_HOST
+- Variable d'environnement WEBSEC_BASE remplacé par MAILSEC_HOST
+- Variable d'environnement TIMEZONE remplacé par TZ
+- Variable d'environnement MYSQL_DATABASE remplacé par DATABASE_NAME
+- Variable d'environnement MYSQL_HOST remplacé par DATABASE_HOST
+- Variable d'environnement MYSQL_USER remplacé par DATABASE_USER
+- Variable d'environnement MYSQL_PASSWORD remplacé par DATABASE_PASSWORD
+- Variable d'environnement MARIADB_DATADIR remplacé par DATABASE_DATADIR
+- Variable d'environnement LOGS_PATH remplacé par APP_LOGS_PATH
 
 ## Suppressions d'éléments dépréciés
 
