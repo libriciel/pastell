@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 class AccessibiliteControler extends PastellControler
 {
-    private const SCHEMA_PLURIANNUEL_PATH =
-        PASTELL_PATH . '/data/_shared/LIBRICIEL-SCOP_schema_pluriannuel_accessibilité_06-25.pdf';
-    private const DECLARATION_PATH =
-        PASTELL_PATH . '/data/_shared/declaration-accessibilite-pastell.pdf';
-
     public function _beforeAction(): void
     {
         parent::_beforeAction();
@@ -21,10 +16,14 @@ class AccessibiliteControler extends PastellControler
      */
     public function indexAction(): void
     {
-        $this->setViewParameter('page_title', "Accessibilité");
+        $data_dir = $this->getObjectInstancier()->getInstance('data_dir');
+        $schema_pluriannuel_path = $data_dir . '/_shared/LIBRICIEL-SCOP_schema_pluriannuel_accessibilité_06-25.pdf';
+        $declaration_path = $data_dir . '/_shared/declaration-accessibilite-pastell.pdf';
+
+        $this->setViewParameter('page_title', 'Accessibilité');
         $this->setViewParameter('twigTemplate', 'accessibilite/index.html.twig');
-        $this->setViewParameter('schema_pluriannuel_path', self::SCHEMA_PLURIANNUEL_PATH);
-        $this->setViewParameter('declaration_path', self::DECLARATION_PATH);
+        $this->setViewParameter('schema_pluriannuel_path', $schema_pluriannuel_path);
+        $this->setViewParameter('declaration_path', $declaration_path);
         $this->renderDefault();
     }
 
