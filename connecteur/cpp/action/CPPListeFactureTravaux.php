@@ -12,11 +12,8 @@ class CPPListeFactureTravaux extends ActionExecutor
         /** @var CPP $cpp */
         $cpp = $this->getMyConnecteur();
         return json_encode(
-            mb_convert_encoding(
-                $cpp->rechercheFactureTravaux($cpp->getDateDepuisLe(), $cpp->getDateJusquAu()),
-                'UTF-8',
-                'ISO-8859-1'
-            )
+            $cpp->rechercheFactureTravaux($cpp->getDateDepuisLe(), $cpp->getDateJusquAu()),
+            JSON_THROW_ON_ERROR
         );
     }
 

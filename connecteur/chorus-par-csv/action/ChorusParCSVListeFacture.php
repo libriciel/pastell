@@ -43,11 +43,8 @@ class ChorusParCSVListeFacture extends ActionExecutor
             $result .= 'Pour la ligne CSV: ' . $col[0] . ';' . $col[2] . ';' . $col[3] . ';' .
                 $col[4] . ';' . $col[5] . '<br/>';
             $result .= json_encode(
-                mb_convert_encoding(
-                    $connecteur_chorus->getListeFacturesRecipiendaire($col[5]),
-                    'UTF-8',
-                    'ISO-8859-1'
-                )
+                $connecteur_chorus->getListeFacturesRecipiendaire($col[5]),
+                JSON_THROW_ON_ERROR
             ) . '<br/>';
         }
         return $result;
