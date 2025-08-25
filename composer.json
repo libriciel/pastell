@@ -30,7 +30,7 @@
     "apereo/phpcas": "dev-master#77309b6a7f304a5f9e351bc52d8adc831989734f",
     "aws/aws-sdk-php": "^3.263",
     "dragonmantank/cron-expression": "^3.1",
-    "erusev/parsedown": "^1.7",
+    "erusev/parsedown": "dev-master#f7285e7",
     "ezyang/htmlpurifier": "^4.13",
     "flowjs/flow-php-server": "^2.0",
     "guzzlehttp/psr7": "^2.2",
@@ -159,7 +159,8 @@
   },
   "extra": {
     "symfony": {
-      "docker": false
+      "docker": false,
+      "require": "6.4.*"
     }
   }
 }

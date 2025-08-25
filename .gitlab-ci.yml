@@ -32,6 +32,8 @@ variables:
     DATABASE_PORT: 3306
     MYSQL_RANDOM_ROOT_PASSWORD: yes
     DATABASE_HOST_TEST: mariadb
+    DATABASE_USER_TEST: user
+    DATABASE_PASSWORD_TEST: user
     PHP_MEMORY_LIMIT: 1000M
     APP_HOST: localhost
     MAILSEC_HOST: 127.0.0.1
@@ -52,7 +54,7 @@ build-app:
     - sed -i "s/%VERSION%/${CI_COMMIT_REF_NAME}/" ./manifest.yml
     - sed -i "s/%GITHUB_API_TOKEN%/${GITHUB_API_TOKEN}/" ./docker/github/auth.json
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker build --secret id=composer_auth,src=./docker/github/auth.json --target dev --pull -t ${CONTAINER_IMAGE_APP} .
+    - docker build --secret id=composer_auth,src=./docker/github/auth.json --target dev --pull -t ${CONTAINER_IMAGE_APP} -f docker/app/Dockerfile .
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
     - docker push ${CONTAINER_IMAGE_APP}
 
@@ -96,7 +98,7 @@ unit_test:
       GIT_STRATEGY: none
       COMPOSER_PROCESS_TIMEOUT: 1200
     services:
-        - name: hubdocker.libriciel.fr/mariadb:11.4.7-noble
+        - name: hubdocker.libriciel.fr/mariadb:11.4.8-noble
           alias: mariadb
     script:
         - cd /app
@@ -130,9 +132,9 @@ acceptance_test:
         FF_NETWORK_PER_BUILD: "true"
         DONT_INIT_DATABASE: "true"
     services:
-        - name: hubdocker.libriciel.fr/mariadb:11.4.7-noble
+        - name: hubdocker.libriciel.fr/mariadb:11.4.8-noble
           alias: mariadb
-        - name: hubdocker.libriciel.fr/redis:8.2.0-alpine3.22
+        - name: hubdocker.libriciel.fr/redis:8.2.1-alpine3.22
           alias: redis
         - name: ${CONTAINER_IMAGE_APP}
           alias: app
@@ -220,4 +222,4 @@ code_quality:
 
 container_scanning:
   variables:
-    CS_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH
+    CS_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH-app

@@ -24,6 +24,15 @@ endif
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+env:
+ifeq ($(wildcard docker/.env),)
+	cp docker/.env.dev.example docker/.env
+	sed -i "s/^DATABASE_ROOT_PASSWORD=.*/DATABASE_ROOT_PASSWORD=$(shell openssl rand -base64 32 | md5sum | cut -d' ' -f1)/" docker/.env
+	sed -i "s/^DATABASE_PASSWORD=.*/DATABASE_PASSWORD=$(shell openssl rand -base64 32 | md5sum | cut -d' ' -f1)/" docker/.env
+	sed -i "s/^DATABASE_PASSWORD_TEST=.*/DATABASE_PASSWORD_TEST=$(shell openssl rand -base64 32 | md5sum | cut -d' ' -f1)/" docker/.env
+endif
+
+
 composer-install: ## Run composer install
 	$(DOCKER_COMPOSE_RUN) -c "composer install"
 

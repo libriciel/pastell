@@ -12,13 +12,13 @@ define("WEBSEC_BASE","https://${MAILSEC_HOST}:${HTTPS_PORT}");
 define("TIMEZONE", "${TZ:-Europe/Paris}");
 define("BD_DSN","mysql:dbname=${DATABASE_NAME:-pastell};host=${DATABASE_HOST:-db};port=${DATABASE_PORT:-3306};charset=utf8mb4");
 define("BD_DBNAME","${DATABASE_NAME:-pastell}");
-define("BD_USER","${DATABASE_USER}");
+define("BD_USER","${DATABASE_USER:-pastell}");
 define("BD_PASS","${DATABASE_PASSWORD}");
 
 define("BD_DSN_TEST","mysql:dbname=${DATABASE_NAME_TEST:-pastell_test};host=${DATABASE_HOST_TEST:-db_test};port=${DATABASE_PORT_TEST:-3306};charset=utf8mb4");
 define("BD_DBNAME_TEST","${DATABASE_NAME_TEST:-pastell_test}");
-define("BD_USER_TEST","${DATABASE_USER_TEST:-user}");
-define("BD_PASS_TEST","${DATABASE_PASSWORD_TEST:-user}");
+define("BD_USER_TEST","${DATABASE_USER_TEST:-pastell}");
+define("BD_PASS_TEST","${DATABASE_PASSWORD_TEST}");
 
 define("WORKSPACE_PATH" , "/data/workspace");
 

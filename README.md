@@ -19,7 +19,11 @@ Prérequis :
 - docker
 - docker compose
 
-Copier le fichier `docker/.env.dev.example` vers `docker/.env` et adapter les valeurs si nécessaires.
+```shell
+make env
+```
+Adapter le fichier `docker/.env` si nécessaire
+
 Si la configuration du fichier `docker/compose.dev.yaml` contient des données à surcharger, il est nécessaire de créer
 un fichier `docker/compose.override.yaml`.
 
