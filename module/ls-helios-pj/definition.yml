@@ -86,7 +86,7 @@ formulaire:
             requis: true
             index: true
             type: externalData
-            choice-action: iparapheur-sous-type
+            choice-action: parapheur-sous-type
             link_name: 'Sélectionner un sous-type'
         json_metadata:
             name: 'Métadonnées parapheur (JSON)'
@@ -111,7 +111,7 @@ formulaire:
         fast_parapheur_circuit:
             name: 'Circuit sur le parapheur'
             type: externalData
-            choice-action: iparapheur-sous-type
+            choice-action: parapheur-sous-type
             link_name: 'Liste des circuits'
         fast_parapheur_circuit_configuration:
             name: 'Configuration du circuit à la volée (au format JSON)'
@@ -557,12 +557,14 @@ action:
         name: 'Signature refusée'
         rule:
             role_id_e: no-role
-    iparapheur-sous-type:
+    parapheur-sous-type:
         name: 'Liste des sous-type iparapheur'
         no-workflow: true
         rule:
             role_id_e: no-role
-        action-class: IparapheurSousType
+        action-class: StandardChoiceAction
+        connecteur-type: signature
+        connecteur-type-action: Pastell\Step\Signature\ChoiceAction\ParapheurSousTypeChoiceAction
         connecteur-type-mapping:
             iparapheur_type: iparapheur_type
             iparapheur_sous_type: iparapheur_sous_type

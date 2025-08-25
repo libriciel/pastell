@@ -1,27 +1,40 @@
 <?php
 
-/**
- * @deprecated 5.0.0, use Pastell\Step\Tdt\Acte\ChoiceAction\ClassificationChoiceAction instead
- */
-class Classification extends ChoiceActionExecutor
+declare(strict_types=1);
+
+namespace Pastell\Step\Tdt\Acte\ChoiceAction;
+
+use ClassificationActes;
+use ConnecteurTypeChoiceActionExecutor;
+use Exception;
+use NotFoundException;
+use Recuperateur;
+use UnrecoverableException;
+
+class ClassificationChoiceAction extends ConnecteurTypeChoiceActionExecutor
 {
-    public function go()
+    /**
+     * @throws NotFoundException
+     */
+    public function go(): void
     {
         $recuperateur = new Recuperateur($_GET);
         $classif = $recuperateur->get('classif');
         $this->getDonneesFormulaire()->setData('classification', $classif);
     }
 
-    public function displayAPI()
+    /**
+     * @throws UnrecoverableException
+     */
+    public function displayAPI(): array
     {
-        $classificationActes = $this->getClassificationActes();
-        return $classificationActes->getAll();
+        return $this->getClassificationActes()->getAll();
     }
 
     /**
      * @throws NotFoundException
      */
-    public function display()
+    public function display(): bool
     {
         $this->setViewParameter('classificationActes', $this->getClassificationActes());
         $this->renderPage(
@@ -31,14 +44,17 @@ class Classification extends ChoiceActionExecutor
         return true;
     }
 
-    private function getClassificationActes()
+    /**
+     * @throws UnrecoverableException
+     */
+    private function getClassificationActes(): ClassificationActes
     {
         $donneesFormulaire = $this->getConnecteurFactory()->getConnecteurConfigByType($this->id_e, $this->type, 'TdT');
-        if (! $donneesFormulaire) {
+        if (!$donneesFormulaire) {
             throw new Exception("La classification en matière et sous-matière n'est pas disponible");
         }
         $file = $donneesFormulaire->getFilePath('classification_file');
-        if (! file_exists($file)) {
+        if (!file_exists($file)) {
             throw new Exception("La classification en matière et sous-matière n'est pas disponible ($file)");
         }
         return new ClassificationActes($donneesFormulaire->getFilePath('classification_file'));

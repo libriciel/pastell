@@ -150,7 +150,7 @@ class TypeDossierEtapeDefinitionTest extends PastellTestCase
             'erreur-verif-iparapheur' => 'erreur-verif-iparapheur_2',
             'recu-iparapheur' => 'recu-iparapheur_2',
             'rejet-iparapheur' => 'rejet-iparapheur_2',
-            'iparapheur-sous-type' => 'iparapheur-sous-type_2',
+            'parapheur-sous-type' => 'parapheur-sous-type_2',
             'envoi_signature' => 'envoi_signature_2',
             'envoi_iparapheur' => 'envoi_iparapheur_2',
             'Parapheur FAST' => 'Parapheur FAST #2',
@@ -213,7 +213,7 @@ class TypeDossierEtapeDefinitionTest extends PastellTestCase
                             'requis' => true,
                             'index' => true,
                             'type' => 'externalData',
-                            'choice-action' => 'iparapheur-sous-type_2',
+                            'choice-action' => 'parapheur-sous-type_2',
                             'link_name' => 'Sélectionner un sous-type',
                         ],
                     'json_metadata_2' =>
@@ -325,7 +325,7 @@ class TypeDossierEtapeDefinitionTest extends PastellTestCase
                 'fast_parapheur_circuit_2' => [
                     'name' => 'Circuit sur le parapheur',
                     'type' => 'externalData',
-                    'choice-action' => 'iparapheur-sous-type_2',
+                    'choice-action' => 'parapheur-sous-type_2',
                     'link_name' => 'Liste des circuits'
                 ],
                 'fast_parapheur_circuit_configuration_2' => [
@@ -450,13 +450,15 @@ Uniquement avec le mode "circuit à la volée"',
                         'role_id_e' => 'no-role',
                     ],
                 ],
-                'iparapheur-sous-type_2' => [
+                'parapheur-sous-type_2' => [
                     'name' => 'Liste des sous-type iparapheur #2',
                     'no-workflow' => true,
                     'rule' => [
                         'role_id_e' => 'no-role',
                     ],
-                    'action-class' => 'IparapheurSousType',
+                    'action-class' => 'StandardChoiceAction',
+                    'connecteur-type' => 'signature',
+                    'connecteur-type-action' => 'Pastell\Step\Signature\ChoiceAction\ParapheurSousTypeChoiceAction',
                     'connecteur-type-mapping' => [
                         'iparapheur_type' => 'iparapheur_type_2',
                         'iparapheur_sous_type' => 'iparapheur_sous_type_2',

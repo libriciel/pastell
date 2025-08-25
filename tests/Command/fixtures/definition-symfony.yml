@@ -113,7 +113,7 @@ formulaire:
             requis: true
             read-only: true
             type: externalData
-            choice-action: iparapheur-sous-type
+            choice-action: parapheur-sous-type
             link_name: 'Sélectionner un sous-type'
     'Parapheur FAST':
         envoi_signature_fast:
@@ -122,7 +122,7 @@ formulaire:
         fast_parapheur_circuit:
             name: 'Circuit sur le parapheur'
             type: externalData
-            choice-action: iparapheur-sous-type
+            choice-action: parapheur-sous-type
             link_name: 'Liste des circuits'
         fast_parapheur_circuit_configuration:
             name: 'Configuration du circuit à la volée (au format JSON)'
@@ -540,7 +540,9 @@ action:
             last-action:
                 - teletransmission-tdt
                 - document-transmis-tdt
-        action-class: TdtTeletransmettre
+        action-class: StandardAction
+        connecteur-type: TdT
+        connecteur-type-action: Pastell\Step\Tdt\Acte\Action\TdtTeletransmettreAction
     return-teletransmission-tdt:
         name: 'Ordre de télétransmission envoyé sur le TDT'
         rule:
@@ -548,7 +550,9 @@ action:
             droit_id_u: 'actes-generique:edition'
             last-action:
                 - teletransmission-tdt
-        action-class: TdtRetourTeletransmettre
+        action-class: StandardAction
+        connecteur-type: TdT
+        connecteur-type-action: Pastell\Step\Tdt\Acte\Action\TdtTeletransmettreRetourAction
         action-automatique: verif-tdt
     verif-tdt:
         name-action: 'Vérifier le statut de la transaction'
@@ -764,18 +768,22 @@ action:
         rule:
             role_id_e: no-role
         action-class: ActesGeneriqueCheminementChange
-    iparapheur-sous-type:
+    parapheur-sous-type:
         name: 'Liste des sous-type iParapheur'
         no-workflow: true
         rule:
             role_id_e: no-role
-        action-class: IparapheurSousType
+        action-class: StandardChoiceAction
+        connecteur-type: signature
+        connecteur-type-action: Pastell\Step\Signature\ChoiceAction\ParapheurSousTypeChoiceAction
     classification:
         name: 'Classification ACTES'
         no-workflow: true
         rule:
             role_id_e: no-role
-        action-class: Classification
+        action-class: StandardChoiceAction
+        connecteur-type: TdT
+        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\ClassificationChoiceAction
     signature-locale:
         name: 'Signature locale'
         no-workflow: true
