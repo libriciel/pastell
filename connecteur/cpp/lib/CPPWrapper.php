@@ -16,63 +16,38 @@ class CPPWrapper
 
     private const PISTE_API_VERSION = 'v1';
 
-    private const RECHERCHE_FACTURE_PAR_RECIPIENDAIRE = "factures/%s/rechercher/recipiendaire";
-    private const CONSULTER_HISTORIQUE_FACTURE = "factures/%s/consulter/historique";
-    private const TELECHARGER_GROUPE_FACTURE = "factures/%s/telecharger/groupe";
-    private const TRAITER_FACTURE_RECUE = "factures/%s/traiter/recue";
+    private const RECHERCHE_FACTURE_PAR_RECIPIENDAIRE = 'factures/%s/rechercher/recipiendaire';
+    private const CONSULTER_HISTORIQUE_FACTURE = 'factures/%s/consulter/historique';
+    private const TELECHARGER_GROUPE_FACTURE = 'factures/%s/telecharger/groupe';
+    private const TRAITER_FACTURE_RECUE = 'factures/%s/traiter/recue';
 
-    private const RECHERCHE_FACTURE_TRAVAUX = "facturesTravaux/%s/rechercher";
+    private const RECHERCHE_FACTURE_TRAVAUX = 'facturesTravaux/%s/rechercher';
 
-    private const RECUPERER_TAUXTVA = "transverses/%s/recuperer/tauxtva";
-    private const RECUPERER_STRUCTURE_DESTINATAIRE = "transverses/%s/recuperer/structures/actives/destinataire";
-    private const RECHERCHER_STRUCTURE = "structures/%s/rechercher";
-    private const RECHERCHER_SERVICE = "structures/%s/rechercher/services";
-    private const CONSULTER_SERVICE = "structures/%s/consulter/service";
+    private const RECUPERER_TAUXTVA = 'transverses/%s/recuperer/tauxtva';
+    private const RECUPERER_STRUCTURE_DESTINATAIRE = 'transverses/%s/recuperer/structures/actives/destinataire';
+    private const RECHERCHER_STRUCTURE = 'structures/%s/rechercher';
+    private const RECHERCHER_SERVICE = 'structures/%s/rechercher/services';
+    private const CONSULTER_SERVICE = 'structures/%s/consulter/service';
 
-    public const SOUMETTRE_FACTURE = "factures/%s/soumettre";
-    public const DEPOSER_PDF = "factures/%s/deposer/pdf";
-    public const DEPOSER_FLUX = "factures/%s/deposer/flux";
-    private const RECHERCHE_FACTURE_PAR_FOURNISSEUR = "factures/%s/rechercher/fournisseur";
-    private const CONSULTER_CR_DETAILLE = "transverses/%s/consulterCRDetaille";
+    public const SOUMETTRE_FACTURE = 'factures/%s/soumettre';
+    public const DEPOSER_PDF = 'factures/%s/deposer/pdf';
+    public const DEPOSER_FLUX = 'factures/%s/deposer/flux';
+    private const RECHERCHE_FACTURE_PAR_FOURNISSEUR = 'factures/%s/rechercher/fournisseur';
+    private const CONSULTER_CR_DETAILLE = 'transverses/%s/consulterCRDetaille';
 
-    /** @var CurlWrapperFactory */
-    private $curlWrapperFactory;
+    private CPPWrapperConfig $cppWrapperConfig;
 
-    /** @var MemoryCache */
-    private $memoryCache;
-
-    /** @var  UTF8Encoder */
-    private $utf8Encoder;
-
-    /** @var  CPPWrapperConfig */
-    private $cppWrapperConfig;
-
-    private $logger;
-
-    /**
-     * CPPWrapper constructor.
-     * @param CurlWrapperFactory $curlWrapperFactory
-     * @param MemoryCache $memoryCache
-     * @param UTF8Encoder $utf8Encoder
-     * @param Logger $logger
-     */
     public function __construct(
-        CurlWrapperFactory $curlWrapperFactory,
-        MemoryCache $memoryCache,
-        UTF8Encoder $utf8Encoder,
-        Logger $logger
+        private readonly CurlWrapperFactory $curlWrapperFactory,
+        private readonly MemoryCache $memoryCache,
+        private readonly Logger $logger
     ) {
-        $this->curlWrapperFactory = $curlWrapperFactory;
-        $this->memoryCache = $memoryCache;
-        $this->utf8Encoder = $utf8Encoder;
-        $this->logger = $logger;
     }
 
     /**
-     * @param CPPWrapperConfig $cppWrapperConfig
      * @throws CPPException
      */
-    public function setCppWrapperConfig(CPPWrapperConfig $cppWrapperConfig)
+    public function setCppWrapperConfig(CPPWrapperConfig $cppWrapperConfig): void
     {
         $this->cppWrapperConfig = $cppWrapperConfig;
 
@@ -89,28 +64,28 @@ class CPPWrapper
     /**
      * @param $fonction_cpp
      * @param array $data
-     * @return array|mixed
-     * @throws Exception
+     * @return array
+     * @throws CPPWrapperExceptionGetToken|CPPException
      */
-    public function call($fonction_cpp, array $data)
+    public function call($fonction_cpp, array $data): array
     {
-        $msg_call = "Chorus Call";
-        $msg_response = "Chorus response";
+        $msg_call = 'Chorus Call';
+        $msg_response = 'Chorus response';
 
         $curlWrapper = $this->curlWrapperFactory->getInstance();
         $curlWrapper->setProperties(CURLOPT_TIMEOUT, 60);
         $cppWrapperConfig = $this->cppWrapperConfig;
         // Authentification
         if (!($cppWrapperConfig->user_login && $cppWrapperConfig->user_password)) {
-            throw new Exception("Erreur: Utilisateur sans Login/Mot de passe");
+            throw new CPPException('Erreur: Utilisateur sans Login/Mot de passe');
         }
 
         $curlWrapper->addHeader('Accept-Charset', 'utf-8');
         $curlWrapper->addHeader('Authorization', $this->getToken());
         $curlWrapper->addHeader('cpro-account', $cppWrapperConfig->cpro_account);
 
-        $url = trim($cppWrapperConfig->url_piste_api, "/") .
-            "/cpro/" . sprintf($fonction_cpp, self::PISTE_API_VERSION);
+        $url = trim($cppWrapperConfig->url_piste_api, '/') .
+            '/cpro/' . sprintf($fonction_cpp, self::PISTE_API_VERSION);
 
         if ($cppWrapperConfig->proxy) {
             $curlWrapper->setProperties(CURLOPT_PROXY, $cppWrapperConfig->proxy);
@@ -137,30 +112,30 @@ class CPPWrapper
         if (!$result) {
             $error_msg = $curlWrapper->getLastError();
             if (!$error_msg) {
-                $error_msg = "Problème de connexion au serveur : Code HTTP " . $curlWrapper->getHTTPCode();
+                $error_msg = 'Problème de connexion au serveur : Code HTTP ' . $curlWrapper->getHTTPCode();
             }
             $this->logger->error(
                 $msg_response,
                 [$curlWrapper->getLastHttpCode(),$error_msg,$curlWrapper->getLastOutput()]
             );
-            throw new Exception($error_msg);
+            throw new CPPException($error_msg);
         }
         if ($curlWrapper->getLastHttpCode() != 200) {
             $this->logger->error($msg_response, [$curlWrapper->getLastHttpCode(),$curlWrapper->getLastOutput()]);
-            throw new Exception(
-                "Utilisateur " . $cppWrapperConfig->user_login . "<br/>" .
-                " Erreur code HTTP: " . $curlWrapper->getLastHttpCode() . "<br/>" . $result
+            throw new CPPException(
+                'Utilisateur ' . $cppWrapperConfig->user_login . '<br/>' .
+                ' Erreur code HTTP: ' . $curlWrapper->getLastHttpCode() . '<br/>' . $result
             );
         }
         $this->logger->debug($msg_response, [mb_substr($result, 0, 100)]);
-        return $this->utf8Encoder->decode(json_decode($result));
+        return json_decode($result, true);
     }
 
     /**
      * @param CurlWrapper $curlWrapper
      * @param array $data
      */
-    private function setJsonPostData(CurlWrapper $curlWrapper, array $data)
+    private function setJsonPostData(CurlWrapper $curlWrapper, array $data): void
     {
         $curlWrapper->setProperties(CURLOPT_POST, true);
         if (empty($data)) {
@@ -172,7 +147,6 @@ class CPPWrapper
     }
 
     /**
-     * @return string
      * @throws CPPWrapperExceptionGetToken
      */
     private function getToken(): string
@@ -190,13 +164,13 @@ class CPPWrapper
         }
 
         $post_data_encode = [];
-        $post_data_encode[urlencode("grant_type")] = urlencode("client_credentials");
-        $post_data_encode[urlencode("client_id")] = urlencode($this->cppWrapperConfig->client_id);
-        $post_data_encode[urlencode("client_secret")] = urlencode($this->cppWrapperConfig->client_secret);
-        $post_data_encode[urlencode("scope")] = urlencode("openid");
+        $post_data_encode[urlencode('grant_type')] = urlencode('client_credentials');
+        $post_data_encode[urlencode('client_id')] = urlencode($this->cppWrapperConfig->client_id);
+        $post_data_encode[urlencode('client_secret')] = urlencode($this->cppWrapperConfig->client_secret);
+        $post_data_encode[urlencode('scope')] = urlencode('openid');
 
         $curlWrapperToken->setPostDataUrlEncode($post_data_encode);
-        $result = $curlWrapperToken->get(trim($this->cppWrapperConfig->url_piste_get_token, "/"));
+        $result = $curlWrapperToken->get(trim($this->cppWrapperConfig->url_piste_get_token, '/'));
 
         if (!$result) {
             $error_msg = $curlWrapperToken->getLastError();
@@ -205,25 +179,24 @@ class CPPWrapper
                     . $curlWrapperToken->getHTTPCode();
             }
             $this->logger->error(
-                "PISTE get token response",
+                'PISTE get token response',
                 [$curlWrapperToken->getLastHttpCode(), $error_msg,$curlWrapperToken->getLastOutput()]
             );
-            throw new CPPWrapperExceptionGetToken("PISTE get token response: " . $error_msg);
+            throw new CPPWrapperExceptionGetToken('PISTE get token response: ' . $error_msg);
         }
         if ($curlWrapperToken->getLastHttpCode() != 200) {
             $this->logger->error(
-                "PISTE get token response",
+                'PISTE get token response',
                 [$curlWrapperToken->getLastHttpCode(),$curlWrapperToken->getLastOutput()]
             );
             throw new CPPWrapperExceptionGetToken(
-                "PISTE get token response - Erreur code HTTP: " .
+                'PISTE get token response - Erreur code HTTP: ' .
                 $curlWrapperToken->getLastHttpCode() . "<br/>" . $result
             );
         }
-
-        $array_result = $this->utf8Encoder->decode(json_decode($result));
+        $array_result = json_decode($result, true);
         if (! is_array($array_result)) {
-            throw new CPPWrapperExceptionGetToken("PISTE impossible de déchiffrer le token");
+            throw new CPPWrapperExceptionGetToken('PISTE impossible de déchiffrer le token');
         }
         if (
             !$array_result['token_type']
@@ -231,16 +204,16 @@ class CPPWrapper
             || !(is_int($array_result['expires_in']) && $array_result['expires_in'] > 0)
         ) {
             $this->logger->error(
-                "PISTE get token invalid return",
+                'PISTE get token invalid return',
                 [$result]
             );
             throw new CPPWrapperExceptionGetToken(
-                "PISTE get token invalid return: " .
+                'PISTE get token invalid return: ' .
                 $result
             );
         }
 
-        $this->logger->debug("PISTE get token response", [mb_substr($result, 0, 100)]);
+        $this->logger->debug('PISTE get token response', [mb_substr($result, 0, 100)]);
         $token = $array_result['token_type'] . ' ' . $array_result['access_token'];
 
         $this->memoryCache->store(
@@ -253,15 +226,13 @@ class CPPWrapper
 
     /**
      * @param $client_id
-     * @return string
      */
     private function getCacheKey($client_id): string
     {
-        return "pastell_token_piste_" . $client_id;
+        return 'pastell_token_piste_' . $client_id;
     }
 
     /**
-     * @return bool
      * @throws Exception
      */
     public function testConnexion(): bool
@@ -271,17 +242,13 @@ class CPPWrapper
     }
 
     /**
-     * @param string $idFournisseur
-     * @param string $periodeDateHeureEtatCourantDu
-     * @param string $periodeDateHeureEtatCourantAu
-     * @return array
      * @throws CPPWrapperExceptionRechercheFactureParRecipiendaire
      * @throws Exception
      */
     public function rechercheFactureParRecipiendaire(
-        string $idFournisseur = "",
-        string $periodeDateHeureEtatCourantDu = "",
-        string $periodeDateHeureEtatCourantAu = ""
+        string $idFournisseur = '',
+        string $periodeDateHeureEtatCourantDu = '',
+        string $periodeDateHeureEtatCourantAu = ''
     ): array {
         $result = [];
         $result['listeFactures'] = [];
@@ -314,7 +281,7 @@ class CPPWrapper
                     $data['periodeDateHeureEtatCourantDu'] = $periodeDateHeureEtatCourantDu;
                 }
                 if ($periodeDateHeureEtatCourantAu) { // 2022-01-07T10:11:47.823Z
-                    $data['periodeDateHeureEtatCourantAu'] = $periodeDateHeureEtatCourantAu . "T23:59:59";
+                    $data['periodeDateHeureEtatCourantAu'] = $periodeDateHeureEtatCourantAu . 'T23:59:59';
                 }
 
                 $call_result = $this->call(self::RECHERCHE_FACTURE_PAR_RECIPIENDAIRE, $data);
@@ -358,10 +325,10 @@ class CPPWrapper
     /**
      * @param $format
      * @param $idFacture
-     * @return false|string
-     * @throws Exception
+     * @throws CPPException
+     * @throws CPPWrapperExceptionGetToken
      */
-    public function telechargerGroupeFacture($format, $idFacture)
+    public function telechargerGroupeFacture($format, $idFacture): string
     {
         $data = [
             'format' => $format,
@@ -369,7 +336,7 @@ class CPPWrapper
         ];
         $result = $this->call(self::TELECHARGER_GROUPE_FACTURE, $data);
         if (!array_key_exists('fichierResultat', $result)) {
-            throw new Exception("Impossible de récupérer la facture");
+            throw new CPPException('Impossible de récupérer la facture');
         }
         return base64_decode($result['fichierResultat']);
     }
@@ -379,10 +346,10 @@ class CPPWrapper
      * @param $idNouveauStatut
      * @param string $motif
      * @param string $numeroMandat
-     * @return array|mixed
-     * @throws Exception
+     * @throws CPPException
+     * @throws CPPWrapperExceptionGetToken
      */
-    public function traiterFactureRecue($idFacture, $idNouveauStatut, string $motif = "", string $numeroMandat = "")
+    public function traiterFactureRecue($idFacture, $idNouveauStatut, string $motif = '', string $numeroMandat = ''): array
     {
         $data = [
             'idFacture' => (int)$idFacture,
@@ -394,7 +361,6 @@ class CPPWrapper
     }
 
     /**
-     * @return array
      * @throws CPPWrapperExceptionRechercheFactureTravaux
      * @throws Exception
      */
@@ -430,7 +396,7 @@ class CPPWrapper
                 $data['periodeDateHeureEtatCourantDu'] = $periodeDateHeureEtatCourantDu;
             }
             if ($periodeDateHeureEtatCourantAu) { // 2022-01-07T10:11:47.823Z
-                $data['periodeDateHeureEtatCourantAu'] = $periodeDateHeureEtatCourantAu . "T23:59:59";
+                $data['periodeDateHeureEtatCourantAu'] = $periodeDateHeureEtatCourantAu . 'T23:59:59';
             }
 
             if ($this->cppWrapperConfig->fetchDownloadedInvoices !== null) {
@@ -464,10 +430,9 @@ class CPPWrapper
     }
 
     /**
-     * @return array|mixed
      * @throws Exception
      */
-    public function recupererStructuresActivesPourDestinataire()
+    public function recupererStructuresActivesPourDestinataire(): array
     {
         return $this->call(self::RECUPERER_STRUCTURE_DESTINATAIRE, []);
     }
@@ -488,7 +453,7 @@ class CPPWrapper
      */
     public function getIdentifiantStructureCPPByIdentifiantStructure(
         $identifiant_structure,
-        string $restreindre_structures = ""
+        string $restreindre_structures = ''
     ) {
         if (! $identifiant_structure) {
             return false;
@@ -565,17 +530,16 @@ class CPPWrapper
         $result = $this->call(self::RECHERCHE_FACTURE_PAR_FOURNISSEUR, $data);
 
         if (empty($result['listeFactures'][0])) {
-            throw new Exception("Impossible de trouver la facture $numero_flux_depot");
+            throw new CPPException("Impossible de trouver la facture $numero_flux_depot");
         }
         return $result['listeFactures'][0];
     }
 
     /**
      * @param $numero_flux_depot
-     * @return array|mixed
      * @throws Exception
      */
-    public function consulterCompteRenduImport($numero_flux_depot)
+    public function consulterCompteRenduImport($numero_flux_depot): array
     {
         return $this->call(self::CONSULTER_CR_DETAILLE, ['numeroFluxDepot' => $numero_flux_depot]);
     }
@@ -583,9 +547,6 @@ class CPPWrapper
     /**
      * Get the CPP invoice id from the invoice number and the CPP supplier id
      *
-     * @param int $supplierCppId
-     * @param string $invoiceNumber
-     * @return int The CPP invoice id
      * @throws Exception when the invoice cannot be found on chorus
      */
     public function getCppInvoiceId(int $supplierCppId, string $invoiceNumber): int
@@ -596,9 +557,9 @@ class CPPWrapper
         ];
         $result = $this->call(self::RECHERCHE_FACTURE_PAR_RECIPIENDAIRE, $data);
         if (empty($result['listeFactures'][0])) {
-            throw new Exception("Impossible de trouver la facture $invoiceNumber");
+            throw new CPPException('Impossible de trouver la facture ' . $invoiceNumber);
         } elseif (count($result['listeFactures']) > 1) {
-            throw new Exception("Plusieurs factures ont été trouvé avec le numéro $invoiceNumber");
+            throw new CPPException('Plusieurs factures ont été trouvé avec le numéro ' . $invoiceNumber);
         }
         return $result['listeFactures'][0]['idFacture'];
     }

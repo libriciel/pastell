@@ -1,17 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 class ChorusParCSVListeFacture extends ActionExecutor
 {
     /**
-     * @return UTF8Encoder
-     */
-    public function getUTF8Encoder(): UTF8Encoder
-    {
-        return $this->objectInstancier->getInstance(UTF8Encoder::class);
-    }
-
-    /**
-     * @return string
      * @throws Exception
      */
     public function metier(): string
@@ -19,11 +12,11 @@ class ChorusParCSVListeFacture extends ActionExecutor
         $connecteur_properties = $this->getConnecteurProperties();
         $fichier_csv_interprete = $connecteur_properties->getFilePath('fichier_csv_interprete');
         if (!file_exists($fichier_csv_interprete)) {
-            throw new Exception("Il n'y a pas de fichier CSV interprété");
+            throw new ChorusParCSVException("Il n'y a pas de fichier CSV interprété");
         }
-        $CSV = new CSV();
-        $colList = $CSV->get($fichier_csv_interprete, ';');
-        $result = "";
+        $csv = new CSV();
+        $colList = $csv->get($fichier_csv_interprete, ';');
+        $result = '';
 
         foreach ($colList as $col) {
             if (!$col[0]) {
@@ -37,7 +30,7 @@ class ChorusParCSVListeFacture extends ActionExecutor
                         '"Identifiant Chorus de la structure (optionel)";' .
                         '"SIRET du fournisseur (optionel)";' .
                         '"Identifiant Chorus du fournisseur (optionel)"';
-                throw new Exception($message);
+                throw new ChorusParCSVException($message);
             }
             // ('user_login', 'user_password',
             // 'siret_structure', 'id_chorus_structure','siret_fournisseur','id_chorus_fournisseur')
@@ -47,12 +40,11 @@ class ChorusParCSVListeFacture extends ActionExecutor
 
             /** @var ChorusParCsv $connecteur_chorus */
             $connecteur_chorus = $this->getMyConnecteur();
-            $result .= 'Pour la ligne CSV: ' . $col[0] . ";" . $col[2] . ";" . $col[3] . ";" .
-                $col[4] . ";" . $col[5] . '<br/>';
-            $result .= $this->getUTF8Encoder()->decode(
-                json_encode($this->getUTF8Encoder()->encode(
-                    $connecteur_chorus->getListeFacturesRecipiendaire($col[5])
-                ))
+            $result .= 'Pour la ligne CSV: ' . $col[0] . ';' . $col[2] . ';' . $col[3] . ';' .
+                $col[4] . ';' . $col[5] . '<br/>';
+            $result .= json_encode(
+                $connecteur_chorus->getListeFacturesRecipiendaire($col[5]),
+                JSON_THROW_ON_ERROR
             ) . '<br/>';
         }
         return $result;
@@ -67,12 +59,12 @@ class ChorusParCSVListeFacture extends ActionExecutor
             $result = $this->metier();
         } catch (Exception $ex) {
             $this->setLastMessage(
-                "La liste des factures d'après Le fichier CSV interprété n'a pas pu être récupérée: " . "<br/>" .
+                "La liste des factures d'après Le fichier CSV interprété n'a pas pu être récupérée: " . '<br/>' .
                 $ex->getMessage()
             );
             return false;
         }
-        $this->setLastMessage("Liste des factures : " . '<br/>' . $result);
+        $this->setLastMessage('Liste des factures : ' . '<br/>' . $result);
         return true;
     }
 }

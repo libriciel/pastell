@@ -1,44 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 class CPPListeStructure extends ActionExecutor
 {
     /**
-     * @return UTF8Encoder
-     */
-    public function getUTF8Encoder()
-    {
-        return $this->objectInstancier->getInstance(UTF8Encoder::class);
-    }
-
-    /**
-     * @return array|mixed
      * @throws Exception
      */
-    public function metier()
+    public function metier(): string
     {
         /** @var CPP $cpp */
         $cpp = $this->getMyConnecteur();
-        return $this->getUTF8Encoder()->decode(
-            json_encode($this->getUTF8Encoder()->encode(
-                $cpp->listeStructure()
-            ))
-        );
+        return json_encode($cpp->listeStructure(), JSON_THROW_ON_ERROR);
     }
 
     /**
-     * @return bool
      * @throws Exception
      */
-    public function go()
+    public function go(): bool
     {
         /** @var CPP $cpp */
         $cpp = $this->getMyConnecteur();
         $result = $this->metier();
         if (! $result) {
-            $this->setLastMessage("La connexion cpp a échoué : " . $cpp->getLastError());
+            $this->setLastMessage('La connexion cpp a échoué : ' . $cpp->getLastError());
             return false;
         }
-        $this->setLastMessage("Liste des structures : " . $result);
+        $this->setLastMessage('Liste des structures : ' . $result);
         return true;
     }
 }

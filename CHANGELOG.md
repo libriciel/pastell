@@ -30,6 +30,7 @@ doivent être mises à jour #1667
 - Suppression de la fonction WorkerSQL::getJobListWithWorker remplacé par JobQueueSQL::getFilteredJobList #2233
 - Suppression de la fonction WorkerSQL::getNbJob remplacé par JobQueueSQL::getNbJob #2239
 - Le connecteur `pdf-relance` est supprimé. Il est intégré au connecteur `mailsec` #2269
+- Suppression de la classe /connecteur/cpp/lib/UTF8Encoder.php #2274
 
 ## Suppression d'éléments dépréciés
 
