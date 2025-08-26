@@ -223,7 +223,7 @@ formulaire:
             requis: true
             read-only: true
             type: externalData
-            choice-action: iparapheur-sous-type
+            choice-action: parapheur-sous-type
             link_name: 'liste des sous types'
         json_metadata:
             name: 'Métadonnées parapheur (JSON)'
@@ -640,12 +640,14 @@ action:
         rule:
             role_id_e: no-role
         action-class: FactureCPPEnvoiVisaChange
-    iparapheur-sous-type:
+    parapheur-sous-type:
         name: 'Liste des sous-type iparapheur'
         no-workflow: true
         rule:
             role_id_e: no-role
-        action-class: IparapheurSousType
+        action-class: StandardChoiceAction
+        connecteur-type: signature
+        connecteur-type-action: Pastell\Step\Signature\ChoiceAction\ParapheurSousTypeChoiceAction
     prepare-ged:
         name: "Préparation de l'envoi à\_l'entrepôt"
         rule:

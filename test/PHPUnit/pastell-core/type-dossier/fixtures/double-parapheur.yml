@@ -50,7 +50,7 @@ formulaire:
             requis: true
             index: true
             type: externalData
-            choice-action: iparapheur-sous-type_1
+            choice-action: parapheur-sous-type_1
             link_name: 'Sélectionner un sous-type'
         json_metadata_1:
             name: 'Métadonnées parapheur (JSON)'
@@ -75,7 +75,7 @@ formulaire:
         fast_parapheur_circuit_1:
             name: 'Circuit sur le parapheur'
             type: externalData
-            choice-action: iparapheur-sous-type_1
+            choice-action: parapheur-sous-type_1
             link_name: 'Liste des circuits'
         fast_parapheur_circuit_configuration_1:
             name: 'Configuration du circuit à la volée (au format JSON)'
@@ -146,7 +146,7 @@ formulaire:
             requis: true
             index: true
             type: externalData
-            choice-action: iparapheur-sous-type_2
+            choice-action: parapheur-sous-type_2
             link_name: 'Sélectionner un sous-type'
         json_metadata_2:
             name: 'Métadonnées parapheur (JSON)'
@@ -171,7 +171,7 @@ formulaire:
         fast_parapheur_circuit_2:
             name: 'Circuit sur le parapheur'
             type: externalData
-            choice-action: iparapheur-sous-type_2
+            choice-action: parapheur-sous-type_2
             link_name: 'Liste des circuits'
         fast_parapheur_circuit_configuration_2:
             name: 'Configuration du circuit à la volée (au format JSON)'
@@ -439,12 +439,14 @@ action:
         rule:
             role_id_e: no-role
         num-same-connecteur: '0'
-    iparapheur-sous-type_1:
+    parapheur-sous-type_1:
         name: 'Liste des sous-type iparapheur #1'
         no-workflow: true
         rule:
             role_id_e: no-role
-        action-class: IparapheurSousType
+        action-class: StandardChoiceAction
+        connecteur-type: signature
+        connecteur-type-action: Pastell\Step\Signature\ChoiceAction\ParapheurSousTypeChoiceAction
         connecteur-type-mapping:
             iparapheur_type: iparapheur_type_1
             iparapheur_sous_type: iparapheur_sous_type_1
@@ -549,12 +551,14 @@ action:
         rule:
             role_id_e: no-role
         num-same-connecteur: '1'
-    iparapheur-sous-type_2:
+    parapheur-sous-type_2:
         name: 'Liste des sous-type iparapheur #2'
         no-workflow: true
         rule:
             role_id_e: no-role
-        action-class: IparapheurSousType
+        action-class: StandardChoiceAction
+        connecteur-type: signature
+        connecteur-type-action: Pastell\Step\Signature\ChoiceAction\ParapheurSousTypeChoiceAction
         connecteur-type-mapping:
             iparapheur_type: iparapheur_type_2
             iparapheur_sous_type: iparapheur_sous_type_2

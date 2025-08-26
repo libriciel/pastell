@@ -70,7 +70,7 @@ formulaire:
             requis: true
             index: true
             type: externalData
-            choice-action: iparapheur-sous-type
+            choice-action: parapheur-sous-type
             link_name: 'Sélectionner un sous-type'
         annotation_publique:
             name: 'Annotation publique'
@@ -84,7 +84,7 @@ formulaire:
         fast_parapheur_circuit:
             name: 'Circuit sur le parapheur'
             type: externalData
-            choice-action: iparapheur-sous-type
+            choice-action: parapheur-sous-type
             link_name: 'Liste des circuits'
         fast_parapheur_circuit_configuration:
             name: 'Configuration du circuit à la volée (au format JSON)'
@@ -544,12 +544,14 @@ action:
         name: 'Signature refusée'
         rule:
             role_id_e: no-role
-    iparapheur-sous-type:
+    parapheur-sous-type:
         name: 'Liste des sous-type iparapheur'
         no-workflow: true
         rule:
             role_id_e: no-role
-        action-class: IparapheurSousType
+        action-class: StandardChoiceAction
+        connecteur-type: signature
+        connecteur-type-action: Pastell\Step\Signature\ChoiceAction\ParapheurSousTypeChoiceAction
         connecteur-type-mapping:
             iparapheur_type: iparapheur_type
             iparapheur_sous_type: iparapheur_sous_type
@@ -786,7 +788,9 @@ action:
             last-action:
                 - teletransmission-tdt
                 - document-transmis-tdt
-        action-class: TdtTeletransmettre
+        action-class: StandardAction
+        connecteur-type: TdT
+        connecteur-type-action: Pastell\Step\Tdt\Acte\Action\TdtTeletransmettreAction
         connecteur-type-mapping:
             tedetis_transaction_id: tedetis_transaction_id
             return-teletransmission-tdt: return-teletransmission-tdt
@@ -795,7 +799,9 @@ action:
         rule:
             last-action:
                 - teletransmission-tdt
-        action-class: TdtRetourTeletransmettre
+        action-class: StandardAction
+        connecteur-type: TdT
+        connecteur-type-action: Pastell\Step\Tdt\Acte\Action\TdtTeletransmettreRetourAction
         connecteur-type-mapping:
             tedetis_transaction_id: tedetis_transaction_id
         action-automatique: verif-tdt
@@ -916,7 +922,9 @@ action:
         no-workflow: true
         rule:
             role_id_e: no-role
-        action-class: Classification
+        action-class: StandardChoiceAction
+        connecteur-type: TdT
+        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\ClassificationChoiceAction
     autre_document_attache-change:
         no-workflow: true
         rule:

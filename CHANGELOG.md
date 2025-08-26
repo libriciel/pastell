@@ -33,7 +33,7 @@ doivent être mises à jour #1667
 - Le connecteur `pdf-relance` est supprimé. Il est intégré au connecteur `mailsec` #2269
 - Suppression de la classe /connecteur/cpp/lib/UTF8Encoder.php #2274
 
-## Suppression d'éléments dépréciés
+## Suppressions d'éléments dépréciés
 
 - Suppression de la table collectivite_fournisseur #2205
 - Suppression de la table droit #2276
@@ -52,6 +52,12 @@ doivent être mises à jour #1667
 - Suppression de IParapheur::getMetaDonnee et SignatureRecuperation::getMetaDonnee #2211
 - Suppression de FluxDataStandard, use FluxDataSedaDefault instead #2211
 
+## Dépréciations
+
+- TdtTeletransmettre, use Pastell\Step\Tdt\Acte\Action\TdtTeletransmettreAction instead #2278
+- TdtRetourTeletransmettre, use Pastell\Step\Tdt\Acte\Action\TdtTeletransmettreRetourAction instead #2278
+- Classification, use Pastell\Step\Tdt\Acte\ChoiceAction\ClassificationChoiceAction instead #2278
+- IparapheurSousType, use Pastell\Step\Signature\ChoiceAction\ParapheurSousTypeChoiceAction instead #2278
 
 # [4.1.11] - 2025-07-15
 

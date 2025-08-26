@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated 5.0.0, use Pastell\Step\Tdt\Acte\Action\TdtTeletransmettreRetourAction instead
+ */
 class TdtRetourTeletransmettre extends ActionExecutor
 {
     public function go()

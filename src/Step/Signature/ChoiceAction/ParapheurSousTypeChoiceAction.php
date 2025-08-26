@@ -1,14 +1,22 @@
 <?php
 
-/**
- * @deprecated 5.0.0, use Pastell\Step\Signature\ChoiceAction\ParapheurSousTypeChoiceAction instead
- */
-class IparapheurSousType extends ChoiceActionExecutor
+declare(strict_types=1);
+
+namespace Pastell\Step\Signature\ChoiceAction;
+
+use ConnecteurTypeChoiceActionExecutor;
+use Exception;
+use SignatureConnecteur;
+use UnrecoverableException;
+
+use function in_array;
+
+class ParapheurSousTypeChoiceAction extends ConnecteurTypeChoiceActionExecutor
 {
     /**
      * @throws Exception
      */
-    public function go()
+    public function go(): void
     {
         $recuperateur = $this->getRecuperateur();
 
@@ -35,7 +43,7 @@ class IparapheurSousType extends ChoiceActionExecutor
         } else {
             $sous_type_iparapheur = $recuperateur->get('iparapheur_sous_type');
 
-            $sousTypePossible = $this->getSousType() ? : [];
+            $sousTypePossible = $this->getSousType() ?: [];
             if (!in_array($sous_type_iparapheur, $sousTypePossible, true)) {
                 throw new UnrecoverableException(
                     "Le sous-type \"$sous_type_iparapheur\" n'existe pas pour le type configuré"
@@ -55,7 +63,7 @@ class IparapheurSousType extends ChoiceActionExecutor
      * @return mixed
      * @throws Exception
      */
-    public function displayAPI()
+    public function displayAPI(): mixed
     {
         return $this->getSousType();
     }
@@ -64,7 +72,7 @@ class IparapheurSousType extends ChoiceActionExecutor
      * @return bool
      * @throws Exception
      */
-    public function display()
+    public function display(): bool
     {
         /** @var SignatureConnecteur $signature */
         $signature = $this->getConnecteur('signature');
@@ -76,7 +84,7 @@ class IparapheurSousType extends ChoiceActionExecutor
                 'connector/fastParapheur/FastParapheurCircuit'
             );
         } else {
-            $this->setViewParameter('sous_type', $this->getSousType() ? : []);
+            $this->setViewParameter('sous_type', $this->getSousType() ?: []);
             $this->renderPage(
                 "Choix d'un type de dossier",
                 'connector/iparapheur/IparapheurSousType'
@@ -89,34 +97,10 @@ class IparapheurSousType extends ChoiceActionExecutor
      * @return mixed
      * @throws Exception
      */
-    private function getSousType()
+    private function getSousType(): mixed
     {
         /** @var SignatureConnecteur $signature */
         $signature = $this->getConnecteur('signature');
         return $signature->getSousType();
-    }
-
-    /**
-     * @return array
-     * @throws Exception
-     */
-    public function displayChoiceForSearch()
-    {
-        try {
-            $config = $this->getConnecteurConfigByType('signature');
-            /** @var SignatureConnecteur $signature */
-            $signature = $this->getConnecteur('signature');
-            $result = [];
-        } catch (Exception $e) {
-            /** Aucun connecteur configuré */
-            return [];
-        }
-        $data = $signature->getSousType();
-        foreach ($data as $key => $name) {
-            if ($name) {
-                $result[$name] = $name;
-            }
-        }
-        return $result;
     }
 }

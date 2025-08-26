@@ -287,7 +287,9 @@ action:
                 - teletransmission-tdt
                 - document-transmis-tdt
             droit_id_u: 'tdt-actes-with-specific-right:teletransmettre'
-        action-class: TdtTeletransmettre
+        action-class: StandardAction
+        connecteur-type: TdT
+        connecteur-type-action: Pastell\Step\Tdt\Acte\Action\TdtTeletransmettreAction
         connecteur-type-mapping:
             tedetis_transaction_id: tedetis_transaction_id
             return-teletransmission-tdt: return-teletransmission-tdt
@@ -296,7 +298,9 @@ action:
         rule:
             last-action:
                 - teletransmission-tdt
-        action-class: TdtRetourTeletransmettre
+        action-class: StandardAction
+        connecteur-type: TdT
+        connecteur-type-action: Pastell\Step\Tdt\Acte\Action\TdtTeletransmettreRetourAction
         connecteur-type-mapping:
             tedetis_transaction_id: tedetis_transaction_id
         action-automatique: verif-tdt
@@ -418,7 +422,9 @@ action:
         no-workflow: true
         rule:
             role_id_e: no-role
-        action-class: Classification
+        action-class: StandardChoiceAction
+        connecteur-type: TdT
+        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\ClassificationChoiceAction
     autre_document_attache-change:
         no-workflow: true
         rule:
