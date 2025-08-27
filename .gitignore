@@ -11,7 +11,7 @@ extensions/**/build
 extensions/**/vendor
 
 /docker/.env
-/docker/docker-compose.override.yml
+/docker/compose.override.yaml
 
 phpcs.xml
 

@@ -1,0 +1,75 @@
+services:
+  app:
+    image: pastell-app-local-dev
+    build:
+      context: ..
+      dockerfile: ./docker/app/Dockerfile
+      target: dev
+      args:
+        UID: ${UID:-10001}
+        GID: ${GID:-10001}
+    environment:
+      APP_HOST: ${APP_HOST:-localhost}
+      MAILSEC_HOST: ${MAILSEC_HOST:-127.0.0.1}
+      MAILER_DSN: "${MAILER_DSN:-smtp://mailpit:1025?verify_peer=0}"
+      DATABASE_NAME_TEST: ${DATABASE_NAME_TEST:-pastell_test}
+      DATABASE_USER_TEST: ${DATABASE_USER_TEST:-pastell}
+      DATABASE_PASSWORD_TEST: ${DATABASE_PASSWORD_TEST:?}
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "1"
+      PACK_TEST: true
+      COMPOSER_CACHE_DIR: /data/composer
+      NPM_CONFIG_CACHE: /data/npm
+    volumes:
+      - ../:/app:cached
+      - ${HOME}/.composer/cache:/data/composer
+      - /data/npm_cache:/data/npm
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  web:
+    image: pastell-web-local-dev
+    build:
+      context: ..
+      dockerfile: ./docker/web/Dockerfile
+    volumes:
+      - ../node_modules:/app/node_modules:ro
+      - ../web:/app/web:ro
+      - ../web-mailsec:/app/web-mailsec:ro
+
+  db:
+    volumes:
+      - ./docker/mysql-dev/:/etc/mysql/conf.d/
+    ports:
+      - "${DATABASE_PORT:-8306}:3306"
+
+  db_test:
+    image: hubdocker.libriciel.fr/mariadb:11.4.8-noble
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD:?}
+      MYSQL_USER: ${DATABASE_USER_TEST:-pastell}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD_TEST:?}
+      MYSQL_DATABASE: ${DATABASE_NAME_TEST:-pastell_test}
+    volumes:
+      - ${DATABASE_DATADIR_TEST:-database_datadir_test}:/var/lib/mysql/
+    ports:
+      - "${DATABASE_PORT_TEST:-13306}:3306"
+
+  glaneur-sftp:
+    image: atmoz/sftp:alpine
+    volumes:
+      - ${PASTELL_GLANEUR:-pastell_glaneur}:/home/${SFTP_USER:-ftp}
+    ports:
+      - "${SFTP_PORT:-2222}:22"
+    command: ${SFTP_USER:-ftp}:${SFTP_PASSWORD:-ftp}:33
+
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "${MAILPIT_PORT:-8025}:8025"
+
+volumes:
+  pastell_glaneur:
+  database_datadir_test:

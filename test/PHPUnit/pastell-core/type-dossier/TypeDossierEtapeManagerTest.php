@@ -80,11 +80,11 @@ class TypeDossierEtapeManagerTest extends PastellTestCase
         $extensionsMock = $this->createMock(Extensions::class);
         $extensionsMock->method('getAllTypeDossier')
             ->willReturn([
-                'depot' => '/var/www/pastell/test/PHPUnit/pastell-core/type-dossier/fixtures/restriction_pack_test'
+                'depot' => '/app/test/PHPUnit/pastell-core/type-dossier/fixtures/restriction_pack_test'
             ]);
         $extensionsMock->method('getTypeDossierPath')
             ->willReturn(
-                '/var/www/pastell/test/PHPUnit/pastell-core/type-dossier/fixtures/restriction_pack_test'
+                '/app/test/PHPUnit/pastell-core/type-dossier/fixtures/restriction_pack_test'
             );
         $typeDossierEtapeManager = new TypeDossierEtapeManager(
             $objectInstancier->getInstance(YMLLoader::class),

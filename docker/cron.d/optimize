@@ -1,1 +1,0 @@
-0 23 * * * %USERNAME% /usr/bin/php /var/www/pastell/batch/optimize.php >> /data/log/optimize.log 2>&1

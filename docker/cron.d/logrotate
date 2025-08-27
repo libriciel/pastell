@@ -1,1 +1,0 @@
-* * * * * %USERNAME% /usr/sbin/logrotate /etc/logrotate.d/pastell.conf -s /data/log/logrotate-status >> /data/log/logrotate.log 2>&1

@@ -1,0 +1,1 @@
+0 * * * * /app/bin/console app:daemon:notify-check >> /data/log/pastell-daemon-check.log 2>&1

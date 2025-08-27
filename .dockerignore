@@ -1,8 +1,10 @@
 .dockerignore
 auth.json
 Dockerfile
-/docker/docker-compose.override.yml
-/docker/docker-compose.yml
+/docker/compose.yaml
+/docker/compose.override.yaml
+/docker/web/Dockerfile
 .gitlab-ci.yml
 .git
-vendor
+/vendor/
+/node_modules/

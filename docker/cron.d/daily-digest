@@ -1,1 +1,0 @@
-00 7 * * * %USERNAME% /usr/bin/php /var/www/pastell/batch/cron-jour.php >> /data/log/daily-digest 2>&1

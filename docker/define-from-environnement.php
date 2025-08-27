@@ -10,7 +10,7 @@ if (file_exists("/data/config/DockerSettings.php")) {
     require_once "/data/config/DockerSettings.php";
 } elseif (! file_exists(__DIR__ . "/../LocalSettings.php")) {
     echo "LocalSettings n'existe pas : création à partir des variables d'environnement\n";
-    $script = __DIR__ . "/docker-pastell-init";
+    $script = __DIR__ . "/app/docker-pastell-init";
 
     `/bin/bash $script > /tmp/DockerSettings.php`;
 

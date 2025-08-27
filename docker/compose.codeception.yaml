@@ -1,0 +1,15 @@
+services:
+  app:
+    volumes:
+      - tmp_app_workspace:/data/workspace/:rw,nosuid,nodev
+    environment:
+      APP_HOST: web
+      DATABASE_HOST: db_test
+      DATABASE_NAME: ${DATABASE_NAME_TEST:-pastell_test}
+      DATABASE_USER: ${DATABASE_USER_TEST:-user}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD_TEST:-user}
+  web:
+    environment:
+      APP_HOST: web
+volumes:
+  tmp_app_workspace:

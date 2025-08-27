@@ -1,0 +1,255 @@
+name: pastell
+
+services:
+  app:
+    image: 'registry.libriciel.fr/public/plateforme/pastell-app:canary'
+    init: true
+    restart: unless-stopped
+    read_only: true
+    stop_grace_period: 60s
+    stop_signal: SIGTERM
+    depends_on:
+      - db
+      - redis
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    user: "${UID:-10001}:${GID:-10001}"
+    environment:
+      APP_HOST: ${APP_HOST:?}
+      MAILSEC_HOST: ${MAILSEC_HOST:?}
+      HTTPS_PORT: ${HTTPS_PORT:-443}
+      PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT:-1000M}
+      PHP_UPLOAD_MAX_FILESIZE: ${PHP_UPLOAD_MAX_FILESIZE:-200M}
+      PHP_POST_MAX_SIZE: ${PHP_POST_MAX_SIZE:-200M}
+      PHP_MAX_EXECUTION_TIME: ${PHP_MAX_EXECUTION_TIME:-600}
+      REDIS_SERVER: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      PLATEFORME_MAIL: ${PLATEFORME_MAIL:-noreply@libriciel.invalid}
+      PASTELL_ADMIN_LOGIN: ${PASTELL_ADMIN_LOGIN:-admin}
+      PASTELL_ADMIN_EMAIL: ${PASTELL_ADMIN_EMAIL:-test@libriciel.invalid}
+      DATABASE_HOST: db
+      DATABASE_NAME: ${DATABASE_NAME:-pastell}
+      DATABASE_USER: ${DATABASE_USER:-pastell}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-dev}
+      MAILER_DSN: ${MAILER_DSN:-null://null}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-test@libriciel.invalid}
+      PACK_CHORUS_PRO: ${PACK_CHORUS_PRO:-false}
+      PACK_MARCHE: ${PACK_MARCHE:-false}
+      PACK_URBANISME: ${PACK_URBANISME:-false}
+      PACK_RH: ${PACK_RH:-false}
+      PACK_TEST: ${PACK_TEST:-false}
+      PACK_LIBERSIGN: ${PACK_LIBERSIGN:-false}
+      PACK_RECUP_PARAPHEUR_CORBEILLE_CONNECTOR: ${PACK_RECUP_PARAPHEUR_CORBEILLE_CONNECTOR:-false}
+      PACK_RECUP_FIN_PARAPHEUR: ${PACK_RECUP_FIN_PARAPHEUR:-false}
+      PACK_RECUP_ACTES_S2LOW: ${PACK_RECUP_ACTES_S2LOW:-false}
+      PACK_RECUP_PES_S2LOW: ${PACK_RECUP_PES_S2LOW:-false}
+      PACK_FAST_CONNECTORS: ${PACK_FAST_CONNECTORS:-false}
+      PACK_VITAM_CONNECTORS: ${PACK_VITAM_CONNECTORS:-false}
+      TZ: ${TZ:-Europe/Paris}
+      LOCALE: ${LOCALE:-fr_FR.UTF-8}
+      NB_WORKERS: ${NB_WORKERS:-5}
+      JOURNAL_MAX_AGE_IN_MONTHS: ${JOURNAL_MAX_AGE_IN_MONTHS:-2}
+      UNLOK_JOB_ERROR_AT_STARTUP: ${UNLOK_JOB_ERROR_AT_STARTUP:-false}
+      NB_JOB_PAR_VERROU: ${NB_JOB_PAR_VERROU:-1}
+      HTTP_PROXY_URL: ${HTTP_PROXY_URL:-}
+      NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1,::1,seda-generator,pes-viewer}
+      TOGGLE_CDGFeature: ${TOGGLE_CDGFeature:-false}
+      OPENSSL_CIPHER_STRING_SECURITY_LEVEL: ${OPENSSL_CIPHER_STRING_SECURITY_LEVEL:-2}
+      USE_UUID_FOR_DOCUMENT: ${USE_UUID_FOR_DOCUMENT:-false}
+      PASSWORD_MIN_ENTROPY: ${PASSWORD_MIN_ENTROPY:-80}
+      RATE_LIMITER_VARIABLE: ${RATE_LIMITER_VARIABLE:-REMOTE_ADDR}
+    tmpfs:
+      - /data/config:mode=770,uid=${UID:-10001},gid=${GID:-10001},rw,noexec,nosuid,nodev
+      - /data/run:mode=770,uid=${UID:-10001},gid=${GID:-10001},rw,noexec,nosuid,nodev
+      - /data/lock:mode=770,uid=${UID:-10001},gid=${GID:-10001},rw,noexec,nosuid,nodev
+      - /data/html_purifier:mode=770,uid=${UID:-10001},gid=${GID:-10001},rw,noexec,nosuid,nodev
+      - /var/run:mode=770,uid=${UID:-10001},gid=${GID:-10001},rw,noexec,nosuid,nodev
+      - /app/var:mode=770,uid=${UID:-10001},gid=${GID:-10001},rw,noexec,nosuid,nodev
+    volumes:
+      - ${PASTELL_EXTENSION_PATH:-../../}:/data/extensions/:ro,noexec,nosuid,nodev
+      - ${WORKSPACE_VOLUME:-app_workspace}:/data/workspace/:rw,nosuid,nodev
+      - ${PASTELL_SESSION:-app_session}:/data/session/:rw,noexec,nosuid,nodev
+      - ${APP_LOGS_PATH:-app_logs_datadir}:/data/log/:rw,noexec,nosuid,nodev
+      - ${TMP_PATH:-tmp_datadir}:/tmp/:rw,noexec,nosuid,nodev
+      - ${UPLOAD_CHUNK_PATH:-upload_chunk_datadir}:/data/upload_chunk/:rw,noexec,nosuid,nodev
+      - ${CACERTS_PATH:-cacerts}:/etc/ssl/certs/:ro,noexec,nosuid,nodev
+
+  web:
+    image: 'registry.libriciel.fr/public/plateforme/pastell-web:canary'
+    restart: unless-stopped
+    read_only: true
+    depends_on:
+      - app
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
+    user: "www-data:www-data"
+    environment:
+      APP_HOST: ${APP_HOST:?}
+      MAILSEC_HOST: ${MAILSEC_HOST:?}
+      ACME_APP_ENABLED: ${ACME_APP_ENABLED:-false}
+      ACME_APP_SERVER: ${ACME_APP_SERVER:-}
+      ACME_APP_EMAIL: ${ACME_APP_EMAIL:-}
+      ACME_APP_DOMAIN: ${ACME_APP_DOMAIN:-}
+      ACME_APP_ADDITIONAL_DOMAINS: ${ACME_APP_ADDITIONAL_DOMAINS:-}
+      ACME_APP_RENEW_BEFORE_DAYS: ${ACME_APP_RENEW_BEFORE_DAYS:-30}
+      ACME_APP_EAB_KID: ${ACME_APP_EAB_KID:-}
+      ACME_APP_EAB_HMAC_KEY: ${ACME_APP_EAB_HMAC_KEY:-}
+      ACME_APP_DEST: ${ACME_APP_DEST:-/data/certificates/app}
+      ACME_MAILSEC_ENABLED: ${ACME_MAILSEC_ENABLED:-false}
+      ACME_MAILSEC_SERVER: ${ACME_MAILSEC_SERVER:-}
+      ACME_MAILSEC_EMAIL: ${ACME_MAILSEC_EMAIL:-}
+      ACME_MAILSEC_DOMAIN: ${ACME_MAILSEC_DOMAIN:-}
+      ACME_MAILSEC_RENEW_BEFORE_DAYS: ${ACME_MAILSEC_RENEW_BEFORE_DAYS:-30}
+      ACME_MAILSEC_EAB_KID: ${ACME_MAILSEC_EAB_KID:-}
+      ACME_MAILSEC_EAB_HMAC_KEY: ${ACME_MAILSEC_EAB_HMAC_KEY:-}
+      ACME_MAILSEC_DEST: ${ACME_MAILSEC_DEST:-/data/certificates/mailsec}
+      HTTP_PORT: ${HTTP_PORT:-80}
+      HTTPS_PORT: ${HTTPS_PORT:-443}
+    tmpfs:
+      - /tmp:mode=770,uid=82,gid=82,rw,noexec,nosuid,nodev
+      - /acme-challenge/.well-known/acme-challenge:mode=770,uid=82,gid=82,size=10M,rw,noexec,nosuid,nodev
+      - /data/run:mode=770,uid=82,gid=82,size=1M,rw,noexec,nosuid,nodev
+    volumes:
+      - ${WEB_LOGS_PATH:-web_logs_datadir}:/data/log:rw,noexec,nosuid,nodev
+      - ${WEB_CERTIFICATES_PATH:-web_certificates_datadir}:/data/certificates:rw,noexec,nosuid,nodev
+      - ${ACME_DATADIR:-acme_datadir}:/etc/letsencrypt:rw,noexec,nosuid,nodev
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+
+  db:
+    image: 'hubdocker.libriciel.fr/mariadb:11.4.8-noble'
+    restart: unless-stopped
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+    read_only: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_CHOWN
+      - DAC_OVERRIDE
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD:?}
+      MYSQL_USER: ${DATABASE_USER:-pastell}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD:?}
+      MYSQL_DATABASE: ${DATABASE_NAME:-pastell}
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev
+      - /run/mysqld:rw,noexec,nosuid,nodev
+    volumes:
+      - ${DATABASE_DATADIR:-database_datadir}:/var/lib/mysql/:rw,noexec,nosuid,nodev
+
+  redis:
+    image: 'hubdocker.libriciel.fr/redis:8.2.1-alpine3.22'
+    restart: unless-stopped
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /data:mode=750,rw,noexec,nosuid,nodev
+
+  seda-generator:
+    image: 'registry.libriciel.fr/public/plateforme/seda-generator:1.1.1'
+    restart: unless-stopped
+    read_only: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:mode=770,rw,nosuid,nodev
+      - /var/run/apache2:mode=770,rw,nosuid,nodev
+    volumes:
+      - '/etc/localtime:/etc/localtime:ro'
+
+  flow:
+    image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.3.2'
+    restart: unless-stopped
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:mode=770,rw,noexec,nosuid,nodev
+
+  cloudooo:
+    image: 'registry.libriciel.fr/public/actes/cloudooo:24.8.4-PDFA'
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  pes-viewer:
+    image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.3'
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
+    volumes:
+      - ${PES_PJ_PATH:-/data/pastell/pesPJ}:/pesPJ/
+
+  cacerts:
+    image: 'registry.libriciel.fr/public/libriciel/ls-docker-cacerts:0.4.0'
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ${CACERTS_PATH:-cacerts}:/etc/ssl/certs/:rw,noexec,nosuid,nodev
+      - ${LOCAL_CACERTS_PATH:-local_cacerts}:/usr/local/share/ca-certificates:rw,noexec,nosuid,nodev
+
+  libriciel-feedback:
+    image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-feedback:2.0.1'
+    restart: unless-stopped
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    user: "10001:10001"
+    tmpfs:
+      - /home/feedback:mode=700,uid=10001,gid=10001
+    environment:
+      ALLO_TOKEN: ${ALLO_TOKEN:-}
+      VERSION: canary
+
+volumes:
+  web_logs_datadir:
+  web_certificates_datadir:
+  acme_datadir:
+  database_datadir:
+  app_workspace:
+  app_session:
+  app_logs_datadir:
+  tmp_datadir:
+  upload_chunk_datadir:
+  cacerts:
+  local_cacerts:

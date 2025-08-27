@@ -3,7 +3,7 @@
   "description": "Pastell est un bus logiciel permettant de créer des documents (flux) et de les faire cheminer entre différents systèmes externe par le biais de connecteur",
   "license": "AGPL-3.0-only",
   "require": {
-    "php": "8.1.*",
+    "php": "8.4.*",
     "ext-bcmath": "*",
     "ext-curl": "*",
     "ext-dom": "*",
@@ -27,10 +27,10 @@
     "ext-xsl": "*",
     "ext-zend-opcache": "*",
     "ext-zip": "*",
-    "apereo/phpcas": "^1.4",
+    "apereo/phpcas": "dev-master#77309b6a7f304a5f9e351bc52d8adc831989734f",
     "aws/aws-sdk-php": "^3.263",
     "dragonmantank/cron-expression": "^3.1",
-    "erusev/parsedown": "^1.7",
+    "erusev/parsedown": "dev-master#f7285e7",
     "ezyang/htmlpurifier": "^4.13",
     "flowjs/flow-php-server": "^2.0",
     "guzzlehttp/psr7": "^2.2",
@@ -65,6 +65,7 @@
     "symfony/monolog-bridge": "^6.2",
     "symfony/process": "^6.2",
     "symfony/rate-limiter": "^6.2",
+    "symfony/routing": "^6.2",
     "symfony/runtime": "^6.2",
     "symfony/security-csrf": "^6.2",
     "symfony/twig-bridge": "^6.2",
@@ -158,7 +159,8 @@
   },
   "extra": {
     "symfony": {
-      "docker": false
+      "docker": false,
+      "require": "6.4.*"
     }
   }
 }

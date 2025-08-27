@@ -1,18 +1,11 @@
 include:
-  - project: "libriciel/integration-continue/templates"
-    ref: publish-container-to-registry@2.0.0
-    file: '/jobs/publish-container-to-registry/publish-container-to-registry.yml'
-  - project: "libriciel/integration-continue/templates"
-    ref: security-check@1.3.2
-    file: '/jobs/security-check/security-check.yml'
-  - project: "libriciel/integration-continue/templates"
-    ref: publish-compose-to-nexus@0.1.4
-    file: '/jobs/publish-compose-to-nexus/publish-compose-to-nexus.yml'
   - template: Code-Quality.gitlab-ci.yml
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
   - template: Security/Container-Scanning.gitlab-ci.yml
+  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@2.0.6
+
 stages:
     - build
     - static-analysis
@@ -23,19 +16,27 @@ stages:
     - publish
 
 variables:
-    CONTAINER_IMAGE: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
+    CONTAINER_IMAGE_APP: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-app"
+    CONTAINER_IMAGE_WEB: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-web"
+    DATABASE_HOST: mariadb
+    DATABASE_NAME: pastell_test
     MYSQL_DATABASE: pastell_test
     MYSQL_USER: user
+    DATABASE_USER: user
     MYSQL_PASSWORD: user
-    MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-    MYSQL_HOST_TEST: 'mariadb'
-    MYSQL_HOST: 'mariadb'
-    MYSQL_PORT: '3306'
-    PHP_MEMORY_LIMIT: '1000M'
-    PASTELL_SITE_BASE: 'https://localhost/'
-    WEBSEC_BASE: https://127.0.0.1/
+    DATABASE_PASSWORD: user
+    DATABASE_PORT: 3306
+    MYSQL_RANDOM_ROOT_PASSWORD: yes
+    DATABASE_HOST_TEST: mariadb
+    DATABASE_USER_TEST: user
+    DATABASE_PASSWORD_TEST: user
+    PHP_MEMORY_LIMIT: 1000M
+    APP_HOST: localhost
+    MAILSEC_HOST: 127.0.0.1
+    HTTP_PORT: 80
+    HTTPS_PORT: 443
 
-build:
+build-app:
   stage: build
   tags:
     - docker-build
@@ -49,26 +50,37 @@ build:
     - sed -i "s/%VERSION%/${CI_COMMIT_REF_NAME}/" ./manifest.yml
     - sed -i "s/%GITHUB_API_TOKEN%/${GITHUB_API_TOKEN}/" ./docker/github/auth.json
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker build --secret id=composer_auth,src=./docker/github/auth.json --target pastell_dev --pull -t ${CONTAINER_IMAGE} .
+    - docker build --secret id=composer_auth,src=./docker/github/auth.json --target dev --pull -t ${CONTAINER_IMAGE_APP} -f docker/app/Dockerfile .
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker push ${CONTAINER_IMAGE}
+    - docker push ${CONTAINER_IMAGE_APP}
+
+build-web:
+  stage: build
+  tags:
+    - docker-build
+  variables:
+    DOCKER_BUILDKIT: 1
+  script:
+    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+    - docker build  --pull -t ${CONTAINER_IMAGE_WEB} -f docker/web/Dockerfile .
+    - docker push ${CONTAINER_IMAGE_WEB}
 
 lint:
   stage: static-analysis
-  image : "$CONTAINER_IMAGE"
+  image : "$CONTAINER_IMAGE_APP"
   variables:
     DONT_INIT_DATABASE: "true"
   script:
-    - cd /var/www/pastell
+    - cd /app
     - composer phpcs
 
 phpstan:
   stage: static-analysis
-  image : "$CONTAINER_IMAGE"
+  image : "$CONTAINER_IMAGE_APP"
   variables:
     DONT_INIT_DATABASE: "true"
   script:
-    - cd /var/www/pastell
+    - cd /app
     - composer phpstan
 
 #Note: il semble que le fichier entrypoint soit exécuté deux fois !
@@ -77,15 +89,15 @@ phpstan:
 
 unit_test:
     stage: test
-    image : "$CONTAINER_IMAGE"
+    image : "$CONTAINER_IMAGE_APP"
     variables:
       GIT_STRATEGY: none
       COMPOSER_PROCESS_TIMEOUT: 1200
     services:
-        - name: hubdocker.libriciel.fr/mariadb:10.11.13-jammy
+        - name: hubdocker.libriciel.fr/mariadb:11.4.8-noble
           alias: mariadb
     script:
-        - cd /var/www/pastell
+        - cd /app
         - php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit --coverage-text --colors=never --coverage-clover coverage/coverage.xml --log-junit coverage/logfile.xml
         - cp -rf coverage $CI_PROJECT_DIR
     coverage: '/^\s*Lines:\s*\d+.\d+\%/'
@@ -106,34 +118,67 @@ quality:
 
 acceptance_test:
     stage: test
+    image : "$CONTAINER_IMAGE_APP"
     variables:
         GIT_STRATEGY: none
         REDIS_SERVER: redis
         REDIS_PORT: 6379
-        PASTELL_SITE_BASE: https://localhost/
-        WEBSEC_BASE: https://127.0.0.1/
         PACK_TEST: "true"
-    image :  "$CONTAINER_IMAGE"
+        APP_HOST: web
+        FF_NETWORK_PER_BUILD: "true"
+        DONT_INIT_DATABASE: "true"
     services:
-        - name: hubdocker.libriciel.fr/mariadb:10.11.13-jammy
+        - name: hubdocker.libriciel.fr/mariadb:11.4.8-noble
           alias: mariadb
-        - name: hubdocker.libriciel.fr/redis:7.2.10
+        - name: hubdocker.libriciel.fr/redis:8.2.1-alpine3.22
           alias: redis
+        - name: ${CONTAINER_IMAGE_APP}
+          alias: app
+          command: [ "/bin/sh", "-c", "mkdir -p /builds/shared-workspace && cp -a /data/workspace/* /builds/shared-workspace && rm -r /data/workspace && ln -s /builds/shared-workspace /data/workspace && /usr/local/sbin/php-fpm --nodaemonize" ]
+          variables:
+            DONT_INIT_DATABASE: ""
+        - name: ${CONTAINER_IMAGE_WEB}
+          alias: web
+    before_script:
+      - mkdir -p /builds/shared-workspace
+      - rm -r /data/workspace
+      - ln -s /builds/shared-workspace /data/workspace
     script:
-        - cd /var/www/pastell
-        - mkdir -p test/codeception/tests/output
-        - /bin/bash -c "source /etc/apache2/envvars && exec /usr/sbin/apache2"
-        - composer codecept || { cp -rf test/codeception/tests/output $CI_PROJECT_DIR; cp -rf /data/log $CI_PROJECT_DIR; exit 1; }
+      - cd /app
+      - mkdir -p test/codeception/tests/output
+      - composer codecept || { cp -rf test/codeception/tests/output $CI_PROJECT_DIR; cp -rf /data/log $CI_PROJECT_DIR; exit 1; }
     artifacts:
         when: on_failure
         paths:
             - $CI_PROJECT_DIR
         expire_in: 1h
 
-security-check:
-  allow_failure: true
-  before_script:
-    - cp .trivyignore /
+.security_scan_base:
+  stage: test
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+  services:
+    - docker:dind
+  script:
+    - apk add --no-cache curl docker-cli
+    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+    - trivy image --no-progress --skip-dirs "/app/documentation/data-exemple" --output scanning-report.txt $CONTAINER_IMAGE
+    - trivy image --exit-code 1 --no-progress --skip-dirs "/app/documentation/data-exemple" --severity HIGH,CRITICAL $CONTAINER_IMAGE
+  artifacts:
+    reports:
+      container_scanning: scanning-report.txt
+    expire_in: 1 week
+
+security_scan_app:
+  extends: .security_scan_base
+  variables:
+    CONTAINER_IMAGE: $CONTAINER_IMAGE_APP
+
+security_scan_web:
+  extends: .security_scan_base
+  variables:
+    CONTAINER_IMAGE: $CONTAINER_IMAGE_WEB
 
 deploy_dev:
     stage: staging
@@ -156,16 +201,38 @@ deploy_dev:
         - curl -i -X POST -d "$PAYLOAD" $MATTERMOST_WEBHOOK
 
 publish-container-to-registry:
+  stage: deploy
+  tags:
+    - docker-build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_TAG != null
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"
+      variables:
+        IMAGE_VERSION: 'canary'
+  variables:
+    IMAGE_VERSION: $CI_COMMIT_REF_NAME
+    APP_IMAGE: ${REGISTRY_CONTAINER_HOST}${REGISTRY_CONTAINER_PATH}-app:$IMAGE_VERSION
+    WEB_IMAGE: ${REGISTRY_CONTAINER_HOST}${REGISTRY_CONTAINER_PATH}-web:$IMAGE_VERSION
   before_script:
     - date=$(date)
     - sed -i "s/%CI_BUILD_ID%/${CI_PIPELINE_ID}/" ./manifest.yml
     - sed -i "s/%BUILD_DATE%/$date/" ./manifest.yml
     - sed -i "s/%VERSION%/${CI_COMMIT_REF_NAME}/" ./manifest.yml
+  script:
+    - docker login -u "$REGISTRY_CONTAINER_USER" -p "$REGISTRY_CONTAINER_PASSWORD" "$REGISTRY_CONTAINER_HOST"
+    - docker build --pull -t ${APP_IMAGE} docker/app/Dockerfile
+    - docker push ${APP_IMAGE}
+    - docker build --pull -t ${WEB_IMAGE} docker/web/Dockerfile
+    - docker push ${WEB_IMAGE}
 
-publish-compose-to-nexus:
-  before_script:
-    - sed -i "s/canary/${CI_COMMIT_REF_NAME}/" docker/docker-compose.yml
+publish-compose:
   needs: [ "publish-container-to-registry" ]
+  variables:
+    COMPOSE_FILE_NAME: compose.yaml
+  before_script:
+    - sed -i "s/canary/${CI_COMMIT_REF_NAME}/" docker/compose.yaml
 
 code_quality:
   tags:
@@ -173,4 +240,4 @@ code_quality:
 
 container_scanning:
   variables:
-    CS_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH
+    CS_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH-app

@@ -23,8 +23,8 @@ final class ExpectedElementsCheck implements CheckInterface
         }
 
         $array = [
-            'PHP est en version 8.1' => [
-                '#^8\.1#',
+            'PHP est en version 8.4' => [
+                '#^8\.4#',
                 $this->verifEnvironnement->checkPHP()['environnement_value']
             ],
             'OpenSSL est en version 1 ou 3' => [
