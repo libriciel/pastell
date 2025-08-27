@@ -34,6 +34,6 @@ class IpRestGetSubTypeList extends ChoiceActionExecutor
     {
         /** @var IparapheurRest $connector */
         $connector = $this->getMyConnecteur();
-        return $connector->getSubTypeList();
+        return $connector->getSousType();
     }
 }

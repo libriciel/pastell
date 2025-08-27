@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Pastell\Client\IparapheurV5\ApiClientFactory;
 use Psr\Http\Client\ClientInterface;
 
@@ -34,7 +35,7 @@ class RecupParapheurCorbeilleTest extends PastellTestCase
     {
         $clientInterface = $this->getMockBuilder(ClientInterface::class)->getMock();
         $clientInterface->method('sendRequest')
-            ->willReturnCallback(function (Request $request): Response {
+            ->willReturnCallback(function (RequestInterface $request): ResponseInterface {
                 return match ($request->getUri()->getPath()) {
                     '/auth/realms/api/protocol/openid-connect/token' => new Response(
                         200,

@@ -14,12 +14,11 @@ final class Premis
 {
     /** @var PremisObject[] */
     public array $object;
-
     /** @var Event[] */
     public array $event;
-
     /** @var Agent[] */
     public array $agent;
+    public const CADES_BASELINE_B = 'CAdES_BASELINE_B';
 
     public static function fromFileToSign(FileToSign $fileToSign, bool $multi_doc = false): self
     {
@@ -52,9 +51,8 @@ final class Premis
         if (!empty($fileToSign->signature_content)) {
             $signature = new Signature();
             $signature->signatureEncoding = 'UTF-8';
-            $signature->signatureMethod = ''; //TODO à determiner
-            $signature->signatureValue = base64_encode($fileToSign->signature_content);
-            $signature->signatureValidationRules = ''; //TODO à determiner
+            $signature->signatureMethod = self::CADES_BASELINE_B;
+            $signature->signatureValue = $fileToSign->signature_content;
             $signatureInformation = new SignatureInformation();
             $signatureInformation->signature = $signature;
             $mainDoc->signatureInformation = $signatureInformation;

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Pastell\Connector\IparapheurRest;
 
 use BadMethodCallException;
+use DOMDocument;
+use DOMXPath;
 use DonneesFormulaire;
 use Fichier;
 use FileToSign;
@@ -29,6 +31,7 @@ use RecursiveIteratorIterator;
 use RuntimeException;
 use SignatureConnecteur;
 use Http\Client\Exception;
+use SplFileObject;
 use stdClass;
 use Psr\Http\Client\ClientInterface;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
@@ -57,7 +60,9 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     private ClientInterface $client;
     private Configuration $configuration;
     private int $iparapheur_nb_jour_max;
+    private string $iparapheur_metadata;
     private bool $iparapheur_multi_doc;
+    private ?array $sending_metadata = null;
 
     public function __construct(
         private readonly ApiClientFactory $apiClientFactory,
@@ -72,6 +77,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     {
         $this->connecteurConfig = $donneesFormulaire;
         $this->iparapheur_nb_jour_max = (int)$donneesFormulaire->get('iparapheur_nb_jour_max');
+        $this->iparapheur_metadata =  (string)$donneesFormulaire->get('iparapheur_metadata');
         $this->iparapheur_multi_doc =  $donneesFormulaire->get('iparapheur_multi_doc') === true;
         $iparapheurAuthConfig = new IparapheurAuthConfig(
             $donneesFormulaire->get(self::USERNAME) ?: '',
@@ -146,9 +152,6 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     /**
      * @throws IpRestException
      */
-    /**
-     * @throws IpRestException
-     */
     public function getTypeList(): array
     {
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
@@ -179,7 +182,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     /**
      * @throws IpRestException
      */
-    public function getSubTypeList(): array
+    public function getSousType(): array
     {
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
         $typeId = $this->connecteurConfig->get(self::TYPE_ID);
@@ -210,7 +213,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         return $subTypes;
     }
 
-    private function getPremis(string $folderId): Premis
+    public function getPremis(string $folderId): Premis
     {
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID, '');
         $deskId = $this->connecteurConfig->get(self::DESK_ID, '');
@@ -232,9 +235,9 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
             /** @var Premis $premis */
             $premis = $serializer->deserialize($premisXml, Premis::class, 'xml');
-            $dom = new \DOMDocument();
+            $dom = new DOMDocument();
             $dom->loadXML($premisXml);
-            $xpath = new \DOMXPath($dom);
+            $xpath = new DOMXPath($dom);
             $xpath->registerNamespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance');
             $objectNodes = $dom->getElementsByTagName('object');
             foreach ($objectNodes as $index => $node) {
@@ -258,14 +261,6 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         return self::IPARAPHEUR_NB_JOUR_MAX_DEFAULT;
     }
 
-    /**
-     * @throws IpRestException
-     */
-    public function getSousType(): array
-    {
-        return $this->getSubTypeList();
-    }
-
     public function getDossierID($id, $name): string
     {
         $name = preg_replace('#[^A-Za-z0-9éèçàêîâôûùüÉÈÇÀÊÎÂÔÛÙÜ_]#u', '_', $name);
@@ -275,6 +270,10 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
     public function sendDossier(FileToSign $dossier): string|false
     {
+        if ($this->sending_metadata) {
+            $dossier->metadata = $this->sending_metadata;
+        }
+
         $tempFiles = [];
         try {
             $premis = Premis::fromFileToSign($dossier, $this->iparapheur_multi_doc);
@@ -282,18 +281,18 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
             $premisPath = tempnam(sys_get_temp_dir(), 'folder-premis-') . '.xml';
             file_put_contents($premisPath, $xml);
-            $folderFile = new \SplFileObject($premisPath, 'r');
+            $folderFile = new SplFileObject($premisPath, 'r');
             $tempFiles[] = $premisPath;
 
             $mainPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $dossier->document->filename;
             file_put_contents($mainPath, $dossier->document->content);
-            $documents = [new \SplFileObject($mainPath, 'r')];
+            $documents = [new SplFileObject($mainPath, 'r')];
             $tempFiles[] = $mainPath;
 
             foreach ($dossier->annexes as $annexe) {
                 $annexePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $annexe->filename;
                 file_put_contents($annexePath, $annexe->content);
-                $documents[] = new \SplFileObject($annexePath, 'r');
+                $documents[] = new SplFileObject($annexePath, 'r');
                 $tempFiles[] = $annexePath;
             }
 
@@ -318,7 +317,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         }
     }
 
-    public function createSimpleTaskParamsFromFileToSign(FileToSign $fileToSign): SimpleTaskParams
+    private function createSimpleTaskParamsFromFileToSign(FileToSign $fileToSign): SimpleTaskParams
     {
         $taskParams = new SimpleTaskParams();
 
@@ -432,7 +431,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         return $info;
     }
 
-    public function getAllHistoriqueInfo($dossierID): \stdClass
+    public function getAllHistoriqueInfo($dossierID): stdClass
     {
         $premis = $this->getPremis($dossierID);
         $events = $premis->getAllCurrentEvents();
@@ -460,7 +459,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         }
 
 
-        $result = new \stdClass();
+        $result = new stdClass();
         $result->LogDossier = $logDossier;
 
         return $result;
@@ -479,7 +478,6 @@ class IparapheurRestConnector extends SignatureConnecteur implements
             $lastLog->annotation
         );
     }
-
 
     public function getRefusalMessage($dossierID): string
     {
@@ -501,9 +499,6 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         return isset($logSignature) ? date('Y-m-d', strtotime($logSignature->timestamp)) : '';
     }
 
-    /**
-     * @throws JsonException
-     */
     public function effacerDossierRejete($dossierID): bool|string
     {
         try {
@@ -567,10 +562,10 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     public function getDetachedSignature($info): string
     {
         $zipPath = tempnam(sys_get_temp_dir(), 'detached-signature-zip-');
-        $zip = new \ZipArchive();
+        $zip = new ZipArchive();
 
-        if ($zip->open($zipPath, \ZipArchive::CREATE) !== true) {
-            throw new \RuntimeException("Impossible de créer l'archive ZIP");
+        if ($zip->open($zipPath, ZipArchive::CREATE) !== true) {
+            throw new RuntimeException("Impossible de créer l'archive ZIP");
         }
 
         /** @var Fichier $file */
@@ -660,6 +655,20 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                 'nom_document' => $fichier->filename,
                 'document' => $fichier->content,
             ];
-        }, array_slice($info['annexes'], $ignore_count));
+        }, \array_slice($info['annexes'], $ignore_count));
+    }
+
+    public function setSendingMetadata(DonneesFormulaire $donneesFormulaire): void
+    {
+        $all_metadata = explode(',', $this->iparapheur_metadata);
+        $result = [];
+        foreach ($all_metadata as $metadata_association) {
+            [$element_pastell, $metadata_parapheur] = array_pad(explode(':', $metadata_association, 2), 2, null);
+            if ($element_pastell && $metadata_parapheur) {
+                $result[$metadata_parapheur] = $donneesFormulaire->get($element_pastell);
+            }
+        }
+
+        $this->sending_metadata = $result;
     }
 }

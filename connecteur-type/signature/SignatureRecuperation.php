@@ -36,16 +36,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         $iparapheur_metadata_sortie_element = $this->getMappingValue('iparapheur_metadata_sortie');
         $iparapheur_dossier_id = $this->getMappingValue('iparapheur_dossier_id');
 
-
-        if (
-            $donneesFormulaire->getFormulaire()->getField($iparapheur_dossier_id) &&
-            $donneesFormulaire->get($iparapheur_dossier_id)
-        ) {
-            $dossierID = $donneesFormulaire->get($iparapheur_dossier_id);
-        } else { // conservé pour compatibilité
-            $filename = $donneesFormulaire->getFileName($document_element);
-            $dossierID = $signature->getDossierID($donneesFormulaire->get($titre_element), $filename);
-        }
+        $dossierID = $donneesFormulaire->get($iparapheur_dossier_id);
 
         $erreur = false;
         $all_historique = [];

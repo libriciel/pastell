@@ -20,9 +20,9 @@ class IpRestDisplaySubType extends ActionExecutor
         /** @var IparapheurRest $connector */
         $connector = $this->getMyConnecteur();
         $properties = $this->getConnecteurProperties();
-        $subTypeList = $connector->getSubTypeList();
+        $subTypeList = $connector->getSousType();
 
-        $message = sprintf(
+        $message = \sprintf(
             'Liste des sous-types pour le type %s : %s',
             $properties->get('iparapheur_type'),
             implode(', ', $subTypeList)
