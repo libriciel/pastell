@@ -1,15 +1,11 @@
 include:
-  - project: "libriciel/integration-continue/templates"
-    ref: publish-container-to-registry@2.0.0
-    file: '/jobs/publish-container-to-registry/publish-container-to-registry.yml'
-  - project: "libriciel/integration-continue/templates"
-    ref: publish-compose-to-nexus@0.1.4
-    file: '/jobs/publish-compose-to-nexus/publish-compose-to-nexus.yml'
   - template: Code-Quality.gitlab-ci.yml
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
   - template: Security/Container-Scanning.gitlab-ci.yml
+  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@2.0.6
+
 stages:
     - build
     - static-analysis
@@ -205,16 +201,38 @@ deploy_dev:
         - curl -i -X POST -d "$PAYLOAD" $MATTERMOST_WEBHOOK
 
 publish-container-to-registry:
+  stage: deploy
+  tags:
+    - docker-build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_TAG != null
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"
+      variables:
+        IMAGE_VERSION: 'canary'
+  variables:
+    IMAGE_VERSION: $CI_COMMIT_REF_NAME
+    APP_IMAGE: ${REGISTRY_CONTAINER_HOST}${REGISTRY_CONTAINER_PATH}-app:$IMAGE_VERSION
+    WEB_IMAGE: ${REGISTRY_CONTAINER_HOST}${REGISTRY_CONTAINER_PATH}-web:$IMAGE_VERSION
   before_script:
     - date=$(date)
     - sed -i "s/%CI_BUILD_ID%/${CI_PIPELINE_ID}/" ./manifest.yml
     - sed -i "s/%BUILD_DATE%/$date/" ./manifest.yml
     - sed -i "s/%VERSION%/${CI_COMMIT_REF_NAME}/" ./manifest.yml
+  script:
+    - docker login -u "$REGISTRY_CONTAINER_USER" -p "$REGISTRY_CONTAINER_PASSWORD" "$REGISTRY_CONTAINER_HOST"
+    - docker build --pull -t ${APP_IMAGE} docker/app/Dockerfile
+    - docker push ${APP_IMAGE}
+    - docker build --pull -t ${WEB_IMAGE} docker/web/Dockerfile
+    - docker push ${WEB_IMAGE}
 
-publish-compose-to-nexus:
+publish-compose:
+  needs: [ "publish-container-to-registry" ]
+  variables:
+    COMPOSE_FILE_NAME: compose.yaml
   before_script:
     - sed -i "s/canary/${CI_COMMIT_REF_NAME}/" docker/compose.yaml
-  needs: [ "publish-container-to-registry" ]
 
 code_quality:
   tags:
