@@ -225,9 +225,9 @@ publish-container-to-registry:
     - sed -i "s/%VERSION%/${CI_COMMIT_REF_NAME}/" ./manifest.yml
   script:
     - docker login -u "$REGISTRY_CONTAINER_USER" -p "$REGISTRY_CONTAINER_PASSWORD" "$REGISTRY_CONTAINER_HOST"
-    - docker build --pull -t ${APP_IMAGE} docker/app/Dockerfile
+    - docker build --pull -t ${APP_IMAGE} -f docker/app/Dockerfile
     - docker push ${APP_IMAGE}
-    - docker build --pull -t ${WEB_IMAGE} docker/web/Dockerfile
+    - docker build --pull -t ${WEB_IMAGE} -f docker/web/Dockerfile
     - docker push ${WEB_IMAGE}
 
 publish-compose:
