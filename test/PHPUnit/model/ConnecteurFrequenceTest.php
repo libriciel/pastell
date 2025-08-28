@@ -107,86 +107,93 @@ class ConnecteurFrequenceTest extends PastellTestCase
     }
 
     /**
-     * @param $frequence_in_minute
-     * @param $date
      * @throws Exception
      */
-    private function assertFrequence($frequence_in_minute, $date)
-    {
-        $expected_time = strtotime("+$frequence_in_minute minute");
-        if ($expected_time - strtotime($date) > 1) {
-            throw new Exception("Failed that $date is " . date("Y-m-d H:i:s", $expected_time));
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testGetNextTryEmpty()
+    public function testGetNextTryEmpty(): void
     {
         $connecteurFrequence = new ConnecteurFrequence();
-        $this->assertEquals('', $connecteurFrequence->getNextTry(42));
+        static::assertSame('', $connecteurFrequence->getNextTry(42));
+    }
+
+    private function assertFrequency(int $frequencyInMinutes, string $date): void
+    {
+        $expectedTime = strtotime("+$frequencyInMinutes minute");
+        $actualTime = strtotime($date);
+        $diff = $expectedTime - $actualTime;
+        static::assertLessThanOrEqual(
+            1,
+            $diff,
+            "Failed that $date is " . date('Y-m-d H:i:s', $expectedTime)
+        );
     }
 
     /**
      * @throws Exception
      */
-    public function testGetNextTry()
+    public function testGetNextTry(): void
     {
         $frequence_in_minute = 5;
         $connecteurFrequence = new ConnecteurFrequence();
-        $connecteurFrequence->expression = "$frequence_in_minute";
+        $connecteurFrequence->expression = (string)$frequence_in_minute;
         $date = $connecteurFrequence->getNextTry(1);
-        $this->assertFrequence($frequence_in_minute, $date);
+        $this->assertFrequency($frequence_in_minute, $date);
     }
 
     /**
      * @throws Exception
      */
-    public function testGetNextTryFrequence()
+    public function testGetNextTryFrequence(): void
     {
         $connecteurFrequence = new ConnecteurFrequence();
         $connecteurFrequence->expression = "1X5\n60";
         $date = $connecteurFrequence->getNextTry(1);
-        $this->assertFrequence(1, $date);
+        $this->assertFrequency(1, $date);
     }
 
     /**
      * @throws Exception
      */
-    public function testGetNextTryFrequenceLoin()
+    public function testGetNextTryFrequenceLoin(): void
     {
         $connecteurFrequence = new ConnecteurFrequence();
         $connecteurFrequence->expression = "1X5\n60";
         $date = $connecteurFrequence->getNextTry(10);
-        $this->assertFrequence(60, $date);
+        $this->assertFrequency(60, $date);
     }
 
     /**
      * @throws Exception
      */
-    public function testGetNextTryFrequenceSpace()
+    public function testGetNextTryFrequenceSpace(): void
     {
         $connecteurFrequence = new ConnecteurFrequence();
         $connecteurFrequence->expression = "1 X 5\n60 X 10";
         $date = $connecteurFrequence->getNextTry(10);
-        $this->assertFrequence(60, $date);
+        $this->assertFrequency(60, $date);
     }
 
     /**
      * @dataProvider frequenceProvider
      * @throws Exception
      */
-    public function testGetNextTryFrequencePlusLoin($minute_expected, $nb_try)
+    public function testGetNextTryFrequencePlusLoin($minute_expected, $nb_try): void
     {
         $connecteurFrequence = new ConnecteurFrequence();
         $connecteurFrequence->expression = "1X5\n60X10\n1X25\n42";
-        $this->assertFrequence($minute_expected, $connecteurFrequence->getNextTry($nb_try));
+        $this->assertFrequency($minute_expected, $connecteurFrequence->getNextTry($nb_try));
     }
 
-    public function frequenceProvider()
+    public function frequenceProvider(): \Generator
     {
-        return [ [1, 0], [1, 1], [1, 4], [60, 5], [60, 14], [1,15], [1,49], [42,50], [42,500]];
+        yield [1, 0];
+        yield [1, 1];
+        yield [1, 4];
+        yield [60, 5];
+        yield [60, 14];
+        yield [1, 15];
+        yield [1, 49];
+        yield [42, 50];
+        yield [42, 500];
     }
 
     public function expressionsProvider(): iterable
