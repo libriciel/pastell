@@ -131,9 +131,6 @@ class NotBuggySoapClient extends SoapClient
                 curl_error($ch));
         }
 
-        $this->__last_request_headers = curl_getinfo($ch, CURLINFO_HEADER_OUT);
-        $this->__last_request = $request;
-
         return $response;
     }
 
