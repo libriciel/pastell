@@ -182,27 +182,6 @@ security_scan_web:
   variables:
     CONTAINER_IMAGE: $CONTAINER_IMAGE_WEB
 
-deploy_dev:
-    allow_failure: true
-    stage: staging
-    environment:
-        name: pastell-4-0.dev.libriciel.net
-        url: https://pastell-4-0.dev.libriciel.net
-    only:
-        - master
-    variables:
-        PAYLOAD: "payload={\"text\": \"[pastell-4-0.dev.libriciel.net](https://pastell-4-0.dev.libriciel.net) a été mis à jour - [build $CI_PIPELINE_ID]($CI_PROJECT_URL/pipelines/$CI_PIPELINE_ID)\"}"
-    script:
-        - eval $(ssh-agent -s)
-        - ssh-add <(echo "$SSH_PRIVATE_KEY")
-        - mkdir -p ~/.ssh
-        - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-        - scp ./docker/compose.yaml gitlab@pastell-4-0.dev.libriciel.net:/data/docker-file/docker-compose.yml
-        - echo "$DEV_ENV_FILE_CONTENT" > /tmp/.env
-        - scp /tmp/.env gitlab@pastell-4-0.dev.libriciel.net:/data/docker-file/
-        - ssh -tt gitlab@pastell-4-0.dev.libriciel.net "docker login -u gitlab-ci-token -p '$CI_JOB_TOKEN' $CI_REGISTRY && cd /data/docker-file/ && docker-compose pull && docker-compose up -d"
-        - curl -i -X POST -d "$PAYLOAD" $MATTERMOST_WEBHOOK
-
 publish-container-to-registry:
   stage: deploy
   tags:
@@ -229,6 +208,28 @@ publish-container-to-registry:
     - docker push ${APP_IMAGE}
     - docker build --pull -t ${WEB_IMAGE} -f docker/web/Dockerfile .
     - docker push ${WEB_IMAGE}
+  
+deploy_dev:
+  needs: [ "publish-container-to-registry" ]
+  allow_failure: true
+  stage: deploy
+  environment:
+    name: pastell-4-0.dev.libriciel.net
+    url: https://pastell-4-0.dev.libriciel.net
+  only:
+    - master
+  variables:
+    PAYLOAD: "payload={\"text\": \"[pastell-4-0.dev.libriciel.net](https://pastell-4-0.dev.libriciel.net) a été mis à jour - [build $CI_PIPELINE_ID]($CI_PROJECT_URL/pipelines/$CI_PIPELINE_ID)\"}"
+  script:
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - scp ./docker/compose.yaml gitlab@pastell-4-0.dev.libriciel.net:/data/docker-file/docker-compose.yml
+    - echo "$DEV_ENV_FILE_CONTENT" > /tmp/.env
+    - scp /tmp/.env gitlab@pastell-4-0.dev.libriciel.net:/data/docker-file/
+    - ssh -tt gitlab@pastell-4-0.dev.libriciel.net "docker login -u gitlab-ci-token -p '$CI_JOB_TOKEN' $CI_REGISTRY && cd /data/docker-file/ && docker-compose pull && docker-compose up -d"
+    - curl -i -X POST -d "$PAYLOAD" $MATTERMOST_WEBHOOK
 
 publish-compose:
   needs: [ "publish-container-to-registry" ]
