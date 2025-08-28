@@ -7,7 +7,7 @@ namespace Pastell\Client\IparapheurV5\Model;
 use DOMDocument;
 use DOMException;
 use FileToSign;
-use OpenAPI\Client\Model\Action;
+use Libriciel\IparapheurV5\Client\Model\Action;
 use RuntimeException;
 
 final class Premis

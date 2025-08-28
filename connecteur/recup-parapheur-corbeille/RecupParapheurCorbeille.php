@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use OpenAPI\Client\Api\AdminTrashBinApi;
-use OpenAPI\Client\Api\TenantApi;
+use Libriciel\IparapheurV5\Client\Api\AdminTrashBinApi;
+use Libriciel\IparapheurV5\Client\Api\TenantApi;
 use Pastell\Action\TestConnectionInterface;
 use Pastell\Client\IparapheurV5\IparapheurAuthConfig;
 use Pastell\Client\IparapheurV5\ApiClientFactory;
 use Pastell\Client\IparapheurV5\ZipContent;
-use OpenAPI\Client\Configuration;
+use Libriciel\IparapheurV5\Client\Configuration;
 use Pastell\Connector\IparapheurRest\IpRestTenantInterface;
 use Psr\Http\Client\ClientInterface;
 

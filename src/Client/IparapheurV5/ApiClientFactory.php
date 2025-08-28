@@ -7,7 +7,7 @@ namespace Pastell\Client\IparapheurV5;
 use GuzzleHttp\Psr7\Request;
 use Http\Discovery\Psr18Client;
 use JsonException;
-use OpenAPI\Client\Configuration;
+use Libriciel\IparapheurV5\Client\Configuration;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use RuntimeException;

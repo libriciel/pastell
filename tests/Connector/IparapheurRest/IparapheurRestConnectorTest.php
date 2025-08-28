@@ -14,7 +14,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Client\ClientInterface;
 use GuzzleHttp\Psr7\Response as HttpResponse;
-use OpenAPI\Client\Model\Action;
+use Libriciel\IparapheurV5\Client\Model\Action;
 use Pastell\Client\IparapheurV5\ApiClientFactory;
 use Pastell\Connector\IparapheurRest\IparapheurRestConnector;
 use Pastell\Connector\IparapheurRest\IpRestException;

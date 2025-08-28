@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use OpenAPI\Client\Api\DeskApi;
-use OpenAPI\Client\Api\FolderApi;
-use OpenAPI\Client\Api\TenantApi;
-use OpenAPI\Client\Configuration;
-use OpenAPI\Client\Model\State;
+use Libriciel\IparapheurV5\Client\Api\DeskApi;
+use Libriciel\IparapheurV5\Client\Api\FolderApi;
+use Libriciel\IparapheurV5\Client\Api\TenantApi;
+use Libriciel\IparapheurV5\Client\Configuration;
+use Libriciel\IparapheurV5\Client\Model\State;
 use Pastell\Action\TestConnectionInterface;
 use Pastell\Client\IparapheurV5\IparapheurAuthConfig;
 use Pastell\Client\IparapheurV5\ApiClientFactory;

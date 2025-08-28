@@ -35,7 +35,7 @@
     "flowjs/flow-php-server": "^2.0",
     "guzzlehttp/psr7": "^2.2",
     "jumbojett/openid-connect-php": "^1.0",
-    "libriciel/iparapheur-v5-api-php": "^0.3.1",
+    "libriciel/iparapheur-v5-api-php": "^0.4.0",
     "libriciel/php-cmis": "^2.0",
     "libriciel/php-office-clients": "^1.9",
     "libriciel/php-password": "^3.0",
