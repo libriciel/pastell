@@ -17,7 +17,7 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 #[AsCommand(
     name: 'app:daemon:notify-check',
-    description: 'Notify ADMIN_EMAIL when daemon check is KO and notify each DAEMON_ADMIN_EMAIL when a daemon is KO',
+    description: 'Notify ADMIN_EMAIL when daemon check is KO and notify each admin_emails when a daemon is KO',
 )]
 final class NotifyCheck extends BaseCommand
 {
@@ -51,44 +51,39 @@ final class NotifyCheck extends BaseCommand
         }
 
         $site = $this->objectInstancier->getInstance('site_base');
-        $errors = [];
-
-
+        $error_items = [];
 
         foreach ($daemonHealth->getDetails() ?? [] as $item) {
             if (!$item->isSuccess()) {
-                $context = $item->getContext();
-                $destinataires = $this->daemonManager->getAdminEmails($context['id_daemon']);
-                $message = "[KO] Tâches automatiques du site {$site} : {$item->result}";
-                $denomination = $context['denomination_entite'];
+                $context       = $item->getContext();
+                $denomination  =  $context['denomination_entite'];
+                $id_daemon      = $context['id_daemon'];
+                $destinataires = $this->daemonManager->getAdminEmails($id_daemon);
+                $body =  "[KO] Tâches automatiques du site $site — $denomination [entité #{$context['id_e']}] — daemon #$id_daemon : {$item->result}";
 
-                $templatedEmail = (new TemplatedEmail())
+                $templatedEmail = new TemplatedEmail()
                     ->to(...$destinataires)
                     ->subject("[PASTELL] Alerte tâches automatiques - {$denomination}")
-                    ->text($message);
-
+                    ->text($body);
                 $this->pastellMailer->send($templatedEmail);
-
                 if ($this->getIO()->isVerbose()) {
-                    $this->getIO()->writeln($message);
+                    $this->getIO()->writeln($body);
                 }
 
-                $errors[] = [
-                    'daemon' => $denomination,
-                    'message' => $item->result,
-                ];
+                $error_items[] = $item;
             }
         }
 
-        if (!empty($errors)) {
+        if (!empty($error_items)) {
             $body = "Résumé des tâches automatiques en erreur sur le site {$site} :\n\n";
 
-            foreach ($errors as $erreur) {
-                $body .= "- {$erreur['daemon']} : {$erreur['message']}\n";
+            foreach ($error_items as $error_item) {
+                $context = $error_item->getContext();
+                $body .= "- {$context['denomination_entite']} [entité #{$context['id_e']}] — daemon #{$context['id_daemon']} : {$error_item->result}\n";
             }
 
             $admin_email = $this->objectInstancier->getInstance('admin_email');
-            $synthesisEmail = (new TemplatedEmail())
+            $synthesisEmail = new TemplatedEmail()
                 ->to(...$admin_email)
                 ->subject('[PASTELL] Alerte tâches automatiques - Synthèse')
                 ->text($body);

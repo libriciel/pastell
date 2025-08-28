@@ -7,12 +7,10 @@ class DaemonManager
     public const IS_RUNNING = 1;
     public const IS_STOPPED = 0;
     public const NB_WORKERS = 'NB_WORKERS';
-    public const DAEMON_ADMIN_EMAIL = 'DAEMON_ADMIN_EMAIL';
 
     public function __construct(
         private readonly DaemonSQL $daemonSQL,
-        private readonly JobQueueSQL $jobQueueSQL,
-        private readonly ConfigurationSQL $configurationSQL
+        private readonly JobQueueSQL $jobQueueSQL
     ) {
     }
 
@@ -107,7 +105,7 @@ class DaemonManager
     /**
      * @throws UnrecoverableException
      */
-    public function addDaemon(int $id_e, int $nb_allocated_workers = 0): Daemon
+    public function addDaemon(int $id_e, int $nb_allocated_workers, string $admin_emails, int $late_jobs_treshold): Daemon
     {
         if ($this->daemonSQL->getDaemonByEntity($id_e)) {
             throw new UnrecoverableException('Création impossible, un daemon existe déjà pour cette entité.');
@@ -117,11 +115,11 @@ class DaemonManager
             throw new UnrecoverableException('Création impossible, pas assez de workers disponibles.');
         }
 
-        $id_daemon = $this->daemonSQL->insertDaemon($id_e);
+        $id_daemon = $this->daemonSQL->insertDaemon($id_e, $nb_allocated_workers, $admin_emails, $late_jobs_treshold);
         foreach ($this->jobQueueSQL->getJobsByAncestor($id_e) as $job) {
             $this->updateClosestDaemon($job);
         }
-        $this->allocateWorkers($id_daemon, $nb_allocated_workers);
+        $this->daemonSQL->refreshAvailableWorkers();
         return $this->daemonSQL->getDaemon($id_daemon);
     }
 
@@ -169,10 +167,7 @@ class DaemonManager
         }
         return explode(
             ',',
-            $this->configurationSQL->getConfiguration(
-                self::DAEMON_ADMIN_EMAIL,
-                $daemon->id_e ?? EntiteSQL::ID_E_ENTITE_RACINE
-            )
+            $daemon->admin_emails
         );
     }
 
@@ -188,11 +183,7 @@ class DaemonManager
             );
         }
         $this->checkRFC2822Email($emails);
-        $this->configurationSQL->setConfiguration(
-            self::DAEMON_ADMIN_EMAIL,
-            $emails,
-            $daemon->id_e ?? EntiteSQL::ID_E_ENTITE_RACINE
-        );
+        $this->daemonSQL->setAdminEmails($id_daemon, $emails);
     }
 
     /**
@@ -208,5 +199,22 @@ class DaemonManager
                 );
             }
         }
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function setLateJobsThreshold(int $id_daemon, int $threshold): void
+    {
+        $daemon = $this->daemonSQL->getDaemon($id_daemon);
+        if ($daemon === null) {
+            throw new UnrecoverableException(
+                'Impossible de définir le seuil de travaux en attente, le daemon n\'existe pas.'
+            );
+        }
+        if ($threshold < 0) {
+            throw new UnrecoverableException('Le seuil de travaux en attente doit être un nombre positif.');
+        }
+        $this->daemonSQL->setLateJobsTreshold($id_daemon, $threshold);
     }
 }

@@ -20,7 +20,14 @@ class DaemonSQL extends SQL
 
     private function mapToDaemon(array $info): Daemon
     {
-        return new Daemon($info['id_daemon'], $info['id_e'], $info['state'], $info['nb_workers']);
+        return new Daemon(
+            $info['id_daemon'],
+            $info['id_e'],
+            $info['state'],
+            $info['nb_workers'],
+            $info['admin_emails'],
+            $info['late_jobs_treshold']
+        );
     }
 
     public function getNbAllocatedWorkers(): int
@@ -84,10 +91,15 @@ class DaemonSQL extends SQL
         return $result;
     }
 
-    public function insertDaemon(int $id_e): int
+    public function insertDaemon(int $id_e, int $nb_workers, string $admin_emails, int $late_jobs_treshold): int
     {
-        $sql = 'INSERT INTO daemon(id_e) VALUES (?);';
-        $this->query($sql, [$id_e]);
+        $sql = 'INSERT INTO daemon(id_e, nb_workers, admin_emails, late_jobs_treshold) VALUES (?, ?, ?, ?);';
+        $this->query($sql, [
+            $id_e,
+            $nb_workers,
+            $admin_emails,
+            $late_jobs_treshold
+        ]);
         return (int)$this->lastInsertId();
     }
 
@@ -115,12 +127,12 @@ class DaemonSQL extends SQL
         return $this->getDaemon(self::GLOBAL_DAEMON);
     }
 
-    public function insertGlobalDaemon(): bool
+    public function insertGlobalDaemon(string $admin_emails): bool
     {
-        $sql = 'INSERT INTO daemon (id_daemon, id_e, nb_workers) VALUES (?, ?, ?)';
+        $sql = 'INSERT INTO daemon (id_daemon, id_e, nb_workers, admin_emails, late_jobs_treshold) VALUES (?, ?, ?, ?, ?)';
         $this->query(
             $sql,
-            [self::GLOBAL_DAEMON, null, $this->getNbWorkers()]
+            [self::GLOBAL_DAEMON, null, $this->getNbWorkers(), $admin_emails, 1]
         );
         return $this->lastInsertId() !== false;
     }
@@ -161,5 +173,17 @@ class DaemonSQL extends SQL
             ORDER BY state DESC
             LIMIT $offset," . self::DISPLAY_LIMIT;
         return $this->query($sql, ["%$search%"]);
+    }
+
+    public function setAdminEmails(int $id_daemon, string $email): void
+    {
+        $sql = 'UPDATE daemon SET admin_emails = ? WHERE id_daemon = ?';
+        $this->query($sql, [$email, $id_daemon]);
+    }
+
+    public function setLateJobsTreshold(int $id_daemon, int $treshold): void
+    {
+        $sql = 'UPDATE daemon SET late_jobs_treshold = ? WHERE id_daemon = ?';
+        $this->query($sql, [$treshold, $id_daemon]);
     }
 }

@@ -655,6 +655,22 @@
                 "Key": "",
                 "Default": "0",
                 "Extra": ""
+            },
+            "admin_emails": {
+                "Field": "admin_emails",
+                "Type": "varchar(256)",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "late_jobs_treshold": {
+                "Field": "late_jobs_treshold",
+                "Type": "int(11)",
+                "Null": "NO",
+                "Key": "",
+                "Default": "1",
+                "Extra": ""
             }
         },
         "Index": {

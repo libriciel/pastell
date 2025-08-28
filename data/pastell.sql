@@ -92,6 +92,8 @@ CREATE TABLE `daemon` (
 	`id_e` int(11),
 	`state` tinyint(1) NOT NULL,
 	`nb_workers` int(11) NOT NULL DEFAULT '0',
+    `admin_emails` varchar(256) NOT NULL,
+    `late_jobs_treshold` int(11) NOT NULL DEFAULT '1',
 	PRIMARY KEY (`id_daemon`)
 )  ENGINE=MyISAM  ;
 CREATE TABLE `document` (
