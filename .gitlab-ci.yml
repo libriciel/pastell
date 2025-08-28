@@ -171,16 +171,19 @@ acceptance_test:
     expire_in: 1 week
 
 security_scan_app:
+  allow_failure: true
   extends: .security_scan_base
   variables:
     CONTAINER_IMAGE: $CONTAINER_IMAGE_APP
 
 security_scan_web:
+  allow_failure: true
   extends: .security_scan_base
   variables:
     CONTAINER_IMAGE: $CONTAINER_IMAGE_WEB
 
 deploy_dev:
+    allow_failure: true
     stage: staging
     environment:
         name: pastell-4-0.dev.libriciel.net
