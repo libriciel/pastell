@@ -331,14 +331,17 @@ class JobQueueSQL extends SQL
             $sql .= ' AND job_queue.id_daemon=?';
             $params[] = $id_daemon;
         }
-        if ($filtre === 'lock') {
-            $sql .= ' AND is_lock=1 ';
-        }
-        if ($filtre === 'wait') {
-            $sql .= ' AND next_try < now() ';
-        }
-        if ($filtre === 'actif') {
-            $sql .= ' AND worker.termine=0 ';
+
+        switch ($filtre) {
+            case 'lock':
+                $sql .= ' AND job_queue.is_lock=1 ';
+                break;
+            case 'wait':
+                $sql .= ' AND next_try < now() AND job_queue.is_lock=0 ';
+                break;
+            case 'actif':
+                $sql .= ' AND worker.termine=0 ';
+                break;
         }
 
         $sql .= " ORDER BY job_queue.is_lock, job_queue.next_try 
