@@ -15,11 +15,9 @@ use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\InMemoryStore;
 use Twig\Environment;
 
-define("FIXTURES_PATH", __DIR__ . "/fixtures/");
-define("FIXTURES_TYPE_DOSSIER_PATH", __DIR__ . "/pastell-core/type-dossier/fixtures/");
-
 abstract class PastellTestCase extends TestCase
 {
+    public const string FIXTURES_TYPE_DOSSIER_PATH = __DIR__ . '/pastell-core/type-dossier/fixtures/';
     public const ID_E_COL = 1;
     public const ID_E_SERVICE = 2;
     public const ID_U_ADMIN = 1;
@@ -349,12 +347,11 @@ iparapheur_retour: Archive',
     }
 
     /**
-     * @param string $filepath
-     * @return int
      * @throws TypeDossierException
      */
-    protected function copyTypeDossierTest($filepath = FIXTURES_TYPE_DOSSIER_PATH . "cas-nominal.json"): int
-    {
+    protected function copyTypeDossierTest(
+        string $filepath = self::FIXTURES_TYPE_DOSSIER_PATH . 'cas-nominal.json'
+    ): int {
         $typeDossierImportService = $this->getObjectInstancier()->getInstance(TypeDossierImportService::class);
         return $typeDossierImportService->importFromFilePath($filepath)['id_t'];
     }

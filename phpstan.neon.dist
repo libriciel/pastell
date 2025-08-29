@@ -29,10 +29,5 @@ parameters:
     - test/codeception/tests/_support/_generated/ApiTesterActions.php
   ignoreErrors:
     -
-      # Il s'agit de symboles externes utilisés par l'extension PHP Soap, donc pas corrigeables
-      message: '/Access to an undefined property NotBuggySoapClient::\$__last_request(.*)/'
-      paths:
-        - lib/NotBuggySoapClient.php
-    -
       message: '/PHPDoc tag @throws with type (.*) is not subtype of Throwable/'
       path: test/codeception/tests/_support/_generated/
