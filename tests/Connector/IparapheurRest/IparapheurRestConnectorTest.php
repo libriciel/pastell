@@ -25,13 +25,13 @@ use UnrecoverableException;
 
 final class IparapheurRestConnectorTest extends PastellTestCase
 {
-    private const TENANT_ID = 'tenant-test';
-    private const DESK_ID = 'desk-test';
-    private const TYPE_ID = 'type-test';
-    private const ONGOING_FOLDER_ID = 'ONGOING-FOLDER-ID';
-    private const FINISHED_FOLDER_ID = 'FINISHED-FOLDER-ID';
-    private const REFUSED_FOLDER_ID = 'REFUSED-FOLDER-ID';
-    private const ERROR_FOLDER_ID = 'ERROR-FOLDER-ID';
+    private const string TENANT_ID = 'tenant-test';
+    private const string DESK_ID = 'desk-test';
+    private const string TYPE_ID = 'type-test';
+    private const string ONGOING_FOLDER_ID = 'ONGOING-FOLDER-ID';
+    private const string FINISHED_FOLDER_ID = 'FINISHED-FOLDER-ID';
+    private const string REFUSED_FOLDER_ID = 'REFUSED-FOLDER-ID';
+    private const string ERROR_FOLDER_ID = 'ERROR-FOLDER-ID';
 
     public function getConnectorId(): int
     {

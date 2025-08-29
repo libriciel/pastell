@@ -49,20 +49,20 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     IpRestDeskInterface,
     TestConnectionInterface
 {
-    private const URL = 'url';
-    private const USERNAME = 'username';
-    private const PASSWORD = 'password';
-    private const TENANT_ID = 'tenant_id';
-    private const DESK_ID = 'desk_id';
-    private const TYPE_ID = 'iparapheur_type_id';
-    public const IPARAPHEUR_NB_JOUR_MAX_DEFAULT = SignatureConnecteur::PARAPHEUR_NB_JOUR_MAX_DEFAULT;
+    private const string URL = 'url';
+    private const string USERNAME = 'username';
+    private const string PASSWORD = 'password';
+    private const string TENANT_ID = 'tenant_id';
+    private const string DESK_ID = 'desk_id';
+    private const string TYPE_ID = 'iparapheur_type_id';
+    public const int IPARAPHEUR_NB_JOUR_MAX_DEFAULT = SignatureConnecteur::PARAPHEUR_NB_JOUR_MAX_DEFAULT;
     private DonneesFormulaire $connecteurConfig;
     private ClientInterface $client;
     private Configuration $configuration;
     private int $iparapheur_nb_jour_max;
     private string $iparapheur_metadata;
-    private bool $iparapheur_multi_doc;
     private ?array $sending_metadata = null;
+    private bool $iparapheur_multi_doc;
 
     public function __construct(
         private readonly ApiClientFactory $apiClientFactory,
@@ -77,8 +77,8 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     {
         $this->connecteurConfig = $donneesFormulaire;
         $this->iparapheur_nb_jour_max = (int)$donneesFormulaire->get('iparapheur_nb_jour_max');
-        $this->iparapheur_metadata =  (string)$donneesFormulaire->get('iparapheur_metadata');
-        $this->iparapheur_multi_doc =  $donneesFormulaire->get('iparapheur_multi_doc') === true;
+        $this->iparapheur_metadata = (string)$donneesFormulaire->get('iparapheur_metadata');
+        $this->iparapheur_multi_doc = $donneesFormulaire->get('iparapheur_multi_doc') === true;
         $iparapheurAuthConfig = new IparapheurAuthConfig(
             $donneesFormulaire->get(self::USERNAME) ?: '',
             $donneesFormulaire->get(self::PASSWORD) ?: '',
@@ -104,7 +104,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $page = 0;
 
         do {
-            $result = (new TenantApi($this->client, $this->configuration))->listTenants($page);
+            $result = new TenantApi($this->client, $this->configuration)->listTenants($page);
 
             foreach ($result->getContent() as $tenant) {
                 $tenants[$tenant->getId()] = $tenant->getName();
@@ -126,7 +126,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     public function getDeskList(): array
     {
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
-        if (! $tenantId) {
+        if (!$tenantId) {
             throw new IpRestException("L'entité iparapheur est obligatoire pour voir la liste des bureaux");
         }
 
@@ -134,7 +134,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $page = 0;
 
         do {
-            $result = (new DeskApi($this->client, $this->configuration))->listUserDesks($tenantId, $page);
+            $result = new DeskApi($this->client, $this->configuration)->listUserDesks($tenantId, $page);
 
             foreach ($result->getContent() as $desk) {
                 $desks[$desk->getId()] = $desk->getName();
@@ -149,13 +149,14 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
         return $desks;
     }
+
     /**
      * @throws IpRestException
      */
     public function getTypeList(): array
     {
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
-        if (! $tenantId) {
+        if (!$tenantId) {
             throw new IpRestException("L'entité iparapheur est obligatoire pour voir la liste des types");
         }
 
@@ -163,7 +164,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $page = 0;
 
         do {
-            $result = (new TypologyApi($this->client, $this->configuration))->listTypes($tenantId, $page);
+            $result = new TypologyApi($this->client, $this->configuration)->listTypes($tenantId, $page);
 
             foreach ($result->getContent() as $type) {
                 $types[$type->getId()] = $type->getName();
@@ -187,7 +188,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
         $typeId = $this->connecteurConfig->get(self::TYPE_ID);
 
-        if ((! $tenantId) || (! $typeId)) {
+        if ((!$tenantId) || (!$typeId)) {
             throw new IpRestException(
                 "L'entité et le type iparapheur sont obligatoires pour voir la liste des sous-types"
             );
@@ -197,7 +198,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $page = 0;
 
         do {
-            $result = (new TypologyApi($this->client, $this->configuration))->listSubtypes($tenantId, $typeId, $page);
+            $result = new TypologyApi($this->client, $this->configuration)->listSubtypes($tenantId, $typeId, $page);
 
             foreach ($result->getContent() as $subType) {
                 $subTypes[$subType->getId()] = $subType->getName();
@@ -222,15 +223,15 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $tmp_folder = $tmpFolder->create();
 
         try {
-            $premisXml = (new FolderApi($this->client, $this->configuration))
+            $premisXml = new FolderApi($this->client, $this->configuration)
                 ->downloadFolderPremis($tenantId, $deskId, $folderId);
 
             $propertyInfo = new PropertyInfoExtractor([], [new PhpDocExtractor(), new ReflectionExtractor()]);
             $normalizer = new ObjectNormalizer(null, null, null, $propertyInfo);
 
             $serializer = new Serializer(
-                [ $normalizer, new ArrayDenormalizer() ],
-                [ new XmlEncoder() ]
+                [$normalizer, new ArrayDenormalizer()],
+                [new XmlEncoder()]
             );
 
             /** @var Premis $premis */
@@ -298,15 +299,27 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
             $tenantId = $this->connecteurConfig->get(self::TENANT_ID, '');
             $deskId = $this->connecteurConfig->get(self::DESK_ID, '');
-            $response = (new FolderApi($this->client, $this->configuration))->createFolder($tenantId, $deskId, $folderFile, $documents, false);
-            $folderId = $response->getId();
+            $result = new FolderApi($this->client, $this->configuration)->createFolder(
+                $tenantId,
+                $deskId,
+                $folderFile,
+                $documents,
+                false
+            );
+            $folderId = $result->getId();
             if ($folderId === null) {
                 return false;
             }
             $created_premis = $this->getPremis($folderId);
             $start_task_id = $created_premis->getStartEvent()->eventIdentifier->eventIdentifierValue;
             $simple_task_params = $this->createSimpleTaskParamsFromFileToSign($dossier);
-            (new WorkflowApi($this->client, $this->configuration))->start($tenantId, $deskId, $folderId, $start_task_id, $simple_task_params);
+            new WorkflowApi($this->client, $this->configuration)->start(
+                $tenantId,
+                $deskId,
+                $folderId,
+                $start_task_id,
+                $simple_task_params
+            );
             return $folderId;
         } finally {
             foreach ($tempFiles as $path) {
@@ -339,7 +352,11 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $premis = $this->getPremis($dossierID);
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
         $deskId = $this->connecteurConfig->get(self::DESK_ID, '');
-        $zipData = (new FolderApi($this->client, $this->configuration))->downloadFolderZip($tenantId, $deskId, $dossierID);
+        $zipData = new FolderApi($this->client, $this->configuration)->downloadFolderZip(
+            $tenantId,
+            $deskId,
+            $dossierID
+        );
 
         $tmpFolder = new TmpFolder();
         $tmp_folder = $tmpFolder->create();
@@ -387,7 +404,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         if (isset($filesMap[$bordereauFilename])) {
             $fichier = new Fichier();
             $fichier->filename = $bordereauFilename;
-            $fichier->content =  $filesMap[$bordereauFilename]['content'];
+            $fichier->content = $filesMap[$bordereauFilename]['content'];
             $info['bordereau'] = $fichier;
             unset($filesMap[$bordereauFilename]);
         }
@@ -428,7 +445,16 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                 }
             }
         }
+        if ($archive) {
+            $this->archiver($dossierID);
+        }
+
         return $info;
+    }
+
+    public function archiver($dossierID): bool
+    {
+        return $this->deleteFolder($dossierID);
     }
 
     public function getAllHistoriqueInfo($dossierID): stdClass
@@ -451,9 +477,9 @@ class IparapheurRestConnector extends SignatureConnecteur implements
             $annotation = $event->eventOutcomeInformation->eventOutcomeDetail->eventOutcomeDetailNote ?? '';
 
             $logDossier[] = (object)[
-                'timestamp'  => $timestamp,
-                'nom'        => $agentName,
-                'status'     => $event->eventType,
+                'timestamp' => $timestamp,
+                'nom' => $agentName,
+                'status' => $event->eventType,
                 'annotation' => $annotation,
             ];
         }
@@ -486,7 +512,6 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
     /**
      * @param $history - output of IparapheurRestConnector::getAllHistoriqueInfo()
-     * @throws \Exception
      */
     public function getDateSignature(array|stdClass $history): string
     {
@@ -499,24 +524,9 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         return isset($logSignature) ? date('Y-m-d', strtotime($logSignature->timestamp)) : '';
     }
 
-    public function effacerDossierRejete($dossierID): bool|string
+    public function effacerDossierRejete($dossierID): bool
     {
-        try {
-            $this->getLogger()->debug("Effacement du dossier $dossierID rejeté");
-            $tenantId = $this->connecteurConfig->get(self::TENANT_ID, '');
-            $deskId = $this->connecteurConfig->get(self::DESK_ID, '');
-            (new FolderApi($this->client, $this->configuration))->deleteFolder(
-                $tenantId,
-                $deskId,
-                $dossierID
-            );
-            $this->getLogger()->debug("Dossier $dossierID supprimé");
-        } catch (Exception $e) {
-            $this->lastError = $e->getMessage();
-            $this->getLogger()->notice("Impossible d'effacer le dossier $dossierID : " . $e->getMessage());
-            return false;
-        }
-        return true;
+        return $this->deleteFolder($dossierID);
     }
 
     public function exercerDroitRemordDossier($dossierID): bool
@@ -670,5 +680,41 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         }
 
         $this->sending_metadata = $result;
+    }
+
+    private function deleteFolder(string $folderId): bool
+    {
+        try {
+            $this->getLogger()->debug("Effacement du dossier $folderId");
+            $tenantId = $this->connecteurConfig->get(self::TENANT_ID, '');
+            $deskId = $this->connecteurConfig->get(self::DESK_ID, '');
+            new FolderApi($this->client, $this->configuration)->deleteFolder(
+                $tenantId,
+                $deskId,
+                $folderId
+            );
+            $this->getLogger()->debug("Dossier $folderId supprimé");
+        } catch (Exception $e) {
+            $this->lastError = $e->getMessage();
+            $this->getLogger()->notice("Impossible d'effacer le dossier $folderId : " . $e->getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public function getLastCompletedHistorique($history): string
+    {
+        for ($i = count($history->LogDossier) - 1; $i >= 0; $i--) {
+            $log = $history->LogDossier[$i];
+            if ($log->timestamp !== '' && $log->status !== Action::READ) {
+                return \sprintf(
+                    '%s : [%s] %s',
+                    date('d/m/Y H:i:s', strtotime($log->timestamp)),
+                    $log->status,
+                    $log->annotation
+                );
+            }
+        }
+        return 'Aucune étape complétée';
     }
 }

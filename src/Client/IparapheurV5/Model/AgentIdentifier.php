@@ -6,7 +6,7 @@ namespace Pastell\Client\IparapheurV5\Model;
 
 class AgentIdentifier
 {
-    public const USER_ID = 'userId';
+    public const string USER_ID = 'userId';
     public string $agentIdentifierType;
     public string $agentIdentifierValue;
 }

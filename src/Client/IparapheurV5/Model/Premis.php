@@ -18,7 +18,7 @@ final class Premis
     public array $event;
     /** @var Agent[] */
     public array $agent;
-    public const CADES_BASELINE_B = 'CAdES_BASELINE_B';
+    public const string CADES_BASELINE_B = 'CAdES_BASELINE_B';
 
     public static function fromFileToSign(FileToSign $fileToSign, bool $multi_doc = false): self
     {

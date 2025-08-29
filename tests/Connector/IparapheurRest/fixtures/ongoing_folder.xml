@@ -72,8 +72,8 @@
         <eventDateTime>2025-08-05T10:02:52.618+0200</eventDateTime>
         <linkingAgentIdentifier>
             <linkingAgentIdentifierType>userId</linkingAgentIdentifierType>
-            <linkingAgentIdentifierValue>id</linkingAgentIdentifierValue>
-            <linkingAgentRole>user</linkingAgentRole>
+            <linkingAgentIdentifierValue>12345678-1234-4123-8123-123456789abc</linkingAgentIdentifierValue>
+            <linkingAgentRole>test</linkingAgentRole>
         </linkingAgentIdentifier>
     </event>
     <event>
@@ -85,8 +85,8 @@
         <eventDateTime>2025-08-05T14:11:07.070+0200</eventDateTime>
         <linkingAgentIdentifier>
             <linkingAgentIdentifierType>userId</linkingAgentIdentifierType>
-            <linkingAgentIdentifierValue>id</linkingAgentIdentifierValue>
-            <linkingAgentRole>user</linkingAgentRole>
+            <linkingAgentIdentifierValue>12345678-1234-4123-8123-123456789abc</linkingAgentIdentifierValue>
+            <linkingAgentRole>test</linkingAgentRole>
         </linkingAgentIdentifier>
     </event>
     <event>
@@ -99,14 +99,14 @@
         <linkingAgentIdentifier>
             <linkingAgentIdentifierType>userId</linkingAgentIdentifierType>
             <linkingAgentIdentifierValue/>
-            <linkingAgentRole>user</linkingAgentRole>
+            <linkingAgentRole>test</linkingAgentRole>
         </linkingAgentIdentifier>
     </event>
     <agent>
         <agentIdentifier>
             <agentIdentifierType>userId</agentIdentifierType>
-            <agentIdentifierValue>id</agentIdentifierValue>
+            <agentIdentifierValue>12345678-1234-4123-8123-123456789abc</agentIdentifierValue>
         </agentIdentifier>
-        <agentName>user</agentName>
+        <agentName>Test Agent</agentName>
     </agent>
 </premis>

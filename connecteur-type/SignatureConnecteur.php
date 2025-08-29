@@ -24,6 +24,14 @@ abstract class SignatureConnecteur extends Connecteur
      */
     abstract public function getLastHistorique($history): string;
 
+    /**
+     * workaround because IparapheurRestConnector::getLastHistorique() returns the ongoing state
+     */
+    public function getLastCompletedHistorique($history): string
+    {
+        return $this->getLastHistorique($history);
+    }
+
     abstract public function getRefusalMessage($dossierID);
 
     /**
@@ -35,11 +43,6 @@ abstract class SignatureConnecteur extends Connecteur
 
     abstract public function exercerDroitRemordDossier($dossierID);
 
-    public function hasTypeSousType()
-    {
-        return true;
-    }
-
     public function isFastSignature()
     {
         return false;
@@ -47,7 +50,7 @@ abstract class SignatureConnecteur extends Connecteur
 
     public function setSendingMetadata(DonneesFormulaire $donneesFormulaire)
     {
-/*Nothing to do*/
+        /*Nothing to do*/
     }
 
     public function archiver($dossierID)
