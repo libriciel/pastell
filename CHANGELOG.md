@@ -11,7 +11,7 @@ doivent être mises à jour #1667
 - Création de la table `configuration` pour stocker les paramètres applicatifs. #2232
 - Possibilité de créer des gestionnaires de tâches spécifiques à chaque entité via l'interface de configuration #2233
 - Ajout des pages relatives à l'accessibilité #1951
-- Nouveau connecteur iparapheur V5 REST (iparapheur >= v5.1.22) #1237
+- Nouveau connecteur iparapheur V5 REST (iparapheur >= v5.1.22, v5.2.13) #1237
 
 ## Évolutions
 
