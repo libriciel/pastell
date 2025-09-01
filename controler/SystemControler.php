@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Bootstrap\SystemConfiguration;
 use Pastell\Configuration\ConnectorValidation;
 use Pastell\Configuration\DocumentTypeValidation;
 use Pastell\Mailer\Mailer;
@@ -73,6 +74,10 @@ class SystemControler extends PastellControler
         $this->setViewParameter('display_feature_toggle_in_test_page', $this->getObjectInstancier()
             ->getInstance(FeatureToggleService::class)
             ->isEnabled(DisplayFeatureToggleInTestPage::class));
+        $this->setViewParameter(
+            'admin_email',
+            $this->getConfigurationSQL()->getConfiguration(SystemConfiguration::ADMIN_EMAIL, ConfigurationSQL::NULL_ID_E)
+        );
         $this->setViewParameter('page_title', 'Test du système');
         $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
         $this->setViewParameter('twigTemplate', 'system/index.html.twig');
@@ -500,5 +505,47 @@ class SystemControler extends PastellControler
         }
 
         return $message;
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    public function editAdminEmailAction(): void
+    {
+        $this->needDroitEdition();
+        $this->needDroitEdition();
+        $this->setViewParameter('page_title', 'Connecteurs manquants');
+        $this->setViewParameter('template_milieu', 'SystemEditAdminEmail');
+        $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
+        $this->setViewParameter(
+            'admin_email',
+            $this->getConfigurationSQL()->getConfiguration(
+                SystemConfiguration::ADMIN_EMAIL,
+                ConfigurationSQL::NULL_ID_E
+            )
+        );
+        $this->renderDefault();
+    }
+
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function doEditAdminEmailAction(): void
+    {
+        $this->needDroitEdition();
+        $admin_email = $this->getPostInfo()->get('admin_email');
+        if (!filter_var($admin_email, FILTER_VALIDATE_EMAIL)) {
+            $this->setLastError("L'adresse email n'est pas valide");
+            $this->redirect('System/editAdminEmail');
+        }
+        $this->getConfigurationSQL()->setConfiguration(
+            SystemConfiguration::ADMIN_EMAIL,
+            $admin_email,
+            ConfigurationSQL::NULL_ID_E
+        );
+        $this->setLastMessage("L'adresse email d'administration a été modifiée");
+        $this->redirect(self::SYSTEM_INDEX_PAGE);
     }
 }

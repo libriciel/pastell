@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Bootstrap\SystemConfiguration;
 use Pastell\Mailer\Mailer;
 use Pastell\Tests\MailerTransportTesting;
 
@@ -12,6 +13,8 @@ class SystemControlerTest extends ControlerTestCase
     {
         parent::setUp();
         $this->systemControler = $this->getControlerInstance("SystemControler");
+        $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)
+            ->setConfiguration(SystemConfiguration::ADMIN_EMAIL, 'admin@libriciel.invalid', ConfigurationSQL::NULL_ID_E);
     }
 
     /**

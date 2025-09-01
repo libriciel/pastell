@@ -367,12 +367,15 @@
                 <form action='{{ path('app.legacy.system_mailTest') }}' method='post'>
                     {{ gabarit.displayCSRFInput() }}
                     <th class="w200" scope="row">ADMIN_EMAIL</th>
-                    <td class="w400">{{ constant('ADMIN_EMAIL') }}</td>
+                    <td class="w400">{{ admin_email }}</td>
                     <input type="hidden" name="email" value="{{ constant('ADMIN_EMAIL') }}">
                     <td>
                         <button type="submit" class="btn btn-primary">
                             <i class="fa fa-paper-plane"></i>&nbsp;Envoyer
                         </button>
+                        <a class='btn btn-primary' href="{{ path('app.legacy.system_editAdminEmail') }}">
+                        <i class="fa fa-pencil"></i>&nbsp;Modifier
+                        </a>
                     </td>
                 </form>
             </tr>
