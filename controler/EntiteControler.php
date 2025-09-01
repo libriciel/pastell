@@ -968,7 +968,7 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('daemon_admin_email', implode(',', $daemon_admin_email));
         $this->setViewParameter('menu_gauche_select', 'Entite/daemonAdmin');
         $this->setViewParameter('template_milieu', 'EntiteDaemonAdmin');
-        $this->setViewParameter('daemon_late_jobs_threshold', $daemon->late_jobs_treshold);
+        $this->setViewParameter('daemon_late_jobs_threshold', $daemon->late_jobs_threshold);
         $this->renderDefault();
     }
 

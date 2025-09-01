@@ -26,7 +26,7 @@ class DaemonSQL extends SQL
             $info['state'],
             $info['nb_workers'],
             $info['admin_emails'],
-            $info['late_jobs_treshold']
+            $info['late_jobs_threshold']
         );
     }
 
@@ -91,14 +91,14 @@ class DaemonSQL extends SQL
         return $result;
     }
 
-    public function insertDaemon(int $id_e, int $nb_workers, string $admin_emails, int $late_jobs_treshold): int
+    public function insertDaemon(int $id_e, int $nb_workers, string $admin_emails, int $late_jobs_threshold): int
     {
-        $sql = 'INSERT INTO daemon(id_e, nb_workers, admin_emails, late_jobs_treshold) VALUES (?, ?, ?, ?);';
+        $sql = 'INSERT INTO daemon(id_e, nb_workers, admin_emails, late_jobs_threshold) VALUES (?, ?, ?, ?);';
         $this->query($sql, [
             $id_e,
             $nb_workers,
             $admin_emails,
-            $late_jobs_treshold
+            $late_jobs_threshold
         ]);
         return (int)$this->lastInsertId();
     }
@@ -129,7 +129,7 @@ class DaemonSQL extends SQL
 
     public function insertGlobalDaemon(string $admin_emails): bool
     {
-        $sql = 'INSERT INTO daemon (id_daemon, id_e, nb_workers, admin_emails, late_jobs_treshold) VALUES (?, ?, ?, ?, ?)';
+        $sql = 'INSERT INTO daemon (id_daemon, id_e, nb_workers, admin_emails, late_jobs_threshold) VALUES (?, ?, ?, ?, ?)';
         $this->query(
             $sql,
             [self::GLOBAL_DAEMON, null, $this->getNbWorkers(), $admin_emails, 1]
@@ -181,9 +181,9 @@ class DaemonSQL extends SQL
         $this->query($sql, [$email, $id_daemon]);
     }
 
-    public function setLateJobsTreshold(int $id_daemon, int $treshold): void
+    public function setLateJobsThreshold(int $id_daemon, int $threshold): void
     {
-        $sql = 'UPDATE daemon SET late_jobs_treshold = ? WHERE id_daemon = ?';
-        $this->query($sql, [$treshold, $id_daemon]);
+        $sql = 'UPDATE daemon SET late_jobs_threshold = ? WHERE id_daemon = ?';
+        $this->query($sql, [$threshold, $id_daemon]);
     }
 }

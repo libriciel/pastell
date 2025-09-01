@@ -12,7 +12,7 @@ class Daemon
     public int $state;
     public int $nb_workers;
     public string $admin_emails;
-    public int $late_jobs_treshold;
+    public int $late_jobs_threshold;
 
     public function __construct(
         int $id_daemon,
@@ -20,14 +20,14 @@ class Daemon
         int $state = self::STATE_INACTIVE,
         int $nb_workers = 0,
         string $admin_email = '',
-        int $late_jobs_treshold = 1
+        int $late_jobs_threshold = 1
     ) {
         $this->id_daemon = $id_daemon;
         $this->id_e = $id_e;
         $this->state = $state;
         $this->nb_workers = $nb_workers;
         $this->admin_emails = $admin_email;
-        $this->late_jobs_treshold = $late_jobs_treshold;
+        $this->late_jobs_threshold = $late_jobs_threshold;
     }
 
     public function toArray(): array

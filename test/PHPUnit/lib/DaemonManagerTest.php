@@ -12,7 +12,7 @@ class DaemonManagerTest extends PastellTestCase
         parent::setUp();
         $this->daemonSQL = $this->getObjectInstancier()->getInstance(DaemonSQL::class);
         $this->daemonSQL->setNbWorkers(10);
-        $this->daemonSQL->insertGlobalDaemon('admin@mail.com');
+        $this->daemonSQL->insertGlobalDaemon('mail@libriciel.invalid');
         $this->daemonManager = $this->getObjectInstancier()->getInstance(DaemonManager::class);
     }
 
@@ -51,7 +51,7 @@ class DaemonManagerTest extends PastellTestCase
      */
     public function testStartAndStopDaemon(): void
     {
-        $daemon = $this->daemonManager->addDaemon(2, 1, 'admin@mail.com', 1);
+        $daemon = $this->daemonManager->addDaemon(2, 1, 'mail@libriciel.invalid', 1);
 
         $this->daemonManager->startDaemon($daemon->id_daemon);
         $startedDaemon = $this->daemonSQL->getDaemonByEntity(2);
@@ -68,7 +68,7 @@ class DaemonManagerTest extends PastellTestCase
     public function testAddDaemonSuccess(): void
     {
         $entityId = 10;
-        $daemon = $this->daemonManager->addDaemon($entityId, 1, 'admin@mail.com', 1);
+        $daemon = $this->daemonManager->addDaemon($entityId, 1, 'mail@libriciel.invalid', 1);
         static::assertNotNull($this->daemonSQL->getDaemon($daemon->id_daemon));
         static::assertSame($entityId, $daemon->id_e);
         static::assertSame(10 - 1, $this->daemonSQL->getNbSharedWorkers());
@@ -80,12 +80,12 @@ class DaemonManagerTest extends PastellTestCase
     public function testAddDaemonThrowsIfAlreadyExists(): void
     {
         $entityId = 11;
-        $this->daemonManager->addDaemon($entityId, 1, 'admin@mail.com', 1);
+        $this->daemonManager->addDaemon($entityId, 1, 'mail@libriciel.invalid', 1);
 
         $this->expectException(UnrecoverableException::class);
         $this->expectExceptionMessage('Création impossible, un daemon existe déjà pour cette entité.');
 
-        $this->daemonManager->addDaemon($entityId, 1, 'admin@mail.com', 1);
+        $this->daemonManager->addDaemon($entityId, 1, 'mail@libriciel.invalid', 1);
     }
 
     public function testAddDaemonThrowsIfNotEnoughWorkers(): void
@@ -96,7 +96,7 @@ class DaemonManagerTest extends PastellTestCase
         $this->expectException(UnrecoverableException::class);
         $this->expectExceptionMessage('Création impossible, pas assez de workers disponibles.');
 
-        $this->daemonManager->addDaemon($entityId, $nbFree + 1, 'admin@mail.com', 1);
+        $this->daemonManager->addDaemon($entityId, $nbFree + 1, 'mail@libriciel.invalid', 1);
     }
 
     /**
@@ -105,7 +105,7 @@ class DaemonManagerTest extends PastellTestCase
     public function testRemoveDaemonSuccess(): void
     {
         $entityId = 13;
-        $daemon = $this->daemonManager->addDaemon($entityId, 2, 'admin@mail.com', 1);
+        $daemon = $this->daemonManager->addDaemon($entityId, 2, 'mail@libriciel.invalid', 1);
 
         static::assertNotNull($this->daemonSQL->getDaemon($daemon->id_daemon));
 
@@ -135,7 +135,7 @@ class DaemonManagerTest extends PastellTestCase
      */
     public function testAllocateWorkers(): void
     {
-        $daemon = $this->daemonManager->addDaemon(1, 5, 'admin@mail.com', 1);
+        $daemon = $this->daemonManager->addDaemon(1, 5, 'mail@libriciel.invalid', 1);
         $this->daemonManager->allocateWorkers($daemon->id_daemon, 3);
         $updatedDaemon = $this->daemonSQL->getDaemon($daemon->id_daemon);
         $globalDaemon = $this->daemonSQL->getGlobalDaemon();
@@ -148,7 +148,7 @@ class DaemonManagerTest extends PastellTestCase
      */
     public function testDaemonAdminMail(): void
     {
-        $daemon = $this->daemonManager->addDaemon(1, 5, 'admin@mail.com', 1);
+        $daemon = $this->daemonManager->addDaemon(1, 5, 'mail@libriciel.invalid', 1);
         $this->daemonManager->setAdminEmails($daemon->id_daemon, 'admin@example.com,root@example.com');
         $result = $this->daemonManager->getAdminEmails($daemon->id_daemon);
 
@@ -174,7 +174,7 @@ class DaemonManagerTest extends PastellTestCase
      */
     public function testGetAdminMailsReturnsEmptyArrayIfEmptyString(): void
     {
-        $daemon = $this->daemonManager->addDaemon(2, 5, 'admin@mail.com', 1);
+        $daemon = $this->daemonManager->addDaemon(2, 5, 'mail@libriciel.invalid', 1);
 
         $this->daemonManager->setAdminEmails($daemon->id_daemon, '');
         $result = $this->daemonManager->getAdminEmails($daemon->id_daemon);
@@ -187,7 +187,7 @@ class DaemonManagerTest extends PastellTestCase
      */
     public function testGetAdminMailsHandlesSpaces(): void
     {
-        $daemon = $this->daemonManager->addDaemon(3, 5, 'admin@mail.com', 1);
+        $daemon = $this->daemonManager->addDaemon(3, 5, 'mail@libriciel.invalid', 1);
 
         $this->daemonManager->setAdminEmails($daemon->id_daemon, ' admin@example.com , root@example.com ');
         $result = $this->daemonManager->getAdminEmails($daemon->id_daemon);
@@ -201,7 +201,7 @@ class DaemonManagerTest extends PastellTestCase
      */
     public function testSetAdminEmailsThrowsOnInvalidEmail(): void
     {
-        $daemon = $this->daemonManager->addDaemon(4, 2, 'admin@mail.com', 1);
+        $daemon = $this->daemonManager->addDaemon(4, 2, 'mail@libriciel.invalid', 1);
 
         $this->expectException(UnrecoverableException::class);
         $this->expectExceptionMessage('Email "invalid-email" invalide : non conforme à la norme RFC 2822.');

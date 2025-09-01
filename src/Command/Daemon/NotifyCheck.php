@@ -59,7 +59,8 @@ final class NotifyCheck extends BaseCommand
                 $denomination  =  $context['denomination_entite'];
                 $id_daemon      = $context['id_daemon'];
                 $destinataires = $this->daemonManager->getAdminEmails($id_daemon);
-                $body =  "[KO] Tâches automatiques du site $site — $denomination [entité #{$context['id_e']}] — daemon #$id_daemon : {$item->result}";
+                $body = "[KO] Tâches automatiques du site $site — $denomination [entité #{$context['id_e']}]" .
+                    "— daemon #$id_daemon : {$item->result}";
 
                 $templatedEmail = new TemplatedEmail()
                     ->to(...$destinataires)

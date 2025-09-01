@@ -105,7 +105,7 @@ class DaemonManager
     /**
      * @throws UnrecoverableException
      */
-    public function addDaemon(int $id_e, int $nb_allocated_workers, string $admin_emails, int $late_jobs_treshold): Daemon
+    public function addDaemon(int $id_e, int $nb_allocated_workers, string $admin_emails, int $late_jobs_threshold): Daemon
     {
         if ($this->daemonSQL->getDaemonByEntity($id_e)) {
             throw new UnrecoverableException('Création impossible, un daemon existe déjà pour cette entité.');
@@ -115,7 +115,7 @@ class DaemonManager
             throw new UnrecoverableException('Création impossible, pas assez de workers disponibles.');
         }
 
-        $id_daemon = $this->daemonSQL->insertDaemon($id_e, $nb_allocated_workers, $admin_emails, $late_jobs_treshold);
+        $id_daemon = $this->daemonSQL->insertDaemon($id_e, $nb_allocated_workers, $admin_emails, $late_jobs_threshold);
         foreach ($this->jobQueueSQL->getJobsByAncestor($id_e) as $job) {
             $this->updateClosestDaemon($job);
         }
@@ -212,9 +212,9 @@ class DaemonManager
                 'Impossible de définir le seuil de travaux en attente, le daemon n\'existe pas.'
             );
         }
-        if ($threshold < 0) {
-            throw new UnrecoverableException('Le seuil de travaux en attente doit être un nombre positif.');
+        if ($threshold < 1) {
+            throw new UnrecoverableException('Le seuil de travaux doit etre supérieur ou égal à 1');
         }
-        $this->daemonSQL->setLateJobsTreshold($id_daemon, $threshold);
+        $this->daemonSQL->setLateJobsThreshold($id_daemon, $threshold);
     }
 }

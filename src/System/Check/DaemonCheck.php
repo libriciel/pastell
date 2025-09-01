@@ -50,7 +50,7 @@ class DaemonCheck implements CheckInterface
                 $nbLateJobs = count($late_jobs);
                 $etat = ($nbLateJobs > 1) ? 'travaux ont' : 'travail a';
                 $message .= "$nbLateJobs $etat plus d'une heure de retard. \n";
-                if ($nbLateJobs > $daemon->late_jobs_treshold) {
+                if ($nbLateJobs >= $daemon->late_jobs_threshold) {
                     $success = false;
                     $globalSuccess = false;
                 }
