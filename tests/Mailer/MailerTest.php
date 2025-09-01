@@ -15,17 +15,6 @@ class MailerTest extends PastellTestCase
     /**
      * @throws TransportExceptionInterface
      */
-    public function testSendMail(): void
-    {
-        $templatedEmail = (new TemplatedEmail())
-            ->to('foo@bar.foo')
-            ->subject('[Pastell] Mail de test')
-            ->text('texte');
-        $mailer = $this->getObjectInstancier()->getInstance(Mailer::class);
-        $mailer->send($templatedEmail);
-        self::markTestIncomplete();
-    }
-
     public function testSendMailWithCustomTransport(): void
     {
         $templatedEmail = (new TemplatedEmail())
