@@ -158,14 +158,22 @@ class JobQueueSQL extends SQL
 
     public function getStatInfo()
     {
-        $sql = "SELECT count(*) FROM job_queue";
+        $sql = <<<SQL
+SELECT count(*) FROM job_queue
+SQL;
         $info['nb_job'] = $this->queryOne($sql);
 
-        $sql = "SELECT count(*) FROM job_queue WHERE is_lock=1";
+        $sql = <<<SQL
+SELECT count(*) FROM job_queue WHERE is_lock=1
+SQL;
         $info['nb_lock'] = $this->queryOne($sql);
 
-        $sql = "SELECT count(*) FROM job_queue " .
-            " WHERE next_try<now()";
+        $sql = <<<SQL
+SELECT count(*) 
+FROM job_queue
+WHERE next_try < now() 
+AND is_lock = 0
+SQL;
         $info['nb_wait'] = $this->queryOne($sql);
 
         $info['nb_lock_one_hour'] = $this->getNbLockSinceOneHour();
@@ -175,11 +183,28 @@ class JobQueueSQL extends SQL
 
     public function getStatInfoForDaemon(int $id_daemon): array
     {
-        $sql = 'SELECT count(*) FROM job_queue WHERE id_daemon = ?';
+        $sql = <<<SQL
+SELECT count(*) 
+FROM job_queue 
+WHERE id_daemon = ?
+SQL;
         $info['nb_job'] = $this->queryOne($sql, $id_daemon);
-        $sql = 'SELECT count(*) FROM job_queue WHERE is_lock=1 AND id_daemon = ?';
+
+        $sql = <<<SQL
+SELECT count(*) 
+FROM job_queue 
+WHERE is_lock = 1 
+AND id_daemon = ?
+SQL;
         $info['nb_lock'] = $this->queryOne($sql, $id_daemon);
-        $sql = 'SELECT count(*) FROM job_queue WHERE next_try<now() AND id_daemon = ?';
+
+        $sql = <<<SQL
+SELECT count(*) 
+FROM job_queue 
+WHERE next_try < now() 
+AND is_lock = 0
+AND id_daemon = ?
+SQL;
         $info['nb_wait'] = $this->queryOne($sql, $id_daemon);
         $info['nb_lock_one_hour'] = $this->getNbLockSinceOneHourForDaemon($id_daemon);
         return $info;
