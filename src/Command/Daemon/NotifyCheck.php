@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pastell\Command\Daemon;
 
+use ConfigurationSQL;
 use DaemonManager;
 use ObjectInstancier;
 use Pastell\Command\BaseCommand;
@@ -25,7 +26,8 @@ final class NotifyCheck extends BaseCommand
         private readonly ObjectInstancier $objectInstancier,
         private readonly DaemonCheck $daemonCheck,
         private readonly Mailer $pastellMailer,
-        private readonly DaemonManager $daemonManager
+        private readonly DaemonManager $daemonManager,
+        private readonly ConfigurationSQL $configurationSQL,
     ) {
         parent::__construct();
     }
@@ -83,9 +85,8 @@ final class NotifyCheck extends BaseCommand
                 $body .= "- {$context['denomination_entite']} [entité #{$context['id_e']}] — daemon #{$context['id_daemon']} : {$error_item->result}\n";
             }
 
-            $admin_email = $this->objectInstancier->getInstance('admin_email');
             $synthesisEmail = new TemplatedEmail()
-                ->to(...$admin_email)
+                ->to(...$this->configurationSQL->getAdminEmails())
                 ->subject('[PASTELL] Alerte tâches automatiques - Synthèse')
                 ->text($body);
 

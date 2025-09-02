@@ -4,12 +4,16 @@ class CPPVerifConnectiviteTest extends ExtensionCppTestCase
 {
     private const FICHIER_CSV_INTERPRETE = __DIR__ . "/../../../../connecteur/chorus-par-csv/fixtures/chorus-csv-interprete.csv";
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->setAdminEmails(['test@libriciel.invalid']);
+    }
     /**
      * @throws Exception
      */
     public function testCPPVerifConnectivite()
     {
-
         $cppWrapper = $this->getMockBuilder(CPPWrapper::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -93,7 +97,8 @@ class CPPVerifConnectiviteTest extends ExtensionCppTestCase
         $last_message .= '<br />' . "\n";
         $last_message .= '<br />' . "\n";
         $last_message .= '<br />' . "\n";
-        $last_message .= ' mail envoyé à ' . \implode(',', $this->getObjectInstancier()->getInstance('admin_email'));
+        $last_message .= ' mail envoyé à ' .
+            \implode(',', $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->getAdminEmails());
 
         return $last_message;
     }

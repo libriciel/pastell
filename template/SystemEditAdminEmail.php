@@ -14,6 +14,9 @@ declare(strict_types=1);
             <tr>
                 <th class='w300'>
                     <label for="type_connecteur">ADMIN_EMAIL<span class="obl">*</span></label>
+                    <p class="form_commentaire">
+                        Plusieurs mails peuvent être renseignés, séparés par des virgules.
+                    </p>
                 </th>
                 <td>
                     <input class="form-control col-md-4" id='admin_email' type="text" name='admin_email'

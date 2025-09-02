@@ -8,7 +8,6 @@ use ConfigurationSQL;
 
 class SystemConfiguration implements InstallableBootstrap
 {
-    public const string ADMIN_EMAIL = 'ADMIN_EMAIL';
     public function __construct(
         private readonly ConfigurationSQL $configurationSQL,
         private readonly array $admin_email,
@@ -17,12 +16,8 @@ class SystemConfiguration implements InstallableBootstrap
 
     public function install(): InstallResult
     {
-        if (!$this->configurationSQL->hasConfiguration(self::ADMIN_EMAIL, ConfigurationSQL::NULL_ID_E)) {
-            $this->configurationSQL->setConfiguration(
-                self::ADMIN_EMAIL,
-                implode(',', $this->admin_email),
-                ConfigurationSQL::NULL_ID_E
-            );
+        if (!$this->configurationSQL->hasConfiguration(ConfigurationSQL::ADMIN_EMAIL, ConfigurationSQL::NULL_ID_E)) {
+            $this->configurationSQL->setAdminEmails($this->admin_email);
         }
         return InstallResult::InstallOk;
     }

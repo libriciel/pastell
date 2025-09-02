@@ -11,9 +11,9 @@ class JournalManager
     public function __construct(
         private readonly Journal $journalSQL,
         private readonly int $journal_max_age_in_months,
-        private readonly array $admin_email,
         private readonly Monolog\Logger $logger,
         private readonly Mailer $mailer,
+        private readonly ConfigurationSQL $configurationSQL,
     ) {
     }
 
@@ -29,7 +29,7 @@ class JournalManager
             $message = sprintf('Erreur sur la purge du journal : %s', $e->getMessage());
             $this->logger->error($message);
             $templatedEmail = (new TemplatedEmail())
-                ->to(...$this->admin_email)
+                ->to(...$this->configurationSQL->getAdminEmails())
                 ->subject('[PASTELL] Problème sur la purge du journal')
                 ->text($message);
             $this->mailer->send($templatedEmail);

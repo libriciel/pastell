@@ -34,16 +34,16 @@ class CPPVerifConnectivite extends ActionExecutor
         }
 
         if ($nb_ko) {
-            $adminMails = $this->objectInstancier->getInstance('admin_email');
+            $admin_email = $this->objectInstancier->getInstance(ConfigurationSQL::class)->getAdminEmails();
             $templatedEmail = (new TemplatedEmail())
-                ->to(...$adminMails)
+                ->to(...$admin_email)
                 ->subject('[Pastell] la connectivité Pastell - Chorus Pro est en erreur')
                 ->text($data);
             $this->objectInstancier
                 ->getInstance(Mailer::class)
                 ->send($templatedEmail);
 
-            $data .= "\n\n mail envoyé à " . \implode(',', $adminMails);
+            $data .= "\n\n mail envoyé à " . \implode(',', $admin_email);
         }
 
         $this->setLastMessage(nl2br($data));
