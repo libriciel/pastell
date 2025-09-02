@@ -45,17 +45,17 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
         $donneesFormulaire->setData('has_historique', true);
         $donneesFormulaire->addFileFromData('iparapheur_historique', "iparapheur_historique.xml", $historique_xml);
 
-        $result = $signature->getLastHistorique($all_historique);
-        $donneesFormulaire->setData('parapheur_last_message', $result);
+        $lastHistorique = $signature->getLastHistorique($all_historique);
+        $donneesFormulaire->setData('parapheur_last_message', $lastHistorique);
 
-        if (strstr($result, "[Archive]")) {
+        if (strstr($lastHistorique, "[Archive]")) {
             return $this->retrieveDossier($dossierID);
-        } elseif ($signature->isRejected($result)) {
-            $this->rejeteDossier($dossierID, $result);
+        } elseif ($signature->isRejected($lastHistorique)) {
+            $this->rejeteDossier($dossierID, $lastHistorique);
         } else {
-            $this->traitementErreur($signature, $result);
+            $this->traitementErreur($signature, $lastHistorique);
         }
-        $this->setLastMessage($result);
+        $this->setLastMessage($lastHistorique);
         return true;
     }
 

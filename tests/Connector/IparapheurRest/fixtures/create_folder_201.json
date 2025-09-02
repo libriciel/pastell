@@ -1,0 +1,10 @@
+{
+  "id": "ONGOING-FOLDER-ID",
+  "name": "string",
+  "dueDate": "2025-08-26T09:54:16.809Z",
+  "metadata": {
+    "additionalProp1": "string",
+    "additionalProp2": "string",
+    "additionalProp3": "string"
+  }
+}

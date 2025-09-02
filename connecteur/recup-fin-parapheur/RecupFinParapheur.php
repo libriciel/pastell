@@ -2,21 +2,25 @@
 
 declare(strict_types=1);
 
-use IparapheurV5Client\Api\Desk;
-use IparapheurV5Client\Api\Folder;
-use IparapheurV5Client\Api\Tenant;
-use IparapheurV5Client\Client;
-use IparapheurV5Client\Exception\IparapheurV5Exception;
-use IparapheurV5Client\Model\ListFoldersQuery;
-use IparapheurV5Client\Model\ListTenantsQuery;
-use IparapheurV5Client\Model\ListUserDesksQuery;
-use IparapheurV5Client\TokenQuery;
-use Pastell\Client\IparapheurV5\ClientFactory;
+use Libriciel\IparapheurV5\Client\Api\DeskApi;
+use Libriciel\IparapheurV5\Client\Api\FolderApi;
+use Libriciel\IparapheurV5\Client\Api\TenantApi;
+use Libriciel\IparapheurV5\Client\Configuration;
+use Libriciel\IparapheurV5\Client\Model\State;
+use Pastell\Action\TestConnectionInterface;
+use Pastell\Client\IparapheurV5\IparapheurAuthConfig;
+use Pastell\Client\IparapheurV5\ApiClientFactory;
 use Pastell\Client\IparapheurV5\ZipContent;
-use IparapheurV5Client\Model\State;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Pastell\Connector\IparapheurRest\IpRestDeskInterface;
+use Pastell\Connector\IparapheurRest\IpRestException;
+use Pastell\Connector\IparapheurRest\IpRestTenantInterface;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
 
-class RecupFinParapheur extends Connecteur
+class RecupFinParapheur extends Connecteur implements
+    IpRestTenantInterface,
+    IpRestDeskInterface,
+    TestConnectionInterface
 {
     private const USERNAME = 'username';
     private const PASSWORD = 'password';
@@ -26,13 +30,19 @@ class RecupFinParapheur extends Connecteur
     private const NB_RECUP = 'nb_recup';
     private array $elementIdDictionnary;
     private DonneesFormulaire $connecteurConfig;
+    private ClientInterface $client;
+    private Configuration $configuration;
 
     public function __construct(
         private readonly GlaneurDocumentCreator $glaneurDocumentCreator,
-        private readonly ClientFactory $clientFactory,
+        private readonly ApiClientFactory $apiClientFactory,
     ) {
     }
 
+    /**
+     * @throws JsonException
+     * @throws ClientExceptionInterface
+     */
     public function setConnecteurConfig(DonneesFormulaire $donneesFormulaire): void
     {
         $this->connecteurConfig = $donneesFormulaire;
@@ -57,49 +67,39 @@ class RecupFinParapheur extends Connecteur
             }
             $this->elementIdDictionnary[trim($part[0])] = trim($part[1]);
         }
+
+        $iparapheurAuthConfig = new IparapheurAuthConfig(
+            $donneesFormulaire->get(self::USERNAME) ?: '',
+            $donneesFormulaire->get(self::PASSWORD) ?: '',
+            $donneesFormulaire->get(self::URL) ?: '',
+        );
+        [$httpClient, $config] = $this->apiClientFactory->createAuthenticatedClient($iparapheurAuthConfig);
+        $this->client = $httpClient;
+        $this->configuration = $config;
     }
 
-    /**
-     * @throws ExceptionInterface
-     * @throws \Http\Client\Exception
-     * @throws IparapheurV5Exception
-     */
-    private function getAuthentificatedClient(): Client
-    {
-        $tokenQuery = new TokenQuery();
-        $tokenQuery->username = $this->connecteurConfig->get(self::USERNAME, '');
-        $tokenQuery->password = $this->connecteurConfig->get(self::PASSWORD, '');
-        $client = $this->clientFactory->getInstance();
-        $client->authenticate($this->connecteurConfig->get(self::URL, ''), $tokenQuery);
-        return $client;
-    }
-
-    /**
-     * @throws ExceptionInterface
-     * @throws \Http\Client\Exception
-     * @throws IparapheurV5Exception
-     */
     public function getTenantList(): array
     {
-        $listTenantsQuery = new ListTenantsQuery();
-        $listTenantsQuery->page = 0;
         $tenants = [];
+        $page = 0;
+
         do {
-            $result = (new Tenant($this->getAuthentificatedClient()))->listTenants($listTenantsQuery);
-            foreach ($result->content as $tenant) {
-                $tenants[$tenant->id] = $tenant->name;
+            $result = (new TenantApi($this->client, $this->configuration))->listTenants($page);
+
+            foreach ($result->getContent() as $tenant) {
+                $tenants[$tenant->getId()] = $tenant->getName();
             }
-            $listTenantsQuery->page++;
-        } while ($result->pageable->pageNumber + 1 < $result->totalPages);
+
+            $pageable = $result->getPageable();
+            $currentPage = $pageable ? $pageable->getPageNumber() : $page;
+            $totalPages = $result->getTotalPages() ?? 1;
+
+            $page++;
+        } while ($currentPage + 1 < $totalPages);
 
         return $tenants;
     }
 
-    /**
-     * @throws \Http\Client\Exception
-     * @throws ExceptionInterface
-     * @throws IparapheurV5Exception
-     */
     public function testConnexion(): string
     {
         $result = $this->getTenantList();
@@ -109,37 +109,28 @@ class RecupFinParapheur extends Connecteur
         return 'Liste des entités parapheurs : ' . implode(', ', $result);
     }
 
-    /**
-     * @throws ExceptionInterface
-     * @throws \Http\Client\Exception
-     * @throws IparapheurV5Exception
-     */
     public function getFinishedFolders(): array
     {
-        $result = [];
-        $listFolderQuery = new ListFoldersQuery();
-        $listFolderQuery->size = (int)$this->connecteurConfig->get(self::NB_RECUP);
-        $listFolderQuery->page = 0;
-        $pageFolder = (new Folder($this->getAuthentificatedClient()))->listFolders(
+        $folders = [];
+        $result = (new FolderApi($this->client, $this->configuration))->listFolders(
             $this->connecteurConfig->get(self::TENANT_ID, ''),
             $this->connecteurConfig->get(self::DESK_ID, ''),
+            /** @phpstan-ignore-next-line */
             State::FINISHED,
-            $listFolderQuery
+            null,
+            null,
+            0,
+            (int)$this->connecteurConfig->get(self::NB_RECUP)
         );
-        foreach ($pageFolder->content as $folder) {
-            $result[$folder->id] = $folder->name;
+        foreach ($result->getContent() as $folder) {
+            $folders[$folder->getId()] = $folder->getName();
         }
-        return $result;
+        return $folders;
     }
 
-    /**
-     * @throws \Http\Client\Exception
-     * @throws ExceptionInterface
-     * @throws IparapheurV5Exception
-     */
     public function removeFolder(string $folder_id): void
     {
-        (new Folder($this->getAuthentificatedClient()))->deleteFolder(
+        (new FolderApi($this->client, $this->configuration))->deleteFolder(
             $this->connecteurConfig->get(self::TENANT_ID, ''),
             $this->connecteurConfig->get(self::DESK_ID, ''),
             $folder_id
@@ -148,9 +139,7 @@ class RecupFinParapheur extends Connecteur
 
 
     /**
-     * @throws ExceptionInterface
-     * @throws \Http\Client\Exception
-     * @throws IparapheurV5Exception
+     * @throws Exception
      */
     public function recupOne(): array
     {
@@ -163,9 +152,6 @@ class RecupFinParapheur extends Connecteur
     }
 
     /**
-     * @throws \Http\Client\Exception
-     * @throws ExceptionInterface
-     * @throws IparapheurV5Exception
      * @throws Exception
      */
     private function retrieveOneDossier(string $dossierId): string
@@ -173,20 +159,15 @@ class RecupFinParapheur extends Connecteur
         $tmpFolder = new TmpFolder();
         $tmp_folder = $tmpFolder->create();
         try {
-            $client = $this->getAuthentificatedClient();
-            $folder = new Folder($client);
-            $response = $folder->downloadFolderZip(
+            $zipData = (new FolderApi($this->client, $this->configuration))->downloadFolderZip(
                 $this->connecteurConfig->get(self::TENANT_ID, ''),
                 self::DESK_ID,
                 $dossierId
             );
-            $body = $response->getBody();
-            $zipFilePath = $tmp_folder . '/response.zip';
-            $file = fopen($zipFilePath, 'wb');
-            while (!$body->eof()) {
-                fwrite($file, $body->read(1024));
-            }
-            fclose($file);
+
+            $zipFilePath = $tmp_folder . '/result.zip';
+            file_put_contents($zipFilePath, $zipData);
+
             $zipContent = new ZipContent();
             $zipContentModel = $zipContent->extract($zipFilePath, $tmp_folder);
             $glaneurLocalDocumentInfo = new GlaneurDocumentInfo($this->getConnecteurInfo()['id_e']);
@@ -231,23 +212,27 @@ class RecupFinParapheur extends Connecteur
     }
 
     /**
-     * @throws ExceptionInterface
-     * @throws \Http\Client\Exception
-     * @throws IparapheurV5Exception
+     * @throws IpRestException
      */
-    public function getAllDesks(): array
+    public function getDeskList(): array
     {
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
-        $listUserDesksQuery = new ListUserDesksQuery();
-        $listUserDesksQuery->page = 0;
         $desks = [];
+        $page = 0;
+
         do {
-            $result = (new Desk($this->getAuthentificatedClient()))->listUserDesks($tenantId, $listUserDesksQuery);
-            foreach ($result->content as $desk) {
-                $desks[$desk->id] = $desk->name;
+            $result = (new DeskApi($this->client, $this->configuration))->listUserDesks($tenantId, $page);
+
+            foreach ($result->getContent() as $desk) {
+                $desks[$desk->getId()] = $desk->getName();
             }
-            $listUserDesksQuery->page++;
-        } while ($result->pageable->pageNumber + 1 < $result->totalPages);
+
+            $pageable = $result->getPageable();
+            $currentPage = $pageable ? $pageable->getPageNumber() : $page;
+            $totalPages = $result->getTotalPages() ?? 1;
+
+            $page++;
+        } while ($currentPage + 1 < $totalPages);
 
         return $desks;
     }

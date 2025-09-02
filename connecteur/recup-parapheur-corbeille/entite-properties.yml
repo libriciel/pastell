@@ -46,11 +46,13 @@ formulaire:
             default: 10
 
 action:
+    test_connexion:
+        name: Tester la connexion
+        action-class: Pastell\Connector\IparapheurRest\Action\IpRestTestConnexion
     tenant_name:
-        action-class: TenantNameAction
+        action-class: Pastell\Connector\IparapheurRest\Action\IpRestGetTenantList
         rule:
             internal-action: true
-
     pastell_module_name:
         rule:
             internal-action: true
@@ -61,24 +63,16 @@ action:
             page_title: 'Choix du type de dossier'
             module_type: pastell_module_id
             module_type_label: pastell_module_name
-
-    test_connexion:
-        name: Tester la connexion
-        action-class: RecupParapheurCorbeilleTestConnexion
-
     list_dossier:
         name: Lister les dossiers à récupérer
         action-class: RecupParapheurCorbeilleListDossier
-
     recup_one:
         name: Faire une boucle de récupération (synchrone)
         action-class: RecupParapheurCorbeilleRecup
-
     recup:
         name: Traitement (immédiat)
         action-class: RecupParapheurCorbeilleRecup
         action-automatique: recup
-
     recup-async:
         name: Traitement (par le gestionnaire de tâches)
         action-class: RecupParapheurCorbeilleRecupAsync

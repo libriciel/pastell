@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Pastell\Client\IparapheurV5\ClientFactory;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Pastell\Client\IparapheurV5\ApiClientFactory;
 use Psr\Http\Client\ClientInterface;
 
 class RecupParapheurCorbeilleTest extends PastellTestCase
@@ -34,7 +35,7 @@ class RecupParapheurCorbeilleTest extends PastellTestCase
     {
         $clientInterface = $this->getMockBuilder(ClientInterface::class)->getMock();
         $clientInterface->method('sendRequest')
-            ->willReturnCallback(function (Request $request): Response {
+            ->willReturnCallback(function (RequestInterface $request): ResponseInterface {
                 return match ($request->getUri()->getPath()) {
                     '/auth/realms/api/protocol/openid-connect/token' => new Response(
                         200,
@@ -57,8 +58,8 @@ class RecupParapheurCorbeilleTest extends PastellTestCase
                     default => throw new UnrecoverableException('Unknown path : ' . $request->getUri()->getPath()),
                 };
             });
-        /** @var ClientFactory $clientFactory */
-        $clientFactory = $this->getObjectInstancier()->getInstance(ClientFactory::class);
+        /** @var ApiClientFactory $clientFactory */
+        $clientFactory = $this->getObjectInstancier()->getInstance(ApiClientFactory::class);
         $clientFactory->setClientInterface($clientInterface);
 
         $id_ce = $this->createConnector('recup-parapheur-corbeille', 'Recup parapheur')['id_ce'];

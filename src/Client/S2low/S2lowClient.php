@@ -6,7 +6,6 @@ namespace Pastell\Client\S2low;
 
 use GuzzleHttp\Psr7\MultipartStream;
 use Http\Discovery\Psr17FactoryDiscovery;
-use IparapheurV5Client\UrlEncoder;
 use Pastell\Client\S2low\Api\Actes;
 use Pastell\Client\S2low\Api\Connexion;
 use Pastell\Client\S2low\Api\Pes;

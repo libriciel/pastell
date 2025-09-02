@@ -172,16 +172,16 @@ class IParapheur extends SignatureConnecteur
     }
 
     /**
-     * @param array $info_from_get_signature output of IParapheur::getSignature()
+     * @param array $info output of IParapheur::getSignature()
      * @param int $ignore_count Ignore the $ignore_count first annexe (i-Parapheur send back the annexes created initialy)
      * @return array output annexe
      */
-    public function getOutputAnnexe($info_from_get_signature, int $ignore_count)
+    public function getOutputAnnexe($info, int $ignore_count)
     {
-        if (empty($info_from_get_signature['annexe'])) {
+        if (empty($info['annexe'])) {
             return [];
         }
-        return array_slice($info_from_get_signature['annexe'], $ignore_count);
+        return array_slice($info['annexe'], $ignore_count);
     }
 
     private function getDocumentSigne($result)
@@ -343,6 +343,9 @@ class IParapheur extends SignatureConnecteur
         }
     }
 
+    /**
+     * @param $history - output of IparapheurRestConnector::getAllHistoriqueInfo()
+     */
     public function getLastHistorique($history): string
     {
         $lastLog = end($history->LogDossier);
@@ -354,6 +357,9 @@ class IParapheur extends SignatureConnecteur
         );
     }
 
+    /**
+     * @param $history - output of IparapheurRestConnector::getAllHistoriqueInfo()
+     */
     public function getDateSignature(stdClass|array $history): string
     {
         foreach (array_reverse($history->LogDossier) as $log) {
@@ -780,72 +786,82 @@ class IParapheur extends SignatureConnecteur
         return $dom->saveXML();
     }
 
-    public function isFinalState(string $lastState): bool
+    /**
+     * @param $lastHistorique - output of Iparapheur::getLastHistorique()
+     */
+    public function isFinalState(string $lastHistorique): bool
     {
-        return strstr($lastState, '[Archive]');
+        return strstr($lastHistorique, '[Archive]');
     }
 
-    public function isRejected(string $lastState): bool
+    /**
+     * @param $lastHistorique - output of Iparapheur::getLastHistorique()
+     */
+    public function isRejected(string $lastHistorique): bool
     {
-        preg_match("/\[([^]]*)]/", $lastState, $matches);
+        preg_match("/\[([^]]*)]/", $lastHistorique, $matches);
         if (! $matches) {
             return false;
         }
         return (in_array($matches[1], self::REJECTED_STATE, true));
     }
 
-    public function isDetached($signature): bool
+    /**
+     * @param $info - output of IParapheur::getSignature()
+     */
+    public function isDetached($info): bool
     {
-        return $signature['signature'] && !$signature['is_pes'];
+        return $info['signature'] && !$info['is_pes'];
     }
 
     /**
      * Workaround because IParapheur::getSignature() does not return only the signature
      *
-     * @param $file
+     * @param $info - output of IParapheur::getSignature()
      * @return mixed
      */
-    public function getDetachedSignature($file)
+    public function getDetachedSignature($info)
     {
-        return $file['signature'];
+        return $info['signature'];
     }
 
     /**
      * Workaround because IParapheur::getSignature() does not return only the signature
      *
-     * @param $file
+     * @param $info - output of IParapheur::getSignature()
      * @return mixed
      */
-    public function getSignedFile($file)
+    public function getSignedFile($info)
     {
-        return $file['signature'] ?: $file['document_signe']['document'];
+        return $info['signature'] ?: $info['document_signe']['document'];
     }
 
     /**
      * Workaround because it is embedded in IParapheur::getSignature()
      *
-     * @param $signature
+     * @param $info - output of IParapheur::getSignature()
      * @param string $documentId
      * @return ?Fichier
      */
-    public function getBordereauFromSignature($signature, string $documentId = ''): ?Fichier
+    public function getBordereauFromSignature($info, string $documentId = ''): ?Fichier
     {
         $file = new Fichier();
-        $file->filename = $signature['nom_document'];
-        $file->content = $signature['document'];
+        $file->filename = $info['nom_document'];
+        $file->content = $info['document'];
         return $file;
     }
 
     /**
+     * @param $info - output of IParapheur::getSignature()
      * @throws JsonException
      */
-    public function getMetadataSortie($signature): ?Fichier
+    public function getMetadataSortie($info): ?Fichier
     {
         $fileContent = '';
-        if ($signature['meta_donnees']) {
+        if ($info['meta_donnees']) {
             $fileContent = json_encode(array_combine(
-                array_column($signature['meta_donnees'], 'nom'),
-                array_column($signature['meta_donnees'], 'valeur')
+                array_column($info['meta_donnees'], 'nom'),
+                array_column($info['meta_donnees'], 'valeur')
             ), JSON_THROW_ON_ERROR);
         }
         $file = new Fichier();
@@ -855,23 +871,23 @@ class IParapheur extends SignatureConnecteur
     }
 
     /**
-     * @param array $info_from_get_signature output of IParapheur::getSignature()
+     * @param $info - output of IParapheur::getSignature()
      * @return bool
      */
-    public function hasMultiDocumentSigne($info_from_get_signature): bool
+    public function hasMultiDocumentSigne($info): bool
     {
-        return (($this->iparapheur_multi_doc) && (!empty($info_from_get_signature['multi_document_signe'])));
+        return (($this->iparapheur_multi_doc) && (!empty($info['multi_document_signe'])));
     }
 
     /**
-     * @param array $info_from_get_signature output of IParapheur::getSignature()
+     * @param array $info output of IParapheur::getSignature()
      * @return array $all_document_signe
      * Au retour du i-parapheur les fichiers DocPrincipal et DocumentsSupplementaires peuvent être inversés
      */
-    public function getAllDocumentSigne(array $info_from_get_signature): array
+    public function getAllDocumentSigne(array $info): array
     {
-        $all_document_signe = $info_from_get_signature['multi_document_signe'];
-        $all_document_signe[] = $info_from_get_signature['document_signe'];
+        $all_document_signe = $info['multi_document_signe'];
+        $all_document_signe[] = $info['document_signe'];
         return $all_document_signe;
     }
 

@@ -99,15 +99,7 @@ class SignatureEnvoie extends ConnecteurTypeActionExecutor
             true
         );
 
-
-        if ($donneesFormulaire->getFormulaire()->getField($iparapheur_dossier_id)) {
-            $fileToSign->dossierId = date("YmdHis") . random_int(0, mt_getrandmax());
-        } else { // conservé pour compatibilité
-            $fileToSign->dossierId = $signature->getDossierID(
-                $donneesFormulaire->get($objet_element),
-                $fileToSign->document->filename
-            );
-        }
+        $fileToSign->dossierId = date('YmdHis') . random_int(0, mt_getrandmax());
 
         $signature->setSendingMetadata($donneesFormulaire);
 

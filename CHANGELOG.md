@@ -11,6 +11,7 @@ doivent être mises à jour #1667
 - Création de la table `configuration` pour stocker les paramètres applicatifs. #2232
 - Possibilité de créer des gestionnaires de tâches spécifiques à chaque entité via l'interface de configuration #2233
 - Ajout des pages relatives à l'accessibilité #1951
+- Nouveau connecteur iparapheur V5 REST (iparapheur >= v5.1.22, v5.2.13) #1237
 
 ## Évolutions
 
@@ -30,6 +31,7 @@ doivent être mises à jour #1667
 - Suppression de la fonction WorkerSQL::getRunningWorkerInfo remplacé par WorkerSQL::getRunningWorker #2237
 - Suppression de la fonction WorkerSQL::getJobListWithWorker remplacé par JobQueueSQL::getFilteredJobList #2233
 - Suppression de la fonction WorkerSQL::getNbJob remplacé par JobQueueSQL::getNbJob #2239
+- Suppression de la fonction SignatureConnecteur::hasTypeSousType #2284
 - Le connecteur `pdf-relance` est supprimé. Il est intégré au connecteur `mailsec` #2269
 - Suppression de la classe /connecteur/cpp/lib/UTF8Encoder.php #2274
 - Variable d'environnement PASTELL_SITE_BASE remplacé par APP_HOST

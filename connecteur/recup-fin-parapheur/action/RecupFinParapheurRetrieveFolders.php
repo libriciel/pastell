@@ -2,17 +2,12 @@
 
 declare(strict_types=1);
 
-use IparapheurV5Client\Exception\IparapheurV5Exception;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
-class RetrieveFolders extends ActionExecutor
+class RecupFinParapheurRetrieveFolders extends ActionExecutor
 {
     /**
-     * @throws \Http\Client\Exception
-     * @throws ExceptionInterface
-     * @throws IparapheurV5Exception
      * @throws Exception
-     * @throws ExceptionInterface
      */
     public function go(): bool
     {

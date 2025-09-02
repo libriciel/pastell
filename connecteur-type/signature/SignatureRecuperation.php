@@ -21,7 +21,6 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         $donneesFormulaire = $this->getDonneesFormulaire();
 
         $document_element = $this->getMappingValue('document');
-        $titre_element = $this->getMappingValue('titre');
         $has_historique_element = $this->getMappingValue('has_historique');
         $iparapheur_historique_element = $this->getMappingValue('iparapheur_historique');
         $parapheur_last_message_element = $this->getMappingValue('parapheur_last_message');
@@ -36,16 +35,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         $iparapheur_metadata_sortie_element = $this->getMappingValue('iparapheur_metadata_sortie');
         $iparapheur_dossier_id = $this->getMappingValue('iparapheur_dossier_id');
 
-
-        if (
-            $donneesFormulaire->getFormulaire()->getField($iparapheur_dossier_id) &&
-            $donneesFormulaire->get($iparapheur_dossier_id)
-        ) {
-            $dossierID = $donneesFormulaire->get($iparapheur_dossier_id);
-        } else { // conservé pour compatibilité
-            $filename = $donneesFormulaire->getFileName($document_element);
-            $dossierID = $signature->getDossierID($donneesFormulaire->get($titre_element), $filename);
-        }
+        $dossierID = $donneesFormulaire->get($iparapheur_dossier_id);
 
         $erreur = false;
         $all_historique = [];
@@ -75,14 +65,15 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 $this->getComputedFileName('iparapheur_historique.xml'),
                 $historique_xml
             );
-            $lastState = $signature->getLastHistorique($all_historique);
-            $donneesFormulaire->setData($parapheur_last_message_element, $lastState);
+            $lastHistorique = $signature->getLastHistorique($all_historique);
+            $lastCompletedHistorique = $signature->getLastCompletedHistorique($all_historique);
+            $donneesFormulaire->setData($parapheur_last_message_element, $lastCompletedHistorique);
         } else {
-            $lastState = false;
+            $lastHistorique = false;
+            $lastCompletedHistorique = false;
         }
 
-        $return = false;
-        if ($signature->isFinalState($lastState)) {
+        if ($signature->isFinalState($lastHistorique)) {
             $donneesFormulaire->setData(
                 $parapheur_date_signature_element,
                 $signature->getDateSignature($all_historique)
@@ -109,11 +100,11 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
             }
             return $return;
         }
-        if ($signature->isRejected($lastState)) {
+        if ($signature->isRejected($lastHistorique)) {
             $refusal_message = $signature->getRefusalMessage($dossierID);
-            $lastState = trim("$lastState $refusal_message");
-            $this->setLastMessage($lastState);
-            $donneesFormulaire->setData($parapheur_last_message_element, $lastState);
+            $lastCompletedHistorique = trim("$lastCompletedHistorique $refusal_message");
+            $this->setLastMessage($lastCompletedHistorique);
+            $donneesFormulaire->setData($parapheur_last_message_element, $lastCompletedHistorique);
             $return = $this->addFinalElements(
                 $dossierID,
                 $bordereau_element,
@@ -122,7 +113,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 $iparapheur_metadata_sortie_element
             );
             if ($return === true) {
-                $return = $this->rejeteDossier($dossierID, $lastState);
+                $return = $this->rejeteDossier($dossierID, $lastCompletedHistorique);
             }
             return $return;
         }
@@ -145,7 +136,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         }
 
         if (! $erreur) {
-            $this->setLastMessage($lastState);
+            $this->setLastMessage($lastCompletedHistorique);
             return true;
         }
 

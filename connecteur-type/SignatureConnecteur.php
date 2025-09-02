@@ -19,20 +19,29 @@ abstract class SignatureConnecteur extends Connecteur
 
     abstract public function getAllHistoriqueInfo($dossierID);
 
+    /**
+     * @param $history - output of SignatureConnecteur::getAllHistoriqueInfo()
+     */
     abstract public function getLastHistorique($history): string;
+
+    /**
+     * workaround because IparapheurRestConnector::getLastHistorique() returns the ongoing state
+     */
+    public function getLastCompletedHistorique($history): string
+    {
+        return $this->getLastHistorique($history);
+    }
 
     abstract public function getRefusalMessage($dossierID);
 
+    /**
+     * @param $history - output of SignatureConnecteur::getAllHistoriqueInfo()
+     */
     abstract public function getDateSignature(stdClass|array $history): string;
 
     abstract public function effacerDossierRejete($dossierID);
 
     abstract public function exercerDroitRemordDossier($dossierID);
-
-    public function hasTypeSousType()
-    {
-        return true;
-    }
 
     public function isFastSignature()
     {
@@ -41,7 +50,7 @@ abstract class SignatureConnecteur extends Connecteur
 
     public function setSendingMetadata(DonneesFormulaire $donneesFormulaire)
     {
-/*Nothing to do*/
+        /*Nothing to do*/
     }
 
     public function archiver($dossierID)
@@ -49,56 +58,73 @@ abstract class SignatureConnecteur extends Connecteur
         return true;
     }
 
-    public function getOutputAnnexe($info_from_get_signature, int $ignore_count)
+    /**
+     * @param $info - output of SignatureConnecteur::getSignature()
+     */
+    public function getOutputAnnexe($info, int $ignore_count)
     {
         return [];
     }
 
-    abstract public function isFinalState(string $lastState): bool;
-    abstract public function isRejected(string $lastState): bool;
-    abstract public function isDetached($signature): bool;
+    /**
+     * @param $lastHistorique - output of SignatureConnecteur::getLastHistorique()
+     */
+    abstract public function isFinalState(string $lastHistorique): bool;
+
+    /**
+     * @param $lastHistorique - output of SignatureConnecteur::getLastHistorique()
+     */
+    abstract public function isRejected(string $lastHistorique): bool;
+
+    /**
+     * @param $info - output of SignatureConnecteur::getSignature()
+     */
+    abstract public function isDetached($info): bool;
 
     /**
      * Workaround because IParapheur::getSignature() does not return only the signature
      *
-     * @param $file
+     * @param $info - output of SignatureConnecteur::getSignature()
      * @return mixed
      */
-    abstract public function getDetachedSignature($file);
+    abstract public function getDetachedSignature($info);
 
     /**
      * Workaround because IParapheur::getSignature() does not return only the signature
      *
-     * @param $file
+     * @param $info - output of SignatureConnecteur::getSignature()
      * @return mixed
      */
-    abstract public function getSignedFile($file);
+    abstract public function getSignedFile($info);
 
     /**
      * Workaround because it is embedded in IParapheur::getSignature()
      *
-     * @param $signature
+     * @param $info - output of SignatureConnecteur::getSignature()
      * @param string $documentId
      * @return Fichier|null
      */
-    abstract public function getBordereauFromSignature($signature, string $documentId = ''): ?Fichier;
-
-    abstract public function getMetadataSortie($signature): ?Fichier;
+    abstract public function getBordereauFromSignature($info, string $documentId = ''): ?Fichier;
 
     /**
-     * @param $info_from_get_signature
+     * @param $info - output of SignatureConnecteur::getSignature()
+     */
+    abstract public function getMetadataSortie($info): ?Fichier;
+
+    /**
+     * @param $info - output of SignatureConnecteur::getSignature()
      * @return bool
      */
-    public function hasMultiDocumentSigne($info_from_get_signature): bool
+    public function hasMultiDocumentSigne($info): bool
     {
         return false;
     }
 
     /**
-     * @param array $info_from_get_signature output of IParapheur::getSignature()
+     * @param array $info output of SignatureConnecteur::getSignature()
      * @return array $all_document_signe
      */
-    public function getAllDocumentSigne(array $info_from_get_signature): array
+    public function getAllDocumentSigne(array $info): array
     {
         return [];
     }
