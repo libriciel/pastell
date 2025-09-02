@@ -158,14 +158,22 @@ class JobQueueSQL extends SQL
 
     public function getStatInfo()
     {
-        $sql = "SELECT count(*) FROM job_queue";
+        $sql = <<<SQL
+SELECT count(*) FROM job_queue
+SQL;
         $info['nb_job'] = $this->queryOne($sql);
 
-        $sql = "SELECT count(*) FROM job_queue WHERE is_lock=1";
+        $sql = <<<SQL
+SELECT count(*) FROM job_queue WHERE is_lock=1
+SQL;
         $info['nb_lock'] = $this->queryOne($sql);
 
-        $sql = "SELECT count(*) FROM job_queue " .
-            " WHERE next_try<now()";
+        $sql = <<<SQL
+SELECT count(*) 
+FROM job_queue
+WHERE next_try < now() 
+AND is_lock = 0
+SQL;
         $info['nb_wait'] = $this->queryOne($sql);
 
         $info['nb_lock_one_hour'] = $this->getNbLockSinceOneHour();
@@ -175,11 +183,28 @@ class JobQueueSQL extends SQL
 
     public function getStatInfoForDaemon(int $id_daemon): array
     {
-        $sql = 'SELECT count(*) FROM job_queue WHERE id_daemon = ?';
+        $sql = <<<SQL
+SELECT count(*) 
+FROM job_queue 
+WHERE id_daemon = ?
+SQL;
         $info['nb_job'] = $this->queryOne($sql, $id_daemon);
-        $sql = 'SELECT count(*) FROM job_queue WHERE is_lock=1 AND id_daemon = ?';
+
+        $sql = <<<SQL
+SELECT count(*) 
+FROM job_queue 
+WHERE is_lock = 1 
+AND id_daemon = ?
+SQL;
         $info['nb_lock'] = $this->queryOne($sql, $id_daemon);
-        $sql = 'SELECT count(*) FROM job_queue WHERE next_try<now() AND id_daemon = ?';
+
+        $sql = <<<SQL
+SELECT count(*) 
+FROM job_queue 
+WHERE next_try < now() 
+AND is_lock = 0
+AND id_daemon = ?
+SQL;
         $info['nb_wait'] = $this->queryOne($sql, $id_daemon);
         $info['nb_lock_one_hour'] = $this->getNbLockSinceOneHourForDaemon($id_daemon);
         return $info;
@@ -331,14 +356,17 @@ class JobQueueSQL extends SQL
             $sql .= ' AND job_queue.id_daemon=?';
             $params[] = $id_daemon;
         }
-        if ($filtre === 'lock') {
-            $sql .= ' AND is_lock=1 ';
-        }
-        if ($filtre === 'wait') {
-            $sql .= ' AND next_try < now() ';
-        }
-        if ($filtre === 'actif') {
-            $sql .= ' AND worker.termine=0 ';
+
+        switch ($filtre) {
+            case 'lock':
+                $sql .= ' AND job_queue.is_lock=1 ';
+                break;
+            case 'wait':
+                $sql .= ' AND next_try < now() AND job_queue.is_lock=0 ';
+                break;
+            case 'actif':
+                $sql .= ' AND worker.termine=0 ';
+                break;
         }
 
         $sql .= " ORDER BY job_queue.is_lock, job_queue.next_try 
