@@ -103,8 +103,8 @@
                 </td>
                 <td>
                     {% if job.worker.id_worker|default('') %}
-                        {{ gabarit.FancyDate.getDateFr(job.date_begin) }}
-                        <br/>{{ gabarit.FancyDate.getTimeElapsed(job.date_begin) }}
+                        {{ gabarit.FancyDate.getDateFr(job.worker.date_begin) }}
+                        <br/>{{ gabarit.FancyDate.getTimeElapsed(job.worker.date_begin) }}
                     {% endif %}
                 </td>
             </tr>

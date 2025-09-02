@@ -206,6 +206,18 @@ class JobQueueSQL extends SQL
         return $this->queryOne($sql, [$last_hour, $id_daemon]);
     }
 
+    public function getLateJobs(int $id_daemon): array
+    {
+        $last_hour = date('Y-m-d H:i:s', strtotime('-1 hour'));
+        $sql = 'SELECT * FROM job_queue WHERE next_try < ? AND nb_try > 0 AND is_lock=0 AND id_daemon = ? ORDER BY next_try DESC';
+        $result = $this->query($sql, [$last_hour, $id_daemon]);
+        $job_list = [];
+        foreach ($result as $job_info) {
+            $job_list[] = $this->mapToJob($job_info);
+        }
+        return $job_list;
+    }
+
     public function getJobLock()
     {
         $sql = "SELECT * FROM job_queue " .

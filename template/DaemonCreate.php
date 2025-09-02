@@ -25,7 +25,7 @@ declare(strict_types=1);
                 <th class='w300'>
                     <label for="type_connecteur">Nombre de processus à allouer <span class="obl">*</span></label>
                     <p class="form_commentaire">
-                        <?=$nb_free_workers . ($nb_free_workers > 1 ? ' workers disponibles' : ' worker disponible')?>
+                        <?= $nb_free_workers . ' processus ' . ($nb_free_workers > 1 ? 'disponibles' : 'disponible') ?>
                     </p>
                 </th>
                 <td>
@@ -36,7 +36,7 @@ declare(strict_types=1);
             </tr>
             <tr>
                 <th class='w300'>
-                    <label for="daemon_admin_email">Mail d'administration <span class="obl">*</span></label>
+                    <label for="daemon_admin_email">Mail(s) d'administration <span class="obl">*</span></label>
                     <p class="form_commentaire">
                         Ce mail sert à notifier les erreurs des tâches automatiques de l'entité. <br>
                         Plusieurs mails peuvent être renseignés, séparés par des virgules.
@@ -44,6 +44,17 @@ declare(strict_types=1);
                 </th>
                 <td>
                     <input class="form-control col-md-4" id='daemon_admin_email' type="text" name='daemon_admin_email' value='' required/>
+                </td>
+            </tr>
+            <tr>
+                <th class='w300'>
+                    <label for="daemon_admin_email">Seuil d'alerte des tâches en retard <span class="obl">*</span></label>
+                    <p class="form_commentaire">
+                        Nombre de tâches en retard minimum avant envoi d'une notification aux mails d'administration.
+                    </p>
+                </th>
+                <td>
+                    <input class="form-control col-md-4" id='daemon_late_jobs_threshold' type="number" name='daemon_late_jobs_threshold' value='1' required/>
                 </td>
             </tr>
         </table>

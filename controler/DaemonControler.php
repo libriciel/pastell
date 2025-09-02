@@ -849,8 +849,13 @@ class DaemonControler extends PastellControler
             $this->redirect('Daemon/create');
         }
 
-        $daemon = $this->getDaemonManager()->addDaemon($id_e, $nb_allocated_workers);
-        $this->getDaemonManager()->setAdminEmails($daemon->id_daemon, $daemon_admin_email);
+        $late_jobs_threshold = $recuperateur->getInt('late_jobs_threshold', 1);
+        if ($late_jobs_threshold < 1) {
+            $this->setLastError('Le seuil de travaux doit etre supérieur ou égal à 1');
+            $this->redirect('Daemon/create');
+        }
+
+        $this->getDaemonManager()->addDaemon($id_e, $nb_allocated_workers, $daemon_admin_email, $late_jobs_threshold);
         $this->setLastMessage('Le gestionnaire de tâches a été créé avec succès');
         $this->redirect("Daemon/configuration?id_e=$id_e");
     }

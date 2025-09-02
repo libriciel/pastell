@@ -968,6 +968,7 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('daemon_admin_email', implode(',', $daemon_admin_email));
         $this->setViewParameter('menu_gauche_select', 'Entite/daemonAdmin');
         $this->setViewParameter('template_milieu', 'EntiteDaemonAdmin');
+        $this->setViewParameter('daemon_late_jobs_threshold', $daemon->late_jobs_threshold);
         $this->renderDefault();
     }
 
@@ -993,9 +994,11 @@ class EntiteControler extends PastellControler
             $this->setLastError('L\'email de l\'administrateur du gestionnaire de tâches est requis');
             $this->redirect("Entite/daemonAdmin?id_e=$id_e");
         }
+        $daemon_late_jobs_threshold = $recuperateur->get('daemon_late_jobs_threshold', 1);
         try {
             $this->getDaemonManager()->setAdminEmails($daemon->id_daemon, $daemon_admin_email);
-            $this->setLastMessage('Les adresses email ont été mises à jour.');
+            $this->getDaemonManager()->setLateJobsThreshold($daemon->id_daemon, $daemon_late_jobs_threshold);
+            $this->setLastMessage('Les paramètres ont été mises à jour.');
         } catch (UnrecoverableException $e) {
             $this->setLastError($e->getMessage());
         }

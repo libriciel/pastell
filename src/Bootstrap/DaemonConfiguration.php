@@ -7,9 +7,7 @@ namespace Pastell\Bootstrap;
 use ConfigurationSQL;
 use DaemonManager;
 use DaemonSQL;
-use EntiteSQL;
 use JobQueueSQL;
-use ObjectInstancier;
 
 class DaemonConfiguration implements InstallableBootstrap
 {
@@ -27,16 +25,8 @@ class DaemonConfiguration implements InstallableBootstrap
             $this->daemonSQL->setNbWorkers((int)NB_WORKERS);
         }
 
-        if (!$this->configurationSQL->hasConfiguration(DaemonManager::DAEMON_ADMIN_EMAIL, EntiteSQL::ID_E_ENTITE_RACINE)) {
-            $this->configurationSQL->setConfiguration(
-                DaemonManager::DAEMON_ADMIN_EMAIL,
-                implode(',', $this->admin_email),
-                EntiteSQL::ID_E_ENTITE_RACINE
-            );
-        }
-
         if ($this->daemonSQL->getGlobalDaemon() === null) {
-            $this->daemonSQL->insertGlobalDaemon();
+            $this->daemonSQL->insertGlobalDaemon(implode(',', $this->admin_email));
             foreach ($this->jobQueueSQL->getJobsByDaemon(DaemonSQL::UNASSIGNED_DAEMON) as $job) {
                 $this->jobQueueSQL->updateDaemon($job->id_job, $this->daemonSQL->getClosestDaemon($job->id_e));
             }
