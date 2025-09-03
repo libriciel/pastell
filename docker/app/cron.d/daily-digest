@@ -1,1 +1,1 @@
-0 7 * * * /usr/local/bin/php /app/batch/cron-jour.php >> /data/log/daily-digest 2>&1
+0 7 * * * /app/bin/console app:notification:daily-digest >> /data/log/daily-digest 2>&1
