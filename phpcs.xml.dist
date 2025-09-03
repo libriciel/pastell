@@ -9,7 +9,6 @@
 
     <file>./action</file>
     <file>./api</file>
-    <file>./batch</file>
     <file>./bin</file>
     <file>./connecteur</file>
     <file>./connecteur-type</file>

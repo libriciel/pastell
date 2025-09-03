@@ -13,7 +13,7 @@ use Throwable;
 
 #[AsCommand(
     name: 'app:database:optimize',
-    description: 'Optimise les tables worker, job_queue et journal (équivalent du script CLI).',
+    description: 'Optimise les tables worker, job_queue et journal.',
 )]
 final class DatabaseOptimize extends Command
 {

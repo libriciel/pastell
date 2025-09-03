@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pastell\Command;
+namespace Pastell\Command\Notification;
 
+use NotificationMail;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,12 +14,12 @@ use Throwable;
 
 #[AsCommand(
     name: 'app:notification:daily-digest',
-    description: 'Envoie le récapitulatif quotidien par e-mail (équivalent du script CLI).',
+    description: 'Envoie le récapitulatif quotidien par e-mail.',
 )]
-final class SendDailyDigestCommand extends Command
+final class SendDailyDigest extends Command
 {
     public function __construct(
-        private readonly \NotificationMail $notificationMail,
+        private readonly NotificationMail $notificationMail,
     ) {
         parent::__construct();
     }
