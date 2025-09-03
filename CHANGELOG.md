@@ -13,6 +13,8 @@ doivent être mises à jour #1667
 - Ajout des pages relatives à l'accessibilité #1951
 - Nouveau connecteur iparapheur V5 REST (iparapheur >= v5.1.22, v5.2.13) #1237
 - Possibilité de modifier la variable système ADMIN_EMAIL via l'interface d'administration avancée #2288
+- Ajout du supplément `suppl_actes_tdt_versant_sae` : Type de dossier Actes TdT versant (archivage) `ls-actes-tdt-versant-sae` #2266
+- Ajout du supplément `suppl_helios_tdt_versant_sae` : Type de dossier Helios TdT versant (archivage) `ls-helios-tdt-versant-sae` #2266
 
 ## Évolutions
 
