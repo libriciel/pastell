@@ -12,6 +12,7 @@ doivent être mises à jour #1667
 - Possibilité de créer des gestionnaires de tâches spécifiques à chaque entité via l'interface de configuration #2233
 - Ajout des pages relatives à l'accessibilité #1951
 - Nouveau connecteur iparapheur V5 REST (iparapheur >= v5.1.22, v5.2.13) #1237
+- Possibilité de modifier la variable système ADMIN_EMAIL via l'interface d'administration avancée #2288
 
 ## Évolutions
 

@@ -73,6 +73,7 @@ class SystemControler extends PastellControler
         $this->setViewParameter('display_feature_toggle_in_test_page', $this->getObjectInstancier()
             ->getInstance(FeatureToggleService::class)
             ->isEnabled(DisplayFeatureToggleInTestPage::class));
+        $this->setViewParameter('admin_email', implode(', ', $this->getConfigurationSQL()->getAdminEmails()));
         $this->setViewParameter('page_title', 'Test du système');
         $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
         $this->setViewParameter('twigTemplate', 'system/index.html.twig');
@@ -297,17 +298,10 @@ class SystemControler extends PastellControler
     public function mailTestAction(): void
     {
         $this->verifDroit(0, DroitService::getDroitLecture(DroitService::DROIT_SYSTEM));
-
-        $emails = $this->getPostInfo()->get('email');
-        if (! $emails) {
-            $this->setLastError('Merci de spécifier un email');
-            $this->redirect(self::SYSTEM_INDEX_PAGE);
-        }
-
         $emailSent = '';
         $emailNotSent = '';
-        $emails = \explode(',', $emails);
-        foreach ($emails as $email) {
+        $admin_email = $this->getConfigurationSQL()->getAdminEmails();
+        foreach ($admin_email as $email) {
             $templatedEmail = (new TemplatedEmail())
                 ->to(new Address($email))
                 ->subject('[Pastell] Mail de test')
@@ -500,5 +494,37 @@ class SystemControler extends PastellControler
         }
 
         return $message;
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    public function editAdminEmailAction(): void
+    {
+        $this->needDroitEdition();
+        $this->setViewParameter('page_title', 'Connecteurs manquants');
+        $this->setViewParameter('template_milieu', 'SystemEditAdminEmail');
+        $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
+        $this->setViewParameter('admin_email', implode(', ', $this->getConfigurationSQL()->getAdminEmails()));
+        $this->renderDefault();
+    }
+
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function doEditAdminEmailAction(): void
+    {
+        $this->needDroitEdition();
+        $admin_email = array_map('trim', explode(',', $this->getPostInfo()->get('admin_email')));
+        try {
+            $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->setAdminEmails($admin_email);
+        } catch (InvalidArgumentException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect('System/editAdminEmail');
+        }
+        $this->setLastMessage("L'adresse email d'administration a été modifiée");
+        $this->redirect(self::SYSTEM_INDEX_PAGE);
     }
 }

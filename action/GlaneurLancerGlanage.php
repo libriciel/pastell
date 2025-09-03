@@ -29,9 +29,10 @@ class GlaneurLancerGlanage extends ActionExecutor
 
             $url = sprintf('%s/Connecteur/edition?id_ce=%d', $this->getSiteBase(), $this->id_ce);
 
+            $admin_email = $this->objectInstancier->getInstance(ConfigurationSQL::class)->getAdminEmails();
             #TODO revoir la gestion des erreurs des connecteurs afin de ne pas envoyer de mail à ce moment-là
             $templatedEmail = (new TemplatedEmail())
-                ->to(...$this->objectInstancier->getInstance('admin_email'))
+                ->to(...$admin_email)
                 ->subject("[Pastell] Le traitement d'un glaneur est passé à 'NON'")
                 ->htmlTemplate('glaneur_lancer_glanage.html.twig')
                 ->context(['url' => $url, 'message' => $message]);

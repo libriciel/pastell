@@ -9,7 +9,6 @@ class CPPVerifConnectiviteTest extends ExtensionCppTestCase
      */
     public function testCPPVerifConnectivite()
     {
-
         $cppWrapper = $this->getMockBuilder(CPPWrapper::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -93,7 +92,8 @@ class CPPVerifConnectiviteTest extends ExtensionCppTestCase
         $last_message .= '<br />' . "\n";
         $last_message .= '<br />' . "\n";
         $last_message .= '<br />' . "\n";
-        $last_message .= ' mail envoyé à ' . \implode(',', $this->getObjectInstancier()->getInstance('admin_email'));
+        $last_message .= ' mail envoyé à ' .
+            \implode(',', $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->getAdminEmails());
 
         return $last_message;
     }
