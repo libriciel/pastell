@@ -11,7 +11,7 @@ use PastellTestCase;
 use UnrecoverableException;
 use TypeDossierLoader;
 
-final class TdtChoiceTypologieActesTest extends PastellTestCase
+final class TypologieChoiceActionTest extends PastellTestCase
 {
     public const TDT_ACTES_ONLY = 'tdt-actes-only';
     private TypeDossierLoader $typeDossierLoader;

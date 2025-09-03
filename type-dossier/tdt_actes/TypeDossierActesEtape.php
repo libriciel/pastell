@@ -23,6 +23,7 @@ class TypeDossierActesEtape implements TypeDossierEtapeSetSpecificInformation
         $annulerTdtAction = $stringMapper->get('annuler-tdt');
         $tamponnerTdtAction = $stringMapper->get('tamponner-tdt');
         $teletransmissionTdtAction = $stringMapper->get('teletransmission-tdt');
+        $typologieChange = $stringMapper->get('typologie-change');
         $acquiterTdtAction = $stringMapper->get('acquiter-tdt');
 
         if (!empty($typeDossierEtape->specific_type_info[self::FICHIER_ACTE])) {
@@ -33,6 +34,8 @@ class TypeDossierActesEtape implements TypeDossierEtapeSetSpecificInformation
             $result[DocumentType::ACTION][$verifTdtAction][Action::CONNECTEUR_TYPE_MAPPING][self::ARRETE]
                 = $typeDossierEtape->specific_type_info[self::FICHIER_ACTE];
             $result[DocumentType::ACTION][$tamponnerTdtAction][Action::CONNECTEUR_TYPE_MAPPING][self::ARRETE]
+                = $typeDossierEtape->specific_type_info[self::FICHIER_ACTE];
+            $result[DocumentType::ACTION][$typologieChange][Action::CONNECTEUR_TYPE_MAPPING][self::ARRETE]
                 = $typeDossierEtape->specific_type_info[self::FICHIER_ACTE];
             $result[DocumentType::THRESHOLD_SIZE] = self::THRESHOLD_SIZE;
             $result[DocumentType::THRESHOLD_FIELDS][] = $typeDossierEtape->specific_type_info[self::FICHIER_ACTE];
@@ -46,6 +49,8 @@ class TypeDossierActesEtape implements TypeDossierEtapeSetSpecificInformation
                 [self::AUTRE_DOCUMENT_ATTACHE] = $typeDossierEtape->specific_type_info[self::FICHIER_ANNEXE];
             $result[DocumentType::ACTION][$tamponnerTdtAction][Action::CONNECTEUR_TYPE_MAPPING]
                 [self::AUTRE_DOCUMENT_ATTACHE] = $typeDossierEtape->specific_type_info[self::FICHIER_ANNEXE];
+            $result[DocumentType::ACTION][$typologieChange][Action::CONNECTEUR_TYPE_MAPPING]
+            [self::AUTRE_DOCUMENT_ATTACHE] = $typeDossierEtape->specific_type_info[self::FICHIER_ANNEXE];
             $result[DocumentType::THRESHOLD_FIELDS][] = $typeDossierEtape->specific_type_info[self::FICHIER_ANNEXE];
         }
         if (!empty($typeDossierEtape->specific_type_info[self::OBJET_ACTE])) {

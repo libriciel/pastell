@@ -80,10 +80,10 @@ formulaire:
             visionneuse-no-link: true
         type_acte_courrier_simple:
             no-show: true
-            read-only: true
+            onchange: cs-typologie-change
         type_pj_courrier_simple:
             no-show: true
-            read-only: true
+            onchange: cs-typologie-change
         empty:
             type: file
             no-show: true
@@ -121,10 +121,10 @@ formulaire:
             visionneuse-no-link: true
         type_acte_demande_piece_complementaire:
             no-show: true
-            read-only: true
+            onchange: pc-typologie-change
         type_pj_demande_piece_complementaire:
             no-show: true
-            read-only: true
+            onchange: pc-typologie-change
         response_transaction_id:
             name: 'Identifiant de la transaction réponse'
             read-only: true
@@ -153,10 +153,10 @@ formulaire:
             visionneuse-no-link: true
         type_acte_lettre_observation:
             no-show: true
-            read-only: true
+            onchange: lo-typologie-change
         type_pj_lettre_observation:
             no-show: true
-            read-only: true
+            onchange: lo-typologie-change
         empty:
             type: file
             no-show: true
@@ -290,13 +290,24 @@ action:
             role_id_e: no-role
         action-class: StandardChoiceAction
         connecteur-type: TdT
-        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\TdtChoiceTypologieActes
+        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\TypologieChoiceAction
         connecteur-type-mapping:
             arrete: reponse
             autre_document_attache: empty
             type_acte: type_acte_lettre_observation
             type_pj: type_pj_lettre_observation
             type_piece: type_piece_lettre_observation
+    lo-typologie-change:
+      no-workflow: true
+      rule:
+        role_id_e: no-role
+      action-class: StandardAction
+      connecteur-type: TdT
+      connecteur-type-action: Pastell\Step\Tdt\Acte\Action\TypologieOnChangeAction
+      connecteur-type-mapping:
+        type_acte: type_acte_lettre_observation
+        type_pj: type_pj_lettre_observation
+        type_piece: type_piece_lettre_observation
     cs-reponse-type-piece:
         name: 'Typologie des pièces'
         no-workflow: true
@@ -304,13 +315,24 @@ action:
             role_id_e: no-role
         action-class: StandardChoiceAction
         connecteur-type: TdT
-        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\TdtChoiceTypologieActes
+        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\TypologieChoiceAction
         connecteur-type-mapping:
             arrete: reponse
             autre_document_attache: empty
             type_acte: type_acte_courrier_simple
             type_pj: type_pj_courrier_simple
             type_piece: type_piece_courrier_simple
+    cs-typologie-change:
+      no-workflow: true
+      rule:
+        role_id_e: no-role
+      action-class: StandardAction
+      connecteur-type: TdT
+      connecteur-type-action: Pastell\Step\Tdt\Acte\Action\TypologieOnChangeAction
+      connecteur-type-mapping:
+        type_acte: type_acte_courrier_simple
+        type_pj: type_pj_courrier_simple
+        type_piece: type_piece_courrier_simple
     pc-reponse-type-piece:
         name: 'Typologie des pièces'
         no-workflow: true
@@ -318,13 +340,24 @@ action:
             role_id_e: no-role
         action-class: StandardChoiceAction
         connecteur-type: TdT
-        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\TdtChoiceTypologieActes
+        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\TypologieChoiceAction
         connecteur-type-mapping:
             arrete: reponse
             autre_document_attache: reponse_pj_demande_piece_complementaire
             type_acte: type_acte_demande_piece_complementaire
             type_pj: type_pj_demande_piece_complementaire
             type_piece: type_piece_demande_piece_complementaire
+    pc-typologie-change:
+      no-workflow: true
+      rule:
+        role_id_e: no-role
+      action-class: StandardAction
+      connecteur-type: TdT
+      connecteur-type-action: Pastell\Step\Tdt\Acte\Action\TypologieOnChangeAction
+      connecteur-type-mapping:
+        type_acte: type_acte_demande_piece_complementaire
+        type_pj: type_pj_demande_piece_complementaire
+        type_piece: type_piece_demande_piece_complementaire
     pc-reponse_pj_demande_piece_complementaire-change:
         no-workflow: true
         rule:

@@ -12,7 +12,7 @@ use Pastell\Step\Tdt\Acte\lib\ActesTypePJData;
 use TdtConnecteur;
 use UnrecoverableException;
 
-class TdtChoiceTypologieActes extends ConnecteurTypeChoiceActionExecutor
+class TypologieChoiceAction extends ConnecteurTypeChoiceActionExecutor
 {
     /**
      * arrete: arrete

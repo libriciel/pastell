@@ -84,10 +84,10 @@ formulaire:
             visionneuse-no-link: true
         type_acte:
             no-show: true
-            read-only: true
+            onchange: typologie-change
         type_pj:
             no-show: true
-            read-only: true
+            onchange: typologie-change
     'Retour Tdt':
         has_bordereau:
             no-show: true
@@ -411,7 +411,7 @@ action:
             role_id_e: no-role
         action-class: StandardChoiceAction
         connecteur-type: TdT
-        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\TdtChoiceTypologieActes
+        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\TypologieChoiceAction
         connecteur-type-mapping:
             acte_nature: acte_nature
             classification: classification
@@ -432,6 +432,21 @@ action:
         action-class: StandardAction
         connecteur-type: TdT
         connecteur-type-action: TdtAnnexeTypologieAnnexeChange
+    typologie-change:
+        no-workflow: true
+        rule:
+            role_id_e: no-role
+        action-class: StandardAction
+        connecteur-type: TdT
+        connecteur-type-action: Pastell\Step\Tdt\Acte\Action\TypologieOnChangeAction
+        connecteur-type-mapping:
+            type_acte: type_acte
+            type_pj: type_pj
+            type_piece: type_piece
+            type_piece_fichier: type_piece_fichier
+            acte_nature: acte_nature
+            arrete: actes
+            autre_document_attache: annexe
     duplicate:
         name-action: "Dupliquer l'acte"
         rule:
