@@ -1,6 +1,5 @@
 <?php
 
-use Pastell\Bootstrap\SystemConfiguration;
 use Pastell\Mailer\Mailer;
 use Pastell\Tests\MailerTransportTesting;
 
@@ -13,8 +12,6 @@ class SystemControlerTest extends ControlerTestCase
     {
         parent::setUp();
         $this->systemControler = $this->getControlerInstance("SystemControler");
-        $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)
-            ->setAdminEmails(['test@libriciel.invalid']);
     }
 
     /**
@@ -74,7 +71,6 @@ class SystemControlerTest extends ControlerTestCase
         $pastellMailer = $this->getObjectInstancier()->getInstance(Mailer::class);
         $pastellMailer->setMailer($mailer);
 
-        $this->setPostInfo(['email' => 'test@libriciel.invalid']);
         try {
             $this->systemControler->mailTestAction();
             self::fail();

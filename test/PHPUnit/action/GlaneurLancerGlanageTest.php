@@ -4,12 +4,6 @@ class GlaneurLancerGlanageTest extends PastellTestCase
 {
     use MailerTransportTestingTrait;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->setAdminEmails(['test@libriciel.invalid']);
-    }
-
     public function testGlaner(): void
     {
         $this->setMailerTransportForTesting();

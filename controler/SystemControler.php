@@ -1,6 +1,5 @@
 <?php
 
-use Pastell\Bootstrap\SystemConfiguration;
 use Pastell\Configuration\ConnectorValidation;
 use Pastell\Configuration\DocumentTypeValidation;
 use Pastell\Mailer\Mailer;

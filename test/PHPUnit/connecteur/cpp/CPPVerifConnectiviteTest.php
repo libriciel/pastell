@@ -4,11 +4,6 @@ class CPPVerifConnectiviteTest extends ExtensionCppTestCase
 {
     private const FICHIER_CSV_INTERPRETE = __DIR__ . "/../../../../connecteur/chorus-par-csv/fixtures/chorus-csv-interprete.csv";
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->setAdminEmails(['test@libriciel.invalid']);
-    }
     /**
      * @throws Exception
      */
