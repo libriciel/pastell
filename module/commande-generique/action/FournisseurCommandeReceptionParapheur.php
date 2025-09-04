@@ -15,16 +15,7 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
 
         $donneesFormulaire = $this->getDonneesFormulaire();
 
-        # oops, il y avait un bug car on change le nom du fichier "commande" quand on récupère du parapheur
-        # le bug se manifeste si on arrive pas à archiver du premier coup
-        $filename = $donneesFormulaire->getFileName('document_orignal') ?: $donneesFormulaire->getFileName('commande');
-
-        if ($donneesFormulaire->get('iparapheur_dossier_id')) {
-            $dossierID = $donneesFormulaire->get('iparapheur_dossier_id');
-        } else {
-            $libelle_id = trim($signature->getDossierID("", $donneesFormulaire->get('libelle')));
-            $dossierID = $signature->getDossierID($libelle_id, $filename);
-        }
+        $dossierID = $donneesFormulaire->get('iparapheur_dossier_id');
 
         $all_historique = false;
         try {

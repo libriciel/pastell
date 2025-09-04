@@ -262,13 +262,6 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         return self::IPARAPHEUR_NB_JOUR_MAX_DEFAULT;
     }
 
-    public function getDossierID($id, $name): string
-    {
-        $name = preg_replace('#[^A-Za-z0-9éèçàêîâôûùüÉÈÇÀÊÎÂÔÛÙÜ_]#u', '_', $name);
-        $name = mb_substr($name, 0, 100);
-        return "$id $name";
-    }
-
     public function sendDossier(FileToSign $dossier): string|false
     {
         if ($this->sending_metadata) {

@@ -16,24 +16,6 @@ class IParapheurRecup extends ActionExecutor
             : $this->goIparapheur();
     }
 
-
-    /**
-     * @throws Exception
-     */
-    private function getDossierID()
-    {
-        /** @var SignatureConnecteur $signature */
-        $signature = $this->getConnecteur('signature');
-
-        $actes = $this->getDonneesFormulaire();
-        if ($actes->get('iparapheur_dossier_id')) {
-            $dossierID = $actes->get('iparapheur_dossier_id');
-        } else {
-            $dossierID = $signature->getDossierID($actes->get('numero_de_lacte'), $actes->get('objet'));
-        }
-        return $dossierID;
-    }
-
     /**
      * @param $dossierID
      * @param $result
@@ -71,7 +53,7 @@ class IParapheurRecup extends ActionExecutor
         $signature = $this->getConnecteur('signature');
 
         $actes = $this->getDonneesFormulaire();
-        $dossierID = $this->getDossierID();
+        $dossierID = $actes->get('iparapheur_dossier_id');
         $info = $signature->getSignature($dossierID, false);
         if (! $info) {
             $this->setLastMessage("La signature n'a pas pu être récupérée : " . $signature->getLastError());
@@ -140,7 +122,7 @@ class IParapheurRecup extends ActionExecutor
 
         $actes = $this->getDonneesFormulaire();
 
-        $dossierID = $this->getDossierID();
+        $dossierID = $actes->get('iparapheur_dossier_id');
         $erreur = false;
         $all_historique = false;
         try {
