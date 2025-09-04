@@ -125,6 +125,7 @@ abstract class PastellTestCase extends TestCase
             'suppl_recup_fin_parapheur' => true,
             'suppl_recup_actes_s2low' => true,
             'suppl_recup_pes_s2low' => true,
+            'suppl_actes_tdt_versant_sae' => true,
             'module_connecteur_fast' => true,
             'module_connecteur_vitam' => true,
         ]);

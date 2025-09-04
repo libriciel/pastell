@@ -1,8 +1,11 @@
-nom: 'Reprise arriérés Actes'
+nom: 'Reprise arriéré actes (TdT versant)'
 type: 'Actes administratifs'
-description: "Ce type de dossier permet de verser les documents issue d'un Tdt en vu de les envoyer vers un document actes-automatique pour\nversement SEDA"
+description: "Ce type de dossier permet de verser les documents issus d'un Tdt 
+  en vu de les envoyer vers un document ls-actes-tdt-versant-sae pour\nversement SEDA"
+restriction_pack:
+  - suppl_actes_tdt_versant_sae
 formulaire:
-    Données:
+    Informations:
         titre:
             name: Titre
             title: true
@@ -32,32 +35,34 @@ action:
             last-action:
                 - creation
                 - modification
+                - importation
                 - erreur
     supression:
-        name-action: Supprimer
-        name: Supprimé
-        action-class: Supprimer
-        warning: 'Êtes-vous sûr ?'
+      name-action: Supprimer
+      name: Supprimé
+      action-class: Supprimer
+      warning: 'Êtes-vous sûr ?'
     importation:
-        name: Importé
-        name-action: Importer
-        action-automatique: create-acte
+        name: 'Importation du document'
         rule:
-            role_id_e: no-role
+          role_id_e: no-role
+        action-automatique: create-acte
     create-acte:
         name-action: "Créer l'acte"
-        name: 'Acte crée'
+        name: 'Acte créé'
+        rule:
+          document_is_valide: true
+          last-action:
+            - creation
+            - modification
+            - importation
         action-class: ActesPreversementSEDACreate
         action-automatique: termine
-        rule:
-            document_is_valide: true
     erreur:
         name: "Erreur lors de l'import"
         rule:
             role_id_e: no-role
     termine:
-        name-action: Terminer
-        name: Terminée
-        action-class: Defaut
-        rule:
-            role_id_e: no-role
+      name: 'Traitement terminé'
+      rule:
+        role_id_e: no-role

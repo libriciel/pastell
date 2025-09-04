@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <actes:ARActe xmlns:actes="http://www.interieur.gouv.fr/ACTES#v1.1-20040216" actes:IDActe="034-491011698-20171207-CL20171227_06-DE" actes:DateReception="2017-12-27">
-  <actes:ActeRecu actes:Date="2017-12-07" actes:NumeroInterne="CL20171227_06" actes:CodeNatureActe="1">
-    <actes:CodeMatiere1 actes:CodeMatiere="3"/>
-    <actes:CodeMatiere2 actes:CodeMatiere="2"/>
-    <actes:Objet>Fichier sign&#xE9; parapheur</actes:Objet>
-    <actes:ClassificationDateVersion>2017-11-13</actes:ClassificationDateVersion>
-    <actes:Document>
-      <actes:NomFichier>034-491011698-20171207-CL20171227_06-DE-1-1_1.pdf</actes:NomFichier>
-    </actes:Document>
-    <actes:Annexes actes:Nombre="0"/>
-    <actes:DocumentPapier>N</actes:DocumentPapier>
-  </actes:ActeRecu>
-  <actes:ClassificationDateVersionEnCours>2017-11-13</actes:ClassificationDateVersionEnCours>
+    <actes:ActeRecu actes:Date="2017-12-07" actes:NumeroInterne="CL20171227_06" actes:CodeNatureActe="1">
+        <actes:CodeMatiere1 actes:CodeMatiere="3"/>
+        <actes:CodeMatiere2 actes:CodeMatiere="2"/>
+        <actes:Objet>Fichier sign&#xE9; parapheur</actes:Objet>
+        <actes:ClassificationDateVersion>2017-11-13</actes:ClassificationDateVersion>
+        <actes:Document>
+            <actes:NomFichier>034-491011698-20171207-CL20171227_06-DE-1-1_1.pdf</actes:NomFichier>
+        </actes:Document>
+        <actes:Annexes actes:Nombre="0"/>
+        <actes:DocumentPapier>N</actes:DocumentPapier>
+    </actes:ActeRecu>
+    <actes:ClassificationDateVersionEnCours>2017-11-13</actes:ClassificationDateVersionEnCours>
 </actes:ARActe>
