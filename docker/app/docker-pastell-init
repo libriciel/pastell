@@ -79,6 +79,14 @@ if (${PACK_RECUP_PES_S2LOW:-false}) {
   \$packs["suppl_recup_pes_s2low"] = true;
 }
 
+if (${PACK_ACTES_TDT_VERSANT_SAE:-false}) {
+  \$packs["suppl_actes_tdt_versant_sae"] = true;
+}
+
+if (${PACK_HELIOS_TDT_VERSANT_SAE:-false}) {
+  \$packs["suppl_helios_tdt_versant_sae"] = true;
+}
+
 if (${PACK_FAST_CONNECTORS:-false}) {
   \$packs["module_connecteur_fast"] = true;
 }

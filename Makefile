@@ -90,6 +90,7 @@ module-json-actes: docker-compose-up ## Run make-module json-actes
 	$(MAKE_MODULE) ./json-studio/json-actes/draft-ls-actes-publication.json ./module/ --id ls-actes-publication --name "Actes publication"
 	$(MAKE_MODULE) ./json-studio/json-actes/draft-ls-dossier-seance.json ./module/ --id ls-dossier-seance --name "Dossier de séance (archivage)"
 	$(MAKE_MODULE) ./json-studio/json-actes/draft-ls-recup-actes-s2low.json ./module/ --id ls-recup-actes-s2low --name "Récupération arriéré actes s2low"  --restriction_pack 'suppl_recup_actes_s2low'
+	$(MAKE_MODULE) ./json-studio/json-actes/draft-ls-actes-tdt-versant-sae.json ./module/ --id ls-actes-tdt-versant-sae --name "Actes TdT versant (archivage)"  --restriction_pack 'suppl_actes_tdt_versant_sae'
 
 module-json-document: docker-compose-up ## Run make-module json-document
 	$(MAKE_MODULE) ./json-studio/json-document/draft-ls-commande.json ./module/ --id ls-commande --name "Commande"
@@ -108,6 +109,7 @@ module-json-helios: docker-compose-up ## Run make-module json-helios
 	$(MAKE_MODULE) ./json-studio/json-helios/draft-ls-helios.json ./module/ --id ls-helios --name "Helios"
 	$(MAKE_MODULE) ./json-studio/json-helios/draft-ls-helios-pj.json ./module/ --id ls-helios-pj --name "Helios PES PJ"
 	$(MAKE_MODULE) ./json-studio/json-helios/draft-ls-recup-pes-s2low.json ./module/ --id ls-recup-pes-s2low --name "Récupération arriéré PES s2low"  --restriction_pack 'suppl_recup_pes_s2low'
+	$(MAKE_MODULE) ./json-studio/json-helios/draft-ls-helios-tdt-versant-sae.json ./module/ --id ls-helios-tdt-versant-sae --name "Helios TdT versant (archivage)"  --restriction_pack 'suppl_helios_tdt_versant_sae'
 
 module-json-mailsec: docker-compose-up ## Run make-module json-mailsec
 	$(MAKE_MODULE) ./json-studio/json-mailsec/draft-ls-mailsec.json ./module/ --id ls-mailsec --name "Mail sécurisé"

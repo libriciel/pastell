@@ -1,0 +1,114 @@
+{
+  "id_type_dossier": "draft-ls-helios-tdt-versant-sae",
+  "pastell-version": "%VERSION%",
+  "timestamp": 1756903276,
+  "raw_data": {
+    "id_type_dossier": "draft-ls-helios-tdt-versant-sae",
+    "nom": "Helios TdT versant (archivage) (Draft)",
+    "type": "Finances",
+    "description": "",
+    "nom_onglet": "Informations",
+    "affiche_one": false,
+    "restriction_pack": "",
+    "formulaireElement": [
+      {
+        "element_id": "transaction_id",
+        "name": "Identifiant de transaction",
+        "type": "text",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "objet",
+        "name": "Objet",
+        "type": "text",
+        "commentaire": "",
+        "requis": "on",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "on",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "fichier_pes",
+        "name": "Fichier PES",
+        "type": "file",
+        "commentaire": "",
+        "requis": "on",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": "application\/xml"
+      },
+      {
+        "element_id": "pes_acquit",
+        "name": "PES Acquit",
+        "type": "file",
+        "commentaire": "",
+        "requis": "on",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      }
+    ],
+    "etape": [
+      {
+        "num_etape": 0,
+        "type": "transformation",
+        "label": "",
+        "defaultChecked": false,
+        "requis": "on",
+        "automatique": "on",
+        "specific_type_info": [],
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      },
+      {
+        "num_etape": 1,
+        "type": "depot",
+        "label": "",
+        "defaultChecked": false,
+        "requis": "",
+        "automatique": "on",
+        "specific_type_info": [],
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      },
+      {
+        "num_etape": 2,
+        "type": "sae",
+        "label": null,
+        "defaultChecked": false,
+        "requis": "on",
+        "automatique": "on",
+        "specific_type_info": {
+          "sae_has_metadata_in_json": "on",
+          "continue_after_refusal": ""
+        },
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      }
+    ]
+  }
+}

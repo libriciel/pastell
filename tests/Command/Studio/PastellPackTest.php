@@ -33,6 +33,11 @@ class PastellPackTest extends PastellTestCase
             'ls-recup-actes-s2low',
             'Récupération arriéré actes s2low',
         ],
+        'draft-ls-actes-tdt-versant-sae' => [
+            'suppl_actes_tdt_versant_sae',
+            'ls-actes-tdt-versant-sae',
+            'Actes TdT versant (archivage)',
+        ],
         'draft-ls-commande' => [
             '',
             'ls-commande',
@@ -93,6 +98,11 @@ class PastellPackTest extends PastellTestCase
             'suppl_recup_pes_s2low',
             'ls-recup-pes-s2low',
             'Récupération arriéré PES s2low',
+        ],
+        'draft-ls-helios-tdt-versant-sae' => [
+            'suppl_helios_tdt_versant_sae',
+            'ls-helios-tdt-versant-sae',
+            'Helios TdT versant (archivage)',
         ],
         'draft-ls-mailsec' =>
             [
