@@ -35,7 +35,7 @@ final class LegacyController extends AbstractController
         $frontController->setTwigEnvironment($this->container->get('twig'));
         $objectInstancier->setInstance(Environment::class, $this->container->get('twig'));
 
-        if($this->isFileDownloadRequest($requestPath)) {
+        if ($this->isFileDownloadRequest($requestPath)) {
             \ob_start(chunk_size: 8192);
         } else {
             \ob_start();
