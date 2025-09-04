@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pastell\Command;
+namespace Pastell\Command\Entity;
 
 use ConnecteurEntiteSQL;
 use DaemonManager;
@@ -30,12 +30,12 @@ use UtilisateurListe;
 use UtilisateurSQL;
 
 #[AsCommand(
-    name: 'app:entite:force-delete-entite',
+    name: 'app:entity:force-delete-entity',
     description: 'Deletes an entity and all its child entities (recursively),' .
-        'along with all its documents, connectors, associations,' .
-        'users, and any daemon. Use --do to actually execute (otherwise dry run).',
+    'along with all its documents, connectors, associations,' .
+    'users, and any daemon. Use --do to actually execute (otherwise dry run).',
 )]
-class ForceDeleteEntityCommand extends Command
+class ForceDeleteEntity extends Command
 {
     private const string ID_E = 'id_e';
     private const string ID_D = 'id_d';
@@ -84,6 +84,11 @@ class ForceDeleteEntityCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $id_e = (string)$input->getArgument(self::ID_E);
         $do = (bool)$input->getOption('do');
+
+        if (!$this->entiteSQL->getInfo($id_e)) {
+            $io->error("L'entité {$id_e} n'existe pas.");
+            return Command::FAILURE;
+        }
 
         $entite_list = $this->entiteSQL->getFille($id_e) ?? [];
         $id_e_list = array_reverse(array_map(static function ($a) {
