@@ -16,8 +16,9 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use UnrecoverableException;
 use UtilisateurListe;
+use PastellTestCase;
 
-final class ForceDeleteEntityTest extends \PastellTestCase
+final class ForceDeleteEntityTest extends PastellTestCase
 {
     private CommandTester $tester;
     private EntiteSQL $entiteSQL;
