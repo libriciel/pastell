@@ -26,6 +26,7 @@ doivent être mises à jour #1667
   en base de données (au lieu d'une variable d'environnement) #2232
 - Généralisation du droit `connecteur:action` permettant d'exécuter des actions sur les connecteurs #2241
 - L'onglet `Travaux en attente` du gestionnaire de tâches n'affiche plus les travaux suspendus #522
+- Le flux `ls-actes-publication` présente de nouvelles données #2179
 
 ## Suppressions
 
