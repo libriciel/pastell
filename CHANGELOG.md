@@ -1,12 +1,12 @@
-# [4.0.25]
+# [4.0.25] - 2025-09-08
 
 ## Correction
 
-- Permet le téléchargement des fichiers volumineux là où une erreur survenait auparavant. #2271
-- Empêcher la recuperation des factures Chorus pro de l'espace factures de travaux lorsqu'elles sont au statut 'suspendu' ou 'À recycler' #2273
+- Permet le téléchargement des fichiers volumineux depuis l'interface #2271
+- Empêcher la recuperation des factures Chorus pro de l'espace factures de travaux lorsqu'elles sont au statut
+'suspendu' ou 'À recycler' #2273
 - Le Code du service destinataire n'était plus renseigné pour les factures de l'espace factures de travaux. 
   (au retour du service rechercherFactureTravaux, 'codeServiceExecutant' au lieu de 'identifiantServiceExecutant') #2282
-
 
 # [4.0.24] - 2025-07-15
 

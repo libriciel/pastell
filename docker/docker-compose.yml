@@ -82,7 +82,7 @@ services:
         user: "${UID:-33}:${GID:-33}"
 
     db:
-        image: 'hubdocker.libriciel.fr/mariadb:10.11.13-jammy'
+        image: 'hubdocker.libriciel.fr/mariadb:10.11.14-jammy'
         restart: unless-stopped
         command:
             - "--character-set-server=utf8mb4"
@@ -106,11 +106,11 @@ services:
             - '/etc/localtime:/etc/localtime:ro'
 
     cloudooo:
-        image: 'registry.libriciel.fr/public/actes/cloudooo:24.8.4-PDFA'
+        image: 'registry.libriciel.fr/public/actes/cloudooo:24.8.7-PDFA'
         restart: unless-stopped
 
     pes-viewer:
-        image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.3'
+        image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.7'
         restart: unless-stopped
         deploy:
             resources:
@@ -132,6 +132,8 @@ services:
         read_only: true
         tmpfs:
             - /home/feedback:mode=700,uid=10001,gid=10001
+        volumes:
+            - ${LIBRICIEL_FEEDBACK_VOLUME:-libriciel-feedback}:/var/run/feedback/
         environment:
             ALLO_TOKEN: ${ALLO_TOKEN:-}
             VERSION: canary
@@ -146,3 +148,4 @@ volumes:
     upload_chunk_datadir:
     cacerts:
     local_cacerts:
+    libriciel-feedback:
