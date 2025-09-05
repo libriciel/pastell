@@ -57,6 +57,7 @@ final class LegacyController extends AbstractController
         $downloadRequestPath = [
             '/Document/recuperationFichier',
             '/DonneesFormulaire/downloadAll',
+            '/Connecteur/recupFile',
             '/MailSec/export',
         ];
 
