@@ -1,3 +1,14 @@
+# [4.1.12] - 2025-09-08
+
+## Correction
+
+- Permet le téléchargement des fichiers volumineux depuis l'interface #2271
+- Empêcher la récuperation des factures Chorus pro de l'espace factures de travaux lorsqu'elles sont au statut
+  'suspendu' ou 'À recycler' #2273
+- Le Code du service destinataire n'était plus renseigné pour les factures de l'espace factures de travaux.
+  (au retour du service rechercherFactureTravaux, 'codeServiceExecutant' au lieu de 'identifiantServiceExecutant') #2282
+
+
 # [4.1.11] - 2025-07-15
 
 ## Évolutions
@@ -241,6 +252,16 @@
 - `pdf-generique` et `document-a-signer` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-document-pdf` #1870
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
+
+# [4.0.25] - 2025-09-08
+
+## Correction
+
+- Permet le téléchargement des fichiers volumineux depuis l'interface #2271
+- Empêcher la recuperation des factures Chorus pro de l'espace factures de travaux lorsqu'elles sont au statut
+'suspendu' ou 'À recycler' #2273
+- Le Code du service destinataire n'était plus renseigné pour les factures de l'espace factures de travaux. 
+  (au retour du service rechercherFactureTravaux, 'codeServiceExecutant' au lieu de 'identifiantServiceExecutant') #2282
 
 # [4.0.24] - 2025-07-15
 

@@ -35,7 +35,12 @@ final class LegacyController extends AbstractController
         $frontController->setTwigEnvironment($this->container->get('twig'));
         $objectInstancier->setInstance(Environment::class, $this->container->get('twig'));
 
-        \ob_start();
+        if ($this->isFileDownloadRequest($requestPath)) {
+            \ob_start(chunk_size: 8192);
+        } else {
+            \ob_start();
+        }
+
         $frontController->dispatch();
         $content = (string)\ob_get_clean();
 
@@ -45,5 +50,17 @@ final class LegacyController extends AbstractController
             $headers[$trimmed[0]] = $trimmed[1];
         }
         return new Response($content, 200, $headers);
+    }
+
+    private function isFileDownloadRequest(string $requestPath): bool
+    {
+        $downloadRequestPath = [
+            '/Document/recuperationFichier',
+            '/DonneesFormulaire/downloadAll',
+            '/Connecteur/recupFile',
+            '/MailSec/export',
+        ];
+
+        return in_array($requestPath, $downloadRequestPath);
     }
 }

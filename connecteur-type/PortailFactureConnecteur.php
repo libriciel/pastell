@@ -169,7 +169,7 @@ abstract class PortailFactureConnecteur extends Connecteur
                 "type_identifiant"      => $FactureCPP["typeIdentifiantFournisseur"],
                 "fournisseur_raison_sociale" => $FactureCPP["designationFournisseur"],
                 "service_destinataire"  => isset($FactureCPP["idServiceExecutant"]) ? $FactureCPP["idServiceExecutant"] : "",
-                "service_destinataire_code" => isset($FactureCPP["identifiantServiceExecutant"]) ? $FactureCPP["identifiantServiceExecutant"] : "",
+                "service_destinataire_code" => isset($FactureCPP["codeServiceExecutant"]) ? $FactureCPP["codeServiceExecutant"] : "",
                 "type_facture"          => isset($FactureCPP["typeFactureTravaux"]) ? $FactureCPP["typeFactureTravaux"] : "",
                 "no_facture"            => $FactureCPP["numeroFactureTravaux"],
                 "date_facture"          => isset($FactureCPP["dateFactureTravaux"]) ? date("Y-m-d", strtotime($FactureCPP["dateFactureTravaux"])) : "",
