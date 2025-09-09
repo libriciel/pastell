@@ -14,7 +14,10 @@ actes:CodeNatureActe="1">
  <actes:Document>
   <actes:NomFichier>32_DP-034-491011698-20171207-CL20171227_06-DE-1-1_1.pdf</actes:NomFichier>
  </actes:Document>
- <actes:Annexes actes:Nombre="0">
+ <actes:Annexes actes:Nombre="1">
+  <actes:Annexe>
+   <actes:NomFichier>32_DP-034-491011698-20171207-CL20171227_06-DE-1-1_2.pdf</actes:NomFichier>
+  </actes:Annexe>
  </actes:Annexes>
 <actes:DocumentPapier>N</actes:DocumentPapier>
 </actes:Acte>

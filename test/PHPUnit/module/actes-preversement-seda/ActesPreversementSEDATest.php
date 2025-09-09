@@ -34,7 +34,7 @@ class ActesPreversementSEDATest extends PastellTestCase
         );
         $donneesFormulaire->addFileFromCopy(
             'document',
-            '034-491011698-20171207-CL20171227_06-DE-1-1_2.pdf',
+            '32_DP-034-491011698-20171207-CL20171227_06-DE-1-1_2.pdf',
             __DIR__ . '/fixtures/acte2-transaction/32_DP-034-491011698-20171207-CL20171227_06-DE-1-1_2.pdf',
             1
         );
@@ -44,7 +44,7 @@ class ActesPreversementSEDATest extends PastellTestCase
             __DIR__ . '/fixtures/acte2-transaction/034-491011698-20171207-CL20171227_06-DE-1-2.xml'
         );
 
-        $this->postAndTest($info);
+        $this->postAndTest($info, '32_DP-034-491011698-20171207-CL20171227_06-DE-1-1_2.pdf');
     }
 
     /**
@@ -132,7 +132,7 @@ class ActesPreversementSEDATest extends PastellTestCase
     public function testWhitOldTransactionWithoutTdtConnector(): void
     {
         $info = $this->createOldTransaction();
-        $this->postAndTest($info);
+        $this->postAndTest($info, '034-491011698-20171207-CL20171227_06-DE-1-1_2.pdf');
     }
 
     /**
@@ -151,10 +151,13 @@ class ActesPreversementSEDATest extends PastellTestCase
         );
 
         $info = $this->createOldTransaction();
-        $this->postAndTest($info);
+        $this->postAndTest($info, '034-491011698-20171207-CL20171227_06-DE-1-1_2.pdf');
     }
 
-    private function postAndTest(array $info): void
+    /**
+     * @throws NotFoundException
+     */
+    private function postAndTest(array $info, string $expectedAnnexe): void
     {
         $result = $this->getInternalAPI()->post("/entite/{$info['id_e']}/document/{$info['id_d']}/action/create-acte");
 
@@ -165,5 +168,10 @@ class ActesPreversementSEDATest extends PastellTestCase
 
         static::assertSame('3.2', $result['data']['classification']);
         static::assertSame('importation', $result['last_action']['action']);
+
+        static::assertSame(
+            $expectedAnnexe,
+            $this->getDonneesFormulaireFactory()->get($id_d)->getFileName('autre_document_attache')
+        );
     }
 }
