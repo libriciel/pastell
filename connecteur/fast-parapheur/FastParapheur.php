@@ -273,7 +273,11 @@ class FastParapheur extends SignatureConnecteur
     public function getAllHistoriqueInfo($dossierID): bool|array
     {
         try {
-            return $this->getClient()->history($dossierID);
+            $history = $this->getClient()->history($dossierID);
+            if (!is_array($history)) {
+                $history = [$history];
+            }
+            return $history;
         } catch (Exception $e) {
             $this->lastError = $e->getMessage();
             return false;
