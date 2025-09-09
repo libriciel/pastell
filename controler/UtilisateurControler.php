@@ -947,9 +947,9 @@ class UtilisateurControler extends PastellControler
     public function addTokenAction(): void
     {
         $recupGet = $this->getGetInfo();
-        $id_u = $recupGet->get('id_u') ?: $this->getId_u();
+        $id_u = $recupGet->get('id_u');
         $source = $recupGet->get('source') ?: 'moi';
-        $this->verifDroitApi($id_u);
+        $this->verifDroitApi($id_u ?: $this->getId_u());
         $this->setViewParameter('pages_without_left_menu', true);
         $this->setViewParameter('id_u', $id_u);
         $this->setViewParameter('source', $source);

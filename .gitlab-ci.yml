@@ -208,7 +208,7 @@ publish-container-to-registry:
     - docker push ${APP_IMAGE}
     - docker build --pull -t ${WEB_IMAGE} -f docker/web/Dockerfile .
     - docker push ${WEB_IMAGE}
-  
+
 deploy_dev:
   needs: [ "publish-container-to-registry" ]
   allow_failure: true
