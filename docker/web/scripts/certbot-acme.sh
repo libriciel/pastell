@@ -67,7 +67,7 @@ request_new_cert() {
   # Add validation method based on mode
   if [ "$STANDALONE" = "true" ]; then
     echo "Using standalone mode"
-    args="$args --standalone --http-01-port 8080"
+    args="$args --standalone --http-01-port 80"
   else
     echo "Using webroot mode"
     args="$args --webroot --webroot-path $ACME_WEBROOT_PATH --http-01-port 80"
