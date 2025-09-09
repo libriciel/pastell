@@ -118,6 +118,8 @@ class RoleUtilisateurSQLTest extends PastellTestCase
             'helios-generique:edition',
             'helios-generique:lecture',
             'journal:lecture',
+            'ls-actes-tdt-versant-sae:edition',
+            'ls-actes-tdt-versant-sae:lecture',
             'ls-document-pdf:edition',
             'ls-document-pdf:lecture',
             'mailsec-bidir:edition',

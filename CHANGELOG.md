@@ -27,6 +27,8 @@ doivent être mises à jour #1667
 - Généralisation du droit `connecteur:action` permettant d'exécuter des actions sur les connecteurs #2241
 - L'onglet `Travaux en attente` du gestionnaire de tâches n'affiche plus les travaux suspendus #522
 - Le flux `ls-actes-publication` présente de nouvelles données #2179
+- **BREAKING** : Le type de dossier "Reprise arriéré actes (TdT versant)" `actes-preversement-seda` 
+    alimente maintenant `ls-actes-tdt-versant-sae`, il fait partie du `suppl_actes_tdt_versant_sae` #2015
 
 ## Suppressions
 

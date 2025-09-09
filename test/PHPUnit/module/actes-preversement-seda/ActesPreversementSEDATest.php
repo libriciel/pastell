@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 class ActesPreversementSEDATest extends PastellTestCase
 {
-    public const FLUX_ID = 'actes-preversement-seda';
+    public const string FLUX_ID = 'actes-preversement-seda';
 
     /**
      * @throws DonneesFormulaireException
@@ -11,7 +13,7 @@ class ActesPreversementSEDATest extends PastellTestCase
     public function testCasNominal(): void
     {
         $result = $this->createDocument(self::FLUX_ID);
-        $this->assertNotEmpty($result['id_d']);
+        static::assertNotEmpty($result['id_d']);
 
         $info['id_d'] = $result['id_d'];
         $info['id_e'] = PastellTestCase::ID_E_COL;
@@ -32,7 +34,7 @@ class ActesPreversementSEDATest extends PastellTestCase
         );
         $donneesFormulaire->addFileFromCopy(
             'document',
-            '034-491011698-20171207-CL20171227_06-DE-1-1_2.pdf',
+            '32_DP-034-491011698-20171207-CL20171227_06-DE-1-1_2.pdf',
             __DIR__ . '/fixtures/acte2-transaction/32_DP-034-491011698-20171207-CL20171227_06-DE-1-1_2.pdf',
             1
         );
@@ -42,7 +44,7 @@ class ActesPreversementSEDATest extends PastellTestCase
             __DIR__ . '/fixtures/acte2-transaction/034-491011698-20171207-CL20171227_06-DE-1-2.xml'
         );
 
-        $this->postAndTest($info, '32_DP');
+        $this->postAndTest($info, '32_DP-034-491011698-20171207-CL20171227_06-DE-1-1_2.pdf');
     }
 
     /**
@@ -76,7 +78,7 @@ class ActesPreversementSEDATest extends PastellTestCase
 
         $this->getInternalAPI()->post(
             sprintf(
-                "/entite/%s/document/%s/action/create-acte",
+                '/entite/%s/document/%s/action/create-acte',
                 PastellTestCase::ID_E_COL,
                 $document['id_d']
             )
@@ -90,7 +92,7 @@ class ActesPreversementSEDATest extends PastellTestCase
     private function createOldTransaction(): array
     {
         $result = $this->createDocument(self::FLUX_ID);
-        $this->assertNotEmpty($result['id_d']);
+        static::assertNotEmpty($result['id_d']);
 
         $info['id_d'] = $result['id_d'];
         $info['id_e'] = PastellTestCase::ID_E_COL;
@@ -130,7 +132,7 @@ class ActesPreversementSEDATest extends PastellTestCase
     public function testWhitOldTransactionWithoutTdtConnector(): void
     {
         $info = $this->createOldTransaction();
-        $this->postAndTest($info, '99_AU');
+        $this->postAndTest($info, '034-491011698-20171207-CL20171227_06-DE-1-1_2.pdf');
     }
 
     /**
@@ -149,14 +151,13 @@ class ActesPreversementSEDATest extends PastellTestCase
         );
 
         $info = $this->createOldTransaction();
-        $this->postAndTest($info, '99_DE');
+        $this->postAndTest($info, '034-491011698-20171207-CL20171227_06-DE-1-1_2.pdf');
     }
 
     /**
-     * @param array $info
-     * @param string $expected_type_acte
+     * @throws NotFoundException
      */
-    private function postAndTest(array $info, string $expected_type_acte): void
+    private function postAndTest(array $info, string $expectedAnnexe): void
     {
         $result = $this->getInternalAPI()->post("/entite/{$info['id_e']}/document/{$info['id_d']}/action/create-acte");
 
@@ -165,10 +166,12 @@ class ActesPreversementSEDATest extends PastellTestCase
 
         $result = $this->getInternalAPI()->get("/entite/{$info['id_e']}/document/$id_d");
 
-        $this->assertSame($expected_type_acte, $result['data']['type_acte']);
-        $this->assertSame('[]', $result['data']['type_pj']);
+        static::assertSame('3.2', $result['data']['classification']);
+        static::assertSame('importation', $result['last_action']['action']);
 
-        $this->assertEquals("3.2", $result['data']['classification']);
-        $this->assertEquals("importation", $result['last_action']['action']);
+        static::assertSame(
+            $expectedAnnexe,
+            $this->getDonneesFormulaireFactory()->get($id_d)->getFileName('autre_document_attache')
+        );
     }
 }

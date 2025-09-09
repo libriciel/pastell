@@ -35,7 +35,8 @@ class DocumentCountTest extends PastellTestCase
                                 'actes-reponse-prefecture' => [],
                                 'commande-generique' => [],
                                 'mailsec-bidir' => [],
-                                'ls-document-pdf' => []
+                                'ls-document-pdf' => [],
+                                'ls-actes-tdt-versant-sae' => []
                             ],
                         'info' =>
                              [
@@ -73,7 +74,8 @@ class DocumentCountTest extends PastellTestCase
                                 'actes-reponse-prefecture' => [],
                                 'commande-generique' => [],
                                 'mailsec-bidir' => [],
-                                'ls-document-pdf' => []
+                                'ls-document-pdf' => [],
+                                'ls-actes-tdt-versant-sae' => []
                             ],
                         'info' =>
                              [
