@@ -183,7 +183,7 @@ services:
       - '/etc/localtime:/etc/localtime:ro'
 
   flow:
-    image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.3.2'
+    image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.5.0'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -194,7 +194,7 @@ services:
       - /tmp:mode=770,rw,noexec,nosuid,nodev
 
   cloudooo:
-    image: 'registry.libriciel.fr/public/actes/cloudooo:24.8.4-PDFA'
+    image: 'registry.libriciel.fr/public/actes/cloudooo:24.8.7-PDFA'
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -202,7 +202,7 @@ services:
       - no-new-privileges:true
 
   pes-viewer:
-    image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.3'
+    image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.7'
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -239,6 +239,8 @@ services:
     user: "10001:10001"
     tmpfs:
       - /home/feedback:mode=700,uid=10001,gid=10001
+    volumes:
+      - ${LIBRICIEL_FEEDBACK_VOLUME:-libriciel-feedback}:/var/run/feedback/:rw,noexec,nosuid,nodev
     environment:
       ALLO_TOKEN: ${ALLO_TOKEN:-}
       VERSION: canary
@@ -255,3 +257,4 @@ volumes:
   upload_chunk_datadir:
   cacerts:
   local_cacerts:
+  libriciel-feedback:
