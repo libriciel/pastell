@@ -9,6 +9,9 @@ class PDFGeneriqueRenvoyer extends ActionExecutor
         return $connector;
     }
 
+    /**
+     * @throws Exception
+     */
     public function go()
     {
         $recuperateur = new Recuperateur($_POST);
@@ -18,8 +21,8 @@ class PDFGeneriqueRenvoyer extends ActionExecutor
             $this->setLastMessage("Un email a été renvoyé à l'utilisateur");
             $this->getMailSecConnecteur()->sendOneMail($this->id_e, $this->id_d, $id_de);
         } else {
-            $this->getMailSecConnecteur()->sendAllMail($this->id_e, $this->id_d);
-            $this->setLastMessage("Un email a été renvoyé à tous les utilisateurs");
+            $this->getMailSecConnecteur()->sendAllMailToNotRead($this->id_e, $this->id_d);
+            $this->setLastMessage("Un email a été renvoyé à tous les destinataires n'ayant pas ouvert le précédent");
             $this->addActionOK("Email renvoyé");
         }
 
