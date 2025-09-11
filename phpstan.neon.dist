@@ -10,7 +10,6 @@ parameters:
   paths:
     - action
     - api
-    - batch
     - connecteur
     - connecteur-type
     - controler
