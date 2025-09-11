@@ -30,7 +30,7 @@ final class SendDailyDigest extends Command
 
         try {
             $this->notificationMail->sendDailyDigest();
-            $io->success('Récapitulatif quotidien envoyé.');
+            $io->success('Résumé journalier des notifications envoyé.');
             return Command::SUCCESS;
         } catch (Throwable $e) {
             $io->error('Échec de l’envoi : ' . $e->getMessage());
