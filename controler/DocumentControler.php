@@ -939,11 +939,10 @@ class DocumentControler extends PastellControler
     }
 
 
-    public function reindex($document_type, $all_field_name, $offset = 0, $limit = -1)
+    public function reindex($document_type, $all_field_name, $offset = 0, $limit = -1): bool
     {
         if (! $this->getDocumentTypeFactory()->isTypePresent($document_type)) {
-            echo "[ERREUR] Le type de dossier $document_type n'existe pas sur cette plateforme.\n";
-            return;
+            throw new RuntimeException("Le type de dossier $document_type n'existe pas sur cette plateforme.");
         }
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($document_type);
         $formulaire = $documentType->getFormulaire();
@@ -954,12 +953,10 @@ class DocumentControler extends PastellControler
         foreach ($all_field_name as $field_name) {
             $field = $formulaire->getField($field_name);
             if (!$field) {
-                echo "[ERREUR] Le champs $field_name n'existe pas pour le type de dossier $document_type\n";
-                return;
+                throw new RuntimeException("Le champs $field_name n'existe pas pour le type de dossier $document_type");
             }
             if (!$field->isIndexed()) {
-                echo "[ERREUR] Le champs $document_type:$field_name n'est pas indexé\n";
-                return;
+                throw new RuntimeException("Le champs $field_name n'est pas indexé pour le type de dossier $document_type");
             }
         }
 
@@ -967,7 +964,7 @@ class DocumentControler extends PastellControler
         if ($limit > 0) {
             $document_list = array_slice($document_list, $offset, $limit);
         }
-        echo "Nombre de documents : " . count($document_list) . "\n";
+        echo 'Nombre de documents : ' . count($document_list) . "\n";
         $document_index = 0;
 
         foreach ($document_list as $document_info) {
@@ -986,6 +983,7 @@ class DocumentControler extends PastellControler
                 gc_collect_cycles();
             }
         }
+        return true;
     }
 
     public function fixModuleChamps($document_type, $old_field_name, $new_field_name)
