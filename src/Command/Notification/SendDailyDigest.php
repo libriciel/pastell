@@ -14,7 +14,7 @@ use Throwable;
 
 #[AsCommand(
     name: 'app:notification:daily-digest',
-    description: 'Envoie le récapitulatif quotidien par e-mail.',
+    description: 'Envoie du résumé journalier des notifications par e-mail.',
 )]
 final class SendDailyDigest extends Command
 {
