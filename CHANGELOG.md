@@ -52,6 +52,7 @@ doivent être mises à jour #1667
 - Variable d'environnement LOGS_PATH remplacé par APP_LOGS_PATH
 - Suppression du script `force-delete-entite.php`, remplacé par la commande `app:entite:force-delete-entite` #2290
 - Suppression du script `test-yml.php` #2292
+- Suppression du script `delete-association-authentification.php`, remplacé par la commande `app:connector:dissociate` #2298
 
 ## Suppressions d'éléments dépréciés
 
