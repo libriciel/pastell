@@ -298,10 +298,15 @@ class SystemControler extends PastellControler
     public function mailTestAction(): void
     {
         $this->verifDroit(0, DroitService::getDroitLecture(DroitService::DROIT_SYSTEM));
+        $emails = $this->getPostInfo()->get('email');
+        if (! $emails) {
+            $this->setLastError('Merci de spécifier un email');
+            $this->redirect(self::SYSTEM_INDEX_PAGE);
+        }
         $emailSent = '';
         $emailNotSent = '';
-        $admin_email = $this->getConfigurationSQL()->getAdminEmails();
-        foreach ($admin_email as $email) {
+        $emails = \explode(',', $emails);
+        foreach ($emails as $email) {
             $templatedEmail = (new TemplatedEmail())
                 ->to(new Address($email))
                 ->subject('[Pastell] Mail de test')

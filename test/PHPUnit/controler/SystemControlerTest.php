@@ -71,6 +71,7 @@ class SystemControlerTest extends ControlerTestCase
         $pastellMailer = $this->getObjectInstancier()->getInstance(Mailer::class);
         $pastellMailer->setMailer($mailer);
 
+        $this->setPostInfo(['email' => 'test@libriciel.invalid']);
         try {
             $this->systemControler->mailTestAction();
             self::fail();
