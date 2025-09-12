@@ -39,21 +39,23 @@
                 </td>
                 <td>{{ job.type == constant('Job::TYPE_DOCUMENT') ? 'Dossier' : 'Connecteur' }}</td>
                 <td>
-                    {% if job.is_lock %}
-                        <p class='alert alert-danger'>OUI <br/>Depuis
-                            le {{ gabarit.FancyDate.getDateFr(job.lock_since) }}
-                            <a href="{{ path('app.legacy.daemon_unlock', {'id_job': job.id_job, 'return_url': return_url}) }}"
-                               class="btn-warning btn">
-                                <i class="fa fa-unlock-alt"></i>&nbsp;
-                                Reprendre
-                            </a>
-                        </p>
-                    {% else %}
-                        <p>NON
-                            <a href="{{ path('app.legacy.daemon_lock', {'id_job': job.id_job, 'return_url': return_url}) }}"
-                               class="btn btn-warning">
-                                <i class="fa fa-lock"></i>&nbsp;
-                                Suspendre</a></p>
+                    {% if  daemon_edition %}
+                        {% if job.is_lock %}
+                            <p class='alert alert-danger'>OUI <br/>Depuis
+                                le {{ gabarit.FancyDate.getDateFr(job.lock_since) }}
+                                <a href="{{ path('app.legacy.daemon_unlock', {'id_job': job.id_job, 'return_url': return_url}) }}"
+                                   class="btn-warning btn">
+                                    <i class="fa fa-unlock-alt"></i>&nbsp;
+                                    Reprendre
+                                </a>
+                            </p>
+                        {% else %}
+                            <p>NON
+                                <a href="{{ path('app.legacy.daemon_lock', {'id_job': job.id_job, 'return_url': return_url}) }}"
+                                   class="btn btn-warning">
+                                    <i class="fa fa-lock"></i>&nbsp;
+                                    Suspendre</a></p>
+                        {% endif %}
                     {% endif %}
                 </td>
                 <td>

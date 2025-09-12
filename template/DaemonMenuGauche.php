@@ -3,6 +3,7 @@
 /**
  * @var Gabarit $this
  * @var string $menu_gauche_select
+ * @var bool $daemon_edition
  */
 
 $taches_automatiques_tab  = [
@@ -15,10 +16,14 @@ $taches_automatiques_tab  = [
 ];
 $collapse_taches_automatiques = !array_key_exists($menu_gauche_select, $taches_automatiques_tab);
 
-$configuration_tab = [
-    'Daemon/frequenceConfiguration' => 'Fréquence des connecteurs',
-    'Daemon/configuration' => 'Configuration des gestionnaires de tâches',
-];
+$configuration_tab = [];
+if ($daemon_edition) {
+    $configuration_tab = [
+        'Daemon/frequenceConfiguration' => 'Fréquence des connecteurs',
+        'Daemon/configuration' => 'Configuration des gestionnaires de tâches',
+    ];
+}
+
 $collapse_configuration = !array_key_exists($menu_gauche_select, $configuration_tab);
 
 ?>
@@ -45,25 +50,27 @@ $collapse_configuration = !array_key_exists($menu_gauche_select, $configuration_
         </ul>
     </div>
 
-    <h3 class=" <?= ($collapse_configuration) ? 'collapsed' : '' ?>"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapse-1"
-        aria-expanded="<?= $collapse_configuration ? 'false' : 'true'?>"
-        aria-controls="collapse-1"
-    >Configuration</h3>
-    <div class="menu collapse <?= ($collapse_configuration) ? '' : 'show' ?>"
-         id="collapse-1">
-        <ul>
-            <?php foreach ($configuration_tab as $onglet_url => $onglet_name) : ?>
-                <li>
-                    <a <?= ($onglet_url === $menu_gauche_select) ? 'class="actif"' : '' ?>
-                            href='<?= $onglet_url?>'>
-                        <?= $onglet_name?>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </div>
+    <?php if ($daemon_edition) : ?>
+        <h3 class=" <?= ($collapse_configuration) ? 'collapsed' : '' ?>"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapse-1"
+            aria-expanded="<?= $collapse_configuration ? 'false' : 'true'?>"
+            aria-controls="collapse-1"
+        >Configuration</h3>
+        <div class="menu collapse <?= ($collapse_configuration) ? '' : 'show' ?>"
+             id="collapse-1">
+            <ul>
+                <?php foreach ($configuration_tab as $onglet_url => $onglet_name) : ?>
+                    <li>
+                        <a <?= ($onglet_url === $menu_gauche_select) ? 'class="actif"' : '' ?>
+                                href='<?= $onglet_url?>'>
+                            <?= $onglet_name?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
 
 
 </div><!-- main_gauche  -->

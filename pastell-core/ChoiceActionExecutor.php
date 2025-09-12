@@ -123,6 +123,8 @@ abstract class ChoiceActionExecutor extends ActionExecutor
             ->hasDroitUtilisateurLecture($this->id_e, $this->id_u);
         $this->viewParameter['daemon_lecture'] = $droitService
             ->hasDroit($this->id_u, DroitService::getDroitLecture(DroitService::DROIT_DAEMON), $this->id_e);
+        $this->viewParameter['daemon_edition'] = $droitService
+            ->hasDroit($this->id_u, DroitService::getDroitEdition(DroitService::DROIT_DAEMON), $this->id_e);
         $this->viewParameter['system_edition'] = $droitService
             ->hasDroit($this->id_u, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM), $this->id_e);
         $this->viewParameter['daemon_exists'] = $this->objectInstancier->getInstance(DaemonSQL::class)
