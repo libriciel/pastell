@@ -1,1 +1,1 @@
-0 20 * * * /usr/local/bin/php /app/installation/vider-journal-to-historique.php >> /data/log/vider-journal.log 2>&1
+0 20 * * * /app/bin/console app:journal:archive-to-history >> /data/log/vider-journal.log 2>&1

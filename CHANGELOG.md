@@ -59,8 +59,11 @@ doivent être mises à jour #1667
 - Variable d'environnement OPENSSL_CIPHER_STRING_SECURITY_LEVEL
 - Suppression du script `force-delete-entite.php`, remplacé par la commande `app:entite:force-delete-entite` #2290
 - Suppression du script `test-yml.php` #2292
-- Suppression du script `cron-jour.php`, remplacé par la commande `app:notification:daily-digest` #2293
-- Suppression du script `optimize.php`, remplacé par la commande `app:database:optimize` #2293
+- Suppression du script `optimize.php`, remplacé par la commande app:database:optimize #2293
+- Suppression du script `cron-jour.php`, remplacé par la commande app:notification:daily-digest #2293
+- Suppression de la commande `app:truncate-journal-historique`, remplacé par `app:journal:delete-history` #2294
+- Suppression du script `vider-journal-to-historique.php`, remplacé par la commande `app:journal:archive-to-history` #2294
+- Suppression des scripts `journal-historique-to-csv.php` et `export-journal_historique.php`, remplacés par la commande `app:journal:export-history` #2294
 - Suppression du script `fix-module.php`, remplacé par la commande `app:module:change-type` #2295
 - Suppression du script `reindex-documents.php`, remplacé par la commande `app:module:reindex` #2297
 - Suppression du script `delete-association-authentification.php`, remplacé par la commande `app:connector:dissociate` #2298
