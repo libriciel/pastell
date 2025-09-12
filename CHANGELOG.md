@@ -52,10 +52,10 @@ doivent être mises à jour #1667
 - Variable d'environnement LOGS_PATH remplacé par APP_LOGS_PATH
 - Suppression du script `force-delete-entite.php`, remplacé par la commande `app:entite:force-delete-entite` #2290
 - Suppression du script `test-yml.php` #2292
-- Suppression du script `optimize.php`, remplacé par la commande app:database:optimize #2293
-- Suppression du script `cron-jour.php`, remplacé par la commande app:notification:daily-digest #2293
-- Suppression du script `reindex-documents.php`, remplacé par la commande `app:module:reindex` #2297
+- Suppression du script `cron-jour.php`, remplacé par la commande `app:notification:daily-digest` #2293
+- Suppression du script `optimize.php`, remplacé par la commande `app:database:optimize` #2293
 - Suppression du script `fix-module.php`, remplacé par la commande `app:module:change-type` #2295
+- Suppression du script `reindex-documents.php`, remplacé par la commande `app:module:reindex` #2297
 - Suppression du script `delete-association-authentification.php`, remplacé par la commande `app:connector:dissociate` #2298
 
 ## Suppressions d'éléments dépréciés

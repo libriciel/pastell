@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Command\Module;
 
 use DocumentSQL;
+use SQLQuery;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -14,7 +15,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:module:change-type',
-    description: "Change le type (flux) de tous les documents : remplace l'ancien type par le nouveau."
+    description: 'Change le type (flux) de tous les documents, met à jour les droits (role_droit)' .
+    "et les associations (flux_entite) du module : remplace l'ancien type par le nouveau."
 )]
 final class ChangeType extends Command
 {
@@ -23,6 +25,7 @@ final class ChangeType extends Command
 
     public function __construct(
         private readonly DocumentSQL $documentSQL,
+        private readonly SQLQuery $sqlQuery
     ) {
         parent::__construct();
     }
@@ -34,6 +37,9 @@ final class ChangeType extends Command
             ->addArgument(self::NEW_TYPE, InputArgument::REQUIRED, 'Nouveau type (flux) de document');
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -56,7 +62,22 @@ final class ChangeType extends Command
             if ($answer !== 'o') {
                 $io->note("Aucune modification n'a été effectuée");
             } else {
-                $this->documentSQL->fixModule($oldType, $newType);
+                $sql = <<<SQL
+UPDATE document SET type= ? WHERE type = ?
+SQL;
+                $this->sqlQuery->query($sql, [$newType, $oldType]);
+
+                $sql = <<<SQL
+UPDATE role_droit
+SET droit = CONCAT(?, SUBSTRING(droit, CHAR_LENGTH(?) + 1))
+WHERE droit LIKE CONCAT(?, ":%")
+SQL;
+                $this->sqlQuery->query($sql, [$newType, $oldType, $oldType]);
+
+                $sql = <<<SQL
+UPDATE flux_entite SET flux= ? WHERE flux = ?
+SQL;
+                $this->sqlQuery->query($sql, [$newType, $oldType]);
                 $io->success('Le type (flux) des documents a été mis à jour.');
             }
         } else {
