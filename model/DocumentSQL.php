@@ -113,13 +113,6 @@ class DocumentSQL extends SQL
         return $this->query($sql, $type);
     }
 
-    public function fixModule($old_flux_name, $new_flux_name)
-    {
-        self::clearCache();
-        $sql = "UPDATE document SET type= ? WHERE type = ?";
-        return $this->query($sql, $new_flux_name, $old_flux_name);
-    }
-
     public function getAllType()
     {
         $sql = "SELECT distinct type FROM document";
