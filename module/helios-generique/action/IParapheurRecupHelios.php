@@ -60,14 +60,8 @@ class IParapheurRecupHelios extends ActionExecutor
         $signature = $this->getConnecteurOrFail('signature');
 
         $helios = $this->getDonneesFormulaire();
-        $filename = $helios->getFileName('fichier_pes');
 
-
-        if ($helios->get('iparapheur_dossier_id')) {
-            $dossierID = $helios->get('iparapheur_dossier_id');
-        } else {
-            $dossierID = $signature->getDossierID($helios->get('objet'), $filename);
-        }
+        $dossierID = $helios->get('iparapheur_dossier_id');
 
         $all_historique = [];
         try {

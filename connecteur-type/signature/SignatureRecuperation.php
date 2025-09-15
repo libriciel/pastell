@@ -59,7 +59,6 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 )
             );
             $donneesFormulaire->setData($has_historique_element, true);
-            $donneesFormulaire->setData($has_signature_element, true); // conservé pour compatibilité
             $donneesFormulaire->addFileFromData(
                 $iparapheur_historique_element,
                 $this->getComputedFileName('iparapheur_historique.xml'),

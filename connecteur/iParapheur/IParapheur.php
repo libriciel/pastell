@@ -75,14 +75,6 @@ class IParapheur extends SignatureConnecteur
         return self::IPARAPHEUR_NB_JOUR_MAX_DEFAULT;
     }
 
-
-    public function getDossierID($id, $name)
-    {
-        $name = preg_replace("#[^A-Za-z0-9éèçàêîâôûùüÉÈÇÀÊÎÂÔÛÙÜ_]#u", "_", $name);
-        $name = mb_substr($name, 0, 100);
-        return "$id $name";
-    }
-
     /**
      * @param $dossierID
      * @return mixed

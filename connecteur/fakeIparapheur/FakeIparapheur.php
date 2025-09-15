@@ -47,12 +47,6 @@ class FakeIparapheur extends SignatureConnecteur
         }
     }
 
-    public function getDossierID($id, $name)
-    {
-        $name = preg_replace("#[^a-zA-Z0-9_ ]#", "_", $name);
-        return "$id $name";
-    }
-
     /**
      * @param FileToSign $dossier
      * @return string

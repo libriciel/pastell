@@ -151,11 +151,6 @@ class FastParapheur extends SignatureConnecteur
         return array_column($this->getClient()->getCircuits($this->subscriberNumber), 'circuitId') ;
     }
 
-    public function getDossierID($id, $name)
-    {
-        // TODO: Implement getDossierID() method.
-    }
-
     /**
      * @param FileToSign $file
      * @return bool

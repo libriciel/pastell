@@ -8,8 +8,6 @@ abstract class SignatureConnecteur extends Connecteur
 
     abstract public function getSousType();
 
-    abstract public function getDossierID($id, $name);
-
     /**
      * @throws SignatureException
      */
