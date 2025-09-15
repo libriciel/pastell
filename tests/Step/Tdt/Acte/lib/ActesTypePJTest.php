@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Pastell\Tests\Step\Tdt\Acte\lib;
+namespace Pastell\Tests\Step\Tdt\Acte\TypePJ;
 
 use Exception;
-use Pastell\Step\Tdt\Acte\lib\ActesTypePJ;
-use Pastell\Step\Tdt\Acte\lib\ActesTypePJData;
+use Pastell\Step\Tdt\Acte\TypePJ\TypePJProvider;
+use Pastell\Step\Tdt\Acte\TypePJ\TypePJDTO;
 use PHPUnit;
 
-class ActesTypePJTest extends PHPUnit\Framework\TestCase
+class TypePJProviderTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @throws Exception
@@ -17,13 +17,13 @@ class ActesTypePJTest extends PHPUnit\Framework\TestCase
     public function testGetTypePJListe(): void
     {
 
-        $actesTypePJData = new ActesTypePJData();
+        $typePJDTO = new TypePJDTO();
 
-        $actesTypePJData->classificationFilePath = __DIR__ . '/../fixtures/classification.xml';
-        $actesTypePJData->acteNature = '4';
+        $typePJDTO->classificationFilePath = __DIR__ . '/../fixtures/classification.xml';
+        $typePJDTO->acteNature = '4';
 
-        $actesTypePJ = new ActesTypePJ();
-        $result = $actesTypePJ->getTypePJListe($actesTypePJData);
+        $typePJProvider = new TypePJProvider();
+        $result = $typePJProvider->getByNature($typePJDTO);
         $expected_value = [
             '99_CO' => 'Contrat (99_CO)',
             '42_AT' => 'Attestation (42_AT)',

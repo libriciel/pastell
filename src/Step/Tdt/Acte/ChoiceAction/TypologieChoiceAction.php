@@ -7,8 +7,8 @@ namespace Pastell\Step\Tdt\Acte\ChoiceAction;
 use ConnecteurTypeChoiceActionExecutor;
 use Exception;
 use NotFoundException;
-use Pastell\Step\Tdt\Acte\lib\ActesTypePJ;
-use Pastell\Step\Tdt\Acte\lib\ActesTypePJData;
+use Pastell\Step\Tdt\Acte\TypePJ\TypePJProvider;
+use Pastell\Step\Tdt\Acte\TypePJ\TypePJDTO;
 use TdtConnecteur;
 use UnrecoverableException;
 
@@ -67,7 +67,7 @@ class TypologieChoiceAction extends ConnecteurTypeChoiceActionExecutor
 
         $connecteur_type_action = $this->getMappingList();
 
-        $actesTypePJData = new ActesTypePJData();
+        $typePJDTO = new TypePJDTO();
         $id_ce = $this->getConnecteurFactory()->getConnecteurId(
             $this->id_e,
             $this->type,
@@ -79,22 +79,22 @@ class TypologieChoiceAction extends ConnecteurTypeChoiceActionExecutor
         }
 
         $configTdt = $this->getConnecteurConfigByType(TdtConnecteur::FAMILLE_CONNECTEUR);
-        $actesTypePJData->classificationFilePath =
+        $typePJDTO->classificationFilePath =
             $configTdt->getFilePath($connecteur_type_action['classification_file'] ?? 'classification_file');
 
-        if (!file_exists($actesTypePJData->classificationFilePath)) {
+        if (!file_exists($typePJDTO->classificationFilePath)) {
             throw new UnrecoverableException("Aucun fichier de classification n'est présent sur le connecteur TDT");
         }
 
-        $actesTypePJData->acteNature =
+        $typePJDTO->acteNature =
             $this->getDonneesFormulaire()->get($connecteur_type_action['acte_nature'] ?? 'acte_nature');
 
-        $actesTypePJ = $this->objectInstancier->getInstance(ActesTypePJ::class);
+        $typePJProvider = $this->objectInstancier->getInstance(TypePJProvider::class);
 
-        $result['actes_type_pj_list'] = $actesTypePJ->getTypePJListe($actesTypePJData);
+        $result['actes_type_pj_list'] = $typePJProvider->getByNature($typePJDTO);
         if (!$result['actes_type_pj_list']) {
             throw new UnrecoverableException(
-                'Aucun type de pièce ne correspond pour la nature et la classification sélectionnée'
+                'Aucun type de pièce nÂe correspond pour la nature et la classification sélectionnée'
             );
         }
 

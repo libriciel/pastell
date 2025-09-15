@@ -8,8 +8,8 @@ use ConnecteurTypeActionExecutor;
 use Exception;
 use JsonException;
 use NotFoundException;
-use Pastell\Step\Tdt\Acte\lib\ActesTypePJ;
-use Pastell\Step\Tdt\Acte\lib\ActesTypePJData;
+use Pastell\Step\Tdt\Acte\TypePJ\TypePJProvider;
+use Pastell\Step\Tdt\Acte\TypePJ\TypePJDTO;
 use TdtConnecteur;
 use UnrecoverableException;
 
@@ -125,16 +125,16 @@ class TypologieOnChangeAction extends ConnecteurTypeActionExecutor
         $classification_file_element = $this->getMappingValue('classification_file');
         $acte_nature = $this->getMappingValue('acte_nature');
 
-        $actesTypePJData = new ActesTypePJData();
+        $typePJDTO = new TypePJDTO();
 
         $configTdt = $this->getConnecteurConfigByType(TdtConnecteur::FAMILLE_CONNECTEUR);
-        $actesTypePJData->classificationFilePath = $configTdt->getFilePath($classification_file_element);
+        $typePJDTO->classificationFilePath = $configTdt->getFilePath($classification_file_element);
 
-        $actesTypePJData->acteNature = $this->getDonneesFormulaire()->get($acte_nature);
+        $typePJDTO->acteNature = $this->getDonneesFormulaire()->get($acte_nature);
 
-        $actesTypePJ = $this->objectInstancier->getInstance(ActesTypePJ::class);
+        $typePJProvider = $this->objectInstancier->getInstance(TypePJProvider::class);
 
-        $result['actes_type_pj_list'] = $actesTypePJ->getTypePJListe($actesTypePJData);
+        $result['actes_type_pj_list'] = $typePJProvider->getByNature($typePJDTO);
         if (! $result['actes_type_pj_list']) {
             throw new UnrecoverableException(
                 'Aucun type de pièce ne correspond pour la nature et la classification selectionnée'

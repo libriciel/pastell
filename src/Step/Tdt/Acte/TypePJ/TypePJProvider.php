@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Pastell\Step\Tdt\Acte\lib;
+namespace Pastell\Step\Tdt\Acte\TypePJ;
 
 use Exception;
 use SimpleXMLWrapper;
 use UnrecoverableException;
 
-class ActesTypePJ
+class TypePJProvider
 {
     /**
      * @throws Exception
      */
-    public function getTypePJListe(ActesTypePJData $actesTypePJData): array
+    public function getByNature(TypePJDTO $actesTypePJData): array
     {
 
         $simpleXMLWrapper = new SimpleXMLWrapper();

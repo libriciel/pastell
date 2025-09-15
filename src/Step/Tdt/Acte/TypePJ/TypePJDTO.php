@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pastell\Step\Tdt\Acte\lib;
+namespace Pastell\Step\Tdt\Acte\TypePJ;
 
-class ActesTypePJData
+class TypePJDTO
 {
     public string $classificationFilePath;
 
