@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class ActesGeneriqueSignatureVerifTest extends PastellTestCase
 {
     use SoapUtilitiesTestTrait;
@@ -8,7 +10,7 @@ class ActesGeneriqueSignatureVerifTest extends PastellTestCase
      * @throws NotFoundException
      * @throws Exception
      */
-    public function testEditableFieldsAfterDocumentIsSigned()
+    public function testEditableFieldsAfterDocumentIsSigned(): void
     {
         $connector = $this->createConnector('iParapheur', 'parapheur');
         $this->configureConnector($connector['id_ce'], [
@@ -23,7 +25,7 @@ class ActesGeneriqueSignatureVerifTest extends PastellTestCase
         $this->mockSoapClient(
             function ($soapMethod, $arguments) use ($id_d) {
                 if (in_array($soapMethod, ['GetHistoDossier', 'GetDossier'])) {
-                    $this->assertSame(
+                    static::assertSame(
                         $this->getDonneesFormulaireFactory()->get($id_d)->get('iparapheur_dossier_id'),
                         $arguments[0]
                     );
@@ -71,21 +73,21 @@ class ActesGeneriqueSignatureVerifTest extends PastellTestCase
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
         $filename = substr($donneesFormulaire->getFileName('arrete'), 0, -4);
-        $filename_signe = $filename . "_signe.pdf";
-        $this->assertEquals($donneesFormulaire->getFileName('signature'), $filename_signe);
-        $this->assertNotEquals($donneesFormulaire->getFileName('arrete'), $donneesFormulaire->getFileName('signature'));
+        $filename_signe = $filename . '_signe.pdf';
+        static::assertSame($donneesFormulaire->getFileName('signature'), $filename_signe);
+        static::assertNotSame($donneesFormulaire->getFileName('arrete'), $donneesFormulaire->getFileName('signature'));
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
-        $this->assertTrue($donneesFormulaire->isEditable('date_de_lacte'));
-        $this->assertTrue($donneesFormulaire->isEditable('type_acte'));
-        $this->assertTrue($donneesFormulaire->isEditable('type_pj'));
+        static::assertTrue($donneesFormulaire->isEditable('date_de_lacte'));
+        static::assertTrue($donneesFormulaire->isEditable('type_acte'));
+        static::assertTrue($donneesFormulaire->isEditable('type_pj'));
     }
 
     /**
      * @throws NotFoundException
      * @throws Exception
      */
-    public function testWhenParapheurReponseIsNotComplete()
+    public function testWhenParapheurReponseIsNotComplete(): void
     {
         $connector = $this->createConnector('iParapheur', 'parapheur');
         $this->configureConnector($connector['id_ce'], [
@@ -100,7 +102,7 @@ class ActesGeneriqueSignatureVerifTest extends PastellTestCase
         $this->mockSoapClient(
             function ($soapMethod, $arguments) use ($id_d) {
                 if (in_array($soapMethod, ['GetHistoDossier', 'GetDossier'])) {
-                    $this->assertSame(
+                    static::assertSame(
                         $this->getDonneesFormulaireFactory()->get($id_d)->get('iparapheur_dossier_id'),
                         $arguments[0]
                     );

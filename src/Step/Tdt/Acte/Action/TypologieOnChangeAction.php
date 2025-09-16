@@ -1,20 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Pastell\Step\Tdt\Acte\Action;
+
+use ConnecteurTypeActionExecutor;
+use Exception;
+use JsonException;
+use NotFoundException;
+use Pastell\Step\Tdt\Acte\TypePJ\TypePJProvider;
+use Pastell\Step\Tdt\Acte\TypePJ\TypePJDTO;
+use TdtConnecteur;
+use UnrecoverableException;
+
 /**
  *
  * @deprecated PA 3.0.0
  * Il faut utiliser la fonction de l'API externalData et ne pas modifier directement type_acte et type_pj
  *
+ * PA 5.0.0 Finalement on conserve par soucis de non regression (pour glaneur et transformation) Cf issue 2283
  *
  */
-class TdtTypologieChangeByApi extends ConnecteurTypeActionExecutor
+class TypologieOnChangeAction extends ConnecteurTypeActionExecutor
 {
     /**
-     * @return bool
+     * @throws NotFoundException
+     * @throws JsonException
      * @throws UnrecoverableException
      * @throws Exception
      */
-    public function go()
+    public function go(): bool
     {
         $result = [];
 
@@ -26,12 +41,17 @@ class TdtTypologieChangeByApi extends ConnecteurTypeActionExecutor
         $info = $this->displayAPI();
 
         $type_acte = $this->getDonneesFormulaire()->get($type_acte_element);
-        $type_pj = json_decode($this->getDonneesFormulaire()->get($type_pj_element, "[]")) ?: [];
+        $type_pj = json_decode(
+            $this->getDonneesFormulaire()->get($type_pj_element, '[]'),
+            false,
+            512,
+            JSON_THROW_ON_ERROR
+        ) ?: [];
 
         if ($type_acte) {
-            if (isset($info['actes_type_pj_list']) && ! array_key_exists($type_acte, $info['actes_type_pj_list'])) {
+            if (isset($info['actes_type_pj_list']) && ! \array_key_exists($type_acte, $info['actes_type_pj_list'])) {
                 throw new UnrecoverableException(
-                    sprintf(
+                    \sprintf(
                         'Le type de pièce «%s» ne correspond pas pour la nature et la classification selectionnée',
                         $type_acte
                     )
@@ -46,7 +66,7 @@ class TdtTypologieChangeByApi extends ConnecteurTypeActionExecutor
         if ($type_pj) {
             if ((count($type_pj)) !== (count($info['pieces']) - 1)) {
                 throw new UnrecoverableException(
-                    sprintf(
+                    \sprintf(
                         "Le nombre de type de pièce «%s» ne correspond pas au nombre d'annexe «%d»",
                         count($type_pj),
                         count($info['pieces']) - 1
@@ -56,7 +76,7 @@ class TdtTypologieChangeByApi extends ConnecteurTypeActionExecutor
             foreach ($type_pj as $i => $type) {
                 if (isset($info['actes_type_pj_list']) && ! array_key_exists($type, $info['actes_type_pj_list'])) {
                     throw new UnrecoverableException(
-                        sprintf(
+                        \sprintf(
                             'Le type de pièce «%s» ne correspond pas pour la nature et la classification selectionnée',
                             $type
                         )
@@ -71,13 +91,13 @@ class TdtTypologieChangeByApi extends ConnecteurTypeActionExecutor
 
         $this->getDonneesFormulaire()->setData(
             $type_piece_element,
-            (count($type_pj) + 1) . " fichier(s) typé(s)"
+            (count($type_pj) + 1) . ' fichier(s) typé(s)'
         );
 
         $this->getDonneesFormulaire()->addFileFromData(
             $type_piece_fichier_element,
             'type_piece.json',
-            json_encode($result)
+            json_encode($result, JSON_THROW_ON_ERROR)
         );
 
         return true;
@@ -87,7 +107,7 @@ class TdtTypologieChangeByApi extends ConnecteurTypeActionExecutor
      * @throws Exception
      * @throws UnrecoverableException
      */
-    public function displayAPI()
+    public function displayAPI(): array
     {
         $result = [];
 
@@ -105,16 +125,16 @@ class TdtTypologieChangeByApi extends ConnecteurTypeActionExecutor
         $classification_file_element = $this->getMappingValue('classification_file');
         $acte_nature = $this->getMappingValue('acte_nature');
 
-        $actesTypePJData = new ActesTypePJData();
+        $typePJDTO = new TypePJDTO();
 
         $configTdt = $this->getConnecteurConfigByType(TdtConnecteur::FAMILLE_CONNECTEUR);
-        $actesTypePJData->classification_file_path = $configTdt->getFilePath($classification_file_element);
+        $typePJDTO->classificationFilePath = $configTdt->getFilePath($classification_file_element);
 
-        $actesTypePJData->acte_nature = $this->getDonneesFormulaire()->get($acte_nature);
+        $typePJDTO->acteNature = $this->getDonneesFormulaire()->get($acte_nature);
 
-        $actesTypePJ = $this->objectInstancier->getInstance(ActesTypePJ::class);
+        $typePJProvider = $this->objectInstancier->getInstance(TypePJProvider::class);
 
-        $result['actes_type_pj_list'] = $actesTypePJ->getTypePJListe($actesTypePJData);
+        $result['actes_type_pj_list'] = $typePJProvider->getByNature($typePJDTO);
         if (! $result['actes_type_pj_list']) {
             throw new UnrecoverableException(
                 'Aucun type de pièce ne correspond pour la nature et la classification selectionnée'
@@ -127,9 +147,9 @@ class TdtTypologieChangeByApi extends ConnecteurTypeActionExecutor
 
     /**
      * @return array|string
-     * @throws UnrecoverableException
+     * @throws UnrecoverableException|NotFoundException
      */
-    private function getAllPieces()
+    private function getAllPieces(): array|string
     {
 
         $arrete_element = $this->getMappingValue('arrete');

@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Step\Tdt\Acte\TypePJ\TypePJProvider;
+use Pastell\Step\Tdt\Acte\TypePJ\TypePJDTO;
+
 abstract class TdtConnecteur extends Connecteur
 {
     public const FAMILLE_CONNECTEUR = 'TdT';
@@ -129,14 +132,14 @@ abstract class TdtConnecteur extends Connecteur
      */
     public function getDefaultTypology($nature, $classification_file_path)
     {
-        $actesTypePJ = new ActesTypePJ();
+        $typePJProvider = new TypePJProvider();
 
-        $actesTypePJData = new ActesTypePJData();
+        $typePJDTO = new TypePJDTO();
 
-        $actesTypePJData->acte_nature = $nature;
-        $actesTypePJData->classification_file_path = $classification_file_path;
+        $typePJDTO->acteNature = $nature;
+        $typePJDTO->classificationFilePath = $classification_file_path;
 
-        $piece_list = $actesTypePJ->getTypePJListe($actesTypePJData);
+        $piece_list = $typePJProvider->getByNature($typePJDTO);
 
         if (!$piece_list) {
             throw new UnrecoverableException(

@@ -99,11 +99,11 @@ formulaire:
 
         type_acte:
             no-show: true
-            onchange: type-acte-change-by-api
+            onchange: typologie-change
 
         type_pj:
             no-show: true
-            onchange: type-acte-change-by-api
+            onchange: typologie-change
 
         envoi_signature_check:
             name: Transmission à la signature
@@ -923,7 +923,7 @@ action:
             role_id_e: no-role
         action-class: StandardChoiceAction
         connecteur-type: TdT
-        connecteur-type-action: TdtChoiceTypologieActes
+        connecteur-type-action: Pastell\Step\Tdt\Acte\ChoiceAction\TypologieChoiceAction
 
     autre_document_attache-change:
         no-workflow: true
@@ -933,11 +933,18 @@ action:
         connecteur-type: TdT
         connecteur-type-action: TdtAnnexeTypologieAnnexeChange
 
-
-    type-acte-change-by-api:
-        no-workflow: true
-        rule:
-            role_id_e: no-role
-        action-class: StandardAction
-        connecteur-type: TdT
-        connecteur-type-action: TdtTypologieChangeByApi
+    typologie-change:
+      no-workflow: true
+      rule:
+        role_id_e: no-role
+      action-class: StandardAction
+      connecteur-type: TdT
+      connecteur-type-action: Pastell\Step\Tdt\Acte\Action\TypologieOnChangeAction
+      connecteur-type-mapping:
+        type_acte: type_acte
+        type_pj: type_pj
+        type_piece: type_piece
+        type_piece_fichier: type_piece_fichier
+        acte_nature: acte_nature
+        arrete: arrete
+        autre_document_attache: autre_document_attache

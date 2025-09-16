@@ -1,21 +1,30 @@
 <?php
 
-class ActesTypePJTest extends PHPUnit\Framework\TestCase
+declare(strict_types=1);
+
+namespace Pastell\Tests\Step\Tdt\Acte\TypePJ;
+
+use Exception;
+use Pastell\Step\Tdt\Acte\TypePJ\TypePJProvider;
+use Pastell\Step\Tdt\Acte\TypePJ\TypePJDTO;
+use PHPUnit;
+
+class TypePJProviderTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @throws Exception
      */
-    public function testGetTypePJListe()
+    public function testGetTypePJListe(): void
     {
 
-        $actesTypePJData = new ActesTypePJData();
+        $typePJDTO = new TypePJDTO();
 
-        $actesTypePJData->classification_file_path = __DIR__ . "/../fixtures/classification.xml";
-        $actesTypePJData->acte_nature = 4;
+        $typePJDTO->classificationFilePath = __DIR__ . '/../fixtures/classification.xml';
+        $typePJDTO->acteNature = '4';
 
-        $actesTypePJ = new ActesTypePJ();
-        $result = $actesTypePJ->getTypePJListe($actesTypePJData);
-        $expected_value =  [
+        $typePJProvider = new TypePJProvider();
+        $result = $typePJProvider->getByNature($typePJDTO);
+        $expected_value = [
             '99_CO' => 'Contrat (99_CO)',
             '42_AT' => 'Attestation (42_AT)',
             '42_AC' => 'Avenant au contrat (42_AC)',
@@ -44,6 +53,6 @@ class ActesTypePJTest extends PHPUnit\Framework\TestCase
             '11_RC' => 'Règlement de consultation (11_RC)',
             '12_ST' => 'Spécifications techniques et fonctionnelles (12_ST)',
         ];
-        $this->assertEquals($expected_value, $result);
+        self::assertSame($expected_value, $result);
     }
 }
