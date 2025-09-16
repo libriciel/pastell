@@ -94,7 +94,7 @@ class TypologieChoiceAction extends ConnecteurTypeChoiceActionExecutor
         $result['actes_type_pj_list'] = $typePJProvider->getByNature($typePJDTO);
         if (!$result['actes_type_pj_list']) {
             throw new UnrecoverableException(
-                'Aucun type de pièce nÂe correspond pour la nature et la classification sélectionnée'
+                'Aucun type de pièce ne correspond pour la nature et la classification sélectionnée'
             );
         }
 
