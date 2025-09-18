@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<premis xmlns="http://www.loc.gov/premis/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+  <object xsi:type="intellectualEntity">
+    <significantProperties>
+      <significantPropertiesType>i_Parapheur_reserved_type</significantPropertiesType>
+      <significantPropertiesValue>TYPE</significantPropertiesValue>
+    </significantProperties>
+    <significantProperties>
+      <significantPropertiesType>i_Parapheur_reserved_subtype</significantPropertiesType>
+      <significantPropertiesValue>SOUS-TYPE</significantPropertiesValue>
+    </significantProperties>
+    <significantProperties>
+      <significantPropertiesType>nom_metadonne_parapheur_1</significantPropertiesType>
+      <significantPropertiesValue>valeur_pastell_1</significantPropertiesValue>
+    </significantProperties>
+    <significantProperties>
+      <significantPropertiesType>nom_metadonne_parapheur_2</significantPropertiesType>
+      <significantPropertiesValue>valeur_pastell_2</significantPropertiesValue>
+    </significantProperties>
+  </object>
+  <object xsi:type="file">
+    <significantProperties>
+      <significantPropertiesType>i_Parapheur_reserved_mainDocument</significantPropertiesType>
+      <significantPropertiesValue>true</significantPropertiesValue>
+    </significantProperties>
+    <originalName>main.pdf</originalName>
+  </object>
+</premis>

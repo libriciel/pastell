@@ -10,6 +10,7 @@ use Exception;
 use Fichier;
 use FileToSign;
 use JsonException;
+use Pastell\Client\IparapheurV5\Model\Premis;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Client\ClientInterface;
@@ -220,6 +221,7 @@ final class IparapheurRestConnectorTest extends PastellTestCase
      * @throws SignatureException
      * @throws ClientExceptionInterface
      * @throws JsonException
+     * @throws \DOMException
      */
     public function testSendDossier(): void
     {
@@ -233,8 +235,18 @@ final class IparapheurRestConnectorTest extends PastellTestCase
         $fts->annexes = [];
         $fts->type = 'TYPE';
         $fts->sousType = 'SOUS-TYPE';
+        $fts->metadata = [
+            'nom_metadonne_parapheur_1' => 'valeur_pastell_1',
+            'nom_metadonne_parapheur_2' => 'valeur_pastell_2'
+        ];
         $folderId = $connector->sendDossier($fts);
         self::assertSame(self::ONGOING_FOLDER_ID, $folderId);
+
+        $premis = Premis::fromFileToSign($fts);
+        self::assertSame(
+            file_get_contents(__DIR__ . '/fixtures/premis_sent.xml'),
+            $premis->generateDraftPremis()
+        );
     }
 
     /**
