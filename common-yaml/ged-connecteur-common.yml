@@ -68,8 +68,8 @@ action:
         name: 'Lister le contenu du répertoire'
         action-class: DepotTestLecture
     test_ecriture_fichier:
-        name: "Tester un dépot d'un fichier"
+        name: "Tester un dépôt d'un fichier"
         action-class: DepotTestEcritureFichier
     test_ecriture:
-        name: 'Tester un dépot sur le répertoire'
+        name: 'Tester un dépôt sur le répertoire'
         action-class: DepotTestEcriture

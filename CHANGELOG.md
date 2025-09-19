@@ -504,7 +504,7 @@ fichier premis du iparapheur à partir des versions 5.0.25 et 5.1.3 est ignoré 
 
 ## Évolutions
 
-- Possibilité de mettre un type de document spécifique ainsi que des métadonnées GED sur les dépots CMIS #1503
+- Possibilité de mettre un type de document spécifique ainsi que des métadonnées GED sur les dépôts CMIS #1503
 
 ## Corrections
 
@@ -1402,7 +1402,7 @@ avec des annexes #1394
 
 ## Évolutions
 
-- Connecteur de dépot : permettre de renommer les fichiers via l'utilisation de méta-données du flux #1037
+- Connecteur de dépôt : permettre de renommer les fichiers via l'utilisation de méta-données du flux #1037
 - Ajout de la constante de configuration HTTP_PROXY_URL permettant l'utilisation d'un proxy pour entre autre les connecteurs S2LOW et i-Parapheur #1004
 
 ## Ajout
@@ -1813,12 +1813,12 @@ Le script script/bug/set-database-encoding-to-utf8.php permet de palier au probl
 
 - Mail sécurisé : Possibilité d'envoyer un mail en HTML, possibilité de modifier la position du lien, possibilité de mettre des données provenant du flux #408
 - Connecteur iParapheur: envoi de fichier de signature avec reconnaissance du format par iParapheur (pour la co-signature) #412
-- Connecteur ged-ssh : les droits de dépot sont fixé à 0666
+- Connecteur ged-ssh : les droits de dépôt sont fixé à 0666
 - Connecteur seda-ng : ajout de la commande connecteur_info (la valeur est passé au générateur, mais n'affiche rien) #407
 - Module actes : possibilité d'avoir un producteur variable sur les bordereau SEDA en fonction de la présence de données à caractère personnel #407 
 - Module helios : si le fichier est en doublon sur le tdt, on passe le document en erreur
 - Mail sécurisé : Possibilité d'envoyer un mail en HTML, possibilité de modifier la position du lien, possibilité de mettre des données provenant du flux #408
-- Les fichiers copié via SFTP sur le connecteur de dépot peuvent être déposé avec un suffixe (ex: .part) #405
+- Les fichiers copié via SFTP sur le connecteur de dépôt peuvent être déposé avec un suffixe (ex: .part) #405
 - Ajout du loggeur standard dans les classes connecteurs et dans les classe d'actions (flux ou connecteur) #398
 - Flux actes-automatique et actes-generique : les objets peuvent avoir plusieurs lignes 
 - Améliorations des performances #423 #424 
@@ -1926,7 +1926,7 @@ Le script script/bug/set-database-encoding-to-utf8.php permet de palier au probl
     - helios-automatique: il manquait l'action prepare-iparapheur #395
 - Flux Actes: ~Flux
     - correction du bouton "Transmettre au TdT" présent alors que le doc a été envoyé #306
-    - Actes : Si le certificat de dépot est sans login/mot de passe alors il y a une limitation sur le certificat de télétransmission qui doit aussi être sans login/passe #385 
+    - Actes : Si le certificat de dépôt est sans login/mot de passe alors il y a une limitation sur le certificat de télétransmission qui doit aussi être sans login/passe #385 
     - Actes-preversement-seda : passage en majuscule du numéro interne pour les versement vers actes-automatiques
 - Flux Commande: #276 ~Flux
     - possibilité de choisir l'envoi en GED alors que le document a commencé le cheminement
@@ -2011,7 +2011,7 @@ Le script script/bug/set-database-encoding-to-utf8.php permet de palier au probl
 
 ## Évolutions
 
-- Modification des droits lors du dépot d'un fichier SSH (ancien connecteur)
+- Modification des droits lors du dépôt d'un fichier SSH (ancien connecteur)
 - Ajout de Monolog pour la gestion des logs (https://github.com/Seldaek/monolog)
 - Logs des actions, des workers, des appels de l'API et du démon
 
@@ -2048,7 +2048,7 @@ Le script script/bug/set-database-encoding-to-utf8.php permet de palier au probl
 ## Ajout
 
 - Connecteur d'entité permettant les purges (Expérimental) 
-- Connecteur de dépot "Nouvelle génération" (remplace les connecteurs GED) (Expérimental)
+- Connecteur de dépôt "Nouvelle génération" (remplace les connecteurs GED) (Expérimental)
 - Connecteur de dépôt local (Expérimental)
 - Connecteur de dépôt WebDAV (Expérimental)
 - Connecteur de dépôt CMIS (Expérimental)

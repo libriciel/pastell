@@ -1,6 +1,6 @@
 nom: ParametrageTypeDossierFactureCPP
 type: ParametrageFlux
-description: "Connecteur pour paramétrer le type de dossier Facture Chorus Pro.\nLors de la création le choix du cheminement est renseigné par defaut et les actions peuvent être lancées automatiquement.\nSuppression automatique des factures après x jours.\nFormatage du nom du répértoire pour le dépot en GED"
+description: "Connecteur pour paramétrer le type de dossier Facture Chorus Pro.\nLors de la création le choix du cheminement est renseigné par defaut et les actions peuvent être lancées automatiquement.\nSuppression automatique des factures après x jours.\nFormatage du nom du répértoire pour le dépôt en GED"
 restriction_pack:
     - pack_chorus_pro
 formulaire:
@@ -32,7 +32,7 @@ formulaire:
             commentaire: 'Suppression automatique des dossiers Facture Chorus Pro (en statut "finaux") après 90 jours si non renseigné.'
             default: 90
         ged_liste_statuts:
-            name: 'Liste des statuts possibles pour le dépot en GED'
+            name: 'Liste des statuts possibles pour le dépôt en GED'
             commentaire: 'MISE_A_DISPOSITION;COMPLETEE;SERVICE_FAIT;MANDATEE par défaut'
             default: MISE_A_DISPOSITION;COMPLETEE;SERVICE_FAIT;MANDATEE
 action:

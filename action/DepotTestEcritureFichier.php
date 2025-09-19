@@ -7,7 +7,7 @@ class DepotTestEcritureFichier extends ActionExecutor
         /** @var DepotConnecteur $depotConnecteur */
         $depotConnecteur = $this->getMyConnecteur();
         $result = $depotConnecteur->testEcritureFichier();
-        $this->setLastMessage("Dépot du fichier sur : $result");
+        $this->setLastMessage("dépôt du fichier sur : $result");
         return true;
     }
 }

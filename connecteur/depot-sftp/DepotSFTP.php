@@ -75,7 +75,7 @@ class DepotSFTP extends DepotConnecteur
 
         if ($this->depot_sftp_rename_suffix) {
             $tmp_filepath = $new_filepath . $this->depot_sftp_rename_suffix;
-            $this->getLogger()->debug("Dépot du fichier $tmp_filepath");
+            $this->getLogger()->debug("dépôt du fichier $tmp_filepath");
             $this->sftp->put($tmp_filepath, $filepath);
             $this->getLogger()->debug("Renommage du fichier $tmp_filepath -> $new_filepath");
             $this->sftp->rename($tmp_filepath, $new_filepath);

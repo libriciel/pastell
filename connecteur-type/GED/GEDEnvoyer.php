@@ -23,7 +23,7 @@ class GEDEnvoyer extends ConnecteurTypeActionExecutor
             $this->notify(
                 $action_for_unrecoverable_error,
                 $this->type,
-                "Erreur lors du dépot: " . $e->getMessage()
+                "Erreur lors du dépôt: " . $e->getMessage()
             );
             return false;
         } catch (RecoverableException $e) {

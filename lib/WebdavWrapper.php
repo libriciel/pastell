@@ -195,7 +195,7 @@ class WebdavWrapper
 
         $response = $this->dav->request('PUT', $this->normalize($new_file), $file_content, $headers);
         if ($response['statusCode'] !== 201) {
-            throw new Exception('Erreur lors du dépot webdav : code ' . $response['statusCode']);
+            throw new Exception('Erreur lors du dépôt webdav : code ' . $response['statusCode']);
         }
         return $response;
     }
