@@ -15,7 +15,7 @@ class DepotCMISDepotXML extends ActionExecutor
             __DIR__ . "/../fixtures/test.xml"
         );
 
-        $this->setLastMessage("Dépot du fichier sur : $result");
+        $this->setLastMessage("dépôt du fichier sur : $result");
         return true;
     }
 }

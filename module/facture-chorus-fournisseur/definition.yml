@@ -11,12 +11,12 @@ connecteur:
 formulaire:
     Facture:
         depot_type:
-            name: 'Type de dépot'
+            name: 'Type de dépôt'
             type: select
             value:
-                DEPOT_PDF_API: "Dépot d'une facture PDF"
+                DEPOT_PDF_API: "dépôt d'une facture PDF"
                 SAISIE_API: 'Saisie manuelle'
-                UPLOAD_API: "Dépot d'une facture structuré XML"
+                UPLOAD_API: "dépôt d'une facture structuré XML"
         fichier_facture_pdf:
             name: 'Fichier facture pdf/xml'
             type: file
@@ -28,7 +28,7 @@ formulaire:
             read-only: true
         syntaxe_flux_in:
             name: 'Syntaxe flux XML'
-            commentaire: "Seulement pour le dépot d'une facture structuré XML, IN_DP_E1_UBL_INVOICE par défaut"
+            commentaire: "Seulement pour le dépôt d'une facture structuré XML, IN_DP_E1_UBL_INVOICE par défaut"
             type: select
             value:
                 IN_DP_E1_UBL_INVOICE: IN_DP_E1_UBL_INVOICE
@@ -134,7 +134,7 @@ formulaire:
         has_donnees_chorus_pro_xml:
             no-show: true
         numero_flux_depot:
-            name: 'Numéro de dépot du flux'
+            name: 'Numéro de dépôt du flux'
         syntaxe_flux:
             name: 'Syntaxe du flux'
         identifiant_facture_cpp:
@@ -192,7 +192,7 @@ formulaire:
             name: 'Ligne de poste (fichier)'
             commentaire: "Ce fichier est éditable avec l'utilitaire ligne de poste au dessus"
             type: file
-    'Donnée dépot':
+    'Donnée dépôt':
         has_donnees_depot:
             no-show: true
         code_interface_flux:
@@ -244,7 +244,7 @@ page-condition:
         has_donnees_chorus_pro_xml: true
     'Fichiers Chorus Pro':
         has_fichier_chorus: true
-    'Donnée dépot':
+    'Donnée dépôt':
         has_donnees_depot: true
     SAE:
         sae_transfert_id: true
@@ -297,7 +297,7 @@ action:
         action-class: Defaut
     deposer-pdf:
         name-action: 'Déposer le fichier PDF sur Chorus Pro'
-        name: 'Dépot du fichier PDF sur Chorus Pro'
+        name: 'dépôt du fichier PDF sur Chorus Pro'
         rule:
             role_id_e: editeur
             droit_id_u: 'facture-chorus-fournisseur:edition'
@@ -326,7 +326,7 @@ action:
             - montant_a_payer
         action-class: CPPDeposerPDF
     pre-deposer-xml:
-        name: 'Pré Dépot de la facture XML'
+        name: 'Pré dépôt de la facture XML'
         name-action: 'Demander de Soumettre le fichier XML sur Chorus Pro'
         rule:
             role_id_e: editeur
@@ -340,7 +340,7 @@ action:
         action-class: Defaut
         action-automatique: deposer-xml
     deposer-xml:
-        name: 'Dépot de la facture XML'
+        name: 'dépôt de la facture XML'
         name-action: 'Soumettre le fichier XML sur Chorus Pro'
         rule:
             role_id_e: editeur
