@@ -9,7 +9,6 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
      */
     public function go()
     {
-
         /** @var SignatureConnecteur $signature */
         $signature = $this->getConnecteurOrFail('signature');
 
@@ -25,23 +24,28 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
         }
 
         if (! $all_historique) {
-            $message = "La connexion avec le iParapheur a échoué : " . $signature->getLastError();
+            $message = 'La connexion avec le iParapheur a échoué : ' . $signature->getLastError();
             $this->traitementErreur($signature, $message);
             return false;
         }
 
         $array2XML = new Array2XML();
-        $historique_xml = $array2XML->getXML('iparapheur_historique', json_decode(json_encode($all_historique), true));
+        $historique_xml = $array2XML->getXML(
+            'iparapheur_historique',
+            json_decode(json_encode($all_historique), true)
+        );
 
         $donneesFormulaire->setData('has_historique', true);
-        $donneesFormulaire->addFileFromData('iparapheur_historique', "iparapheur_historique.xml", $historique_xml);
+        $donneesFormulaire->addFileFromData('iparapheur_historique', 'iparapheur_historique.xml', $historique_xml);
 
         $lastHistorique = $signature->getLastHistorique($all_historique);
-        $donneesFormulaire->setData('parapheur_last_message', $lastHistorique);
+        $lastCompletedHistorique = $signature->getLastCompletedHistorique($all_historique);
+        $donneesFormulaire->setData('parapheur_last_message', $lastCompletedHistorique);
 
-        if (strstr($lastHistorique, "[Archive]")) {
+        if ($signature->isFinalState($lastHistorique)) {
             return $this->retrieveDossier($dossierID);
-        } elseif ($signature->isRejected($lastHistorique)) {
+        }
+        if ($signature->isRejected($lastHistorique)) {
             $this->rejeteDossier($dossierID, $lastHistorique);
         } else {
             $this->traitementErreur($signature, $lastHistorique);
@@ -51,12 +55,9 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
     }
 
     /**
-     * @param SignatureConnecteur $signature
-     * @param $message
-     * @return bool
      * @throws Exception
      */
-    public function traitementErreur(SignatureConnecteur $signature, $message)
+    public function traitementErreur(SignatureConnecteur $signature, $message): bool
     {
         $nb_jour_max = $signature->getNbJourMaxInConnecteur();
         $lastAction = $this->getDocumentActionEntite()->getLastActionInfo($this->id_e, $this->id_d);
@@ -72,12 +73,9 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
     }
 
     /**
-     * @param $dossierID
-     * @param $result
-     * @return bool
      * @throws Exception
      */
-    public function rejeteDossier($dossierID, $result)
+    public function rejeteDossier($dossierID, $result): bool
     {
         /** @var SignatureConnecteur $signature */
         $signature = $this->getConnecteur('signature');
@@ -93,20 +91,22 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
         $signature->effacerDossierRejete($dossierID);
 
         $this->notify('rejet-iparapheur', $this->type, "Le document a été rejeté dans le parapheur : $result");
-        $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'rejet-iparapheur', "Le document a été rejeté dans le parapheur : $result");
+        $this->getActionCreator()->addAction(
+            $this->id_e,
+            $this->id_u,
+            'rejet-iparapheur',
+            "Le document a été rejeté dans le parapheur : $result"
+        );
         return true;
     }
 
     /**
-     * @param $dossierID
-     * @return bool
      * @throws Exception
      * @throws RecoverableException
      */
-    public function retrieveDossier($dossierID)
+    public function retrieveDossier($dossierID): bool
     {
-
-        /** @var IParapheur $signature */
+        /** @var SignatureConnecteur $signature */
         $signature = $this->getConnecteur('signature');
         $donneesFormulaire = $this->getDonneesFormulaire();
 
@@ -134,14 +134,24 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
             $donneesFormulaire->addFileFromData('commande', $filename_signe, $info['document_signe']['document']);
         }
 
-        $output_annexe = $signature->getOutputAnnexe($info, $donneesFormulaire->getFileNumber('autre_document_attache'));
+        $output_annexe = $signature->getOutputAnnexe(
+            $info,
+            $donneesFormulaire->getFileNumber('autre_document_attache')
+        );
 
         foreach ($output_annexe as $i => $annexe) {
-            $donneesFormulaire->addFileFromData('iparapheur_annexe_sortie', $annexe['nom_document'], $annexe['document'], $i);
+            $donneesFormulaire->addFileFromData(
+                'iparapheur_annexe_sortie',
+                $annexe['nom_document'],
+                $annexe['document'],
+                $i
+            );
         }
 
-
-        $donneesFormulaire->addFileFromData('bordereau', $info['nom_document'], $info['document']);
+        $bordereau = $signature->getBordereauFromSignature($info, $dossierID);
+        if ($bordereau) {
+            $donneesFormulaire->addFileFromData('bordereau', $bordereau->filename, $bordereau->content);
+        }
 
         if (! $signature->archiver($dossierID)) {
             throw new RecoverableException(
@@ -149,9 +159,15 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
             );
         }
 
-        $this->setLastMessage("La signature a été récupérée");
+        $this->setLastMessage('La signature a été récupérée');
 
-        $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'recu-iparapheur', "La signature a été récupérée sur le parapheur électronique");
+        $this->getActionCreator()->addAction(
+            $this->id_e,
+            $this->id_u,
+            'recu-iparapheur',
+            'La signature a été récupérée sur le parapheur électronique'
+        );
+
         return true;
     }
 }
