@@ -33,7 +33,11 @@ class IParapheurRecup extends ActionExecutor
             $this->setLastMessage("Le bordereau n'a pas pu être récupéré : " . $signature->getLastError());
             return false;
         }
-        $donneesFormulaire->addFileFromData('document_signe', $info['nom_document'], $info['document']);
+        // Bordereau
+        $bordereau = $signature->getBordereauFromSignature($info, $dossierID);
+        if ($bordereau) {
+            $donneesFormulaire->addFileFromData('document_signe', $bordereau->filename, $bordereau->content);
+        }
 
         $signature->effacerDossierRejete($dossierID);
 
@@ -61,23 +65,33 @@ class IParapheurRecup extends ActionExecutor
         }
 
         $actes->setData('has_signature', true);
-        if ($info['signature']) {
-            $actes->addFileFromData('signature', "signature.zip", $info['signature']);
-        } elseif ($info['document_signe']) {
+        if ($signature->isDetached($info)) {
+            $actes->addFileFromData(
+                'signature',
+                'signature.zip',
+                $signature->getDetachedSignature($info)
+            );
+        } else {
             $actes->setData('is_pades', true);
             $filename = substr($actes->getFileName('arrete'), 0, -4);
-            $filename_signe = $filename . "_signe.pdf";
-            $actes->addFileFromData('signature', $filename_signe, $info['document_signe']['document']);
+            $filename_signe = $filename . '_signe.pdf';
+            $actes->addFileFromData(
+                'signature',
+                $filename_signe,
+                $signature->getSignedFile($info)
+            );
         }
 
         $output_annexe = $signature->getOutputAnnexe($info, $actes->getFileNumber('autre_document_attache'));
-
         foreach ($output_annexe as $i => $annexe) {
             $actes->addFileFromData('iparapheur_annexe_sortie', $annexe['nom_document'], $annexe['document'], $i);
         }
 
         // Bordereau de signature
-        $actes->addFileFromData('document_signe', $info['nom_document'], $info['document']);
+        $bordereau = $signature->getBordereauFromSignature($info, $dossierID);
+        if ($bordereau) {
+            $actes->addFileFromData('document_signe', $bordereau->filename, $bordereau->content);
+        }
 
         if (! $signature->archiver($dossierID)) {
             throw new RecoverableException(
@@ -85,9 +99,9 @@ class IParapheurRecup extends ActionExecutor
             );
         }
 
-        $this->setLastMessage("La signature a été récupérée");
-        $this->notify('recu-iparapheur', $this->type, "La signature a été récupérée");
-        $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'recu-iparapheur', "La signature a été récupérée sur le parapheur électronique");
+        $this->setLastMessage('La signature a été récupérée');
+        $this->notify('recu-iparapheur', $this->type, 'La signature a été récupérée');
+        $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'recu-iparapheur', 'La signature a été récupérée sur le parapheur électronique');
         return true;
     }
 
@@ -114,6 +128,7 @@ class IParapheurRecup extends ActionExecutor
     /**
      * @return bool
      * @throws RecoverableException
+     * @throws JsonException
      */
     private function goIparapheur()
     {
@@ -132,25 +147,34 @@ class IParapheurRecup extends ActionExecutor
         }
 
         if (! $all_historique) {
-            $message = "La connexion avec le iParapheur a échoué : " . $signature->getLastError();
+            $message = 'La connexion avec le iParapheur a échoué : ' . $signature->getLastError();
             $this->throwError($signature, $message);
         }
 
         $array2XML = new Array2XML();
-        $historique_xml = $array2XML->getXML('iparapheur_historique', json_decode(json_encode($all_historique), true));
-
-
+        $historique_xml = $array2XML->getXML(
+            'iparapheur_historique',
+            json_decode(
+                json_encode($all_historique, JSON_THROW_ON_ERROR),
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            )
+        );
         $actes->setData('has_historique', true);
-        $actes->addFileFromData('iparapheur_historique', "iparapheur_historique.xml", $historique_xml);
+        $actes->addFileFromData('iparapheur_historique', 'iparapheur_historique.xml', $historique_xml);
 
         $lastHistorique = $signature->getLastHistorique($all_historique);
-        $actes->setData('parapheur_last_message', $lastHistorique);
+        $lastCompletedHistorique = $signature->getLastCompletedHistorique($all_historique);
+        $actes->setData('parapheur_last_message', $lastCompletedHistorique);
 
-        if (strstr($lastHistorique, "[Archive]")) {
+        if ($signature->isFinalState($lastHistorique)) {
             return $this->retrieveDossier();
         } elseif ($signature->isRejected($lastHistorique)) {
-            $this->rejeteDossier($dossierID, $lastHistorique);
-            $this->setLastMessage($lastHistorique);
+            $refusal_message = $signature->getRefusalMessage($dossierID);
+            $lastCompletedHistorique = trim("$lastCompletedHistorique $refusal_message");
+            $this->rejeteDossier($dossierID, $lastCompletedHistorique);
+            $this->setLastMessage($lastCompletedHistorique);
             return true;
         }
         $nb_jour_max = $signature->getNbJourMaxInConnecteur();
@@ -163,7 +187,7 @@ class IParapheurRecup extends ActionExecutor
         }
 
         if (! $erreur) {
-            $this->setLastMessage($lastHistorique);
+            $this->setLastMessage($lastCompletedHistorique);
             return true;
         }
 
@@ -187,7 +211,7 @@ class IParapheurRecup extends ActionExecutor
         $array2XML = new Array2XML();
         $xmlHistory = $array2XML->getXML('iparapheur_historique', json_decode(json_encode($history), true));
         $acte->setData('has_historique', true);
-        $acte->addFileFromData('iparapheur_historique', "history.xml", $xmlHistory);
+        $acte->addFileFromData('iparapheur_historique', 'history.xml', $xmlHistory);
 
         $lastHistorique = $signature->getLastHistorique($history);
         if ($signature->isFinalState($lastHistorique)) {
@@ -195,8 +219,8 @@ class IParapheurRecup extends ActionExecutor
         }
         if ($signature->isRejected($lastHistorique)) {
             $signature->effacerDossierRejete($documentId);
-            $this->notify('rejet-iparapheur', $this->type, "Le document a été rejeté dans le parapheur");
-            $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'rejet-iparapheur', "Le document a été rejeté dans le parapheur");
+            $this->notify('rejet-iparapheur', $this->type, 'Le document a été rejeté dans le parapheur');
+            $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'rejet-iparapheur', 'Le document a été rejeté dans le parapheur');
         }
 
         $nb_jour_max = $signature->getNbJourMaxInConnecteur();
@@ -235,9 +259,9 @@ class IParapheurRecup extends ActionExecutor
         $acte->setData('has_signature', true);
         $acte->addFileFromData('signature', $acte->getFileName('arrete'), $signedFile);
         $acte->setData('is_pades', true);
-        $this->setLastMessage("La signature a été récupérée");
-        $this->notify('recu-iparapheur', $this->type, "La signature a été récupérée");
-        $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'recu-iparapheur', "La signature a été récupérée sur le parapheur électronique");
+        $this->setLastMessage('La signature a été récupérée');
+        $this->notify('recu-iparapheur', $this->type, 'La signature a été récupérée');
+        $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'recu-iparapheur', 'La signature a été récupérée sur le parapheur électronique');
         return true;
     }
 
@@ -258,7 +282,7 @@ class IParapheurRecup extends ActionExecutor
         }
 
         if (!$history) {
-            $message = "La connexion avec le parapheur a échouée : " . $signature->getLastError();
+            $message = 'La connexion avec le parapheur a échouée : ' . $signature->getLastError();
             throw new Exception($message);
         }
         return $history;
