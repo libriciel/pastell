@@ -375,7 +375,7 @@ class IParapheur extends SignatureConnecteur
             $element_pastell = $data[0];
             $metadata_parapheur = $data[1];
             if ($element_pastell && $metadata_parapheur) {
-                $result[$metadata_parapheur] = $donneesFormulaire->get($element_pastell);
+                $result[$metadata_parapheur] = $donneesFormulaire->get(trim($element_pastell), '');
             }
         }
 

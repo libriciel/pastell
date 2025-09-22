@@ -329,9 +329,6 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
         $taskParams->setPublicAnnotation($fileToSign->annotationPublic ?? '');
         $taskParams->setPrivateAnnotation($fileToSign->annotationPrivee ?? '');
-        if (\is_array($fileToSign->metadata)) {
-            $taskParams->setMetadata(array_map(static fn($value) => $value, $fileToSign->metadata));
-        }
 
         return $taskParams;
     }
@@ -668,7 +665,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         foreach ($all_metadata as $metadata_association) {
             [$element_pastell, $metadata_parapheur] = array_pad(explode(':', $metadata_association, 2), 2, null);
             if ($element_pastell && $metadata_parapheur) {
-                $result[$metadata_parapheur] = $donneesFormulaire->get($element_pastell);
+                $result[$metadata_parapheur] = $donneesFormulaire->get(trim($element_pastell), '');
             }
         }
 

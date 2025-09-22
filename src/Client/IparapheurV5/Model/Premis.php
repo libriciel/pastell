@@ -45,6 +45,13 @@ final class Premis
             $significantProperties[] = $dueDateProp;
         }
 
+        foreach ($fileToSign->metadata as $key => $value) {
+            $currentMetadata = new SignificantProperties();
+            $currentMetadata->significantPropertiesType = $key;
+            $currentMetadata->significantPropertiesValue = (string)$value;
+            $significantProperties[] = $currentMetadata;
+        }
+
         $intellectual->significantProperties = $significantProperties;
 
         $mainDoc = self::createFileObject($fileToSign->document->filename, true);
