@@ -526,7 +526,7 @@ class ConnexionControler extends PastellControler
         $login = $recuperateur->get('login');
 
         $utilisateurListe = new UtilisateurListe($this->getSQLQuery());
-        $id_u = $utilisateurListe->getByLoginOrEmail($login, $login);
+        $id_u = $utilisateurListe->getUtilisateurByLogin($login);
 
         if (!$id_u) {
             $this->setLastError("Aucun compte n'a été trouvé avec ces informations");
