@@ -52,8 +52,8 @@ class IParapheurRecupHelios extends ActionExecutor
     private function goIparapheur()
     {
 
-        if ($this->from_api == false) {
-            $this->getJournal()->add(Journal::DOCUMENT_ACTION, $this->id_e, $this->id_d, 'verif-iparapheur', "Vérification du retour iparapheur");
+        if (!$this->from_api) {
+            $this->getJournal()->add(Journal::DOCUMENT_ACTION, $this->id_e, $this->id_d, 'verif-iparapheur', 'Vérification du retour iparapheur');
         }
 
         /** @var SignatureConnecteur $signature */
@@ -71,31 +71,40 @@ class IParapheurRecupHelios extends ActionExecutor
         }
 
         if (! $all_historique) {
-            $message = "La connexion avec le iParapheur a échoué : " . $signature->getLastError();
+            $message = 'La connexion avec le iParapheur a échoué : ' . $signature->getLastError();
             $this->throwError($signature, $message);
         }
 
         $array2XML = new Array2XML();
-        $historique_xml = $array2XML->getXML('iparapheur_historique', json_decode(json_encode($all_historique), true));
+        $historique_xml = $array2XML->getXML(
+            'iparapheur_historique',
+            json_decode(
+                json_encode($all_historique, JSON_THROW_ON_ERROR),
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            )
+        );
 
 
         $helios->setData('has_historique', true);
-        $helios->addFileFromData('iparapheur_historique', "iparapheur_historique.xml", $historique_xml);
+        $helios->addFileFromData('iparapheur_historique', 'iparapheur_historique.xml', $historique_xml);
 
         $lastHistorique = $signature->getLastHistorique($all_historique);
-        $helios->setData('parapheur_last_message', $lastHistorique);
+        $lastCompletedHistorique = $signature->getLastCompletedHistorique($all_historique);
+        $helios->setData('parapheur_last_message', $lastCompletedHistorique);
 
         if ($signature->isFinalState($lastHistorique)) {
             return $this->retrieveDossier($dossierID);
         } elseif ($signature->isRejected($lastHistorique)) {
-            $this->rejeteDossier($dossierID, $lastHistorique);
+            $this->rejeteDossier($dossierID, $lastCompletedHistorique);
         } else {
-            $this->verifNbJour($signature, $lastHistorique);
-            $this->setLastMessage($lastHistorique);
+            $this->verifNbJour($signature, $lastCompletedHistorique);
+            $this->setLastMessage($lastCompletedHistorique);
             return false;
         }
 
-        $this->setLastMessage($lastHistorique);
+        $this->setLastMessage($lastCompletedHistorique);
         return true;
     }
 
@@ -116,7 +125,11 @@ class IParapheurRecupHelios extends ActionExecutor
             $this->setLastMessage("Le bordereau n'a pas pu être récupéré : " . $signature->getLastError());
             return false;
         }
-        $donneesFormulaire->addFileFromData('document_signe', $info['nom_document'], $info['document']);
+
+        $bordereau = $signature->getBordereauFromSignature($info, $dossierID);
+        if ($bordereau) {
+            $donneesFormulaire->addFileFromData('document_signe', $bordereau->filename, $bordereau->content);
+        }
 
         $signature->effacerDossierRejete($dossierID);
 
@@ -139,7 +152,7 @@ class IParapheurRecupHelios extends ActionExecutor
 
         $helios = $this->getDonneesFormulaire();
         $filename = substr($helios->getFileName('fichier_pes'), 0, -4);
-        $filename_signe = $filename . "_signe.xml";
+        $filename_signe = $filename . '_signe.xml';
 
         $info = $signature->getSignature($dossierID, false);
         if (! $info) {
@@ -148,14 +161,17 @@ class IParapheurRecupHelios extends ActionExecutor
         }
 
         $helios->setData('has_signature', true);
-        if ($info['signature']) {
-            $helios->addFileFromData('fichier_pes_signe', $filename_signe, $info['signature']);
-        } else {
-            $fichier_pes_path = $helios->getFilePath('fichier_pes', 0);
-            $fichier_pes_content = file_get_contents($fichier_pes_path);
-            $helios->addFileFromData('fichier_pes_signe', $filename_signe, $fichier_pes_content);
+        $helios->addFileFromData(
+            'fichier_pes_signe',
+            $filename_signe,
+            $signature->getSignedFile($info)
+        );
+
+        $bordereau = $signature->getBordereauFromSignature($info, $dossierID);
+        if ($bordereau) {
+            $helios->addFileFromData('document_signe', $bordereau->filename, $bordereau->content);
         }
-        $helios->addFileFromData('document_signe', $info['nom_document'], $info['document']);
+
         if (! $signature->archiver($dossierID)) {
             throw new RecoverableException(
                 "Impossible d'archiver la transaction sur le parapheur : " . $signature->getLastError()
@@ -167,10 +183,10 @@ class IParapheurRecupHelios extends ActionExecutor
             $helios->addFileFromData('iparapheur_annexe_sortie', $annexe['nom_document'], $annexe['document'], $i);
         }
 
-        $this->setLastMessage("La signature a été récupérée");
+        $this->setLastMessage('La signature a été récupérée');
 
-        $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'recu-iparapheur', "La signature a été récupérée sur le parapheur électronique");
-        $this->notify('recu-iparapheur', $this->type, "La signature a été récupérée sur le parapheur électronique");
+        $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'recu-iparapheur', 'La signature a été récupérée sur le parapheur électronique');
+        $this->notify('recu-iparapheur', $this->type, 'La signature a été récupérée sur le parapheur électronique');
         return true;
     }
 
@@ -189,15 +205,15 @@ class IParapheurRecupHelios extends ActionExecutor
         $array2XML = new Array2XML();
         $xmlHistory = $array2XML->getXML('iparapheur_historique', json_decode(json_encode($history), true));
         $helios->setData('has_historique', true);
-        $helios->addFileFromData('iparapheur_historique', "history.xml", $xmlHistory);
+        $helios->addFileFromData('iparapheur_historique', 'history.xml', $xmlHistory);
 
         $lastHistorique = $signature->getLastHistorique($history);
         if ($signature->isFinalState($lastHistorique)) {
             $this->retrieveFile($signature, $helios, $documentId);
         } elseif ($signature->isRejected($lastHistorique)) {
             $signature->effacerDossierRejete($documentId);
-            $this->notify('rejet-iparapheur', $this->type, "Le document a été rejeté dans le parapheur");
-            $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'rejet-iparapheur', "Le document a été rejeté dans le parapheur");
+            $this->notify('rejet-iparapheur', $this->type, 'Le document a été rejeté dans le parapheur');
+            $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'rejet-iparapheur', 'Le document a été rejeté dans le parapheur');
         } else {
             $this->verifNbJour($signature, $lastHistorique);
             $this->setLastMessage($lastHistorique);
@@ -224,7 +240,7 @@ class IParapheurRecupHelios extends ActionExecutor
         }
 
         if (!$history) {
-            $message = "La connexion avec le parapheur a échouée : " . $signature->getLastError();
+            $message = 'La connexion avec le parapheur a échouée : ' . $signature->getLastError();
             throw new Exception($message);
         }
 
@@ -248,9 +264,9 @@ class IParapheurRecupHelios extends ActionExecutor
 
         $helios->setData('has_signature', true);
         $helios->addFileFromData('fichier_pes_signe', $helios->getFileName('fichier_pes'), $signedFile);
-        $this->setLastMessage("La signature a été récupérée");
-        $this->notify('recu-iparapheur', $this->type, "La signature a été récupérée");
-        $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'recu-iparapheur', "La signature a été récupérée sur le parapheur électronique");
+        $this->setLastMessage('La signature a été récupérée');
+        $this->notify('recu-iparapheur', $this->type, 'La signature a été récupérée');
+        $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'recu-iparapheur', 'La signature a été récupérée sur le parapheur électronique');
         return true;
     }
 }
