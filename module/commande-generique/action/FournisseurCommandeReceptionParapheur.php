@@ -46,11 +46,11 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
             return $this->retrieveDossier($dossierID);
         }
         if ($signature->isRejected($lastHistorique)) {
-            $this->rejeteDossier($dossierID, $lastHistorique);
+            $this->rejeteDossier($dossierID, $lastCompletedHistorique);
         } else {
             $this->traitementErreur($signature, $lastHistorique);
         }
-        $this->setLastMessage($lastHistorique);
+        $this->setLastMessage($lastCompletedHistorique);
         return true;
     }
 
@@ -86,7 +86,11 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
             $this->setLastMessage("Le bordereau n'a pas pu être récupéré : " . $signature->getLastError());
             return false;
         }
-        $donneesFormulaire->addFileFromData('bordereau', $info['nom_document'], $info['document']);
+
+        $bordereau = $signature->getBordereauFromSignature($info, $dossierID);
+        if ($bordereau) {
+            $donneesFormulaire->addFileFromData('bordereau', $bordereau->filename, $bordereau->content);
+        }
 
         $signature->effacerDossierRejete($dossierID);
 
@@ -117,9 +121,14 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
         }
 
         $donneesFormulaire->setData('has_signature', true);
-        if ($info['signature']) {
-            $donneesFormulaire->addFileFromData('signature', "signature.zip", $info['signature']);
+        if ($signature->isDetached($info)) {
+            $donneesFormulaire->addFileFromData(
+                'signature',
+                'signature.zip',
+                $signature->getDetachedSignature($info)
+            );
         }
+
 
         $originalDocumentName = $donneesFormulaire->getFileName('document_orignal');
         if (!$originalDocumentName) {
@@ -131,7 +140,11 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
             $filename = substr($donneesFormulaire->getFileName('commande'), 0, -4);
             $file_extension =  substr($donneesFormulaire->getFileName('commande'), -3);
             $filename_signe = preg_replace("#[^a-zA-Z0-9_]#", "_", $filename) . "_signe." . $file_extension;
-            $donneesFormulaire->addFileFromData('commande', $filename_signe, $info['document_signe']['document']);
+            $donneesFormulaire->addFileFromData(
+                'commande',
+                $filename_signe,
+                $signature->getSignedFile($info)
+            );
         }
 
         $output_annexe = $signature->getOutputAnnexe(
