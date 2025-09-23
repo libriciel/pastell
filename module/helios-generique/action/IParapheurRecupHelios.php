@@ -29,7 +29,7 @@ class IParapheurRecupHelios extends ActionExecutor
     }
 
 
-    private function verifNbJour(SignatureConnecteur $signature, $message)
+    private function verifNbJour(SignatureConnecteur $signature, $message): bool
     {
         $nb_jour_max = $signature->getNbJourMaxInConnecteur();
 
@@ -37,10 +37,18 @@ class IParapheurRecupHelios extends ActionExecutor
 
         $time_action = strtotime($lastAction['date']);
         if (time() - $time_action > $nb_jour_max * 86400) {
-            $message = "Aucune réponse disponible sur le parapheur depuis $nb_jour_max jours !";
+            $message = sprintf(
+                'Aucune réponse disponible sur le parapheur depuis %d jours ! %s',
+                $nb_jour_max,
+                $message,
+            );
             $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'erreur-verif-iparapheur', $message);
             $this->notify($this->action, $this->type, $message);
+            $this->setLastMessage($message);
+            return false;
         }
+        $this->setLastMessage($message);
+        return true;
     }
 
 
@@ -99,9 +107,7 @@ class IParapheurRecupHelios extends ActionExecutor
         } elseif ($signature->isRejected($lastHistorique)) {
             $this->rejeteDossier($dossierID, $lastCompletedHistorique);
         } else {
-            $this->verifNbJour($signature, $lastCompletedHistorique);
-            $this->setLastMessage($lastCompletedHistorique);
-            return false;
+            return $this->verifNbJour($signature, $lastCompletedHistorique);
         }
 
         $this->setLastMessage($lastCompletedHistorique);
@@ -215,9 +221,7 @@ class IParapheurRecupHelios extends ActionExecutor
             $this->notify('rejet-iparapheur', $this->type, 'Le document a été rejeté dans le parapheur');
             $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'rejet-iparapheur', 'Le document a été rejeté dans le parapheur');
         } else {
-            $this->verifNbJour($signature, $lastHistorique);
-            $this->setLastMessage($lastHistorique);
-            return false;
+            return $this->verifNbJour($signature, $lastHistorique);
         }
 
         $this->setLastMessage($lastHistorique);
