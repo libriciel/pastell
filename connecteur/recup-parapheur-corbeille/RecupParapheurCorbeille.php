@@ -4,21 +4,24 @@ declare(strict_types=1);
 
 use Libriciel\IparapheurV5\Client\Api\AdminTrashBinApi;
 use Libriciel\IparapheurV5\Client\Api\TenantApi;
+use Libriciel\IparapheurV5\Client\ApiException;
 use Pastell\Action\TestConnectionInterface;
 use Pastell\Client\IparapheurV5\IparapheurAuthConfig;
 use Pastell\Client\IparapheurV5\ApiClientFactory;
 use Pastell\Client\IparapheurV5\ZipContent;
 use Libriciel\IparapheurV5\Client\Configuration;
+use Pastell\Connector\IparapheurRest\IpRestApiException;
 use Pastell\Connector\IparapheurRest\IpRestTenantInterface;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 
 class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterface, TestConnectionInterface
 {
-    private const USERNAME = 'username';
-    private const PASSWORD = 'password';
-    private const URL = 'url';
-    private const NB_RECUP = 'nb_recup';
-    private const TENANT_ID = 'tenant_id';
+    private const string USERNAME = 'username';
+    private const string PASSWORD = 'password';
+    private const string URL = 'url';
+    private const string NB_RECUP = 'nb_recup';
+    private const string TENANT_ID = 'tenant_id';
     private array $elementIdDictionnary;
     private DonneesFormulaire $connecteurConfig;
     private ClientInterface $client;
@@ -32,9 +35,9 @@ class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterfac
 
     /**
      * @throws JsonException
-     * @throws \Psr\Http\Client\ClientExceptionInterface
+     * @throws ClientExceptionInterface
      */
-    public function setConnecteurConfig(DonneesFormulaire $donneesFormulaire)
+    public function setConnecteurConfig(DonneesFormulaire $donneesFormulaire): void
     {
         $this->connecteurConfig = $donneesFormulaire;
 
@@ -69,13 +72,26 @@ class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterfac
         $this->configuration = $config;
     }
 
+    /**
+     * @throws IpRestApiException
+     */
     public function getTenantList(): array
     {
         $tenants = [];
         $page = 0;
 
         do {
-            $result = (new TenantApi($this->client, $this->configuration))->listTenants($page);
+            try {
+                $result = new TenantApi($this->client, $this->configuration)->listTenants($page);
+            } catch (ApiException $e) {
+                throw new IpRestApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $e->getCode(),
+                        $e->getResponseBody(),
+                    )
+                );
+            }
 
             foreach ($result->getContent() as $tenant) {
                 $tenants[$tenant->getId()] = $tenant->getName();
@@ -91,6 +107,9 @@ class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterfac
         return $tenants;
     }
 
+    /**
+     * @throws IpRestApiException
+     */
     public function testConnexion(): string
     {
         $result = $this->getTenantList();
@@ -100,13 +119,27 @@ class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterfac
         return 'Liste des entités parapheurs : ' . implode(', ', $result);
     }
 
+    /**
+     * @throws IpRestApiException
+     */
     public function listDossier(): array
     {
-        $result = (new AdminTrashBinApi($this->client, $this->configuration))->listTrashBinFolders(
-            $this->connecteurConfig->get(self::TENANT_ID, ''),
-            0,
-            (int)$this->connecteurConfig->get(self::NB_RECUP)
-        );
+        try {
+            $result = new AdminTrashBinApi($this->client, $this->configuration)->listTrashBinFolders(
+                $this->connecteurConfig->get(self::TENANT_ID, ''),
+                0,
+                (int)$this->connecteurConfig->get(self::NB_RECUP)
+            );
+        } catch (ApiException $e) {
+            throw new IpRestApiException(
+                sprintf(
+                    '[%d] Error connecting to the API (%s)',
+                    $e->getCode(),
+                    $e->getResponseBody(),
+                )
+            );
+        }
+
         $folders = [];
         foreach ($result->getContent() as $folder) {
             $folders[$folder->getId()] = $folder->getName();
@@ -119,6 +152,7 @@ class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterfac
 
     /**
      * @throws UnrecoverableException
+     * @throws IpRestApiException
      */
     public function recupOne(): array
     {
@@ -171,14 +205,32 @@ class RecupParapheurCorbeille extends Connecteur implements IpRestTenantInterfac
             $glaneurLocalDocumentInfo->action_ok = 'importation';
             $glaneurLocalDocumentInfo->action_ko = 'fatal-error';
             $id_d = $this->glaneurDocumentCreator->create($glaneurLocalDocumentInfo, $tmp_folder);
+        } catch (ApiException $e) {
+            throw new IpRestApiException(
+                sprintf(
+                    '[%d] Error connecting to the API (%s)',
+                    $e->getCode(),
+                    $e->getResponseBody(),
+                )
+            );
         } finally {
             $tmpFolder->delete($tmp_folder);
         }
 
-        $adminTrashBinApi->deleteTrashBinFolder(
-            $tenantId,
-            $folderId
-        );
+        try {
+            $adminTrashBinApi->deleteTrashBinFolder(
+                $tenantId,
+                $folderId
+            );
+        } catch (ApiException $e) {
+            throw new IpRestApiException(
+                sprintf(
+                    '[%d] Error connecting to the API (%s)',
+                    $e->getCode(),
+                    $e->getResponseBody(),
+                )
+            );
+        }
 
         return $id_d;
     }
