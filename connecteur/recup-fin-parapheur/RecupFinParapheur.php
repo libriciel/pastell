@@ -5,12 +5,14 @@ declare(strict_types=1);
 use Libriciel\IparapheurV5\Client\Api\DeskApi;
 use Libriciel\IparapheurV5\Client\Api\FolderApi;
 use Libriciel\IparapheurV5\Client\Api\TenantApi;
+use Libriciel\IparapheurV5\Client\ApiException;
 use Libriciel\IparapheurV5\Client\Configuration;
 use Libriciel\IparapheurV5\Client\Model\State;
 use Pastell\Action\TestConnectionInterface;
 use Pastell\Client\IparapheurV5\IparapheurAuthConfig;
 use Pastell\Client\IparapheurV5\ApiClientFactory;
 use Pastell\Client\IparapheurV5\ZipContent;
+use Pastell\Connector\IparapheurRest\IpRestApiException;
 use Pastell\Connector\IparapheurRest\IpRestDeskInterface;
 use Pastell\Connector\IparapheurRest\IpRestException;
 use Pastell\Connector\IparapheurRest\IpRestTenantInterface;
@@ -22,12 +24,12 @@ class RecupFinParapheur extends Connecteur implements
     IpRestDeskInterface,
     TestConnectionInterface
 {
-    private const USERNAME = 'username';
-    private const PASSWORD = 'password';
-    private const URL = 'url';
-    private const TENANT_ID = 'tenant_id';
-    private const DESK_ID = 'desk_id';
-    private const NB_RECUP = 'nb_recup';
+    private const string USERNAME = 'username';
+    private const string PASSWORD = 'password';
+    private const string URL = 'url';
+    private const string TENANT_ID = 'tenant_id';
+    private const string DESK_ID = 'desk_id';
+    private const string NB_RECUP = 'nb_recup';
     private array $elementIdDictionnary;
     private DonneesFormulaire $connecteurConfig;
     private ClientInterface $client;
@@ -78,13 +80,26 @@ class RecupFinParapheur extends Connecteur implements
         $this->configuration = $config;
     }
 
+    /**
+     * @throws IpRestApiException
+     */
     public function getTenantList(): array
     {
         $tenants = [];
         $page = 0;
 
         do {
-            $result = (new TenantApi($this->client, $this->configuration))->listTenants($page);
+            try {
+                $result = new TenantApi($this->client, $this->configuration)->listTenants($page);
+            } catch (ApiException $e) {
+                throw new IpRestApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $e->getCode(),
+                        $e->getResponseBody(),
+                    )
+                );
+            }
 
             foreach ($result->getContent() as $tenant) {
                 $tenants[$tenant->getId()] = $tenant->getName();
@@ -100,6 +115,9 @@ class RecupFinParapheur extends Connecteur implements
         return $tenants;
     }
 
+    /**
+     * @throws IpRestApiException
+     */
     public function testConnexion(): string
     {
         $result = $this->getTenantList();
@@ -109,34 +127,60 @@ class RecupFinParapheur extends Connecteur implements
         return 'Liste des entités parapheurs : ' . implode(', ', $result);
     }
 
+    /**
+     * @throws IpRestApiException
+     */
     public function getFinishedFolders(): array
     {
         $folders = [];
-        $result = (new FolderApi($this->client, $this->configuration))->listFolders(
-            $this->connecteurConfig->get(self::TENANT_ID, ''),
-            $this->connecteurConfig->get(self::DESK_ID, ''),
-            /** @phpstan-ignore-next-line */
-            State::FINISHED,
-            null,
-            null,
-            0,
-            (int)$this->connecteurConfig->get(self::NB_RECUP)
-        );
+        try {
+            $result = new FolderApi($this->client, $this->configuration)->listFolders(
+                $this->connecteurConfig->get(self::TENANT_ID, ''),
+                $this->connecteurConfig->get(self::DESK_ID, ''),
+                /** @phpstan-ignore-next-line */
+                State::FINISHED,
+                null,
+                null,
+                0,
+                (int)$this->connecteurConfig->get(self::NB_RECUP)
+            );
+        } catch (ApiException $e) {
+            throw new IpRestApiException(
+                sprintf(
+                    '[%d] Error connecting to the API (%s)',
+                    $e->getCode(),
+                    $e->getResponseBody(),
+                )
+            );
+        }
+
         foreach ($result->getContent() as $folder) {
             $folders[$folder->getId()] = $folder->getName();
         }
         return $folders;
     }
 
+    /**
+     * @throws IpRestApiException
+     */
     public function removeFolder(string $folder_id): void
     {
-        (new FolderApi($this->client, $this->configuration))->deleteFolder(
-            $this->connecteurConfig->get(self::TENANT_ID, ''),
-            $this->connecteurConfig->get(self::DESK_ID, ''),
-            $folder_id
-        );
+        try {
+            new FolderApi($this->client, $this->configuration)->deleteFolder(
+                $this->connecteurConfig->get(self::TENANT_ID, ''),
+                $this->connecteurConfig->get(self::DESK_ID, ''),
+                $folder_id
+            );
+        } catch (ApiException $e) {
+            throw new IpRestApiException(
+                sprintf(
+                    '[%d] Error connecting to the API (%s)',
+                    $e->getCode(),
+                    $e->getResponseBody(),
+                )
+            );
+        }
     }
-
 
     /**
      * @throws Exception
@@ -159,7 +203,7 @@ class RecupFinParapheur extends Connecteur implements
         $tmpFolder = new TmpFolder();
         $tmp_folder = $tmpFolder->create();
         try {
-            $zipData = (new FolderApi($this->client, $this->configuration))->downloadFolderZip(
+            $zipData = new FolderApi($this->client, $this->configuration)->downloadFolderZip(
                 $this->connecteurConfig->get(self::TENANT_ID, ''),
                 self::DESK_ID,
                 $dossierId
@@ -193,6 +237,14 @@ class RecupFinParapheur extends Connecteur implements
             $id_d = $this->glaneurDocumentCreator->create($glaneurLocalDocumentInfo, $tmp_folder);
             $this->removeFolder($dossierId);
             return $id_d;
+        } catch (ApiException $e) {
+            throw new IpRestApiException(
+                sprintf(
+                    '[%d] Error connecting to the API (%s)',
+                    $e->getCode(),
+                    $e->getResponseBody(),
+                )
+            );
         } catch (Exception $e) {
             $this->lastError = $e->getMessage();
             throw new \RuntimeException($e->getMessage());
@@ -212,7 +264,7 @@ class RecupFinParapheur extends Connecteur implements
     }
 
     /**
-     * @throws IpRestException
+     * @throws IpRestApiException
      */
     public function getDeskList(): array
     {
@@ -221,7 +273,17 @@ class RecupFinParapheur extends Connecteur implements
         $page = 0;
 
         do {
-            $result = (new DeskApi($this->client, $this->configuration))->listUserDesks($tenantId, $page);
+            try {
+                $result = new DeskApi($this->client, $this->configuration)->listUserDesks($tenantId, $page);
+            } catch (ApiException $e) {
+                throw new IpRestApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $e->getCode(),
+                        $e->getResponseBody(),
+                    )
+                );
+            }
 
             foreach ($result->getContent() as $desk) {
                 $desks[$desk->getId()] = $desk->getName();

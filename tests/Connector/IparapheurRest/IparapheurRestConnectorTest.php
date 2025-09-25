@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Pastell\Tests\Connector\IparapheurRest;
 
 use ActionExecutorFactory;
+use DOMException;
 use DonneesFormulaire;
 use Exception;
 use Fichier;
 use FileToSign;
 use JsonException;
 use Pastell\Client\IparapheurV5\Model\Premis;
+use Pastell\Connector\IparapheurRest\IpRestApiException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Client\ClientInterface;
@@ -21,8 +23,10 @@ use Pastell\Connector\IparapheurRest\IparapheurRestConnector;
 use Pastell\Connector\IparapheurRest\IpRestException;
 use PastellTestCase;
 use Psr\Http\Client\ClientExceptionInterface;
-use SignatureException;
 use UnrecoverableException;
+
+use function array_key_exists;
+use function count;
 
 final class IparapheurRestConnectorTest extends PastellTestCase
 {
@@ -68,16 +72,28 @@ final class IparapheurRestConnectorTest extends PastellTestCase
 
             'GET /api/standard/v1/tenant/' . self::TENANT_ID . '/desk/' . self::DESK_ID . '/folder/' . self::FINISHED_FOLDER_ID . '/premis' => $this->fixture('finished_folder.xml'),
             'GET /api/standard/v1/tenant/' . self::TENANT_ID . '/desk/' . self::DESK_ID . '/folder/' . self::REFUSED_FOLDER_ID . '/premis' => $this->fixture('refused_folder.xml'),
-
+            'GET /api/standard/v1/tenant/' . self::TENANT_ID . '/desk/' . self::DESK_ID . '/folder/' . self::ERROR_FOLDER_ID . '/premis'
+            => new HttpResponse(
+                404,
+                ['Content-type' => 'application/json'],
+                \sprintf(
+                    '{"timestamp":"%s","status":%d,"error":"%s","message":"%s","path":"%s"}',
+                    '2025-09-24T12:04:44.591+00:00',
+                    404,
+                    'Not Found',
+                    "L'ID du dossier est introuvable",
+                    '/api/standard/v1/tenant/' . self::TENANT_ID . '/desk/' . self::DESK_ID . '/folder/' . self::ERROR_FOLDER_ID . '/premis',
+                )
+            ),
             'DELETE /api/standard/v1/tenant/' . self::TENANT_ID . '/desk/' . self::DESK_ID . '/folder/' . self::ONGOING_FOLDER_ID => new HttpResponse(204, ['Content-type' => 'application/json'], ''),
-            'DELETE /api/standard/v1/tenant/' . self::TENANT_ID . '/desk/' . self::DESK_ID . '/folder/' . self::ERROR_FOLDER_ID => new HttpResponse(400, ['Content-type' => 'application/json'], ''),
+            'DELETE /api/standard/v1/tenant/' . self::TENANT_ID . '/desk/' . self::DESK_ID . '/folder/' . self::ERROR_FOLDER_ID => new HttpResponse(404, ['Content-type' => 'application/json'], ''),
         ];
 
         $client = $this->getMockBuilder(ClientInterface::class)->getMock();
         $client->method('sendRequest')
             ->willReturnCallback(function (RequestInterface $request) use ($routes): ResponseInterface {
                 $key = $request->getMethod() . ' ' . $request->getUri()->getPath();
-                if (!\array_key_exists($key, $routes)) {
+                if (!array_key_exists($key, $routes)) {
                     throw new UnrecoverableException('Unknown path : ' . $key);
                 }
                 return $routes[$key];
@@ -218,10 +234,9 @@ final class IparapheurRestConnectorTest extends PastellTestCase
     }
 
     /**
-     * @throws SignatureException
      * @throws ClientExceptionInterface
      * @throws JsonException
-     * @throws \DOMException
+     * @throws DOMException|IpRestApiException
      */
     public function testSendDossier(): void
     {
@@ -243,10 +258,7 @@ final class IparapheurRestConnectorTest extends PastellTestCase
         self::assertSame(self::ONGOING_FOLDER_ID, $folderId);
 
         $premis = Premis::fromFileToSign($fts);
-        self::assertSame(
-            file_get_contents(__DIR__ . '/fixtures/premis_sent.xml'),
-            $premis->generateDraftPremis()
-        );
+        self::assertStringEqualsFile(__DIR__ . '/fixtures/premis_sent.xml', $premis->generateDraftPremis());
     }
 
     /**
@@ -268,14 +280,14 @@ final class IparapheurRestConnectorTest extends PastellTestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws JsonException
+     * @throws JsonException|IpRestException
      */
     public function testGetPremis(): void
     {
         $this->getConnectorId();
         $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
         $premis = $connector->getPremis(self::ONGOING_FOLDER_ID);
-        self::assertGreaterThanOrEqual(2, \count($premis->object));
+        self::assertGreaterThanOrEqual(2, count($premis->object));
         self::assertSame('intellectualEntity', $premis->object[0]->type);
         self::assertSame('file', $premis->object[1]->type);
         self::assertSame('test', $premis->object[0]->originalName);
@@ -352,9 +364,34 @@ final class IparapheurRestConnectorTest extends PastellTestCase
     {
         $this->getConnectorId();
         $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
-        $ok = $connector->effacerDossierRejete(self::ERROR_FOLDER_ID);
-        self::assertFalse($ok);
+        $this->expectException(IpRestApiException::class);
+        $this->expectExceptionMessage('[404] Error connecting to the API ()');
+        $connector->effacerDossierRejete(self::ERROR_FOLDER_ID);
     }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws JsonException
+     * @throws IpRestApiException
+     */
+    public function testGetPremisError(): void
+    {
+        $this->getConnectorId();
+        $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
+        $this->expectException(IpRestApiException::class);
+        $this->expectExceptionMessage(
+            \sprintf(
+                '[404] Error connecting to the API ({"timestamp":"%s","status":%d,"error":"%s","message":"%s","path":"%s"})',
+                '2025-09-24T12:04:44.591+00:00',
+                404,
+                'Not Found',
+                "L'ID du dossier est introuvable",
+                '/api/standard/v1/tenant/' . self::TENANT_ID . '/desk/' . self::DESK_ID . '/folder/' . self::ERROR_FOLDER_ID . '/premis',
+            )
+        );
+        $connector->getPremis(self::ERROR_FOLDER_ID);
+    }
+
 
     /**
      * @throws Exception

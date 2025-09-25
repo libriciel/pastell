@@ -6,8 +6,10 @@ namespace Pastell\Connector\IparapheurRest;
 
 use BadMethodCallException;
 use DOMDocument;
+use DOMException;
 use DOMXPath;
 use DonneesFormulaire;
+use Exception;
 use Fichier;
 use FileToSign;
 use JsonException;
@@ -19,6 +21,7 @@ use Libriciel\IparapheurV5\Client\Api\WorkflowApi;
 use Libriciel\IparapheurV5\Client\Configuration;
 use Libriciel\IparapheurV5\Client\Model\Action;
 use Libriciel\IparapheurV5\Client\Model\SimpleTaskParams;
+use Libriciel\IparapheurV5\Client\ApiException;
 use Pastell\Action\TestConnectionInterface;
 use Pastell\Client\IparapheurV5\IparapheurAuthConfig;
 use Pastell\Client\IparapheurV5\ApiClientFactory;
@@ -30,7 +33,6 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
 use SignatureConnecteur;
-use Http\Client\Exception;
 use SplFileObject;
 use stdClass;
 use Psr\Http\Client\ClientInterface;
@@ -43,6 +45,10 @@ use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use ZipArchive;
+
+use function array_slice;
+use function in_array;
+use function sprintf;
 
 class IparapheurRestConnector extends SignatureConnecteur implements
     IpRestTenantInterface,
@@ -89,6 +95,9 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $this->configuration = $config;
     }
 
+    /**
+     * @throws IpRestApiException
+     */
     public function testConnexion(): string
     {
         $result = $this->getTenantList();
@@ -98,13 +107,26 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         return 'Liste des entités iparapheur : ' . implode(', ', $result);
     }
 
+    /**
+     * @throws IpRestApiException
+     */
     public function getTenantList(): array
     {
         $tenants = [];
         $page = 0;
 
         do {
-            $result = new TenantApi($this->client, $this->configuration)->listTenants($page);
+            try {
+                $result = new TenantApi($this->client, $this->configuration)->listTenants($page);
+            } catch (ApiException $e) {
+                throw new IpRestApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $e->getCode(),
+                        $e->getResponseBody(),
+                    )
+                );
+            }
 
             foreach ($result->getContent() as $tenant) {
                 $tenants[$tenant->getId()] = $tenant->getName();
@@ -122,6 +144,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
     /**
      * @throws IpRestException
+     * @throws IpRestApiException
      */
     public function getDeskList(): array
     {
@@ -134,7 +157,17 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $page = 0;
 
         do {
-            $result = new DeskApi($this->client, $this->configuration)->listUserDesks($tenantId, $page);
+            try {
+                $result = new DeskApi($this->client, $this->configuration)->listUserDesks($tenantId, $page);
+            } catch (ApiException $e) {
+                throw new IpRestApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $e->getCode(),
+                        $e->getResponseBody(),
+                    )
+                );
+            }
 
             foreach ($result->getContent() as $desk) {
                 $desks[$desk->getId()] = $desk->getName();
@@ -152,6 +185,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
     /**
      * @throws IpRestException
+     * @throws IpRestApiException
      */
     public function getTypeList(): array
     {
@@ -164,7 +198,17 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $page = 0;
 
         do {
-            $result = new TypologyApi($this->client, $this->configuration)->listTypes($tenantId, $page);
+            try {
+                $result = new TypologyApi($this->client, $this->configuration)->listTypes($tenantId, $page);
+            } catch (ApiException $e) {
+                throw new IpRestApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $e->getCode(),
+                        $e->getResponseBody(),
+                    )
+                );
+            }
 
             foreach ($result->getContent() as $type) {
                 $types[$type->getId()] = $type->getName();
@@ -182,6 +226,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
     /**
      * @throws IpRestException
+     * @throws IpRestApiException
      */
     public function getSousType(): array
     {
@@ -198,7 +243,17 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $page = 0;
 
         do {
-            $result = new TypologyApi($this->client, $this->configuration)->listSubtypes($tenantId, $typeId, $page);
+            try {
+                $result = new TypologyApi($this->client, $this->configuration)->listSubtypes($tenantId, $typeId, $page);
+            } catch (ApiException $e) {
+                throw new IpRestApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $e->getCode(),
+                        $e->getResponseBody(),
+                    )
+                );
+            }
 
             foreach ($result->getContent() as $subType) {
                 $subTypes[$subType->getId()] = $subType->getName();
@@ -214,6 +269,10 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         return $subTypes;
     }
 
+    /**
+     * @throws IpRestApiException
+     * @throws Exception
+     */
     public function getPremis(string $folderId): Premis
     {
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID, '');
@@ -247,8 +306,15 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                     $premis->object[$index]->type = $type;
                 }
             }
-
             return $premis;
+        } catch (ApiException $e) {
+            throw new IpRestApiException(
+                sprintf(
+                    '[%d] Error connecting to the API (%s)',
+                    $e->getCode(),
+                    $e->getResponseBody(),
+                )
+            );
         } finally {
             $tmpFolder->delete($tmp_folder);
         }
@@ -262,6 +328,10 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         return self::IPARAPHEUR_NB_JOUR_MAX_DEFAULT;
     }
 
+    /**
+     * @throws DOMException
+     * @throws IpRestApiException
+     */
     public function sendDossier(FileToSign $dossier): string|false
     {
         if ($this->sending_metadata) {
@@ -314,6 +384,14 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                 $simple_task_params
             );
             return $folderId;
+        } catch (ApiException $e) {
+            throw new IpRestApiException(
+                sprintf(
+                    '[%d] Error connecting to the API (%s)',
+                    $e->getCode(),
+                    $e->getResponseBody(),
+                )
+            );
         } finally {
             foreach ($tempFiles as $path) {
                 if (file_exists($path)) {
@@ -335,18 +413,28 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function getSignature($dossierID, $archive = true): array
     {
         $premis = $this->getPremis($dossierID);
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
         $deskId = $this->connecteurConfig->get(self::DESK_ID, '');
-        $zipData = new FolderApi($this->client, $this->configuration)->downloadFolderZip(
-            $tenantId,
-            $deskId,
-            $dossierID
-        );
+        try {
+            $zipData = new FolderApi($this->client, $this->configuration)->downloadFolderZip(
+                $tenantId,
+                $deskId,
+                $dossierID
+            );
+        } catch (ApiException $e) {
+            throw new IpRestApiException(
+                sprintf(
+                    '[%d] Error connecting to the API (%s)',
+                    $e->getCode(),
+                    $e->getResponseBody(),
+                )
+            );
+        }
 
         $tmpFolder = new TmpFolder();
         $tmp_folder = $tmpFolder->create();
@@ -447,6 +535,9 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         return $this->deleteFolder($dossierID);
     }
 
+    /**
+     * @throws IpRestApiException
+     */
     public function getAllHistoriqueInfo($dossierID): stdClass
     {
         $premis = $this->getPremis($dossierID);
@@ -483,18 +574,21 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
     /**
      * @param $history - output of IparapheurRestConnector::getAllHistoriqueInfo()
-     * @throws \Exception
+     * @throws Exception
      */
     public function getLastHistorique($history): string
     {
         $lastLog = end($history->LogDossier);
-        return \sprintf(
+        return sprintf(
             'Étape en cours : [%s] %s',
             $lastLog->status,
             $lastLog->annotation
         );
     }
 
+    /**
+     * @throws IpRestApiException
+     */
     public function getRefusalMessage($dossierID): string
     {
         return $this->getPremis($dossierID)->getRefusalMessage();
@@ -506,7 +600,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     public function getDateSignature(array|stdClass $history): string
     {
         foreach (array_reverse($history->LogDossier) as $log) {
-            if (\in_array($log->status, [Action::SIGNATURE, Action::EXTERNAL_SIGNATURE], true)) {
+            if (in_array($log->status, [Action::SIGNATURE, Action::EXTERNAL_SIGNATURE], true)) {
                 $logSignature = $log;
                 break;
             }
@@ -545,7 +639,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
      */
     public function hasMultiDocumentSigne($info): bool
     {
-        return ($this->iparapheur_multi_doc && count($info['documents']) > 1);
+        return $this->iparapheur_multi_doc && count($info['documents']) > 1;
     }
 
     /**
@@ -655,7 +749,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                 'nom_document' => $fichier->filename,
                 'document' => $fichier->content,
             ];
-        }, \array_slice($info['annexes'], $ignore_count));
+        }, array_slice($info['annexes'], $ignore_count));
     }
 
     public function setSendingMetadata(DonneesFormulaire $donneesFormulaire): void
@@ -672,6 +766,9 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $this->sending_metadata = $result;
     }
 
+    /**
+     * @throws IpRestApiException
+     */
     private function deleteFolder(string $folderId): bool
     {
         try {
@@ -684,6 +781,14 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                 $folderId
             );
             $this->getLogger()->debug("Dossier $folderId supprimé");
+        } catch (ApiException $e) {
+            throw new IpRestApiException(
+                sprintf(
+                    '[%d] Error connecting to the API (%s)',
+                    $e->getCode(),
+                    $e->getResponseBody(),
+                )
+            );
         } catch (Exception $e) {
             $this->lastError = $e->getMessage();
             $this->getLogger()->notice("Impossible d'effacer le dossier $folderId : " . $e->getMessage());
@@ -697,7 +802,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         for ($i = count($history->LogDossier) - 1; $i >= 0; $i--) {
             $log = $history->LogDossier[$i];
             if ($log->timestamp !== '' && $log->status !== Action::READ) {
-                return \sprintf(
+                return sprintf(
                     '%s : [%s] %s',
                     date('d/m/Y H:i:s', strtotime($log->timestamp)),
                     $log->status,
