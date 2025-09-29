@@ -317,7 +317,7 @@ final class IparapheurRestConnectorTest extends PastellTestCase
         $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
         $history = $connector->getAllHistoriqueInfo(self::ONGOING_FOLDER_ID);
         $last = $connector->getLastHistorique($history);
-        self::assertSame('Étape en cours : [SIGNATURE] ', $last);
+        self::assertSame('Étape en cours : [SIGNATURE] (bureau test) ', $last);
     }
 
     /**

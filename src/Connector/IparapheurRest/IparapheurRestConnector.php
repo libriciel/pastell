@@ -555,7 +555,11 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                 $agentName = $premis->getAgent($event->linkingAgentIdentifier->linkingAgentIdentifierValue)->agentName;
             }
 
-            $annotation = $event->eventOutcomeInformation->eventOutcomeDetail->eventOutcomeDetailNote ?? '';
+            $annotation = \sprintf(
+                '(bureau %s) %s',
+                $event->linkingAgentIdentifier->linkingAgentRole ?? '',
+                $event->eventOutcomeInformation->eventOutcomeDetail->eventOutcomeDetailNote ?? '',
+            );
 
             $logDossier[] = (object)[
                 'timestamp' => $timestamp,

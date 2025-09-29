@@ -8,5 +8,5 @@ class LinkingAgentIdentifier
 {
     public string $linkingAgentIdentifierType;
     public string $linkingAgentIdentifierValue;
-    public string $linkingAgentIdentifierRole;
+    public string $linkingAgentRole;
 }
