@@ -31,6 +31,7 @@ doivent être mises à jour #1667
   alimente maintenant `ls-actes-tdt-versant-sae`, il fait partie du `suppl_actes_tdt_versant_sae` #2015
 - La classe `TdtChoiceTypologieActes` est déplacée Pastell\Step\Tdt\Acte\ChoiceAction\TypologieChoiceAction #2283
 - La classe `TdtTypologieChangeByApi` est déplacée Pastell\Step\Tdt\Acte\Action\TypologieOnChangeAction #2283
+- Il n'est plus possible d'utiliser l'adresse mail dans la page "Mot de passe oublié ?" #2309
 
 ## Suppressions
 
