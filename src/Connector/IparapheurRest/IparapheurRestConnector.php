@@ -88,7 +88,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $iparapheurAuthConfig = new IparapheurAuthConfig(
             $donneesFormulaire->get(self::USERNAME) ?: '',
             $donneesFormulaire->get(self::PASSWORD) ?: '',
-            $donneesFormulaire->get(self::URL) ?: '',
+            rtrim($donneesFormulaire->get(self::URL), '/') ?: '',
         );
         [$httpClient, $config] = $this->apiClientFactory->createAuthenticatedClient($iparapheurAuthConfig);
         $this->client = $httpClient;
