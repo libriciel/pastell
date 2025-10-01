@@ -97,7 +97,7 @@ class SignatureEnvoie extends ConnecteurTypeActionExecutor
         $fileToSign->metadata = json_decode(
             $donneesFormulaire->getFileContent($json_metadata),
             true
-        );
+        ) ?? [];
 
         $fileToSign->dossierId = date('YmdHis') . random_int(0, mt_getrandmax());
 
