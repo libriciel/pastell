@@ -99,7 +99,7 @@
           "document_a_signer": "document",
           "annexe": "annexe",
           "has_date_limite": "on",
-          "has_metadata_in_json": "",
+          "has_metadata_in_json": "on",
           "continue_after_refusal": ""
         },
         "num_etape_same_type": 0,
