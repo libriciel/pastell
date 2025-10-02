@@ -187,7 +187,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         $signature = $this->getConnecteur('signature');
         $donneesFormulaire = $this->getDonneesFormulaire();
 
-        $info = $signature->getSignature($dossierID, false);
+        $info = $signature->getSignature($dossierID);
 
         if (!$info) {
             $this->setLastMessage("La signature n'a pas pu être récupérée : " . $signature->getLastError());
@@ -285,7 +285,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         $signature = $this->getConnecteur('signature');
         $donneesFormulaire = $this->getDonneesFormulaire();
 
-        $info = $signature->getSignature($dossierID, false);
+        $info = $signature->getSignature($dossierID);
         if (!$info) {
             $this->setLastMessage('Le bordereau n\'a pas pu être récupéré : ' . $signature->getLastError());
             return false;

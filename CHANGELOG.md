@@ -43,6 +43,7 @@ doivent être mises à jour #1667
 - Suppression de la fonction WorkerSQL::getJobListWithWorker remplacé par JobQueueSQL::getFilteredJobList #2233
 - Suppression de la fonction WorkerSQL::getNbJob remplacé par JobQueueSQL::getNbJob #2239
 - Suppression de la fonction SignatureConnecteur::hasTypeSousType #2284
+- Suppression du paramètre `$archive` sur `SignatureConnecteur::getSignature()` #2312
 - Le connecteur `pdf-relance` est supprimé. Il est intégré au connecteur `mailsec` #2269
 - Suppression de la classe /connecteur/cpp/lib/UTF8Encoder.php #2274
 - Variable d'environnement PASTELL_SITE_BASE remplacé par APP_HOST

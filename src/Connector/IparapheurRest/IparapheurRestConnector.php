@@ -415,7 +415,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     /**
      * @throws Exception
      */
-    public function getSignature($dossierID, $archive = true): array
+    public function getSignature($dossierID): array
     {
         $premis = $this->getPremis($dossierID);
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
@@ -522,9 +522,6 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                     $info['detached_signatures'][] = $fichier;
                 }
             }
-        }
-        if ($archive) {
-            $this->archiver($dossierID);
         }
 
         return $info;
