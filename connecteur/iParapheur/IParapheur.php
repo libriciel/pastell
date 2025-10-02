@@ -220,12 +220,9 @@ class IParapheur extends SignatureConnecteur
 
     /**
      * @param $dossierID
-     * @param bool $archiver => Il faut toujours mettre false et appellé archiver() après avoir enregistré la signature
-     *                  Sinon, en cas de fulldisk, on perd la signature et le parapheur l'a effacé !
-     *                  Il faudrait refaire cette fonction...
      * @return array|bool
      */
-    public function getSignature($dossierID, $archiver = true)
+    public function getSignature($dossierID)
     {
         try {
             $result =  $this->getClient()->GetDossier($dossierID);
@@ -250,10 +247,6 @@ class IParapheur extends SignatureConnecteur
             $info['multi_document_signe'] = $this->getMultiDocumentSigne($result);
             $info['annexe'] = $this->getAnnexe($result);
 
-            if ($archiver) {
-                //TODO BUG ! Si on fait ca et qu'on arrive pas à écrire sur le FS, alors... on est mal...
-                $this->archiver($dossierID);
-            }
             return $info;
         } catch (Exception $e) {
             $this->lastError = "Erreur sur la récupération de la signature : " . $e->getMessage();

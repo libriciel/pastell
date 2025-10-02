@@ -160,7 +160,7 @@ class IParapheurRecupHelios extends ActionExecutor
         $filename = substr($helios->getFileName('fichier_pes'), 0, -4);
         $filename_signe = $filename . '_signe.xml';
 
-        $info = $signature->getSignature($dossierID, false);
+        $info = $signature->getSignature($dossierID);
         if (! $info) {
             $this->setLastMessage("La signature n'a pas pu être récupérée : " . $signature->getLastError());
             return false;

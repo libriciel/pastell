@@ -62,7 +62,7 @@ class FakeIparapheur extends SignatureConnecteur
         return "Dossier déposé pour signature";
     }
 
-    public function getSignature($dossierID, $archive = true)
+    public function getSignature($dossierID)
     {
         $info['document'] = "Document";
         $info['nom_document'] = "document.txt";

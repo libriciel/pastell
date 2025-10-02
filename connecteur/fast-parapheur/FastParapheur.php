@@ -255,7 +255,7 @@ class FastParapheur extends SignatureConnecteur
         }
     }
 
-    public function getSignature($documentId, $archive = true)
+    public function getSignature($documentId)
     {
         try {
             return $this->getClient()->download($documentId);

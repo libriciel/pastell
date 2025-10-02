@@ -13,7 +13,7 @@ abstract class SignatureConnecteur extends Connecteur
      */
     abstract public function sendDossier(FileToSign $dossier);
 
-    abstract public function getSignature($dossierID, $archive = true);
+    abstract public function getSignature($dossierID);
 
     abstract public function getAllHistoriqueInfo($dossierID);
 

@@ -136,7 +136,7 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
         $document_element = 'commande';
         $document_orignal_element = 'document_orignal';
 
-        $info = $signature->getSignature($dossierID, false);
+        $info = $signature->getSignature($dossierID);
         if (! $info) {
             $this->setLastMessage("La signature n'a pas pu être récupérée : " . $signature->getLastError());
             return false;
