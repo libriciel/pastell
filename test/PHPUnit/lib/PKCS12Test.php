@@ -46,6 +46,8 @@ class PKCS12Test extends PHPUnit\Framework\TestCase
     public function testWithLegacyOpensslProvider(): void
     {
         $all = $this->pkcs12->getAll(__DIR__ . '/fixtures/demou.p12', 'demou');
-        static::assertFalse($all);
+        static::assertNotFalse($all);
+        $info = openssl_x509_parse($all['cert']);
+        static::assertSame('7e899712', $info['hash']);
     }
 }

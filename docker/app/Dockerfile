@@ -17,36 +17,44 @@ WORKDIR /app
 
 EXPOSE 9000
 
-RUN apk add --no-cache $PHPIZE_DEPS \
+RUN apk add --no-cache \
     bash \
     bash-completion \
+    c-client \
     ca-certificates \
     curl \
-    curl-dev \
     git \
     graphviz \
+    icu \
     icu-data-full \
-    icu-dev \
-    imap-dev \
-    krb5-dev \
-    libxml2-dev \
+    krb5 \
+    libxml2 \
     libxslt \
-    libxslt-dev \
-    libzip-dev \
+    libzip \
     logrotate \
     musl-locales \
     musl-locales-lang \
-    oniguruma-dev \
-    openldap-dev \
+    oniguruma \
+    openldap \
     supercronic \
     supervisor \
     tzdata \
     wget \
     xmlstarlet
 
-RUN pecl install imap redis uuid
-
-RUN docker-php-ext-install \
+RUN apk add --no-cache --virtual .build-deps \
+    $PHPIZE_DEPS \
+    curl-dev \
+    icu-dev \
+    imap-dev \
+    krb5-dev \
+    libxml2-dev \
+    libxslt-dev \
+    libzip-dev \
+    oniguruma-dev \
+    openldap-dev \
+  && pecl install imap redis uuid \
+  && docker-php-ext-install -j$(nproc) \
     bcmath \
     ftp \
     intl \
@@ -58,9 +66,8 @@ RUN docker-php-ext-install \
     soap \
     xml \
     xsl \
-    zip
-
-RUN docker-php-ext-enable \
+    zip \
+  && docker-php-ext-enable \
     bcmath \
     imap \
     ftp \
@@ -76,7 +83,8 @@ RUN docker-php-ext-enable \
     uuid \
     xml \
     xsl \
-    zip
+    zip \
+  && apk del .build-deps
 
 RUN addgroup -S app -g "$GID" && adduser -S app -G app -u "$UID"
 
@@ -102,6 +110,8 @@ COPY ./docker/app/php/ /usr/local/etc/php/conf.d/
 COPY --chown=app:app ./ /app/
 RUN chown app:app /app/
 
+RUN sh /app/docker/app/add-legacy-provider-to-openssl-v3.sh
+
 RUN cp /app/docker/app/supervisord/supervisord.conf /etc/supervisord.conf
 
 RUN composer run-script --no-dev post-install-cmd && composer dump-autoload --no-dev --optimize
@@ -120,13 +130,15 @@ USER "root"
 
 COPY --from=hubdocker.libriciel.fr/composer:2.8.12 /usr/bin/composer /usr/local/bin/composer
 
-RUN apk add --no-cache $PHPIZE_DEPS \
-    linux-headers \
-    nodejs \
-    npm
+RUN apk add --no-cache nodejs npm
 
-RUN pecl install pcov xdebug
-RUN docker-php-ext-enable pcov xdebug
+RUN apk add --no-cache --virtual .dev-build-deps \
+    $PHPIZE_DEPS \
+    linux-headers \
+ && pecl install pcov xdebug \
+ && docker-php-ext-enable pcov xdebug \
+ && apk del .dev-build-deps
+
 RUN composer install
 
 USER "app"
