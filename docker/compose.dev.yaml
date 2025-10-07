@@ -60,10 +60,10 @@ services:
   glaneur-sftp:
     image: atmoz/sftp:alpine
     volumes:
-      - ${PASTELL_GLANEUR:-pastell_glaneur}:/home/${SFTP_USER:-ftp}
+      - ${PASTELL_GLANEUR:-pastell_glaneur}:/home/${SFTP_USER:-sftp}
     ports:
       - "${SFTP_PORT:-2222}:22"
-    command: ${SFTP_USER:-ftp}:${SFTP_PASSWORD:-ftp}:33
+    command: ${SFTP_USER:-sftp}:${SFTP_PASSWORD:-sftp}:${UID:-10001}
 
   mailpit:
     image: axllent/mailpit

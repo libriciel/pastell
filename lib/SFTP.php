@@ -117,7 +117,8 @@ class SFTP
     private function throwErrorIfNeeded(): void
     {
         $errors = $this->netSFTP->getSFTPErrors();
-        if ($errors && $errors[0]) {
+        /** @see : https://stackoverflow.com/questions/62671036/end-of-file-error-for-phpseclib-for-any-file-get */
+        if ($errors && $errors[0] && $errors[0] !== 'NET_SFTP_STATUS_EOF: End of file') {
             throw new UnrecoverableException($errors[0]);
         }
     }
