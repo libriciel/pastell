@@ -4,7 +4,11 @@ include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
   - template: Security/Container-Scanning.gitlab-ci.yml
-  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@2.0.6
+  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@2.2.0
+  - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@1.2.0
+    inputs:
+      compose_file: "docker/compose.yaml"
+      version_placeholder: "canary"
 
 stages:
     - build
@@ -231,8 +235,14 @@ deploy_dev:
     - ssh -tt gitlab@pastell-4-0.dev.libriciel.net "docker login -u gitlab-ci-token -p '$CI_JOB_TOKEN' $CI_REGISTRY && cd /data/docker-file/ && docker-compose pull && docker-compose up -d"
     - curl -i -X POST -d "$PAYLOAD" $MATTERMOST_WEBHOOK
 
+generate-sbom-compose:
+  needs: [ "publish-container-to-registry"]
+
+package-sbom-compose:
+  needs: [ "generate-sbom-compose" ]
+
 publish-compose:
-  needs: [ "publish-container-to-registry" ]
+  needs: [ "publish-container-to-registry", "package-sbom-compose" ]
   variables:
     COMPOSE_FILE_NAME: compose.yaml
   before_script:
