@@ -57,13 +57,6 @@ final class ExpectedElementsCheck implements CheckInterface
             '>='
         ));
 
-        $elements[] = (new HealthCheckItem(
-            'Niveau de sécurité OpenSSL',
-            \getenv('OPENSSL_CIPHER_STRING_SECURITY_LEVEL'),
-            '>= 2',
-            'https://www.openssl.org/docs/man3.0/man3/SSL_CTX_set_security_level.html'
-        ))->setSuccess(\getenv('OPENSSL_CIPHER_STRING_SECURITY_LEVEL') >= 2);
-
         return $elements;
     }
 }

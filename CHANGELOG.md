@@ -55,6 +55,7 @@ doivent être mises à jour #1667
 - Variable d'environnement MYSQL_PASSWORD remplacé par DATABASE_PASSWORD
 - Variable d'environnement MARIADB_DATADIR remplacé par DATABASE_DATADIR
 - Variable d'environnement LOGS_PATH remplacé par APP_LOGS_PATH
+- Variable d'environnement OPENSSL_CIPHER_STRING_SECURITY_LEVEL
 - Suppression du script `force-delete-entite.php`, remplacé par la commande `app:entite:force-delete-entite` #2290
 - Suppression du script `test-yml.php` #2292
 - Suppression du script `cron-jour.php`, remplacé par la commande `app:notification:daily-digest` #2293
