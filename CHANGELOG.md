@@ -1,5 +1,10 @@
 # [4.0.26]
 
+## Correction
+
+- Il n'y a plus de modification du dernier état (table document_entite) lors de plusieurs tentatives 
+  d'action identique en erreur sur un document #2333
+
 ## Évolutions
 
 - Ajout du champ 'Métadonnées parapheur (JSON)' pour les types de dossiers document-autorisation-urbanisme,

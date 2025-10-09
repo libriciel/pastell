@@ -2,6 +2,8 @@
 
 namespace Pastell\Tests\Step\SAE\Action;
 
+use DocumentActionEntite;
+use DocumentEntite;
 use NotFoundException;
 use Pastell\Step\SAE\Enum\SAEActionsEnum;
 use PastellTestCase;
@@ -11,11 +13,15 @@ final class SAESendArchiveActionTest extends PastellTestCase
 {
     public const SAE_ONLY = 'sae-only';
     private TypeDossierLoader $typeDossierLoader;
+    private DocumentEntite $documentEntite;
+    private DocumentActionEntite $documentActionEntite;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->typeDossierLoader = $this->getObjectInstancier()->getInstance(TypeDossierLoader::class);
+        $this->documentEntite = $this->getObjectInstancier()->getInstance(DocumentEntite::class);
+        $this->documentActionEntite = $this->getObjectInstancier()->getInstance(DocumentActionEntite::class);
     }
 
     protected function tearDown(): void
@@ -91,10 +97,32 @@ final class SAESendArchiveActionTest extends PastellTestCase
 
         $result = $this->triggerActionOnDocument($documentId, SAEActionsEnum::SEND_ARCHIVE->value);
         $this->assertFalse($result);
-
         $this->assertLastMessage(
             "Ce connecteur bouchon est configuré pour renvoyer une erreur - L'envoi du bordereau a échoué : "
         );
         $this->assertLastDocumentAction(SAEActionsEnum::SEND_ARCHIVE_ERROR->value, $documentId);
+
+        /*
+         * test : Il n'y a plus de modification du dernier état (table document_entite) lors de plusieurs
+         * tentatives d'action identique en erreur sur un document #2333
+         */
+        $this->assertSame(
+            $this->documentEntite->getFromAction(
+                self::SAE_ONLY,
+                SAEActionsEnum::SEND_ARCHIVE_ERROR->value
+            )[0]['last_action_date'],
+            $this->documentActionEntite->getLastActionInfo(self::ID_E_COL, $documentId)['date']
+        );
+
+        sleep(1);
+        $this->triggerActionOnDocument($documentId, SAEActionsEnum::SEND_ARCHIVE->value);
+
+        $this->assertLessThan(
+            $this->documentEntite->getFromAction(
+                self::SAE_ONLY,
+                SAEActionsEnum::SEND_ARCHIVE_ERROR->value
+            )[0]['last_action_date'],
+            $this->documentActionEntite->getLastActionInfo(self::ID_E_COL, $documentId)['date']
+        );
     }
 }

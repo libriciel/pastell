@@ -106,9 +106,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         $time_action = strtotime($lastAction['date']);
         if (time() - $time_action > $nb_jour_max * 86400) {
             $erreur = "Aucune réponse disponible sur le parapheur depuis $nb_jour_max jours !";
-            $this->getActionCreator()->addAction(
-                $this->id_e,
-                $this->id_u,
+            $this->changeOrUpdateAction(
                 $this->getMappingValue(self::ACTION_NAME_ERROR),
                 $erreur
             );

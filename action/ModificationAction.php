@@ -2,15 +2,16 @@
 
 class ModificationAction extends ActionExecutor
 {
-    public const ACTION_ID = "modification";
+    public const ACTION_ID = 'modification';
+    private const ACTION_MESSAGE = 'Modification du document';
 
     /**
      * @return bool
      * @throws DonneesFormulaireException
      * @throws ForbiddenException
-     * @throws NotFoundException
+     * @throws NotFoundException|JsonException
      */
-    public function go()
+    public function go(): bool
     {
 
         /** @var FileUploader $fileUploader */
@@ -53,8 +54,7 @@ class ModificationAction extends ActionExecutor
         if ($this->getDonneesFormulaire()->isModified()) {
             $action_name = $this->getDocumentActionEntite()->getLastAction($this->id_e, $this->id_d);
             if ($this->needChangeEtatToModification($action_name)) {
-                $this->objectInstancier->getInstance(ActionChange::class)
-                    ->updateModification($this->id_d, $this->id_e, $this->id_u, self::ACTION_ID);
+                $this->changeOrUpdateAction(self::ACTION_ID, self::ACTION_MESSAGE);
             } else {
                 $this->getJournal()->addSQL(
                     Journal::DOCUMENT_ACTION,
@@ -62,13 +62,13 @@ class ModificationAction extends ActionExecutor
                     $this->id_u,
                     $this->id_d,
                     $action_name,
-                    "Modification du document"
+                    self::ACTION_MESSAGE
                 );
             }
         }
 
         //Traitement du ONCHANGE
-        $message = "";
+        $message = '';
         $result = true;
 
         foreach ($this->getDonneesFormulaire()->getOnChangeAction() as $action_on_change) {
