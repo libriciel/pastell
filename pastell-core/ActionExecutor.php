@@ -369,14 +369,18 @@ abstract class ActionExecutor
         $this->setLastMessage($message);
     }
 
-    public function changeOrUpdateAction($action, $message): void
-    {
+    public function changeOrUpdateAction(
+        string $action,
+        string $message,
+        bool $updateDate = false,
+    ): void {
         $this->objectInstancier->getInstance(ActionChange::class)->addOrUpdateAction(
             $this->id_d,
             $this->id_e,
             $this->id_u,
             $action,
-            $message
+            $message,
+            $updateDate
         );
         $this->setLastMessage($message);
     }

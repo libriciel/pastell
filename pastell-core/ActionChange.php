@@ -38,14 +38,17 @@ class ActionChange extends SQL
         $id_e,
         $id_u,
         string $action,
-        string $message_journal
+        string $message_journal,
+        bool $updateDate = false,
     ): void {
         $document_action = $this->documentActionSQL->getLastActionInfo($id_d, $id_e);
 
         if (! $document_action || $document_action['id_u'] !== $id_u || $document_action['action'] !== $action) {
             $this->addAction($id_d, $id_e, $id_u, $action, $message_journal);
         } else {
-            $this->documentActionSQL->updateDate($document_action['id_a']);
+            if ($updateDate) {
+                $this->documentActionSQL->updateDate($document_action['id_a']);
+            }
             $this->journal->addSQL(
                 Journal::DOCUMENT_ACTION,
                 $id_e,

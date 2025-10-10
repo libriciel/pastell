@@ -54,7 +54,7 @@ class ModificationAction extends ActionExecutor
         if ($this->getDonneesFormulaire()->isModified()) {
             $action_name = $this->getDocumentActionEntite()->getLastAction($this->id_e, $this->id_d);
             if ($this->needChangeEtatToModification($action_name)) {
-                $this->changeOrUpdateAction(self::ACTION_ID, self::ACTION_MESSAGE);
+                $this->changeOrUpdateAction(self::ACTION_ID, self::ACTION_MESSAGE, true);
             } else {
                 $this->getJournal()->addSQL(
                     Journal::DOCUMENT_ACTION,

@@ -135,7 +135,9 @@ INSERT INTO `role_droit` (`role`, `droit`) VALUES
 ('admin', 'commande-generique:edition'),
 ('admin', 'commande-generique:lecture'),
 ('admin', 'mailsec-bidir:edition'),
-('admin', 'mailsec-bidir:lecture');
+('admin', 'mailsec-bidir:lecture'),
+('admin', 'ls-document-pdf:edition'),
+('admin', 'ls-document-pdf:lecture');
 
 
 TRUNCATE TABLE `utilisateur`;
