@@ -3,7 +3,11 @@
 ## Évolutions
 
 - Ajout du champ 'Métadonnées parapheur (JSON)' pour les types de dossiers document-autorisation-urbanisme,
-  rh-bulletin-salaire et rh-document-individuel #2324
+  rh-bulletin-salaire et rh-document-individuel #2324 
+
+## Corrections
+
+- Amélioration des headers #2338
 
 # [4.0.25] - 2025-09-08
 
