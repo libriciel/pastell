@@ -27,7 +27,7 @@ class IpRestGetTypeListTest extends PastellTestCase
                         ['Content-type' => 'application/json'],
                         file_get_contents(__DIR__ . '/../fixtures/authenticate_ok.json')
                     ),
-                    '/api/standard/v1/tenant/8a4dba5f-b034-4f92-8625-3aee7be97d46/types' => new Response(
+                    '/api/standard/v1/tenant/8a4dba5f-b034-4f92-8625-3aee7be97d46/desk/429db3e9-c419-4e6a-87d9-1348c63cf2b7/types/creation-allowed' => new Response(
                         200,
                         ['Content-type' => 'application/json'],
                         file_get_contents(__DIR__ . '/../fixtures/list_types.json')
@@ -55,7 +55,8 @@ class IpRestGetTypeListTest extends PastellTestCase
                 'url' => 'https://url',
                 'username' => 'username-iparapheur',
                 'password' => 'password-iparapheur',
-                'tenant_id' => '8a4dba5f-b034-4f92-8625-3aee7be97d46'
+                'tenant_id' => '8a4dba5f-b034-4f92-8625-3aee7be97d46',
+                'desk_id' => '429db3e9-c419-4e6a-87d9-1348c63cf2b7',
             ]
         );
 
@@ -86,6 +87,7 @@ class IpRestGetTypeListTest extends PastellTestCase
                 'url' => 'https://url',
                 'username' => 'username-iparapheur',
                 'password' => 'password-iparapheur',
+                'tenant_id' => '8a4dba5f-b034-4f92-8625-3aee7be97d46',
             ]
         );
 
@@ -93,7 +95,7 @@ class IpRestGetTypeListTest extends PastellTestCase
         $ipRestGetTypeList->setConnecteurId('iparapheur-rest', $connectorId);
 
         $this->expectException(IpRestException::class);
-        $this->expectExceptionMessage("L'entité iparapheur est obligatoire pour voir la liste des types");
+        $this->expectExceptionMessage("L'entité et le bureau iparapheur sont obligatoires pour voir la liste des types");
 
         $ipRestGetTypeList->displayAPI();
     }

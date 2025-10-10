@@ -58,8 +58,8 @@ final class IparapheurRestConnectorTest extends PastellTestCase
             'POST /auth/realms/api/protocol/openid-connect/token' => $this->fixture('authenticate_ok.json'),
             'GET /api/standard/v1/tenant' => $this->fixture('list_tenants.json'),
             'GET /api/standard/v1/tenant/' . self::TENANT_ID . '/desk' => $this->fixture('list_user_desks.json'),
-            'GET /api/standard/v1/tenant/' . self::TENANT_ID . '/types' => $this->fixture('list_types.json'),
-            'GET /api/standard/v1/tenant/' . self::TENANT_ID . '/types/' . self::TYPE_ID . '/subtypes' => $this->fixture('list_subtypes.json'),
+            'GET /api/standard/v1/tenant/' . self::TENANT_ID .  '/desk/' . self::DESK_ID . '/types/creation-allowed' => $this->fixture('list_types.json'),
+            'GET /api/standard/v1/tenant/' . self::TENANT_ID .  '/desk/' . self::DESK_ID . '/types/' . self::TYPE_ID . '/subtypes/creation-allowed' => $this->fixture('list_subtypes.json'),
             'POST /api/standard/v1/tenant/' . self::TENANT_ID . '/desk/' . self::DESK_ID . '/folder' => $this->fixture('create_folder_201.json', 201),
 
             'GET /api/standard/v1/tenant/' . self::TENANT_ID . '/desk/' . self::DESK_ID . '/folder/' . self::ONGOING_FOLDER_ID . '/premis' => $this->fixture('ongoing_folder.xml'),
@@ -179,7 +179,7 @@ final class IparapheurRestConnectorTest extends PastellTestCase
     public function testGetTypeList(): void
     {
         $this->getConnectorId();
-        $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID]);
+        $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
         $types = $connector->getTypeList();
         self::assertNotEmpty($types);
         $firstKey = array_key_first($types);
@@ -195,7 +195,11 @@ final class IparapheurRestConnectorTest extends PastellTestCase
     public function testGetSousType(): void
     {
         $this->getConnectorId();
-        $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'iparapheur_type_id' => self::TYPE_ID]);
+        $connector = $this->makeConnector([
+            'tenant_id' => self::TENANT_ID,
+            'desk_id' => self::DESK_ID,
+            'iparapheur_type_id' => self::TYPE_ID
+        ]);
         $subtypes = $connector->getSousType();
         self::assertNotEmpty($subtypes);
         $firstKey = array_key_first($subtypes);
