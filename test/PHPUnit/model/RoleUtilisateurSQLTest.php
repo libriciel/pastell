@@ -115,6 +115,8 @@ class RoleUtilisateurSQLTest extends PastellTestCase
             'helios-generique:edition',
             'helios-generique:lecture',
             'journal:lecture',
+            'ls-document-pdf:edition',
+            'ls-document-pdf:lecture',
             'mailsec-bidir:edition',
             'mailsec-bidir:lecture',
             'mailsec:edition',

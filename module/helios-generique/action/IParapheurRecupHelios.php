@@ -38,7 +38,7 @@ class IParapheurRecupHelios extends ActionExecutor
         $time_action = strtotime($lastAction['date']);
         if (time() - $time_action > $nb_jour_max * 86400) {
             $message = "Aucune réponse disponible sur le parapheur depuis $nb_jour_max jours !";
-            $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'erreur-verif-iparapheur', $message);
+            $this->changeOrUpdateAction('erreur-verif-iparapheur', $message);
             $this->notify($this->action, $this->type, $message);
         }
     }

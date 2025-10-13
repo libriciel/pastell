@@ -8,6 +8,8 @@
 ## Corrections
 
 - Amélioration des headers #2338
+- Il n'y a plus de modification du dernier état (table document_entite) lors de plusieurs tentatives
+  d'action identique en erreur sur un document #2333
 
 # [4.0.25] - 2025-09-08
 
