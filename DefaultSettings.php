@@ -283,3 +283,7 @@ if (!defined('RATE_LIMITER_VARIABLE')) {
 if (!defined('USE_CONNECTOR_ACTION_PERMISSION')) {
     define('USE_CONNECTOR_ACTION_PERMISSION', false);
 }
+
+if (!defined('DISPLAY_SECURITY_BANNER')) {
+    define('DISPLAY_SECURITY_BANNER', true);
+}

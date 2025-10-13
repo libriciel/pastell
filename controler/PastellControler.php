@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Logger;
+use Pastell\Security\LibricielFeedbackReader;
 use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Droit\DroitService;
 
@@ -243,6 +244,8 @@ class PastellControler extends Controler
         $this->setBreadcrumbs();
         $this->setViewParameter('all_module', $this->getAllModule());
         $this->setViewParameter('authentification', $this->getInstance(Authentification::class));
+        $this->setViewParameter('libricielFeedback', $this->getInstance(LibricielFeedbackReader::class));
+
         $this->setViewParameter('roleUtilisateur', $this->getRoleUtilisateur());
         $this->setViewParameter('sqlQuery', $this->getSQLQuery());
         $this->setViewParameter('objectInstancier', $this->getObjectInstancier());
