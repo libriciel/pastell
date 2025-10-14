@@ -330,12 +330,14 @@ class IParapheurUnitTest extends PastellTestCase
                 );
             });
         $iParapheur = $this->getIParapheurConnecteur($soapClient);
-        try {
-            $fileToSign->xPathPourSignatureXML = null;
-            $iParapheur->sendDossier($fileToSign);
-        } catch (Exception $e) {
-            static::assertSame("Le bordereau du fichier PES ne contient pas d'identifiant valide, ni la balise PESAller : signature impossible", $e->getMessage());
-        }
+
+        $fileToSign->xPathPourSignatureXML = null;
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage(
+            "Le bordereau du fichier PES ne contient pas d'identifiant valide, ni la balise PESAller : signature impossible"
+        );
+        $iParapheur->sendDossier($fileToSign);
+
         $fileToSign->xPathPourSignatureXML = '4';
         static::assertSame('1234-abcd', $iParapheur->sendDossier($fileToSign));
     }
