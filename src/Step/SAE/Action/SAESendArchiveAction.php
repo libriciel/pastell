@@ -35,7 +35,7 @@ final class SAESendArchiveAction extends ConnecteurTypeActionExecutor
             $transfertId = $sae->sendSIP($bordereau, $archivePath);
         } catch (\Exception $exception) {
             $message = $exception->getMessage() . " - L'envoi du bordereau a échoué : " . $sae->getLastError();
-            $this->changeAction($sendArchiveErrorState, $message);
+            $this->changeOrUpdateAction($sendArchiveErrorState, $message);
             $this->notify($sendArchiveErrorState, $this->type, $message);
             return false;
         }

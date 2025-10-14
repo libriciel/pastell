@@ -13,6 +13,9 @@ class ActionCreatorSQL extends SQL
         $this->journal = $journal;
     }
 
+    /**
+     * @deprecated 4.0.26 unused
+     */
     public function updateModification($id_e, $id_u, $action, $id_d)
     {
         if (! $action) {

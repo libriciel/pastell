@@ -41,3 +41,18 @@
         </div>
     {% endif %}
 </div>
+
+{% if authentification.isConnected %}
+    {% if libricielFeedback.hasSecurityAlert() %}
+        <div class="security-banner security-banner">
+            <div class="security-banner-warning-icon">
+                <i class="fa fa-exclamation-triangle"></i>
+            </div>
+            <div class="security-banner-warning-text">
+                <p>Cette version de l'application présente <strong>une faille de sécurité critique</strong> activement
+                    exploitable.</p>
+                <p>Veuillez contacter immédiatement votre administrateur système pour procéder à une mise à jour.</p>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}

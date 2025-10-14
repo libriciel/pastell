@@ -63,6 +63,7 @@ services:
       USE_UUID_FOR_DOCUMENT: ${USE_UUID_FOR_DOCUMENT:-false}
       PASSWORD_MIN_ENTROPY: ${PASSWORD_MIN_ENTROPY:-80}
       RATE_LIMITER_VARIABLE: ${RATE_LIMITER_VARIABLE:-REMOTE_ADDR}
+      DISPLAY_SECURITY_BANNER: ${DISPLAY_SECURITY_BANNER:-true}
     tmpfs:
       - /data/config:mode=770,uid=${UID:-10001},gid=${GID:-10001},rw,noexec,nosuid,nodev
       - /data/run:mode=770,uid=${UID:-10001},gid=${GID:-10001},rw,noexec,nosuid,nodev
@@ -78,6 +79,7 @@ services:
       - ${TMP_PATH:-tmp_datadir}:/tmp/:rw,noexec,nosuid,nodev
       - ${UPLOAD_CHUNK_PATH:-upload_chunk_datadir}:/data/upload_chunk/:rw,noexec,nosuid,nodev
       - ${CACERTS_PATH:-cacerts}:/etc/ssl/certs/:ro,noexec,nosuid,nodev
+      - ${LIBRICIEL_FEEDBACK_VOLUME:-libriciel-feedback}:/data/libriciel_feedback/:ro,noexec,nosuid,nodev
 
   web:
     image: 'registry.libriciel.fr/public/plateforme/pastell-web:canary'
@@ -154,7 +156,7 @@ services:
       - ${DATABASE_DATADIR:-database_datadir}:/var/lib/mysql/:rw,noexec,nosuid,nodev
 
   redis:
-    image: 'hubdocker.libriciel.fr/redis:8.2.1-alpine3.22'
+    image: 'hubdocker.libriciel.fr/redis:8.2.2-alpine3.22'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -165,7 +167,7 @@ services:
       - /data:mode=750,rw,noexec,nosuid,nodev
 
   seda-generator:
-    image: 'registry.libriciel.fr/public/plateforme/seda-generator:1.1.1'
+    image: 'registry.libriciel.fr/public/plateforme/seda-generator:1.1.2'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -182,7 +184,7 @@ services:
       - '/etc/localtime:/etc/localtime:ro'
 
   flow:
-    image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.5.0'
+    image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.5.1'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -201,7 +203,7 @@ services:
       - no-new-privileges:true
 
   pes-viewer:
-    image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.7'
+    image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.10'
     restart: unless-stopped
     cap_drop:
       - ALL

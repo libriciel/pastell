@@ -42,7 +42,7 @@ class IParapheurRecupHelios extends ActionExecutor
                 $nb_jour_max,
                 $message,
             );
-            $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'erreur-verif-iparapheur', $message);
+            $this->changeOrUpdateAction('erreur-verif-iparapheur', $message);
             $this->notify($this->action, $this->type, $message);
             $this->setLastMessage($message);
             return false;
