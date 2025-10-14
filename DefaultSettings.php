@@ -280,3 +280,7 @@ if (!defined("USE_EXTERNAL_STORAGE_FOR_JOURNAL_PROOF")) {
 if (!defined('RATE_LIMITER_VARIABLE')) {
     define('RATE_LIMITER_VARIABLE', 'REMOTE_ADDR');
 }
+
+if (!defined('DISPLAY_SECURITY_BANNER')) {
+    define('DISPLAY_SECURITY_BANNER', true);
+}

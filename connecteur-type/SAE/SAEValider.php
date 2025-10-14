@@ -36,7 +36,7 @@ class SAEValider extends ConnecteurTypeActionExecutor
         if (!$id_transfert) {
             $message = "Impossible de trouver l'identifiant du transfert";
             $this->setLastMessage($message);
-            $this->getActionCreator()->addAction($this->id_e, $this->id_u, $action_name_error_envoi, $message);
+            $this->changeOrUpdateAction($action_name_error_envoi, $message);
             $this->notify($this->action, $this->type, $message);
             return false;
         }

@@ -19,7 +19,7 @@ class SAEEnvoyer extends ConnecteurTypeActionExecutor
         try {
             $result = $this->goThrow($tmp_folder);
         } catch (UnrecoverableException $e) {
-            $this->changeAction(self::ACTION_NAME_ERROR, $e->getMessage());
+            $this->changeOrUpdateAction(self::ACTION_NAME_ERROR, $e->getMessage());
             $this->notify(self::ACTION_NAME_ERROR, $this->type, $e->getMessage());
         } finally {
             $tmpFolder->delete($tmp_folder);

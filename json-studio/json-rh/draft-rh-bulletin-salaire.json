@@ -29,7 +29,7 @@
           "has_date_limite": "on",
           "document_a_signer": "document",
           "libelle_parapheur": "titre_document",
-          "has_metadata_in_json": "",
+          "has_metadata_in_json": "on",
           "continue_after_refusal": ""
         },
         "num_etape_same_type": 0,

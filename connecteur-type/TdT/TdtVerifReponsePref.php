@@ -54,7 +54,7 @@ class TdtVerifReponsePref extends ConnecteurTypeActionExecutor
         if ($status == TdtConnecteur::STATUS_ERREUR) {
             $message = "Transaction en erreur sur le TdT : " . $tdT->getLastError();
             $this->setLastMessage($message);
-            $actionCreator->addAction($this->id_e, $this->id_u, $erreur_verif_tdt, $message);
+            $this->changeOrUpdateAction($erreur_verif_tdt, $message);
             $this->notify($erreur_verif_tdt, $this->type, $message);
             return false;
         }

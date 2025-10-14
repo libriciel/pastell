@@ -37,6 +37,7 @@ $objectInstancier->setInstance('temp_directory', sys_get_temp_dir());
 $objectInstancier->setInstance('workspacePath', WORKSPACE_PATH);
 $objectInstancier->setInstance('template_path', TEMPLATE_PATH);
 $objectInstancier->setInstance('uploadChunkDirectory', UPLOAD_CHUNK_DIRECTORY);
+$objectInstancier->setInstance('libricielFeedbackDirectory', '/data/libriciel_feedback');
 
 $objectInstancier->setInstance('opensslPath', OPENSSL_PATH);
 
@@ -148,6 +149,8 @@ $objectInstancier->setInstance('unlock_job_error_at_startup', UNLOK_JOB_ERROR_AT
 $objectInstancier->setInstance('upload_chunk_directory', UPLOAD_CHUNK_DIRECTORY);
 
 $objectInstancier->setInstance('loginPageConfigurationLocation', LOGIN_PAGE_CONFIGURATION_LOCATION);
+
+$objectInstancier->setInstance('displaySecurityBanner', DISPLAY_SECURITY_BANNER);
 
 $featureToggleService = $objectInstancier->getInstance(FeatureToggleService::class);
 
