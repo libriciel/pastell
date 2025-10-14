@@ -138,9 +138,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 'Aucune réponse disponible sur le parapheur depuis %s jours !',
                 $nb_jour_max
             );
-            $this->getActionCreator()->addAction(
-                $this->id_e,
-                $this->id_u,
+            $this->changeOrUpdateAction(
                 $this->getMappingValue(self::ACTION_NAME_ERROR),
                 $erreur
             );

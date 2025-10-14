@@ -32,7 +32,7 @@ final class SAEGenerateArchiveAction extends ConnecteurTypeActionExecutor
         try {
             $result = $this->goInternal($tmp_folder);
         } catch (UnrecoverableException $e) {
-            $this->changeAction($generateSipErrorState, $e->getMessage());
+            $this->changeOrUpdateAction($generateSipErrorState, $e->getMessage());
             $this->notify($generateSipErrorState, $this->type, $e->getMessage());
         } finally {
             $tmpFolder->delete($tmp_folder);

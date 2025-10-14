@@ -39,8 +39,9 @@ class DocumentActionSQL extends SQL
 
     public function updateDate($id_a)
     {
-        $sql = "UPDATE document_action SET date=now() WHERE id_a=?";
-        $this->query($sql, $id_a);
+        $now = date(Date::DATE_ISO);
+        $sql = "UPDATE document_action SET date=? WHERE id_a=?";
+        $this->query($sql, $now, $id_a);
     }
 
     public function getCreator($id_d)

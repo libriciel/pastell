@@ -254,6 +254,19 @@
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
 
+# [4.0.26] - 2025-10-13
+
+## Évolutions
+
+- Ajout du champ 'Métadonnées parapheur (JSON)' pour les types de dossiers document-autorisation-urbanisme,
+  rh-bulletin-salaire et rh-document-individuel #2324 
+
+## Corrections
+
+- Amélioration des headers #2338
+- Il n'y a plus de modification du dernier état (table document_entite) lors de plusieurs tentatives
+  d'action identique en erreur sur un document #2333
+
 # [4.0.25] - 2025-09-08
 
 ## Correction

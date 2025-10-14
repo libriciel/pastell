@@ -119,4 +119,30 @@ class ModificationActionTest extends PastellTestCase
             ]
         );
     }
+
+    public function testAddOrUpdateAction(): void
+    {
+        $documentEntite = $this->getObjectInstancier()->getInstance(DocumentEntite::class);
+        $documentActionEntite = $this->getObjectInstancier()->getInstance(DocumentActionEntite::class);
+
+        $documentId = $this->createDocument('ls-document-pdf')['id_d'];
+        $this->getInternalAPI()->patch("/Entite/1/Document/{$documentId}", ['envoi_sae' => 1]);
+        self::assertSame(
+            $documentActionEntite->getLastActionInfo(self::ID_E_COL, $documentId)['date'],
+            $documentEntite->getFromAction(
+                'ls-document-pdf',
+                'modification'
+            )[0]['last_action_date']
+        );
+
+        sleep(1);
+        $this->getInternalAPI()->patch("/Entite/1/Document/{$documentId}", ['envoi_sae' => 0]);
+        self::assertLessThan(
+            $documentActionEntite->getLastActionInfo(self::ID_E_COL, $documentId)['date'],
+            $documentEntite->getFromAction(
+                'ls-document-pdf',
+                'modification'
+            )[0]['last_action_date']
+        );
+    }
 }
