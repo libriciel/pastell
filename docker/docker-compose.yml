@@ -28,6 +28,7 @@ services:
             - ${TMP_PATH:-tmp_datadir}:/tmp
             - ${UPLOAD_CHUNK_PATH:-upload_chunk_datadir}:/data/upload_chunk
             - ${CACERTS_PATH:-cacerts}:/etc/ssl/certs/
+            - ${LIBRICIEL_FEEDBACK_VOLUME:-libriciel-feedback}:/data/libriciel_feedback/:ro,noexec,nosuid,nodev
 
         environment:
             PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT:-1000M}

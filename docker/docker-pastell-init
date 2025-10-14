@@ -112,6 +112,8 @@ define('RATE_LIMITER_VARIABLE', '${RATE_LIMITER_VARIABLE:-REMOTE_ADDR}');
 
 define('USE_CONNECTOR_ACTION_PERMISSION', ${USE_CONNECTOR_ACTION_PERMISSION:-false});
 
+define('DISPLAY_SECURITY_BANNER', ${DISPLAY_SECURITY_BANNER:-true});
+
 EOF
 
 env | grep '^TOGGLE_' | sed "s/^TOGGLE_\([^=]*\)=\(.*\)/\$feature_toggle[Pastell\\\Service\\\FeatureToggle\\\\\1::class] = \2;/g"

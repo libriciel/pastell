@@ -716,3 +716,30 @@ html body .ls-on {
 .handle:hover {
     cursor: grab;
 }
+
+.security-banner {
+    background-color: #C02B2B;
+    height: 60px;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    padding-left: 25px;
+    box-sizing: border-box;
+}
+
+.security-banner-warning-icon .fa-exclamation-triangle {
+    font-size: 25px;
+}
+
+.security-banner-warning-text {
+    margin-left: 25px;
+}
+
+.security-banner-warning-text p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.security-banner-warning-text p:first-child {
+    margin-bottom: 2px;
+}
