@@ -190,8 +190,11 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     public function getTypeList(): array
     {
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
-        if (!$tenantId) {
-            throw new IpRestException("L'entité iparapheur est obligatoire pour voir la liste des types");
+        $deskId = $this->connecteurConfig->get(self::DESK_ID);
+        if ((!$tenantId) || (!$deskId)) {
+            throw new IpRestException(
+                "L'entité et le bureau iparapheur sont obligatoires pour voir la liste des types"
+            );
         }
 
         $types = [];
@@ -199,7 +202,8 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
         do {
             try {
-                $result = new TypologyApi($this->client, $this->configuration)->listTypes($tenantId, $page);
+                $result = new TypologyApi($this->client, $this->configuration)
+                    ->listCreationAllowedTypes($tenantId, $deskId, $page);
             } catch (ApiException $e) {
                 throw new IpRestApiException(
                     sprintf(
@@ -231,11 +235,12 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     public function getSousType(): array
     {
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
+        $deskId = $this->connecteurConfig->get(self::DESK_ID);
         $typeId = $this->connecteurConfig->get(self::TYPE_ID);
 
-        if ((!$tenantId) || (!$typeId)) {
+        if ((!$tenantId) || (!$deskId) || (!$typeId)) {
             throw new IpRestException(
-                "L'entité et le type iparapheur sont obligatoires pour voir la liste des sous-types"
+                "L'entité, le bureau et le type iparapheur sont obligatoires pour voir la liste des sous-types"
             );
         }
 
@@ -244,7 +249,8 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
         do {
             try {
-                $result = new TypologyApi($this->client, $this->configuration)->listSubtypes($tenantId, $typeId, $page);
+                $result = new TypologyApi($this->client, $this->configuration)
+                    ->listCreationAllowedSubtypes($tenantId, $deskId, $typeId, $page);
             } catch (ApiException $e) {
                 throw new IpRestApiException(
                     sprintf(
@@ -418,7 +424,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     public function getSignature($dossierID): array
     {
         $premis = $this->getPremis($dossierID);
-        $tenantId = $this->connecteurConfig->get(self::TENANT_ID);
+        $tenantId = $this->connecteurConfig->get(self::TENANT_ID, '');
         $deskId = $this->connecteurConfig->get(self::DESK_ID, '');
         try {
             $zipData = new FolderApi($this->client, $this->configuration)->downloadFolderZip(

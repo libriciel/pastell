@@ -27,7 +27,7 @@ class IpRestGetSubTypeListTest extends PastellTestCase
                         ['Content-type' => 'application/json'],
                         file_get_contents(__DIR__ . '/../fixtures/authenticate_ok.json')
                     ),
-                    '/api/standard/v1/tenant/8a4dba5f-b034-4f92-8625-3aee7be97d46/types/233f806c-9fc3-44db-ab36-739c4909cdc9/subtypes'
+                    '/api/standard/v1/tenant/8a4dba5f-b034-4f92-8625-3aee7be97d46/desk/429db3e9-c419-4e6a-87d9-1348c63cf2b7/types/233f806c-9fc3-44db-ab36-739c4909cdc9/subtypes/creation-allowed'
                     => new Response(
                         200,
                         ['Content-type' => 'application/json'],
@@ -57,6 +57,7 @@ class IpRestGetSubTypeListTest extends PastellTestCase
                 'username' => 'username-iparapheur',
                 'password' => 'password-iparapheur',
                 'tenant_id' => '8a4dba5f-b034-4f92-8625-3aee7be97d46',
+                'desk_id' => '429db3e9-c419-4e6a-87d9-1348c63cf2b7',
                 'iparapheur_type_id' => '233f806c-9fc3-44db-ab36-739c4909cdc9'
             ]
         );
@@ -89,6 +90,7 @@ class IpRestGetSubTypeListTest extends PastellTestCase
                 'username' => 'username-iparapheur',
                 'password' => 'password-iparapheur',
                 'tenant_id' => '8a4dba5f-b034-4f92-8625-3aee7be97d46',
+                'desk_id' => '429db3e9-c419-4e6a-87d9-1348c63cf2b7',
             ]
         );
 
@@ -96,7 +98,9 @@ class IpRestGetSubTypeListTest extends PastellTestCase
         $ipRestGetSubTypeList->setConnecteurId('iparapheur-rest', $connectorId);
 
         $this->expectException(IpRestException::class);
-        $this->expectExceptionMessage("L'entité et le type iparapheur sont obligatoires pour voir la liste des sous-types");
+        $this->expectExceptionMessage(
+            "L'entité, le bureau et le type iparapheur sont obligatoires pour voir la liste des sous-types"
+        );
 
         $ipRestGetSubTypeList->displayAPI();
     }
