@@ -192,6 +192,10 @@ formulaire:
             type: externalData
             choice-action: iparapheur-sous-type
             link_name: 'Sélectionner un sous-type'
+        json_metadata:
+            name: 'Métadonnées parapheur (JSON)'
+            commentaire: 'Au format JSON {"cle1":"valeur1","cle2":"valeur2",...}'
+            type: file
         has_date_limite:
             name: 'Utiliser une date limite'
             type: checkbox
@@ -503,6 +507,7 @@ action:
             - envoi_sae
             - envoi_iparapheur
             - iparapheur_sous_type
+            - json_metadata
             - has_date_limite
             - date_limite
             - annotation_publique
@@ -555,6 +560,7 @@ action:
             iparapheur_type: iparapheur_type
             iparapheur_sous_type: iparapheur_sous_type
             iparapheur_dossier_id: iparapheur_dossier_id
+            json_metadata: json_metadata
             fast_parapheur_circuit: fast_parapheur_circuit
             fast_parapheur_circuit_configuration: fast_parapheur_circuit_configuration
             fast_parapheur_email_destinataire: fast_parapheur_email_destinataire
@@ -573,6 +579,7 @@ action:
         name: "Erreur lors de l'envoi du dossier à la signature"
         editable-content:
             - iparapheur_sous_type
+            - json_metadata
             - has_date_limite
             - date_limite
             - fast_parapheur_circuit
