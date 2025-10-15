@@ -351,13 +351,12 @@ class EntiteSQL extends SQL
         int $mere = 0,
         int $cdg = 0,
     ): int {
-        $date = \date(\Date::DATE_ISO);
         $query = <<<EOT
 INSERT INTO entite(denomination,siren,type,entite_mere,date_inscription,centre_de_gestion)
 VALUES (?,?,?,?,?,?);
 EOT;
 
-        $this->query($query, $name, $siren, $type, $mere, $date, $cdg);
+        $this->query($query, $name, $siren, $type, $mere, $this->getNow(), $cdg);
         return (int)$this->lastInsertId();
     }
 

@@ -89,8 +89,8 @@ class UtilisateurSQL extends SQL
     public function create($login, $password, $email, $password_validation)
     {
         $sql = "INSERT INTO utilisateur(login,email,mail_verif_password,date_inscription) " .
-                " VALUES (?,?,?,now())";
-        $this->query($sql, $login, $email, $password_validation);
+                " VALUES (?,?,?,?)";
+        $this->query($sql, $login, $email, $password_validation, $this->getNow());
         $id_u =  $this->getIdFromLogin($login);
         $this->setPassword($id_u, $password);
         return $id_u;

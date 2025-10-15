@@ -97,7 +97,7 @@ class Journal extends SQL
             $action = "";
         }
 
-        $now = date(Date::DATE_ISO);
+        $now = $this->getNow();
         $message_horodate = "$type - $id_e - $id_u - $id_d - $action - $message - $now - $document_type";
 
         $preuve = "";

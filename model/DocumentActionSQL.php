@@ -4,14 +4,12 @@ class DocumentActionSQL extends SQL
 {
     public function add($id_d, $id_e, $id_u, $action)
     {
-        $now = date(Date::DATE_ISO);
-
         $sql = "INSERT INTO document_action(id_d,date,action,id_e,id_u) VALUES (?,?,?,?,?)";
-        $this->query($sql, $id_d, $now, $action, $id_e, $id_u);
+        $this->query($sql, $id_d, $this->getNow(), $action, $id_e, $id_u);
         $id_a = $this->lastInsertId();
 
         $sql = "UPDATE document_entite SET last_action=? , last_action_date=? WHERE id_d=? AND id_e=?";
-        $this->query($sql, $action, $now, $id_d, $id_e);
+        $this->query($sql, $action, $this->getNow(), $id_d, $id_e);
 
         return $id_a;
     }
@@ -39,9 +37,8 @@ class DocumentActionSQL extends SQL
 
     public function updateDate($id_a)
     {
-        $now = date(Date::DATE_ISO);
         $sql = "UPDATE document_action SET date=? WHERE id_a=?";
-        $this->query($sql, $now, $id_a);
+        $this->query($sql, $this->getNow(), $id_a);
     }
 
     public function getCreator($id_d)

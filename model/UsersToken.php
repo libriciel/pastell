@@ -8,14 +8,12 @@ final class UsersToken extends SQL
 
     public function create(int $userId, string $name, string $token, ?string $expirationDate = null): void
     {
-        $now = \date(Date::DATE_ISO);
-
         $query = <<<EOT
 INSERT INTO users_token(id_u, name, token, created_at, expired_at)
 VALUES(?,?,?,?,?);
 EOT;
 
-        $this->query($query, $userId, $name, $this->getHashedToken($token), $now, $expirationDate);
+        $this->query($query, $userId, $name, $this->getHashedToken($token), $this->getNow(), $expirationDate);
     }
 
     public function updateToken(int $tokenId, string $token): void

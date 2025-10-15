@@ -6,10 +6,8 @@ class TypeDossierActionSQL extends SQL
 
     public function add(int $id_u, int $id_t, string $action, string $empreinte_sha256, string $message, string $export_json): int
     {
-        $now = date(Date::DATE_ISO);
-
         $sql = "INSERT INTO type_dossier_action(id_u, id_t, action, date, empreinte_sha256, message, export_json) VALUES (?,?,?,?,?,?,?)";
-        $this->query($sql, $id_u, $id_t, $action, $now, $empreinte_sha256, $message, $export_json);
+        $this->query($sql, $id_u, $id_t, $action, $this->getNow(), $empreinte_sha256, $message, $export_json);
         return $this->lastInsertId();
     }
 
