@@ -107,7 +107,9 @@ class FactureCPPIparapheurRecupTest extends ExtensionCppTestCase
          * It probably means that the assertion in the returnCallback() of the mocked soapClient is broken and the exception
          * is caught by the connector.
          */
-        $this->assertLastMessage('01/01/1970 01:00:00 : [RejetVisa] annotation');
+        $this->assertLastMessage(
+            'Le document a été rejeté dans le parapheur : 01/01/1970 01:00:00 : [RejetVisa] annotation'
+        );
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
 

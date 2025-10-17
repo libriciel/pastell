@@ -20,11 +20,10 @@ class TdTRecupAnnulation extends ConnecteurTypeActionExecutor
         $tdT = $this->getConnecteur('TdT');
 
         $tedetis_annulation_id_element = $this->getDonneesFormulaire()->get($tedetis_annulation_id);
-        $actionCreator = $this->getActionCreator();
+
         if (!$tedetis_annulation_id_element) {
             $message = "Une erreur est survenue lors de l'envoi à " . $tdT->getLogicielName();
-            $this->setLastMessage($message);
-            $actionCreator->addAction($this->id_e, 0, $tdt_error, $message);
+            $this->changeOrUpdateAction($tdt_error, $message);
             $this->notify($tdt_error, $this->type, $message);
             return false;
         }
@@ -42,12 +41,7 @@ class TdTRecupAnnulation extends ConnecteurTypeActionExecutor
             );
             return true;
         }
-        $actionCreator->addAction(
-            $this->id_e,
-            0,
-            $annuler_tdt,
-            "L'acte a été annulé par le contrôle de légalité"
-        );
+        $this->changeAction($annuler_tdt, "L'acte a été annulé par le contrôle de légalité");
 
         $donneesFormulaire = $this->getDonneesFormulaire();
         $donneesFormulaire->setData($date_ar_annulation, $tdT->getDateAR($tedetis_annulation_id_element));

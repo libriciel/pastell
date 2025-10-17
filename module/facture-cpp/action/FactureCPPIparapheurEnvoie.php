@@ -51,9 +51,8 @@ class FactureCPPIparapheurEnvoie extends SignatureEnvoie
             PortailFactureConnecteur::STATUT_COMPLETEE
         ];
         if (!in_array($statut, $statut_possible)) {
-            $message = "Le statut " . $statut . " de la facture ne permet pas l'envoi pour validation";
-            $this->setLastMessage($message);
-            $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'send-iparapheur-annule', $message);
+            $message = 'Le statut ' . $statut . " de la facture ne permet pas l'envoi pour validation";
+            $this->changeAction('send-iparapheur-annule', $message);
             return false;
         }
 

@@ -35,8 +35,7 @@ class FactureCPPEnvoiGED extends GEDEnvoyer
 
         if ($donneesFormulaire->get('has_send_ged') == true) {
             $message = 'La facture a déja été déposée en GED';
-            $this->setLastMessage($message);
-            $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'modification', $message);
+            $this->changeAction('modification', $message);
             return false;
         }
 
@@ -62,10 +61,9 @@ class FactureCPPEnvoiGED extends GEDEnvoyer
         $gedListeStatutsTab = explode(";", $gedListeStatuts);
 
         if (!(in_array($statut, $gedListeStatutsTab))) {
-            $message = "Le statut " . $statut . " de la facture ne permet pas l'envoi en GED";
-            $this->setLastMessage($message);
+            $message = 'Le statut ' . $statut . " de la facture ne permet pas l'envoi en GED";
             $this->notify($this->action, $this->type, $message);
-            $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'send-ged-annule', $message);
+            $this->changeAction('send-ged-annule', $message);
             return false;
         }
         return true;

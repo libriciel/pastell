@@ -26,34 +26,29 @@ class TdtVerifReponsePref extends ConnecteurTypeActionExecutor
         $reponse_de_reponse_transaction_id = 'response_transaction_id';
         $reponse_de_reponse_transaction_id_element = $this->getDonneesFormulaire()->get($reponse_de_reponse_transaction_id);
 
-        $actionCreator = $this->getActionCreator();
-
         if (( ! $acte_transaction_id_element) || ( ! $reponse_transaction_id_element)) {
-            $message = "Une erreur est survenue lors de l'envoi à " . $tdT->getLogicielName() . " (tedetis_transaction_id non disponible)";
-            $this->setLastMessage($message);
-            $actionCreator->addAction($this->id_e, 0, $tdt_error, $message);
+            $message = "Une erreur est survenue lors de l'envoi à " . $tdT->getLogicielName() . ' (tedetis_transaction_id non disponible)';
+            $this->changeOrUpdateAction($tdt_error, $message);
             $this->notify($tdt_error, $this->type, $message);
             return false;
         }
 
         if (!in_array($type_reponse_element, [TdtConnecteur::DEMANDE_PIECE_COMPLEMENTAIRE, TdtConnecteur::LETTRE_OBSERVATION])) {
             $message = "Ce type de réponse de la préfécture ne prévoit pas d'acquittement";
-            $actionCreator->addAction($this->id_e, 0, $termine, $message);
-            $this->setLastMessage($message);
+            $this->changeAction($termine, $message);
             return false;
         }
 
         try {
             $status = $tdT->getStatus($reponse_de_reponse_transaction_id_element);
         } catch (Exception $e) {
-            $message = "Echec de la récupération des informations : " .  $e->getMessage();
+            $message = 'Echec de la récupération des informations : ' .  $e->getMessage();
             $this->setLastMessage($message);
             return false;
         }
 
         if ($status == TdtConnecteur::STATUS_ERREUR) {
-            $message = "Transaction en erreur sur le TdT : " . $tdT->getLastError();
-            $this->setLastMessage($message);
+            $message = 'Transaction en erreur sur le TdT : ' . $tdT->getLastError();
             $this->changeOrUpdateAction($erreur_verif_tdt, $message);
             $this->notify($erreur_verif_tdt, $this->type, $message);
             return false;

@@ -83,13 +83,7 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
         );
         $this->getMailSecConnecteur()->sendAllMail($this->id_e, $this->id_d);
 
-        $this->getActionCreator()->addAction(
-            $this->id_e,
-            $this->id_u,
-            $this->action,
-            'Le document a été envoyé'
-        );
-
+        $this->changeAction($this->action, 'Le document a été envoyé');
         $this->setLastMessage('Le document a été envoyé au(x) destinataire(s)');
         $this->getMailsecManager()->updateReceipt($this->id_d);
         return true;

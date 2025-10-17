@@ -824,6 +824,8 @@ class FastParapheurTest extends PastellTestCase
         $this->assertLastMessage('Le document a été envoyé au parapheur électronique');
 
         $this->triggerActionOnDocument($id_d, 'verif-iparapheur');
-        $this->assertLastMessage('03/04/2019 15:46:49 : [Refusé] test message de refus');
+        $this->assertLastMessage(
+            'Le document a été rejeté dans le parapheur : 03/04/2019 15:46:49 : [Refusé] test message de refus'
+        );
     }
 }

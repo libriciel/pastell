@@ -5,9 +5,9 @@ declare(strict_types=1);
 final readonly class ActionChange
 {
     public function __construct(
-        private DocumentActionSQL    $documentActionSQL,
+        private DocumentActionSQL $documentActionSQL,
         private DocumentActionEntite $documentActionEntite,
-        private Journal              $journal,
+        private Journal $journal,
     ) {
     }
 

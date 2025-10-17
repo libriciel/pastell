@@ -21,9 +21,8 @@ class StatutFactureCppCreate extends ActionExecutor
         try {
             $xsdValidator->schemaValidate($schemaPath, $filePath);
         } catch (Exception $e) {
-            $errorMessage = "Le fichier CPPStatutPivot est incorrect: " . $e->getMessage();
-            $this->getActionCreator()
-                ->addAction($this->id_e, $this->id_u, 'create-statut-facture-cpp-error', $errorMessage);
+            $errorMessage = 'Le fichier CPPStatutPivot est incorrect: ' . $e->getMessage();
+            $this->changeAction('create-statut-facture-cpp-error', $errorMessage);
             $this->notify('create-statut-facture-cpp-error', $this->type, $errorMessage);
             throw new Exception($errorMessage);
         }
@@ -33,8 +32,7 @@ class StatutFactureCppCreate extends ActionExecutor
 
         if (!$content->CPPFactureStatuts) {
             $errorMessage = "Le fichier CPPStatutPivot est incorrect : Il ne présente pas l'élément CPPFactureStatuts";
-            $this->getActionCreator()
-                ->addAction($this->id_e, $this->id_u, 'create-statut-facture-cpp-error', $errorMessage);
+            $this->changeAction('create-statut-facture-cpp-error', $errorMessage);
             $this->notify('create-statut-facture-cpp-error', $this->type, $errorMessage);
 
             throw new Exception($errorMessage);
@@ -49,8 +47,7 @@ class StatutFactureCppCreate extends ActionExecutor
         if (!$supplierCppId) {
             $donneesFormulaire->setData('identifiant_cpp_fournisseur', "1-IDENTIFIANT NON TROUVE");
             $errorMessage = "L'identifiant de structure $supplierIdentifier n'a pas été trouvé. L'identifiant CPP est invalide";
-            $this->getActionCreator()
-                ->addAction($this->id_e, $this->id_u, 'create-statut-facture-cpp-error', $errorMessage);
+            $this->changeAction('create-statut-facture-cpp-error', $errorMessage);
             $this->notify('create-statut-facture-cpp-error', $this->type, $errorMessage);
             throw new Exception($errorMessage);
         }
@@ -71,8 +68,7 @@ class StatutFactureCppCreate extends ActionExecutor
             $donneesFormulaire->setData('identifiant_facture_cpp', $invoiceCppId);
         } catch (Exception $e) {
             $errorMessage = $e->getMessage();
-            $this->getActionCreator()
-                ->addAction($this->id_e, $this->id_u, 'create-statut-facture-cpp-error', $errorMessage);
+            $this->changeAction('create-statut-facture-cpp-error', $errorMessage);
             $this->notify('create-statut-facture-cpp-error', $this->type, $errorMessage);
             throw new Exception($errorMessage);
         }
@@ -84,8 +80,7 @@ class StatutFactureCppCreate extends ActionExecutor
             $donneesFormulaire->setData('statut_cible', $statutCible);
         } catch (Exception $e) {
             $errorMessage = $e->getMessage();
-            $this->getActionCreator()
-                ->addAction($this->id_e, $this->id_u, 'create-statut-facture-cpp-error', $errorMessage);
+            $this->changeAction('create-statut-facture-cpp-error', $errorMessage);
             $this->notify('create-statut-facture-cpp-error', $this->type, $errorMessage);
             throw new Exception($errorMessage);
         }
