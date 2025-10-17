@@ -102,10 +102,7 @@ final class MailsecManager
             $this->validatePassword($mailSecInfo->donneesFormulaire, $mailSecInfo->key, $request);
         }
 
-        $this->objectInstancier->getInstance(DocumentEmail::class)->consulter(
-            $mailSecInfo->key,
-            $this->objectInstancier->getInstance(Journal::class)
-        );
+        $this->objectInstancier->getInstance(DocumentEmail::class)->consulter($mailSecInfo->key);
 
         $this->objectInstancier->getInstance(ActionExecutorFactory::class)->executeOnDocument(
             $mailSecInfo->id_e,

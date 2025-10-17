@@ -81,7 +81,7 @@ class PDFGeneriqueTest extends PastellTestCase
         $info = $documentEmail->getInfo($id_d);
         $key = $info[0]['key'];
 
-        $documentEmail->consulter($key, $this->getJournal());
+        $documentEmail->consulter($key);
 
         $notificationDigestSql = $this->getObjectInstancier()->getInstance(NotificationDigestSQL::class);
 
