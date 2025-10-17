@@ -86,7 +86,9 @@ doivent être mises à jour #1667
 - Suppression de HeliosGeneriqueXMLFile, TdTExtractionHelios #2211
 - Suppression de IParapheur::getMetaDonnee et SignatureRecuperation::getMetaDonnee #2211
 - Suppression de FluxDataStandard, use FluxDataSedaDefault instead #2211
-- Suppression de SignatureConnecteur::getDossierID($id, $name) #2289
+- Suppression de SignatureConnecteur::getDossierID #2289
+- Suppression de ActionCreator et ActionCreatorSQL use ActionChange instead #2336
+- Suppression de ActionChange::updateModification, use addOrUpdateAction instead #2336
 
 ## Dépréciations
 
