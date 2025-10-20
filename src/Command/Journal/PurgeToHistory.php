@@ -15,10 +15,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
 #[AsCommand(
-    name: 'app:journal:archive-to-history',
+    name: 'app:journal:purge-to-history',
     description: 'Archive les entrées du journal de plus de N mois dans journal_historique puis les supprime du journal.',
 )]
-final class ArchiveToHistory extends Command
+final class PurgeToHistory extends Command
 {
     public function __construct(
         private readonly Logger $logger,
