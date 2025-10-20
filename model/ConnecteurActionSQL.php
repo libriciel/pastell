@@ -6,10 +6,8 @@ class ConnecteurActionSQL extends SQL
 
     public function add(int $id_e, int $id_u, int $id_ce, string $type_dossier, string $action, string $empreinte_sha256, string $message): int
     {
-        $now = date(Date::DATE_ISO);
-
         $sql = "INSERT INTO connecteur_action(id_e, id_u, id_ce, type_dossier, action, date, empreinte_sha256, message) VALUES (?,?,?,?,?,?,?,?)";
-        $this->query($sql, $id_e, $id_u, $id_ce, $type_dossier, $action, $now, $empreinte_sha256, $message);
+        $this->query($sql, $id_e, $id_u, $id_ce, $type_dossier, $action, $this->getNow(), $empreinte_sha256, $message);
         return $this->lastInsertId();
     }
 

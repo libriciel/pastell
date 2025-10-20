@@ -123,14 +123,14 @@ class JobQueueSQL extends SQL
 
     public function lock($id_job)
     {
-        $sql = "UPDATE job_queue SET is_lock=1,lock_since=now() WHERE id_job=?";
-        $this->query($sql, $id_job);
+        $sql = "UPDATE job_queue SET is_lock=1,lock_since=? WHERE id_job=?";
+        $this->query($sql, $this->getNow(), $id_job);
     }
 
     public function lockByVerrouAndEtat($id_verrou, $etat_source, $etat_cible)
     {
-        $sql = "UPDATE job_queue SET is_lock=1,lock_since=now() WHERE id_verrou=? AND etat_source=? AND etat_cible=?";
-        $this->query($sql, $id_verrou, $etat_source, $etat_cible);
+        $sql = "UPDATE job_queue SET is_lock=1,lock_since=? WHERE id_verrou=? AND etat_source=? AND etat_cible=?";
+        $this->query($sql, $this->getNow(), $id_verrou, $etat_source, $etat_cible);
     }
 
     public function unlockAll(?int $id_daemon = null): void
@@ -171,10 +171,10 @@ SQL;
         $sql = <<<SQL
 SELECT count(*) 
 FROM job_queue
-WHERE next_try < now() 
+WHERE next_try < ?
 AND is_lock = 0
 SQL;
-        $info['nb_wait'] = $this->queryOne($sql);
+        $info['nb_wait'] = $this->queryOne($sql, $this->getNow());
 
         $info['nb_lock_one_hour'] = $this->getNbLockSinceOneHour();
 
@@ -201,11 +201,11 @@ SQL;
         $sql = <<<SQL
 SELECT count(*) 
 FROM job_queue 
-WHERE next_try < now() 
+WHERE next_try < ?
 AND is_lock = 0
 AND id_daemon = ?
 SQL;
-        $info['nb_wait'] = $this->queryOne($sql, $id_daemon);
+        $info['nb_wait'] = $this->queryOne($sql, $this->getNow(), $id_daemon);
         $info['nb_lock_one_hour'] = $this->getNbLockSinceOneHourForDaemon($id_daemon);
         return $info;
     }
@@ -268,9 +268,9 @@ SQL;
 
     public function getCountJobByVerrouAndEtat()
     {
-        $sql = "SELECT count(*) as count,sum(is_lock) as nb_lock, id_verrou,etat_source,etat_cible, max(last_try) as last_try, sum(next_try < now()) as nb_late FROM job_queue " .
+        $sql = "SELECT count(*) as count,sum(is_lock) as nb_lock, id_verrou,etat_source,etat_cible, max(last_try) as last_try, sum(next_try < ?) as nb_late FROM job_queue " .
             " GROUP BY id_verrou,etat_source,etat_cible ORDER BY count DESC,last_try ASC";
-        return $this->query($sql);
+        return $this->query($sql, $this->getNow());
     }
 
     public function updateDaemon(int $job_id, int $id_daemon): void
@@ -362,7 +362,8 @@ SQL;
                 $sql .= ' AND job_queue.is_lock=1 ';
                 break;
             case 'wait':
-                $sql .= ' AND next_try < now() AND job_queue.is_lock=0 ';
+                $sql .= ' AND next_try < ? AND job_queue.is_lock=0 ';
+                $params[] = $this->getNow();
                 break;
             case 'actif':
                 $sql .= ' AND worker.termine=0 ';
@@ -399,7 +400,8 @@ SQL;
             $sql .= ' AND job_queue.is_lock=1';
         }
         if ($filtre === 'wait') {
-            $sql .= ' AND job_queue.next_try < NOW()';
+            $sql .= ' AND job_queue.next_try < ?';
+            $params[] = $this->getNow();
         }
         if ($filtre === 'actif') {
             $sql .= ' AND worker.termine = 0';

@@ -35,16 +35,14 @@ class DocumentSQL extends SQL
 
     public function save($id_d, $type)
     {
-        $now = date(Date::DATE_ISO);
-
         $sql = "INSERT INTO document(id_d,type,creation,modification) VALUES (?,?,?,?)";
-        $this->query($sql, $id_d, $type, $now, $now);
+        $this->query($sql, $id_d, $type, $this->getNow(), $this->getNow());
     }
 
     public function setTitre($id_d, $titre)
     {
-        $sql = "UPDATE document SET titre = ?,modification=now() WHERE id_d = ?";
-        $this->query($sql, $titre, $id_d);
+        $sql = "UPDATE document SET titre = ?,modification=? WHERE id_d = ?";
+        $this->query($sql, $titre, $this->getNow(), $id_d);
         unset(self::$cache[$id_d]);
     }
 

@@ -30,8 +30,8 @@ class DocumentEmailReponseSQL extends SQL
 
     public function validateReponse($id_de)
     {
-        $sql = "UPDATE document_email_reponse SET has_reponse=true,date_reponse=now(),has_date_reponse=true  WHERE id_de=?";
-        $this->query($sql, $id_de);
+        $sql = "UPDATE document_email_reponse SET has_reponse=true,date_reponse=?,has_date_reponse=true  WHERE id_de=?";
+        $this->query($sql, $this->getNow(), $id_de);
     }
 
     public function getAllReponse($id_d, $validated = true): array

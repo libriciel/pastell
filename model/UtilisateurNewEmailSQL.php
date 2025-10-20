@@ -14,8 +14,8 @@ class UtilisateurNewEmailSQL extends SQL
     {
         $this->delete($id_u);
         $password = $this->passwordGenerator->getPassword();
-        $sql = "INSERT INTO utilisateur_new_email(id_u,email,password,date) VALUES (?,?,?,now())";
-        $this->query($sql, $id_u, $email, $password);
+        $sql = "INSERT INTO utilisateur_new_email(id_u,email,password,date) VALUES (?,?,?,?)";
+        $this->query($sql, $id_u, $email, $password, $this->getNow());
         return $password;
     }
 

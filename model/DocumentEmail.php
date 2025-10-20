@@ -29,8 +29,8 @@ class DocumentEmail extends SQL
             return $key;
         }
         $key = md5($id_d . $email . mt_rand());
-        $sql = "INSERT INTO document_email(id_d,email,`key`,date_envoie,type_destinataire) VALUES (?,?,?,now(),?)";
-        $this->query($sql, $id_d, $email, $key, $type);
+        $sql = "INSERT INTO document_email(id_d,email,`key`,date_envoie,type_destinataire) VALUES (?,?,?,?,?)";
+        $this->query($sql, $id_d, $email, $key, $this->getNow(), $type);
         return $key;
     }
 
@@ -105,8 +105,8 @@ class DocumentEmail extends SQL
         if ($result['lu']) {
             return $result;
         }
-        $sql = "UPDATE document_email SET lu=1,date_lecture=now() WHERE `key` = ?";
-        $this->query($sql, $key);
+        $sql = "UPDATE document_email SET lu=1,date_lecture=? WHERE `key` = ?";
+        $this->query($sql, $this->getNow(), $key);
 
         $sql = "SELECT id_e FROM document_entite WHERE id_d=?";
         $id_e = $this->queryOne($sql, $result['id_d']);
@@ -165,10 +165,12 @@ class DocumentEmail extends SQL
 
     public function updateRenvoi($id_de)
     {
-        $sql = "UPDATE document_email " .
-                " SET date_renvoi=now(), nb_renvoi=nb_renvoi+1 " .
-                " WHERE id_de=?";
-        $this->query($sql, $id_de);
+        $sql = <<<SQL
+UPDATE document_email 
+SET date_renvoi=?, nb_renvoi=nb_renvoi+1 
+WHERE id_de=?
+SQL;
+        $this->query($sql, $this->getNow(), $id_de);
     }
 
     public function addReponse($id_de, $reponse)

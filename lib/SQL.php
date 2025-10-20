@@ -2,11 +2,9 @@
 
 abstract class SQL
 {
-    private $sqlQuery;
-
-    public function __construct(SQLQuery $sqlQuery)
-    {
-        $this->sqlQuery = $sqlQuery;
+    public function __construct(
+        private readonly SQLQuery $sqlQuery,
+    ) {
     }
 
     public function query($query, $param = false)
@@ -39,5 +37,10 @@ abstract class SQL
     public function lastInsertId($name = null)
     {
         return $this->sqlQuery->getPdo()->lastInsertId($name);
+    }
+
+    public function getNow(): string
+    {
+        return date(Date::DATE_ISO);
     }
 }

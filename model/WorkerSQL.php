@@ -20,8 +20,8 @@ class WorkerSQL extends SQL
 
     public function create($pid)
     {
-        $sql = "INSERT INTO worker (pid,date_begin) VALUES (?,now())";
-        $this->query($sql, $pid);
+        $sql = "INSERT INTO worker (pid,date_begin) VALUES (?,?)";
+        $this->query($sql, $pid, $this->getNow());
         return $this->lastInsertId();
     }
 
@@ -37,8 +37,8 @@ class WorkerSQL extends SQL
 
     public function error($id_worker, $message)
     {
-        $sql = "UPDATE worker SET message=?,date_end=now(),termine=1 WHERE id_worker=?";
-        $this->query($sql, $message, $id_worker);
+        $sql = "UPDATE worker SET message=?,date_end=?,termine=1 WHERE id_worker=?";
+        $this->query($sql, $message, $this->getNow(), $id_worker);
     }
 
     public function getRunningWorker(int $id_job): ?WorkerObject
@@ -96,13 +96,13 @@ class WorkerSQL extends SQL
         $sql = "SELECT jq.id_job,next_try FROM job_queue jq
             LEFT JOIN worker ON jq.id_job=worker.id_job AND worker.termine=0
             WHERE worker.id_worker IS NULL
-            AND next_try<=now()
+            AND next_try<=?
             AND is_lock=0
             AND id_verrou = ''
             AND jq.id_daemon = ?
             ORDER BY next_try
             LIMIT $limit";
-        $job_list = $this->query($sql, $id_daemon);
+        $job_list = $this->query($sql, $this->getNow(), $id_daemon);
         foreach ($this->getAllVerrou() as $verrou_id) {
             foreach ($this->getJobsToLaunchByLock($verrou_id, $id_daemon) as $job) {
                 $job_list[] = $job;
@@ -129,13 +129,13 @@ class WorkerSQL extends SQL
         $sql = "SELECT jq.id_job,next_try FROM job_queue jq
             LEFT JOIN worker ON jq.id_job=worker.id_job AND worker.termine=0
             WHERE worker.id_worker IS NULL
-            AND next_try<now()
+            AND next_try<?
             AND is_lock=0
             AND id_verrou = ?
             AND jq.id_daemon = ?
             ORDER BY next_try
             LIMIT $nb_job_par_verrou";
-        return $this->query($sql, $verrou_id, $id_daemon);
+        return $this->query($sql, $this->getNow(), $verrou_id, $id_daemon);
     }
 
     public function getAllVerrou()
