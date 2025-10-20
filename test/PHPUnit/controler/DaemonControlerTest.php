@@ -7,6 +7,8 @@ class DaemonControlerTest extends ControlerTestCase
         $this->getInternalAPI()->post("/entite/1/connecteur/13/action/une_action_auto");
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
         $this->expectOutputRegex("#une_action_auto#");
+
+        $daemonControler->_beforeAction();
         $daemonControler->verrouAction();
     }
 

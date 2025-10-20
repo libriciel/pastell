@@ -3,7 +3,7 @@
         {{ sub_title }}
     </h2>
 
-    {% if filtre is defined and filtre == 'lock' %}
+    {% if daemon_edition and filtre is defined and filtre == 'lock' %}
         {% if id_e is defined %}
             <a class='btn btn-warning mb-2' href="{{ path(unlock_all_action, {'id_e': id_e}) }}">
         {% else %}
@@ -39,23 +39,25 @@
                 </td>
                 <td>{{ job.type == constant('Job::TYPE_DOCUMENT') ? 'Dossier' : 'Connecteur' }}</td>
                 <td>
-                    {% if  daemon_edition %}
-                        {% if job.is_lock %}
-                            <p class='alert alert-danger'>OUI <br/>Depuis
-                                le {{ gabarit.FancyDate.getDateFr(job.lock_since) }}
+                    {% if job.is_lock %}
+                        <p class='alert alert-danger'>OUI <br/>Depuis
+                            le {{ gabarit.FancyDate.getDateFr(job.lock_since) }}
+                            {% if  daemon_edition %}
                                 <a href="{{ path('app.legacy.daemon_unlock', {'id_job': job.id_job, 'return_url': return_url}) }}"
                                    class="btn-warning btn">
                                     <i class="fa fa-unlock-alt"></i>&nbsp;
                                     Reprendre
                                 </a>
-                            </p>
-                        {% else %}
-                            <p>NON
+                            {% endif %}
+                        </p>
+                    {% else %}
+                        <p>NON
+                            {% if  daemon_edition %}
                                 <a href="{{ path('app.legacy.daemon_lock', {'id_job': job.id_job, 'return_url': return_url}) }}"
                                    class="btn btn-warning">
                                     <i class="fa fa-lock"></i>&nbsp;
                                     Suspendre</a></p>
-                        {% endif %}
+                            {% endif %}
                     {% endif %}
                 </td>
                 <td>
@@ -91,7 +93,7 @@
                 <td>{{ job.worker.id_worker|default('') }}</td>
                 <td>
                     {{ job.worker.pid|default('') }}
-                    {% if job.worker.pid|default(false) %}
+                    {% if daemon_edition and job.worker.pid|default(false) %}
                         {% if not job.worker.termine|default(false) %}
                             <a href="{{ path('app.legacy.daemon_kill', {'id_worker': job.worker.id_worker|default(''), 'return_url': return_url}) }}"
                                class='btn btn-danger'>
@@ -113,7 +115,7 @@
         {% endfor %}
     </table>
 
-    {% if filtre is defined and filtre == 'lock' %}
+    {% if daemon_edition and filtre is defined and filtre == 'lock' %}
         {% if id_e is defined %}
             <a class='btn btn-warning mb-2' href="{{ path(unlock_all_action, {'id_e': id_e}) }}">
         {% else %}

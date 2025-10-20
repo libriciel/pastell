@@ -15,6 +15,7 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('menu_gauche_template', 'DaemonMenuGauche');
         $this->setViewParameter('menu_gauche_select', 'Daemon/index');
         $this->setViewParameter('dont_display_breacrumbs', true);
+        $this->setDroitsDaemon(EntiteSQL::ID_E_ENTITE_RACINE);
     }
 
 
@@ -276,7 +277,7 @@ class DaemonControler extends PastellControler
 
         $this->verifDroit(
             EntiteSQL::ID_E_ENTITE_RACINE,
-            DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
+            DroitService::getDroitLecture(DroitService::DROIT_DAEMON)
         );
         $this->setViewParameter('twigTemplate', 'daemon/job.html.twig');
         $this->setViewParameter('page_title', 'Gestionnaire de tâches');
@@ -326,11 +327,18 @@ class DaemonControler extends PastellControler
      */
     public function detailAction(): void
     {
-        $this->verifDroit(
-            EntiteSQL::ID_E_ENTITE_RACINE,
-            DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
-        );
         $id_job = $this->getGetInfo()->get('id_job');
+        $job = $this->getJobQueueSQL()->getJob($id_job);
+
+        if ($job === null) {
+            $this->setLastError('Impossible de trouver le travail demandé');
+            $this->redirect('Daemon/index');
+        }
+
+        $this->verifDroit(
+            $job->id_e,
+            DroitService::getDroitLecture(DroitService::DROIT_DAEMON)
+        );
 
         $this->setViewParameter('page_title', "Détail du travail #{$id_job}");
         /** @var JobQueueSQL $jobQueueSQL */
@@ -482,12 +490,7 @@ class DaemonControler extends PastellControler
      */
     private function verifConnecteur($id_cf): ConnecteurFrequence
     {
-        $this->verifDroit(
-            EntiteSQL::ID_E_ENTITE_RACINE,
-            DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
-        );
         $connecteurFrequence = $this->getConnecteurFrequenceSQL()->getConnecteurFrequence($id_cf);
-
         if (!$connecteurFrequence) {
             $this->setLastError("Impossible de trouver le connecteur $id_cf");
             $this->redirect('Daemon/frequenceConfiguration');
