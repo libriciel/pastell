@@ -113,11 +113,11 @@ $id_e = $entiteExtendedInfo['id_e'];
                 <i class="fa fa-plus-circle"></i>&nbsp;Ajouter une entité fille
             </a>&nbsp;&nbsp;
             <a class='btn btn-outline-primary' href="Entite/import?id_e=<?php echo $id_e?>" >
-                <i class="fa fa-upload"></i>&nbsp;Importer des entités filles
+                <i class="fa fa-upload"></i>&nbsp;Importer des entités filles (fichier CSV)
             </a>
         <?php endif;?>
         &nbsp;&nbsp;<a class='btn btn-outline-primary' href='<?php $this->url("Entite/export?id_e={$id_e}"); ?>'>
-            <i class="fa fa-download"></i>&nbsp;Exporter
+            <i class="fa fa-download"></i>&nbsp;Exporter la liste (fichier CSV)
         </a>
 
     <?php endif; ?>
