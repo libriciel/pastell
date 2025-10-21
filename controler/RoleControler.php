@@ -56,7 +56,11 @@ class RoleControler extends PastellControler
         if ($role) {
             $this->setViewParameter('nouveau', false);
             $this->setViewParameter('page_title', "Modification du rôle $role ");
-            $this->setViewParameter('role_info', $this->getRoleSQL()->getInfo($role));
+            $role_info = $this->getRoleSQL()->getInfo($role);
+            if (!$role_info) {
+                throw new NotFoundException("Le rôle demandé n'existe pas");
+            }
+            $this->setViewParameter('role_info', $role_info);
             $this->setViewParameter('cancelRedirectUrl', '/Role/detail?role=' . $role);
         } else {
             $this->setViewParameter('nouveau', true);
