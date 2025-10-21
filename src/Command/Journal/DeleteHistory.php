@@ -1,6 +1,8 @@
 <?php
 
-namespace Pastell\Command;
+declare(strict_types=1);
+
+namespace Pastell\Command\Journal;
 
 use Exception;
 use JournalHistoriqueSQL;
@@ -11,7 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class TruncateJournalHistorique extends Command
+class DeleteHistory extends Command
 {
     private $journalHistoriqueSQL;
     private $journalHistoriqueService;
@@ -26,7 +28,7 @@ class TruncateJournalHistorique extends Command
     protected function configure(): void
     {
         $this
-            ->setName('app:truncate-journal-historique')
+            ->setName('app:journal:delete-history')
             ->setDescription('Vide la table journal_historique')
             ->addOption(
                 'force',
@@ -42,7 +44,7 @@ class TruncateJournalHistorique extends Command
      * @return int
      * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());
@@ -58,7 +60,7 @@ class TruncateJournalHistorique extends Command
             $confirm = true;
         }
         if (! $confirm) {
-            $io->note("Abort the deletion of the content of table journal_historique");
+            $io->note('Abort the deletion of the content of table journal_historique');
             return 1;
         }
         $this->journalHistoriqueService->truncate();

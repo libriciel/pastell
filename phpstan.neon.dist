@@ -13,7 +13,6 @@ parameters:
     - connecteur
     - connecteur-type
     - controler
-    - installation
     - lib
     - mailsec
     - model
