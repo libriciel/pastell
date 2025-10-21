@@ -24,7 +24,7 @@ class ChorusProImportUtilService
     ) {
     }
 
-    public function getOldestDateDepuisLe(string $id_e, string $dateDepuisLe, string $typeIntegration): string
+    public function getOldestDateDepuisLe(int $id_e, string $dateDepuisLe, string $typeIntegration): string
     {
         // date_statut_courant la plus récente
         $mostRecentDateStatutCourant = $this->chorusProImportSQL->getMostRecentDateStatutCourant($id_e, $typeIntegration);
@@ -37,17 +37,12 @@ class ChorusProImportUtilService
         // et (depuis le 01/01/2020 => 01/01/2020), (depuis le 01/01/2022 => 01/01/2021)
     }
 
-    public function getListeFacturePastell($id_e, string $typeIntegration, string $utilisateurTechnique = ''): array
+    public function getListeFacturePastell(int $id_e, string $typeIntegration, string $utilisateurTechnique = ''): array
     {
         return $this->chorusProImportSQL->getListeFacturePastell($id_e, $typeIntegration, $utilisateurTechnique);
     }
 
-    /**
-     * @param $id_facture_cpp
-     * @param $liste_facture_pastell
-     * @return mixed
-     */
-    public function rechercherDocumentPastell($id_facture_cpp, $liste_facture_pastell): mixed
+    public function rechercherDocumentPastell(string $id_facture_cpp, array $liste_facture_pastell): bool|array
     {
         foreach ($liste_facture_pastell as $facture_pastell) {
             if (strcmp($facture_pastell['id_facture_cpp'], $id_facture_cpp) === 0) {
@@ -58,11 +53,7 @@ class ChorusProImportUtilService
         return false;
     }
 
-    /**
-     * @param $result
-     * @return string
-     */
-    public function miseEnFormeResult($result): string
+    public function miseEnFormeResult(array $result): string
     {
         $message = '';
         $retour = [];

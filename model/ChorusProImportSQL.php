@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 final class ChorusProImportSQL extends SQL
 {
-    public function getMostRecentDateStatutCourant($id_e, string $typeIntegration): mixed
+    public function getMostRecentDateStatutCourant(int $id_e, string $typeIntegration): bool|string
     {
         $query = <<<SQL
 SELECT di.field_value FROM document_index di
@@ -17,7 +17,7 @@ SQL;
         return $this->queryOne($query, $typeIntegration, $id_e);
     }
 
-    public function getListeFacturePastell($id_e, string $typeIntegration, string $utilisateurTechnique = ''): array
+    public function getListeFacturePastell(int $id_e, string $typeIntegration, string $utilisateurTechnique = ''): array
     {
         // Chargement des factures cpp présentes sur le Pastell
         $sql = <<<SQL
@@ -32,7 +32,7 @@ INNER JOIN document_index di_type_integration
         AND di_type_integration.field_name = 'type_integration'
         AND di_type_integration.field_value =?
 SQL;
-        if ($utilisateurTechnique) {
+        if ($utilisateurTechnique !== '') {
             $sql .= <<<SQL
 INNER JOIN document_index di_utilisateur_technique
     ON de.id_d = di_utilisateur_technique.id_d
