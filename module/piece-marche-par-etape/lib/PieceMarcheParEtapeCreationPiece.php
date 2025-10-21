@@ -56,7 +56,7 @@ class PieceMarcheParEtapeCreationPiece
         $titre = $donneesFormulaire->get($titre_fieldname);
         $this->objectInstancier->getInstance(DocumentSQL::class)->setTitre($new_id_d, $titre);
 
-        $actionCreator = new ActionCreatorSQL($this->objectInstancier->getInstance(SQLQuery::class), $this->objectInstancier->getInstance(Journal::class));
+        $actionChange = $this->objectInstancier->getInstance(ActionChange::class);
 
         $erreur = false;
         if (!$donneesFormulaire->isValidable()) {
@@ -65,20 +65,19 @@ class PieceMarcheParEtapeCreationPiece
 
         if ($erreur) { // création avec erreur
             $message = "Création de la pièce de marché avec erreur: #ID $new_id_d - type : $nom_flux_piece - $titre - $pieceMarcheParEtapeData->etape - $types_pj - Erreur: $erreur";
-            $actionCreator->addAction($id_e, $id_u, Action::CREATION, $message, $new_id_d);
+            $actionChange->addAction($new_id_d, $id_e, $id_u, Action::CREATION, $message);
             return $message;
         } else { // création succcès
             $message = "Création de la pièce de marché succès #ID $new_id_d - type : $nom_flux_piece - $titre - $pieceMarcheParEtapeData->etape - $types_pj";
-            $actionCreator->addAction($id_e, $id_u, Action::MODIFICATION, $message, $new_id_d);
-
+            $actionChange->addAction($new_id_d, $id_e, $id_u, Action::MODIFICATION, $message);
 
             if ($envoyer) {
                 // Valorisation de l'état suivant avec envoyer
-                $actionCreator->addAction($id_e, $id_u, 'importation', "Traitement du dossier", $new_id_d);
+                $actionChange->addAction($new_id_d, $id_e, $id_u, 'importation', 'Traitement du dossier');
                 $this->objectInstancier->getInstance(ActionExecutorFactory::class)->executeOnDocument($id_e, 0, $new_id_d, 'affectation-orientation');
             } else {
                 // Valorisation de l'état suivant sans envoyer
-                $actionCreator->addAction($id_e, $id_u, 'importation-sans-envoi', "Traitement du dossier", $new_id_d);
+                $actionChange->addAction($new_id_d, $id_e, $id_u, 'importation-sans-envoi', 'Traitement du dossier');
                 $this->objectInstancier->getInstance(ActionExecutorFactory::class)->executeOnDocument($id_e, 0, $new_id_d, 'affectation');
             }
 

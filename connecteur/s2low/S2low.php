@@ -512,8 +512,8 @@ class S2low extends TdtConnecteur
 
         $donneesFormulaire->addFileFromData("fichier_pes", $nom_pes, $fic_pes);
 
-        $actionCreatorSQL = $this->objectInstancier->getInstance(ActionCreatorSQL::class);
-        $actionCreatorSQL->addAction($id_e, 0, Action::CREATION, "Importation du PES Retour avec succès", $new_id_d);
+        $this->objectInstancier->getInstance(ActionChange::class)
+            ->addAction($new_id_d, $id_e, 0, Action::CREATION, 'Importation du PES Retour avec succès');
 
         $this->objectInstancier->getInstance(NotificationMail::class)->notify($id_e, $new_id_d, Action::CREATION, self::FLUX_PES_RETOUR, 'Importation du PES Retour avec succès');
 
@@ -774,23 +774,23 @@ class S2low extends TdtConnecteur
         $titre = $donneesFormulaire->get($titre_fieldname);
         $this->objectInstancier->getInstance(DocumentSQL::class)->setTitre($new_id_d, $titre);
 
-        $actionCreatorSQL = $this->objectInstancier->getInstance(ActionCreatorSQL::class);
+        $actionChange = $this->objectInstancier->getInstance(ActionChange::class);
 
-        if ($reponse['type'] == TdtConnecteur::DEFERE_TRIBUNAL_ADMINISTRATIF) {
-            $actionCreatorSQL->addAction(
+        if ($reponse['type'] === TdtConnecteur::DEFERE_TRIBUNAL_ADMINISTRATIF) {
+            $actionChange->addAction(
+                $new_id_d,
                 $id_e,
                 0,
                 'termine',
-                'Ce type de réponse de la préfecture ne prévoit pas de retour',
-                $new_id_d
+                'Ce type de réponse de la préfecture ne prévoit pas de retour'
             );
         } else {
-            $actionCreatorSQL->addAction(
+            $actionChange->addAction(
+                $new_id_d,
                 $id_e,
                 0,
                 'attente-reponse-prefecture',
-                "Attente d'une réponse",
-                $new_id_d
+                "Attente d'une réponse"
             );
         }
 

@@ -3,7 +3,7 @@
 class GlaneurDocumentCreator
 {
     public function __construct(
-        private readonly ActionCreatorSQL $actionCreatorSQL,
+        private readonly ActionChange $actionChange,
         private readonly DonneesFormulaireFactory $donneesFormulaireFactory,
         private readonly JobManager $jobManager,
         private readonly DocumentCreationService $documentCreationService,
@@ -50,12 +50,12 @@ class GlaneurDocumentCreator
             // Errors will be caught on document validation
         }
 
-        $this->actionCreatorSQL->addAction(
+        $this->actionChange->addAction(
+            $new_id_d,
             $glaneurLocalDocumentInfo->id_e,
             0,
             Action::MODIFICATION,
-            "[glaneur] Import du document",
-            $new_id_d
+            '[glaneur] Import du document'
         );
 
         if (! $glaneurLocalDocumentInfo->action_ok) {
@@ -74,12 +74,12 @@ class GlaneurDocumentCreator
             $message = "[glaneur] Le dossier n'est pas valide : " . $donneesFormulaire->getLastError();
             $next_state = $glaneurLocalDocumentInfo->action_ko ?: "fatal-error";
         }
-        $this->actionCreatorSQL->addAction(
+        $this->actionChange->addAction(
+            $new_id_d,
             $glaneurLocalDocumentInfo->id_e,
             0,
             $next_state,
-            $message,
-            $new_id_d
+            $message
         );
         $this->notificationMail->notify(
             $glaneurLocalDocumentInfo->id_e,

@@ -77,10 +77,9 @@ class PESMarchePurgeTest extends PastellMarcheTestCase
         $donneesFormulaire->addFileFromCopy('fichier_pes', 'PESALR2_XYZ.xml', __DIR__ . "/../fixtures/exemple_marche_contrat_initial_nov2017.xml");
         $donneesFormulaire->addFileFromCopy('fichier_reponse', 'PESALR2_XYZ.xml', __DIR__ . "/../fixtures/exemple_marche_contrat_initial_nov2017.xml");
 
-
-        $actionCreatorSQL = $this->getObjectInstancier()->getInstance(ActionCreatorSQL::class);
+        $actionChange = $this->getObjectInstancier()->getInstance(ActionChange::class);
         foreach ($liste_etats as $etat) {
-            $actionCreatorSQL->addAction(1, 0, $etat, "test", $id_d);
+            $actionChange->addAction($id_d, 1, 0, $etat, 'test');
         }
 
         $purge = $this->getObjectInstancier()->getInstance(Purge::class);

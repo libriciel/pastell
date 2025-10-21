@@ -84,9 +84,9 @@ class PieceMarchePurgeTest extends PastellMarcheTestCase
         ]);
         $donneesFormulaire->addFileFromCopy('document', 'vide.pdf', __DIR__ . "/../fixtures/vide.pdf");
 
-        $actionCreatorSQL = $this->getObjectInstancier()->getInstance(ActionCreatorSQL::class);
+        $actionChange = $this->getObjectInstancier()->getInstance(ActionChange::class);
         foreach ($liste_etats as $etat) {
-            $actionCreatorSQL->addAction(1, 0, $etat, "test", $id_d);
+            $actionChange->addAction($id_d, 1, 0, $etat, 'test');
         }
 
         $purge = $this->getObjectInstancier()->getInstance(Purge::class);

@@ -274,9 +274,8 @@ class TedetisRecupTest extends PastellTestCase
         $donneesFormulaire->addFileFromData('arrete', 'mon_acte.pdf', '');
         $donneesFormulaire->addFileFromData('autre_document_attache', 'ma_premiere_annexe.pdf', '');
 
-        $actionCreator = $this->getObjectInstancier()->getInstance(ActionCreatorSQL::class);
-        $actionCreator->addAction(1, 0, 'acquiter-tdt', "test", $id_d);
-
+        $this->getObjectInstancier()->getInstance(ActionChange::class)
+            ->addAction($id_d, 1, 0, 'acquiter-tdt', 'test');
 
         $result = $this->triggerActionOnDocument($id_d, 'tamponner-tdt');
         if (! $result) {
@@ -300,8 +299,8 @@ class TedetisRecupTest extends PastellTestCase
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
         $donneesFormulaire->setData('acte_publication_date', '2022-02-18');
 
-        $actionCreator = $this->getObjectInstancier()->getInstance(ActionCreatorSQL::class);
-        $actionCreator->addAction(1, 0, 'acquiter-tdt', "test", $id_d);
+        $this->getObjectInstancier()->getInstance(ActionChange::class)
+            ->addAction($id_d, 1, 0, 'acquiter-tdt', 'test');
 
         $actionExecutorFactory = $this->getObjectInstancier()->getInstance(ActionExecutorFactory::class);
         $actionExecutorFactory->executeLotDocument(1, 1, [$id_d], "tamponner-tdt");
