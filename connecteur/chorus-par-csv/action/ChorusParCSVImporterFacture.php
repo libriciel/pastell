@@ -59,12 +59,12 @@ class ChorusParCSVImporterFacture extends ActionExecutor
     {
         /** @var ChorusParCsv $connecteur_chorus */
         $connecteur_chorus = $this->getMyConnecteur();
-        $min_date_statut_courant = $this->getChorusProUtilService()->getMinDateStatutCourant(
+        $oldestDateDepuisLe = $this->getChorusProUtilService()->getOldestDateDepuisLe(
             $this->id_e,
             $connecteur_chorus->getDateDepuisLe(),
             ChorusProImportUtilService::TYPE_INTEGRATION_CSV_VALEUR
         );
-        $this->getLogger()->info("Date de dépôt minimum factures recues: $min_date_statut_courant");
+        $this->getLogger()->info("Date de dépôt minimum factures recues: $oldestDateDepuisLe");
 
         $connecteur_properties = $this->getConnecteurProperties();
 
@@ -97,7 +97,7 @@ class ChorusParCSVImporterFacture extends ActionExecutor
             $connecteur_properties->setData('user_password', $col[1]);
             $connecteur_properties->setData('identifiant_structure_cpp', $col[3]);
 
-            $result = $this->traiterUneLigne($col[5], $min_date_statut_courant);
+            $result = $this->traiterUneLigne($col[5], $oldestDateDepuisLe);
             $message .= $this->getChorusProUtilService()->miseEnFormeResult($result);
         }
         return $message;
@@ -105,11 +105,11 @@ class ChorusParCSVImporterFacture extends ActionExecutor
 
     /**
      * @param string $fournisseur
-     * @param string $min_date_statut_courant
+     * @param string $oldestDateDepuisLe
      * @return array
      * @throws Exception
      */
-    public function traiterUneLigne(string $fournisseur, string $min_date_statut_courant): array
+    public function traiterUneLigne(string $fournisseur, string $oldestDateDepuisLe): array
     {
         $liste_facture_a_creer = [];
         $result_all = [];
@@ -122,7 +122,7 @@ class ChorusParCSVImporterFacture extends ActionExecutor
         // Chargement des factures présentes sur la plateforme chorus ayant changé de statut
         $liste_facture_chorus = $connecteur_chorus->getListeFacturesRecipiendaire(
             $fournisseur,
-            $min_date_statut_courant
+            $oldestDateDepuisLe
         );
 
         foreach ($liste_facture_chorus as $facture_chorus) {

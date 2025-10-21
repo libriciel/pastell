@@ -75,26 +75,26 @@ class CPPImporterFacture extends ActionExecutor
 
         // Chargement des factures présentes sur la plateforme chorus ayant changé de statut
 
-        $min_date_statut_courant_recues = $this->getChorusProUtilService()->getMinDateStatutCourant(
+        $oldestDateDepuisLeRecues = $this->getChorusProUtilService()->getOldestDateDepuisLe(
             $this->id_e,
             $connecteur_chorus->getDateDepuisLe(),
             ChorusProImportUtilService::TYPE_INTEGRATION_CPP_VALEUR
         );
-        $this->getLogger()->info("Date de dépôt minimum factures recues: $min_date_statut_courant_recues");
+        $this->getLogger()->info("Date de dépôt minimum factures recues: $oldestDateDepuisLeRecues");
         $liste_facture_recues = $connecteur_chorus->getListeFacturesRecipiendaire(
             '',
-            $min_date_statut_courant_recues,
+            $oldestDateDepuisLeRecues,
             $connecteur_chorus->getDateJusquAu()
         );
 
-        $min_date_statut_courant_travaux = $this->getChorusProUtilService()->getMinDateStatutCourant(
+        $oldestDateDepuisLeTravaux = $this->getChorusProUtilService()->getOldestDateDepuisLe(
             $this->id_e,
             $connecteur_chorus->getDateDepuisLe(),
             ChorusProImportUtilService::TYPE_INTEGRATION_CPP_TRAVAUX_VALEUR
         );
-        $this->getLogger()->info("Date de dépôt minimum factures travaux: $min_date_statut_courant_travaux");
+        $this->getLogger()->info("Date de dépôt minimum factures travaux: $oldestDateDepuisLeTravaux");
         $liste_facture_travaux = $connecteur_chorus->getListeFacturesTravaux(
-            $min_date_statut_courant_travaux,
+            $oldestDateDepuisLeTravaux,
             $connecteur_chorus->getDateJusquAu()
         );
 
