@@ -9,6 +9,7 @@
  * @var bool $permission_on_import_export
  * @var bool $droitLectureAnnuaire
  * @var bool $daemon_lecture
+ * @var bool $daemon_edition
  * @var bool $daemon_exists
  */
 
@@ -39,9 +40,12 @@ if (($daemon_exists || $id_e === 0) && $daemon_lecture) {
         'Entite/job' => 'Tous les travaux',
         'Entite/job?filtre=actif' => 'Travaux actifs',
         'Entite/job?filtre=lock' => 'Travaux suspendus',
-        'Entite/job?filtre=wait' => 'Travaux en attente',
-        'Entite/daemonAdmin' => 'Administration du gestionnaire de tâches',
+        'Entite/job?filtre=wait' => 'Travaux en attente'
     ];
+
+    if ($daemon_edition) {
+        $daemon_tabs['Entite/daemonAdmin'] = 'Administration du gestionnaire de tâches';
+    }
 }
 $collapse_daemon = !array_key_exists($menu_gauche_select, $daemon_tabs);
 

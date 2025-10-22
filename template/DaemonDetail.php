@@ -4,6 +4,7 @@
  * @var Gabarit $this
  * @var array $job_info
  * @var string $return_url
+ * @var bool $daemon_edition
  */
 ?>
 <div class="box">
@@ -36,11 +37,13 @@
                 ?>
                 <p class='alert alert-danger'>OUI  <br/>
                     Depuis le <?php echo $this->getFancyDate()->getDateFr($job_info['lock_since']);?>
+                <?php if ($daemon_edition) : ?>
                     <a href='<?php $this->url($unlockUrl); ?>' class=" btn-warning btn">
                         <i class="fa fa-unlock-alt"></i>&nbsp;
 
                         Reprendre
                     </a></p>
+                <?php endif; ?>
             <?php else : ?>
                 <?php
                 $lockUrl = \sprintf(
@@ -49,11 +52,13 @@
                     $return_url
                 );
                 ?>
-                <p>NON <a href='<?php $this->url($lockUrl); ?>' class="btn btn-warning">
-                        <i class="fa fa-lock"></i>&nbsp;
+                <?php if ($daemon_edition) : ?>
+                    <p>NON <a href='<?php $this->url($lockUrl); ?>' class="btn btn-warning">
+                            <i class="fa fa-lock"></i>&nbsp;
 
-                        Suspendre
-                    </a></p>
+                            Suspendre
+                        </a></p>
+                <?php endif;?>
             <?php endif;?>
             </td>
         </tr>

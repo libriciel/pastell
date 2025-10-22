@@ -41,7 +41,7 @@
                 {{ job_stat_info.nb_lock }}
                 {% if (job_stat_info.nb_lock_one_hour and daemon_global_lecture) %}
                     <span class='alert alert-warning'>
-                        <a href="{{ path('app.legacy.daemon_job', {'filtre': 'lock'}) }}">
+                        <a href="{{ path('app.legacy.entite_job', {'filtre': 'lock',   id_e: daemon.id_e ?? 0 }) }}">
                             {{ job_stat_info.nb_lock_one_hour }} depuis plus d'une heure !
                         </a>
                     </span>
