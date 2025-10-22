@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @deprecated 5.0.0
+ */
+
 declare(strict_types=1);
 
 use PhpXmlRpc\Client;
