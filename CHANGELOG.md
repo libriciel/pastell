@@ -1,3 +1,9 @@
+# [4.0.27]
+
+## Correction
+
+- L'action MailSec `Renvoyer` envoie uniquement aux destinataires n'ayant pas ouvert le mail initial #1206
+
 # [4.0.26] - 2025-10-13
 
 ## Évolutions
@@ -20,7 +26,6 @@
 'suspendu' ou 'À recycler' #2273
 - Le Code du service destinataire n'était plus renseigné pour les factures de l'espace factures de travaux. 
   (au retour du service rechercherFactureTravaux, 'codeServiceExecutant' au lieu de 'identifiantServiceExecutant') #2282
-- L'action MailSec `Renvoyer` envoie uniquement aux destinataires n'ayant pas ouvert le mail initial #1206
 
 # [4.0.24] - 2025-07-15
 
