@@ -6,6 +6,9 @@ use PhpXmlRpc\Client;
 use PhpXmlRpc\Request;
 use PhpXmlRpc\Value;
 
+/**
+ * @deprecated 5.0.0
+ */
 class Cloudooo extends ConvertisseurPDF
 {
     private string $cloudooo_hostname;

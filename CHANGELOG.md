@@ -98,6 +98,7 @@ doivent être mises à jour #1667
 - TdtRetourTeletransmettre, use Pastell\Step\Tdt\Acte\Action\TdtTeletransmettreRetourAction instead #2278
 - Classification, use Pastell\Step\Tdt\Acte\ChoiceAction\ClassificationChoiceAction instead #2278
 - IparapheurSousType, use Pastell\Step\Signature\ChoiceAction\ParapheurSousTypeChoiceAction instead #2278
+- Connecteur convertisseur-office-pdf Cloudooo #2322
 
 # [4.1.13] - 2025-10-14
 
