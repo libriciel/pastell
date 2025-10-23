@@ -4,10 +4,10 @@ use Pastell\Service\Droit\DroitService;
 
 abstract class BaseAPIController
 {
-    public const RESULT_OK = "ok";
+    public const string RESULT_OK = 'ok';
 
     private $id_u;
-    private $request = [];
+    private array $request = [];
 
     private $caller_type;
 
@@ -23,7 +23,7 @@ abstract class BaseAPIController
 
     private $query_args;
 
-    private $hasAllDroit;
+    private bool $hasAllDroit = false;
 
     public function setQueryArgs(array $query_args)
     {
@@ -35,9 +35,14 @@ abstract class BaseAPIController
         return $this->query_args[$place_number] ?? false;
     }
 
-    public function setAllDroit($hasAllDroit = false)
+    public function setAllDroit(bool $hasAllDroit = false): void
     {
         $this->hasAllDroit = $hasAllDroit;
+    }
+
+    protected function hasAllDroit(): bool
+    {
+        return $this->hasAllDroit;
     }
 
     public function setCallerType($caller_type)
@@ -114,30 +119,25 @@ abstract class BaseAPIController
         return $this->request;
     }
 
-    protected function checkDroit($id_e, $droit)
+    /**
+     * @throws ForbiddenException
+     */
+    protected function checkDroit($id_e, string $droit): true
     {
-        if ($this->hasAllDroit) {
-            return true;
-        }
-        if (! $this->getDroitService()->hasDroit($this->id_u, $droit, $id_e)) {
+        if (!(($this->hasAllDroit) || $this->getDroitService()->hasDroit($this->id_u, $droit, $id_e))) {
             throw new ForbiddenException("Acces interdit id_e=$id_e, droit=$droit,id_u={$this->id_u}");
         }
         return true;
     }
 
-    protected function checkOneDroit($droit)
+    /**
+     * @throws ForbiddenException
+     */
+    protected function checkOneDroit(string $droit): true
     {
-        if (!$this->hasOneDroit($droit)) {
+        if (!(($this->hasAllDroit) || $this->getDroitService()->hasOneDroit($this->id_u, $droit))) {
             throw new ForbiddenException("Vous devez avoir le droit $droit pour accéder à la ressource.");
         }
         return true;
-    }
-
-    public function hasOneDroit($droit)
-    {
-        if ($this->hasAllDroit) {
-            return true;
-        }
-        return $this->getDroitService()->hasOneDroit($this->getUtilisateurId(), $droit);
     }
 }

@@ -23,8 +23,6 @@ abstract class ActionExecutor
     private $lastMessage;
     private $lastMessageString;
 
-    private InternalAPI $internalAPI;
-
     abstract public function go();
 
     public function __construct(ObjectInstancier $objectInstancier)
@@ -438,22 +436,6 @@ abstract class ActionExecutor
         foreach ($all_id_d as $id_d) {
             $jobManager->setJobForDocument($this->id_e, $id_d, "suite traitement par lot");
         }
-    }
-
-    public function apiCall($method, $ressource, $data)
-    {
-        if (! isset($this->internalAPI)) {
-            $this->internalAPI = $this->objectInstancier->getInstance(InternalAPI::class);
-            $this->internalAPI->setCallerType(InternalAPI::CALLER_TYPE_CONSOLE);
-            $this->internalAPI->setFileUploader($this->objectInstancier->getInstance(FileUploader::class));
-            $this->internalAPI->setUtilisateurId($this->id_u);
-        }
-        return $this->internalAPI->$method($ressource, $data);
-    }
-
-    protected function apiGet($ressource, $data)
-    {
-        return $this->apiCall('get', $ressource, $data);
     }
 
     private $logger;

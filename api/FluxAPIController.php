@@ -1,55 +1,43 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Module\ModuleListService;
+
 class FluxAPIController extends BaseAPIController
 {
-    /** @var  DocumentTypeFactory */
-    private $documentTypeFactory;
-
-    public function __construct(DocumentTypeFactory $documentTypeFactory)
-    {
-        $this->documentTypeFactory = $documentTypeFactory;
+    public function __construct(
+        private readonly DocumentTypeFactory $documentTypeFactory,
+        private readonly ModuleListService $moduleListService,
+    ) {
     }
 
-    public function get()
+    /**
+     * @throws NotFoundException
+     * @throws ForbiddenException
+     */
+    public function get(): array
     {
-        $id_flux = $this->getFromQueryArgs(0);
+        $idFlux = $this->getFromQueryArgs(0);
         $action = $this->getFromQueryArgs(1);
-        if (! $id_flux) {
-            return $this->listFlux();
+        if (! $idFlux) {
+            return $this->moduleListService->getModuleListOrderByNom($this->getUtilisateurId(), $this->hasAllDroit());
         }
 
-        if (! $this->documentTypeFactory->isTypePresent($id_flux)) {
-            throw new NotFoundException("Le flux $id_flux n'existe pas sur cette plateforme");
+        if (! $this->documentTypeFactory->isTypePresent($idFlux)) {
+            throw new NotFoundException("Le flux $idFlux n'existe pas sur cette plateforme");
         }
-        $this->checkOneDroit("$id_flux:lecture");
+        $this->checkOneDroit(DroitService::getDroitLecture($idFlux));
 
-        if ($action == "action") {
-            return $this->listAction($id_flux);
+        if ($action === 'action') {
+            return $this->listAction($idFlux);
         }
 
-        return $this->getFlux($id_flux);
+        return $this->getFlux($idFlux);
     }
 
-    public function listFlux()
+    public function getFlux(string $idFlux): array
     {
-        $allDocType = $this->documentTypeFactory->getAllType();
-        $allType = [];
-        foreach ($allDocType as $type_flux => $les_flux) {
-            foreach ($les_flux as $nom => $affichage) {
-                if ($this->hasOneDroit($nom . ":lecture")) {
-                    $allType[$nom]  = ['type' => $type_flux,'nom' => $affichage];
-                }
-            }
-        }
-        uasort($allType, static function ($a, $b) {
-            return strcmp($a['nom'], $b['nom']);
-        });
-        return $allType;
-    }
-
-    public function getFlux($id_flux)
-    {
-        $documentType = $this->documentTypeFactory->getFluxDocumentType($id_flux);
+        $documentType = $this->documentTypeFactory->getFluxDocumentType($idFlux);
         $formulaire = $documentType->getFormulaire();
         $result = [];
         /**
@@ -61,9 +49,8 @@ class FluxAPIController extends BaseAPIController
         return $result;
     }
 
-    public function listAction($id_flux)
+    public function listAction(string $idFlux): array
     {
-        $documentType = $this->documentTypeFactory->getFluxDocumentType($id_flux);
-        return $documentType->getTabAction();
+        return $this->documentTypeFactory->getFluxDocumentType($idFlux)->getTabAction();
     }
 }
