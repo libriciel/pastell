@@ -20,7 +20,7 @@ class FournisseurCommandeRenvoyerMail extends ActionExecutor
         if ($id_de) {
             $this->getMailSecConnecteur()->sendOneMail($this->id_e, $this->id_d, $id_de);
         } else {
-            $this->getMailSecConnecteur()->sendAllMailToNotRead($this->id_e, $this->id_d);
+            $this->getMailSecConnecteur()->resendUnopenedEmails($this->id_e, $this->id_d);
         }
         $this->setLastMessage("Un email a été renvoyé au founisseur");
 

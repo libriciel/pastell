@@ -137,7 +137,7 @@ class MailSecConnecteurTest extends PastellTestCase
     /**
      * @throws Exception
      */
-    public function testSendAllMailToNotRead(): void
+    public function testResendUnopenedEmails(): void
     {
         $this->addContentHTML(__DIR__ . "/fixtures/mail-exemple.html");
         $mailsec = $this->getMailSec();
@@ -148,7 +148,7 @@ class MailSecConnecteurTest extends PastellTestCase
 
         $this->getDocumentEmail()->consulter($keyRead, $this->getJournal());
 
-        $mailsec->sendAllMailToNotRead(1, $documentId);
+        $mailsec->resendUnopenedEmails(1, $documentId);
 
         $all = $this->getMailerTransport()->getAllSentMessages();
         $this->assertCount(1, $all);

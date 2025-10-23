@@ -44,7 +44,7 @@ class MailSec extends MailsecConnecteur
     /**
      * @throws Exception
      */
-    public function sendAllMailToNotRead(int $id_e, string $id_d): void
+    public function resendUnopenedEmails(int $id_e, string $id_d): void
     {
         foreach ($this->documentEmail->getInfo($id_d) as $email_info) {
             if ($email_info['lu'] === 0) {
