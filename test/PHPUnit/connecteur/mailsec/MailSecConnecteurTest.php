@@ -137,6 +137,30 @@ class MailSecConnecteurTest extends PastellTestCase
     /**
      * @throws Exception
      */
+    public function testResendUnopenedEmails(): void
+    {
+        $this->addContentHTML(__DIR__ . "/fixtures/mail-exemple.html");
+        $mailsec = $this->getMailSec();
+
+        $documentId = $this->createDocument('test')['id_d'];
+        $keyRead = $this->getDocumentEmail()->add($documentId, "jdoe@example.org", "to");
+        $this->getDocumentEmail()->add($documentId, "john.doe@example.org", "to");
+
+        $this->getDocumentEmail()->consulter($keyRead, $this->getJournal());
+
+        $mailsec->resendUnopenedEmails(1, $documentId);
+
+        $all = $this->getMailerTransport()->getAllSentMessages();
+        $this->assertCount(1, $all);
+        $this->assertMailContentEqualsFile(
+            __DIR__ . "/fixtures/mail_john.doe.txt",
+            $all[0]->toString()
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testSendHTML(): void
     {
         $this->addContentHTML(__DIR__ . '/fixtures/mail-exemple.html');

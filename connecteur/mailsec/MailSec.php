@@ -44,6 +44,18 @@ class MailSec extends MailsecConnecteur
     /**
      * @throws Exception
      */
+    public function resendUnopenedEmails(int $id_e, string $id_d): void
+    {
+        foreach ($this->documentEmail->getInfo($id_d) as $email_info) {
+            if ($email_info['lu'] === 0) {
+                $this->sendEmail($id_e, $id_d, $email_info);
+            }
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     public function sendOneMail(int $id_e, string $id_d, int $id_de): void
     {
         $email_info = $this->documentEmail->getInfoFromPK($id_de);
