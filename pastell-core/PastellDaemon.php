@@ -108,7 +108,7 @@ class PastellDaemon
         $this->logger->info("Daemon starts worker for job #$job->id_job : " . json_encode($job, JSON_THROW_ON_ERROR));
     }
 
-    public function runningWorker(?string $jobId = null): void
+    public function runningWorker(string $jobId): void
     {
         try {
             $this->runningWorkerThrow($jobId);
@@ -122,18 +122,8 @@ class PastellDaemon
     /**
      * @throws Exception
      */
-    private function runningWorkerThrow(?string $jobId = null): void
+    private function runningWorkerThrow(string $jobId): void
     {
-        if ($jobId === null) {
-            /** @deprecated 4.0.3: Remove this global state and make jobId required */
-            $jobId = get_argv(1);
-            if (! $jobId) {
-                global $argv;
-                echo "Usage : {$argv[0]} id_job";
-                return;
-            }
-        }
-
         $this->logger->pushProcessor(function ($record) use ($jobId) {
             $record['extra']['id_job'] = $jobId;
             return $record;

@@ -89,6 +89,8 @@ doivent être mises à jour #1667
 - Suppression de SignatureConnecteur::getDossierID #2289
 - Suppression de ActionCreator et ActionCreatorSQL use ActionChange instead #2336
 - Suppression de ActionChange::updateModification, use addOrUpdateAction instead #2336
+- Suppression d'éléments dépréciés de util.php 
+  (rrmdir, get_argv, exceptionToJson, throwIfFalse, throwLastError, wl_basename, tick, utf8_decode_array) #2347
 
 ## Dépréciations
 
