@@ -112,17 +112,6 @@ abstract class ActionExecutor
     }
 
     /**
-     * @return ActionCreator
-     */
-    public function getActionCreator($id_d = false)
-    {
-        if (! $id_d) {
-            $id_d = $this->id_d;
-        }
-        return new ActionCreator($this->getSQLQuery(), $this->getJournal(), $id_d);
-    }
-
-    /**
      * @throws NotFoundException
      */
     public function getDonneesFormulaire(): DonneesFormulaire
@@ -359,17 +348,21 @@ abstract class ActionExecutor
         return $this->getConnecteurFactory()->getGlobalConnecteur($type);
     }
 
+    public function getActionChange(): ActionChange
+    {
+        return $this->objectInstancier->getInstance(ActionChange::class);
+    }
 
     /***** Fonction utilitaire *****/
 
-    public function addActionOK($message = "")
+    public function addActionOK($message = ''): void
     {
         $this->changeAction($this->action, $message);
     }
 
-    public function changeAction($action, $message)
+    public function changeAction($action, $message): void
     {
-        $this->objectInstancier->getInstance(ActionChange::class)->addAction(
+        $this->getActionChange()->addAction(
             $this->id_d,
             $this->id_e,
             $this->id_u,
@@ -384,7 +377,7 @@ abstract class ActionExecutor
         string $message,
         bool $updateDate = false,
     ): void {
-        $this->objectInstancier->getInstance(ActionChange::class)->addOrUpdateAction(
+        $this->getActionChange()->addOrUpdateAction(
             $this->id_d,
             $this->id_e,
             $this->id_u,

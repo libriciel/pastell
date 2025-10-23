@@ -16,15 +16,8 @@ final class HeliosAutomatiqueImportationTest extends PastellTestCase
             __DIR__ . '/../helios-generique/fixtures/HELIOS_SIMU_ALR2_1496987735_826268894.xml'
         );
 
-        $this->getObjectInstancier()
-            ->getInstance(ActionCreatorSQL::class)
-            ->addAction(
-                self::ID_E_COL,
-                0,
-                'importation',
-                'message',
-                $document['id_d']
-            );
+        $this->getObjectInstancier()->getInstance(ActionChange::class)
+            ->addAction($document['id_d'], self::ID_E_COL, 0, 'importation', 'message');
 
         $this->triggerActionOnDocument($document['id_d'], 'orientation');
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document['id_d']);

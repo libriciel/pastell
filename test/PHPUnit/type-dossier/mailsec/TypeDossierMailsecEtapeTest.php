@@ -84,7 +84,7 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
 
         $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
         $document_email_info = $documentEmail->getInfo($id_d);
-        $documentEmail->consulter($document_email_info[0]['key'], $this->getJournal());
+        $documentEmail->consulter($document_email_info[0]['key']);
         $this->assertLastDocumentAction('reception', $id_d);
 
         $this->assertTrue(

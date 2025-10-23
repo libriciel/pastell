@@ -21,11 +21,9 @@ class TdTRestamp extends ConnecteurTypeActionExecutor
 
         $tedetis_transaction_id = $this->getDonneesFormulaire()->get($tedetis_transaction_id_element);
 
-        $actionCreator = $this->getActionCreator();
         if (! $tedetis_transaction_id) {
-            $message = "Une erreur est survenue lors de l'envoi à " . $tdT->getLogicielName() . " (tedetis_transaction_id non disponible)";
-            $this->setLastMessage($message);
-            $actionCreator->addAction($this->id_e, 0, $tdt_error, $message);
+            $message = "Une erreur est survenue lors de l'envoi à " . $tdT->getLogicielName() . ' (tedetis_transaction_id non disponible)';
+            $this->changeOrUpdateAction($tdt_error, $message);
             $this->notify($tdt_error, $this->type, $message);
             return false;
         }
@@ -41,7 +39,7 @@ class TdTRestamp extends ConnecteurTypeActionExecutor
 
         if ($actes_tamponne) {
             $actes_original_filename = $donneesFormulaire->getFileNameWithoutExtension($arrete_element);
-            $donneesFormulaire->addFileFromData($acte_tamponne_element, $actes_original_filename . "-tampon.pdf", $actes_tamponne);
+            $donneesFormulaire->addFileFromData($acte_tamponne_element, $actes_original_filename . '-tampon.pdf', $actes_tamponne);
         }
         if ($annexes_tamponnees_list) {
             $file_number = 0;
@@ -51,17 +49,16 @@ class TdTRestamp extends ConnecteurTypeActionExecutor
                 }
                 $annexe_filename_send = $tdT->getFilenameTransformation($this->getDonneesFormulaire()->getFileName($autre_document_attache_element, $i));
                 if (strcmp($annexe_filename_send, $annexe_tamponnee['filename']) !== 0) {
-                    $message = "Une erreur est survenue lors de la récupération des annexes tamponnées de " . $tdT->getLogicielName() .
-                        " L'annexe tamponée " . $annexe_tamponnee['filename'] . " ne correspond pas avec " . $annexe_filename_send;
-                    $this->setLastMessage($message);
-                    $actionCreator->addAction($this->id_e, 0, $tdt_error, $message);
+                    $message = 'Une erreur est survenue lors de la récupération des annexes tamponnées de ' . $tdT->getLogicielName() .
+                        " L'annexe tamponée " . $annexe_tamponnee['filename'] . ' ne correspond pas avec ' . $annexe_filename_send;
+                    $this->changeOrUpdateAction($tdt_error, $message);
                     $this->notify($tdt_error, $this->type, $message);
                     return false;
                 }
                 $annexe_filename = $donneesFormulaire->getFileNameWithoutExtension($autre_document_attache_element, $i);
                 $donneesFormulaire->addFileFromData(
                     $annexes_tamponnees_element,
-                    $annexe_filename . "-tampon.pdf",
+                    $annexe_filename . '-tampon.pdf',
                     $annexe_tamponnee['content'],
                     $file_number++
                 );
@@ -77,7 +74,7 @@ class TdTRestamp extends ConnecteurTypeActionExecutor
         foreach ($all_id_d as $id_d) {
             $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
             if (! $donneesFormulaire->get('acte_publication_date')) {
-                $donneesFormulaire->setData('acte_publication_date', date("Y-m-d"));
+                $donneesFormulaire->setData('acte_publication_date', date('Y-m-d'));
             }
         }
         parent::goLot($all_id_d);

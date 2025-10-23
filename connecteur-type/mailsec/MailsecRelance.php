@@ -35,22 +35,16 @@ class MailsecRelance extends ConnecteurTypeActionExecutor
             && $connector->mustRelance($date_send_mailsec)
         ) {
             $message = 'Préparation du renvoi du document';
-            $this->setLastMessage($message);
-            $this->getActionCreator()->addAction($this->id_e, $this->id_u, $prepare_renvoi_action, $message);
+            $this->changeAction($prepare_renvoi_action, $message);
             return true;
         }
 
         if ($connector->mustGoToNextState($date_send_mailsec)) {
+            $this->changeOrUpdateAction($non_recu_action, 'Le temps de récupération du document est écoulé');
             $this->setLastMessage('Le document passe en non reçu !');
-            $this->getActionCreator()->addAction(
-                $this->id_e,
-                $this->id_u,
-                $non_recu_action,
-                'Le temps de récupération du document est écoulé'
-            );
             return true;
         }
-        $message = "";
+        $message = '';
         if (in_array($last_action, [$send_mailsec_action, $reception_partielle_action], true)) {
             $date_relance = $connector->getDateRelance($date_send_mailsec);
             $message .= "Relance programmée le $date_relance<br/>";

@@ -18,23 +18,22 @@ class CppIntegrationParGlaneurPivot extends ActionExecutor
         try {
             $pivot->verifIsFormatPivot($fichier_pivot);
         } catch (Exception $e) {
-            $message = "Le fichier FacturePivot est incorrect: " . $e->getMessage();
-            $this->setLastMessage($message);
-            $this->getActionCreator()->addAction($this->id_e, 0, 'integration-glaneur-pivot-error', $message);
+            $message = 'Le fichier FacturePivot est incorrect: ' . $e->getMessage();
+            $this->changeAction('integration-glaneur-pivot-error', $message);
             $this->notify('integration-glaneur-pivot-error', $this->type, $message);
             return false;
         }
 
         $docInfo = [
             'id_u' => 0,
-            'id_facture_cpp' => date("YmdHis") . "_" . mt_rand(0, mt_getrandmax()),
+            'id_facture_cpp' => date('YmdHis') . '_' . mt_rand(0, mt_getrandmax()),
 
             'destinataire' => '', // Identifiant CPP du destinataire
             'service_destinataire' => '', // Identifiant CPP du service destinataire
 
             'type_integration' => 'GLANEUR',
             'statut' => 'MISE_A_DISPOSITION',
-            'commentaire' => "Facture issue du glaneur pivot",
+            'commentaire' => 'Facture issue du glaneur pivot',
             'date_depot' => '',
             'date_statut_courant' => '',
 
@@ -54,7 +53,7 @@ class CppIntegrationParGlaneurPivot extends ActionExecutor
             $classCreationFactureCPP->parametrer($this->id_d, $parametrageFluxFactureCPP);
         }
 
-        $message = "Intégration du dossier via le fichier PIVOT";
+        $message = 'Intégration du dossier via le fichier PIVOT';
         $this->addActionOK($message);
         $this->setLastMessage($message);
         $this->notify($this->action, $this->type, $message);

@@ -33,7 +33,7 @@ class CreationFactureCPP
             $this->parametrer($new_id_d, $parametrageFluxFactureCPP);
         }
 
-        $actionCreator = new ActionCreatorSQL($this->objectInstancier->getInstance(SQLQuery::class), $this->objectInstancier->getInstance(Journal::class));
+        $actionChange = $this->objectInstancier->getInstance(ActionChange::class);
 
         /** @var DonneesFormulaire $donneesFormulaire */
         $donneesFormulaire = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)->get($new_id_d);
@@ -44,14 +44,14 @@ class CreationFactureCPP
 
         if ($erreur) { // création avec erreur
             $message = "Création de la facture CPP avec erreur: #ID $new_id_d - type : $nom_flux_cpp - $titre - Erreur: $erreur";
-            $actionCreator->addAction($id_e, $id_u, Action::CREATION, $message, $new_id_d);
+            $actionChange->addAction($new_id_d, $id_e, $id_u, Action::CREATION, $message);
             return $message;
         } else { // création succcès
             $message = "Création de la facture CPP succès #ID $new_id_d - type : $nom_flux_cpp - $titre";
-            $actionCreator->addAction($id_e, $id_u, Action::MODIFICATION, $message, $new_id_d);
+            $actionChange->addAction($new_id_d, $id_e, $id_u, Action::MODIFICATION, $message);
 
             // Valorisation de l'état suivant
-            $actionCreator->addAction($id_e, $id_u, 'importation', "Traitement du document", $new_id_d);
+            $actionChange->addAction($new_id_d, $id_e, $id_u, 'importation', 'Traitement du document');
             $this->objectInstancier->getInstance(ActionExecutorFactory::class)->executeOnDocument($id_e, 0, $new_id_d, 'orientation');
 
             return $message;

@@ -39,7 +39,7 @@ class OrientationFluxAutoDoc extends ActionExecutor
                 default:
                     $this->notifyAndExit("Impossible de faire avancer le document depuis l'état : $last_action");
             }
-            $this->getActionCreator()->addAction($this->id_e, 0, $action_cible, "Affectation automatique du nouvel état");
+            $this->changeAction($action_cible, 'Affectation automatique du nouvel état');
             $this->setLastMessage("Préparation pour le prochain état : $action_cible");
             return true;
         } else {
@@ -59,7 +59,7 @@ class OrientationFluxAutoDoc extends ActionExecutor
                 default:
                     $this->notifyAndExit("Impossible de faire avancer le document depuis l'état : $last_action");
             }
-            $this->getActionCreator()->addAction($this->id_e, 0, $action_cible, "Conservation de l'état du document");
+            $this->changeAction($action_cible, "Conservation de l'état du document");
             $this->setLastMessage("Conservation de l'état du document : $action_cible");
             return true;
         }

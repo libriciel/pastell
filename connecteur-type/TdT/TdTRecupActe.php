@@ -31,14 +31,12 @@ class TdTRecupActe extends ConnecteurTypeActionExecutor
         $tdT = $this->getConnecteurOrFail('Tdt');
         $tedetis_transaction_id = $this->getDonneesFormulaire()->get($tedetis_transaction_id_element);
 
-        $actionCreator = $this->getActionCreator();
         if (! $tedetis_transaction_id) {
             $message = \sprintf(
                 "Une erreur est survenue lors de l'envoi à %s (tedetis_transaction_id non disponible)",
                 $tdT->getLogicielName()
             );
-            $this->setLastMessage($message);
-            $actionCreator->addAction($this->id_e, 0, $tdt_error, $message);
+            $this->changeOrUpdateAction($tdt_error, $message);
             $this->notify($tdt_error, $this->type, $message);
             return false;
         }
@@ -53,7 +51,6 @@ class TdTRecupActe extends ConnecteurTypeActionExecutor
 
         if ($status == TdtConnecteur::STATUS_ERREUR) {
             $message = 'Transaction en erreur sur le TdT : ' . $tdT->getLastError();
-            $this->setLastMessage($message);
             $this->changeOrUpdateAction($erreur_verif_tdt, $message);
             $this->notify($erreur_verif_tdt, $this->type, $message);
             return false;
@@ -69,7 +66,7 @@ class TdTRecupActe extends ConnecteurTypeActionExecutor
         $actes_tamponne = $tdT->getActeTamponne($tedetis_transaction_id);
         $annexes_tamponnees_list = $tdT->getAnnexesTamponnees($tedetis_transaction_id);
 
-        $actionCreator->addAction($this->id_e, 0, $acquiter_tdt, "L'acte a été acquitté par le contrôle de légalité");
+        $this->changeAction($acquiter_tdt, "L'acte a été acquitté par le contrôle de légalité");
 
         $infoDocument = $this->getDocument()->getInfo($this->id_d);
         $documentActionEntite = $this->getDocumentActionEntite();
@@ -128,8 +125,7 @@ class TdTRecupActe extends ConnecteurTypeActionExecutor
                         $tdT->getLogicielName() . " L'annexe tamponée " . $annexe_tamponnee['filename'] .
                         ' ne correspond pas avec ' . $annexe_filename_send;
 
-                    $this->setLastMessage($message);
-                    $actionCreator->addAction($this->id_e, 0, $tdt_error, $message);
+                    $this->changeOrUpdateAction($tdt_error, $message);
                     $this->notify($tdt_error, $this->type, $message);
                     return false;
                 }
