@@ -56,7 +56,11 @@ class RoleControler extends PastellControler
         if ($role) {
             $this->setViewParameter('nouveau', false);
             $this->setViewParameter('page_title', "Modification du rôle $role ");
-            $this->setViewParameter('role_info', $this->getRoleSQL()->getInfo($role));
+            $role_info = $this->getRoleSQL()->getInfo($role);
+            if (!$role_info) {
+                throw new NotFoundException("Le rôle n'existe pas");
+            }
+            $this->setViewParameter('role_info', $role_info);
             $this->setViewParameter('cancelRedirectUrl', '/Role/detail?role=' . $role);
         } else {
             $this->setViewParameter('nouveau', true);
@@ -68,16 +72,25 @@ class RoleControler extends PastellControler
         $this->renderDefault();
     }
 
-    public function doEditionAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function doEditionAction(): void
     {
-        $this->verifDroit(0, "role:edition");
+        $this->verifDroit(0, 'role:edition');
         $role = $this->getPostInfo()->get('role');
-        $role = preg_replace("/\s+/", "_", $role);
+        $role = preg_replace('/\s+/', '_', $role);
         $libelle = $this->getPostInfo()->get('libelle');
+        $role_info = $this->getRoleSQL()->getInfo($role);
 
-        if (empty($libelle) || empty($role)) {
-            $this->setLastError("Les deux champs sont obligatoires");
-            $this->redirect("/Role/edition");
+        if ($role_info && empty($libelle)) {
+            $this->setLastError('Le libellé est obligatoire');
+            $this->redirect("/Role/edition?role=$role");
+        }
+        if (!$role_info && (empty($libelle) || empty($role))) {
+            $this->setLastError('Les deux champs sont obligatoires');
+            $this->redirect('/Role/edition');
         }
 
         $this->getRoleSQL()->edit($role, $libelle);
