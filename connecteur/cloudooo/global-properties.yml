@@ -1,4 +1,4 @@
-nom: Cloudooo
+nom: Cloudooo - déprécié
 type: convertisseur-office-pdf
 description: "Connecteur permettant de convertir les fichiers de type office (MS Office, LibreOffice, ...) vers le format PDF\nCe connecteur est basé sur cloudoo\nhttps://github.com/nexedi/cloudooo\nIl est nécessaire d'installer le paquet PEAR XML_RPC2 afin de faire fonctionner ce connecteur\n(apt-get install php-pear, apt-get install php-xml-rpc2, pear install HTTP_Request2)"
 formulaire:

@@ -102,8 +102,6 @@ class PastellBootstrap
 
     /**
      * @deprecated 5.0.0
-     */
-    /**
      * @param string $server_name
      * @throws Exception
      */
