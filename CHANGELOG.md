@@ -34,6 +34,7 @@ doivent être mises à jour #1667
 - Il n'est plus possible d'utiliser l'adresse mail dans la page "Mot de passe oublié ?" #2309
 - Les droits 'changement-email:' ne sont plus sur le rôle admin par défaut #2320
 - Renommage de ChorusProImportUtilService::getMinDateStatutCourant en getOldestDateDepuisLe #2340
+- Les utilisateurs avec le droit system:edition peuvent désormais changer manuellement l'état d'un dossier #2354
 
 ## Suppressions
 

@@ -192,13 +192,9 @@ $listConnectorsUrl = \sprintf(
         <?php foreach ($job_list as $job_info) : ?>
             <tr>
                 <td>
-                    <?php if ($daemon_global_lecture) : ?>
-                        <a href='<?php $this->url("Daemon/detail?id_job={$job_info['id_job']}"); ?>'>
-                            <?php echo $job_info['id_job']; ?>
-                        </a>
-                    <?php else : ?>
+                    <a href='<?php $this->url("Daemon/detail?id_job={$job_info['id_job']}"); ?>'>
                         <?php echo $job_info['id_job']; ?>
-                    <?php endif ?>
+                    </a>
                 </td>
                 <td>
                     <?php if ($job_info['is_lock']) : ?>
@@ -250,10 +246,10 @@ $listConnectorsUrl = \sprintf(
                                     $return_url
                                 );
                                 ?>
-                            <a href='<?php $this->url($killJobUrl); ?>'
-                               class='btn btn-danger'>
-                                <i class="fa fa-power-off"></i>&nbsp;
-                                Tuer</a>
+                                <a href='<?php $this->url($killJobUrl); ?>'
+                                   class='btn btn-danger'>
+                                    <i class="fa fa-power-off"></i>&nbsp;
+                                    Tuer</a>
                             <?php endif; ?>
                         <?php else : ?>
                         <br/><?php echo $job_info['message']?>
