@@ -598,7 +598,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
      */
     public function getRefusalMessage($dossierID): string
     {
-        return $this->getPremis($dossierID)->getRefusalMessage();
+        return $this->getPremis($dossierID)->getRefusalMessage() ?? '';
     }
 
     /**
