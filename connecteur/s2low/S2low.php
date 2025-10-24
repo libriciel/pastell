@@ -109,7 +109,7 @@ class S2low extends TdtConnecteur
     /**
      * @throws S2lowException
      */
-    private function exec($url, bool $utf_8_encode = true)
+    private function exec($url, bool $utf_8_encode = true): bool|string
     {
         $this->ensureLogin();
         $output = $this->curlWrapper->get($this->tedetisURL . $url);
@@ -776,9 +776,8 @@ class S2low extends TdtConnecteur
      * @throws S2lowException
      * @throws UnrecoverableException
      */
-    private function sendReponseType(int $id_type, DonneesFormulaire $donneesFormulaire): bool
+    private function sendReponseType(int $id_type, DonneesFormulaire $donneesFormulaire): void
     {
-
         $libelle = $this->getLibelleType($id_type);
 
         $nature_reponse = $donneesFormulaire->get('refus_reponse') ? 3 : 4;
@@ -807,7 +806,7 @@ class S2low extends TdtConnecteur
         $this->curlWrapper->addPostFile('acte_pdf_file', $file_path, $file_name);
 
         if (
-            ($id_type === 3)
+            $id_type === 3
             && $nature_reponse === 4
             && $donneesFormulaire->get('reponse_pj_demande_piece_complementaire')
         ) {
@@ -832,7 +831,6 @@ class S2low extends TdtConnecteur
         $ligne = explode("\n", $result);
         $id_transaction = trim($ligne[1]);
         $donneesFormulaire->setData('response_transaction_id', $id_transaction);
-        return true;
     }
 
     public function getRedirectURLForTeletransimission(): string
@@ -840,13 +838,14 @@ class S2low extends TdtConnecteur
         return $this->tedetisURL . self::URL_POST_CONFIRM;
     }
 
-    public function getRedirectURLForTeletransimissionMulti()
+    public function getRedirectURLForTeletransimissionMulti(): string
     {
         return $this->tedetisURL . self::URL_POST_CONFIRM_MULTI;
     }
 
     /**
      * @throws S2lowException
+     * @throws JsonException
      */
     //Cette fonction fonctionne sur une branche de S2low 1.5 ou 2.0
     //Elle ne lance pas d'exception (la branche 1.5 ne connait pas cette fonction).
