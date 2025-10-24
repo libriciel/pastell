@@ -24,9 +24,9 @@ COPY ./docker/logrotate.d/pastell.conf /etc/logrotate.d/
 COPY ./docker/web/crontab /data/crontab
 COPY ./docker/web/supervisord.conf /etc/supervisord.conf
 
-RUN mkdir -p /data/certificates && mkdir -p /data/log && chown www-data:www-data -R /data/
+RUN mkdir -p /data/certificates && mkdir -p /data/log && mkdir -p /data/run && chown www-data:www-data -R /data/
 
-RUN echo "PidFile /tmp/httpd.pid" >> /usr/local/apache2/conf/httpd.conf && \
+RUN echo "PidFile /data/run/httpd.pid" >> /usr/local/apache2/conf/httpd.conf && \
     echo "IncludeOptional conf/vhosts/*.conf" >> /usr/local/apache2/conf/httpd.conf && \
     echo "Include conf/extra/security.conf" >> /usr/local/apache2/conf/httpd.conf
 
