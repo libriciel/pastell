@@ -17,7 +17,7 @@
         <tr>
             <th>#ID travail</th>
             <th>Type</th>
-            <th>Suspendu</th>
+            <th class="w-3">Suspendu</th>
             <th>Entité</th>
             <th>#ID gestionnaire de tâche</th>
             <th>Dossier / Connecteur</th>
@@ -84,7 +84,7 @@
                 <td>{{ gabarit.FancyDate.getDateFr(job.first_try) }}</td>
                 <td>{{ gabarit.FancyDate.getDateFr(job.last_try) }}</td>
                 <td>{{ job.nb_try }}</td>
-                <td>{{ job.last_message }}</td>
+                <td style="word-break: break-all;">{{ job.last_message }}</td>
                 <td>
                     {{ gabarit.FancyDate.getDateFr(job.next_try) }}
                     <br/>{{ gabarit.FancyDate.getTimeElapsed(job.next_try) }}

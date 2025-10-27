@@ -356,7 +356,7 @@ if ($infoDocumentEmail) :
                             <td><?php echo $this->getFancyDate()->getDateFr($job_info['first_try']); ?></td>
                             <td><?php echo $this->getFancyDate()->getDateFr($job_info['last_try']); ?></td>
                             <td><?php echo $job_info['nb_try']; ?></td>
-                            <td><?php hecho($job_info['last_message']); ?></td>
+                            <td style="word-break: break-all;"><?php hecho($job_info['last_message']); ?></td>
                             <td>
                                 <?php echo $this->getFancyDate()->getDateFr($job_info['next_try']); ?><br/>
                                 <?php echo $this->getFancyDate()->getTimeElapsed($job_info['next_try']); ?>
