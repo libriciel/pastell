@@ -31,16 +31,16 @@ $usernameDisplayer = new UsernameDisplayer();
 $backTitle = sprintf('Liste des "%s" de %s', $documentType->getName(), $infoEntite['denomination']);
 ?>
 <a class='btn btn-link'
-   href='Document/list?type=<?= $info['type']?>&id_e=<?= $id_e?>&last_id=<?= $id_d ?>'>
+   href='Document/list?type=<?php echo $info['type']?>&id_e=<?php echo $id_e?>&last_id=<?php echo $id_d ?>'>
 <i class="fa fa-arrow-left"></i>&nbsp;<?php hecho($backTitle); ?></a>
 
 <?php if ($donneesFormulaire->getNbOnglet() > 1) : ?>
         <ul class="nav nav-tabs" style="margin-top:10px;">
             <?php foreach ($donneesFormulaire->getOngletList() as $page_num => $name) : ?>
                 <li class="nav-item" >
-                    <a class="nav-link <?= ($page_num == $page) ? 'active' : '' ?>"
-                       href='<?php $this->url("Document/detail?id_d=$id_d&id_e=$id_e") ?>&page=<?= $page_num?>'>
-                        <?= $name?>
+                    <a class="nav-link <?php echo ($page_num == $page) ? 'active' : '' ?>"
+                       href='<?php $this->url("Document/detail?id_d=$id_d&id_e=$id_e") ?>&page=<?php echo $page_num?>'>
+                        <?php echo $name?>
                     </a>
                 </li>
             <?php endforeach;?>
@@ -61,11 +61,11 @@ $backTitle = sprintf('Liste des "%s" de %s', $documentType->getName(), $infoEnti
                 <td>
                     <form action='Document/action' method='post'>
                         <?php $this->displayCSRFInput() ?>
-                        <input type='hidden' name='id_d' value='<?= $id_d ?>'/>
-                        <input type='hidden' name='id_e' value='<?= $id_e ?>'/>
-                        <input type='hidden' name='page' value='<?= $page ?>'/>
+                        <input type='hidden' name='id_d' value='<?php echo $id_d; ?>'/>
+                        <input type='hidden' name='id_e' value='<?php echo $id_e; ?>'/>
+                        <input type='hidden' name='page' value='<?php echo $page; ?>'/>
 
-                        <input type='hidden' name='action' value='<?= $action_name ?>'/>
+                        <input type='hidden' name='action' value='<?php echo $action_name; ?>'/>
 
                         <?php if (\in_array($action_name, ['supression', 'suppression'], true)) {
                             $submitButtonClass = 'btn-danger';
@@ -75,7 +75,7 @@ $backTitle = sprintf('Liste des "%s" de %s', $documentType->getName(), $infoEnti
                             $submitButtonClass = 'btn-outline-primary';
                         }
                         ?>
-                        <button type="submit" class="btn <?= $submitButtonClass ?>"
+                        <button type="submit" class="btn <?php echo $submitButtonClass; ?>"
                         ><i class="fa <?php
                             $icon = [
                                 'supression' => 'fa-trash',
@@ -148,13 +148,13 @@ if ($infoDocumentEmail) :
             <?php foreach ($infoDocumentEmail as $infoEmail) : ?>
                 <tr>
                     <td><?php hecho($infoEmail['email']); ?></td>
-                    <td><?= DocumentEmail::getChaineTypeDestinataire($infoEmail['type_destinataire']) ?></td>
-                    <td><?= time_iso_to_fr($infoEmail['date_envoie']) ?></td>
-                    <td><?= time_iso_to_fr($infoEmail['date_renvoi']) ?></td>
-                    <td><?= $infoEmail['nb_renvoi'] ?></td>
+                    <td><?php echo DocumentEmail::getChaineTypeDestinataire($infoEmail['type_destinataire']); ?></td>
+                    <td><?php echo time_iso_to_fr($infoEmail['date_envoie']); ?></td>
+                    <td><?php echo time_iso_to_fr($infoEmail['date_renvoi']); ?></td>
+                    <td><?php echo $infoEmail['nb_renvoi']; ?></td>
                     <td>
                         <?php if ($infoEmail['lu']) : ?>
-                            <p class="badge bg-success"><?= time_iso_to_fr($infoEmail['date_lecture']) ?></p>
+                            <p class="badge bg-success"><?php echo time_iso_to_fr($infoEmail['date_lecture']) ?></p>
                         <?php elseif ($infoEmail['has_error']) : ?>
                             <?php
                             $mailsecErrorUrl = \sprintf(
@@ -187,7 +187,7 @@ if ($infoDocumentEmail) :
                                 ?>
                                 <?php if ($reponse_info['has_date_reponse']) : ?>
                                     <p class="badge bg-success">
-                                        <?= time_iso_to_fr($reponse_info['date_reponse']) ?>
+                                        <?php echo time_iso_to_fr($reponse_info['date_reponse']) ?>
                                     </p>
                                 <?php endif; ?>
                                 <a href="<?php $this->url(sprintf(
@@ -196,7 +196,7 @@ if ($infoDocumentEmail) :
                                     $id_d,
                                     $reponse_info['id_d_reponse']
                                 )); ?>"
-                                   class="badge <?= $reponse_info['is_lu'] ? 'bg-light text-dark' : 'bg-info' ?>"
+                                   class="badge <?php echo $reponse_info['is_lu'] ? 'bg-light text-dark' : 'bg-info' ?>"
                                 >
                                     <?php hecho($reponse_info['titre'] ?: 'Voir'); ?>
                                 </a>
@@ -216,10 +216,10 @@ if ($infoDocumentEmail) :
                         <td>
                             <form action='Document/action' method='post'>
                                 <?php $this->displayCSRFInput(); ?>
-                                <input type='hidden' name='id_d' value='<?= $id_d ?>'/>
-                                <input type='hidden' name='id_e' value='<?= $id_e ?>'/>
-                                <input type='hidden' name='id_de' value='<?= $infoEmail['id_de'] ?>'/>
-                                <input type='hidden' name='page' value='<?= $page ?>'/>
+                                <input type='hidden' name='id_d' value='<?php echo $id_d; ?>'/>
+                                <input type='hidden' name='id_e' value='<?php echo $id_e; ?>'/>
+                                <input type='hidden' name='id_de' value='<?php echo $infoEmail['id_de']; ?>'/>
+                                <input type='hidden' name='page' value='<?php echo $page; ?>'/>
                                 <input type='hidden' name='action' value='renvoi'/>
                                 <button type="submit" class="btn btn-outline-primary">
                                     <i class="fa fa-cogs"></i>&nbsp;Envoyer à nouveau
@@ -248,9 +248,9 @@ if ($infoDocumentEmail) :
         <?php foreach ($documentActionEntite->getAction($id_e, $id_d) as $action) : ?>
             <tr>
                 <td><?php hecho($theAction->getActionName($action['action'])); ?></td>
-                <td><?= time_iso_to_fr($action['date']) ?></td>
+                <td><?php echo time_iso_to_fr($action['date']); ?></td>
                 <td>
-                    <?= $usernameDisplayer->getUsername($action) ?>
+                    <?php echo $usernameDisplayer->getUsername($action); ?>
                 </td>
                 <td>
                     <?php if ($action['id_j']) : ?>
@@ -262,7 +262,7 @@ if ($infoDocumentEmail) :
                             $id_e,
                             $info['type']
                         ); ?>
-                        <a href='Journal/detail?<?= $journalDetailQueryParams ?>'
+                        <a href='Journal/detail?<?php echo $journalDetailQueryParams; ?>'
                            title="Consulter le détail des événements"
                         >
                             <i class="fa fa-eye"></i>
@@ -275,7 +275,7 @@ if ($infoDocumentEmail) :
     <div class="row">
         <div class="col float-right">
             <a class='btn btn-link'
-               href='Journal/index?id_e=<?= $id_e ?>&id_d=<?= $id_d ?>&type=<?= $info['type'] ?>'
+               href='Journal/index?id_e=<?php echo $id_e ?>&id_d=<?php echo $id_d ?>&type=<?php echo $info['type'] ?>'
             ><i class='fa fa-list-alt'></i>&nbsp;Voir le journal des événements</a>
         </div>
     </div>
@@ -326,7 +326,9 @@ if ($infoDocumentEmail) :
                                 <?php if ($job_info['is_lock']) : ?>
                                     <p class='alert alert-danger'>
                                         OUI <br/>
-                                        Depuis le <?= $this->getFancyDate()->getDateFr($job_info['lock_since']) ?><br/>
+                                        Depuis le <?php
+                                        echo $this->getFancyDate()->getDateFr($job_info['lock_since']);
+                                        ?><br/>
                                         <?php if ($daemon_edition) : ?>
                                             <a href='<?php $this->url("Daemon/unlock?$daemonQueryParams"); ?>'
                                                class=" btn-warning btn">
@@ -351,20 +353,20 @@ if ($infoDocumentEmail) :
                             <td><?php hecho($job_info['id_daemon']); ?><br/>
                             <td><?php hecho($job_info['etat_source']); ?><br/>
                                 <?php hecho($job_info['etat_cible']); ?></td>
-                            <td><?= $this->getFancyDate()->getDateFr($job_info['first_try']) ?></td>
-                            <td><?= $this->getFancyDate()->getDateFr($job_info['last_try']) ?></td>
-                            <td><?= $job_info['nb_try'] ?></td>
+                            <td><?php echo $this->getFancyDate()->getDateFr($job_info['first_try']); ?></td>
+                            <td><?php echo $this->getFancyDate()->getDateFr($job_info['last_try']); ?></td>
+                            <td><?php echo $job_info['nb_try']; ?></td>
                             <td><?php hecho($job_info['last_message']); ?></td>
                             <td>
-                                <?= $this->getFancyDate()->getDateFr($job_info['next_try']) ?><br/>
-                                <?= $this->getFancyDate()->getTimeElapsed($job_info['next_try']) ?>
+                                <?php echo $this->getFancyDate()->getDateFr($job_info['next_try']); ?><br/>
+                                <?php echo $this->getFancyDate()->getTimeElapsed($job_info['next_try']); ?>
                             </td>
                             <td>
                                 <?php hecho($job_info['id_verrou']); ?>
                             </td>
-                            <td><?= $job_info['id_worker'] ?></td>
+                            <td><?php echo $job_info['id_worker']; ?></td>
                             <td>
-                                <?= $job_info['pid'] ?>
+                                <?php echo $job_info['pid']; ?>
                                 <?php if ($job_info['pid']) : ?>
                                     <?php if (! $job_info['termine']) : ?>
                                         <?php if ($daemon_edition) : ?>
@@ -381,14 +383,14 @@ if ($infoDocumentEmail) :
                                             </a>
                                         <?php endif; ?>
                                     <?php else : ?>
-                                        <br/><?= $job_info['message'] ?>
+                                        <br/><?php echo $job_info['message']; ?>
                                     <?php endif; ?>
                                 <?php endif; ?>
                             </td>
                             <td>
                                 <?php if ($job_info['id_worker']) : ?>
-                                    <?= $this->getFancyDate()->getDateFr($job_info['date_begin']) ?><br/>
-                                    <?= $this->getFancyDate()->getTimeElapsed($job_info['date_begin']) ?>
+                                    <?php echo $this->getFancyDate()->getDateFr($job_info['date_begin']); ?><br/>
+                                    <?php echo $this->getFancyDate()->getTimeElapsed($job_info['date_begin']); ?>
                                 <?php endif; ?>
                             </td>
                             <?php if ($daemon_edition) : ?>
@@ -402,11 +404,11 @@ if ($infoDocumentEmail) :
                                     );
                                     ?>
 
-                                        <a href="<?= $deleteJobUrl ?>"
-                                           class="btn btn-danger">
-                                            <i class="fa fa-trash"></i>&nbsp;
-                                            Supprimer
-                                        </a>
+                                    <a href="<?php echo $deleteJobUrl; ?>"
+                                       class="btn btn-danger">
+                                        <i class="fa fa-trash"></i>&nbsp;
+                                        Supprimer
+                                    </a>
                                 </td>
                             <?php endif; ?>
                         </tr>
@@ -431,13 +433,13 @@ if ($infoDocumentEmail) :
                 </div>
                 <form action='<?php $this->url('Document/changeEtat'); ?>' method='post'>
                     <?php $this->displayCSRFInput(); ?>
-                    <input type='hidden' name='id_e' value='<?= $id_e ?>'/>
-                    <input type='hidden' name='id_d' value='<?= $id_d ?>'/>
+                    <input type='hidden' name='id_e' value='<?php echo $id_e; ?>'/>
+                    <input type='hidden' name='id_d' value='<?php echo $id_d; ?>'/>
                     Nouvel état : <select name='action' class="form-select">
                         <option value=''></option>
                         <?php foreach ($all_action as $etat => $libelle_etat) : ?>
-                            <option value='<?= $etat ?>'>
-                                <?= $libelle_etat ?> [<?= $etat ?>]
+                            <option value='<?php echo $etat; ?>'>
+                                <?php echo $libelle_etat; ?> [<?php echo $etat; ?>]
                             </option>
                         <?php endforeach; ?>
                     </select><br/>
@@ -450,7 +452,7 @@ if ($infoDocumentEmail) :
                     <button
                             type="submit"
                             class="btn btn-danger"
-                            formaction="<?php $this->url('Document/action'); ?>"
+                            formaction="<?php $this->url('Document/fatalError'); ?>"
                             name="action"
                             value="fatal-error"
                     >

@@ -1087,6 +1087,9 @@ class DocumentControler extends PastellControler
             $this->redirect("/Document/edition?id_d=$id_d&id_e=$id_e&page=$page");
         }
 
+        if ($action === FatalError::ACTION_ID) {
+            throw new \RuntimeException('La mise en erreur fatale ne peut pas être lancée via cette action');
+        }
 
         $id_destinataire = $recuperateur->get('destinataire') ?: [];
 
@@ -1102,13 +1105,65 @@ class DocumentControler extends PastellControler
         }
         $result = $this->getActionExecutorFactory()->executeOnDocument($id_e, $this->getId_u(), $id_d, $action, $id_destinataire);
         $message = $this->getActionExecutorFactory()->getLastMessage();
-        if ($action === FatalError::ACTION_ID && $go) {
-            $this->getInstance(JobManager::class)->deleteDocumentForAllEntities($id_d);
-        }
         if (! $result) {
             $this->setLastError($message);
         } else {
             $this->setLastMessage($message);
+        }
+        $this->redirect("/Document/detail?id_d=$id_d&id_e=$id_e&page=$page");
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws NotFoundException
+     * @throws LastErrorException
+     */
+    public function fatalErrorAction(): void
+    {
+        $recuperateur = $this->getPostOrGetInfo();
+        $id_e = $recuperateur->get('id_e');
+        $this->verifDroit(
+            $id_e,
+            DroitService::getDroitEdition(DroitService::DROIT_SYSTEM)
+        );
+
+        $this->setViewParameter('template_milieu', 'DocumentFatalError');
+        $this->setViewParameter('page_title', 'Erreur fatale sur le document');
+        $this->setViewParameter('id_d', $recuperateur->get('id_d'));
+        $this->setViewParameter('id_e', $id_e);
+        $this->setViewParameter('page', $recuperateur->getInt('page', 0));
+        $this->renderDefault();
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function doFatalErrorAction(): void
+    {
+        $recuperateur = $this->getPostOrGetInfo();
+        $id_d = $recuperateur->get('id_d');
+        $id_e = $recuperateur->get('id_e');
+        $page = $recuperateur->getInt('page', 0);
+
+        $this->verifDroit(
+            $id_e,
+            DroitService::getDroitEdition(DroitService::DROIT_SYSTEM)
+        );
+
+        $result = $this->getActionExecutorFactory()->executeOnDocument(
+            $id_e,
+            $this->getId_u(),
+            $id_d,
+            FatalError::ACTION_ID,
+            []
+        );
+        $message = $this->getActionExecutorFactory()->getLastMessage();
+        $this->getInstance(JobManager::class)->deleteDocumentForAllEntities($id_d);
+        if ($result) {
+            $this->setLastMessage($message);
+        } else {
+            $this->setLastError($message);
         }
         $this->redirect("/Document/detail?id_d=$id_d&id_e=$id_e&page=$page");
     }

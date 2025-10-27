@@ -127,9 +127,6 @@ class Action
 
     public function getWarning($action_name)
     {
-        if ($action_name == ActionPossible::FATAL_ERROR_ACTION) {
-            return true;
-        }
         return $this->getProperties($action_name, self::WARNING);
     }
 
