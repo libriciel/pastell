@@ -89,7 +89,12 @@ class DocumentControler extends PastellControler
         $this->renderDefault();
     }
 
-    public function detailAction()
+    /**
+     * @throws NotFoundException
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function detailAction(): void
     {
         $recuperateur = $this->getGetInfo();
         $id_d = $recuperateur->get('id_d');
@@ -98,7 +103,6 @@ class DocumentControler extends PastellControler
 
         $info_document = $this->verifDroitLecture($id_e, $id_d);
 
-        /** @var DocumentType $documentType */
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($info_document['type']);
 
         $true_last_action = $this->getDocumentActionEntite()->getTrueAction($id_e, $id_d);
@@ -117,37 +121,31 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('documentType', $documentType);
         $this->setViewParameter('infoEntite', $this->getEntiteSQL()->getInfo($id_e));
         $this->setViewParameter('formulaire', $documentType->getFormulaire());
-        $this->setViewParameter('donneesFormulaire', $this->getDonneesFormulaireFactory()->get($id_d, $info_document['type']));
-        $this->getViewParameterOrObject('donneesFormulaire')->getFormulaire()->setTabNumber($page);
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d, $info_document['type']);
+        $this->setViewParameter('donneesFormulaire', $donneesFormulaire);
+        $donneesFormulaire->getFormulaire()->setTabNumber($page);
 
         $this->setViewParameter('actionPossible', $this->getActionPossible());
-        $this->setViewParameter('theAction', $documentType->getAction());
+        $action = $documentType->getAction();
+        $this->setViewParameter('theAction', $action);
         $this->setViewParameter('documentEntite', $this->getDocumentEntite());
-        $this->setViewParameter('my_role', $this->getDocumentEntite()->getRole($id_e, $id_d));
+        $role = $this->getDocumentEntite()->getRole($id_e, $id_d);
+        $this->setViewParameter('my_role', $role);
         $this->setViewParameter('documentEmail', $this->getInstance(DocumentEmail::class));
         $this->setViewParameter('documentActionEntite', $this->getDocumentActionEntite());
 
-        $this->setViewParameter('next_action_automatique', $this->getViewParameterOrObject('theAction')->getActionAutomatique($true_last_action));
-        $this->setViewParameter(
-            'droit_erreur_fatale',
-            $this->getRoleUtilisateur()->hasDroit(
-                $this->getId_u(),
-                DroitService::getDroitEdition(DroitService::DROIT_SYSTEM),
-                $id_e
-            )
-        );
-
-        $this->setViewParameter('is_super_admin', $this->getRoleUtilisateur()->hasDroit($this->getId_u(), "system:edition", 0));
-        if ($this->getViewParameterOrObject('is_super_admin')) {
+        $this->setViewParameter('next_action_automatique', $action->getActionAutomatique($true_last_action));
+        $system_edition = $this->hasDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->setViewParameter('system_edition', $system_edition);
+        if ($system_edition) {
             $this->setViewParameter('all_action', $documentType->getAction()->getWorkflowAction());
         }
         $this->setDroitsDaemon($id_e);
-        $this->setViewParameter('page_title', $info_document['titre'] . " (" . $documentType->getName() . ")");
-
+        $this->setViewParameter('page_title', $info_document['titre'] . ' (' . $documentType->getName() . ')');
         if ($documentType->isAfficheOneTab()) {
-            $this->setViewParameter('fieldDataList', $this->getViewParameterOrObject('donneesFormulaire')->getFieldDataListAllOnglet($this->getViewParameterOrObject('my_role')));
+            $this->setViewParameter('fieldDataList', $donneesFormulaire->getFieldDataListAllOnglet($role));
         } else {
-            $this->setViewParameter('fieldDataList', $this->getViewParameterOrObject('donneesFormulaire')->getFieldDataList($this->getViewParameterOrObject('my_role'), $page));
+            $this->setViewParameter('fieldDataList', $donneesFormulaire->getFieldDataList($role, $page));
         }
 
         $document_email_reponse_list =
@@ -157,14 +155,14 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('document_email_reponse_list', $document_email_reponse_list);
 
         $this->setViewParameter('recuperation_fichier_url', "Document/recuperationFichier?id_d=$id_d&id_e=$id_e");
-        if ($this->hasDroit($this->getViewParameterOrObject('id_e'), DroitService::getDroitLecture(DroitService::DROIT_DAEMON))) {
-            $this->setViewParameter('job_list', $this->getWorkerSQL()->getJobListWithWorkerForDocument($this->getViewParameterOrObject('id_e'), $this->getViewParameterOrObject('id_d')));
+        if ($this->hasDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_DAEMON))) {
+            $this->setViewParameter('job_list', $this->getWorkerSQL()->getJobListWithWorkerForDocument($id_e, $id_d));
         } else {
             $this->setViewParameter('job_list', false);
         }
-        $this->setViewParameter('return_url', urlencode("Document/detail?id_e={$this->getViewParameterOrObject('id_e')}&id_d={$this->getViewParameterOrObject('id_d')}"));
+        $this->setViewParameter('return_url', urlencode("Document/detail?id_e=$id_e&id_d=$id_d"));
 
-        $this->setViewParameter('template_milieu', "DocumentDetail");
+        $this->setViewParameter('template_milieu', 'DocumentDetail');
         $this->setViewParameter('inject', ['id_e' => $id_e,'id_ce' => '','id_d' => $id_d,'action' => $action]);
 
         $this->renderDefault();
@@ -1004,15 +1002,17 @@ class DocumentControler extends PastellControler
      */
     public function changeEtatAction()
     {
-        if (!$this->getRoleUtilisateur()->hasDroit($this->getId_u(), "system:edition", 0)) {
-            $this->redirect("");
-        }
-
         $recuperateur = $this->getPostInfo();
         $id_d = $recuperateur->get('id_d');
         $id_e = $recuperateur->getInt('id_e');
         $action = $recuperateur->get('action');
         $message = $recuperateur->get('message');
+
+        $this->verifDroit(
+            $id_e,
+            DroitService::getDroitEdition(DroitService::DROIT_SYSTEM),
+            "/Document/detail?id_d=$id_d&id_e=$id_e"
+        );
 
         $role = $this->getDocumentEntite()->getRole($id_e, $id_d);
         if (!$role) {
@@ -1087,6 +1087,9 @@ class DocumentControler extends PastellControler
             $this->redirect("/Document/edition?id_d=$id_d&id_e=$id_e&page=$page");
         }
 
+        if ($action === FatalError::ACTION_ID) {
+            throw new \RuntimeException('La mise en erreur fatale ne peut pas être lancée via cette action');
+        }
 
         $id_destinataire = $recuperateur->get('destinataire') ?: [];
 
@@ -1102,13 +1105,65 @@ class DocumentControler extends PastellControler
         }
         $result = $this->getActionExecutorFactory()->executeOnDocument($id_e, $this->getId_u(), $id_d, $action, $id_destinataire);
         $message = $this->getActionExecutorFactory()->getLastMessage();
-        if ($action === FatalError::ACTION_ID && $go) {
-            $this->getInstance(JobManager::class)->deleteDocumentForAllEntities($id_d);
-        }
         if (! $result) {
             $this->setLastError($message);
         } else {
             $this->setLastMessage($message);
+        }
+        $this->redirect("/Document/detail?id_d=$id_d&id_e=$id_e&page=$page");
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws NotFoundException
+     * @throws LastErrorException
+     */
+    public function fatalErrorAction(): void
+    {
+        $recuperateur = $this->getPostOrGetInfo();
+        $id_e = $recuperateur->get('id_e');
+        $this->verifDroit(
+            $id_e,
+            DroitService::getDroitEdition(DroitService::DROIT_SYSTEM)
+        );
+
+        $this->setViewParameter('template_milieu', 'DocumentFatalError');
+        $this->setViewParameter('page_title', 'Erreur fatale sur le document');
+        $this->setViewParameter('id_d', $recuperateur->get('id_d'));
+        $this->setViewParameter('id_e', $id_e);
+        $this->setViewParameter('page', $recuperateur->getInt('page', 0));
+        $this->renderDefault();
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function doFatalErrorAction(): void
+    {
+        $recuperateur = $this->getPostOrGetInfo();
+        $id_d = $recuperateur->get('id_d');
+        $id_e = $recuperateur->get('id_e');
+        $page = $recuperateur->getInt('page', 0);
+
+        $this->verifDroit(
+            $id_e,
+            DroitService::getDroitEdition(DroitService::DROIT_SYSTEM)
+        );
+
+        $result = $this->getActionExecutorFactory()->executeOnDocument(
+            $id_e,
+            $this->getId_u(),
+            $id_d,
+            FatalError::ACTION_ID,
+            []
+        );
+        $message = $this->getActionExecutorFactory()->getLastMessage();
+        $this->getInstance(JobManager::class)->deleteDocumentForAllEntities($id_d);
+        if ($result) {
+            $this->setLastMessage($message);
+        } else {
+            $this->setLastError($message);
         }
         $this->redirect("/Document/detail?id_d=$id_d&id_e=$id_e&page=$page");
     }

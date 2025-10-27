@@ -15,13 +15,12 @@
  * @var int $page
  * @var Action $theAction
  * @var array $document_email_reponse_list
- * @var bool $is_super_admin
+ * @var bool $system_edition
  * @var bool $daemon_edition
  * @var bool $daemon_global_lecture
  * @var bool $daemon_lecture
  * @var array|bool $job_list
  * @var string $return_url
- * @var bool $droit_erreur_fatale
  * @var array $all_action
  */
 
@@ -41,7 +40,7 @@ $backTitle = sprintf('Liste des "%s" de %s', $documentType->getName(), $infoEnti
                 <li class="nav-item" >
                     <a class="nav-link <?php echo ($page_num == $page) ? 'active' : '' ?>"
                        href='<?php $this->url("Document/detail?id_d=$id_d&id_e=$id_e") ?>&page=<?php echo $page_num?>'>
-                    <?php echo $name?>
+                        <?php echo $name?>
                     </a>
                 </li>
             <?php endforeach;?>
@@ -405,35 +404,21 @@ if ($infoDocumentEmail) :
                                     );
                                     ?>
 
-                                        <a href="<?php echo $deleteJobUrl; ?>"
-                                           class="btn btn-danger">
-                                            <i class="fa fa-trash"></i>&nbsp;
-                                            Supprimer
-                                        </a>
+                                    <a href="<?php echo $deleteJobUrl; ?>"
+                                       class="btn btn-danger">
+                                        <i class="fa fa-trash"></i>&nbsp;
+                                        Supprimer
+                                    </a>
                                 </td>
                             <?php endif; ?>
                         </tr>
                     <?php endforeach; ?>
                 </table>
-
-                <?php if ($droit_erreur_fatale) : ?>
-                    <form action='Document/action' method='post'>
-                        <?php $this->displayCSRFInput(); ?>
-                        <input type='hidden' name='id_d' value='<?php echo $id_d; ?>'/>
-                        <input type='hidden' name='id_e' value='<?php echo $id_e; ?>'/>
-                        <input type='hidden' name='page' value='<?php echo $page; ?>'/>
-                        <input type='hidden' name='action' value='fatal-error'/>
-
-                        <button type='submit' class='btn btn-danger'>
-                            <i class="fa fa-exclamation-triangle"></i>&nbsp;Passer en erreur fatale
-                        </button>
-                    </form>
-                <?php endif; ?>
             </div>
         </div>
     </div>
 <?php endif; ?>
-<?php if ($is_super_admin) : ?>
+<?php if ($system_edition) : ?>
     <div class="box">
         <a class="collapse-link" data-bs-toggle="collapse" data-bs-target="#collapseExample">
             <h2><i class="fa fa-plus-square"></i>&nbsp;Administration avancée</h2>
@@ -464,7 +449,15 @@ if ($infoDocumentEmail) :
                             class="btn btn-danger"><i class="fa fa-floppy-o"
                         ></i>&nbsp;Valider le changement d'état
                     </button>
-
+                    <button
+                            type="submit"
+                            class="btn btn-danger"
+                            formaction="<?php $this->url('Document/fatalError'); ?>"
+                            name="action"
+                            value="fatal-error"
+                    >
+                        <i class="fa fa-exclamation-triangle"></i>&nbsp;Passer en erreur fatale
+                    </button>
                 </form>
             </div>
         </div>

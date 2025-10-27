@@ -386,6 +386,9 @@ Lignes',
         $this->assertSame('3', $data['maselection']);
     }
 
+    /**
+     * @throws LastErrorException
+     */
     public function testNoJobLeftFatalErrorFromDocument(): void
     {
         $id_d = $this->createDocument('test')['id_d'];
@@ -394,15 +397,27 @@ Lignes',
         static::assertTrue($jobQueueSQL->hasDocumentJob(self::ID_E_COL, $id_d));
         $this->setGetInfo([
             'id_d' => $id_d,
-            'action' => FatalError::ACTION_ID,
-            'id_e' => self::ID_E_COL,
+            'id_e' => (int)self::ID_E_COL,
             'go' => 1,
         ]);
-        try {
-            $this->getControlerInstance(DocumentControler::class)->actionAction();
-        } catch (Exception) {
-        }
+        $this->expectException(LastMessageException::class);
+        $this->getControlerInstance(DocumentControler::class)->doFatalErrorAction();
         static::assertFalse($jobQueueSQL->hasDocumentJob(self::ID_E_COL, $id_d));
+    }
+
+
+    public function testFatalErrorForbidden(): void
+    {
+        $id_d = $this->createDocument('test')['id_d'];
+        $this->triggerActionOnDocument($id_d, 'action-auto');
+        $this->setGetInfo([
+            'id_d' => $id_d,
+            'id_e' => self::ID_E_COL,
+            'action' => FatalError::ACTION_ID,
+            'go' => 1,
+        ]);
+        $this->expectExceptionMessage('La mise en erreur fatale ne peut pas être lancée via cette action');
+        $this->getControlerInstance(DocumentControler::class)->actionAction();
     }
 
     public function testCreateDocumentOnDeactivatedEntity(): void

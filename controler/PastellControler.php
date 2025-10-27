@@ -87,13 +87,6 @@ class PastellControler extends Controler
             $this->hasDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_DAEMON))
         );
         $this->setViewParameter('daemon_exists', $this->getDaemonSQL()->getDaemonByEntity($id_e));
-        $this->setViewParameter(
-            'system_edition',
-            $this->hasDroit(
-                EntiteSQL::ID_E_ENTITE_RACINE,
-                DroitService::getDroitEdition(DroitService::DROIT_SYSTEM)
-            )
-        );
     }
 
     protected function setDroitImportExportConfig(int $id_e): void
