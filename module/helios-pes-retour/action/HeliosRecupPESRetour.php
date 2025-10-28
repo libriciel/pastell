@@ -1,11 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 class HeliosRecupPESRetour extends ActionExecutor
 {
-    public function go()
+    /**
+     * @throws NotFoundException
+     * @throws S2lowException
+     * @throws UnrecoverableException
+     */
+    public function go(): bool
     {
         /** @var S2low $tdT */
-        $tdT = $this->getConnecteur("TdT");
+        $tdT = $this->getConnecteur('TdT');
 
         $id_retour = $this->getDonneesFormulaire()->get('id_retour');
 
@@ -14,8 +21,8 @@ class HeliosRecupPESRetour extends ActionExecutor
             return false;
         }
         $tdT->getPESRetourLu($this->getDonneesFormulaire());
-        $this->addActionOK("Le fichier PES Retour a été importé à nouveau");
-        $this->setLastMessage("Le fichier PES Retour a été importé à nouveau");
+        $this->addActionOK('Le fichier PES Retour a été importé à nouveau');
+        $this->setLastMessage('Le fichier PES Retour a été importé à nouveau');
         return true;
     }
 }
