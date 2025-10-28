@@ -21,7 +21,7 @@
 
         <tr>
             <th>Dernier message</th>
-            <td><?php echo $job_info['last_message'] ?></td>
+            <td style="word-break: break-all;"><?php echo $job_info['last_message'] ?></td>
         </tr>
 
         <tr>
