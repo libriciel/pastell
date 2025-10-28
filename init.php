@@ -123,7 +123,7 @@ if (PHP_SAPI !== 'cli' || $objectInstancier->getInstance(SQLQuery::class)->isCon
 }
 
 
-$objectInstancier->setInstance('journal_max_age_in_months', JOURNAL_MAX_AGE_IN_MONTHS);
+$objectInstancier->setInstance('journal_max_age_in_days', JOURNAL_MAX_AGE_IN_DAYS);
 $objectInstancier->setInstance('database_file', DatabaseUpdater::DATABASE_FILE);
 $objectInstancier->setInstance('rgpd_page_path', RGPD_PAGE_PATH);
 

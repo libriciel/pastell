@@ -390,9 +390,9 @@ class Journal extends SQL
         return $this->queryOne("SELECT date FROM journal ORDER BY id_j LIMIT 1;");
     }
 
-    public function purgeToHistorique($journal_max_age_in_months = 2)
+    public function purgeToHistorique(int $journal_max_age_in_days = 60): void
     {
-        $date = date("Y-m-d H:i:s", strtotime("-$journal_max_age_in_months months"));
+        $date = date('Y-m-d H:i:s', strtotime("-$journal_max_age_in_days days"));
         $sql = "SELECT id_j FROM journal WHERE date<? ORDER BY date LIMIT 1000";
 
         do {
@@ -409,6 +409,5 @@ class Journal extends SQL
                 $this->query($sql_delete, $id_j);
             }
         } while ($id_j_list);
-        return true;
     }
 }

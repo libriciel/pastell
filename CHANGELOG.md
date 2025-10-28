@@ -35,6 +35,7 @@ doivent être mises à jour #1667
 - Les droits 'changement-email:' ne sont plus sur le rôle admin par défaut #2320
 - Renommage de ChorusProImportUtilService::getMinDateStatutCourant en getOldestDateDepuisLe #2340
 - Les utilisateurs avec le droit system:edition peuvent désormais changer manuellement l'état d'un dossier #2354
+- La variable d'environnement JOURNAL_MAX_AGE_IN_MONTHS est remplacée par JOURNAL_MAX_AGE_IN_DAYS (à 60 jours par défaut) #2358
 
 ## Suppressions
 
