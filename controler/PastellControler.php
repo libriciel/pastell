@@ -614,4 +614,23 @@ class PastellControler extends Controler
     {
         return $this->getObjectInstancier()->getInstance('site_base');
     }
+
+    public function getLoginPageConfiguration(): string
+    {
+        $result = '';
+        if (file_exists(LOGIN_PAGE_CONFIGURATION_LOCATION)) {
+            $raw = file_get_contents(LOGIN_PAGE_CONFIGURATION_LOCATION);
+            $raw = trim($raw);
+            try {
+                $result = json_encode(
+                    json_decode($raw, true, 512, JSON_THROW_ON_ERROR),
+                    JSON_THROW_ON_ERROR
+                    | JSON_UNESCAPED_UNICODE
+                    | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
+                );
+            } catch (JsonException) {
+            }
+        }
+        return $result;
+    }
 }

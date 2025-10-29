@@ -200,11 +200,7 @@ class ConnexionControler extends PastellControler
     {
         $this->setViewParameter('message_connexion', false);
 
-        $this->setViewParameter(
-            'login_page_configuration',
-            file_exists(LOGIN_PAGE_CONFIGURATION_LOCATION) ?
-                file_get_contents(LOGIN_PAGE_CONFIGURATION_LOCATION) : ''
-        );
+        $this->setViewParameter('login_page_configuration', $this->getLoginPageConfiguration());
         $this->setViewParameter('page', 'connexion');
         $this->setViewParameter('page_title', 'Connexion');
         $this->setViewParameter('request_uri', $this->getGetInfo()->get('request_uri'));
@@ -236,11 +232,7 @@ class ConnexionControler extends PastellControler
             $this->setViewParameter('login', $utilisateurInfo['login']);
         }
 
-        $this->setViewParameter(
-            'login_page_configuration',
-            file_exists(LOGIN_PAGE_CONFIGURATION_LOCATION) ?
-                file_get_contents(LOGIN_PAGE_CONFIGURATION_LOCATION) : ''
-        );
+        $this->setViewParameter('login_page_configuration', $this->getLoginPageConfiguration());
         $this->setViewParameter('page', 'connexion');
         $this->setViewParameter('page_title', 'Connexion');
         $this->setViewParameter('request_uri', $this->getGetInfo()->get('request_uri'));
@@ -284,11 +276,7 @@ class ConnexionControler extends PastellControler
         }
 
         $this->setViewParameter('config', $config);
-        $this->setViewParameter(
-            'login_page_configuration',
-            file_exists(LOGIN_PAGE_CONFIGURATION_LOCATION) ?
-                file_get_contents(LOGIN_PAGE_CONFIGURATION_LOCATION) : ''
-        );
+        $this->setViewParameter('login_page_configuration', $this->getLoginPageConfiguration());
         $this->setViewParameter('page', 'oublie_identifiant');
         $this->setViewParameter('page_title', 'Oubli des identifiants');
         $this->render('connexion/password_reset.html.twig');
@@ -305,11 +293,8 @@ class ConnexionControler extends PastellControler
         $recuperateur = $this->getGetInfo();
         $passwordEntropy = $this->getObjectInstancier()->getInstance(PasswordEntropy::class);
         $this->setViewParameter('password_min_entropy', $passwordEntropy->getEntropyForDisplay());
-        $this->setViewParameter(
-            'login_page_configuration',
-            file_exists(LOGIN_PAGE_CONFIGURATION_LOCATION) ?
-                file_get_contents(LOGIN_PAGE_CONFIGURATION_LOCATION) : ''
-        );
+        $this->setViewParameter('login_page_configuration', $this->getLoginPageConfiguration());
+
         $this->setViewParameter('mail_verif_password', $recuperateur->get('mail_verif'));
         $this->setViewParameter('page', 'oublie_identifiant');
         $this->setViewParameter('page_title', 'Oubli des identifiants');
