@@ -1,3 +1,9 @@
+# [4.1.14] - 2025-11-10
+
+## Corrections
+
+- Améliorations de sécurité #2343
+
 # [4.1.13] - 2025-10-14
 
 ## Évolutions

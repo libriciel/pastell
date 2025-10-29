@@ -397,9 +397,7 @@ class SystemControler extends PastellControler
      */
     public function loginPageConfigurationAction()
     {
-        $this->setViewParameter('login_page_configuration', file_exists(LOGIN_PAGE_CONFIGURATION_LOCATION)
-            ? file_get_contents(LOGIN_PAGE_CONFIGURATION_LOCATION)
-            : '');
+        $this->setViewParameter('login_page_configuration', $this->getLoginPageConfiguration());
         $this->setViewParameter('page_title', '');
         $this->setViewParameter('menu_gauche_select', 'System/loginPageConfiguration');
         $this->setViewParameter('template_milieu', 'LoginPageConfiguration');
