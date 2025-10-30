@@ -298,6 +298,7 @@ class Extensions
         $result['flux'] = $this->getAllModuleByPath($path);
         $result['connecteur'] = $this->getAllConnecteurByPath($path);
         $result['connecteur-type'] = $this->getAllConnecteurTypeByPath($path);
+        $result['type_dossier'] = $this->getAllStepTypesByPath($path);
         $manifest = $this->getManifest($path);
         $result['manifest'] = $manifest;
         $result['id'] = $manifest['id'] ?? basename($path);
@@ -315,21 +316,25 @@ class Extensions
         return $manifest->getInfo();
     }
 
-    private function getAllModuleByPath($path)
+    private function getAllModuleByPath($path): array
     {
-        return $this->globAll($path . "/" . self::MODULE_FOLDER_NAME . "/*");
+        return $this->globAll($path . '/' . self::MODULE_FOLDER_NAME . '/*');
     }
 
-    private function getAllConnecteurByPath($path)
+    private function getAllConnecteurByPath($path): array
     {
-        return $this->globAll($path . "/" . self::CONNECTEUR_FOLDER_NAME . "/*");
+        return $this->globAll($path . '/' . self::CONNECTEUR_FOLDER_NAME . '/*');
     }
 
-    private function getAllConnecteurTypeByPath($path)
+    private function getAllConnecteurTypeByPath($path): array
     {
-        return $this->globAll($path . "/" . self::CONNECTEUR_TYPE_FOLDER_NAME . "/*");
+        return $this->globAll($path . '/' . self::CONNECTEUR_TYPE_FOLDER_NAME . '/*');
     }
 
+    private function getAllStepTypesByPath($path): array
+    {
+        return $this->globAll($path . '/' . self::TYPE_DOSSIER_FOLDER_NAME . '/*');
+    }
 
     private function globAll($glob_expression)
     {
