@@ -1,8 +1,9 @@
 # [4.0.27]
 
-## Correction
+## Corrections
 
 - L'action MailSec `Renvoyer` envoie uniquement aux destinataires n'ayant pas ouvert le mail initial #1206
+- Ordonner la télétransmission ne fonctionnait plus sur les navigateurs basés sur Chromium #2360
 
 # [4.0.26] - 2025-10-13
 
