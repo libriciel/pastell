@@ -385,6 +385,16 @@
                 <td></td>
             </tr>
             <tr>
+                <th class="w200" scope="row">LIBELLE_PLATEFORME_MAIL</th>
+                <td>{{ libelle_plateforme_mail }}</td>
+                <input type="hidden" name="email" value="{{ libelle_plateforme_mail }}">
+                <td>
+                    <a class='btn btn-primary' href="{{ path('app.legacy.system_editLibellePlateformeMail') }}">
+                        <i class="fa fa-pencil"></i>&nbsp;Modifier
+                    </a>
+                </td>
+            </tr>
+            <tr>
                 <form action='{{ path('app.legacy.system_mailTest') }}' method='post'>
                     {{ gabarit.displayCSRFInput() }}
                 <th class="w200" scope="row">

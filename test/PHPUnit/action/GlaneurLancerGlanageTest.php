@@ -13,6 +13,6 @@ class GlaneurLancerGlanageTest extends PastellTestCase
             'type_depot' => 'VRAC',
         ]);
         $this->triggerActionOnConnector($id_ce, 'go');
-        $this->assertMessageContainsString("Subject: [Pastell] Le traitement d'un glaneur est");
+        $this->assertMessageContainsString("Subject: [PASTELL] Le traitement d'un glaneur est");
     }
 }

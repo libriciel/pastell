@@ -9,6 +9,7 @@ class ConfigurationSQL extends SQL
     public const int NULL_ID_E = -1;
 
     public const string ADMIN_EMAIL = 'ADMIN_EMAIL';
+    public const string LIBELLE_PLATEFORME_MAIL = 'LIBELLE_PLATEFORME_MAIL';
     public function setConfiguration(string $config_key, string $config_value, int $id_e): void
     {
         $sql = <<<SQL
@@ -59,5 +60,10 @@ SQL;
         } catch (ConfigurationNotFoundException) {
             return [];
         }
+    }
+
+    public function getLibellePlateformeMail(): string
+    {
+        return $this->getConfiguration(self::LIBELLE_PLATEFORME_MAIL, self::NULL_ID_E);
     }
 }

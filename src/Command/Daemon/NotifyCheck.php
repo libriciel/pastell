@@ -55,6 +55,7 @@ final class NotifyCheck extends BaseCommand
         $site = $this->objectInstancier->getInstance('site_base');
         $error_items = [];
 
+        $libelle_plateforme_mail = $this->configurationSQL->getLibellePlateformeMail();
         foreach ($daemonHealth->getDetails() ?? [] as $item) {
             if (!$item->isSuccess()) {
                 $context       = $item->getContext();
@@ -63,10 +64,9 @@ final class NotifyCheck extends BaseCommand
                 $destinataires = $this->daemonManager->getAdminEmails($id_daemon);
                 $body = "[KO] Tâches automatiques du site $site — $denomination [entité #{$context['id_e']}]" .
                     "— daemon #$id_daemon : {$item->result}";
-
                 $templatedEmail = new TemplatedEmail()
                     ->to(...$destinataires)
-                    ->subject("[PASTELL] Alerte tâches automatiques - {$denomination}")
+                    ->subject("[$libelle_plateforme_mail] Alerte tâches automatiques - {$denomination}")
                     ->text($body);
                 $this->pastellMailer->send($templatedEmail);
                 if ($this->getIO()->isVerbose()) {
@@ -87,7 +87,7 @@ final class NotifyCheck extends BaseCommand
 
             $synthesisEmail = new TemplatedEmail()
                 ->to(...$this->configurationSQL->getAdminEmails())
-                ->subject('[PASTELL] Alerte tâches automatiques - Synthèse')
+                ->subject("[$libelle_plateforme_mail] Alerte tâches automatiques - Synthèse")
                 ->text($body);
 
             $this->pastellMailer->send($synthesisEmail);

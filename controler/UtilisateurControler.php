@@ -133,10 +133,11 @@ class UtilisateurControler extends PastellControler
 
         $password = $this->getUtilisateurNewEmailSQL()->add($this->getId_u(), $email);
 
+        $libelle_plateforme_mail = $this->getConfigurationSQL()->getLibellePlateformeMail();
         $link = sprintf('%s/Utilisateur/modifEmailConfirm?password=%s', $this->getSiteBase(), $password);
-        $templatedEmail = (new TemplatedEmail())
+        $templatedEmail = new TemplatedEmail()
             ->to($email)
-            ->subject('[Pastell] Changement de mail sur Pastell')
+            ->subject("[$libelle_plateforme_mail] Changement de mail sur Pastell")
             ->htmlTemplate('changement-email.html.twig')
             ->context(['link' => $link]);
         $this->getObjectInstancier()

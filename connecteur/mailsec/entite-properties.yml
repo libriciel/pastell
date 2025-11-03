@@ -12,8 +12,8 @@ formulaire:
             commentaire: "Lors de l'envoi, prend la valeur de l'émetteur PLATEFORME_MAIL si non renseigné"
         mailsec_subject:
             name: 'Sujet du mail sécurisé'
-            default: '[Pastell] Vous avez reçu un mail sécurisé'
-            commentaire: "Vous pouvez utiliser les mêmes méta-informations que le contenu du mail texte\npar le nom de l'entité et par le titre du dossier Pastell."
+            default: 'Vous avez reçu un mail sécurisé'
+            commentaire: "Vous pouvez utiliser les mêmes méta-informations que le contenu du mail texte\npar le nom de l'entité et par le titre du dossier Pastell. Le libellé configuré pour la plateforme sera ajouté entre crochets au début de l’objet."
         content_html:
             name: 'Mail HTML'
             commentaire: "Un fichier HTML susceptible d'être envoyé par mail. Peut contenir les mêmes méta-informations que le contenu texte"

@@ -28,9 +28,10 @@ class JournalManager
         } catch (Exception $e) {
             $message = sprintf('Erreur sur la purge du journal : %s', $e->getMessage());
             $this->logger->error($message);
-            $templatedEmail = (new TemplatedEmail())
+            $libelle_plateforme_mail = $this->configurationSQL->getLibellePlateformeMail();
+            $templatedEmail = new TemplatedEmail()
                 ->to(...$this->configurationSQL->getAdminEmails())
-                ->subject('[PASTELL] Problème sur la purge du journal')
+                ->subject("[$libelle_plateforme_mail] Problème sur la purge du journal")
                 ->text($message);
             $this->mailer->send($templatedEmail);
             return false;

@@ -13,6 +13,7 @@ class NotificationMail
         private readonly NotificationDigestSQL $notificationDigestSQL,
         private readonly EntiteSQL $entiteSQL,
         private readonly DocumentSQL $documentSQL,
+        private readonly ConfigurationSQL $configurationSQL,
         private readonly string $site_base,
     ) {
     }
@@ -41,9 +42,10 @@ class NotificationMail
         $documentInfo = $this->documentSQL->getInfo($id_d);
 
         $url = sprintf('%s/Document/detail?id_d=%s&id_e=%d', $this->site_base, $id_d, $id_e);
-        $templatedEmail = (new TemplatedEmail())
+        $libelle_plateforme_mail = $this->configurationSQL->getLibellePlateformeMail();
+        $templatedEmail = new TemplatedEmail()
             ->to($mail)
-            ->subject('[Pastell] Notification')
+            ->subject("[$libelle_plateforme_mail] Notification")
             ->htmlTemplate('notification.html.twig')
             ->context([
                 'message' => $message,
@@ -79,9 +81,10 @@ class NotificationMail
     {
         $all = $this->notificationDigestSQL->getAll();
         foreach ($all as $email => $all_info) {
-            $templatedEmail = (new TemplatedEmail())
+            $libelle_plateforme_mail = $this->configurationSQL->getLibellePlateformeMail();
+            $templatedEmail = new TemplatedEmail()
                 ->to($email)
-                ->subject('[Pastell] Notification (résumé journalier)')
+                ->subject("[$libelle_plateforme_mail] Notification (résumé journalier)")
                 ->htmlTemplate('notification-daily-digest.html.twig')
                 ->context(['info' => $all_info, 'SITE_BASE' => $this->site_base]);
             $this->mailer->send($templatedEmail);

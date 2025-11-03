@@ -544,9 +544,10 @@ class ConnexionControler extends PastellControler
             $this->getSiteBase(),
             $mailVerifPassword
         );
-        $templatedEmail = (new TemplatedEmail())
+        $libelle_plateforme_mail = $this->getConfigurationSQL()->getLibellePlateformeMail();
+        $templatedEmail = new TemplatedEmail()
             ->to($info['email'])
-            ->subject('[Pastell] Procédure de modification de mot de passe')
+            ->subject("[$libelle_plateforme_mail] Procédure de modification de mot de passe")
             ->htmlTemplate('oublie-identifiant.html.twig')
             ->context(['link' => $link]);
         $this->getObjectInstancier()

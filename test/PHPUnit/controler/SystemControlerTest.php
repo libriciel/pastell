@@ -82,7 +82,7 @@ class SystemControlerTest extends ControlerTestCase
             );
         }
         self::assertStringContainsString(
-            'Subject: [Pastell] Mail de test',
+            'Subject: [PASTELL] Mail de test',
             $mailerTransportTesting->getSentMessage()->getMessage()->toString()
         );
     }

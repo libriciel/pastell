@@ -15,9 +15,12 @@ class Accepter extends ActionExecutor
 
         $utilisateur_info = $this->objectInstancier->getInstance(UtilisateurSQL::class)->getInfo($id_u);
 
-        $templatedEmail = (new TemplatedEmail())
+        $libelle_plateforme_mail = $this->objectInstancier->getInstance(
+            ConfigurationSQL::class
+        )->getLibellePlateformeMail();
+        $templatedEmail = new TemplatedEmail()
             ->to($utilisateur_info['email'])
-            ->subject('[Pastell] Votre changement de mail a été accepté')
+            ->subject("[$libelle_plateforme_mail] Votre changement de mail a été accepté")
             ->htmlTemplate('changement-email-accepter.html.twig')
             ->context(["message" => $message]);
         $this->objectInstancier
