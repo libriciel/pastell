@@ -164,7 +164,7 @@ class MailSec extends MailsecConnecteur
         $templatedEmail = (new TemplatedEmail())
             ->from(new Address($this->plateforme_mail, $mailsec_from_description))
             ->to($to)
-            ->subject("[$libelle_plateforme_mail]" . $sujet)
+            ->subject("[$libelle_plateforme_mail] " . $sujet)
             ->replyTo($mailsec_reply_to);
 
         if ($mailPastellId) {

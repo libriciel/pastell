@@ -98,7 +98,7 @@ class MailSecConnecteurTest extends PastellTestCase
     public function testTest()
     {
         $this->getMailSec()->test();
-        $this->assertMessageContainsString('Subject: entite: Bourg-en-Bresse -- titre : mon titre');
+        $this->assertMessageContainsString('Subject: [PASTELL] entite: Bourg-en-Bresse -- titre : mon titre');
     }
 
     /**
