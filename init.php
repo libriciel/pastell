@@ -138,7 +138,7 @@ $objectInstancier->setInstance('password_min_entropy', PASSWORD_MIN_ENTROPY);
 $objectInstancier->setInstance('mailer_dsn', MAILER_DSN);
 $objectInstancier->setInstance('email_template_path', __DIR__ . '/templates/email/');
 $objectInstancier->setInstance('plateforme_mail', PLATEFORME_MAIL);
-$objectInstancier->setInstance('libelle_plateforme_mail', 'PASTELL');
+$objectInstancier->setInstance('libelle_plateforme_mail', 'Pastell');
 
 $objectInstancier->setInstance('admin_email', \explode(',', ADMIN_EMAIL));
 

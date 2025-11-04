@@ -15,7 +15,7 @@ declare(strict_types=1);
                 <th class='w300'>
                     <label for="type_connecteur">LIBELLE_PLATEFORME_MAIL<span class="obl">*</span></label>
                     <p class="form_commentaire">
-                        Libellé affiché entre crochets avant l’objet du mail envoyé par pastell
+                        Nom affiché avant l’adresse d’expéditeur dans le champ “From” des mails envoyés par Pastell.
                     </p>
                 </th>
                 <td>

@@ -7,6 +7,7 @@ use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Utilisateur\UserUpdateService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mime\Address;
 
 class UtilisateurControler extends PastellControler
 {
@@ -133,11 +134,13 @@ class UtilisateurControler extends PastellControler
 
         $password = $this->getUtilisateurNewEmailSQL()->add($this->getId_u(), $email);
 
-        $libelle_plateforme_mail = $this->getConfigurationSQL()->getLibellePlateformeMail();
         $link = sprintf('%s/Utilisateur/modifEmailConfirm?password=%s', $this->getSiteBase(), $password);
+        $plateforme_mail = $this->getInstance('plateforme_mail');
+        $libelle_plateforme_mail = $this->getConfigurationSQL()->getLibellePlateformeMail();
         $templatedEmail = new TemplatedEmail()
+            ->from(new Address($plateforme_mail, $libelle_plateforme_mail))
             ->to($email)
-            ->subject("[$libelle_plateforme_mail] Changement de mail sur Pastell")
+            ->subject('[Pastell] Changement de mail sur Pastell')
             ->htmlTemplate('changement-email.html.twig')
             ->context(['link' => $link]);
         $this->getObjectInstancier()

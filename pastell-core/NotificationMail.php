@@ -3,6 +3,7 @@
 use Pastell\Mailer\Mailer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mime\Address;
 
 class NotificationMail
 {
@@ -15,6 +16,7 @@ class NotificationMail
         private readonly DocumentSQL $documentSQL,
         private readonly ConfigurationSQL $configurationSQL,
         private readonly string $site_base,
+        private readonly string $plateforme_mail,
     ) {
     }
 
@@ -44,8 +46,9 @@ class NotificationMail
         $url = sprintf('%s/Document/detail?id_d=%s&id_e=%d', $this->site_base, $id_d, $id_e);
         $libelle_plateforme_mail = $this->configurationSQL->getLibellePlateformeMail();
         $templatedEmail = new TemplatedEmail()
+            ->from(new Address($this->plateforme_mail, $libelle_plateforme_mail))
             ->to($mail)
-            ->subject("[$libelle_plateforme_mail] Notification")
+            ->subject('[Pastell] Notification')
             ->htmlTemplate('notification.html.twig')
             ->context([
                 'message' => $message,
@@ -83,8 +86,9 @@ class NotificationMail
         foreach ($all as $email => $all_info) {
             $libelle_plateforme_mail = $this->configurationSQL->getLibellePlateformeMail();
             $templatedEmail = new TemplatedEmail()
+                ->from(new Address($this->plateforme_mail, $libelle_plateforme_mail))
                 ->to($email)
-                ->subject("[$libelle_plateforme_mail] Notification (résumé journalier)")
+                ->subject('[Pastell] Notification (résumé journalier)')
                 ->htmlTemplate('notification-daily-digest.html.twig')
                 ->context(['info' => $all_info, 'SITE_BASE' => $this->site_base]);
             $this->mailer->send($templatedEmail);

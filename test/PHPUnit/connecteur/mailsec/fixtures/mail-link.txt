@@ -1,6 +1,6 @@
 From: PASTELL <test@libriciel.invalid>
 To: eric.pommateau@adullact-projet.com
-Subject: [PASTELL] entite: Bourg-en-Bresse -- titre : mon titre
+Subject: entite: Bourg-en-Bresse -- titre : mon titre
 Reply-To: test@libriciel.invalid
 X-PASTELL-DOCUMENT: NOTTESTABLE
 Message-ID: NOTTESTABLE

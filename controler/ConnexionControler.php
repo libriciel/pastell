@@ -6,6 +6,7 @@ use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\PasswordEntropy;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -544,10 +545,12 @@ class ConnexionControler extends PastellControler
             $this->getSiteBase(),
             $mailVerifPassword
         );
+        $plateforme_mail = $this->getInstance('plateforme_mail');
         $libelle_plateforme_mail = $this->getConfigurationSQL()->getLibellePlateformeMail();
         $templatedEmail = new TemplatedEmail()
+            ->from(new Address($plateforme_mail, $libelle_plateforme_mail))
             ->to($info['email'])
-            ->subject("[$libelle_plateforme_mail] Procédure de modification de mot de passe")
+            ->subject('[Pastell] Procédure de modification de mot de passe')
             ->htmlTemplate('oublie-identifiant.html.twig')
             ->context(['link' => $link]);
         $this->getObjectInstancier()

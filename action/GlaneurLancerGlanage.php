@@ -2,6 +2,7 @@
 
 use Pastell\Mailer\Mailer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mime\Address;
 
 class GlaneurLancerGlanage extends ActionExecutor
 {
@@ -31,12 +32,14 @@ class GlaneurLancerGlanage extends ActionExecutor
 
             $admin_email = $this->objectInstancier->getInstance(ConfigurationSQL::class)->getAdminEmails();
             #TODO revoir la gestion des erreurs des connecteurs afin de ne pas envoyer de mail à ce moment-là
+            $plateforme_mail = $this->objectInstancier->getInstance('plateforme_mail');
             $libelle_plateforme_mail = $this->objectInstancier->getInstance(
                 ConfigurationSQL::class
             )->getLibellePlateformeMail();
             $templatedEmail = new TemplatedEmail()
+                ->from(new Address($plateforme_mail, $libelle_plateforme_mail))
                 ->to(...$admin_email)
-                ->subject("[$libelle_plateforme_mail] Le traitement d'un glaneur est passé à 'NON'")
+                ->subject("[Pastell] Le traitement d'un glaneur est passé à 'NON'") ->htmlTemplate('glaneur_lancer_glanage.html.twig')
                 ->htmlTemplate('glaneur_lancer_glanage.html.twig')
                 ->context(['url' => $url, 'message' => $message]);
             $this->objectInstancier->getInstance(Mailer::class)->send($templatedEmail);

@@ -2,6 +2,7 @@
 
 use Pastell\Mailer\Mailer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mime\Address;
 
 class CPPVerifConnectivite extends ActionExecutor
 {
@@ -36,10 +37,14 @@ class CPPVerifConnectivite extends ActionExecutor
         if ($nb_ko) {
             $configurationSql = $this->objectInstancier->getInstance(ConfigurationSQL::class);
             $admin_email = $configurationSql->getAdminEmails();
-            $libelle_plateforme_mail = $configurationSql->getLibellePlateformeMail();
+            $plateforme_mail = $this->objectInstancier->getInstance('plateforme_mail');
+            $libelle_plateforme_mail = $this->objectInstancier->getInstance(
+                ConfigurationSQL::class
+            )->getLibellePlateformeMail();
             $templatedEmail = new TemplatedEmail()
+                ->from(new Address($plateforme_mail, $libelle_plateforme_mail))
                 ->to(...$admin_email)
-                ->subject("[$libelle_plateforme_mail] la connectivité Pastell - Chorus Pro est en erreur")
+                ->subject('[Pastell] la connectivité Pastell - Chorus Pro est en erreur')
                 ->text($data);
             $this->objectInstancier
                 ->getInstance(Mailer::class)

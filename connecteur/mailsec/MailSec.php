@@ -20,7 +20,6 @@ class MailSec extends MailsecConnecteur
         private readonly DocumentEmail $documentEmail,
         private readonly Journal $journal,
         private readonly EntiteSQL $entiteSQL,
-        private readonly ConfigurationSQL $configurationSQL,
         private readonly Mailer $mailer,
         private readonly string $websec_base,
         private readonly ConnecteurFactory $connecteurFactory,
@@ -160,11 +159,10 @@ class MailSec extends MailsecConnecteur
             $this->plateforme_mail
         ) ?: $this->plateforme_mail;
 
-        $libelle_plateforme_mail = $this->configurationSQL->getLibellePlateformeMail();
         $templatedEmail = (new TemplatedEmail())
             ->from(new Address($this->plateforme_mail, $mailsec_from_description))
             ->to($to)
-            ->subject("[$libelle_plateforme_mail] " . $sujet)
+            ->subject($sujet)
             ->replyTo($mailsec_reply_to);
 
         if ($mailPastellId) {

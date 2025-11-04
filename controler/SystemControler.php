@@ -311,10 +311,12 @@ class SystemControler extends PastellControler
         $emailNotSent = '';
         $emails = \explode(',', $emails);
         foreach ($emails as $email) {
+            $plateforme_mail = $this->getInstance('plateforme_mail');
             $libelle_plateforme_mail = $this->getConfigurationSQL()->getLibellePlateformeMail();
             $templatedEmail = new TemplatedEmail()
+                ->from(new Address($plateforme_mail, $libelle_plateforme_mail))
                 ->to(new Address($email))
-                ->subject("[$libelle_plateforme_mail] Mail de test")
+                ->subject('[Pastell] Mail de test')
                 ->htmlTemplate('test_system.html.twig')
                 ->context(['SITE_BASE' => $this->getSiteBase()])
                 ->attachFromPath(
