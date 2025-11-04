@@ -32,11 +32,11 @@ class JournalCheck implements CheckInterface
                 'Date du premier enregistrement de la table journal',
                 $this->journal->getFirstLineDate()
             ),
-            new HealthCheckItem("Nombre de mois de conservation du journal", (string)JOURNAL_MAX_AGE_IN_MONTHS),
-            (new HealthCheckItem(
-                "Age du premier enregistrement de la table journal",
+            new HealthCheckItem('Nombre de jours de conservation du journal', (string)JOURNAL_MAX_AGE_IN_DAYS),
+            new HealthCheckItem(
+                'Age du premier enregistrement de la table journal',
                 $firstLineDate . ' jours'
-            ))->setSuccess($firstLineDate <= JOURNAL_MAX_AGE_IN_MONTHS * 31),
+            )->setSuccess($firstLineDate <= JOURNAL_MAX_AGE_IN_DAYS),
         ];
     }
 }

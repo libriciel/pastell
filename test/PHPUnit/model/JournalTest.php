@@ -175,7 +175,7 @@ class JournalTest extends PastellTestCase
         $this->assertEquals(1, $this->journal->getNbLine());
         $this->assertEquals(0, $this->journal->getNbLineHistorique());
 
-        $this->assertTrue($this->journal->purgeToHistorique());
+        $this->journal->purgeToHistorique();
 
         $this->assertEquals(0, $this->journal->getNbLine());
         $this->assertEquals(1, $this->journal->getNbLineHistorique());
@@ -191,7 +191,7 @@ class JournalTest extends PastellTestCase
         $sql_insert = "INSERT INTO journal_historique SELECT * FROM journal WHERE id_j=?";
         $this->getSQLQuery()->queryOne($sql_insert, $id_j);
 
-        $this->assertTrue($this->journal->purgeToHistorique());
+        $this->journal->purgeToHistorique();
 
         $this->assertEquals(0, $this->journal->getNbLine());
         $this->assertEquals(1, $this->journal->getNbLineHistorique());

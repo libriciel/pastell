@@ -133,8 +133,8 @@ if (!defined("DISABLE_JOURNAL_HORODATAGE")) {
 }
 
 /** Permet de savoir ce que l'on va archiver dans la table journal_historique */
-if (!defined("JOURNAL_MAX_AGE_IN_MONTHS")) {
-    define("JOURNAL_MAX_AGE_IN_MONTHS", 2);
+if (!defined("JOURNAL_MAX_AGE_IN_DAYS")) {
+    define("JOURNAL_MAX_AGE_IN_DAYS", 60);
 }
 
 /* pour ne pas verrouiller les jobs qui ne se sont pas terminés correctement. */

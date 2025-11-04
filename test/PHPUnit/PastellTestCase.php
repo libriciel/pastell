@@ -101,7 +101,7 @@ abstract class PastellTestCase extends TestCase
         $this->getJournal()->setId(1);
 
         $this->objectInstancier->setInstance('opensslPath', OPENSSL_PATH);
-        $this->objectInstancier->setInstance('journal_max_age_in_months', 2);
+        $this->objectInstancier->setInstance('journal_max_age_in_days', 60);
         $this->objectInstancier->setInstance('admin_email', ['test@libriciel.invalid']);
         $this->objectInstancier->setInstance('mailer_dsn', 'null://null');
 
