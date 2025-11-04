@@ -49,8 +49,8 @@
         </td>
         <td>
             <ul>
-                <?php foreach ($extension['type_dossier'] as $type_dossier) : ?>
-                    <li><?php hecho($type_dossier)?></li>
+                <?php foreach ($extension['type_etape'] as $type_etape) : ?>
+                    <li><?php hecho($type_etape)?></li>
                 <?php endforeach;?>
             </ul>
         </td>

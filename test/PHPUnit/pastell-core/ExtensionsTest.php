@@ -182,4 +182,45 @@ class ExtensionsTest extends PastellTestCase
         yield ['3.0.9999', false];
         yield ['3.9999', false];
     }
+
+    public function testGetAllTypeEtape(): void
+    {
+        $extensionPathWithTypeEtape = realpath(__DIR__ . '/type-dossier/fixtures/extension_test/');
+        $extensions = $this->getExtensions([['id_e' => '99', 'path' => $extensionPathWithTypeEtape]]);
+        $allTypeDossier = $extensions->getAllTypeDossier();
+
+        static::assertArrayHasKey('hal-9000', $allTypeDossier);
+        static::assertEquals($extensionPathWithTypeEtape . '/type-dossier/hal-9000', $allTypeDossier['hal-9000']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetInfoFromPathWithTypeEtape(): void
+    {
+        $extensionPathWithTypeEtape = realpath(__DIR__ . '/type-dossier/fixtures/extension_test/');
+        $extensions = $this->getExtensions([['id_e' => '99', 'path' => $extensionPathWithTypeEtape]]);
+        $info = $extensions->getInfo(99);
+
+        static::assertArrayHasKey('type_etape', $info);
+        static::assertIsArray($info['type_etape']);
+        static::assertContains('hal-9000', $info['type_etape']);
+    }
+
+    public function testGetTypeEtapePath(): void
+    {
+        $extensionPathWithTypeEtape = realpath(__DIR__ . '/type-dossier/fixtures/extension_test/');
+        $extensions = $this->getExtensions([['id_e' => '99', 'path' => $extensionPathWithTypeEtape]]);
+        $path = $extensions->getTypeDossierPath('hal-9000');
+
+        static::assertEquals($extensionPathWithTypeEtape . '/type-dossier/hal-9000', $path);
+    }
+
+    public function testGetTypeDossierPathNotExists(): void
+    {
+        $extensions = $this->getExtensionsTest();
+        $path = $extensions->getTypeDossierPath('non-existent-type');
+
+        static::assertFalse($path);
+    }
 }

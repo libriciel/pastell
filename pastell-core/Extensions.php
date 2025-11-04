@@ -298,7 +298,7 @@ class Extensions
         $result['flux'] = $this->getAllModuleByPath($path);
         $result['connecteur'] = $this->getAllConnecteurByPath($path);
         $result['connecteur-type'] = $this->getAllConnecteurTypeByPath($path);
-        $result['type_dossier'] = $this->getAllStepTypesByPath($path);
+        $result['type_etape'] = $this->getAllStepTypesByPath($path);
         $manifest = $this->getManifest($path);
         $result['manifest'] = $manifest;
         $result['id'] = $manifest['id'] ?? basename($path);
