@@ -10,6 +10,7 @@ use Journal;
 use Pastell\Service\TokenGenerator;
 use Pastell\Validator\UserValidator;
 use RoleUtilisateur;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use UnrecoverableException;
 use UtilisateurSQL;
 
@@ -21,6 +22,7 @@ final class UserCreationService
         private readonly RoleUtilisateur $roleUtilisateur,
         private readonly Journal $journal,
         private readonly UserValidator $userValidator,
+        private readonly PasswordResetService $passwordResetMailService,
     ) {
     }
 
@@ -28,14 +30,16 @@ final class UserCreationService
      * @throws UnrecoverableException
      * @throws ConflictException
      * @throws Exception
+     * @throws TransportExceptionInterface
      */
     public function create(
         string $login,
         string $email,
         string $firstname,
         string $lastname,
-        int $entityId = 0,
-        ?string $password = null,
+        int $entityId,
+        ?string $password,
+        bool $sendResetMail,
     ): int {
         if ($password === null) {
             $password = $this->tokenGenerator->generate();
@@ -60,6 +64,10 @@ final class UserCreationService
         $this->utilisateurSQL->setColBase($userId, $entityId);
 
         $this->roleUtilisateur->addRole($userId, RoleUtilisateur::AUCUN_DROIT, $entityId);
+
+        if ($sendResetMail) {
+            $this->passwordResetMailService->sendResetMail($userId);
+        }
 
         $info = \implode('; ', [
             'prenom : ' . $firstname,

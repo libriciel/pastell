@@ -373,7 +373,10 @@ class DocumentAPIControllerTest extends PastellTestCase
                 'readonly',
                 'readonly@example.org',
                 'readonly',
-                'readonly'
+                'readonly',
+                0,
+                null,
+                false
             );
         $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole($userId, 'readonly', self::ID_E_COL);
 

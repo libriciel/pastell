@@ -207,7 +207,15 @@ class DocumentControlerTest extends ControlerTestCase
     public function testIndexWithoutRight(): void
     {
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
-        $id_u = $userCreationService->create('badguy', 'test@bar.baz', 'foo', 'foo');
+        $id_u = $userCreationService->create(
+            'badguy',
+            'test@bar.baz',
+            'foo',
+            'foo',
+            0,
+            null,
+            false
+        );
 
         $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
         $roleUtilisateur->addRole($id_u, 'admin', 2);
@@ -235,7 +243,15 @@ class DocumentControlerTest extends ControlerTestCase
     public function testIndexWithTwoRoleOnTwoEntities(): void
     {
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
-        $id_u = $userCreationService->create('badguy', 'test@bar.baz', 'foo', 'foo');
+        $id_u = $userCreationService->create(
+            'badguy',
+            'test@bar.baz',
+            'foo',
+            'foo',
+            0,
+            null,
+            false
+        );
 
         $documentController = $this->getControlerInstance(DocumentControler::class);
         $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
@@ -257,7 +273,15 @@ class DocumentControlerTest extends ControlerTestCase
     public function testIndexWithTwoDifferentRoleOnTwoEntities(): void
     {
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
-        $id_u = $userCreationService->create('badguy', 'test@bar.baz', 'foo', 'foo');
+        $id_u = $userCreationService->create(
+            'badguy',
+            'test@bar.baz',
+            'foo',
+            'foo',
+            0,
+            null,
+            false
+        );
 
         $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
         $roleSQL->addDroit('utilisateur', 'actes-generique:lecture');

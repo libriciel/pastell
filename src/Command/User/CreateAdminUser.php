@@ -64,7 +64,8 @@ final class CreateAdminUser extends BaseCommand
                 $userLogin,
                 $userLogin,
                 0,
-                $password
+                $password,
+                false
             );
         } catch (Exception $e) {
             $this->getIO()->writeln(sprintf(

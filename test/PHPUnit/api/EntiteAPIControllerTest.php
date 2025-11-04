@@ -195,7 +195,15 @@ class EntiteAPIControllerTest extends PastellTestCase
     public function testDeActivateFailDroit(): void
     {
         $user = $this->getObjectInstancier()->getInstance(UserCreationService::class)
-            ->create('tester', 'tester@example.org', 'tester', 'tester');
+            ->create(
+                'tester',
+                'tester@example.org',
+                'tester',
+                'tester',
+                0,
+                null,
+                false
+            );
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
             ->edit('entite:lecture', 'entiteLectureEdition');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)

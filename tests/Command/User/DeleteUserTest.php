@@ -41,7 +41,8 @@ class DeleteUserTest extends PastellTestCase
             'a',
             'a',
             0,
-            'passwordpasswordpassword'
+            'passwordpasswordpassword',
+            false
         );
         $this->commandTester->setInputs(['o']);
         $this->commandTester->execute(['userLogin' => 'LoginNewUser']);
@@ -69,7 +70,8 @@ class DeleteUserTest extends PastellTestCase
             'a',
             'a',
             0,
-            'passwordpasswordpassword'
+            'passwordpasswordpassword',
+            false
         );
         $this->commandTester->setInputs(['No']);
         $this->commandTester->execute(['userLogin' => 'LoginNewUser']);

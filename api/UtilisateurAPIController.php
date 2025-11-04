@@ -146,6 +146,7 @@ class UtilisateurAPIController extends BaseAPIController
             $this->getFromRequest('nom'),
             (int)$id_e,
             $this->getFromRequest('password', null),
+            false
         );
         return $this->getDetailInfoForAPI($id_u);
     }

@@ -190,7 +190,15 @@ class RoleUtilisateurSQLTest extends PastellTestCase
         $entity321 = $entityCreationService->create('Entité 321', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $entity32);
 
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
-        $id_u = $userCreationService->create('test_get_arbre_fille', 'aa@aa.fr', 'user', 'user');
+        $id_u = $userCreationService->create(
+            'test_get_arbre_fille',
+            'aa@aa.fr',
+            'user',
+            'user',
+            0,
+            null,
+            false
+        );
 
         $this->roleUtilisateurSQL->addRole($id_u, 'admin', $entity1);
         $this->roleUtilisateurSQL->addRole($id_u, 'admin', $entity31);
@@ -328,7 +336,15 @@ class RoleUtilisateurSQLTest extends PastellTestCase
         $id_e_3 = $entityCreationService->create('Entité 3', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_2);
 
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
-        $id_u = $userCreationService->create('test_get_arbre_fille', 'aa@aa.fr', 'user', 'user');
+        $id_u = $userCreationService->create(
+            'test_get_arbre_fille',
+            'aa@aa.fr',
+            'user',
+            'user',
+            0,
+            null,
+            false
+        );
 
         $this->roleUtilisateurSQL->addRole($id_u, 'admin', 0);
 
@@ -417,7 +433,15 @@ class RoleUtilisateurSQLTest extends PastellTestCase
         $id_e_3 = $entityCreationService->create('Entité 3', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_2);
 
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
-        $id_u = $userCreationService->create('test', 'aa@aa.fr', 'user', 'user');
+        $id_u = $userCreationService->create(
+            'test',
+            'aa@aa.fr',
+            'user',
+            'user',
+            0,
+            null,
+            false
+        );
 
         $this->roleUtilisateurSQL->addRole($id_u, 'admin', $id_e_2);
         $this->roleUtilisateurSQL->addRole($id_u, 'admin', $id_e_3);

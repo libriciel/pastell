@@ -202,7 +202,15 @@ class UtilisateurControlerTest extends ControlerTestCase
         $id_e2 = $entiteCreationService->create('entite2', '000000000');
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $this->api_user_id = $userCreationService->createAPI('api_user', $id_e1, 'api', 'user');
-        $this->admin_inf = $userCreationService->create('admin_inferieur', 'admin@gmail.com', 'admin', 'admin', $id_e2);
+        $this->admin_inf = $userCreationService->create(
+            'admin_inferieur',
+            'admin@gmail.com',
+            'admin',
+            'admin',
+            $id_e2,
+            null,
+            false
+        );
         $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
         $roleUtilisateur->addRole($this->admin_inf, 'admin', $id_e2);
         $this->userTokenService = $this->getObjectInstancier()->getInstance(UserTokenService::class);
@@ -360,7 +368,15 @@ class UtilisateurControlerTest extends ControlerTestCase
         ]);
         $controller = $this->getUtilisateurControler();
         $user = $this->getObjectInstancier()->getInstance(UserCreationService::class)
-            ->create('tester', 'tester@example.org', 'tester', 'tester');
+            ->create(
+                'tester',
+                'tester@example.org',
+                'tester',
+                'tester',
+                0,
+                null,
+                false
+            );
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
             ->edit('entiteLectureEdition', 'Droit utilisateur');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)

@@ -43,7 +43,8 @@ class AdminControler extends Controler
                 'admin',
                 'admin',
                 0,
-                $password
+                $password,
+                false
             );
         } catch (Exception $e) {
             $this->setLastError($e->getMessage());
