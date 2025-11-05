@@ -12,7 +12,7 @@
     <th>Connecteurs-Type</th>
     <th>Connecteurs</th>
     <th>Types de dossier</th>
-    <th>Types d'étapes</th>
+    <th>Types d'étapes studio</th>
     <th>Numéro de version (révision)</th>
     <th>Version de Pastell attendue</th>
     <th>Extensions attendues</th>
