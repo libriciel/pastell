@@ -4,6 +4,7 @@
 
 - **BREAKING** : Correction du calcul des empreintes dans les connecteurs SFTP (dépôt et glaneur) : les empreintes
 doivent être mises à jour #1667
+- Les entités désactivées n'apparaissent plus dans le fil d'ariane #2285
 
 ## Ajouts
 
