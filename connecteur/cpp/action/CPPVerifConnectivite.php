@@ -38,9 +38,7 @@ class CPPVerifConnectivite extends ActionExecutor
             $configurationSql = $this->objectInstancier->getInstance(ConfigurationSQL::class);
             $admin_email = $configurationSql->getAdminEmails();
             $plateforme_mail = $this->objectInstancier->getInstance('plateforme_mail');
-            $libelle_plateforme_mail = $this->objectInstancier->getInstance(
-                ConfigurationSQL::class
-            )->getLibellePlateformeMail();
+            $libelle_plateforme_mail = $configurationSql->getLibellePlateformeMail();
             $templatedEmail = new TemplatedEmail()
                 ->from(new Address($plateforme_mail, $libelle_plateforme_mail))
                 ->to(...$admin_email)
