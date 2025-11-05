@@ -15,6 +15,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mime\Address;
 
 #[AsCommand(
     name: 'app:daemon:notify-check',
@@ -28,6 +29,7 @@ final class NotifyCheck extends BaseCommand
         private readonly Mailer $pastellMailer,
         private readonly DaemonManager $daemonManager,
         private readonly ConfigurationSQL $configurationSQL,
+        private readonly string $plateforme_mail,
     ) {
         parent::__construct();
     }
@@ -55,6 +57,7 @@ final class NotifyCheck extends BaseCommand
         $site = $this->objectInstancier->getInstance('site_base');
         $error_items = [];
 
+        $libelle_plateforme_mail = $this->configurationSQL->getLibellePlateformeMail();
         foreach ($daemonHealth->getDetails() ?? [] as $item) {
             if (!$item->isSuccess()) {
                 $context       = $item->getContext();
@@ -63,10 +66,10 @@ final class NotifyCheck extends BaseCommand
                 $destinataires = $this->daemonManager->getAdminEmails($id_daemon);
                 $body = "[KO] Tâches automatiques du site $site — $denomination [entité #{$context['id_e']}]" .
                     "— daemon #$id_daemon : {$item->result}";
-
                 $templatedEmail = new TemplatedEmail()
+                    ->from(new Address($this->plateforme_mail, $libelle_plateforme_mail))
                     ->to(...$destinataires)
-                    ->subject("[PASTELL] Alerte tâches automatiques - {$denomination}")
+                    ->subject("[Pastell] Alerte tâches automatiques - {$denomination}")
                     ->text($body);
                 $this->pastellMailer->send($templatedEmail);
                 if ($this->getIO()->isVerbose()) {
@@ -86,8 +89,9 @@ final class NotifyCheck extends BaseCommand
             }
 
             $synthesisEmail = new TemplatedEmail()
+                ->from(new Address($this->plateforme_mail, $libelle_plateforme_mail))
                 ->to(...$this->configurationSQL->getAdminEmails())
-                ->subject('[PASTELL] Alerte tâches automatiques - Synthèse')
+                ->subject('[Pastell] Alerte tâches automatiques - Synthèse')
                 ->text($body);
 
             $this->pastellMailer->send($synthesisEmail);

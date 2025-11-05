@@ -104,6 +104,7 @@ abstract class PastellTestCase extends TestCase
         $this->objectInstancier->setInstance('journal_max_age_in_days', 60);
         $this->objectInstancier->setInstance('admin_email', ['test@libriciel.invalid']);
         $this->objectInstancier->setInstance('mailer_dsn', 'null://null');
+        $this->objectInstancier->setInstance('libelle_plateforme_mail', 'Pastell');
 
         $this->objectInstancier->setInstance('pastell_admin_login', 'admin');
         $this->objectInstancier->setInstance('pastell_admin_email', 'test@libriciel.invalid');

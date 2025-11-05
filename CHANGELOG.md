@@ -16,6 +16,7 @@ doivent être mises à jour #1667
 - Ajout du supplément `suppl_actes_tdt_versant_sae` : Type de dossier Actes TdT versant (archivage) `ls-actes-tdt-versant-sae` #2266
 - Ajout du supplément `suppl_helios_tdt_versant_sae` : Type de dossier Helios TdT versant (archivage) `ls-helios-tdt-versant-sae` #2266
 - Les types d'étapes studio sont affichés sur la page extensions #741
+- Ajout de la configuration LIBELLE_PLATEFORME_MAIL pour personnaliser le nom de la plateforme dans les mails envoyés #1637
 
 ## Évolutions
 

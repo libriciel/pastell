@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Pastell\Mailer\Mailer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mime\Address;
 
 class JournalManager
 {
@@ -14,6 +15,7 @@ class JournalManager
         private readonly Monolog\Logger $logger,
         private readonly Mailer $mailer,
         private readonly ConfigurationSQL $configurationSQL,
+        private readonly string $plateforme_mail,
     ) {
     }
 
@@ -28,9 +30,11 @@ class JournalManager
         } catch (Exception $e) {
             $message = sprintf('Erreur sur la purge du journal : %s', $e->getMessage());
             $this->logger->error($message);
-            $templatedEmail = (new TemplatedEmail())
+            $libelle_plateforme_mail = $this->configurationSQL->getLibellePlateformeMail();
+            $templatedEmail = new TemplatedEmail()
+                ->from(new Address($this->plateforme_mail, $libelle_plateforme_mail))
                 ->to(...$this->configurationSQL->getAdminEmails())
-                ->subject('[PASTELL] Problème sur la purge du journal')
+                ->subject('[Pastell] Problème sur la purge du journal')
                 ->text($message);
             $this->mailer->send($templatedEmail);
             return false;

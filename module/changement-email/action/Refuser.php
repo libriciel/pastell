@@ -2,6 +2,7 @@
 
 use Pastell\Mailer\Mailer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mime\Address;
 
 class Refuser extends ActionExecutor
 {
@@ -12,7 +13,12 @@ class Refuser extends ActionExecutor
 
         $utilisateur_info = $this->objectInstancier->getInstance(UtilisateurSQL::class)->getInfo($id_u);
 
-        $templatedEmail = (new TemplatedEmail())
+        $plateforme_mail = $this->objectInstancier->getInstance('plateforme_mail');
+        $libelle_plateforme_mail = $this->objectInstancier->getInstance(
+            ConfigurationSQL::class
+        )->getLibellePlateformeMail();
+        $templatedEmail = new TemplatedEmail()
+            ->from(new Address($plateforme_mail, $libelle_plateforme_mail))
             ->to($utilisateur_info['email'])
             ->subject('[Pastell] Votre changement de mail a été rejeté')
             ->htmlTemplate('changement-email-refus.html.twig')

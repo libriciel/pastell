@@ -74,6 +74,10 @@ class SystemControler extends PastellControler
             ->getInstance(FeatureToggleService::class)
             ->isEnabled(DisplayFeatureToggleInTestPage::class));
         $this->setViewParameter('admin_email', implode(', ', $this->getConfigurationSQL()->getAdminEmails()));
+        $this->setViewParameter(
+            'libelle_plateforme_mail',
+            $this->getConfigurationSQL()->getLibellePlateformeMail()
+        );
         $this->setViewParameter('page_title', 'Test du système');
         $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
         $this->setViewParameter('twigTemplate', 'system/index.html.twig');
@@ -307,7 +311,10 @@ class SystemControler extends PastellControler
         $emailNotSent = '';
         $emails = \explode(',', $emails);
         foreach ($emails as $email) {
-            $templatedEmail = (new TemplatedEmail())
+            $plateforme_mail = $this->getInstance('plateforme_mail');
+            $libelle_plateforme_mail = $this->getConfigurationSQL()->getLibellePlateformeMail();
+            $templatedEmail = new TemplatedEmail()
+                ->from(new Address($plateforme_mail, $libelle_plateforme_mail))
                 ->to(new Address($email))
                 ->subject('[Pastell] Mail de test')
                 ->htmlTemplate('test_system.html.twig')
@@ -502,12 +509,14 @@ class SystemControler extends PastellControler
     }
 
     /**
+     * @throws LastMessageException
+     * @throws LastErrorException
      * @throws NotFoundException
      */
     public function editAdminEmailAction(): void
     {
-        $this->needDroitEdition();
-        $this->setViewParameter('page_title', 'Connecteurs manquants');
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->setViewParameter('page_title', 'Modification de la configuration ADMIN_EMAIL');
         $this->setViewParameter('template_milieu', 'SystemEditAdminEmail');
         $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
         $this->setViewParameter('admin_email', implode(', ', $this->getConfigurationSQL()->getAdminEmails()));
@@ -521,7 +530,7 @@ class SystemControler extends PastellControler
      */
     public function doEditAdminEmailAction(): void
     {
-        $this->needDroitEdition();
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
         $admin_email = array_map('trim', explode(',', $this->getPostInfo()->get('admin_email')));
         try {
             $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->setAdminEmails($admin_email);
@@ -530,6 +539,38 @@ class SystemControler extends PastellControler
             $this->redirect('System/editAdminEmail');
         }
         $this->setLastMessage("L'adresse email d'administration a été modifiée");
+        $this->redirect(self::SYSTEM_INDEX_PAGE);
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
+    public function editLibellePlateformeMailAction(): void
+    {
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->setViewParameter('page_title', 'Modification de la configuration LIBELLE_PLATEFORME_MAIL');
+        $this->setViewParameter('template_milieu', 'SystemEditLibellePlateformeEmail');
+        $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
+        $this->setViewParameter('libelle_plateforme_mail', $this->getConfigurationSQL()->getLibellePlateformeMail());
+        $this->renderDefault();
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function doEditLibellePlateformeMailAction(): void
+    {
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $libelle_plateforme_mail = $this->getPostInfo()->get('libelle_plateforme_mail');
+        $this->getConfigurationSQL()->setConfiguration(
+            ConfigurationSQL::LIBELLE_PLATEFORME_MAIL,
+            $libelle_plateforme_mail,
+            ConfigurationSQL::NULL_ID_E
+        );
+        $this->setLastMessage('Le libellé de la plateforme mail a été modifié');
         $this->redirect(self::SYSTEM_INDEX_PAGE);
     }
 }
