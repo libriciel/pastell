@@ -12,6 +12,7 @@
     <th>Connecteurs-Type</th>
     <th>Connecteurs</th>
     <th>Types de dossier</th>
+    <th>Types d'étapes studio</th>
     <th>Numéro de version (révision)</th>
     <th>Version de Pastell attendue</th>
     <th>Extensions attendues</th>
@@ -44,6 +45,13 @@
                 <?php hecho($flux)?>
                 </li>
             <?php endforeach;?>
+            </ul>
+        </td>
+        <td>
+            <ul>
+                <?php foreach ($extension['type_etape'] as $type_etape) : ?>
+                    <li><?php hecho($type_etape)?></li>
+                <?php endforeach;?>
             </ul>
         </td>
         <td>
