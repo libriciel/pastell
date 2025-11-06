@@ -124,7 +124,7 @@ class PastellControler extends Controler
     {
         $this->verifDroit(
             $entityId,
-            DroitService::getActionPermission(DroitService::DROIT_CONNECTEUR),
+            DroitService::getDroitAction(DroitService::DROIT_CONNECTEUR),
         );
     }
 
@@ -152,7 +152,7 @@ class PastellControler extends Controler
      */
     public function hasDroitEdition($id_e)
     {
-        $this->verifDroit($id_e, "entite:edition");
+        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
     }
 
     /**

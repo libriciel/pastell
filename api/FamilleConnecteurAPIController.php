@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
+
 class FamilleConnecteurAPIController extends BaseAPIController
 {
     private $connecteurDefinitionFiles;
@@ -9,9 +11,12 @@ class FamilleConnecteurAPIController extends BaseAPIController
         $this->connecteurDefinitionFiles = $connecteurDefinitionFiles;
     }
 
+    /**
+     * @throws ForbiddenException
+     */
     public function get()
     {
-        $this->checkDroit(0, "system:lecture");
+        $this->checkDroit(0, DroitService::getDroitLecture(DroitService::DROIT_SYSTEM));
 
         $famille_connecteur = $this->getFromQueryArgs(0);
         if ($famille_connecteur) {

@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Entite\EntityUpdateService;
@@ -38,6 +39,10 @@ final class EntiteAPIController extends BaseAPIController
         return $users;
     }
 
+    /**
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
     private function getInfo($id_e)
     {
         $infoEntite = $this->entiteSQL->getInfo($id_e);
@@ -45,7 +50,7 @@ final class EntiteAPIController extends BaseAPIController
         if (!$infoEntite) {
             throw new NotFoundException("L'entité $id_e n'a pas été trouvée");
         }
-        $this->checkDroit($id_e, "entite:lecture");
+        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ENTITE));
 
         // Chargement des entités filles
         $resultFille = [];
@@ -79,7 +84,8 @@ final class EntiteAPIController extends BaseAPIController
     public function post()
     {
         $id_e = $this->getFromQueryArgs(0);
-        if ($id_e !== false && $this->checkDroit($id_e, 'entite:edition')) {
+        if ($id_e !== false) {
+            $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
             $action = $this->getFromQueryArgs(1);
             if ($action === 'activate') {
                 $this->entiteSQL->setActive($id_e, 1);
@@ -96,11 +102,10 @@ final class EntiteAPIController extends BaseAPIController
         $denomination = $this->getFromRequest('denomination');
         $centre_de_gestion = $this->getFromRequest('centre_de_gestion', 0);
 
-        $this->checkDroit($entite_mere, 'entite:edition');
+        $this->checkDroit($entite_mere, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
         $id_e = $this->entityCreationService->create($denomination, $siren, $type, $entite_mere, $centre_de_gestion);
         return $this->getInfo($id_e);
     }
-
 
     /**
      * @return mixed
@@ -114,7 +119,7 @@ final class EntiteAPIController extends BaseAPIController
         $infoEntiteExistante = $this->entiteSQL->getEntiteFromData($data);
         $id_e = $infoEntiteExistante['id_e'];
 
-        $this->checkDroit($id_e, "entite:edition");
+        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
 
         $this->entiteDeletionService->delete($id_e);
 
@@ -158,8 +163,8 @@ final class EntiteAPIController extends BaseAPIController
             $centre_de_gestion = $infoEntiteExistante['centre_de_gestion'];
         }
 
-        $this->checkDroit($id_e, 'entite:edition');
-        $this->checkDroit($entite_mere, 'entite:edition');
+        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+        $this->checkDroit($entite_mere, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
         $this->entityUpdateService->update($id_e, $denomination, $siren, $type, $entite_mere, $centre_de_gestion);
 
         $result = $this->getInfo($id_e);

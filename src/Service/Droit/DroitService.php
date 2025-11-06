@@ -7,15 +7,19 @@ use RoleUtilisateur;
 
 class DroitService
 {
-    public const DROIT_LECTURE = 'lecture';
-    public const DROIT_ECRITURE = 'edition';
-    public const DROIT_ACTION = 'action';
+    public const string DROIT_LECTURE = 'lecture';
+    public const string DROIT_ECRITURE = 'edition';
+    public const string DROIT_ACTION = 'action';
+    public const string DROIT_CREATION = 'creation';
 
-    public const DROIT_CONNECTEUR = 'connecteur';
-    public const DROIT_SYSTEM = 'system';
-    public const DROIT_ENTITE = 'entite';
-    public const DROIT_UTILISATEUR = 'utilisateur';
-    public const DROIT_DAEMON = 'daemon';
+    public const string DROIT_CONNECTEUR = 'connecteur';
+    public const string DROIT_SYSTEM = 'system';
+    public const string DROIT_ENTITE = 'entite';
+    public const string DROIT_UTILISATEUR = 'utilisateur';
+    public const string DROIT_DAEMON = 'daemon';
+    public const string DROIT_JOURNAL = 'journal';
+    public const string DROIT_ROLE = 'role';
+
 
     public function __construct(
         private readonly RoleUtilisateur $roleUtilisateur,
@@ -38,9 +42,14 @@ class DroitService
         return self::getPermission($part, self::DROIT_ECRITURE);
     }
 
-    public static function getActionPermission(string $part): string
+    public static function getDroitAction(string $part): string
     {
         return self::getPermission($part, self::DROIT_ACTION);
+    }
+
+    public static function getDroitCreation(string $part): string
+    {
+        return self::getPermission($part, self::DROIT_CREATION);
     }
 
     /**
@@ -120,7 +129,7 @@ class DroitService
     {
         return $this->hasDroit(
             $userId,
-            self::getActionPermission(self::DROIT_CONNECTEUR),
+            self::getDroitAction(self::DROIT_CONNECTEUR),
             $entityId,
         );
     }

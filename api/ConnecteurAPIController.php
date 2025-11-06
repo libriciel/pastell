@@ -45,7 +45,7 @@ class ConnecteurAPIController extends BaseAPIController
         if ($id_e && !$this->entiteSQL->getInfo($id_e)) {
             throw new NotFoundException("L'entité $id_e n'existe pas");
         }
-        $this->checkDroit($id_e, "entite:lecture");
+        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ENTITE));
         return $id_e;
     }
 
@@ -270,7 +270,7 @@ class ConnecteurAPIController extends BaseAPIController
      */
     private function checkConnecteurAction(int $id_e): void
     {
-        $this->checkDroit($id_e, DroitService::getActionPermission(DroitService::DROIT_CONNECTEUR));
+        $this->checkDroit($id_e, DroitService::getDroitAction(DroitService::DROIT_CONNECTEUR));
     }
 
     /**

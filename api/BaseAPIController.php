@@ -122,22 +122,20 @@ abstract class BaseAPIController
     /**
      * @throws ForbiddenException
      */
-    protected function checkDroit($id_e, string $droit): true
+    protected function checkDroit($id_e, string $droit): void
     {
         if (!(($this->hasAllDroit) || $this->getDroitService()->hasDroit($this->id_u, $droit, $id_e))) {
             throw new ForbiddenException("Acces interdit id_e=$id_e, droit=$droit,id_u={$this->id_u}");
         }
-        return true;
     }
 
     /**
      * @throws ForbiddenException
      */
-    protected function checkOneDroit(string $droit): true
+    protected function checkOneDroit(string $droit): void
     {
         if (!(($this->hasAllDroit) || $this->getDroitService()->hasOneDroit($this->id_u, $droit))) {
             throw new ForbiddenException("Vous devez avoir le droit $droit pour accéder à la ressource.");
         }
-        return true;
     }
 }
