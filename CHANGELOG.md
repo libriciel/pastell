@@ -3,6 +3,7 @@
 ## Corrections
 
 - Améliorations de sécurité #2343
+- Les liens de redirection après connexion étaient mal interprétés lorsqu'ils contenaient des caractères spéciaux #2311
 
 # [4.1.13] - 2025-10-14
 
