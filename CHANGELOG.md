@@ -6,6 +6,10 @@
 - Ordonner la télétransmission ne fonctionnait plus sur les navigateurs basés sur Chromium #2360
 - La récupération de dossiers iParapheur contenant des caractères spéciaux dans le titre renvoyait une erreur #2329
 
+## Ajouts
+
+- La liste des packs activés est visible via la commande `app:system:healthcheck` #2222
+
 # [4.0.26] - 2025-10-13
 
 ## Évolutions
