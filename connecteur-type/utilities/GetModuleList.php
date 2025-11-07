@@ -4,9 +4,9 @@ use Pastell\Service\Module\ModuleListService;
 
 class GetModuleList extends ConnecteurTypeChoiceActionExecutor
 {
-    private const MODULE_TYPE_FIELD = 'module_type';
-    private const MODULE_TYPE_LABEL_FIELD = 'module_type_label';
-    private const PAGE_TITLE = 'page_title';
+    private const string MODULE_TYPE_FIELD = 'module_type';
+    private const string MODULE_TYPE_LABEL_FIELD = 'module_type_label';
+    private const string PAGE_TITLE = 'page_title';
 
     /**
      * @return bool
@@ -40,7 +40,10 @@ class GetModuleList extends ConnecteurTypeChoiceActionExecutor
             $this->getConnecteurProperties()->get($this->getMappingValue(self::MODULE_TYPE_FIELD))
         );
 
-        $this->setViewParameter('moduleList', $this->displayAPI());
+        $this->setViewParameter(
+            'moduleList',
+            $this->objectInstancier->getInstance(ModuleListService::class)->getModuleListOrderByType($this->id_u)
+        );
         $this->renderPage(
             $this->getMappingValue(self::PAGE_TITLE),
             'connectorType/utilities/GetModuleList'
@@ -50,6 +53,8 @@ class GetModuleList extends ConnecteurTypeChoiceActionExecutor
 
     public function displayAPI(): array
     {
+        // Uniformisation des listes de sélection de type de dossier #2351
+        // getModuleListOrderByNom conservé par nom pour compatibilité appel API
         return $this->objectInstancier->getInstance(ModuleListService::class)->getModuleListOrderByNom($this->id_u);
     }
 }

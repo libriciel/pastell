@@ -27,14 +27,16 @@
                 <td>
                     <select name="module_type" id="module_type" class="form-select col-md-2">
                         <option></option>
-                        <?php foreach ($moduleList as $flux_id => $flux_info) : ?>
-                            <option
-                                    value="<?php hecho($flux_id); ?>"
-                                <?php echo ($flux_id === $moduleType) ? 'selected' : '' ?>
-                            >
-                                <?php hecho($flux_info['nom']); ?>
-                            </option>
-                        <?php endforeach ?>
+                        <?php foreach ($moduleList as $fluxType => $fluxByType) : ?>
+                            <optgroup label="<?php hecho($fluxType) ?>">
+                                <?php foreach ($fluxByType as $fluxId => $fluxNom) :?>
+                                    <option value='<?php hecho($fluxId)?>'
+                                            <?= ($fluxId === $moduleType) ? 'selected' : '' ?>>
+                                        <?php hecho($fluxNom) ?>
+                                    </option>
+                                <?php endforeach;?>
+                            </optgroup>
+                        <?php endforeach ; ?>
                     </select>
                 </td>
             </tr>
