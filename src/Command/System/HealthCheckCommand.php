@@ -52,7 +52,8 @@ class HealthCheckCommand extends Command
             ->checkExpectedElements($output)
             ->checkCommands($output)
             ->checkConstants($output)
-            ->checkAutoTest($output);
+            ->checkAutoTest($output)
+            ->checkPack($output);
 
         if ($this->returnCode === 0) {
             $io->success('Done');
@@ -233,6 +234,22 @@ class HealthCheckCommand extends Command
             ->addRow([$missingConnectors->label, $this->getResult($missingConnectors)])
             ->addRow([$missingModules->label, $this->getResult($missingModules)]);
 
+        $table->render();
+        return $this;
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    private function checkPack(OutputInterface $output): self
+    {
+        $table = new Table($output);
+        $table
+            ->setHeaders(['<options=bold,underscore>Pack(s)</>'])
+            ->setHorizontal(false);
+        foreach ($this->healthCheck->check(HealthCheck::PACK_CHECK) as $pack) {
+            $table->addRow([$pack->label]);
+        }
         $table->render();
         return $this;
     }

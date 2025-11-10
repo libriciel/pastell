@@ -1,4 +1,8 @@
-# [4.0.27]
+# [4.0.27] - 2025-11-10
+
+## Ajouts
+
+- La liste des packs activés est visible via la commande `app:system:healthcheck` #2222
 
 ## Corrections
 
