@@ -8,7 +8,7 @@ use Pastell\System\HealthCheckItem;
 
 class PackCheck implements CheckInterface
 {
-    public function __construct(readonly PackService $packService)
+    public function __construct(private readonly PackService $packService)
     {
     }
 

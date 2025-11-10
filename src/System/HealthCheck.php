@@ -52,7 +52,7 @@ class HealthCheck
             self::MISSING_CONNECTORS_CHECK => Check\MissingConnectorsCheck::class,
             self::MISSING_MODULES_CHECK => Check\MissingModulesCheck::class,
             self::DATETIME_CHECK => Check\DatetimeCheck::class,
-            self::PACK_CHECK => Check\PackCheck::class
+            self::PACK_CHECK => Check\PackCheck::class,
         ];
     }
 
