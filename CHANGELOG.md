@@ -1,9 +1,16 @@
 # [4.1.14] - 2025-11-10
 
+## Ajouts
+
+- La liste des packs activés est visible via la commande `app:system:healthcheck` #2222
+
 ## Corrections
 
 - Améliorations de sécurité #2343
 - Les liens de redirection après connexion étaient mal interprétés lorsqu'ils contenaient des caractères spéciaux #2311
+- L'action MailSec `Renvoyer` envoie uniquement aux destinataires n'ayant pas ouvert le mail initial #1206
+- Ordonner la télétransmission ne fonctionnait plus sur les navigateurs basés sur Chromium #2360
+- La récupération de dossiers iParapheur contenant des caractères spéciaux dans le titre renvoyait une erreur #2329
 
 # [4.1.13] - 2025-10-14
 
