@@ -79,7 +79,11 @@ final class ZipContent
             }
         }
 
-        $zipContentModel->bordereau = $zipContentModel->name . '_bordereau.pdf';
+        $matches = glob($folderPath . '/*_bordereau.pdf');
+        if (empty($matches)) {
+            throw new UnrecoverableException("Aucun fichier bordereau trouvé dans l'archive");
+        }
+        $zipContentModel->bordereau = basename($matches[0]);
         return $zipContentModel;
     }
     private function getSerializer(): Serializer
