@@ -22,7 +22,7 @@ final class UserCreationService
         private readonly RoleUtilisateur $roleUtilisateur,
         private readonly Journal $journal,
         private readonly UserValidator $userValidator,
-        private readonly PasswordResetService $passwordResetMailService,
+        private readonly PasswordResetMailService $passwordResetMailService,
     ) {
     }
 

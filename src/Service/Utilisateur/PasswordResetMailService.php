@@ -14,7 +14,7 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mime\Address;
 use UtilisateurSQL;
 
-final class PasswordResetService
+final class PasswordResetMailService
 {
     public function __construct(
         private readonly Mailer $mailer,

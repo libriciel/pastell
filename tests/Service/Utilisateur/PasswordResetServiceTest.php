@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Tests\Service\Utilisateur;
 
 use Pastell\Mailer\Mailer;
-use Pastell\Service\Utilisateur\PasswordResetService;
+use Pastell\Service\Utilisateur\PasswordResetMailService;
 use Pastell\Tests\MailerTransportTesting;
 use PastellTestCase;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
@@ -17,7 +17,7 @@ class PasswordResetServiceTest extends PastellTestCase
      */
     public function testSendResetMail(): void
     {
-        $passwordResetService = $this->getObjectInstancier()->getInstance(PasswordResetService::class);
+        $passwordResetService = $this->getObjectInstancier()->getInstance(PasswordResetMailService::class);
         $pastellMailer = $this->getObjectInstancier()->getInstance(Mailer::class);
 
         $mailerTransportTesting = new MailerTransportTesting();

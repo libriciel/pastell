@@ -7,7 +7,7 @@ use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
-use Pastell\Service\Utilisateur\PasswordResetService;
+use Pastell\Service\Utilisateur\PasswordResetMailService;
 
 class ConnexionControler extends PastellControler
 {
@@ -515,7 +515,7 @@ class ConnexionControler extends PastellControler
             $this->setLastError("Aucun compte n'a été trouvé avec ces informations");
             $this->redirect('/Connexion/oublieIdentifiant');
         }
-        $this->getObjectInstancier()->getInstance(PasswordResetService::class)->sendResetMail($id_u);
+        $this->getObjectInstancier()->getInstance(PasswordResetMailService::class)->sendResetMail($id_u);
         $this->setLastMessage('Un email vous a été envoyé avec la suite de la procédure');
         $this->redirect('/Connexion/oublieIdentifiant');
     }
