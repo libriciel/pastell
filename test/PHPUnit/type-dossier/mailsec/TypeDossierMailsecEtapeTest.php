@@ -73,7 +73,7 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
         $this->assertTrue(
             $this->triggerActionOnDocument($id_d, "renvoi")
         );
-        $this->assertLastMessage("Un email a été renvoyé à tous les destinataires");
+        $this->assertLastMessage("Un email a été renvoyé à tous les destinataires n'ayant pas ouvert le précédent");
         $this->assertLastDocumentAction('renvoi', $id_d);
 
         $this->assertTrue(

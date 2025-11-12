@@ -24,7 +24,7 @@
 
         loginFormElement.additionalSubmittedValues = [
             {name: 'csrf_token', value: '{{ gabarit.getCSRFToken().getCSRFToken() }}', type: 'hidden'},
-            {name: 'request_uri', value: '{{ request_uri }}', type: 'hidden'},
+            {name: 'request_uri', value: '{{ request_uri|url_encode }}', type: 'hidden'},
         ];
 
         loginFormElement.configuration = {

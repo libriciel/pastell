@@ -104,6 +104,20 @@ doivent être mises à jour #1667
 - IparapheurSousType, use Pastell\Step\Signature\ChoiceAction\ParapheurSousTypeChoiceAction instead #2278
 - Connecteur convertisseur-office-pdf Cloudooo #2322
 
+# [4.1.14] - 2025-11-10
+
+## Ajouts
+
+- La liste des packs activés est visible via la commande `app:system:healthcheck` #2222
+
+## Corrections
+
+- Améliorations de sécurité #2343
+- Les liens de redirection après connexion étaient mal interprétés lorsqu'ils contenaient des caractères spéciaux #2311
+- L'action MailSec `Renvoyer` envoie uniquement aux destinataires n'ayant pas ouvert le mail initial #1206
+- Ordonner la télétransmission ne fonctionnait plus sur les navigateurs basés sur Chromium #2360
+- La récupération de dossiers iParapheur contenant des caractères spéciaux dans le titre renvoyait une erreur #2329
+
 # [4.1.13] - 2025-10-14
 
 ## Évolutions
@@ -372,6 +386,18 @@ doivent être mises à jour #1667
 - `pdf-generique` et `document-a-signer` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-document-pdf` #1870
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
+
+# [4.0.27] - 2025-11-10
+
+## Ajouts
+
+- La liste des packs activés est visible via la commande `app:system:healthcheck` #2222
+
+## Corrections
+
+- L'action MailSec `Renvoyer` envoie uniquement aux destinataires n'ayant pas ouvert le mail initial #1206
+- Ordonner la télétransmission ne fonctionnait plus sur les navigateurs basés sur Chromium #2360
+- La récupération de dossiers iParapheur contenant des caractères spéciaux dans le titre renvoyait une erreur #2329
 
 # [4.0.26] - 2025-10-13
 
