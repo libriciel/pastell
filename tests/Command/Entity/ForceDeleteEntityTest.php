@@ -77,15 +77,7 @@ final class ForceDeleteEntityTest extends PastellTestCase
     {
         $id_e = $this->entityCreationService->create('test', '',);
         $id_ce = $this->connecteurCreationService->createConnecteur('test-conn', '', 0, $id_e);
-        $id_u = $this->userCreationService->create(
-            'test-user',
-            'test@libriciel.invalid',
-            'Test',
-            'User',
-            $id_e,
-            null,
-            false
-        );
+        $id_u = $this->userCreationService->create('test-user', 'test@libriciel.invalid', 'Test', 'User', $id_e);
 
         $connsBefore = $this->connecteurEntiteSQL->getAll($id_e);
         $usersBefore = $this->utilisateurListe->getAllUtilisateurSimple($id_e);
@@ -117,15 +109,7 @@ final class ForceDeleteEntityTest extends PastellTestCase
         self::assertNotFalse($this->entiteSQL->getInfo((string)$child_id));
 
         $id_ce = $this->connecteurCreationService->createConnecteur('test-conn', '', 0, $child_id);
-        $id_u = $this->userCreationService->create(
-            'test-user',
-            'test@libriciel.invalid',
-            'Test',
-            'User',
-            $child_id,
-            null,
-            false
-        );
+        $id_u = $this->userCreationService->create('test-user', 'test@libriciel.invalid', 'Test', 'User', $child_id);
         $connsBefore = $this->connecteurEntiteSQL->getAll($child_id);
         $usersBefore = $this->utilisateurListe->getAllUtilisateurSimple($child_id);
         self::assertContains($id_ce, array_column($connsBefore, 'id_ce'));

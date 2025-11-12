@@ -51,8 +51,6 @@ class ControlerTestCase extends PastellTestCase
             'user',
             'user',
             $id_e,
-            null,
-            false
         );
 
         $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);

@@ -303,15 +303,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
     public function testGetContentWithoutRight(): void
     {
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
-        $id_u = $userCreationService->create(
-            'badguy',
-            'test@bar.baz',
-            'user',
-            'user',
-            0,
-            null,
-            false
-        );
+        $id_u = $userCreationService->create('badguy', 'test@bar.baz', 'user', 'user');
 
         $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
         $roleUtilisateur->addRole($id_u, 'admin', 2);
@@ -519,15 +511,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
     public function testGetAllWithoutPermission(): void
     {
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
-        $userId = $userCreationService->create(
-            'test',
-            'test@bar.baz',
-            'user',
-            'user',
-            0,
-            null,
-            false
-        );
+        $userId = $userCreationService->create('test', 'test@bar.baz', 'user', 'user');
         $this->expectException(ForbiddenException::class);
         $this->expectExceptionMessage("Acces interdit id_e=0, droit=connecteur:lecture,id_u=$userId");
 
@@ -541,15 +525,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
     public function testGetFileFromAnotherEntite(): void
     {
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
-        $id_u = $userCreationService->create(
-            'badguy',
-            'test@bar.baz',
-            'user',
-            'user',
-            0,
-            null,
-            false
-        );
+        $id_u = $userCreationService->create('badguy', 'test@bar.baz', 'user', 'user');
         $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
         $roleUtilisateur->addRole($id_u, 'admin', 2);
 
@@ -582,15 +558,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
     public function testGetExternalDataFromAnotherEntite(): void
     {
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
-        $id_u = $userCreationService->create(
-            'badguy',
-            'test@bar.baz',
-            'user',
-            'user',
-            0,
-            null,
-            false
-        );
+        $id_u = $userCreationService->create('badguy', 'test@bar.baz', 'user', 'user');
         $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
         $roleUtilisateur->addRole($id_u, 'admin', 2);
 
@@ -609,15 +577,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
         $roleSql->edit('readonly', 'readonly');
         $roleSql->addDroit('readonly', 'entite:lecture');
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
-        $userId = $userCreationService->create(
-            'readonly',
-            'readonly@example.org',
-            'user',
-            'user',
-            0,
-            null,
-            false
-        );
+        $userId = $userCreationService->create('readonly', 'readonly@example.org', 'user', 'user');
         $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole($userId, 'readonly', self::ID_E_COL);
 
         $this->expectException(ForbiddenException::class);
@@ -639,15 +599,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
         $roleSql->edit('readonly', 'readonly');
         $roleSql->addDroit('readonly', 'entite:lecture');
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
-        $userId = $userCreationService->create(
-            'readonly',
-            'readonly@example.org',
-            'user',
-            'user',
-            0,
-            null,
-            false
-        );
+        $userId = $userCreationService->create('readonly', 'readonly@example.org', 'user', 'user');
         $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole($userId, 'readonly', self::ID_E_COL);
 
         $this->expectException(ForbiddenException::class);
@@ -716,15 +668,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
         $roleSql->edit('readonly', 'readonly');
         $roleSql->addDroit('readonly', 'entite:lecture');
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
-        $userId = $userCreationService->create(
-            'readonly',
-            'readonly@example.org',
-            'user',
-            'user',
-            0,
-            null,
-            false
-        );
+        $userId = $userCreationService->create('readonly', 'readonly@example.org', 'user', 'user');
         $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole($userId, 'readonly', self::ID_E_COL);
 
         $this->expectException(ForbiddenException::class);

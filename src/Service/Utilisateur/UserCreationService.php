@@ -37,9 +37,9 @@ final class UserCreationService
         string $email,
         string $firstname,
         string $lastname,
-        int $entityId,
-        ?string $password,
-        bool $sendResetMail,
+        int $entityId = 0,
+        ?string $password = null,
+        bool $sendResetMail = false,
     ): int {
         if ($password === null) {
             $password = $this->tokenGenerator->generate();

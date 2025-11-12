@@ -27,9 +27,6 @@ class UserCreationServiceTest extends PastellTestCase
             'email@example.org',
             'firstname',
             'lastname',
-            0,
-            null,
-            false
         );
 
         $user = $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->getInfo($userId);

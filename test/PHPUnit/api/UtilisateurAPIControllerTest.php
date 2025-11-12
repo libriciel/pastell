@@ -240,15 +240,7 @@ class UtilisateurAPIControllerTest extends PastellTestCase
     public function testPostDeactivateFailDroit(): void
     {
         $user = $this->getObjectInstancier()->getInstance(UserCreationService::class)
-            ->create(
-                'tester',
-                'tester@example.org',
-                'tester',
-                'tester',
-                0,
-                null,
-                false
-            );
+            ->create('tester', 'tester@example.org', 'tester', 'tester');
         $this->expectException(ForbiddenException::class);
         $this->expectExceptionMessage('Acces interdit id_e=0, droit=utilisateur:edition,id_u=3');
         $this->getInternalAPIAsUser($user)->post('/utilisateur/1/deactivate');
@@ -257,15 +249,7 @@ class UtilisateurAPIControllerTest extends PastellTestCase
     public function testCreateUserFail(): void
     {
         $user = $this->getObjectInstancier()->getInstance(UserCreationService::class)
-            ->create(
-                'tester',
-                'tester@example.org',
-                'tester',
-                'tester',
-                0,
-                null,
-                false
-            );
+            ->create('tester', 'tester@example.org', 'tester', 'tester');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
             ->edit('utilisateurLectureEdition', 'Droit utilisateur');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)

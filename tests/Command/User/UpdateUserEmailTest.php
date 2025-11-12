@@ -39,8 +39,7 @@ class UpdateUserEmailTest extends PastellTestCase
             'a',
             'a',
             0,
-            'passwordpasswordpassword',
-            false
+            'passwordpasswordpassword'
         );
         $this->commandTester->execute([
             'userLogin' => 'LoginNewUser',

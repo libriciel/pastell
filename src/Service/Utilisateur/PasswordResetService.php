@@ -47,8 +47,6 @@ final class PasswordResetService
             ->htmlTemplate('oublie-identifiant.html.twig')
             ->context(['link' => $link, 'login' => $info['login']]);
         $this->mailer->send($templatedEmail);
-
-        $this->mailer->send($templatedEmail);
         $this->journal->addActionAutomatique(
             Journal::MODIFICATION_UTILISATEUR,
             $info['id_e'],
