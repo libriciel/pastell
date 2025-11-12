@@ -427,4 +427,30 @@ class RoleUtilisateurSQLTest extends PastellTestCase
         static::assertCount(1, $childrenWithPermissions);
         static::assertSame($id_e_3, $childrenWithPermissions[0]['id_e']);
     }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testGetChildrenWithPermissionWhenEntityDeactivated(): void
+    {
+        $entiteSQL = $this->getObjectInstancier()->getInstance(EntiteSQL::class);
+        $entityCreationService = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
+        $id_e_2 = $entityCreationService->create('Entité 2', '000000000');
+        $id_e_3 = $entityCreationService->create('Entité 3', '000000000');
+        $id_e_4 = $entityCreationService->create('Entité 4', '000000000');
+
+        $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
+        $id_u = $userCreationService->create('test', 'aa@aa.fr', 'user', 'user');
+
+        $this->roleUtilisateurSQL->addRole($id_u, 'admin', $id_e_2);
+        $this->roleUtilisateurSQL->addRole($id_u, 'admin', $id_e_3);
+        $this->roleUtilisateurSQL->addRole($id_u, 'admin', $id_e_4);
+
+        $childrenWithPermissions = $this->roleUtilisateurSQL->getChildrenWithPermission(EntiteSQL::ID_E_ENTITE_RACINE, $id_u);
+        static::assertCount(3, $childrenWithPermissions);
+        $entiteSQL->setActive($id_e_3, false);
+        $childrenWithPermissions = $this->roleUtilisateurSQL->getChildrenWithPermission(EntiteSQL::ID_E_ENTITE_RACINE, $id_u);
+        static::assertCount(2, $childrenWithPermissions);
+    }
 }
