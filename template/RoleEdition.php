@@ -15,7 +15,7 @@
         <?php $this->getCSRFToken()->displayFormInput() ?>
         <input type='hidden' name='nouveau' value='<?php hecho($nouveau); ?>'/>
         <div class="control-group">
-            <label class="control-label" for="role">Rôle<span class="obl">*</span></label>
+            <label class="control-label" for="role">Rôle</label>
             <div class="controls">
                 <input class="form-control col-md-4"
                        type="text"
@@ -29,6 +29,9 @@
                 />
             </div>
         </div>
+        <?php if ($role_info['role'] !== '') : ?>
+            <input type="hidden" name="role" value="<?php hecho($role_info['role']); ?>" />
+        <?php endif; ?>
 
         <div class="control-group">
             <label class="control-label" for="libelle">Libellé<span class="obl">*</span></label>
