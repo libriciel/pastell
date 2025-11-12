@@ -22,6 +22,7 @@ class HealthCheck
     public const DAEMON_CHECK = 'DAEMON_CHECK';
     public const MISSING_CONNECTORS_CHECK = 'MISSING_CONNECTORS_CHECK';
     public const MISSING_MODULES_CHECK = 'MISSING_MODULES_CHECK';
+    public const PACK_CHECK = 'PACK_CHECK';
 
     /**
      * @var ObjectInstancier
@@ -50,7 +51,8 @@ class HealthCheck
             self::DAEMON_CHECK => Check\DaemonCheck::class,
             self::MISSING_CONNECTORS_CHECK => Check\MissingConnectorsCheck::class,
             self::MISSING_MODULES_CHECK => Check\MissingModulesCheck::class,
-            self::DATETIME_CHECK => Check\DatetimeCheck::class
+            self::DATETIME_CHECK => Check\DatetimeCheck::class,
+            self::PACK_CHECK => Check\PackCheck::class,
         ];
     }
 
