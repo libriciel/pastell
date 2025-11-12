@@ -1,5 +1,11 @@
 <?php
 
+use Pastell\Service\ChorusPro\ChorusProXSDPivot;
+
+/**
+ * @deprecated 5.0.0 Chorus
+ */
+
 class FactureFormulaireCreerPivot
 {
     private const DEFAULT_MODE_EMISSION = 'PDF';
@@ -143,9 +149,10 @@ class FactureFormulaireCreerPivot
 
         $donneesFormulaire->addFileFromData('fichier_facture', "$id_facture.xml", $fichierPivot);
 
+        $chorusProXSDPivot = new ChorusProXSDPivot();
         try {
-            $pivot->verifIsFormatPivot($donneesFormulaire->getFilePath('fichier_facture'));
-            return "Le fichier pivot a été créé et vérifié";
+            $chorusProXSDPivot->checkIsFormatPivot($donneesFormulaire->getFilePath('fichier_facture'));
+            return 'Le fichier pivot a été créé et vérifié';
         } catch (Exception $e) {
             $donneesFormulaire->removeFile('fichier_facture');
             throw new Exception($e->getMessage());

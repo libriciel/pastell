@@ -1,5 +1,11 @@
 <?php
 
+use Pastell\Service\ChorusPro\ChorusProXSDPivot;
+
+/**
+ * @deprecated 5.0.0 Chorus
+ */
+
 class FactureFormulaireExtrairePivot extends ActionExecutor
 {
     /**
@@ -13,14 +19,12 @@ class FactureFormulaireExtrairePivot extends ActionExecutor
 
         $fichier_pivot = $donneesFormulaire->getFilePath('fichier_facture');
         if (!$fichier_pivot) {
-            throw new Exception("Le fichier CPPFacturePivot est manquant.");
+            throw new Exception('Le fichier CPPFacturePivot est manquant.');
         }
-        /** @var FactureFichierPivot $pivot */
-        $pivot = new FactureFichierPivot();
         try {
-            $pivot->verifIsFormatPivot($fichier_pivot);
+            $this->objectInstancier->getInstance(ChorusProXSDPivot::class)->checkIsFormatPivot($fichier_pivot);
         } catch (Exception $e) {
-            throw new Exception("Le fichier CPPFacturePivot est incorrect: " . $e->getMessage());
+            throw new Exception('Le fichier CPPFacturePivot est incorrect: ' . $e->getMessage());
         }
 
         //Extraction des donnees pivot

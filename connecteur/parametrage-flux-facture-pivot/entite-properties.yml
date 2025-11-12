@@ -1,6 +1,7 @@
-nom: ParametrageTypeDossierFormulairePivot
+nom: ParametrageTypeDossierFormulairePivot - déprécié
 type: ParametrageFluxFacturePivot
-description: "Connecteur pour affecter des valeurs par défaut aux dossiers facture formulaire PIVOT.\nAprès la création d'un nouveau document il est possible d'affecter les valeurs par défaut (si elles ne sont pas renseignées)."
+description: "Connecteur pour affecter des valeurs par défaut aux dossiers facture formulaire PIVOT.\n
+Après la création d'un nouveau document il est possible d'affecter les valeurs par défaut (si elles ne sont pas renseignées)."
 restriction_pack:
     - pack_chorus_pro
 formulaire:

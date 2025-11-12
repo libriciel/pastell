@@ -10,6 +10,10 @@ class CreationFactureCPP
     }
 
     /**
+     * @deprecated 5.0.0 Chorus
+     * Le cas 'is_cpp' = false ne devrait plus arriver. Toutes les factures seront importées de chorus
+     */
+    /**
      * @param array $docInfo
      * @return string
      * @throws DonneesFormulaireException
@@ -59,6 +63,10 @@ class CreationFactureCPP
     }
 
     /**
+     * @deprecated 5.0.0 Chorus
+     * Le cas 'is_cpp' = false ne devrait plus arriver. Toutes les factures seront importées de chorus
+     */
+    /**
      * @param array $docInfo
      * @return mixed
      * @throws Exception
@@ -84,6 +92,10 @@ class CreationFactureCPP
         return $new_id_d;
     }
 
+    /**
+     * @deprecated 5.0.0 Chorus
+     * Le cas 'is_cpp' = false ne devrait plus arriver. Toutes les factures seront importées de chorus
+     */
     /**
      * @param $id_d
      * @param array $docInfo
@@ -176,6 +188,10 @@ class CreationFactureCPP
     }
 
     /**
+     * @deprecated 5.0.0 Chorus
+     * Le cas 'is_cpp' = false ne devrait plus arriver. Toutes les factures seront importées de chorus
+     */
+    /**
      * @param $id_d
      * @param array $docInfo
      * @throws Exception
@@ -212,6 +228,10 @@ class CreationFactureCPP
         );
     }
 
+    /**
+     * @deprecated 5.0.0 Chorus
+     * Le cas 'is_cpp' = false ne devrait plus arriver. Toutes les factures seront importées de chorus
+     */
     /**
      * @param $idFacture
      * @return mixed

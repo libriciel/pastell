@@ -65,6 +65,10 @@ class CppModifStatut extends ActionExecutor
     {
         $doc = $this->getDonneesFormulaire();
 
+        /**
+         * @deprecated 5.0.0 Chorus
+         * Le cas 'is_cpp' = false ne devrait plus arriver. Toutes les factures seront importées de chorus
+         */
         if (!$doc->get('is_cpp')) {
             $statut_cible_tab = explode(";", $doc->get(AttrFactureCPP::ATTR_STATUT_CIBLE_LISTE));
             $statut_cible = end($statut_cible_tab);

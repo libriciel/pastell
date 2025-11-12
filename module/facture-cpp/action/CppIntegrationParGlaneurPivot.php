@@ -1,5 +1,10 @@
 <?php
 
+use Pastell\Service\ChorusPro\ChorusProXSDPivot;
+
+/**
+ * @deprecated 5.0.0 Chorus
+ */
 class CppIntegrationParGlaneurPivot extends ActionExecutor
 {
     /**
@@ -13,10 +18,8 @@ class CppIntegrationParGlaneurPivot extends ActionExecutor
 
         $fichier_pivot = $donneesFormulaire->getFilePath('fichier_facture');
 
-        /** @var FactureFichierPivot $pivot */
-        $pivot = new FactureFichierPivot();
         try {
-            $pivot->verifIsFormatPivot($fichier_pivot);
+            $this->objectInstancier->getInstance(ChorusProXSDPivot::class)->checkIsFormatPivot($fichier_pivot);
         } catch (Exception $e) {
             $message = 'Le fichier FacturePivot est incorrect: ' . $e->getMessage();
             $this->changeAction('integration-glaneur-pivot-error', $message);

@@ -2,6 +2,10 @@
 
 use Pastell\Service\ChorusPro\ChorusProXSDPivot;
 
+/**
+ * @deprecated 5.0.0 Chorus
+ */
+
 class FactureFichierPivot
 {
     public function getXSDFichierPivot()
@@ -13,25 +17,6 @@ class FactureFichierPivot
     public function getNameXSDFichierPivot()
     {
         return basename($this->getXSDFichierPivot());
-    }
-
-    public function verifIsFormatPivot($file)
-    {
-        $previous = libxml_use_internal_errors(true);
-        $dom = new DOMDocument();
-        $dom->load($file, LIBXML_PARSEHUGE);
-        $err =  $dom->schemaValidate($this->getXSDFichierPivot());
-        if (!$err) {
-            $last_error = libxml_get_errors();
-            $msg = ' ';
-            foreach ($last_error as $err) {
-                $msg .= "[Erreur #{$err->code}] " . $err->message . "\n";
-            }
-            libxml_use_internal_errors($previous);
-            throw new Exception($msg);
-        }
-        libxml_use_internal_errors($previous);
-        return true;
     }
 
     public function checkInformation(array $information)

@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @deprecated 5.0.0 Chorus
+ * Le cas 'is_cpp' = false ne devrait plus arriver. Toutes les factures seront importées de chorus
+ */
+
 class HistoStatutCPP
 {
     public function create()
