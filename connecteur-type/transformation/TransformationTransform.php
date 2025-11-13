@@ -33,6 +33,9 @@ class TransformationTransform extends ConnecteurTypeActionExecutor
         try {
             $modifiedFields = $transformationConnecteur->transform($donneesFormulaire);
             $this->addOnChange($modifiedFields);
+        } catch (ValidationException) {
+            $this->clearCache();
+            $donneesFormulaire = $this->getDonneesFormulaire();
         } catch (Exception $e) {
             $this->changeAction($transformationErrorState, $e->getMessage());
             $this->notify(
@@ -65,7 +68,7 @@ class TransformationTransform extends ConnecteurTypeActionExecutor
     /**
      * @throws NotFoundException
      * @throws JsonException
-     * @throws UnrecoverableException
+     * @throws ValidationException
      */
     private function addOnChange(array $modified_fields = []): void
     {
@@ -92,9 +95,9 @@ class TransformationTransform extends ConnecteurTypeActionExecutor
         //FIXME: it's trash
         $actionExecutorFactory->setLastClassAction($this);
         $donneesFormulaire = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)->get($this->id_d);
-        if (! $donneesFormulaire->isValidable()) {
-            throw new UnrecoverableException(
-                "[transformation] Le dossier n'est pas valide : " . $donneesFormulaire->getLastError()
+        if (!$donneesFormulaire->isValidable()) {
+            throw new ValidationException(
+                'Le document doit être modifié avant de pouvoir continuer le cheminement.'
             );
         }
     }
