@@ -6,7 +6,6 @@
  * @var bool $nouveau
  * @var string $cancelRedirectUrl
  */
-
 ?>
 
 <div class="box">
@@ -15,8 +14,19 @@
         <?php $this->getCSRFToken()->displayFormInput() ?>
         <input type='hidden' name='nouveau' value='<?php hecho($nouveau); ?>'/>
         <?php if ($role_info['role'] !== '') : ?>
-            <input type="hidden" name="role" value="<?php
-            hecho($role_info['role']); ?>"/>
+            <div class="control-group">
+                <label class="control-label" for="role">Rôle</label>
+                <div class="controls">
+                    <input class="form-control col-md-4"
+                           type="text"
+                           name="role"
+                           id="role"
+                           disabled="disabled"
+                           value="<?php hecho($role_info['role']); ?>"
+                    />
+                </div>
+            </div>
+            <input type="hidden" name="role" value="<?php hecho($role_info['role']); ?>" />
         <?php else : ?>
             <div class="control-group">
                 <label class="control-label" for="role">Rôle<span class="obl">*</span></label>
