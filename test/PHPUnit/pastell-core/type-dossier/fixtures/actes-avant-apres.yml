@@ -227,6 +227,7 @@ action:
                 - importation
                 - transformation
                 - acquiter-tdt
+                - transformation-error
                 - send-tdt-erreur
                 - acquiter-tdt
                 - send-ged
@@ -319,6 +320,18 @@ action:
         name: 'Erreur lors de la transformation du dossier'
         rule:
             role_id_e: no-role
+        editable-content:
+            - envoi_tdt_actes
+            - envoi_depot
+            - acte_nature
+            - numero_de_lacte
+            - date_de_lacte
+            - document_papier
+            - classification
+            - type_piece
+            - type_acte
+            - type_pj
+            - acte_publication_date
     pre-send-tdt:
         name: "Préparation de l'envoi au Tdt"
         rule:

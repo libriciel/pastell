@@ -161,14 +161,18 @@ EOT;
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($info['id_d']);
         static::assertFalse($donneesFormulaire->get('envoi_signature'));
 
-        static::assertTrue(
+        static::assertFalse(
             $this->triggerActionOnDocument($info['id_d'], 'transformation')
         );
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($info['id_d']);
         static::assertTrue($donneesFormulaire->get('envoi_signature'));
 
-        $this->assertLastDocumentAction('transformation', $info['id_d']);
+        $this->assertLastMessage(
+            "[transformation] Le dossier n'est pas valide : Le formulaire est incomplet : le champ «Sous-type iparapheur» est obligatoire."
+        );
+
+        $this->assertLastDocumentAction('transformation-error', $info['id_d']);
     }
 
     /**

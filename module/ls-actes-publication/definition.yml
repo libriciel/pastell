@@ -153,6 +153,7 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
     supression:
         name-action: Supprimer
         name: Supprimé

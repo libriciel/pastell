@@ -72,6 +72,8 @@ action:
                 - modification
                 - importation
                 - transformation_1
+                - transformation-error_1
+                - transformation-error_2
     supression:
         name-action: Supprimer
         name: Supprimé

@@ -462,6 +462,7 @@ action:
                 - reception
                 - non-recu
                 - send-ged
+                - transformation-error
                 - send-signature-error
                 - send-mailsec-error
     supression:
@@ -580,6 +581,43 @@ action:
         name: 'Erreur lors de la transformation du dossier'
         rule:
             role_id_e: no-role
+        editable-content:
+            - envoi_signature
+            - envoi_mailsec
+            - envoi_depot
+            - envoi_sae
+            - envoi_iparapheur
+            - iparapheur_sous_type
+            - json_metadata
+            - has_date_limite
+            - date_limite
+            - annotation_publique
+            - annotation_privee
+            - envoi_fast
+            - fast_parapheur_circuit
+            - fast_parapheur_circuit_configuration
+            - fast_parapheur_email_destinataire
+            - fast_parapheur_email_cc
+            - fast_parapheur_agents
+            - to
+            - cc
+            - bcc
+            - password
+            - password2
+            - sae_config
+            - sae_show
+            - journal
+            - date_journal_debut
+            - date_cloture_journal
+            - date_cloture_journal_iso8601
+            - sae_transfert_id
+            - sae_bordereau
+            - sae_archive
+            - ar_sae
+            - sae_ack_comment
+            - reply_sae
+            - sae_archival_identifier
+            - sae_atr_comment
     preparation-send-iparapheur:
         name: "Préparation de l'envoi au parapheur"
         rule:

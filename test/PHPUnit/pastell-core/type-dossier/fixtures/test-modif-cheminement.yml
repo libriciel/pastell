@@ -170,6 +170,7 @@ action:
                 - send-ged_1
                 - reception
                 - non-recu
+                - transformation-error
                 - send-mailsec-error
     supression:
         name-action: Supprimer
@@ -254,6 +255,15 @@ action:
         name: 'Erreur lors de la transformation du dossier'
         rule:
             role_id_e: no-role
+        editable-content:
+            - envoi_depot_1
+            - envoi_mailsec
+            - envoi_depot_2
+            - to
+            - cc
+            - bcc
+            - password
+            - password2
     preparation-send-ged_1:
         name: "Préparation de l'envoi à la GED #1"
         rule:
