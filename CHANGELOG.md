@@ -111,6 +111,7 @@ doivent être mises à jour #1667
 - Les Types d'intégration 'Formulaire PIVOT', 'Glaneur PIVOT' et 'Importation Chorus Pro par CSV' 
   du type de dossier `facture-cpp` Facture Chorus Pro sont dépréciés, ainsi que les classes associées.
   Seules les factures importées de Chorus Pro seront traitées. #1856
+- Connecteur iparapheur soap #2268
 
 # [4.1.14] - 2025-11-10
 
