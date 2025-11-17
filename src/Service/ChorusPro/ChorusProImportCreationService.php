@@ -83,6 +83,9 @@ class ChorusProImportCreationService
         $this->donneesFormulaireFactory = $donneesFormulaireFactory;
     }
 
+    /**
+     * @deprecated 5.0.0 Chorus csv - À refacto
+     */
     public function analyseOneFactureCreation(array $facture_a_creer, string $nommage_csv = ""): array
     {
         // Avant la création, il faut vérifier que la facture n'existe pas sur une autre entité.
@@ -117,8 +120,9 @@ class ChorusProImportCreationService
     //  'message' => texte libre en cas de succes ou message de l'exception
     /**
      * @param array $facture_cpp
-      * @param string $nommage_csv
+     * @param string $nommage_csv
      * @return array
+     *@deprecated 5.0.0 Chorus csv - À refacto
      */
     private function creerFacture(array $facture_cpp, string $nommage_csv = ""): array
     {
@@ -144,6 +148,7 @@ class ChorusProImportCreationService
      * @throws CPPException
      * @throws UnrecoverableException
      * @throws NotFoundException
+     * @deprecated 5.0.0 Chorus csv - À refacto
      */
     private function creerDocumentFacture(array $factureCPP, string $authorized_flux, string $nommage_csv = ""): array
     {

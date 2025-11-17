@@ -4,6 +4,10 @@ use Pastell\Service\ChorusPro\ChorusProImportCreationService;
 use Pastell\Service\ChorusPro\ChorusProImportSynchroService;
 use Pastell\Service\ChorusPro\ChorusProImportUtilService;
 
+/**
+ * @deprecated 5.0.0 Chorus
+ */
+
 class ChorusParCSVImporterFacture extends ActionExecutor
 {
     /**

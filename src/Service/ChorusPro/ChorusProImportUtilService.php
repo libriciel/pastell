@@ -15,6 +15,9 @@ class ChorusProImportUtilService
     public const string TYPE_INTEGRATION_CPP_TRAVAUX_CLE = 'CPP_TRAVAUX';
     public const string TYPE_INTEGRATION_CPP_TRAVAUX_VALEUR = 'Importation Chorus Pro Facture de Travaux (MOE/MOA)';
 
+    /**
+     * @deprecated 5.0.0 Chorus csv - À refacto
+     */
     public const string NOMMAGE_ID_FACTURE_CSV = '-99-csv';
     public const string TYPE_INTEGRATION_CSV_CLE = 'CSV';
     public const string TYPE_INTEGRATION_CSV_VALEUR = 'Importation Chorus Pro par CSV';

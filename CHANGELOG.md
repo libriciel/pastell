@@ -112,6 +112,7 @@ doivent être mises à jour #1667
   du type de dossier `facture-cpp` Facture Chorus Pro sont dépréciés, ainsi que les classes associées.
   Seules les factures importées de Chorus Pro seront traitées. #1856
 - Connecteur iparapheur soap #2268
+- Connecteur `chorus-par-csv` ChorusPro par CSV #2356
 
 # [4.1.14] - 2025-11-10
 
