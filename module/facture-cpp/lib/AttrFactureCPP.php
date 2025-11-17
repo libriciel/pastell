@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @deprecated 5.0.0 Chorus
+ */
+
 class AttrFactureCPP
 {
     public const ATTR_ID_FACTURE_CPP = 'id_facture_cpp';

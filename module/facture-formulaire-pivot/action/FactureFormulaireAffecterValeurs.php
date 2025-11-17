@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @deprecated 5.0.0 Chorus
+ */
+
 class FactureFormulaireAffecterValeurs extends ActionExecutor
 {
     protected function metier()

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @deprecated 5.0.0 Chorus
+ */
+
 class FactureFormulaireIntegrerCPP extends ActionExecutor
 {
     private $nom_flux_cpp = 'facture-cpp';

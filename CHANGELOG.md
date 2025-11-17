@@ -105,6 +105,12 @@ doivent être mises à jour #1667
 - Classification, use Pastell\Step\Tdt\Acte\ChoiceAction\ClassificationChoiceAction instead #2278
 - IparapheurSousType, use Pastell\Step\Signature\ChoiceAction\ParapheurSousTypeChoiceAction instead #2278
 - Connecteur convertisseur-office-pdf Cloudooo #2322
+- Le statut cible "SERVICE_FAIT;MANDATEE" sera supprimé pour le type de dossier `facture-cpp` Facture Chorus Pro #1856
+- Type de dossier `facture-formulaire-pivot` Facture Formulaire PIVOT #1856
+- Connecteur `parametrage-flux-facture-pivot` ParametrageTypeDossierFormulairePivot #1856
+- Les Types d'intégration 'Formulaire PIVOT', 'Glaneur PIVOT' et 'Importation Chorus Pro par CSV' 
+  du type de dossier `facture-cpp` Facture Chorus Pro sont dépréciés, ainsi que les classes associées.
+  Seules les factures importées de Chorus Pro seront traitées. #1856
 
 # [4.1.14] - 2025-11-10
 

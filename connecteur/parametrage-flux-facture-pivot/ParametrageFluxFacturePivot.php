@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated 5.0.0 Chorus
+ */
 class ParametrageFluxFacturePivot extends Connecteur
 {
     /** @var  DonneesFormulaire */
