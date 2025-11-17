@@ -1,4 +1,4 @@
-nom: 'ChorusPro par CSV'
+nom: ChorusPro par CSV - déprécié
 type: PortailFacture
 description: "Connecteur pour le portail facture Chorus Pro.\nPermet la récupération et la synchronisation de factures (sans traitement) pour plusieurs structures et suivant plusieurs critères (ex: fournisseurs)."
 restriction_pack:

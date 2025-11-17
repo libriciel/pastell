@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @deprecated 5.0.0 Chorus
+ */
+
 class ChorusParCsv extends PortailFactureConnecteur
 {
     private const DEPOSE_DEPUIS_NB_JOURS = 30;

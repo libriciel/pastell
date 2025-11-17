@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @deprecated 5.0.0 Chorus
+ */
+
 class ChorusParCSVInterpreteCSV extends ActionExecutor
 {
     /**
