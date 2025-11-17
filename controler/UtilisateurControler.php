@@ -499,6 +499,8 @@ class UtilisateurControler extends PastellControler
                     $firstname,
                     $lastname,
                     $id_e,
+                    null,
+                    true
                 );
             }
         } catch (Exception $e) {

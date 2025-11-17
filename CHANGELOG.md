@@ -18,6 +18,7 @@ doivent être mises à jour #1667
 - Ajout du supplément `suppl_helios_tdt_versant_sae` : Type de dossier Helios TdT versant (archivage) `ls-helios-tdt-versant-sae` #2266
 - Les types d'étapes studio sont affichés sur la page extensions #741
 - Ajout de la configuration LIBELLE_PLATEFORME_MAIL pour personnaliser le nom de la plateforme dans les mails envoyés #1637
+- Un email est envoyé automatiquement à la création d'un utilisateur pour définir son mot de passe #2363
 
 ## Évolutions
 

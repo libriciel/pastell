@@ -1,16 +1,13 @@
 <?php
 
-use Pastell\Mailer\Mailer;
-use Pastell\Service\TokenGenerator;
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\PasswordEntropy;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
+use Pastell\Service\Utilisateur\PasswordResetMailService;
 
 class ConnexionControler extends PastellControler
 {
@@ -518,38 +515,7 @@ class ConnexionControler extends PastellControler
             $this->setLastError("Aucun compte n'a été trouvé avec ces informations");
             $this->redirect('/Connexion/oublieIdentifiant');
         }
-        $tokenGenerator = new TokenGenerator();
-        $mailVerifPassword = $tokenGenerator->generate();
-
-        $utilisateur = new UtilisateurSQL($this->getSQLQuery());
-        $info = $utilisateur->getInfo($id_u);
-        $utilisateur->reinitPassword($id_u, $mailVerifPassword);
-
-        $link = sprintf(
-            '%s/Connexion/changementMdp?mail_verif=%s',
-            $this->getSiteBase(),
-            $mailVerifPassword
-        );
-        $plateforme_mail = $this->getInstance('plateforme_mail');
-        $libelle_plateforme_mail = $this->getConfigurationSQL()->getLibellePlateformeMail();
-        $templatedEmail = new TemplatedEmail()
-            ->from(new Address($plateforme_mail, $libelle_plateforme_mail))
-            ->to($info['email'])
-            ->subject('[Pastell] Procédure de modification de mot de passe')
-            ->htmlTemplate('oublie-identifiant.html.twig')
-            ->context(['link' => $link]);
-        $this->getObjectInstancier()
-            ->getInstance(Mailer::class)
-            ->send($templatedEmail);
-
-        $this->getJournal()->addActionAutomatique(
-            Journal::MODIFICATION_UTILISATEUR,
-            $info['id_e'],
-            0,
-            'mot de passe modifié',
-            "Procédure initiée pour {$info['email']}"
-        );
-
+        $this->getObjectInstancier()->getInstance(PasswordResetMailService::class)->sendResetMail($id_u);
         $this->setLastMessage('Un email vous a été envoyé avec la suite de la procédure');
         $this->redirect('/Connexion/oublieIdentifiant');
     }
