@@ -21,16 +21,6 @@ class Gabarit
         $this->viewParameter = array_merge($this->viewParameter, $parameter);
     }
 
-    protected function getAPIController($controllerName)
-    {
-        $baseAPIControllerFactory = $this->objectInstancier->getInstance(BaseAPIControllerFactory::class);
-        return $baseAPIControllerFactory->getInstance(
-            $controllerName,
-            $this->objectInstancier->getInstance(Authentification::class)->getId()
-        );
-    }
-
-
     public function getRender(string $template): string
     {
         ob_start();

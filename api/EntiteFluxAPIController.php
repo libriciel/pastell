@@ -24,7 +24,7 @@ class EntiteFluxAPIController extends BaseAPIController
         if ($id_e && ! $this->entiteSQL->getInfo($id_e)) {
             throw new NotFoundException("L'entité $id_e n'existe pas");
         }
-        $this->checkDroit($id_e, "entite:lecture");
+        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ENTITE));
         return $id_e;
     }
 
@@ -67,7 +67,7 @@ class EntiteFluxAPIController extends BaseAPIController
         $flux = $this->getFromRequest('flux', null);
         $type = $this->getFromRequest('type', null);
 
-        $this->checkDroit($id_e, "entite:lecture");
+        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ENTITE));
 
         $associations = $this->fluxEntiteSQL->getAllFluxEntite($id_e, $flux, $type);
 
@@ -109,7 +109,7 @@ class EntiteFluxAPIController extends BaseAPIController
         $type = $this->getFromRequest('type');
         $num_same_type = (int)$this->getFromRequest('num_same_type', 0);
 
-        $this->checkDroit($id_e, "entite:edition");
+        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
         $id_fe = $this->connecteurAssociationService->addConnecteurAssociation(
             $id_e,
             $id_ce,
@@ -132,7 +132,7 @@ class EntiteFluxAPIController extends BaseAPIController
     public function postAction(): array
     {
         $id_e = $this->checkedEntite();
-        $this->checkDroit($id_e, DroitService::getActionPermission(DroitService::DROIT_CONNECTEUR));
+        $this->checkDroit($id_e, DroitService::getDroitAction(DroitService::DROIT_CONNECTEUR));
         $flux = $this->getFromQueryArgs(2);
 
         $type_connecteur = $this->getFromRequest('type');
@@ -185,7 +185,7 @@ class EntiteFluxAPIController extends BaseAPIController
         $id_e = $this->checkedEntite();
         $id_fe = $this->getFromRequest('id_fe');
         $this->checkConnecteurEdition($id_e);
-        $this->checkDroit($id_e, "entite:edition");
+        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
 
         $this->connecteurAssociationService->deleteConnecteurAssociationById_fe(
             $id_fe,

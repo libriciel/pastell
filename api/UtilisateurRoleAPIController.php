@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
+
 class UtilisateurRoleAPIController extends BaseAPIController
 {
     public const ALL_ROLES = "ALL_ROLES";
@@ -45,7 +47,7 @@ class UtilisateurRoleAPIController extends BaseAPIController
     {
         $id_u = $this->getFromQueryArgs(0);
         $id_e = $this->getFromRequest('id_e', 0);
-        $this->checkDroit($id_e, "utilisateur:lecture");
+        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_UTILISATEUR));
 
         $this->verifExists($id_u);
 
@@ -102,7 +104,7 @@ class UtilisateurRoleAPIController extends BaseAPIController
      */
     private function addRoleUtilisateur($id_u, $role, $id_e)
     {
-        $this->checkDroit($id_e, "utilisateur:edition");
+        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR));
         $this->verifExists($id_u);
         $this->verifRoleExists($role);
 
@@ -124,7 +126,7 @@ class UtilisateurRoleAPIController extends BaseAPIController
      */
     private function deleteRoleUtilisateur($id_u, $role, $id_e)
     {
-        $this->checkDroit($id_e, "utilisateur:edition");
+        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR));
         $this->verifExists($id_u);
 
         if ($role === self::ALL_ROLES) {

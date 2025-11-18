@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Module\ModuleListService;
 use Symfony\Component\Process\Process;
 
 class DaemonControler extends PastellControler
@@ -415,7 +416,7 @@ class DaemonControler extends PastellControler
 
     public function listFluxAjaxAction()
     {
-        $flux = $this->apiGet('/Flux');
+        $flux = $this->getInstance(ModuleListService::class)->getModuleListOrderByNom($this->getId_u());
         echo json_encode(array_keys($flux));
     }
 

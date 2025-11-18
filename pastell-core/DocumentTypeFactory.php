@@ -65,12 +65,6 @@ class DocumentTypeFactory
         return $this->allType;
     }
 
-    public function isSuperTypePresent($type)
-    {
-        $all = $this->getAllType();
-        return isset($all[$type]);
-    }
-
     public function isTypePresent($type)
     {
         $all = $this->fluxDefinitionFiles->getAll();

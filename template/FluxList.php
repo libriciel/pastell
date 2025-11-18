@@ -3,12 +3,12 @@
 /**
  * @var Gabarit $this
  * @var array $flux_list
- * @var array $possible_pack_list
+ * @var array $possibleFluxList
  * @var int $id_e_mere
  * @var array $all_herited
  * @var int $id_e
  * @var bool $droit_edition
- * @var bool $droitConnecteurEdition
+ * @var bool $canEditConnector
  */
 ?>
 <div class="box">
@@ -71,7 +71,7 @@
         <?php endforeach;?>
         </table>
     <?php endif;?>
-    <?php if ($droitConnecteurEdition) : ?>
+    <?php if ($canEditConnector) : ?>
         <h2>Configurer un nouveau type de dossier</h2>
         <form action='Flux/detail' method='get'>
             <input type='hidden' name='id_e' value='<?php hecho($id_e); ?>'/>
@@ -82,11 +82,11 @@
                     </th>
                     <td>
                         <select name="flux" id="module_type" class="select2_type_dossier form-select col-md-3">
-                            <?php foreach ($possible_pack_list as $type => $possible_flux_list) : ?>
-                                <optgroup label="<?php hecho($type) ?>">
-                                <?php foreach ($possible_flux_list as $flux_id => $flux_info) : ?>
-                                    <option value="<?php hecho($flux_id); ?>">
-                                        <?php hecho($flux_info['nom']); ?>
+                            <?php foreach ($possibleFluxList as $fluxType => $fluxByType) : ?>
+                                <optgroup label="<?php hecho($fluxType) ?>">
+                                <?php foreach ($fluxByType as $fluxId => $fluxNom) : ?>
+                                    <option value="<?php hecho($fluxId); ?>">
+                                        <?php hecho($fluxNom); ?>
                                     </option>
                                 <?php endforeach ?>
                                 </optgroup>

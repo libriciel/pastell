@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UserUpdateService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
@@ -47,7 +48,7 @@ class UtilisateurAPIController extends BaseAPIController
 
         $id_e = $this->getFromRequest('id_e', 0);
 
-        $this->checkDroit($id_e, "utilisateur:lecture");
+        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_UTILISATEUR));
 
         $listUtilisateur = $this->utilisateurListe->getAllUtilisateurSimple($id_e);
         $result = [];
@@ -88,7 +89,7 @@ class UtilisateurAPIController extends BaseAPIController
     private function getDetailInfoForAPI($id_u)
     {
         $infoUtilisateur = $this->verifExists($id_u);
-        $this->checkDroit($infoUtilisateur['id_e'], "utilisateur:lecture");
+        $this->checkDroit($infoUtilisateur['id_e'], DroitService::getDroitLecture(DroitService::DROIT_UTILISATEUR));
 
         $result = [];
         $result['id_u'] = (string)$infoUtilisateur['id_u'];
@@ -117,11 +118,11 @@ class UtilisateurAPIController extends BaseAPIController
         $id_e = $this->getFromRequest('id_e', 0);
         $id_u = $this->getFromQueryArgs(0);
 
-        if (
-            $id_u !== false
-            && $this->verifExists($id_u)
-            && $this->checkDroit($this->utilisateur->getInfo($id_u)['id_e'], 'utilisateur:edition')
-        ) {
+        if ($id_u !== false && $this->verifExists($id_u)) {
+            $this->checkDroit(
+                $this->utilisateur->getInfo($id_u)['id_e'],
+                DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR)
+            );
             $action = $this->getFromQueryArgs(1);
             if ($action === 'activate') {
                 $this->utilisateur->enable($id_u);
@@ -137,7 +138,7 @@ class UtilisateurAPIController extends BaseAPIController
             return $this->detail();
         }
 
-        $this->checkDroit($id_e, 'utilisateur:creation');
+        $this->checkDroit($id_e, DroitService::getDroitCreation(DroitService::DROIT_UTILISATEUR));
 
         $id_u = $this->userCreationService->create(
             $this->getFromRequest('login'),
@@ -171,7 +172,7 @@ class UtilisateurAPIController extends BaseAPIController
         $id_e = $this->getFromRequest('id_e', $infoUtilisateurExistant['id_e']);
 
         // Vérification des droits.
-        $this->checkDroit($id_e, 'utilisateur:edition');
+        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR));
 
         // Modification de l'utilisateur chargé avec les infos passées par l'API
         foreach ($data as $key => $newValeur) {
@@ -218,7 +219,7 @@ class UtilisateurAPIController extends BaseAPIController
 
         $infoUtilisateur = $this->utilisateur->getUserFromData($data);
 
-        $this->checkDroit($infoUtilisateur['id_e'], "utilisateur:edition");
+        $this->checkDroit($infoUtilisateur['id_e'], DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR));
 
         $this->utilisateurDeletionService->delete($infoUtilisateur['id_u']);
 

@@ -40,6 +40,7 @@ doivent être mises à jour #1667
 - Renommage de ChorusProImportUtilService::getMinDateStatutCourant en getOldestDateDepuisLe #2340
 - Les utilisateurs avec le droit system:edition peuvent désormais changer manuellement l'état d'un dossier #2354
 - La variable d'environnement JOURNAL_MAX_AGE_IN_MONTHS est remplacée par JOURNAL_MAX_AGE_IN_DAYS (à 60 jours par défaut) #2358
+- Uniformisation des listes de sélection de type de dossier #2351
 
 ## Suppressions
 
@@ -97,6 +98,10 @@ doivent être mises à jour #1667
 - Suppression de ActionChange::updateModification, use addOrUpdateAction instead #2336
 - Suppression d'éléments dépréciés de util.php 
   (rrmdir, get_argv, exceptionToJson, throwIfFalse, throwLastError, wl_basename, tick, utf8_decode_array) #2347
+- Suppression de BaseAPIControllerFactory #2351
+- Suppression de BaseAPIController::hasOneDroit, FluxAPIController::listFlux, PastellController::getAPIController,
+  Gabarit::getAPIController, ActionExecutor::apiGet, ActionExecutor::apiCall, DocumentTypeFactory::isSuperTypePresent,
+  PastellTestCase::getAPIController #2351
 
 ## Dépréciations
 

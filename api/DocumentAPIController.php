@@ -2,6 +2,7 @@
 
 use Pastell\File\Chunk\ChunkRequest;
 use Pastell\File\Chunk\ChunkUploader;
+use Pastell\Service\Droit\DroitService;
 
 class DocumentAPIController extends BaseAPIController
 {
@@ -25,16 +26,24 @@ class DocumentAPIController extends BaseAPIController
     ) {
     }
 
+    /**
+     * @throws NotFoundException
+     * @throws ForbiddenException
+     */
     private function checkedEntite()
     {
         $id_e = $this->getFromQueryArgs(0) ?: 0;
         if ($id_e && !$this->entiteSQL->getInfo($id_e)) {
             throw new NotFoundException("L'entité $id_e n'existe pas");
         }
-        $this->checkDroit($id_e, 'entite:lecture');
+        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ENTITE));
         return $id_e;
     }
 
+    /**
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
     public function get()
     {
         if ($this->getFromQueryArgs(0) == 'count') {
@@ -78,13 +87,13 @@ class DocumentAPIController extends BaseAPIController
         if (!$id_e) {
             throw new Exception('id_e est obligatoire');
         }
-        $this->checkDroit($id_e, 'entite:lecture');
+        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ENTITE));
 
         $allDroitEntite = $this->getDroitService()->getAllDocumentLecture($this->getUtilisateurId(), $id_e);
 
         $indexedFieldValue = [];
         if ($type) {
-            $this->checkDroit($id_e, "$type:lecture");
+            $this->checkDroit($id_e, DroitService::getDroitLecture($type));
             $documentType = $this->documentTypeFactory->getFluxDocumentType($type);
             $indexedFieldsList = $documentType->getFormulaire()->getIndexedFields();
 
@@ -123,6 +132,9 @@ class DocumentAPIController extends BaseAPIController
         return $documents;
     }
 
+    /**
+     * @throws ForbiddenException
+     */
     private function countByEntityFormat()
     {
         $id_e = $this->getFromRequest('id_e');
@@ -133,8 +145,8 @@ class DocumentAPIController extends BaseAPIController
         }
 
         // verifier les droits
-        $this->checkDroit($id_e, 'entite:lecture');
-        $this->checkDroit($id_e, $type . ':lecture');
+        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ENTITE));
+        $this->checkDroit($id_e, DroitService::getDroitLecture($type));
 
         $req = $this->getRequest();
         unset($req['id_e']);
@@ -290,13 +302,16 @@ class DocumentAPIController extends BaseAPIController
     }
 
 
+    /**
+     * @throws ForbiddenException
+     */
     public function externalDataAction($id_e, $id_d)
     {
         $field = $this->getFromQueryArgs(4);
 
         $info = $this->document->getInfo($id_d);
 
-        $this->checkDroit($id_e, "{$info['type']}:edition");
+        $this->checkDroit($id_e, DroitService::getDroitEdition($info['type']));
 
         $documentType = $this->documentTypeFactory->getFluxDocumentType($info['type']);
         $formulaire = $documentType->getFormulaire();
@@ -452,11 +467,16 @@ class DocumentAPIController extends BaseAPIController
         return $result;
     }
 
+    /**
+     * @throws NotFoundException
+     * @throws ForbiddenException
+     */
     public function receiveFileAction($id_e, $id_d, $field_name, $file_number)
     {
         $document = $this->document;
         $info = $document->getInfo($id_d);
-        $this->checkDroit($id_e, "{$info['type']}:lecture");
+
+        $this->checkDroit($id_e, DroitService::getDroitLecture($info['type']));
         $donneesFormulaire = $this->donneesFormulaireFactory->get($id_d);
 
         $result['file_name'] = $donneesFormulaire->getFileName($field_name, $file_number);
@@ -480,7 +500,7 @@ class DocumentAPIController extends BaseAPIController
         if (!$info) {
             throw new NotFoundException("Le document $documentId n'appartient pas à l'entité $entityId");
         }
-        $this->checkDroit($entityId, $info['type'] . ':edition');
+        $this->checkDroit($entityId, DroitService::getDroitEdition($info['type']));
         if (!$this->actionPossible->isActionPossible($entityId, $this->getUtilisateurId(), $documentId, $action)) {
             throw new Exception("L'action « $action »  n'est pas permise : " . $this->actionPossible->getLastBadRule());
         }
@@ -609,6 +629,10 @@ class DocumentAPIController extends BaseAPIController
         return $response;
     }
 
+    /**
+     * @throws NotFoundException
+     * @throws ForbiddenException
+     */
     private function getDocument(string $id_d, $id_e): array
     {
         $info = $this->document->getInfo($id_d);
@@ -616,7 +640,7 @@ class DocumentAPIController extends BaseAPIController
             throw new NotFoundException("Le document $id_d n'appartient pas à l'entité $id_e");
         }
 
-        $this->checkDroit($id_e, $info['type'] . ':edition');
+        $this->checkDroit($id_e, DroitService::getDroitEdition($info['type']));
         $my_role = $this->documentEntite->getRole($id_e, $id_d);
         if (!$my_role) {
             throw new NotFoundException("Le document $id_d n'appartient pas à l'entité $id_e");

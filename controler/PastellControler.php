@@ -4,6 +4,7 @@ use Monolog\Logger;
 use Pastell\Security\LibricielFeedbackReader;
 use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Module\ModuleListService;
 
 class PastellControler extends Controler
 {
@@ -123,7 +124,7 @@ class PastellControler extends Controler
     {
         $this->verifDroit(
             $entityId,
-            DroitService::getActionPermission(DroitService::DROIT_CONNECTEUR),
+            DroitService::getDroitAction(DroitService::DROIT_CONNECTEUR),
         );
     }
 
@@ -151,7 +152,7 @@ class PastellControler extends Controler
      */
     public function hasDroitEdition($id_e)
     {
-        $this->verifDroit($id_e, "entite:edition");
+        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
     }
 
     /**
@@ -349,36 +350,7 @@ class PastellControler extends Controler
      */
     public function getAllModule(): array
     {
-        $all_module = [];
-
-        /** @var FluxAPIController $fluxAPIController */
-        $fluxAPIController = $this->getAPIController('Flux');
-        $list = $fluxAPIController->get();
-
-        foreach ($list as $flux_id => $flux_info) {
-            $all_module[$flux_info['type']][$flux_id]  = $flux_info['nom'];
-        }
-
-        $currentLocale = setlocale(LC_COLLATE, '0');
-        setlocale(LC_COLLATE, 'fr_FR.utf8');
-        ksort($all_module, SORT_LOCALE_STRING);
-        setlocale(LC_COLLATE, $currentLocale);
-
-        return $all_module;
-    }
-
-    /**
-     * @param $controllerName
-     * @return BaseAPIController
-     * @throws NotFoundException
-     */
-    protected function getAPIController($controllerName)
-    {
-        /** @var BaseAPIControllerFactory $baseAPIControllerFactory */
-        $baseAPIControllerFactory = $this->getInstance(BaseAPIControllerFactory::class);
-        $instance = $baseAPIControllerFactory->getInstance($controllerName, $this->getId_u());
-        $instance->setCallerType('console');
-        return $instance;
+        return $this->getInstance(ModuleListService::class)->getModuleListOrderByType($this->getId_u());
     }
 
     private InternalAPI $internalAPI;
