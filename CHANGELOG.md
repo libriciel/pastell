@@ -4,7 +4,6 @@
 
 - **BREAKING** : Correction du calcul des empreintes dans les connecteurs SFTP (dépôt et glaneur) : les empreintes
 doivent être mises à jour #1667
-- Correction d'un bug lors de l'ajout d'une étape de cheminement pendant la transformation d'un dossier #2332
 - Les entités désactivées n'apparaissent plus dans le fil d'ariane #2285
 
 ## Ajouts
@@ -42,6 +41,7 @@ doivent être mises à jour #1667
 - Les utilisateurs avec le droit system:edition peuvent désormais changer manuellement l'état d'un dossier #2354
 - La variable d'environnement JOURNAL_MAX_AGE_IN_MONTHS est remplacée par JOURNAL_MAX_AGE_IN_DAYS (à 60 jours par défaut) #2358
 - Uniformisation des listes de sélection de type de dossier #2351
+- Il est possible de modifier un dossier en état "Erreur lors de la transformation du dossier" #2332
 
 ## Suppressions
 

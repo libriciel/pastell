@@ -309,8 +309,8 @@ action:
                 - modification
                 - importation
                 - transformation
-                - recu-iparapheur
                 - transformation-error
+                - recu-iparapheur
                 - send-signature-error
                 - send-tdt-erreur
                 - acquiter-tdt
@@ -347,6 +347,7 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - recu-iparapheur
                 - acquiter-tdt
                 - rejet-iparapheur
@@ -389,6 +390,7 @@ action:
         connecteur-type-mapping:
             transformation_file: transformation_file
             has_transformation: has_transformation
+            transformation-error: transformation-error
         editable-content:
             - envoi_signature
             - envoi_tdt_actes
@@ -438,6 +440,7 @@ action:
             - type_acte
             - type_pj
             - acte_publication_date
+        modification-no-change-etat: true
     preparation-send-iparapheur:
         name: "Préparation de l'envoi au parapheur"
         rule:

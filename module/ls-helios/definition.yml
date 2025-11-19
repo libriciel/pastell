@@ -337,10 +337,10 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - recu-iparapheur
                 - info-tdt
                 - send-ged
-                - transformation-error
                 - send-signature-error
     supression:
         name-action: Supprimer
@@ -374,6 +374,7 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - recu-iparapheur
                 - info-tdt
                 - send-ged
@@ -414,6 +415,7 @@ action:
         connecteur-type-mapping:
             transformation_file: transformation_file
             has_transformation: has_transformation
+            transformation-error: transformation-error
         editable-content:
             - envoi_signature
             - envoi_tdt_helios
@@ -481,6 +483,7 @@ action:
             - reply_sae
             - sae_archival_identifier
             - sae_atr_comment
+        modification-no-change-etat: true
     preparation-send-iparapheur:
         name: "Préparation de l'envoi au parapheur"
         rule:

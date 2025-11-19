@@ -458,11 +458,11 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - recu-iparapheur
                 - reception
                 - non-recu
                 - send-ged
-                - transformation-error
                 - send-signature-error
                 - send-mailsec-error
     supression:
@@ -498,6 +498,7 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - recu-iparapheur
                 - reception
                 - non-recu
@@ -539,6 +540,7 @@ action:
         connecteur-type-mapping:
             transformation_file: transformation_file
             has_transformation: has_transformation
+            transformation-error: transformation-error
         editable-content:
             - envoi_signature
             - envoi_mailsec
@@ -618,6 +620,7 @@ action:
             - reply_sae
             - sae_archival_identifier
             - sae_atr_comment
+        modification-no-change-etat: true
     preparation-send-iparapheur:
         name: "Préparation de l'envoi au parapheur"
         rule:

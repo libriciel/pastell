@@ -196,8 +196,8 @@ action:
                 - modification
                 - importation
                 - transformation
-                - send-ged
                 - transformation-error
+                - send-ged
     supression:
         name-action: Supprimer
         name: Supprimé
@@ -227,6 +227,7 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - send-ged
                 - accepter-sae
             document_is_valide: true
@@ -265,6 +266,7 @@ action:
         connecteur-type-mapping:
             transformation_file: transformation_file
             has_transformation: has_transformation
+            transformation-error: transformation-error
         editable-content:
             - envoi_depot
             - envoi_sae
@@ -304,6 +306,7 @@ action:
             - reply_sae
             - sae_archival_identifier
             - sae_atr_comment
+        modification-no-change-etat: true
     preparation-send-ged:
         name: "Préparation de l'envoi à la GED"
         rule:

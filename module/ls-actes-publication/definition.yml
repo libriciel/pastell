@@ -182,6 +182,7 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - send-ged
             document_is_valide: true
         action-class: OrientationTypeDossierPersonnalise
@@ -219,6 +220,7 @@ action:
         connecteur-type-mapping:
             transformation_file: transformation_file
             has_transformation: has_transformation
+            transformation-error: transformation-error
         editable-content:
             - envoi_depot
         modification-no-change-etat: true
@@ -226,6 +228,9 @@ action:
         name: 'Erreur lors de la transformation du dossier'
         rule:
             role_id_e: no-role
+        editable-content:
+            - envoi_depot
+        modification-no-change-etat: true
     preparation-send-ged:
         name: "Préparation de l'envoi à la GED"
         rule:

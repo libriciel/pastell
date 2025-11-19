@@ -167,10 +167,10 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - send-ged_1
                 - reception
                 - non-recu
-                - transformation-error
                 - send-mailsec-error
     supression:
         name-action: Supprimer
@@ -202,6 +202,7 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - send-ged_1
                 - reception
                 - non-recu
@@ -241,6 +242,7 @@ action:
         connecteur-type-mapping:
             transformation_file: transformation_file
             has_transformation: has_transformation
+            transformation-error: transformation-error
         editable-content:
             - envoi_depot_1
             - envoi_mailsec
@@ -264,6 +266,7 @@ action:
             - bcc
             - password
             - password2
+        modification-no-change-etat: true
     preparation-send-ged_1:
         name: "Préparation de l'envoi à la GED #1"
         rule:

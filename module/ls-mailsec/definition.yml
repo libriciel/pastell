@@ -217,10 +217,10 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - reception
                 - non-recu
                 - send-ged
-                - transformation-error
                 - send-mailsec-error
     supression:
         name-action: Supprimer
@@ -252,6 +252,7 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - reception
                 - non-recu
                 - send-ged
@@ -292,6 +293,7 @@ action:
         connecteur-type-mapping:
             transformation_file: transformation_file
             has_transformation: has_transformation
+            transformation-error: transformation-error
         editable-content:
             - envoi_mailsec
             - envoi_depot
@@ -343,6 +345,7 @@ action:
             - reply_sae
             - sae_archival_identifier
             - sae_atr_comment
+        modification-no-change-etat: true
     preparation-send-mailsec:
         name: "Préparation de l'envoi par mail sécurisé"
         rule:

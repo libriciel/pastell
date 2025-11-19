@@ -35,7 +35,9 @@ action:
         connecteur-type-mapping:
             transformation_file: transformation_file
             has_transformation: has_transformation
+            transformation-error: transformation-error
     transformation-error:
         name: 'Erreur lors de la transformation du dossier'
         rule:
             role_id_e: no-role
+        action-automatique: orientation

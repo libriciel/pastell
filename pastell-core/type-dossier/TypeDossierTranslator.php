@@ -274,15 +274,6 @@ class TypeDossierTranslator
                                     $result[DocumentType::ACTION][$action_id][Action::EDITABLE_CONTENT],
                                     $ongletElementId[$elementId]
                                 );
-                                if (
-                                    $action_id === TypeDossierTransformationEtape::TRANSFORMATION_ACTION ||
-                                    str_starts_with(
-                                        $action_id,
-                                        TypeDossierTransformationEtape::TRANSFORMATION_ACTION . '_'
-                                    )
-                                ) {
-                                    $this->syncTransformationErrorContent($action_id, $result);
-                                }
                             }
                         }
                         $result[DocumentType::ACTION][$action_id][Action::MODIFICATION_NO_CHANGE_ETAT] = true;
@@ -297,13 +288,6 @@ class TypeDossierTranslator
         foreach ($typeDossierData->etape as $etape) {
             $result = $this->typeDossierEtapeDefinition->setSpecificData($etape, $result);
         }
-    }
-
-    private function syncTransformationErrorContent(string $action_id, array &$result): void
-    {
-        $suffixe = substr($action_id, strlen(TypeDossierTransformationEtape::TRANSFORMATION_ACTION));
-        $transformationErrorActionId = TypeDossierTransformationEtape::TRANSFORMATION_ERROR_ACTION . $suffixe;
-        $result[DocumentType::ACTION][$transformationErrorActionId][Action::EDITABLE_CONTENT] = $result[DocumentType::ACTION][$action_id][Action::EDITABLE_CONTENT];
     }
 
     private function getType(TypeDossierFormulaireElementProperties $typeDossierFormulaireElement)

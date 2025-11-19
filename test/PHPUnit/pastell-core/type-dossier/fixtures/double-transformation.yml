@@ -73,7 +73,6 @@ action:
                 - importation
                 - transformation_1
                 - transformation-error_1
-                - transformation-error_2
     supression:
         name-action: Supprimer
         name: Supprimé
@@ -102,7 +101,9 @@ action:
                 - modification
                 - importation
                 - transformation_1
+                - transformation-error_1
                 - transformation_2
+                - transformation-error_2
             document_is_valide: true
         action-class: OrientationTypeDossierPersonnalise
     termine:
@@ -139,6 +140,7 @@ action:
         connecteur-type-mapping:
             transformation_file: transformation_file_1
             has_transformation: has_transformation_1
+            transformation-error: transformation-error_1
         num-same-connecteur: '0'
         editable-content:
             - envoi_transformation_2
@@ -148,6 +150,9 @@ action:
         rule:
             role_id_e: no-role
         num-same-connecteur: '0'
+        editable-content:
+            - envoi_transformation_2
+        modification-no-change-etat: true
     preparation-transformation_2:
         name: 'Préparation à la transformation #2'
         rule:
@@ -167,6 +172,7 @@ action:
         connecteur-type-mapping:
             transformation_file: transformation_file_2
             has_transformation: has_transformation_2
+            transformation-error: transformation-error_2
         num-same-connecteur: '1'
     transformation-error_2:
         name: 'Erreur lors de la transformation du dossier #2'
