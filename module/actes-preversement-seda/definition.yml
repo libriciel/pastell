@@ -1,4 +1,4 @@
-nom: 'Reprise arriéré actes (TdT versant)'
+nom: 'Reprise arriéré Actes (TdT versant)'
 type: 'Actes administratifs'
 description: "Ce type de dossier permet de verser les documents issus d'un Tdt 
   en vu de les envoyer vers un document ls-actes-tdt-versant-sae pour\nversement SEDA"
