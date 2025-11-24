@@ -62,7 +62,7 @@ final class ModuleListServiceTest extends PastellTestCase
                 ],
                 'actes-preversement-seda' => [
                     'type' => 'Actes administratifs',
-                    'nom' => 'Reprise arriéré actes (TdT versant)',
+                    'nom' => 'Reprise arriéré Actes (TdT versant)',
                 ],
             ],
             $this->getModuleListService()->getModuleListOrderByNom($this->getUserWithRole())
@@ -79,7 +79,7 @@ final class ModuleListServiceTest extends PastellTestCase
             [
                 'Actes administratifs' => [
                     'ls-actes' => 'Actes',
-                    'actes-preversement-seda' => 'Reprise arriéré actes (TdT versant)',
+                    'actes-preversement-seda' => 'Reprise arriéré Actes (TdT versant)',
                 ],
                 'Commande publique' => [
                     'pes-marche' => 'PES marché',
