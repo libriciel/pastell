@@ -85,9 +85,7 @@ class CreationFactureCPP
             throw new Exception("Le type $nom_flux_cpp n'existe pas sur cette plateforme Pastell");
         }
 
-        $new_id_d = $this->objectInstancier->getInstance(DocumentSQL::class)->getNewId();
-        $this->objectInstancier->getInstance(DocumentSQL::class)->save($new_id_d, $nom_flux_cpp);
-        $this->objectInstancier->getInstance(DocumentEntite::class)->addRole($new_id_d, $id_e, "editeur");
+        $new_id_d = $this->objectInstancier->getInstance(DocumentCreationService::class)->createDocumentWithoutAuthorizationChecking($id_e, $nom_flux_cpp);
 
         return $new_id_d;
     }

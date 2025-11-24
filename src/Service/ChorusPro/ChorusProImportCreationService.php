@@ -6,13 +6,13 @@ use FluxEntiteSQL;
 use DocumentIndexSQL;
 use ActionExecutorFactory;
 use DocumentTypeFactory;
-use DocumentSQL;
 use DocumentEntite;
 use CPPException;
 use Exception;
 use NotFoundException;
 use UnrecoverableException;
 use DonneesFormulaireFactory;
+use DocumentCreationService;
 
 class ChorusProImportCreationService
 {
@@ -37,11 +37,6 @@ class ChorusProImportCreationService
     private $documentTypeFactory;
 
     /**
-     * @var DocumentSQL
-     */
-    private $documentSQL;
-
-    /**
      * @var DocumentEntite
      */
     private $documentEntite;
@@ -50,6 +45,11 @@ class ChorusProImportCreationService
      * @var DonneesFormulaireFactory
      */
     private $donneesFormulaireFactory;
+
+    /**
+     * @var DocumentCreationService
+     */
+    private $documentCreationService;
 
     /** @var  int */
     private $id_e;
@@ -70,17 +70,17 @@ class ChorusProImportCreationService
         DocumentIndexSQL $documentIndexSQL,
         ActionExecutorFactory $actionExecutorFactory,
         DocumentTypeFactory $documentTypeFactory,
-        DocumentSQL $documentSQL,
         DocumentEntite $documentEntite,
-        DonneesFormulaireFactory $donneesFormulaireFactory
+        DonneesFormulaireFactory $donneesFormulaireFactory,
+        DocumentCreationService $documentCreationService
     ) {
         $this->fluxEntiteSQL = $fluxEntiteSQL;
         $this->documentIndexSQL = $documentIndexSQL;
         $this->actionExecutorFactory = $actionExecutorFactory;
         $this->documentTypeFactory = $documentTypeFactory;
-        $this->documentSQL = $documentSQL;
         $this->documentEntite = $documentEntite;
         $this->donneesFormulaireFactory = $donneesFormulaireFactory;
+        $this->documentCreationService = $documentCreationService;
     }
 
     /**
@@ -157,9 +157,7 @@ class ChorusProImportCreationService
             throw new CPPException("Le type $authorized_flux n'existe pas sur cette plateforme Pastell");
         }
 
-        $id_d = $this->documentSQL->getNewId();
-        $this->documentSQL->save($id_d, $authorized_flux);
-        $this->documentEntite->addRole($id_d, $this->id_e, "editeur");
+        $id_d = $this->documentCreationService->createDocumentWithoutAuthorizationChecking($this->id_e, $authorized_flux);
 
         $actionExecutorFactory->executeOnDocumentThrow(
             $id_d,

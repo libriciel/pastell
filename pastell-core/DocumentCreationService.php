@@ -4,19 +4,12 @@ use Pastell\Service\Droit\DroitService;
 
 class DocumentCreationService
 {
-    private $documentSQL;
-    private $actionExecutorFactory;
-    private $droitService;
-
     public function __construct(
         private readonly EntiteSQL $entiteSQL,
-        DocumentSQL $documentSQL,
-        ActionExecutorFactory $actionExecutorFactory,
-        DroitService $droitService
+        private readonly DocumentSQL $documentSQL,
+        private readonly ActionExecutorFactory $actionExecutorFactory,
+        private readonly DroitService $droitService
     ) {
-        $this->documentSQL = $documentSQL;
-        $this->actionExecutorFactory = $actionExecutorFactory;
-        $this->droitService = $droitService;
     }
 
     /**

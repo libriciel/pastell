@@ -29,9 +29,7 @@ class PieceMarcheParEtapeCreationPiece
         if (!$this->objectInstancier->getInstance(DocumentTypeFactory::class)->isTypePresent($nom_flux_piece)) {
             throw new Exception("Le type $nom_flux_piece n'existe pas sur cette plateforme Pastell");
         }
-        $new_id_d = $this->objectInstancier->getInstance(DocumentSQL::class)->getNewId();
-        $this->objectInstancier->getInstance(DocumentSQL::class)->save($new_id_d, $nom_flux_piece);
-        $this->objectInstancier->getInstance(DocumentEntite::class)->addRole($new_id_d, $id_e, "editeur");
+        $new_id_d = $this->objectInstancier->getInstance(DocumentCreationService::class)->createDocumentWithoutAuthorizationChecking($id_e, $nom_flux_piece);
 
         /** @var DonneesFormulaire $donneesFormulaire */
         $donneesFormulaire = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)->get($new_id_d);
