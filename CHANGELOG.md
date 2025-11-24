@@ -8,6 +8,7 @@
 ## Ajouts
 
 - Liens vers entité et dossier/connecteur ajoutés sur les listes de tâches automatiques #2246
+- Ajout de la commande 'app:connector:update-sftp-fingerprint' #2303
 
 # [5.0.0] - 2025-12-16
 
