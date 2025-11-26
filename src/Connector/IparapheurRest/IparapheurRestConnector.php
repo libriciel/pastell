@@ -559,19 +559,23 @@ class IparapheurRestConnector extends SignatureConnecteur implements
             }
 
             $annotation = \sprintf(
-                '(bureau %s) %s',
+                '(bureau %s pour [%s]) %s',
                 $event->linkingAgentIdentifier->linkingAgentRole ?? '',
+                $event->eventType,
                 $event->eventOutcomeInformation->eventOutcomeDetail->eventOutcomeDetailNote ?? '',
             );
+            //renseigne l'annotation du logDossier précédent avec l'annotation du prochain logDossier
+            if (end($logDossier)) {
+                end($logDossier)->annotation = trim($annotation);
+            }
 
             $logDossier[] = (object)[
                 'timestamp' => $timestamp,
                 'nom' => $agentName,
                 'status' => $event->eventType,
-                'annotation' => $annotation,
+                'annotation' => trim($annotation),
             ];
         }
-
 
         $result = new stdClass();
         $result->LogDossier = $logDossier;
@@ -808,7 +812,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     {
         for ($i = count($history->LogDossier) - 1; $i >= 0; $i--) {
             $log = $history->LogDossier[$i];
-            if ($log->timestamp !== '' && $log->status !== Action::READ) {
+            if ($log->timestamp !== '') {
                 return sprintf(
                     '%s : [%s] %s',
                     date('d/m/Y H:i:s', strtotime($log->timestamp)),
