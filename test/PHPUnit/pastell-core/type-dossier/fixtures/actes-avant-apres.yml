@@ -226,6 +226,7 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - acquiter-tdt
                 - send-tdt-erreur
                 - acquiter-tdt
@@ -261,6 +262,7 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - acquiter-tdt
                 - send-ged
             document_is_valide: true
@@ -302,6 +304,7 @@ action:
         connecteur-type-mapping:
             transformation_file: transformation_file
             has_transformation: has_transformation
+            transformation-error: transformation-error
         editable-content:
             - envoi_tdt_actes
             - envoi_depot
@@ -319,6 +322,19 @@ action:
         name: 'Erreur lors de la transformation du dossier'
         rule:
             role_id_e: no-role
+        editable-content:
+            - envoi_tdt_actes
+            - envoi_depot
+            - acte_nature
+            - numero_de_lacte
+            - date_de_lacte
+            - document_papier
+            - classification
+            - type_piece
+            - type_acte
+            - type_pj
+            - acte_publication_date
+        modification-no-change-etat: true
     pre-send-tdt:
         name: "Préparation de l'envoi au Tdt"
         rule:

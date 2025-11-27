@@ -290,7 +290,6 @@ class TypeDossierTranslator
         }
     }
 
-
     private function getType(TypeDossierFormulaireElementProperties $typeDossierFormulaireElement)
     {
         if ($typeDossierFormulaireElement->type == 'multi_file') {

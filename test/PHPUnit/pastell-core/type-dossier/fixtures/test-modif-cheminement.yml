@@ -167,6 +167,7 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - send-ged_1
                 - reception
                 - non-recu
@@ -201,6 +202,7 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - send-ged_1
                 - reception
                 - non-recu
@@ -240,6 +242,7 @@ action:
         connecteur-type-mapping:
             transformation_file: transformation_file
             has_transformation: has_transformation
+            transformation-error: transformation-error
         editable-content:
             - envoi_depot_1
             - envoi_mailsec
@@ -254,6 +257,16 @@ action:
         name: 'Erreur lors de la transformation du dossier'
         rule:
             role_id_e: no-role
+        editable-content:
+            - envoi_depot_1
+            - envoi_mailsec
+            - envoi_depot_2
+            - to
+            - cc
+            - bcc
+            - password
+            - password2
+        modification-no-change-etat: true
     preparation-send-ged_1:
         name: "Préparation de l'envoi à la GED #1"
         rule:

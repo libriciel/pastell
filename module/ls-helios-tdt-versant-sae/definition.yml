@@ -150,6 +150,7 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - send-ged
     supression:
         name-action: Supprimer
@@ -180,6 +181,7 @@ action:
                 - modification
                 - importation
                 - transformation
+                - transformation-error
                 - send-ged
                 - accepter-sae
             document_is_valide: true
@@ -218,6 +220,7 @@ action:
         connecteur-type-mapping:
             transformation_file: transformation_file
             has_transformation: has_transformation
+            transformation-error: transformation-error
         editable-content:
             - envoi_depot
             - envoi_sae
@@ -240,6 +243,24 @@ action:
         name: 'Erreur lors de la transformation du dossier'
         rule:
             role_id_e: no-role
+        editable-content:
+            - envoi_depot
+            - envoi_sae
+            - sae_config
+            - sae_show
+            - journal
+            - date_journal_debut
+            - date_cloture_journal
+            - date_cloture_journal_iso8601
+            - sae_transfert_id
+            - sae_bordereau
+            - sae_archive
+            - ar_sae
+            - sae_ack_comment
+            - reply_sae
+            - sae_archival_identifier
+            - sae_atr_comment
+        modification-no-change-etat: true
     preparation-send-ged:
         name: "Préparation de l'envoi à la GED"
         rule:

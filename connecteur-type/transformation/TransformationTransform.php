@@ -29,7 +29,6 @@ class TransformationTransform extends ConnecteurTypeActionExecutor
         $transformationErrorState = $this->getMappingValue('transformation-error');
 
         $donneesFormulaire = $this->getDonneesFormulaire();
-
         try {
             $modifiedFields = $transformationConnecteur->transform($donneesFormulaire);
             $this->addOnChange($modifiedFields);
@@ -43,6 +42,7 @@ class TransformationTransform extends ConnecteurTypeActionExecutor
             return false;
         }
 
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($this->id_d);
         $documentTitre = $this->objectInstancier->getInstance(DocumentTitre::class);
         $documentTitre->update($this->id_d);
 
@@ -91,8 +91,8 @@ class TransformationTransform extends ConnecteurTypeActionExecutor
 
         //FIXME: it's trash
         $actionExecutorFactory->setLastClassAction($this);
-        $donneesFormulaire = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)->get($this->id_d);
-        if (! $donneesFormulaire->isValidable()) {
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($this->id_d);
+        if (!$donneesFormulaire->isValidable()) {
             throw new UnrecoverableException(
                 "[transformation] Le dossier n'est pas valide : " . $donneesFormulaire->getLastError()
             );

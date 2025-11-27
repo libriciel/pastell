@@ -37,6 +37,7 @@ class TransformationFixeTransform extends ConnecteurTypeActionExecutor
             return false;
         }
 
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($this->id_d);
         $documentTitre = $this->objectInstancier->getInstance(DocumentTitre::class);
         $documentTitre->update($this->id_d);
 
@@ -85,7 +86,7 @@ class TransformationFixeTransform extends ConnecteurTypeActionExecutor
 
         //FIXME: it's trash
         $actionExecutorFactory->setLastClassAction($this);
-        $donneesFormulaire = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)->get($this->id_d);
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($this->id_d);
         if (! $donneesFormulaire->isValidable()) {
             throw new UnrecoverableException(
                 "[transformation fixe] Le dossier n'est pas valide : " . $donneesFormulaire->getLastError()
