@@ -23,7 +23,6 @@ cf : http://blogs.kent.ac.uk/webdev/2011/07/14/phpunit-and-unserialized-pdo-inst
       <directory suffix=".php">model</directory>
       <directory suffix=".php">module</directory>
       <directory suffix=".php">pastell-core</directory>
-      <directory suffix=".php">script</directory>
       <directory suffix=".php">src</directory>
       <directory suffix=".php">template</directory>
       <directory suffix=".php">web</directory>

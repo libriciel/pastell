@@ -18,7 +18,6 @@ parameters:
     - model
     - module
     - pastell-core
-    - script
     - src
     - test
     - tests
