@@ -102,19 +102,6 @@ final class Premis
         throw new RuntimeException('Intellectual entity not found in Premis object.');
     }
 
-    public function getRefusalMessage(): ?string
-    {
-        foreach ($this->event as $event) {
-            if (
-                isset($event->eventOutcomeInformation->eventOutcomeDetail->eventOutcomeDetailNote) &&
-                strtoupper($event->eventType ?? '') === Action::REJECT
-            ) {
-                return $event->eventOutcomeInformation->eventOutcomeDetail->eventOutcomeDetailNote;
-            }
-        }
-        return null;
-    }
-
     public function getStartEvent(): Event
     {
         if (empty($this->event)) {

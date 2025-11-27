@@ -558,16 +558,26 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                 $agentName = $premis->getAgent($event->linkingAgentIdentifier->linkingAgentIdentifierValue)->agentName;
             }
 
-            $annotation = \sprintf(
-                '(bureau %s pour [%s]) %s',
+            $nextEvent = \sprintf(
+                '(bureau %s pour [%s])',
                 $event->linkingAgentIdentifier->linkingAgentRole ?? '',
                 $event->eventType,
+            );
+
+            //remplace "l'action à venir" '(bureau %s pour [%s])' de l'annotation du logDossier précédent.
+            if (end($logDossier)) {
+                end($logDossier)->annotation = preg_replace(
+                    '/^\([^)]+\)/',
+                    $nextEvent,
+                    end($logDossier)->annotation
+                );
+            }
+
+            $annotation = \sprintf(
+                '%s %s',
+                $nextEvent,
                 $event->eventOutcomeInformation->eventOutcomeDetail->eventOutcomeDetailNote ?? '',
             );
-            //renseigne l'annotation du logDossier précédent avec l'annotation du prochain logDossier
-            if (end($logDossier)) {
-                end($logDossier)->annotation = trim($annotation);
-            }
 
             $logDossier[] = (object)[
                 'timestamp' => $timestamp,
@@ -602,7 +612,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
      */
     public function getRefusalMessage($dossierID): string
     {
-        return $this->getPremis($dossierID)->getRefusalMessage() ?? '';
+        return '';
     }
 
     /**
