@@ -558,9 +558,24 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                 $agentName = $premis->getAgent($event->linkingAgentIdentifier->linkingAgentIdentifierValue)->agentName;
             }
 
-            $annotation = \sprintf(
-                '(bureau %s) %s',
+            $nextEvent = \sprintf(
+                '(bureau %s pour [%s])',
                 $event->linkingAgentIdentifier->linkingAgentRole ?? '',
+                $event->eventType,
+            );
+
+            //remplace "l'action à venir" '(bureau %s pour [%s])' de l'annotation du logDossier précédent.
+            if (end($logDossier)) {
+                end($logDossier)->annotation = preg_replace(
+                    '/^\([^)]+\)/',
+                    $nextEvent,
+                    end($logDossier)->annotation
+                );
+            }
+
+            $annotation = \sprintf(
+                '%s %s',
+                $nextEvent,
                 $event->eventOutcomeInformation->eventOutcomeDetail->eventOutcomeDetailNote ?? '',
             );
 
@@ -568,10 +583,9 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                 'timestamp' => $timestamp,
                 'nom' => $agentName,
                 'status' => $event->eventType,
-                'annotation' => $annotation,
+                'annotation' => trim($annotation),
             ];
         }
-
 
         $result = new stdClass();
         $result->LogDossier = $logDossier;
@@ -598,7 +612,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
      */
     public function getRefusalMessage($dossierID): string
     {
-        return $this->getPremis($dossierID)->getRefusalMessage() ?? '';
+        return '';
     }
 
     /**
@@ -808,7 +822,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     {
         for ($i = count($history->LogDossier) - 1; $i >= 0; $i--) {
             $log = $history->LogDossier[$i];
-            if ($log->timestamp !== '' && $log->status !== Action::READ) {
+            if ($log->timestamp !== '') {
                 return sprintf(
                     '%s : [%s] %s',
                     date('d/m/Y H:i:s', strtotime($log->timestamp)),

@@ -321,7 +321,7 @@ final class IparapheurRestConnectorTest extends PastellTestCase
         $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
         $history = $connector->getAllHistoriqueInfo(self::ONGOING_FOLDER_ID);
         $last = $connector->getLastHistorique($history);
-        self::assertSame('Étape en cours : [SIGNATURE] (bureau test) ', $last);
+        self::assertSame('Étape en cours : [SIGNATURE] (bureau test pour [SIGNATURE])', $last);
     }
 
     /**
@@ -332,7 +332,11 @@ final class IparapheurRestConnectorTest extends PastellTestCase
     {
         $this->getConnectorId();
         $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
-        self::assertSame('This folder was refused', $connector->getRefusalMessage(self::REFUSED_FOLDER_ID));
+        $history = $connector->getAllHistoriqueInfo(self::REFUSED_FOLDER_ID);
+        self::assertSame(
+            '07/08/2025 16:20:10 : [REJECT] (bureau test pour [DELETE]) This folder was refused',
+            $connector->getLastCompletedHistorique($history)
+        );
     }
 
     /**
