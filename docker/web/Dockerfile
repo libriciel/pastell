@@ -3,7 +3,7 @@ WORKDIR /app/
 COPY package*.json ./
 RUN npm install
 
-FROM hubdocker.libriciel.fr/httpd:2.4.65-alpine
+FROM hubdocker.libriciel.fr/httpd:2.4.66-alpine
 
 RUN apk add --no-cache \
     certbot \
