@@ -10,6 +10,7 @@
 
 - Liens vers entité et dossier/connecteur ajoutés sur les listes de tâches automatiques #2246
 - Ajout de la commande `app:connector:update-sftp-fingerprint` #2303
+- Ajout de la commande 'app:connector:migrate-ip-soap-rest' #2342
 
 ## Évolutions
 
