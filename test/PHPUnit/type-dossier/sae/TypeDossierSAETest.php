@@ -181,7 +181,8 @@ class TypeDossierSAETest extends PastellTestCase
         );
         $this->assertLastDocumentAction('erreur-envoie-sae', $document['id_d']);
         $this->assertLastMessage(
-            "Erreur de connexion au serveur : Could not resolve host: sae - L'envoi du bordereau a échoué : "
+            //phpcs:ignore Generic.Files.LineLength.TooLong
+            "Erreur de connexion au serveur : Could not resolve host: sae (Domain name not found) - L'envoi du bordereau a échoué : "
         );
     }
 

@@ -3,7 +3,7 @@ WORKDIR /app/
 COPY package*.json ./
 RUN npm install
 
-FROM hubdocker.libriciel.fr/php:8.4.14-fpm-alpine3.22 AS base
+FROM hubdocker.libriciel.fr/php:8.4.15-fpm-alpine3.23 AS base
 
 ARG UID=10001
 ARG GID=10001
@@ -99,7 +99,7 @@ RUN bash -c "mkdir -p /data/{config,html_purifier,log,run,session,upload_chunk,w
  && chown "$UID":"$GID" -R /data/
 
 COPY --from=node_modules /app/node_modules/ /app/node_modules/
-COPY --from=hubdocker.libriciel.fr/composer:2.9.1 /usr/bin/composer /usr/local/bin/composer
+COPY --from=hubdocker.libriciel.fr/composer:2.9.2 /usr/bin/composer /usr/local/bin/composer
 COPY ./composer.* /app/
 RUN --mount=type=secret,id=composer_auth,dst=/app/auth.json \
     /bin/bash -c 'mkdir -p /app/{web,web-mailsec}' && \
@@ -128,7 +128,7 @@ FROM base AS dev
 
 USER "root"
 
-COPY --from=hubdocker.libriciel.fr/composer:2.9.1 /usr/bin/composer /usr/local/bin/composer
+COPY --from=hubdocker.libriciel.fr/composer:2.9.2 /usr/bin/composer /usr/local/bin/composer
 
 RUN apk add --no-cache nodejs npm
 
