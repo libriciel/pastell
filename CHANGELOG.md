@@ -107,6 +107,7 @@ doivent être mises à jour #1667
 - Suppression de BaseAPIController::hasOneDroit, FluxAPIController::listFlux, PastellController::getAPIController,
   Gabarit::getAPIController, ActionExecutor::apiGet, ActionExecutor::apiCall, DocumentTypeFactory::isSuperTypePresent,
   PastellTestCase::getAPIController #2351
+- Suppression du connecteur Opensign 'Liberhorodatage', utilisation de 'Horodateur Pastell interne' #2372
 
 ## Dépréciations
 
