@@ -8,5 +8,6 @@ class LinkingAgentIdentifier
 {
     public string $linkingAgentIdentifierType;
     public string $linkingAgentIdentifierValue;
-    public string $linkingAgentRole;
+    /** @var string[]|null */
+    public ?array $linkingAgentRole;
 }

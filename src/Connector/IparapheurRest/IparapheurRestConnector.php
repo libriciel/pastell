@@ -558,9 +558,17 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                 $agentName = $premis->getAgent($event->linkingAgentIdentifier->linkingAgentIdentifierValue)->agentName;
             }
 
+            $bureaux = '';
+            $nbBureaux = 0;
+            if (!empty($event->linkingAgentIdentifier->linkingAgentRole)) {
+                $bureaux = implode(', ', $event->linkingAgentIdentifier->linkingAgentRole);
+                $nbBureaux = count($event->linkingAgentIdentifier->linkingAgentRole);
+            }
+            $labelBureau = $nbBureaux > 1 ? 'bureaux' : 'bureau';
             $nextEvent = \sprintf(
-                '(bureau %s pour [%s])',
-                $event->linkingAgentIdentifier->linkingAgentRole ?? '',
+                '(%s %s pour [%s])',
+                $labelBureau,
+                $bureaux,
                 $event->eventType,
             );
 
