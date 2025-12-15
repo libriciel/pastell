@@ -511,7 +511,7 @@ class UtilisateurControlerTest extends ControlerTestCase
     public function testBeforeActionWithInvalidIdU(): void
     {
         $this->setGetInfo(['id_u' => 99999]);
-        $this->expectException(LastMessageException::class);
+        $this->expectException(LastErrorException::class);
         $this->expectExceptionMessage("L'utilisateur n'existe pas");
         $this->getUtilisateurControler()->_beforeAction();
     }
