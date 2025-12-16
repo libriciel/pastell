@@ -337,6 +337,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     /**
      * @throws DOMException
      * @throws IpRestApiException
+     * @throws Exception
      */
     public function sendDossier(FileToSign $dossier): string|false
     {
@@ -344,26 +345,25 @@ class IparapheurRestConnector extends SignatureConnecteur implements
             $dossier->metadata = $this->sending_metadata;
         }
 
-        $tempFiles = [];
+        $tmpFolder = new TmpFolder();
+        $tmp_folder = $tmpFolder->create();
+
         try {
             $premis = Premis::fromFileToSign($dossier, $this->iparapheur_multi_doc);
             $xml = $premis->generateDraftPremis();
 
-            $premisPath = tempnam(sys_get_temp_dir(), 'folder-premis-') . '.xml';
+            $premisPath = tempnam($tmp_folder, 'folder-premis-') . '.xml';
             file_put_contents($premisPath, $xml);
             $folderFile = new SplFileObject($premisPath, 'r');
-            $tempFiles[] = $premisPath;
 
-            $mainPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $dossier->document->filename;
+            $mainPath = $tmp_folder . DIRECTORY_SEPARATOR . $dossier->document->filename;
             file_put_contents($mainPath, $dossier->document->content);
             $documents = [new SplFileObject($mainPath, 'r')];
-            $tempFiles[] = $mainPath;
 
             foreach ($dossier->annexes as $annexe) {
-                $annexePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $annexe->filename;
+                $annexePath = $tmp_folder . DIRECTORY_SEPARATOR . $annexe->filename;
                 file_put_contents($annexePath, $annexe->content);
                 $documents[] = new SplFileObject($annexePath, 'r');
-                $tempFiles[] = $annexePath;
             }
 
             $tenantId = $this->connecteurConfig->get(self::TENANT_ID, '');
@@ -399,11 +399,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                 )
             );
         } finally {
-            foreach ($tempFiles as $path) {
-                if (file_exists($path)) {
-                    unlink($path);
-                }
-            }
+            $tmpFolder->delete($tmp_folder);
         }
     }
 
@@ -447,90 +443,96 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $tmp_path = $tmp_folder . "/$dossierID.zip";
         file_put_contents($tmp_path, $zipData);
 
-        $zip = new ZipArchive();
-        if ($zip->open($tmp_path) === true) {
-            $zip->extractTo($tmp_folder);
-            $zip->close();
-        } else {
-            throw new RuntimeException("Impossible d'extraire l'archive ZIP.");
-        }
-
-        $info = [];
-        $info['bordereau'] = null;
-        $info['meta_donnees'] = [];
-        $info['documents'] = [];
-        $info['detached_signatures'] = [];
-        $info['annexes'] = [];
-        $info['premis'] = $premis;
-        $info['is_pes'] = false;
-        $info['is_detached'] = false;
-
-        foreach ($premis->object as $object) {
-            if ($object->type === PremisObject::FILE && isset($object->signatureInformation)) {
-                $info['is_detached'] = true;
-                break;
+        try {
+            $zip = new ZipArchive();
+            if ($zip->open($tmp_path) === true) {
+                $zip->extractTo($tmp_folder);
+                $zip->close();
+            } else {
+                throw new RuntimeException("Impossible d'extraire l'archive ZIP.");
             }
-        }
 
-        $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($tmp_folder));
-        $filesMap = [];
-        foreach ($rii as $file) {
-            if ($file->isFile()) {
-                $filesMap[$file->getFilename()] = [
-                    'content' => file_get_contents($file->getPathname()),
-                    'path' => $file->getPathname(),
-                ];
-            }
-        }
+            $info = [];
+            $info['bordereau'] = null;
+            $info['meta_donnees'] = [];
+            $info['documents'] = [];
+            $info['detached_signatures'] = [];
+            $info['annexes'] = [];
+            $info['premis'] = $premis;
+            $info['is_pes'] = false;
+            $info['is_detached'] = false;
 
-        $entity = $premis->getIntellectualEntity();
-        $bordereauFilename = $entity->originalName . '_bordereau.pdf';
-        if (isset($filesMap[$bordereauFilename])) {
-            $fichier = new Fichier();
-            $fichier->filename = $bordereauFilename;
-            $fichier->content = $filesMap[$bordereauFilename]['content'];
-            $info['bordereau'] = $fichier;
-            unset($filesMap[$bordereauFilename]);
-        }
-
-        foreach ($premis->object as $object) {
-            if ($object->type !== PremisObject::FILE) {
-                continue;
-            }
-            $filename = $object->originalName;
-            if (!isset($filesMap[$filename])) {
-                continue;
-            }
-            $fichier = new Fichier();
-            $fichier->filename = $filename;
-            $fichier->content = $filesMap[$filename]['content'];
-            foreach ($object->significantProperties as $prop) {
-                if ($prop->significantPropertiesType === SignificantProperties::MAIN_DOCUMENT) {
-                    $target = strtolower($prop->significantPropertiesValue) === SignificantProperties::TRUE
-                        ? 'documents'
-                        : 'annexes';
-                    $info[$target][] = $fichier;
+            foreach ($premis->object as $object) {
+                if ($object->type === PremisObject::FILE && isset($object->signatureInformation)) {
+                    $info['is_detached'] = true;
                     break;
                 }
             }
-            if (isset($object->signatureInformation)) {
-                $info['is_detached'] = true;
-            }
-            unset($filesMap[$filename]);
-        }
 
-        if ($info['is_detached']) {
-            foreach ($filesMap as $filename => $data) {
-                if (str_contains($data['path'], DIRECTORY_SEPARATOR . 'Documents principaux' . DIRECTORY_SEPARATOR)) {
-                    $fichier = new Fichier();
-                    $fichier->filename = $filename;
-                    $fichier->content = $data['content'];
-                    $info['detached_signatures'][] = $fichier;
+            $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($tmp_folder));
+            $filesMap = [];
+            foreach ($rii as $file) {
+                if ($file->isFile()) {
+                    $filesMap[$file->getFilename()] = [
+                        'content' => file_get_contents($file->getPathname()),
+                        'path' => $file->getPathname(),
+                    ];
                 }
             }
-        }
 
-        return $info;
+            $entity = $premis->getIntellectualEntity();
+            $bordereauFilename = $entity->originalName . '_bordereau.pdf';
+            if (isset($filesMap[$bordereauFilename])) {
+                $fichier = new Fichier();
+                $fichier->filename = $bordereauFilename;
+                $fichier->content = $filesMap[$bordereauFilename]['content'];
+                $info['bordereau'] = $fichier;
+                unset($filesMap[$bordereauFilename]);
+            }
+
+            foreach ($premis->object as $object) {
+                if ($object->type !== PremisObject::FILE) {
+                    continue;
+                }
+                $filename = $object->originalName;
+                if (!isset($filesMap[$filename])) {
+                    continue;
+                }
+                $fichier = new Fichier();
+                $fichier->filename = $filename;
+                $fichier->content = $filesMap[$filename]['content'];
+                foreach ($object->significantProperties as $prop) {
+                    if ($prop->significantPropertiesType === SignificantProperties::MAIN_DOCUMENT) {
+                        $target = strtolower($prop->significantPropertiesValue) === SignificantProperties::TRUE
+                            ? 'documents'
+                            : 'annexes';
+                        $info[$target][] = $fichier;
+                        break;
+                    }
+                }
+                if (isset($object->signatureInformation)) {
+                    $info['is_detached'] = true;
+                }
+                unset($filesMap[$filename]);
+            }
+
+            if ($info['is_detached']) {
+                foreach ($filesMap as $filename => $data) {
+                    if (
+                        str_contains($data['path'], DIRECTORY_SEPARATOR . 'Documents principaux' . DIRECTORY_SEPARATOR)
+                    ) {
+                        $fichier = new Fichier();
+                        $fichier->filename = $filename;
+                        $fichier->content = $data['content'];
+                        $info['detached_signatures'][] = $fichier;
+                    }
+                }
+            }
+
+            return $info;
+        } finally {
+            $tmpFolder->delete($tmp_folder);
+        }
     }
 
     public function archiver($dossierID): bool
