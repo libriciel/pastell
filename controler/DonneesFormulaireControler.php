@@ -166,6 +166,7 @@ class DonneesFormulaireControler extends PastellControler
         $config->setTempDir(UPLOAD_CHUNK_DIRECTORY);
 
         $request = new Request();
+        $uploaded_filename = basename($request->getFileName());
 
         $upload_filepath = \sprintf(
             '%s/%s_%s_%s_%s_%s_%s',
@@ -195,9 +196,9 @@ class DonneesFormulaireControler extends PastellControler
             if ($donneesFormulaire->getFormulaire()->getField($field)->isMultiple()) {
                 $nb_file = $donneesFormulaire->get($field) ? count($donneesFormulaire->get($field)) : 0;
                 $this->getLogger()->debug("ajout fichier $nb_file");
-                $donneesFormulaire->addFileFromCopy($field, $request->getFileName(), $upload_filepath, $nb_file);
+                $donneesFormulaire->addFileFromCopy($field, $uploaded_filename, $upload_filepath, $nb_file);
             } else {
-                $donneesFormulaire->addFileFromCopy($field, $request->getFileName(), $upload_filepath);
+                $donneesFormulaire->addFileFromCopy($field, $uploaded_filename, $upload_filepath);
             }
 
             foreach ($donneesFormulaire->getOnChangeAction() as $action_on_change) {

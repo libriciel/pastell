@@ -728,7 +728,7 @@ class DonneesFormulaire
         if (! $all_file_name) {
             return "";
         }
-        return  $all_file_name[$num];
+        return basename($all_file_name[$num]);
     }
 
     public function getFileNameWithoutExtension($field_name, $num = 0)

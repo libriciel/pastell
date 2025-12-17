@@ -299,10 +299,10 @@ abstract class DepotConnecteur extends GEDConnecteur
         $filename = "metadata" . $extension_filename;
         if ($this->connecteurConfig->get(self::DEPOT_METADONNES_FILENAME)) {
             $filename =
-                $this->getNameFromMetadata(
+                $this->cleaningName($this->getNameFromMetadata(
                     $donneesFormulaire,
                     $this->connecteurConfig->get(self::DEPOT_METADONNES_FILENAME)
-                ) . $extension_filename;
+                )) . $extension_filename;
         }
         $metadata_file_path = $this->tmp_folder . "/$filename";
         file_put_contents($metadata_file_path, $data);
