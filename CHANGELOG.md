@@ -1,3 +1,9 @@
+# [4.0.28]
+
+## Corrections
+
+- Corrige une erreur qui survenait lors du passage d'un mauvais identifiant dans certaines pages de gestion utilisateurs. #2379
+
 # [4.0.27] - 2025-11-10
 
 ## Ajouts
