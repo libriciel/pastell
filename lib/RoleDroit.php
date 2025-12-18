@@ -30,4 +30,9 @@ class RoleDroit
         sort($droit);
         return array_merge($droit, $this->documentTypeFactory->getAllDroit());
     }
+
+    public function areExistingRolesDroits(array $rolesDroits): bool
+    {
+        return count(array_intersect($rolesDroits, $this->getAllDroit())) === count($rolesDroits);
+    }
 }
