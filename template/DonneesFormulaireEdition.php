@@ -159,7 +159,7 @@ if ($donneesFormulaire->getFormulaire()->getNbPage() > 1) {
                                         $field->getName(),
                                         $num
                                     ); ?>
-                                            <a href='<?php echo $fileDownloadUrl; ?>'><?php echo $fileName; ?></a>
+                                            <a href='<?php hecho($fileDownloadUrl); ?>'><?php hecho($fileName); ?></a>
                                             &nbsp;&nbsp;
                                             <?php if ($donneesFormulaire->isEditable($field->getName())) : ?>
                                                 <?php
