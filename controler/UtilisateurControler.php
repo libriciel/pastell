@@ -264,7 +264,7 @@ class UtilisateurControler extends PastellControler
     public function editionAction()
     {
         $recuperateur = $this->getGetInfo();
-        $id_u = $recuperateur->get('id_u');
+        $id_u = $recuperateur->getInt('id_u');
         $id_e = $recuperateur->getInt('id_e');
 
         $infoUtilisateur = [
@@ -319,7 +319,7 @@ class UtilisateurControler extends PastellControler
     public function detailAction()
     {
         $recuperateur = new Recuperateur($_GET);
-        $id_u = $recuperateur->get('id_u');
+        $id_u = $recuperateur->getInt('id_u');
 
         $info = $this->getUtilisateur()->getInfo($id_u);
         if (!$info) {
