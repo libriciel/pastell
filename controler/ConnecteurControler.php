@@ -235,6 +235,9 @@ class ConnecteurControler extends PastellControler
      */
     public function deleteFileAction()
     {
+        $csrf_token = $this->getPostInfo()->get('csrf_token');
+        $this->getObjectInstancier()->getInstance(CSRFToken::class)->verifParamToken($csrf_token);
+
         $id_ce = $this->getGetInfo()->getInt('id_ce');
         $field = $this->getGetInfo()->get('field');
         $num = $this->getGetInfo()->getInt('num');

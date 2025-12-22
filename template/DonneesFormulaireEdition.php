@@ -169,7 +169,7 @@ if ($donneesFormulaire->getFormulaire()->getNbPage() > 1) {
                                                     $field->getName(),
                                                     $num
                                                 ); ?>
-                                                <a style='margin:4px 0' href='<?php hecho($fileDeletionUrl); ?>'>
+                                                <a style='margin:4px 0' href='<?php hecho($fileDeletionUrl . '&csrf_token=' . $this->getCSRFToken()->getCSRFToken()); ?>'>
                                                     <i class="fa fa-times-circle" style="color:red"></i>
                                                 </a>
                                             <?php endif;?>
