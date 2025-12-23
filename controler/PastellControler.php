@@ -220,8 +220,8 @@ class PastellControler extends Controler
                     'is_root' => false,
                     'id_e' => $ancestor['id_e'],
                     'name' => $this->getEntiteSQL()->getDenomination($ancestor['id_e']),
-                    'same_level_entities' => $this->getRoleUtilisateur()->getChildrenWithPermission(
-                        $ancestor['entite_mere'],
+                    'same_level_entities' => $this->getEntiteSQL()->getSiblingsWithPermission(
+                        $ancestor['id_e'],
                         $this->getId_u()
                     ),
                     'is_last' => false,
@@ -233,8 +233,8 @@ class PastellControler extends Controler
                 'is_root' => false,
                 'id_e' => $id_e,
                 'name' => $this->getEntiteSQL()->getDenomination($id_e),
-                'same_level_entities' => $this->getRoleUtilisateur()->getChildrenWithPermission(
-                    $this->getEntiteSQL()->getEntiteMere($id_e) ?: 0,
+                'same_level_entities' => $this->getEntiteSQL()->getSiblingsWithPermission(
+                    $id_e,
                     $this->getId_u()
                 ),
                 'children' => $this->getEntiteSQL()->getFilleInfoNavigation($id_e, $listeCollectivite),
