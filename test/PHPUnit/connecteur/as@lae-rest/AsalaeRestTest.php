@@ -6,30 +6,34 @@ use Monolog\Logger;
 
 class AsalaeRestTest extends PastellTestCase
 {
+    use CurlUtilitiesTestTrait;
+
     private function getAsalaeRest(
         string $curl_response,
         int $http_code = 200,
         int $chunk_size_in_bytes = 0
     ): AsalaeREST {
-        $curlWrapper = $this->createMock(CurlWrapper::class);
-        $curlWrapper->method('get')->willReturn($curl_response);
-        $curlWrapper->method('getHTTPCode')->willReturn($http_code);
-
-        $curlWrapperFactory = $this->createMock(CurlWrapperFactory::class);
-        $curlWrapperFactory->method('getInstance')->willReturn($curlWrapper);
+        $this->mockCurl([
+            'https://sae/restservices/ping' => $curl_response,
+            'https://sae/restservices/versions' => $curl_response,
+            'https://sae/restservices/sedaMessages' => $curl_response,
+            'https://sae/restservices/sedaAttachmentsChunkFiles' => $curl_response,
+        ], $http_code);
 
         $connecteurConfig = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
         $connecteurConfig->setTabData([
-            'url' => 'https://sae/restservices/',
+            'url' => 'https://sae/restservices',
             'login' => 'login',
             'password' => 'password',
             'chunk_size_in_bytes' => $chunk_size_in_bytes,
         ]);
-        $asalaeRest = new AsalaeREST($curlWrapperFactory, $this->getObjectInstancier()->getInstance(Logger::class));
+        $asalaeRest = new AsalaeREST(
+            $this->getObjectInstancier()->getInstance(CurlWrapperFactory::class),
+            $this->getObjectInstancier()->getInstance(Logger::class)
+        );
         $asalaeRest->setConnecteurConfig($connecteurConfig);
         return $asalaeRest;
     }
-
 
     /**
      * @throws Exception
@@ -39,7 +43,7 @@ class AsalaeRestTest extends PastellTestCase
         $asalaeRest = $this->getAsalaeRest(
             '"webservices as@lae accessibles"'
         );
-        $this->assertEquals('webservices as@lae accessibles', $asalaeRest->ping());
+        static::assertSame('webservices as@lae accessibles', $asalaeRest->ping());
     }
 
     /**
@@ -85,7 +89,7 @@ class AsalaeRestTest extends PastellTestCase
         $asalaeRest = $this->getAsalaeRest(
             '{"application":"as@lae","denomination":"","version":"V1.6.3"}'
         );
-        $this->assertEquals('V1.6.3', $asalaeRest->getVersion()['version']);
+        static::assertSame('V1.6.3', $asalaeRest->getVersion()['version']);
     }
 
     /**
@@ -94,7 +98,7 @@ class AsalaeRestTest extends PastellTestCase
     public function testSendArchive(): void
     {
         $asalaeRest = $this->getAsalaeRest('"ok"');
-        $this->assertSame(
+        static::assertSame(
             '2020-05-12-ACTES-18',
             $asalaeRest->sendSIP(
                 file_get_contents(__DIR__ . '/../../connecteur-type/fixtures/bordereau_seda_2.1.xml'),
@@ -120,7 +124,7 @@ class AsalaeRestTest extends PastellTestCase
             200,
             $chunksize
         );
-        $this->assertSame(
+        static::assertSame(
             '2020-05-12-ACTES-18',
             $asalaeRest->sendSIP(
                 file_get_contents(__DIR__ . '/../../connecteur-type/fixtures/bordereau_seda_2.1.xml'),
@@ -155,7 +159,7 @@ class AsalaeRestTest extends PastellTestCase
     {
         $asalaeRest = $this->getAsalaeRest('');
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage("");
+        $this->expectExceptionMessage('');
         $asalaeRest->sendSIP('test bordereau SEDA', __FILE__);
     }
 }
