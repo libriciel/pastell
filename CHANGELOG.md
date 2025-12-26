@@ -5,6 +5,7 @@
 - Amélioration de la sécurité #2373
 - Mise à jour de sécurité #2375
 - Corrige une erreur qui survenait lors du passage d'un mauvais identifiant dans certaines pages de gestion utilisateurs. #2379
+- Les pages ne sont plus indexées sur les moteurs de recherche #2369
 
 # [4.0.27] - 2025-11-10
 
