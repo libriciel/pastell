@@ -91,11 +91,12 @@ class FakeIparapheur extends SignatureConnecteur
 
     /**
      * @throws JsonException
+     * @throws UnrecoverableException
      */
     public function getAllHistoriqueInfo($dossierID)
     {
         if ($this->retour === 'Fatal') {
-            trigger_error('Fatal error', E_USER_ERROR);
+            throw new UnrecoverableException('Fatal error');
         }
         sleep($this->iparapheur_temps_reponse);
         $timestamp = date(DATE_ATOM);

@@ -3,6 +3,7 @@
 ## Corrections
 
 - Le fil d'ariane n'est plus bloqué sur une entité désactivée #2285
+- Remplacement de `trigger_error('Fatal error', E_USER_ERROR)` incompatible php 8.4 par `UnrecoverableException` #2392
 
 ## Ajouts
 
