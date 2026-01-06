@@ -27,7 +27,6 @@ formulaire:
                 Archive: OK
                 Rejet: Rejet
                 Erreur: Erreur
-                Fatal: 'Déclencher une erreur fatale PHP'
         iparapheur_temps_reponse:
             name: 'Temps de réponse (en seconde) pour la fonction de récupération'
         field_signature:

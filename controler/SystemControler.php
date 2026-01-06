@@ -392,12 +392,9 @@ class SystemControler extends PastellControler
         $this->redirect(self::SYSTEM_INDEX_PAGE);
     }
 
-    /**
-     * @throws UnrecoverableException
-     */
     public function sendFatalErrorAction()
     {
-        throw new UnrecoverableException("Déclenchement manuel d'une erreur fatale !");
+        throw new Error("Déclenchement manuel d'une erreur fatale !");
     }
 
 

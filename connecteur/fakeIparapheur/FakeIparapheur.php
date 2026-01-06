@@ -95,9 +95,6 @@ class FakeIparapheur extends SignatureConnecteur
      */
     public function getAllHistoriqueInfo($dossierID)
     {
-        if ($this->retour === 'Fatal') {
-            throw new UnrecoverableException('Fatal error');
-        }
         sleep($this->iparapheur_temps_reponse);
         $timestamp = date(DATE_ATOM);
         $user = 'simulation de parapheur!';
