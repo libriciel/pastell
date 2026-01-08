@@ -2,7 +2,6 @@
 
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\LockInterface;
-use Symfony\Component\Lock\Store\StoreFactory;
 
 class ActionExecutorFactoryTest extends PastellTestCase
 {
@@ -108,11 +107,10 @@ class ActionExecutorFactoryTest extends PastellTestCase
         $this->assertLastMessage("Aucun connecteur de type GED n'est associé au type de dossier pdf-generique");
 
         $id_job  = $this->getJobQueueSQL()->getJobIdForDocument(1, $id_d);
-        $job_info = $this->getJobQueueSQL()->getJobInfo($id_job);
+        $job = $this->getJobQueueSQL()->getJob($id_job);
 
-        $this->assertEquals(1, $job_info['is_lock']);
+        static::assertSame(1, $job->is_lock);
     }
-
 
     //Une fuite mémoire existait sur les processeur Monolog
     public function testNoLoggerProcessorLeftOnConnecteur()

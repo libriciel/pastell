@@ -10,9 +10,12 @@ class Job
 
     public $type;
     public $id_e;
+    public string $entite_denomination;
     public $id_d;
+    public ?string $document_titre;
     public $id_u;
     public int $id_ce;
+    public ?string $connecteur_libelle;
     public $etat_source;
     public $etat_cible;
     public $last_message;

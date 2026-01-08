@@ -60,24 +60,23 @@
                             {% endif %}
                     {% endif %}
                 </td>
-                <td>
-                    <a href="{{ path('app.legacy.entite_detail', {'id_e': job.id_e}) }}">{{ job.id_e }}</a>
+                <td style="word-break: break-all;">
+                    {{ job.entite_denomination }} (<a
+                            href="{{ path('app.legacy.entite_detail', {'id_e': job.id_e}) }}">{{ job.id_e }}</a>)
                 </td>
                 <td>
                     {% if job.daemon is defined %}
                         {{ job.daemon.id_daemon }}
                     {% endif %}
                 </td>
-                <td>
+                <td style="word-break: break-all;">
                     {% if job.id_d %}
-                        <a href="{{ path('app.legacy.document_detail', {'id_e': job.id_e, 'id_d': job.id_d}) }}">
-                            {{ job.id_d }}
-                        </a>
+                        {{ job.document_titre }} (<a
+                            href="{{ path('app.legacy.document_detail', {'id_e': job.id_e, 'id_d': job.id_d}) }}">{{ job.id_d }}</a>)
                     {% endif %}
                     {% if job.id_ce %}
-                        <a href="{{ path('app.legacy.connecteur_edition', {'id_ce': job.id_ce}) }}">
-                            {{ job.id_ce }}
-                        </a>
+                        {{ job.connecteur_libelle }}  (<a
+                            href="{{ path('app.legacy.connecteur_edition', {'id_ce': job.id_ce}) }}">{{ job.id_ce }}</a>)
                     {% endif %}
                 </td>
                 <td>{{ job.etat_source }}<br/>{{ job.etat_cible }}</td>

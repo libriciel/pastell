@@ -2,17 +2,15 @@
 
 class JobQueueSQL extends SQL
 {
-    private WorkerSQL $workerSQL;
-    private DaemonSQL $daemonSQL;
-
     public function __construct(
         SQLQuery $sqlQuery,
-        WorkerSQL $workerSQL,
-        DaemonSQL $daemonSQL,
+        private readonly WorkerSQL $workerSQL,
+        private readonly DaemonSQL $daemonSQL,
+        private readonly DocumentSQL $documentSQL,
+        private readonly EntiteSQL $entiteSQL,
+        private readonly ConnecteurEntiteSQL $connecteurSQL
     ) {
         parent::__construct($sqlQuery);
-        $this->workerSQL = $workerSQL;
-        $this->daemonSQL = $daemonSQL;
     }
     private function mapToJob(array $info): Job
     {
@@ -36,6 +34,18 @@ class JobQueueSQL extends SQL
         $job->id_daemon = $info['id_daemon'];
         $job->daemon = $this->daemonSQL->getDaemon($job->id_daemon);
         $job->worker = $this->workerSQL->getWorker($job->id_job);
+        $job->entite_denomination = $this->entiteSQL->getDenomination($job->id_e);
+        if ($job->type === Job::TYPE_DOCUMENT) {
+            $document_info = $this->documentSQL->getInfo($job->id_d);
+            if ($document_info) {
+                $job->document_titre = $document_info['titre'];
+            }
+        } elseif ($job->type === Job::TYPE_CONNECTEUR) {
+            $connecteur_info = $this->connecteurSQL->getInfo($job->id_ce);
+            if ($connecteur_info) {
+                $job->connecteur_libelle = $connecteur_info['libelle'];
+            }
+        }
         return $job;
     }
 
@@ -257,13 +267,6 @@ SQL;
         $sql = "SELECT count(*) FROM job_queue " .
                 " WHERE id_e=? AND id_d=?";
         return boolval($this->queryOne($sql, $id_e, $id_d));
-    }
-
-
-    public function getJobInfo($id_job)
-    {
-        $sql = "SELECT * FROM job_queue WHERE id_job = ?";
-        return $this->queryOne($sql, $id_job);
     }
 
     public function getCountJobByVerrouAndEtat()
