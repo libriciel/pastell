@@ -133,4 +133,26 @@ class JobQueueSQLTest extends PastellTestCase
         $job_list = $this->jobQueueSQL->getAllJobs(9, 3);
         static::assertCount(1, $job_list);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetJobsForConnector(): void
+    {
+        $job = $this->getNewJob();
+        $job->id_ce = 1;
+        $this->jobQueueSQL->createJob($job);
+        static::assertCount(1, $this->jobQueueSQL->getJobsForConnector(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetJobsForDocument(): void
+    {
+        $job = $this->getNewJob();
+        $job->id_d = '12345ABC';
+        $this->jobQueueSQL->createJob($job);
+        static::assertCount(1, $this->jobQueueSQL->getJobsForDocument('12345ABC'));
+    }
 }

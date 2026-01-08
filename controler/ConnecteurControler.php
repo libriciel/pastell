@@ -435,7 +435,7 @@ class ConnecteurControler extends PastellControler
         );
         $this->setViewParameter(
             'job_list',
-            $this->getWorkerSQL()->getJobListWithWorkerForConnecteur($this->getViewParameterByKey('id_ce'))
+            $this->getJobQueueSQL()->getJobsForConnector($this->getViewParameterByKey('id_ce'))
         );
         $this->setViewParameter(
             'return_url',
