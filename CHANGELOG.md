@@ -1,6 +1,12 @@
+# [5.0.1] -
+
+## Corrections
+
+- Le fil d'ariane n'est plus bloqué sur une entité désactivée #2285
+
 # [5.0.0] - 2025-12-16
 
-## Correction
+## Corrections
 
 - **BREAKING** : Correction du calcul des empreintes dans les connecteurs SFTP (dépôt et glaneur) : les empreintes
 doivent être mises à jour #1667
