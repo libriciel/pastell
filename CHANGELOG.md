@@ -11,6 +11,10 @@
 - Liens vers entité et dossier/connecteur ajoutés sur les listes de tâches automatiques #2246
 - Ajout de la commande `app:connector:update-sftp-fingerprint` #2303
 
+## Évolutions
+
+- Ajout des paramètres optionnels `with_preuve` et `id_d` à la commande `app:journal:export-history` #2044
+
 # [5.0.0] - 2025-12-16
 
 ## Corrections

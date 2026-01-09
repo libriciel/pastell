@@ -1,0 +1,19 @@
+Status info:
+Status: Granted.
+Status description: unspecified
+Failure info: unspecified
+
+TST info:
+Version: 1
+Policy OID: tsa_policy1
+Hash Algorithm: sha256
+Message data:
+    0000 - 5b 2f 53 41 18 3a d9 38-08 d7 2b ad 17 34 d7 24   [/SA.:.8..+..4.$
+    0010 - 35 54 11 ad 32 02 e7 12-ed 54 75 27 c9 9a 9a 37   5T..2....Tu'...7
+Serial number: 0x4E
+Time stamp: Aug 28 15:34:35 2025 GMT
+Accuracy: unspecified
+Ordering: yes
+Nonce: 0xDF5EFDC98108E827
+TSA: DirName:/C=FR/ST=HERAULT/L=MONTPELLIER/O=LIBRICIEL/OU=CERTIFICAT_AUTO_SIGNE/CN=127.0.0.1/emailAddress=test@localhost
+Extensions:
