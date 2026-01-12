@@ -11,16 +11,12 @@ class WorkerSQLTest extends PastellTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->workerSQL = new WorkerSQL(static::getSQLQuery());
+        $this->workerSQL =  $this->getObjectInstancier()->getInstance(WorkerSQL::class);
         $daemonSQL = $this->getObjectInstancier()->getInstance(DaemonSQL::class);
         $daemonSQL->setNbWorkers((int)NB_WORKERS);
-        $daemonSQL->insertGlobalDaemon('admin@email.com');
+        $daemonSQL->insertGlobalDaemon('admin@libriciel.invalid');
         $this->globalDaemon = $daemonSQL->getGlobalDaemon();
-        $this->jobQueueSQL = new JobQueueSQL(
-            static::getSQLQuery(),
-            $this->workerSQL,
-            $daemonSQL
-        );
+        $this->jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
     }
 
     public function testCreate(): void

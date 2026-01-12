@@ -4,6 +4,10 @@
 
 - Le fil d'ariane n'est plus bloqué sur une entité désactivée #2285
 
+## Ajouts
+
+- Liens vers entité et dossier/connecteur ajoutés sur les listes de tâches automatiques #2246
+
 # [5.0.0] - 2025-12-16
 
 ## Corrections

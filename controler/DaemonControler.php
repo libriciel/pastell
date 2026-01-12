@@ -344,7 +344,7 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('page_title', "Détail du travail #{$id_job}");
         /** @var JobQueueSQL $jobQueueSQL */
         $jobQueueSQL = $this->getViewParameterOrObject('JobQueueSQL');
-        $this->setViewParameter('job_info', $jobQueueSQL->getJobInfo($id_job));
+        $this->setViewParameter('job', $jobQueueSQL->getJob($id_job));
         $this->setViewParameter('return_url', "Daemon/detail?id_job=$id_job");
         $this->setViewParameter('template_milieu', 'DaemonDetail');
         $this->renderDefault();
