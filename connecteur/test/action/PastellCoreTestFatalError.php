@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 class PastellCoreTestFatalError extends ActionExecutor
 {
-    public function go()
+    public function go(): void
     {
-        trigger_error("Fatal error", E_USER_ERROR);
+        throw new Error('Fatal error');
     }
 }
