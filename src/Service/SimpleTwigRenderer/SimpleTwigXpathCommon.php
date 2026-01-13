@@ -42,4 +42,9 @@ class SimpleTwigXpathCommon
 
         return self::$xmlCache[$element_id]->xpath($xpath_expression);
     }
+
+    public static function clearCache(): void
+    {
+        self::$xmlCache = [];
+    }
 }
