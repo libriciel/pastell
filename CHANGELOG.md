@@ -2,10 +2,15 @@
 
 ## Corrections
 
-- Amélioration de la sécurité #2373
-- Mise à jour de sécurité #2375, #2374
 - Corrige une erreur qui survenait lors du passage d'un mauvais identifiant dans certaines pages de gestion utilisateurs. #2379
 - Les pages ne sont plus indexées sur les moteurs de recherche #2369
+- Certains fichiers envoyés par API n'étaient pas correctement supprimés dans le répertoire temporaire #2396
+
+## Sécurité
+
+- Faille XSRF #2373
+- Faille de création/écrasement de fichier arbitraire #2374
+- Faille XSS #2375
 
 # [4.0.27] - 2025-11-10
 
