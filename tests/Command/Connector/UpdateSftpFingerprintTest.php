@@ -36,19 +36,21 @@ class UpdateSftpFingerprintTest extends PastellTestCase
      * @throws Exception
      */
     public function testUpdateSftpFingerprint(
-        string $scenario,
         ?string $connecteurType,
         ?array $connecteurConfig,
         string $expectedOutput,
-        ?string $expectedFingerprintAfterUpdate = null
+        ?string $fingerprintField
     ): void {
         $idCe = null;
+        $initialFingerprint = null;
+
         if ($connecteurType !== null) {
             $connector = $this->createConnector($connecteurType, 'Test SFTP Connector');
             $idCe = $connector['id_ce'];
 
-            if ($connecteurConfig !== null) {
+            if ($connecteurConfig !== null && $fingerprintField !== null) {
                 $this->configureConnector($idCe, $connecteurConfig);
+                $initialFingerprint = $connecteurConfig[$fingerprintField] ?? null;
             }
         }
 
@@ -58,13 +60,16 @@ class UpdateSftpFingerprintTest extends PastellTestCase
         $output = $this->commandTester->getDisplay();
         static::assertStringContainsString($expectedOutput, $output);
 
-        if ($expectedFingerprintAfterUpdate !== null && $idCe !== null) {
+        // Si une mise à jour a eu lieu, vérifier que le fingerprint a changé
+        if ($idCe !== null && $fingerprintField !== null && $initialFingerprint !== null && str_contains($output, 'Successfully updated')) {
             $config = $this->connecteurFactory->getConnecteurConfig($idCe);
-            $fingerprintField = $connecteurType === 'depot-sftp' ? 'depot_sftp_fingerprint' : 'glaneur_sftp_fingerprint';
-            $actualFingerprint = $config->get($fingerprintField);
+            $updatedFingerprint = $config->get($fingerprintField);
 
-            static::assertNotSame($connecteurConfig[$fingerprintField], $actualFingerprint);
-            static::assertSame($expectedFingerprintAfterUpdate, $actualFingerprint);
+            static::assertNotSame(
+                $initialFingerprint,
+                $updatedFingerprint,
+                "Le fingerprint devrait avoir changé de '$initialFingerprint' à '$updatedFingerprint'"
+            );
         }
     }
 
@@ -72,46 +77,42 @@ class UpdateSftpFingerprintTest extends PastellTestCase
     {
         return [
             'pas_de_connecteur_sftp' => [
-                'scenario' => 'pas_de_connecteur',
                 'connecteurType' => null,
                 'connecteurConfig' => null,
                 'expectedOutput' => 'No SFTP connectors found',
-                'expectedFingerprintAfterUpdate' => null,
+                'fingerprintField' => null,
             ],
             'connecteur_glaneur_sftp_non_configure' => [
-                'scenario' => 'non_configure',
                 'connecteurType' => 'glaneur-sftp',
                 'connecteurConfig' => null,
                 'expectedOutput' => 'All SFTP connectors configured have valid fingerprints',
-                'expectedFingerprintAfterUpdate' => null,
+                'fingerprintField' => 'glaneur_sftp_fingerprint',
             ],
             'connecteur_depot_sftp_mauvais_fingerprint' => [
-                'scenario' => 'mauvais_fingerprint',
                 'connecteurType' => 'depot-sftp',
                 'connecteurConfig' => [
-                    'depot_sftp_host' => 'sftp.example.com',
+                    'depot_sftp_host' => 'pastell-depot-sftp-1',
                     'depot_sftp_port' => '22',
-                    'depot_sftp_login' => 'testuser',
-                    'depot_sftp_password' => 'testpass',
-                    'depot_sftp_repertoire' => '/test',
-                    'depot_sftp_fingerprint' => 'SHA256:aki0Kgy9zYzhW2UtKpflOPQmBsNa+VdWvRlpE6dgDy0',
+                    'depot_sftp_login' => 'sftp',
+                    'depot_sftp_password' => 'sftp',
+                    'depot_sftp_repertoire' => '/upload',
+                    'depot_sftp_fingerprint' => 'SHA256:BADFINGERPRINTthatWillTriggerAnUpdate',
                 ],
                 'expectedOutput' => 'Found 1 SFTP connector(s)',
-                'expectedFingerprintAfterUpdate' => null, // sera rempli dynamiquement selon le serveur
+                'fingerprintField' => 'depot_sftp_fingerprint',
             ],
             'connecteur_glaneur_sftp_mauvais_fingerprint' => [
-                'scenario' => 'mauvais_fingerprint',
                 'connecteurType' => 'glaneur-sftp',
                 'connecteurConfig' => [
-                    'glaneur_sftp_host' => 'sftp.example.com',
+                    'glaneur_sftp_host' => 'pastell-glaneur-sftp-1',
                     'glaneur_sftp_port' => '22',
-                    'glaneur_sftp_login' => 'testuser',
-                    'glaneur_sftp_password' => 'testpass',
-                    'glaneur_sftp_repertoire' => '/test',
-                    'glaneur_sftp_fingerprint' => 'SHA256:aki0Kgy9zYzhW2UtKpflOPQmBsNa+VdWvRlpE6dgDy0',
+                    'glaneur_sftp_login' => 'sftp',
+                    'glaneur_sftp_password' => 'sftp',
+                    'glaneur_sftp_repertoire' => '/upload',
+                    'glaneur_sftp_fingerprint' => 'SHA256:BADFINGERPRINTthatWillTriggerAnUpdate',
                 ],
                 'expectedOutput' => 'Found 1 SFTP connector(s)',
-                'expectedFingerprintAfterUpdate' => null, // sera rempli dynamiquement selon le serveur
+                'fingerprintField' => 'glaneur_sftp_fingerprint',
             ],
         ];
     }

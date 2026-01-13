@@ -10,13 +10,21 @@ use DepotConnecteur;
 use Exception;
 use GlaneurSFTP;
 use Pastell\Command\BaseCommand;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use UnrecoverableException;
 
-class UpdateSftpFingerprint extends BaseCommand
+#[AsCommand(
+    name: 'app:connector:update-sftp-fingerprint',
+    description: 'Update SFTP fingerprints for DepotSFTP and GlaneurSFTP connectors',
+)]
+final class UpdateSftpFingerprint extends BaseCommand
 {
+    public const string DEPOT_SFTP = 'depot-sftp';
+    public const string GLANEUR_SFTP = 'glaneur-sftp';
+
     public function __construct(
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
         private readonly ConnecteurFactory $connecteurFactory
@@ -27,8 +35,6 @@ class UpdateSftpFingerprint extends BaseCommand
     protected function configure(): void
     {
         $this
-            ->setName('app:connector:update-sftp-fingerprint')
-            ->setDescription('Update SFTP fingerprints for DepotSFTP and GlaneurSFTP connectors')
             ->addOption(
                 'dry-run',
                 null,
@@ -46,14 +52,14 @@ class UpdateSftpFingerprint extends BaseCommand
             $this->getIO()->note('Running in DRY-RUN mode - no changes will be applied');
         }
 
-        $depotSftpConnectors = $this->connecteurEntiteSQL->getAllByConnecteurId('depot-sftp');
-        $glaneurSftpConnectors = $this->connecteurEntiteSQL->getAllByConnecteurId('glaneur-sftp');
+        $depotSftpConnectors = $this->connecteurEntiteSQL->getAllByConnecteurId(self::DEPOT_SFTP);
+        $glaneurSftpConnectors = $this->connecteurEntiteSQL->getAllByConnecteurId(self::GLANEUR_SFTP);
         $allConnectors = array_merge($depotSftpConnectors, $glaneurSftpConnectors);
         $totalConnectors = count($allConnectors);
 
         if ($totalConnectors === 0) {
             $this->getIO()->warning('No SFTP connectors found');
-            return 0;
+            return self::SUCCESS;
         }
         $this->getIO()->writeln("Found <info>$totalConnectors</info> SFTP connector(s)");
         $this->getIO()->writeln('');
@@ -89,19 +95,19 @@ class UpdateSftpFingerprint extends BaseCommand
 
         if ($updateCount === 0) {
             $this->getIO()->success('All SFTP connectors configured have valid fingerprints. No updates needed.');
-            return 0;
+            return self::SUCCESS;
         }
 
         $this->getIO()->section("Connectors requiring updates: $updateCount");
 
         if ($dryRun) {
             $this->getIO()->success('DRY-RUN complete. No changes were applied.');
-            return 0;
+            return self::SUCCESS;
         }
 
         if (!$this->getIO()->confirm("Do you want to update these $updateCount connector(s)?", false)) {
             $this->getIO()->note('Operation cancelled by user');
-            return 0;
+            return self::SUCCESS;
         }
 
         $this->getIO()->section('Applying updates...');
@@ -133,11 +139,11 @@ class UpdateSftpFingerprint extends BaseCommand
 
         if ($errorCount > 0) {
             $this->getIO()->warning("Updated $successCount connector(s) with $errorCount error(s)");
-        } else {
-            $this->getIO()->success("Successfully updated $successCount connector(s)");
+            return self::FAILURE;
         }
 
-        return 0;
+        $this->getIO()->success("Successfully updated $successCount connector(s)");
+        return self::SUCCESS;
     }
 
     /**
@@ -146,22 +152,28 @@ class UpdateSftpFingerprint extends BaseCommand
      */
     private function analyzeConnector(int $id_ce, string $id_connecteur): array
     {
-        $isDepot = $id_connecteur === 'depot-sftp';
-        $prefix = $isDepot ? 'depot_sftp_' : 'glaneur_sftp_';
-        $fingerprintField = $prefix . 'fingerprint';
-
+        $fingerprintField = '';
         try {
             $connector = $this->connecteurFactory->getConnecteurById($id_ce);
-            if ($isDepot) {
-                /** @var DepotConnecteur $connector */
-                $connector->listDirectory();
-            } else {
-                /** @var GlaneurSFTP $connector */
-                $connector->listDirectories();
+            switch ($id_connecteur) {
+                case self::DEPOT_SFTP:
+                    $fingerprintField = 'depot_sftp_fingerprint';
+                    /** @var DepotConnecteur $connector */
+                    $connector->listDirectory();
+                    break;
+
+                case self::GLANEUR_SFTP:
+                    $fingerprintField = 'glaneur_sftp_fingerprint';
+                    /** @var GlaneurSFTP $connector */
+                    $connector->listDirectories();
+                    break;
+
+                default:
+                    throw new UnrecoverableException("Unknown SFTP connector type: $id_connecteur");
             }
+
             return [
                 'needsUpdate' => false,
-                'reason' => 'Fingerprint is valid'
             ];
         } catch (UnrecoverableException $e) {
             $errorMessage = $e->getMessage();
@@ -176,7 +188,6 @@ class UpdateSftpFingerprint extends BaseCommand
             }
             return [
                 'needsUpdate' => false,
-                'reason' => 'Connection error: ' . $errorMessage
             ];
         }
     }
