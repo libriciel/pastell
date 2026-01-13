@@ -1,55 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 class S2lowDemandeClassificationAllTest extends PastellTestCase
 {
-    /**
-     * @param $curl_response
-     * @param $id_e
-     * @return array
-     */
-    private function getS2low($curl_response, $id_e)
+    use CurlUtilitiesTestTrait;
+
+    private function getS2low(string $curl_response, int $id_e): array
     {
-        $curlWrapper = $this->createMock(CurlWrapper::class);
+        $this->mockCurl([
+            '/admin/users/api-list-login.php' => 'ok',
+            '/modules/actes/actes_classification_request.php?api=1' => '',
+            '/modules/actes/actes_classification_fetch.php?api=1' => $curl_response,
+        ]);
 
-        $curlWrapper
-            ->method('get')
-            ->willReturn($curl_response);
-
-        $curlWrapperFactory = $this->createMock(CurlWrapperFactory::class);
-
-        $curlWrapperFactory
-            ->method('getInstance')
-            ->willReturn($curlWrapper);
-
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
-
-
-        $info = $this->createConnector('s2low', "S2LOW", $id_e);
-
-        return $info;
+        return $this->createConnector('s2low', 'S2LOW', $id_e);
     }
 
-
-    /**
-     * When getting latest available classification file
-     *
-     * @test
-     * @throws Exception
-     */
-    public function whenGettingLatestClassification()
+    public function testWhenGettingLatestClassification(): void
     {
         $this->getS2low('S²low a répondu : OK', self::ID_E_COL);
         $this->getS2low('S²low a répondu : OK', self::ID_E_SERVICE);
 
-
         $globalConnector = $this->createConnector('s2low', 'S2low', 0);
         $actionResult = $this->triggerActionOnConnector($globalConnector['id_ce'], 'demande-classification');
+        static::assertTrue($actionResult);
 
-        $this->assertTrue($actionResult);
-
-        $expectedMessage = "Résultat :"
-            . "<br/>Bourg-en-Bresse(id_ce=14) : demande de classification envoyée"
-            . "<br/>CCAS(id_ce=15) : demande de classification envoyée";
+        $expectedMessage = 'Résultat :'
+            . '<br/>Bourg-en-Bresse(id_ce=14) : demande de classification envoyée'
+            . '<br/>CCAS(id_ce=15) : demande de classification envoyée';
 
         $this->assertLastMessage($expectedMessage);
     }
