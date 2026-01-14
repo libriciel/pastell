@@ -418,18 +418,23 @@ class DocumentAPIController extends BaseAPIController
         $tmpFolder = new TmpFolder();
         $tmp_folder = $tmpFolder->create();
 
-        file_put_contents($tmp_folder . "/tmp_file", $file_content);
+        try {
+            $tempFile = $tmp_folder . '/tmp_file';
+            file_put_contents($tempFile, $file_content);
 
-        $this->documentModificationService->addFile(
-            $id_e,
-            $this->getUtilisateurId(),
-            $id_d,
-            $field_name,
-            $file_number,
-            $file_name,
-            $tmp_folder . "/tmp_file"
-        );
-        $tmpFolder->delete($tmp_folder);
+            $this->documentModificationService->addFile(
+                $id_e,
+                $this->getUtilisateurId(),
+                $id_d,
+                $field_name,
+                $file_number,
+                $file_name,
+                $tempFile
+            );
+        } finally {
+            $tmpFolder->delete($tmp_folder);
+        }
+
         $result['content'] = $this->internalDetail($id_e, $id_d);
         $result['result'] = self::RESULT_OK;
 
