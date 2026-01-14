@@ -20,6 +20,7 @@ use PastellTestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use UnrecoverableException;
 
@@ -31,11 +32,9 @@ class MigrateIparapheurSoapRestTest extends PastellTestCase
     {
         parent::setUp();
 
-        // Créer un connecteur SOAP iParapheur
-        $soapConnector = $this->createConnector('iParapheur', 'Test SOAP iParapheur');
+        $soapConnector = $this->createConnector(MigrateIparapheurSoapRest::IPARAPHEUR_SOAP, 'Test SOAP iParapheur');
         $this->soapConnectorId = (int)$soapConnector['id_ce'];
 
-        // Configurer le connecteur SOAP
         $this->configureConnector($this->soapConnectorId, [
             'iparapheur_wsdl' => 'https://test.example.com/ws-iparapheur?wsdl',
             'iparapheur_login' => 'test_user',
@@ -46,7 +45,6 @@ class MigrateIparapheurSoapRestTest extends PastellTestCase
             'multi_doc' => '1'
         ]);
 
-        // association pour le connecteur SOAP
         $this->associateFluxWithConnector(
             $this->soapConnectorId,
             'ls-document-pdf',
@@ -160,20 +158,16 @@ class MigrateIparapheurSoapRestTest extends PastellTestCase
             '--id_ce' => (string)$this->soapConnectorId,
         ]);
 
-        // Récupérer l'output
         $output = $commandTester->getDisplay();
 
-        // Assertions
         if ($expectedSuccess) {
-            static::assertSame(0, $exitCode, 'Exit code should be 0 for success');
+            static::assertSame(Command::SUCCESS, $exitCode);
             static::assertStringContainsString('Résumé: 1 succès, 0 erreur(s)', $output);
 
-            // Vérifier qu'un nouveau connecteur REST a été créé
             $connecteurEntiteSQL = $this->getObjectInstancier()->getInstance(ConnecteurEntiteSQL::class);
-            $restConnectors = $connecteurEntiteSQL->getAllEntiteConnectorById('iparapheur-rest');
+            $restConnectors = $connecteurEntiteSQL->getAllEntiteConnectorById(MigrateIparapheurSoapRest::IPARAPHEUR_REST);
             static::assertNotEmpty($restConnectors, 'A REST connector should have been created');
 
-            // Vérifier que les associations ont été migrées
             $fluxEntiteSQL = $this->getObjectInstancier()->getInstance(FluxEntiteSQL::class);
             $newRestConnectorId = $restConnectors[0]['id_ce'];
             $associations = $fluxEntiteSQL->getUsedByConnecteur($newRestConnectorId);

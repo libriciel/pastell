@@ -10,6 +10,7 @@ use DonneesFormulaire;
 use DonneesFormulaireFactory;
 use Exception;
 use FluxEntiteSQL;
+use JsonException;
 use Pastell\Command\BaseCommand;
 use Pastell\Connector\IparapheurRest\IpRestApiException;
 use Pastell\Connector\IparapheurRest\IpRestException;
@@ -32,6 +33,9 @@ use function sprintf;
 )]
 final class MigrateIparapheurSoapRest extends BaseCommand
 {
+    public const string IPARAPHEUR_SOAP = 'iParapheur';
+    public const string IPARAPHEUR_REST = 'iparapheur-rest';
+
     public function __construct(
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
         private readonly FluxEntiteSQL $fluxEntiteSQL,
@@ -64,76 +68,70 @@ final class MigrateIparapheurSoapRest extends BaseCommand
     {
         $this->getIO()->title('Migration des connecteurs iParapheur SOAP vers iparapheur-rest');
 
-        $connectorsIparapheur = $this->connecteurEntiteSQL->getAllEntiteConnectorById('iParapheur');
+        $connectorsIparapheurSOAP = $this->connecteurEntiteSQL->getAllEntiteConnectorById(self::IPARAPHEUR_SOAP);
 
         $specificIdCe = $input->getOption('id_ce');
         if ($specificIdCe) {
-            $filteredConnectors = [];
-            foreach ($connectorsIparapheur as $connector) {
-                if ((string)$connector['id_ce'] === $specificIdCe) {
-                    $filteredConnectors[] = $connector;
-                }
-            }
-            $connectorsIparapheur = $filteredConnectors;
+            $connectorsIparapheurSOAP = array_filter(
+                $connectorsIparapheurSOAP,
+                static fn($connector) => (string)$connector['id_ce'] === $specificIdCe
+            );
 
-            if (empty($connectorsIparapheur)) {
-                $this->getIO()->error("Aucun connecteur iParapheur trouvé avec l'ID $specificIdCe");
-                return 1;
+            if (empty($connectorsIparapheurSOAP)) {
+                $this->getIO()->error("Aucun connecteur iParapheur SOAP trouvé avec l'ID $specificIdCe");
+                return self::FAILURE;
             }
         }
 
         $connectorsWithAssociations = [];
-        $connectorsWithoutAssociations = 0;
+        $connectorsWithoutAssociationsCount = 0;
 
-        foreach ($connectorsIparapheur as $connector) {
+        foreach ($connectorsIparapheurSOAP as $connector) {
             $associations = $this->fluxEntiteSQL->getUsedByConnecteur($connector['id_ce']);
             if (!empty($associations)) {
                 $connectorsWithAssociations[] = $connector;
             } else {
-                $connectorsWithoutAssociations++;
+                $connectorsWithoutAssociationsCount++;
             }
         }
 
-        $connectorsIparapheur = $connectorsWithAssociations;
+        $connectorsIparapheurSOAP = $connectorsWithAssociations;
 
-        if ($connectorsWithoutAssociations > 0) {
+        if ($connectorsWithoutAssociationsCount > 0) {
             $this->getIO()->note(
-                "$connectorsWithoutAssociations connecteur(s) sans association ont été exclus de la migration"
+                "$connectorsWithoutAssociationsCount connecteur(s) sans association ont été exclus de la migration"
             );
         }
 
-        if (empty($connectorsIparapheur)) {
-            $this->getIO()->warning('Aucun connecteur iParapheur à migrer');
-            return 0;
+        if (empty($connectorsIparapheurSOAP)) {
+            $this->getIO()->warning('Aucun connecteur iParapheur SOAP à migrer');
+            return self::SUCCESS;
         }
 
-        $this->displayConnectorsSummary($connectorsIparapheur);
+        $this->displayConnectorsSummary($connectorsIparapheurSOAP);
 
-        $connectorsNumber = count($connectorsIparapheur);
+        $connectorsNumber = count($connectorsIparapheurSOAP);
         if ($input->isInteractive()) {
-            $question = "Voulez-vous migrer ces $connectorsNumber connecteur(s) ?";
+            $question = $connectorsNumber === 1 ?
+                'Voulez-vous migrer le connecteur ?'
+                : "Voulez-vous migrer ces $connectorsNumber connecteur(s) ?";
             if (!$this->getIO()->confirm($question, false)) {
-                return 0;
+                return self::SUCCESS;
             }
         }
 
         $this->getIO()->section('Début de la migration');
-        $results = $this->migrateConnectors($connectorsIparapheur);
+        $results = $this->migrateConnectors($connectorsIparapheurSOAP);
 
         $this->displayMigrationResults($results);
 
-        $successfulMigrations = [];
-        foreach ($results as $result) {
-            if ($result['success']) {
-                $successfulMigrations[] = $result;
-            }
-        }
+        $successfulMigrations = array_filter($results, static fn($result) => $result['success']);
 
         if (!empty($successfulMigrations) && $input->isInteractive()) {
             $this->askForDeletion($successfulMigrations);
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 
     private function displayConnectorsSummary(array $connectors): void
@@ -199,7 +197,6 @@ final class MigrateIparapheurSoapRest extends BaseCommand
         ];
 
         try {
-            // Récupération de la config SOAP
             $soapForm = $this->connecteurFactory->getConnecteurConfig($connectorInfo['id_ce']);
             $wsdl = trim((string)$soapForm->get('iparapheur_wsdl', '"\''));
             $restUrl = preg_replace('#/ws-iparapheur\?wsdl$#', '', $wsdl);
@@ -207,7 +204,6 @@ final class MigrateIparapheurSoapRest extends BaseCommand
             $soapPassword = (string)$soapForm->get('iparapheur_password');
             $soapType = (string)$soapForm->get('iparapheur_type');
 
-            // Création d'un connecteur temporaire pour validation
             $tempConfig = $this->donneesFormulaireFactory->getNonPersistingDonneesFormulaire();
             $tempConfig->setData('url', $restUrl);
             $tempConfig->setData('username', $soapUsername);
@@ -215,7 +211,6 @@ final class MigrateIparapheurSoapRest extends BaseCommand
             $tempConnector = new IparapheurRestConnector($this->apiClientFactory);
             $tempConnector->setConnecteurConfig($tempConfig);
 
-            // VALIDATION avec le connecteur temporaire
             $validationResult = $this->validateAndConfigureRestConnector(
                 $tempConnector,
                 $tempConfig,
@@ -226,9 +221,8 @@ final class MigrateIparapheurSoapRest extends BaseCommand
                 throw new Exception($validationResult['error']);
             }
 
-            // Validation réussie - Création du connecteur
             $newIdCe = $this->connecteurCreationService->createConnecteur(
-                'iparapheur-rest',
+                self::IPARAPHEUR_REST,
                 'signature',
                 0,
                 $connectorInfo['id_e'],
@@ -240,7 +234,6 @@ final class MigrateIparapheurSoapRest extends BaseCommand
 
             $result['new_id_ce'] = $newIdCe;
 
-            // Configuration du connecteur avec les données validées
             $restForm = $this->connecteurFactory->getConnecteurConfig($newIdCe);
             $restForm->setData('url', $restUrl);
             $restForm->setData('username', $soapUsername);
@@ -255,7 +248,6 @@ final class MigrateIparapheurSoapRest extends BaseCommand
             $restForm->setData('iparapheur_metadata', $soapForm->get('iparapheur_metadata'));
             $restForm->setData('iparapheur_multi_doc', $soapForm->get('iparapheur_multi_doc'));
 
-            // Migration des associations
             $associations = $this->fluxEntiteSQL->getUsedByConnecteur($connectorInfo['id_ce']);
             foreach ($associations as $association) {
                 $this->connecteurAssociationService->addConnecteurAssociation(
@@ -277,6 +269,10 @@ final class MigrateIparapheurSoapRest extends BaseCommand
         return $result;
     }
 
+    /**
+     * @throws ClientExceptionInterface
+     * @throws JsonException
+     */
     private function validateAndConfigureRestConnector(
         IparapheurRestConnector $connector,
         DonneesFormulaire $form,
@@ -331,11 +327,9 @@ final class MigrateIparapheurSoapRest extends BaseCommand
                     $soapTypeName = trim($soapTypeName, '"\'');
 
                     $foundTypeId = null;
-                    $foundTypeName = null;
                     foreach ($typeList as $typeId => $typeName) {
                         if ($typeName === $soapTypeName) {
                             $foundTypeId = $typeId;
-                            $foundTypeName = $typeName;
                             break;
                         }
                     }
@@ -344,10 +338,10 @@ final class MigrateIparapheurSoapRest extends BaseCommand
                         $result['error'] = "Type $soapTypeName non trouvé dans la liste REST";
                     } else {
                         $form->setData('iparapheur_type_id', $foundTypeId);
-                        $form->setData('iparapheur_type', $foundTypeName);
+                        $form->setData('iparapheur_type', $soapTypeName);
 
                         $result['type_id'] = $foundTypeId;
-                        $result['type_name'] = $foundTypeName;
+                        $result['type_name'] = $soapTypeName;
                         $result['valid'] = true;
                     }
                 }
