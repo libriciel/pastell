@@ -87,7 +87,7 @@ class UpdateSftpFingerprintTest extends PastellTestCase
                 'connecteurType' => UpdateSftpFingerprint::GLANEUR_SFTP,
                 'connecteurConfig' => null,
                 'expectedOutput' => 'All SFTP connectors configured have valid fingerprints',
-                'fingerprintField' => 'glaneur_sftp_fingerprint',
+                'fingerprintField' => GlaneurSFTP::GLANEUR_SFTP_FINGERPRINT,
             ],
             'connecteur_depot_sftp_mauvais_fingerprint' => [
                 'connecteurType' => UpdateSftpFingerprint::DEPOT_SFTP,
