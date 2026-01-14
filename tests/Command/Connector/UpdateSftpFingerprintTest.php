@@ -6,7 +6,10 @@ namespace Pastell\Tests\Command\Connector;
 
 use ConnecteurEntiteSQL;
 use ConnecteurFactory;
+use DepotSFTP;
 use Exception;
+use GlaneurConnecteur;
+use GlaneurSFTP;
 use Pastell\Command\Connector\UpdateSftpFingerprint;
 use PastellTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -60,15 +63,13 @@ class UpdateSftpFingerprintTest extends PastellTestCase
         $output = $this->commandTester->getDisplay();
         static::assertStringContainsString($expectedOutput, $output);
 
-        // Si une mise à jour a eu lieu, vérifier que le fingerprint a changé
         if ($idCe !== null && $fingerprintField !== null && $initialFingerprint !== null && str_contains($output, 'Successfully updated')) {
             $config = $this->connecteurFactory->getConnecteurConfig($idCe);
             $updatedFingerprint = $config->get($fingerprintField);
 
             static::assertNotSame(
                 $initialFingerprint,
-                $updatedFingerprint,
-                "Le fingerprint devrait avoir changé de '$initialFingerprint' à '$updatedFingerprint'"
+                $updatedFingerprint
             );
         }
     }
@@ -83,36 +84,36 @@ class UpdateSftpFingerprintTest extends PastellTestCase
                 'fingerprintField' => null,
             ],
             'connecteur_glaneur_sftp_non_configure' => [
-                'connecteurType' => 'glaneur-sftp',
+                'connecteurType' => UpdateSftpFingerprint::GLANEUR_SFTP,
                 'connecteurConfig' => null,
                 'expectedOutput' => 'All SFTP connectors configured have valid fingerprints',
                 'fingerprintField' => 'glaneur_sftp_fingerprint',
             ],
             'connecteur_depot_sftp_mauvais_fingerprint' => [
-                'connecteurType' => 'depot-sftp',
+                'connecteurType' => UpdateSftpFingerprint::DEPOT_SFTP,
                 'connecteurConfig' => [
-                    'depot_sftp_host' => 'pastell-depot-sftp-1',
-                    'depot_sftp_port' => '22',
-                    'depot_sftp_login' => 'sftp',
-                    'depot_sftp_password' => 'sftp',
-                    'depot_sftp_repertoire' => '/upload',
-                    'depot_sftp_fingerprint' => 'SHA256:BADFINGERPRINTthatWillTriggerAnUpdate',
+                    DepotSFTP::DEPOT_SFTP_HOST => 'pastell-depot-sftp-1',
+                    DepotSFTP::DEPOT_SFTP_PORT => '22',
+                    DepotSFTP::DEPOT_SFTP_LOGIN => 'sftp',
+                    DepotSFTP::DEPOT_SFTP_PASSWORD => 'sftp',
+                    DepotSFTP::DEPOT_SFTP_DIRECTORY => '/upload',
+                    DepotSFTP::DEPOT_SFTP_FINGERPRINT => 'SHA256:BADFINGERPRINTthatWillTriggerAnUpdate',
                 ],
                 'expectedOutput' => 'Found 1 SFTP connector(s)',
-                'fingerprintField' => 'depot_sftp_fingerprint',
+                'fingerprintField' => DepotSFTP::DEPOT_SFTP_FINGERPRINT,
             ],
             'connecteur_glaneur_sftp_mauvais_fingerprint' => [
-                'connecteurType' => 'glaneur-sftp',
+                'connecteurType' => UpdateSftpFingerprint::GLANEUR_SFTP,
                 'connecteurConfig' => [
-                    'glaneur_sftp_host' => 'pastell-glaneur-sftp-1',
-                    'glaneur_sftp_port' => '22',
-                    'glaneur_sftp_login' => 'sftp',
-                    'glaneur_sftp_password' => 'sftp',
-                    'glaneur_sftp_repertoire' => '/upload',
-                    'glaneur_sftp_fingerprint' => 'SHA256:BADFINGERPRINTthatWillTriggerAnUpdate',
+                    GlaneurSFTP::GLANEUR_SFTP_HOST => 'pastell-glaneur-sftp-1',
+                    GlaneurSFTP::GLANEUR_SFTP_PORT => '22',
+                    GlaneurSFTP::GLANEUR_SFTP_LOGIN => 'sftp',
+                    GlaneurSFTP::GLANEUR_SFTP_PASSWORD => 'sftp',
+                    GlaneurConnecteur::DIRECTORY => '/upload',
+                    GlaneurSFTP::GLANEUR_SFTP_FINGERPRINT => 'SHA256:BADFINGERPRINTthatWillTriggerAnUpdate',
                 ],
                 'expectedOutput' => 'Found 1 SFTP connector(s)',
-                'fingerprintField' => 'glaneur_sftp_fingerprint',
+                'fingerprintField' => GlaneurSFTP::GLANEUR_SFTP_FINGERPRINT,
             ],
         ];
     }

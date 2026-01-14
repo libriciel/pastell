@@ -7,6 +7,7 @@ namespace Pastell\Command\Connector;
 use ConnecteurEntiteSQL;
 use ConnecteurFactory;
 use DepotConnecteur;
+use DepotSFTP;
 use Exception;
 use GlaneurSFTP;
 use Pastell\Command\BaseCommand;
@@ -51,10 +52,14 @@ final class UpdateSftpFingerprint extends BaseCommand
         if ($dryRun) {
             $this->getIO()->note('Running in DRY-RUN mode - no changes will be applied');
         }
-
-        $depotSftpConnectors = $this->connecteurEntiteSQL->getAllByConnecteurId(self::DEPOT_SFTP);
-        $glaneurSftpConnectors = $this->connecteurEntiteSQL->getAllByConnecteurId(self::GLANEUR_SFTP);
-        $allConnectors = array_merge($depotSftpConnectors, $glaneurSftpConnectors);
+        $connectorTypes = [
+            self::DEPOT_SFTP,
+            self::GLANEUR_SFTP,
+        ];
+        $allConnectors = [];
+        foreach ($connectorTypes as $type) {
+            $allConnectors = [...$allConnectors, ...$this->connecteurEntiteSQL->getAllByConnecteurId($type)];
+        }
         $totalConnectors = count($allConnectors);
 
         if ($totalConnectors === 0) {
@@ -157,13 +162,13 @@ final class UpdateSftpFingerprint extends BaseCommand
             $connector = $this->connecteurFactory->getConnecteurById($id_ce);
             switch ($id_connecteur) {
                 case self::DEPOT_SFTP:
-                    $fingerprintField = 'depot_sftp_fingerprint';
+                    $fingerprintField = DepotSFTP::DEPOT_SFTP_FINGERPRINT;
                     /** @var DepotConnecteur $connector */
                     $connector->listDirectory();
                     break;
 
                 case self::GLANEUR_SFTP:
-                    $fingerprintField = 'glaneur_sftp_fingerprint';
+                    $fingerprintField = GlaneurSFTP::GLANEUR_SFTP_FINGERPRINT;
                     /** @var GlaneurSFTP $connector */
                     $connector->listDirectories();
                     break;
