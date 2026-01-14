@@ -77,17 +77,11 @@ class ReplaceGedSshWithDepotSftp extends BaseCommand
                 $gedSshForm
             );
 
-            $associationsOfConnector = $this->fluxEntiteSQL->getUsedByConnecteur($associatedConnector['id_ce']);
-            foreach ($associationsOfConnector as $association) {
-                $this->connecteurAssociationService->addConnecteurAssociation(
-                    $association['id_e'],
-                    $depotSftpId,
-                    $association['type'],
-                    0,
-                    $association['flux'],
-                    $association['num_same_type']
-                );
-            }
+            $this->connecteurAssociationService->migrateConnecteurAssociation(
+                $associatedConnector['id_ce'],
+                $depotSftpId,
+                0
+            );
             $this->getIO()->progressAdvance();
         }
 

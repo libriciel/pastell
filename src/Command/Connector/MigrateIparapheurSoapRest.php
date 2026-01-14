@@ -248,19 +248,12 @@ final class MigrateIparapheurSoapRest extends BaseCommand
             $restForm->setData('iparapheur_metadata', $soapForm->get('iparapheur_metadata'));
             $restForm->setData('iparapheur_multi_doc', $soapForm->get('iparapheur_multi_doc'));
 
-            $associations = $this->fluxEntiteSQL->getUsedByConnecteur($connectorInfo['id_ce']);
-            foreach ($associations as $association) {
-                $this->connecteurAssociationService->addConnecteurAssociation(
-                    $association['id_e'],
-                    $newIdCe,
-                    $association['type'],
-                    0,
-                    $association['flux'],
-                    $association['num_same_type']
-                );
-            }
+            $result['associations_migrated'] = $this->connecteurAssociationService->migrateConnecteurAssociation(
+                $connectorInfo['id_ce'],
+                $newIdCe,
+                0
+            );
 
-            $result['associations_migrated'] = count($associations);
             $result['success'] = true;
         } catch (Exception $e) {
             $result['error'] = $e->getMessage();
