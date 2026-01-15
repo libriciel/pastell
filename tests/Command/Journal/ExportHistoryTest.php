@@ -100,20 +100,14 @@ final class ExportHistoryTest extends PastellTestCase
         $preuveBase64Expected = trim((string)file_get_contents(__DIR__ . '/fixtures/preuve_base64.txt'));
         $preuveTexteExpected = file_get_contents(__DIR__ . '/fixtures/preuve_texte.txt');
 
-        // Créer un fichier temporaire pour le test
-        $tmpFolder = new TmpFolder();
-        $tmp = $tmpFolder->create();
-        $outFile = $tmp . '/test_export_preuve.csv';
+        $outFile = $this->tmp_folder . '/test_export_preuve.csv';
 
-        // Créer les mocks
         $sqlQuery = $this->createMock(SQLQuery::class);
-        // Mock prepareAndExecute: vérifier que la requête contient les bons éléments
         $sqlQuery->expects($this->once())
             ->method('prepareAndExecute')
             ->with(
                 $this->stringContains('SELECT jh.*, d.titre'),
                 $this->callback(function ($params) {
-                    // Vérifier les paramètres: ['2025-01-01', '2025-12-31', 'bcd28d74-4669-4b4d-a481-99f3e41fa9a9']
                     return count($params) === 3
                         && $params[0] === '2025-01-01'
                         && $params[1] === '2025-12-31'
@@ -121,12 +115,10 @@ final class ExportHistoryTest extends PastellTestCase
                 })
             );
 
-        // Mock hasMoreResult: retourne true pour la première ligne, puis false
         $sqlQuery->expects($this->exactly(2))
             ->method('hasMoreResult')
             ->willReturnOnConsecutiveCalls(true, false);
 
-        // Mock fetch: retourne une ligne de données correspondant au fixture CSV
         $sqlQuery->expects($this->once())
             ->method('fetch')
             ->willReturn([
@@ -149,14 +141,11 @@ final class ExportHistoryTest extends PastellTestCase
                 'siren' => '491011698',
             ]);
 
-        // Utiliser le vrai CSVoutput pour générer le CSV
         $csvOutput = $this->getObjectInstancier()->getInstance(CSVoutput::class);
 
-        // Créer la commande avec les mocks
         $command = new ExportHistory($sqlQuery, $csvOutput);
         $tester = new CommandTester($command);
 
-        // Exécuter la commande
         $status = $tester->execute([
             'date_debut'  => '01/01/2025',
             'date_fin'    => '31/12/2025',
@@ -165,19 +154,15 @@ final class ExportHistoryTest extends PastellTestCase
             '--id_d' => 'bcd28d74-4669-4b4d-a481-99f3e41fa9a9',
         ]);
 
-        // Vérifications
         self::assertSame(Command::SUCCESS, $status);
-        // Lire le contenu du CSV généré
         $content = file_get_contents($outFile);
         self::assertStringContainsString('7304', $content);
         self::assertStringContainsString('bcd28d74-4669-4b4d-a481-99f3e41fa9a9', $content);
         self::assertStringContainsString('Libriciel', $content);
 
-        // Extraire la ligne CSV (en ignorant le header)
         $lines = explode("\n", $content);
         self::assertCount(3, $lines); // Header + 1 ligne de données + ligne vide
 
-        // Parser la ligne de données (ligne 2, index 1)
         $dataLine = str_getcsv($lines[1], escape: '');
         self::assertSame(
             $preuveBase64Expected,
@@ -185,14 +170,11 @@ final class ExportHistoryTest extends PastellTestCase
             'Le contenu du champ "preuve tsr (base64)" doit correspondre exactement au fichier ./fixtures/preuve_base64.txt'
         );
 
-        // Vérifier que le base64 peut être décodé et correspond au binaire
         $preuveDecoded = base64_decode($dataLine[8], true);
         self::assertSame($preuveTsrBinary, $preuveDecoded, 'La preuve décodée doit correspondre au fichier TSR original');
 
-        // Vérifier que la commande openssl ts peut valider la preuve et retourne le contenu attendu
-        $tsrTempFile = $tmp . '/preuve_test.tsr';
+        $tsrTempFile = $this->tmp_folder . '/preuve_test.tsr';
         file_put_contents($tsrTempFile, $preuveDecoded);
-        // Exécuter la commande openssl ts pour vérifier le contenu
         $opensslOutput = shell_exec("/usr/bin/openssl ts -reply -in {$tsrTempFile} -text 2>/dev/null");
         self::assertSame($preuveTexteExpected, $opensslOutput, 'La preuve texte doit correspondre au fichier preuve_texte.txt');
 
@@ -203,7 +185,5 @@ final class ExportHistoryTest extends PastellTestCase
         self::assertStringContainsString('Time stamp: Aug 28 15:34:35 2025 GMT', $opensslOutput);
         self::assertStringContainsString('TSA: DirName:/C=FR/ST=HERAULT/L=MONTPELLIER/O=LIBRICIEL', $opensslOutput);
         self::assertStringContainsString('emailAddress=test@localhost', $opensslOutput);
-
-        $tmpFolder->delete($tmp);
     }
 }

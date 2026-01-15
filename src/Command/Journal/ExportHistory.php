@@ -106,15 +106,12 @@ final class ExportHistory extends Command
             $withPreuve = $input->getOption(self::OPT_WITH_PREUVE);
 
             $headers = [
-                'id_j', 'type', 'id_e', 'id_u', 'id_d', 'action', 'message', 'date'
-            ];
-            if ($withPreuve) {
-                $headers[] = 'preuve tsr (base64)';
-            }
-            $headers = array_merge($headers, [
+                'id_j', 'type', 'id_e', 'id_u', 'id_d', 'action', 'message', 'date',
+                ...($withPreuve ? ['preuve tsr (base64)'] : []),
                 'date_horodatage', 'message_horodate', 'document_type', 'titre',
                 'entité', 'nom', 'prenom', 'siren'
-            ]);
+            ];
+
             $this->csvOutput->displayLine($headers);
 
             $rowCount = 0;
