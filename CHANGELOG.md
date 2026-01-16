@@ -5,6 +5,7 @@
 - Corrige une erreur qui survenait lors du passage d'un mauvais identifiant dans certaines pages de gestion utilisateurs. #2379
 - Les pages ne sont plus indexées sur les moteurs de recherche #2369
 - Certains fichiers envoyés par API n'étaient pas correctement supprimés dans le répertoire temporaire #2396
+- Amélioration de la génération d'une archive en mode ZIP utilisant des expressions xpath #2382
 
 ## Sécurité
 
