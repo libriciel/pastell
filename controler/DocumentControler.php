@@ -156,7 +156,7 @@ class DocumentControler extends PastellControler
 
         $this->setViewParameter('recuperation_fichier_url', "Document/recuperationFichier?id_d=$id_d&id_e=$id_e");
         if ($this->hasDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_DAEMON))) {
-            $this->setViewParameter('job_list', $this->getWorkerSQL()->getJobListWithWorkerForDocument($id_e, $id_d));
+            $this->setViewParameter('job_list', $this->getJobQueueSQL()->getJobsForDocument($id_d));
         } else {
             $this->setViewParameter('job_list', false);
         }

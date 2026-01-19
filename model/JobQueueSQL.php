@@ -33,7 +33,7 @@ class JobQueueSQL extends SQL
         $job->id_job = $info['id_job'];
         $job->id_daemon = $info['id_daemon'];
         $job->daemon = $this->daemonSQL->getDaemon($job->id_daemon);
-        $job->worker = $this->workerSQL->getWorker($job->id_job);
+        $job->worker = $this->workerSQL->getRunningWorker($job->id_job);
         $job->entite_denomination = $this->entiteSQL->getDenomination($job->id_e);
         if ($job->type === Job::TYPE_DOCUMENT) {
             $document_info = $this->documentSQL->getInfo($job->id_d);
@@ -47,6 +47,15 @@ class JobQueueSQL extends SQL
             }
         }
         return $job;
+    }
+
+    private function mapResultToJobList(array $result): array
+    {
+        $job_list = [];
+        foreach ($result as $job_info) {
+            $job_list[] = $this->mapToJob($job_info);
+        }
+        return $job_list;
     }
 
     public function deleteConnecteur($id_ce)
@@ -82,11 +91,32 @@ class JobQueueSQL extends SQL
         return $this->queryOne($sql, $id_ce, $etat_source);
     }
 
+    public function getJobsForConnector(int $id_ce): array
+    {
+        $sql = <<<SQL
+SELECT * FROM job_queue
+WHERE id_ce=?;
+SQL;
+        $result = $this->query($sql, $id_ce);
+        return $this->mapResultToJobList($result);
+    }
+
     public function getJobIdForDocument($id_e, $id_d)
     {
         $sql = "SELECT id_job FROM job_queue WHERE id_e=? AND id_d=?";
         return $this->queryOne($sql, $id_e, $id_d);
     }
+
+    public function getJobsForDocument(string $id_d): array
+    {
+        $sql = <<<SQL
+SELECT * FROM job_queue
+WHERE id_d=?;
+SQL;
+        $result = $this->query($sql, $id_d);
+        return $this->mapResultToJobList($result);
+    }
+
 
     public function getJobIdForDocumentAndAction(int $id_e, string $id_d, string $action)
     {
@@ -246,11 +276,7 @@ SQL;
         $last_hour = date('Y-m-d H:i:s', strtotime('-1 hour'));
         $sql = 'SELECT * FROM job_queue WHERE next_try < ? AND nb_try > 0 AND is_lock=0 AND id_daemon = ? ORDER BY next_try DESC';
         $result = $this->query($sql, [$last_hour, $id_daemon]);
-        $job_list = [];
-        foreach ($result as $job_info) {
-            $job_list[] = $this->mapToJob($job_info);
-        }
-        return $job_list;
+        return $this->mapResultToJobList($result);
     }
 
     public function getJobLock()
@@ -295,11 +321,8 @@ SQL;
             $sql .= ' LIMIT ' . ($offset !== null ? "$offset, $limit" : "$limit");
         }
 
-        $result = [];
-        foreach ($this->query($sql, $id_daemon) as $info) {
-            $result[] = $this->mapToJob($info);
-        }
-        return $result;
+        $result = $this->query($sql, $id_daemon);
+        return $this->mapResultToJobList($result);
     }
 
     /**
@@ -312,11 +335,7 @@ SQL;
         JOIN entite_ancetre ea ON ea.id_e = jq.id_e
         WHERE id_e_ancetre = ?';
         $results = $this->query($sql, [$id_e]);
-        $job_list = [];
-        foreach ($results as $job_info) {
-            $job_list[] = $this->mapToJob($job_info);
-        }
-        return $job_list;
+        return $this->mapResultToJobList($results);
     }
 
     /**
@@ -329,11 +348,7 @@ SQL;
         ORDER BY next_try DESC
         LIMIT $offset, $limit";
         $results = $this->query($sql);
-        $job_list = [];
-        foreach ($results as $job_info) {
-            $job_list[] = $this->mapToJob($job_info);
-        }
-        return $job_list;
+        return $this->mapResultToJobList($results);
     }
 
     /**
@@ -377,12 +392,7 @@ SQL;
               LIMIT $offset, $limit";
 
         $result = $this->query($sql, $params);
-        $job_list = [];
-        foreach ($result as $job_info) {
-            $job = $this->mapToJob($job_info);
-            $job_list[] = $job;
-        }
-        return $job_list;
+        return $this->mapResultToJobList($result);
     }
 
     public function getNbJob($filtre, ?int $id_daemon = null): int

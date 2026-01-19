@@ -179,32 +179,10 @@ class WorkerSQL extends SQL
         return $this->query($sql);
     }
 
-    public function menage($id_job)
-    {
-        $sql = "DELETE FROM worker WHERE id_job=? AND termine=1";
-        $this->query($sql, $id_job);
-    }
-
     public function menageAll()
     {
         $sql = "DELETE FROM worker WHERE termine=1";
         $this->query($sql);
-    }
-
-    public function getJobListWithWorkerForConnecteur($id_ce)
-    {
-        $sql = "SELECT *, job_queue.id_job as id_job FROM job_queue " .
-                " LEFT JOIN worker ON job_queue.id_job = worker.id_job " .
-                " WHERE id_ce=? ";
-        return $this->query($sql, $id_ce);
-    }
-
-    public function getJobListWithWorkerForDocument($id_e, $id_d)
-    {
-        $sql = "SELECT *, job_queue.id_job as id_job FROM job_queue " .
-                " LEFT JOIN worker ON job_queue.id_job = worker.id_job " .
-                " WHERE id_e=? AND id_d=?";
-        return $this->query($sql, $id_e, $id_d);
     }
 
     public function getActionEnCours($id_e, $id_d)

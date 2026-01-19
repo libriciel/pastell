@@ -170,16 +170,6 @@ class WorkerSQLTest extends PastellTestCase
         static::assertSame(1, $this->jobQueueSQL->getNbJob('actif'));
     }
 
-    public function testGetJobListWithWorkerForConnecteur(): void
-    {
-        static::assertEmpty($this->workerSQL->getJobListWithWorkerForConnecteur(11));
-    }
-
-    public function testGetJobListWithWorkerForDocument(): void
-    {
-        static::assertEmpty($this->workerSQL->getJobListWithWorkerForDocument(42, 8));
-    }
-
     public function testGetActionEnCours(): void
     {
         static::assertEmpty($this->workerSQL->getActionEnCours(42, 8));

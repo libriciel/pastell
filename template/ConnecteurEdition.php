@@ -10,7 +10,7 @@
  * @var array $connecteur_entite_info
  * @var bool $has_definition
  * @var array $action_possible
- * @var array $job_list
+ * @var Job[] $job_list
  * @var string $return_url
  * @var bool $daemon_edition
  * @var bool $daemon_global_lecture
@@ -189,19 +189,19 @@ $listConnectorsUrl = \sprintf(
                 <th>Fonction</th>
             <?php endif; ?>
         </tr>
-        <?php foreach ($job_list as $job_info) : ?>
+        <?php foreach ($job_list as $job) : ?>
             <tr>
                 <td>
-                    <a href='<?php $this->url("Daemon/detail?id_job={$job_info['id_job']}"); ?>'>
-                        <?php echo $job_info['id_job']; ?>
+                    <a href='<?php $this->url("Daemon/detail?id_job={$job->id_job}"); ?>'>
+                        <?php echo $job->id_job; ?>
                     </a>
                 </td>
                 <td>
-                    <?php if ($job_info['is_lock']) : ?>
+                    <?php if ($job->is_lock) : ?>
                         <p class='alert alert-danger'>
-                            OUI  <br/>Depuis le <?php echo $this->getFancyDate()->getDateFr($job_info['lock_since']);?><br/>
+                            OUI  <br/>Depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since);?><br/>
                         <?php if ($daemon_edition) : ?>
-                            <a href='<?php $this->url("Daemon/unlock?id_job={$job_info['id_job']}&return_url={$return_url}") ?>'
+                            <a href='<?php $this->url("Daemon/unlock?id_job={$job->id_job}&return_url={$return_url}") ?>'
                            class=" btn-warning btn"> <i class="fa fa-unlock"></i>&nbsp;Reprendre</a></p>
                         <?php endif;?>
                     <?php else : ?>
@@ -211,7 +211,7 @@ $listConnectorsUrl = \sprintf(
                                 <?php
                                 $lockJobUrl = sprintf(
                                     'Daemon/lock?id_job=%s&return_url=%s',
-                                    $job_info['id_job'],
+                                    $job->id_job,
                                     $return_url
                                 );
                                 ?>
@@ -220,56 +220,54 @@ $listConnectorsUrl = \sprintf(
                             <?php endif;?>
                     <?php endif;?>
                 </td>
-                <td><?php hecho($job_info['id_daemon'])?></td>
-                <td><?php hecho($job_info['etat_cible'])?></td>
-                <td><?php echo $this->getFancyDate()->getDateFr($job_info['first_try']) ?></td>
-                <td><?php echo $this->getFancyDate()->getDateFr($job_info['last_try']) ?></td>
-                <td><?php echo $job_info['nb_try'] ?></td>
-                <td><?php echo $job_info['last_message'] ?></td>
+                <td><?php hecho($job->id_daemon)?></td>
+                <td><?php hecho($job->etat_cible)?></td>
+                <td><?php echo $this->getFancyDate()->getDateFr($job->first_try) ?></td>
+                <td><?php echo $this->getFancyDate()->getDateFr($job->last_try) ?></td>
+                <td><?php echo $job->nb_try ?></td>
+                <td><?php echo $job->last_message ?></td>
                 <td>
-                    <?php echo $this->getFancyDate()->getDateFr($job_info['next_try']) ?><br/>
-                    <?php echo $this->getFancyDate()->getTimeElapsed($job_info['next_try'])?>
+                    <?php echo $this->getFancyDate()->getDateFr($job->next_try) ?><br/>
+                    <?php echo $this->getFancyDate()->getTimeElapsed($job->next_try)?>
                 </td>
-                <td>
-                    <?php hecho($job_info['id_verrou']) ?>
-                </td>
-                <td><?php echo $job_info['id_worker']?></td>
-                <td>
-                    <?php echo $job_info['pid']?>
-                    <?php if ($job_info['pid']) : ?>
-                        <?php if (! $job_info['termine']) : ?>
-                            <?php if ($daemon_edition) : ?>
-                                <?php
+                <td><?php hecho($job->id_verrou); ?></td>
+                <?php if ($job->worker) : ?>
+                    <td><?php echo $job->worker->id_worker; ?></td>
+                    <td>
+                        <?php echo $job->worker->pid; ?>
+                        <?php if (! $job->worker->termine) : ?>
+                            <?php if ($daemon_edition) :
                                 $killJobUrl = sprintf(
                                     'Daemon/kill?id_worker=%s&return_url=%s',
-                                    $job_info['id_worker'],
+                                    $job->worker->id_worker,
                                     $return_url
                                 );
                                 ?>
-                                <a href='<?php $this->url($killJobUrl); ?>'
-                                   class='btn btn-danger'>
-                                    <i class="fa fa-power-off"></i>&nbsp;
-                                    Tuer</a>
+                                <a href='<?php $this->url($killJobUrl); ?>' class='btn btn-danger'>
+                                    <i class="fa fa-power-off"></i>&nbsp;Tuer
+                                </a>
                             <?php endif; ?>
                         <?php else : ?>
-                        <br/><?php echo $job_info['message']?>
-                        <?php endif;?>
-                    <?php endif;?>
-                </td>
+                            <br/><?php echo $job->worker->message; ?>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <?php echo $this->getFancyDate()->getDateFr($job->worker->date_begin); ?><br/>
+                        <?php echo $this->getFancyDate()->getTimeElapsed($job->worker->date_begin); ?>
+                    </td>
+                <?php else : ?>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                <?php endif; ?>
                 <td>
-                    <?php if ($job_info['id_worker']) : ?>
-                        <?php echo $this->getFancyDate()->getDateFr($job_info['date_begin'])?><br/>
-                        <?php echo $this->getFancyDate()->getTimeElapsed($job_info['date_begin'])?>
-                    <?php endif;?>
-                </td>
-                <td>
-                    <?php if ($daemon_edition) : ?>
-                        <?php
-                        $deleteJobUrl = "Daemon/deleteJob?id_job={$job_info['id_job']}&id_ce={$job_info['id_ce']}";
+                    <?php if ($daemon_edition) :
+                        $deleteJobUrl = "Daemon/deleteJob?id_job={$job->id_job}&id_ce={$job->id_ce}";
                         ?>
-                        <a href="<?php echo $deleteJobUrl; ?>"
-                           class="btn btn-danger"><i class="fa fa-trash"></i>&nbsp;Supprimer</a>
-                    <?php endif;?>
+                        <a href="<?php echo $deleteJobUrl; ?>" class="btn btn-danger">
+                            <i class="fa fa-trash"></i>&nbsp;Supprimer
+                        </a>
+                    <?php endif; ?>
                 </td>
             </tr>
         <?php endforeach;?>

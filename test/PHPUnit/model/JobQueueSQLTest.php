@@ -4,6 +4,7 @@ class JobQueueSQLTest extends PastellTestCase
 {
     public const ID_D = 'foo';
     private JobQueueSQL $jobQueueSQL;
+    private WorkerSQL $workerSQL;
 
     /**
      * @var Job
@@ -14,6 +15,7 @@ class JobQueueSQLTest extends PastellTestCase
     {
         parent::setUp();
         $this->jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
+        $this->workerSQL = $this->getObjectInstancier()->getInstance(WorkerSQL::class);
         $this->job = new Job();
     }
 
@@ -132,5 +134,41 @@ class JobQueueSQLTest extends PastellTestCase
         static::assertCount(3, $job_list);
         $job_list = $this->jobQueueSQL->getAllJobs(9, 3);
         static::assertCount(1, $job_list);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetJobsForConnector(): void
+    {
+        $job = $this->getNewJob();
+        $job->id_ce = 1;
+        $this->jobQueueSQL->createJob($job);
+        static::assertCount(1, $this->jobQueueSQL->getJobsForConnector(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetJobsForDocument(): void
+    {
+        $job = $this->getNewJob();
+        $job->id_d = '12345ABC';
+        $this->jobQueueSQL->createJob($job);
+        static::assertCount(1, $this->jobQueueSQL->getJobsForDocument('12345ABC'));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetWorkerFromJob(): void
+    {
+        $job_id = $this->jobQueueSQL->createJob($this->getNewJob());
+        $worker_id = $this->workerSQL->create('0');
+        $this->workerSQL->attachJob($worker_id, $job_id);
+
+        $worker = $this->workerSQL->getWorker($worker_id);
+        $job_result = $this->jobQueueSQL->getJob($job_id);
+        static::assertEquals($worker, $job_result->worker);
     }
 }
