@@ -2,6 +2,13 @@
 
 class SedaNGTest extends PastellTestCase
 {
+    private SedaNG $sedaNG;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->sedaNG = $this->getObjectInstancier()->getInstance(SedaNG::class);
+    }
     /**
      * @throws Exception
      */
@@ -22,9 +29,7 @@ class SedaNGTest extends PastellTestCase
         ]);
 
         /** @var FluxData $fluxData */
-
-        $sedaNG = new SedaNG();
-        $sedaNG->generateArchive($fluxData, $archive_path);
+        $this->sedaNG->generateArchive($fluxData, $archive_path);
 
         exec("tar xvzf $archive_path -C $tmp_folder");
         $tmp_content = scandir($tmp_folder);
@@ -55,9 +60,7 @@ class SedaNGTest extends PastellTestCase
         ]);
 
         /** @var FluxData $fluxData */
-
-        $sedaNG = new SedaNG();
-        $sedaNG->generateArchive($fluxData, $archive_path);
+        $this->sedaNG->generateArchive($fluxData, $archive_path);
 
         exec("tar xvzf $archive_path -C $tmp_folder");
         $tmp_content = scandir($tmp_folder . "/fixtures/");
@@ -85,10 +88,9 @@ class SedaNGTest extends PastellTestCase
             'profil_agape.xml',
             __DIR__ . "/fixtures/connecteur_info.xml"
         );
-        $sedaNG = new SedaNG();
-        $sedaNG->setConnecteurConfig($connecteurConfig);
+        $this->sedaNG->setConnecteurConfig($connecteurConfig);
 
-        $info = $sedaNG->getProprietePastellConnecteur();
+        $info = $this->sedaNG->getProprietePastellConnecteur();
         $this->assertEquals(['id_service_archive','id_producteur_hors_rh','id_producteur_rh'], $info);
     }
 
@@ -115,8 +117,7 @@ class SedaNGTest extends PastellTestCase
         }
         $fluxData->method('getFilelist')->willReturn($fileList);
 
-        $sedaNG = new SedaNG();
-        $sedaNG->generateArchive($fluxData, $archive_path);
+        $this->sedaNG->generateArchive($fluxData, $archive_path);
         $tmpFolder->delete($tmp_folder);
     }
 }

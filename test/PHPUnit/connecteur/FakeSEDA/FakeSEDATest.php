@@ -7,7 +7,7 @@ class FakeSEDATest extends PastellTestCase
      */
     public function testCoverAll(): void
     {
-        $fakeSEDA = new FakeSEDA();
+        $fakeSEDA = $this->getObjectInstancier()->getInstance(FakeSEDA::class);
         $fakeSEDA->setDataDir($this->getObjectInstancier()->getInstance('data_dir'));
         $donnesFormulaire = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
         $fakeSEDA->setConnecteurConfig($donnesFormulaire);

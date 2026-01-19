@@ -61,7 +61,6 @@ abstract class SEDAConnecteur extends Connecteur
                 $archive_path,
             )
         );
-        dd($this->archiveCreationTimeout);
         $process->setTimeout($this->archiveCreationTimeout);
         $process->run();
 

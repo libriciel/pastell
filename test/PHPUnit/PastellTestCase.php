@@ -67,6 +67,7 @@ abstract class PastellTestCase extends TestCase
         $this->objectInstancier->setInstance('redis_port', 0);
         $this->objectInstancier->setInstance('disable_journal_horodatage', false);
         $this->objectInstancier->setInstance('rateLimiterVariable', 'REMOTE_ADDR');
+        $this->objectInstancier->setInstance('archiveCreationTimeout', 1200);
 
         $this->objectInstancier->setInstance(LockFactory::class, new LockFactory(new InMemoryStore()));
 
