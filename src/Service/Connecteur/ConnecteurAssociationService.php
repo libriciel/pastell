@@ -7,6 +7,7 @@ use FluxDefinitionFiles;
 use FluxEntiteSQL;
 use Exception;
 use Pastell\Service\Droit\DroitService;
+use PHPUnit\Framework\Constraint\Count;
 use UnrecoverableException;
 
 class ConnecteurAssociationService
@@ -128,7 +129,6 @@ class ConnecteurAssociationService
         }
 
         $associations = $this->fluxEntiteSQL->getUsedByConnecteur($id_ce_source);
-        $count = 0;
 
         foreach ($associations as $association) {
             $this->addConnecteurAssociation(
@@ -139,10 +139,9 @@ class ConnecteurAssociationService
                 $association['flux'],
                 $association['num_same_type']
             );
-            $count++;
         }
 
-        return $count;
+        return count($associations);
     }
 
     /**

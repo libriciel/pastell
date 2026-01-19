@@ -283,7 +283,6 @@ final class MigrateIparapheurSoapRest extends BaseCommand
         ];
 
         try {
-            // Validation du tenant
             $tenantList = $connector->getTenantList();
             if (count($tenantList) === 0) {
                 $result['error'] = 'Aucun tenant trouvé';
@@ -299,7 +298,6 @@ final class MigrateIparapheurSoapRest extends BaseCommand
                 $result['tenant_id'] = $tenantId;
                 $result['tenant_name'] = $tenantName;
 
-                // Validation du desk
                 $deskList = $connector->getDeskList();
                 if (count($deskList) === 0) {
                     $result['error'] = 'Aucun desk trouvé';
@@ -315,7 +313,6 @@ final class MigrateIparapheurSoapRest extends BaseCommand
                     $result['desk_id'] = $deskId;
                     $result['desk_name'] = $deskName;
 
-                    // Validation du type
                     $typeList = $connector->getTypeList();
                     $soapTypeName = trim($soapTypeName, '"\'');
 
@@ -395,7 +392,6 @@ final class MigrateIparapheurSoapRest extends BaseCommand
             return;
         }
 
-        // Suppression des connecteurs SOAP
         $this->getIO()->progressStart(count($successfulMigrations));
         $deleted = 0;
         $errors = [];
@@ -428,7 +424,6 @@ final class MigrateIparapheurSoapRest extends BaseCommand
 
         $this->getIO()->progressFinish();
 
-        // Affichage des résultats
         if ($deleted > 0) {
             $this->getIO()->success(sprintf(
                 '%d connecteur(s) SOAP supprimé(s) avec succès',

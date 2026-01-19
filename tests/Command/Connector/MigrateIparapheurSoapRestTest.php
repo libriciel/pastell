@@ -54,9 +54,6 @@ class MigrateIparapheurSoapRestTest extends PastellTestCase
         );
     }
 
-    /**
-     * Fournit les scénarios de test pour la migration
-     */
     public function migrationScenariosProvider(): array
     {
         return [
@@ -166,27 +163,20 @@ class MigrateIparapheurSoapRestTest extends PastellTestCase
 
             $connecteurEntiteSQL = $this->getObjectInstancier()->getInstance(ConnecteurEntiteSQL::class);
             $restConnectors = $connecteurEntiteSQL->getAllEntiteConnectorById(MigrateIparapheurSoapRest::IPARAPHEUR_REST);
-            static::assertNotEmpty($restConnectors, 'A REST connector should have been created');
+            static::assertNotEmpty($restConnectors);
 
             $fluxEntiteSQL = $this->getObjectInstancier()->getInstance(FluxEntiteSQL::class);
             $newRestConnectorId = $restConnectors[0]['id_ce'];
             $associations = $fluxEntiteSQL->getUsedByConnecteur($newRestConnectorId);
-            static::assertCount(1, $associations, 'Association should be migrated');
+            static::assertCount(1, $associations);
         } else {
             static::assertStringContainsString('Résumé: 0 succès, 1 erreur(s)', $output);
             if ($expectedErrorPattern !== null) {
-                static::assertMatchesRegularExpression(
-                    $expectedErrorPattern,
-                    $output,
-                    'Error message should match expected pattern'
-                );
+                static::assertMatchesRegularExpression($expectedErrorPattern, $output);
             }
         }
     }
 
-    /**
-     * Construit un mock HTTP client qui simule les réponses de l'API iParapheur
-     */
     private function buildMockClient(?array $tenants, ?array $desks, ?array $types, ?Exception $exception): ClientInterface
     {
         $clientInterface = $this->getMockBuilder(ClientInterface::class)->getMock();
@@ -201,7 +191,6 @@ class MigrateIparapheurSoapRestTest extends PastellTestCase
             ->willReturnCallback(function (RequestInterface $request) use ($tenants, $desks, $types): ResponseInterface {
                 $path = $request->getUri()->getPath();
 
-                // Auth endpoint
                 if (str_contains($path, '/token')) {
                     return new HttpResponse(
                         200,
@@ -210,7 +199,6 @@ class MigrateIparapheurSoapRestTest extends PastellTestCase
                     );
                 }
 
-                // Tenants endpoint
                 if (str_ends_with($path, '/tenant')) {
                     if ($tenants === null) {
                         throw new IpRestApiException('Erreur de connexion API');
@@ -250,7 +238,6 @@ class MigrateIparapheurSoapRestTest extends PastellTestCase
                     );
                 }
 
-                // Desks endpoint
                 if (str_contains($path, '/desk') && !str_contains($path, '/types')) {
                     $deskContent = [];
                     foreach ($desks ?? [] as $desk) {
@@ -295,7 +282,6 @@ class MigrateIparapheurSoapRestTest extends PastellTestCase
                     );
                 }
 
-                // Types endpoint
                 if (str_contains($path, '/types/creation-allowed')) {
                     $typeContent = [];
                     foreach ($types ?? [] as $type) {
