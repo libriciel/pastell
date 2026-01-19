@@ -48,6 +48,7 @@ $objectInstancier->setInstance('redis_server', REDIS_SERVER);
 $objectInstancier->setInstance('redis_port', REDIS_PORT);
 
 $objectInstancier->setInstance('rateLimiterVariable', RATE_LIMITER_VARIABLE);
+$objectInstancier->setInstance('archiveCreationTimeout', ARCHIVE_CREATION_TIMEOUT);
 
 if (REDIS_SERVER && !TESTING_ENVIRONNEMENT) {
     $objectInstancier->setInstance(RedisWrapper::class, new RedisWrapper(REDIS_SERVER, REDIS_PORT));

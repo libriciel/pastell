@@ -17,6 +17,10 @@
 - Faille XSS #2375
 - Possibilité de récupérer la liste des entités sans avoir les bonnes permissions #2397
 
+## Ajouts 
+
+- Ajout de la variable d'environnement `ARCHIVE_CREATION_TIMEOUT` pour définir le temps maximum (en secondes) pour la création d'une archive #2386
+
 # [4.0.27] - 2025-11-10
 
 ## Ajouts
