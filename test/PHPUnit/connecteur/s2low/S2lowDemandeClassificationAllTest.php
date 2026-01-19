@@ -6,7 +6,7 @@ class S2lowDemandeClassificationAllTest extends PastellTestCase
 {
     use CurlUtilitiesTestTrait;
 
-    private function getS2low(string $curl_response, int $id_e): array
+    private function setUpS2lowConnector(string $curl_response, int $id_e): void
     {
         $this->mockCurl([
             '/admin/users/api-list-login.php' => 'ok',
@@ -14,13 +14,13 @@ class S2lowDemandeClassificationAllTest extends PastellTestCase
             '/modules/actes/actes_classification_fetch.php?api=1' => $curl_response,
         ]);
 
-        return $this->createConnector('s2low', 'S2LOW', $id_e);
+        $this->createConnector('s2low', 'S2LOW', $id_e);
     }
 
     public function testWhenGettingLatestClassification(): void
     {
-        $this->getS2low('S²low a répondu : OK', self::ID_E_COL);
-        $this->getS2low('S²low a répondu : OK', self::ID_E_SERVICE);
+        $this->setUpS2lowConnector('S²low a répondu : OK', self::ID_E_COL);
+        $this->setUpS2lowConnector('S²low a répondu : OK', self::ID_E_SERVICE);
 
         $globalConnector = $this->createConnector('s2low', 'S2low', 0);
         $actionResult = $this->triggerActionOnConnector($globalConnector['id_ce'], 'demande-classification');
