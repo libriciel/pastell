@@ -227,15 +227,32 @@ class RoleUtilisateur extends SQL
         return $this->query($sql, $data);
     }
 
-    public function getAllEntiteWithFille($id_u, $droit)
+    public function getAllEntiteWithFille(int $id_u, string $droit, ?string $active): array
     {
-        $sql = "SELECT DISTINCT entite.id_e,entite.denomination,entite.siren,entite.type,entite.centre_de_gestion,entite.entite_mere,entite.is_active FROM entite_ancetre " .
-                " JOIN utilisateur_role ON entite_ancetre.id_e_ancetre = utilisateur_role.id_e " .
-                " JOIN role_droit ON utilisateur_role.role=role_droit.role " .
-                " JOIN entite ON entite_ancetre.id_e=entite.id_e " .
-                " WHERE utilisateur_role.id_u=? AND droit=? " .
-                " ORDER BY entite_mere,denomination";
-        return $this->query($sql, $id_u, $droit);
+        $sql = <<<EOT
+SELECT DISTINCT entite.id_e,
+                entite.denomination,
+                entite.siren,
+                entite.type,
+                entite.centre_de_gestion,
+                entite.entite_mere,
+                entite.is_active
+FROM entite_ancetre
+JOIN utilisateur_role ON entite_ancetre.id_e_ancetre = utilisateur_role.id_e
+JOIN role_droit ON utilisateur_role.role=role_droit.role
+JOIN entite ON entite_ancetre.id_e=entite.id_e
+WHERE utilisateur_role.id_u=? AND droit=?
+EOT;
+        $data[] = $id_u;
+        $data[] = $droit;
+        if ($active !== null) {
+            $sql .= ' AND entite.is_active=?';
+            $data[] = filter_var($active, FILTER_VALIDATE_BOOL);
+        }
+
+        $sql .= ' ORDER BY entite.id_e,droit;';
+
+        return $this->query($sql, $data);
     }
 
 
