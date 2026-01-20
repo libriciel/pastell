@@ -7,28 +7,18 @@ use FluxDefinitionFiles;
 use FluxEntiteSQL;
 use Exception;
 use Pastell\Service\Droit\DroitService;
+use PHPUnit\Framework\Constraint\Count;
 use UnrecoverableException;
 
 class ConnecteurAssociationService
 {
-    private $connecteurEntiteSQL;
-    private $fluxEntiteSQL;
-    private $droitService;
-    private $fluxDefinitionFiles;
-    private $connecteurActionService;
-
     public function __construct(
-        ConnecteurEntiteSQL $connecteurEntiteSQL,
-        FluxEntiteSQL $fluxEntiteSQL,
-        DroitService $droitService,
-        FluxDefinitionFiles $fluxDefinitionFiles,
-        ConnecteurActionService $connecteurActionService
+        private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
+        private readonly FluxEntiteSQL $fluxEntiteSQL,
+        private readonly DroitService $droitService,
+        private readonly FluxDefinitionFiles $fluxDefinitionFiles,
+        private readonly ConnecteurActionService $connecteurActionService
     ) {
-        $this->connecteurEntiteSQL = $connecteurEntiteSQL;
-        $this->fluxEntiteSQL = $fluxEntiteSQL;
-        $this->droitService = $droitService;
-        $this->fluxDefinitionFiles = $fluxDefinitionFiles;
-        $this->connecteurActionService = $connecteurActionService;
     }
 
     /**
@@ -112,6 +102,46 @@ class ConnecteurAssociationService
                 $message
             );
         }
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws Exception
+     */
+    public function migrateConnecteurAssociation(
+        int $id_ce_source,
+        int $id_ce_target,
+        int $id_u = 0
+    ): int {
+        $sourceInfo = $this->connecteurEntiteSQL->getInfo($id_ce_source);
+        $targetInfo = $this->connecteurEntiteSQL->getInfo($id_ce_target);
+
+        if (!$sourceInfo) {
+            throw new UnrecoverableException("Le connecteur source n'existe pas : id_ce=$id_ce_source");
+        }
+        if (!$targetInfo) {
+            throw new UnrecoverableException("Le connecteur cible n'existe pas : id_ce=$id_ce_target");
+        }
+        if ($sourceInfo['type'] !== $targetInfo['type']) {
+            throw new UnrecoverableException(
+                "Les connecteurs ne sont pas du même type : {$sourceInfo['type']} (source) vs {$targetInfo['type']} (cible)"
+            );
+        }
+
+        $associations = $this->fluxEntiteSQL->getUsedByConnecteur($id_ce_source);
+
+        foreach ($associations as $association) {
+            $this->addConnecteurAssociation(
+                $association['id_e'],
+                $id_ce_target,
+                $association['type'],
+                $id_u,
+                $association['flux'],
+                $association['num_same_type']
+            );
+        }
+
+        return count($associations);
     }
 
     /**

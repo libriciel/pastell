@@ -177,4 +177,38 @@ class ConnecteurAssociationServiceTest extends PastellTestCase
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
         static::assertSame('bar', $donneesFormulaire->get('foo'));
     }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws Exception
+     */
+    public function testMigrateConnecteurAssociation(): void
+    {
+        $id_ce_source = $this->createConnector('iParapheur', 'Connecteur source')['id_ce'];
+        $this->getConnecteurAssociationService()
+            ->addConnecteurAssociation(1, $id_ce_source, 'signature', 0, 'ls-document-pdf');
+
+        $id_ce_target = $this->createConnector('iparapheur-rest', 'Connecteur cible')['id_ce'];
+
+        $count = $this->getConnecteurAssociationService()
+            ->migrateConnecteurAssociation($id_ce_source, $id_ce_target);
+
+        static::assertSame(1, $count);
+        static::assertSame(
+            (int)$id_ce_target,
+            $this->getFluxEntiteSQL()->getConnecteurId(1, 'ls-document-pdf', 'signature', 0)
+        );
+    }
+
+    public function testMigrateConnecteurAssociationWithDifferentTypes(): void
+    {
+        $this->expectException(UnrecoverableException::class);
+        $this->expectExceptionMessage('Les connecteurs ne sont pas du même type : signature (source) vs GED (cible)');
+
+        $id_ce_source = $this->createConnector('iParapheur', 'Connecteur source')['id_ce'];
+        $id_ce_target = $this->createConnector('depot-sftp', 'Connecteur cible')['id_ce'];
+
+        $this->getConnecteurAssociationService()
+            ->migrateConnecteurAssociation($id_ce_source, $id_ce_target);
+    }
 }
