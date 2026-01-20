@@ -7,6 +7,8 @@
 - Remplacement de `trigger_error('Fatal error', E_USER_ERROR)` incompatible php 8.4 par `throw new Error('Fatal error')` #2392
 - iparapheur REST, renommage de l'action `display-subtype` en `display-sous-type` pour être à l'identique que iparapheur SOAP #2395
 - iparapheur REST, renommage de l'action `test-connexion` en `test-iparapheur` pour être à l'identique que iparapheur SOAP #2395
+- iparapheur REST, renommage de l'externalData `iparapheur_subtype` en `iparapheur_sous_type` et retour d'un tableau sans clé
+  pour être à l'identique que iparapheur SOAP #2395
 
 ## Ajouts
 

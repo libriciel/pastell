@@ -202,9 +202,7 @@ final class IparapheurRestConnectorTest extends PastellTestCase
         ]);
         $subtypes = $connector->getSousType();
         self::assertNotEmpty($subtypes);
-        $firstKey = array_key_first($subtypes);
-        self::assertIsString($firstKey);
-        self::assertIsString($subtypes[$firstKey]);
+        self::assertIsString($subtypes[0]);
     }
 
     /**

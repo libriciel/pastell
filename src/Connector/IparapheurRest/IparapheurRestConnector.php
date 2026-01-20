@@ -262,7 +262,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
             }
 
             foreach ($result->getContent() as $subType) {
-                $subTypes[$subType->getId()] = $subType->getName();
+                $subTypes[] = $subType->getName();
             }
 
             $pageable = $result->getPageable();

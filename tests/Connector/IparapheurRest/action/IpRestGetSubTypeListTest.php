@@ -68,10 +68,10 @@ class IpRestGetSubTypeListTest extends PastellTestCase
         $result = $ipRestGetSubTypeList->displayAPI();
 
         static::assertSame([
-            '12eff029-ee61-4b9a-816d-1af5cedce3f1' => 'Cachet auto',
-            '61c84105-5d7a-4e6e-b673-5bf2fff73563' => 'Cachet manuel',
-            'abb28258-6965-4725-8570-ff64a2a02745' => 'Signature',
-            '741948ac-855e-4081-9dae-ccc2492a5d54' => 'Visa'
+            0 => 'Cachet auto',
+            1 => 'Cachet manuel',
+            2 => 'Signature',
+            3 => 'Visa'
         ], $result);
     }
 
