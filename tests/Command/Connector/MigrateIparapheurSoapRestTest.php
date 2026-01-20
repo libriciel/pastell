@@ -149,7 +149,6 @@ class MigrateIparapheurSoapRestTest extends PastellTestCase
 
         $commandTester = new CommandTester($command);
 
-        // Exécuter la commande avec le connecteur SOAP spécifique et confirmation auto
         $commandTester->setInputs(['yes', 'no']); // yes pour migration, no pour deletion
         $exitCode = $commandTester->execute([
             '--id_ce' => (string)$this->soapConnectorId,
