@@ -19,7 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:journal:export-history',
-    description: 'Exporte journal_historique en CSV : date_debut date_fin output_path (format date JJ/MM/AAAA). Options: --with_preuve, --id_d',
+    description: 'Exporte journal_historique en CSV sur une période [date_debut; date_fin] (format JJ/MM/AAAA).',
 )]
 
 // Exemple d'appel :
