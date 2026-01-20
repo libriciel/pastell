@@ -1,103 +1,91 @@
 <?php
 
+declare(strict_types=1);
+
 class TestConnexionTest extends ExtensionCppTestCase
 {
-    private const MEMORY_KEY = "pastell_token_piste_61cde1ef-41ab-441c-b23f-95991f9d919g";
-    private const TOKEN = "Bearer BHv3LJUSWnGl5JRzxm8948mqhvv8P1UQLtCdjj1HgKdm8vQgmkeWQF";
-    public function setUp(): void
+    use CurlUtilitiesTestTrait;
+
+    private const CLIENT_ID = 'client_id';
+    private const MEMORY_KEY = 'pastell_token_piste_' . self::CLIENT_ID;
+    private const TOKEN = 'Bearer myToken';
+    protected function setUp(): void
     {
         parent::setUp();
         $this->getObjectInstancier()->getInstance(MemoryCache::class)->store(self::MEMORY_KEY, self::TOKEN);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         parent::tearDown();
         $this->getObjectInstancier()->getInstance(MemoryCache::class)->delete(self::MEMORY_KEY);
     }
 
-    /**
-     * @return array
-     */
-    public function getConnexionProvider(): array
+    public static function getConnexionProvider(): array
     {
         return [
             'OauthOK' =>
                 [
-                    "cpp url token",
-                    "61cde1ef-41ab-441c-b23f-95991f9d919g",
-                    "bd307b18-298e-45a7-a4ef-9169200fad63",
-                    "cpp url api",
-                    "DEV_DESTTAA074@cpp2017.fr",
-                    "Riuxdnup64167[",
-                    "La connexion est réussie"
+                    'https://token',
+                    self::CLIENT_ID,
+                    'secret',
+                    'https://api',
+                    'login',
+                    'password',
+                    'La connexion est réussie',
                 ],
             'OauthKONeedElement' =>
                 [
-                    "cpp url token",
-                    "",
-                    "bd307b18-298e-45a7-a4ef-9169200fad63",
-                    "cpp url api",
-                    "DEV_DESTTAA074@cpp2017.fr",
-                    "Riuxdnup64167[",
-                    "Il manque des éléments pour l'authentification PISTE, le connecteur global est-il bien associé ?"
+                    'https://token',
+                    '',
+                    'secret',
+                    'https://api',
+                    'login',
+                    'password',
+                    "Il manque des éléments pour l'authentification PISTE, le connecteur global est-il bien associé ?",
                 ],
             'OauthKONeedUser' =>
                 [
-                    "cpp url token",
-                    "61cde1ef-41ab-441c-b23f-95991f9d919g",
-                    "bd307b18-298e-45a7-a4ef-9169200fad63",
-                    "cpp url api",
-                    "",
-                    "Riuxdnup64167[",
-                    "Erreur: Utilisateur sans Login/Mot de passe"
+                    'https://token',
+                    self::CLIENT_ID,
+                    'secret',
+                    'https://api',
+                    '',
+                    'password',
+                    'Erreur: Utilisateur sans Login/Mot de passe',
                 ],
         ];
     }
 
     /**
-     * @param $url_piste_get_token
-     * @param $client_id
-     * @param $client_secret
-     * @param $url_piste_api
-     * @param $user_login
-     * @param $user_password
-     * @param $last_message_expected
-     * @throws Exception
      * @dataProvider getConnexionProvider
+     * @throws Exception
      */
     public function testTestConnexion(
-        $url_piste_get_token,
-        $client_id,
-        $client_secret,
-        $url_piste_api,
-        $user_login,
-        $user_password,
-        $last_message_expected
-    ) {
-        $curlWrapper = $this->getMockBuilder(CurlWrapper::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapper->expects($this->any())->method('get')->willReturn(
-            json_encode(
-                [
+        string $url_piste_get_token,
+        string $client_id,
+        string $client_secret,
+        string $url_piste_api,
+        string $user_login,
+        string $user_password,
+        string $last_message_expected,
+    ): void {
+        $this->mockCurl(
+            [
+                $url_piste_api . '/cpro/transverses/v1/recuperer/tauxtva' => '{"ok":"ok"}',
+                $url_piste_get_token => json_encode([
                     'token_type' => 'foo',
                     'access_token' => 'bar',
                     'expires_in' => 42
-                ]
-            )
+                ], JSON_THROW_ON_ERROR),
+
+            ],
         );
-        $curlWrapper->expects($this->any())->method('getLastHttpCode')->willReturn(200);
 
-        $curlWrapperFactory = $this->getMockBuilder(CurlWrapperFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapperFactory->expects($this->any())->method('getInstance')->willReturn($curlWrapper);
-
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
-
-        $id_ce_chorus = $this->createCppConnector("facture-cpp");
-        $connecteurDonneesFormulaire = $this->getDonneesFormulaireFactory()->getConnecteurEntiteFormulaire($id_ce_chorus);
+        $id_ce_chorus = $this->createCppConnector('facture-cpp');
+        $connecteurDonneesFormulaire = $this
+            ->getDonneesFormulaireFactory()
+            ->getConnecteurEntiteFormulaire($id_ce_chorus);
         $connecteurDonneesFormulaire->setData('url_piste_get_token', $url_piste_get_token);
         $connecteurDonneesFormulaire->setData('client_id', $client_id);
         $connecteurDonneesFormulaire->setData('client_secret', $client_secret);
