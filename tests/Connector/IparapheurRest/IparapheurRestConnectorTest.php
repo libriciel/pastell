@@ -153,7 +153,7 @@ final class IparapheurRestConnectorTest extends PastellTestCase
     public function testConnexion(): void
     {
         $connectorId = $this->getConnectorId();
-        $this->triggerActionOnConnector($connectorId, 'test-connexion');
+        $this->triggerActionOnConnector($connectorId, 'test-iparapheur');
         $lastMessage = $this->getObjectInstancier()->getInstance(ActionExecutorFactory::class)->getLastMessage();
         self::assertSame('Liste des entités iparapheur : Pastell, Pastell 2, Pastell 3', $lastMessage);
     }

@@ -54,7 +54,7 @@ formulaire:
       commentaire: 'Si le sous-type iparapheur le permet (Signature multi-document), alors les fichiers multiples envoyés seront des multi-documents signés'
 
 action:
-  test-connexion:
+  test-iparapheur:
     name: "Tester la connexion"
     action-class: Pastell\Connector\IparapheurRest\Action\IpRestTestConnexion
   tenant-name:
