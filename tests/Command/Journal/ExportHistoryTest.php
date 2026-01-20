@@ -48,7 +48,9 @@ final class ExportHistoryTest extends PastellTestCase
 
     public function __destruct()
     {
-        $this->TmpFolder->delete($this->tmp_folder);
+        if (isset($this->TmpFolder, $this->tmp_folder)) {
+            $this->TmpFolder->delete($this->tmp_folder);
+        }
     }
 
     /**
@@ -56,20 +58,14 @@ final class ExportHistoryTest extends PastellTestCase
      */
     public function testInvalidDatesReturnInvalid(): void
     {
-        $sql = $this->createMock(SQLQuery::class);
-        $csv = $this->createMock(CSVoutput::class);
-
-        $command = new ExportHistory($sql, $csv);
-        $tester  = new CommandTester($command);
-
-        $status = $tester->execute([
+        $status = $this->tester->execute([
             'date_debut'  => '2025-01-01',
             'date_fin'    => '31-12-2025',
             'output_path' => $this->outFile,
         ]);
 
         self::assertSame(Command::INVALID, $status);
-        self::assertStringContainsString('Format attendu : JJ/MM/AAAA', $tester->getDisplay());
+        self::assertStringContainsString('Format attendu : JJ/MM/AAAA', $this->tester->getDisplay());
     }
 
     public function testRunCreatesFile(): void
@@ -87,5 +83,88 @@ final class ExportHistoryTest extends PastellTestCase
         $content = file_get_contents($this->outFile);
         self::assertIsString($content);
         self::assertStringContainsString('foo', $content);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testExportWithPreuveAndIdDFilter(): void
+    {
+        $preuveTsrBinary = file_get_contents(__DIR__ . '/fixtures/preuve.tsr');
+        $preuveBase64Expected = trim((string)file_get_contents(__DIR__ . '/fixtures/preuve_base64.txt'));
+        $preuveTexteExpected = file_get_contents(__DIR__ . '/fixtures/preuve_texte.txt');
+
+        $sqlQuery = $this->createMock(SQLQuery::class);
+        $sqlQuery->expects($this->once())
+            ->method('prepareAndExecute')
+            ->with(
+                $this->stringContains('SELECT jh.*, d.titre'),
+                $this->callback(function ($params) {
+                    return count($params) === 3
+                        && $params[0] === '2025-01-01'
+                        && $params[1] === '2025-12-31'
+                        && $params[2] === 'bcd28d74-4669-4b4d-a481-99f3e41fa9a9';
+                })
+            );
+
+        $sqlQuery->expects($this->exactly(2))
+            ->method('hasMoreResult')
+            ->willReturnOnConsecutiveCalls(true, false);
+
+        $sqlQuery->expects($this->once())
+            ->method('fetch')
+            ->willReturn([
+                'id_j' => '7304',
+                'type' => '7',
+                'id_e' => '1',
+                'id_u' => '1',
+                'id_d' => 'bcd28d74-4669-4b4d-a481-99f3e41fa9a9',
+                'action' => 'Consulté',
+                'message' => ' admin a consulté le document iparapheur_historique.xml',
+                'date' => '2025-08-28 17:34:35',
+                'preuve' => $preuveTsrBinary, // Données binaires brutes (pas base64)
+                'date_horodatage' => '2025-08-28 17:34:35',
+                'message_horodate' => '7 - 1 - 1 - bcd28d74-4669-4b4d-a481-99f3e41fa9a9 - Consulté -  admin a consulté le document iparapheur_historique.xml - 2025-08-28 17:34:35 - ls-document-pdf',
+                'document_type' => 'ls-document-pdf',
+                'titre' => '0828-pdf-rest-parapheur-rejet',
+                'denomination' => 'Libriciel',
+                'nom' => 'admin',
+                'prenom' => '',
+                'siren' => '491011698',
+            ]);
+
+        $command = new ExportHistory(
+            $sqlQuery,
+            $this->getObjectInstancier()->getInstance(CSVoutput::class)
+        );
+        $tester = new CommandTester($command);
+
+        $status = $tester->execute([
+            'date_debut'  => '01/01/2025',
+            'date_fin'    => '31/12/2025',
+            'output_path' => $this->outFile,
+            '--with_preuve' => true,
+            '--id_d' => 'bcd28d74-4669-4b4d-a481-99f3e41fa9a9',
+        ]);
+
+        self::assertSame(Command::SUCCESS, $status);
+        $content = file_get_contents($this->outFile);
+        self::assertStringContainsString('bcd28d74-4669-4b4d-a481-99f3e41fa9a9', $content);
+        self::assertStringContainsString('Libriciel', $content);
+
+        $lines = explode("\n", $content);
+        self::assertCount(3, $lines); // Header + 1 ligne de données + ligne vide
+
+        $dataLine = str_getcsv($lines[1], escape: '');
+        $preuveTsrBase64 = $dataLine[8];
+        self::assertSame($preuveBase64Expected, $preuveTsrBase64);
+
+        $preuveDecoded = base64_decode($preuveTsrBase64, true);
+        self::assertSame($preuveTsrBinary, $preuveDecoded);
+
+        $tsrTempFile = $this->tmp_folder . '/preuve_test.tsr';
+        file_put_contents($tsrTempFile, $preuveDecoded);
+        $opensslOutput = shell_exec("/usr/bin/openssl ts -reply -in {$tsrTempFile} -text 2>/dev/null");
+        self::assertSame($preuveTexteExpected, $opensslOutput);
     }
 }
