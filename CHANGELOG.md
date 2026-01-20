@@ -5,6 +5,7 @@
 - Les informations des processus liés aux jobs étaient absentes #2394
 - Le fil d'ariane n'est plus bloqué sur une entité désactivée #2285
 - Remplacement de `trigger_error('Fatal error', E_USER_ERROR)` incompatible php 8.4 par `throw new Error('Fatal error')` #2392
+- iparapheur REST, renommage de l'action `display-subtype` en `display-sous-type` pour être à l'identique que iparapheur SOAP #2395
 
 ## Ajouts
 

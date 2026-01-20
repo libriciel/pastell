@@ -73,7 +73,7 @@ action:
     action-class: Pastell\Connector\IparapheurRest\Action\IpRestGetSubTypeList
     rule:
       internal-action: true
-  display-subtype:
+  display-sous-type:
     name: "Voir les sous-types"
     action-class: Pastell\Connector\IparapheurRest\Action\IpRestDisplaySubType
 
