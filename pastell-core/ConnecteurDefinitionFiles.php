@@ -19,12 +19,35 @@ class ConnecteurDefinitionFiles
     ) {
     }
 
-    public function getAll(bool $global = false): array
+    public function getAll(): array
     {
-        if ($global) {
-            return $this->getAllGlobal();
-        }
         return $this->getAllConnecteurByFile(self::ENTITE_PROPERTIES_FILENAME);
+    }
+
+    public function getAllRoot(): array
+    {
+        $result = [];
+        foreach ($this->extensions->getAllConnecteur() as $id_connecteur => $connecteur_path) {
+            $definition_file_path = $connecteur_path . '/' . self::ENTITE_PROPERTIES_FILENAME;
+            if (file_exists($definition_file_path)) {
+                $connecteur_definition = $this->yml_loader->getArray($definition_file_path);
+                if (!is_array($connecteur_definition) || $this->isRestrictedConnecteur($connecteur_definition)) {
+                    continue;
+                }
+
+                if ($this->isAllowedOnRootEntity($connecteur_definition)) {
+                    $result[$id_connecteur] = $connecteur_definition;
+                }
+            }
+        }
+        uasort($result, [$this, 'sortConnecteur']);
+        return $result;
+    }
+
+    public function isAllowedOnRootEntity(array $connecteur_definition): bool
+    {
+        $allowOnRootEntity = $connecteur_definition[ConnectorConfiguration::ALLOW_ON_ROOT_ENTITY] ?? false;
+        return $allowOnRootEntity !== false;
     }
 
     public function getAllGlobal(): array
@@ -137,7 +160,8 @@ class ConnecteurDefinitionFiles
     public function getAllByFamille(string $famille_connecteur, bool $global = false): array
     {
         $result = [];
-        foreach ($this->getAll($global) as $connecteur_id => $connecteur_properties) {
+        $all_connectors = $global ? $this->getAllGlobal() : $this->getAll();
+        foreach ($all_connectors as $connecteur_id => $connecteur_properties) {
             if ($connecteur_properties['type'] === $famille_connecteur) {
                 $result[$connecteur_id] = true;
             }

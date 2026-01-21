@@ -1,7 +1,7 @@
 nom: iparapheur rest
 type: signature
 description: "Connecteur pour le iparapheur de Libriciel (api rest à partir de la V5)"
-
+allow_on_root_entity: true
 formulaire:
   page:
     url:

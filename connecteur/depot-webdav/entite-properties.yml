@@ -2,6 +2,7 @@ nom: 'Dépôt WebDAV'
 type: GED
 heritage: ged-connecteur-common
 description: 'Connecteur de dépôt sur un serveur WebDAV.'
+allow_on_root_entity: true
 formulaire:
     page0:
         depot_webdav_url:

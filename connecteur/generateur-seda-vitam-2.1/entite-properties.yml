@@ -4,3 +4,4 @@ description: "Permet de générer des bordereaux SEDA 2.1 à destination de Vita
 restriction_pack:
   - module_connecteur_vitam
 heritage: seda-generator-common
+allow_on_root_entity: true

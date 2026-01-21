@@ -2,6 +2,7 @@ nom: 'Dépôt SFTP'
 type: GED
 heritage: ged-connecteur-common
 description: 'Connecteur de dépôt sur un répertoire SFTP'
+allow_on_root_entity: true
 formulaire:
     page0:
         depot_sftp_host:

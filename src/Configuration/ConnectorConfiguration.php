@@ -16,6 +16,7 @@ class ConnectorConfiguration implements ConfigurationInterface
     public const DESCRIPTION = 'description';
     public const RESTRICTION_PACK = 'restriction_pack';
     public const HERITAGE = 'heritage';
+    public const string ALLOW_ON_ROOT_ENTITY = 'allow_on_root_entity';
 
     public const FORMULAIRE = 'formulaire';
     public const PAGE_NAME = 'page_name';
@@ -86,6 +87,9 @@ class ConnectorConfiguration implements ConfigurationInterface
                 ->scalarNode(self::HERITAGE)
                     ->info('Fichier YML dont hérite le présent fichier')
                 ->end()
+                ->scalarNode(self::ALLOW_ON_ROOT_ENTITY)
+                    ->info('Indique si le connecteur peut être créé sur l\'entité racine')
+                    ->end()
                 ->arrayNode(self::RESTRICTION_PACK)
                     ->info("Indique que le connecteur fait partie d'un des packs")
                     ->scalarPrototype()
