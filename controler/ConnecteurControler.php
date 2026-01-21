@@ -139,6 +139,7 @@ class ConnecteurControler extends PastellControler
                 throw new RuntimeException("Aucun connecteur du type « $id_connecteur »");
             }
             if (
+                !$global &&
                 $id_e === EntiteSQL::ID_E_ENTITE_RACINE &&
                 !$this->getConnecteurDefinitionFile()->isAllowedOnRootEntity($connecteur_info)
             ) {
