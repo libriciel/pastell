@@ -19,7 +19,7 @@
 
 ## Ajouts 
 
-- Ajout de la variable d'environnement `ARCHIVE_CREATION_TIMEOUT` pour définir le temps maximum (en secondes) pour la création d'une archive #2386
+- Ajout de la variable d'environnement `ARCHIVE_CREATION_TIMEOUT` pour définir le temps maximum (1200 secondes par défaut) pour la création d'une archive #2386
 
 # [4.0.27] - 2025-11-10
 
