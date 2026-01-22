@@ -30,7 +30,16 @@ class TypeDossierEtapeManagerTest extends PastellTestCase
         $result = $this->getTypeDossierEtapeManager()->setSpecificData($etape, $result);
         $this->assertEquals([
             'formulaire' => [],
-            'action' => ['supression' => ['rule' => ['last-action' => ['rejet-sae']]]]
+            'action' => [
+                'supression' => [
+                    'rule' => [
+                        'last-action' => [
+                            'rejet-sae',
+                            'erreur-envoie-sae'
+                        ]
+                    ]
+                ]
+            ]
         ], $result);
     }
 

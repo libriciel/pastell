@@ -170,6 +170,7 @@ action:
                 - transformation-error
                 - error-ged
                 - rejet-sae
+                - erreur-envoie-sae
         action-class: Supprimer
         warning: 'Êtes-vous sûr ?'
     importation:
