@@ -48,6 +48,16 @@ class RecupPesS2lowConnector extends \Connecteur
         $this->startDate = $donneesFormulaire->get('start_date');
         $this->endDate = $donneesFormulaire->get('end_date');
 
+        $dateFifteenDaysAgo = new \DateTime();
+        $dateFifteenDaysAgo->sub(new \DateInterval('P15D'));
+        $connectorDate = new \DateTime($donneesFormulaire->get('end_date'));
+
+        if ($connectorDate > $dateFifteenDaysAgo) {
+            $this->endDate = $dateFifteenDaysAgo->format('Y-m-d');
+        } else {
+            $this->endDate = $connectorDate->format('Y-m-d');
+        }
+
         $this->numberOfDocumentsPerJob = (int)$donneesFormulaire->get('nb_recup') ?: 10;
         $this->maxNumberOfDocumentsInEntity = (int)$donneesFormulaire->get('nb_documents') ?: 100;
 

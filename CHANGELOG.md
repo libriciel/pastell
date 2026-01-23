@@ -1,3 +1,9 @@
+# [4.1.15] - 2026-02-02
+
+## Évolutions
+
+- Les PES acquittés il y a moins de 15 jours ne sont plus récupérés par le supplément des arriérés PES #
+
 # [4.1.14] - 2025-11-10
 
 ## Ajouts
