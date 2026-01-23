@@ -75,16 +75,16 @@ class ConnecteurDefinitionFilesTest extends PastellTestCase
     public function testGetAll(): void
     {
         $this->mockExtensionsWithFixtures();
-        $result = $this->connecteurDefinitionFiles->getAll();
+        $result = $this->connecteurDefinitionFiles->getAllConnecteursEntite(false);
         static::assertArrayHasKey('allowed-on-entite-racine', $result);
         static::assertArrayHasKey('not-allowed-on-entite-racine', $result);
         static::assertCount(2, $result);
     }
 
-    public function testGetAllRoot(): void
+    public function testGetAllEntiteRacine(): void
     {
         $this->mockExtensionsWithFixtures();
-        $result = $this->connecteurDefinitionFiles->getAllRoot();
+        $result = $this->connecteurDefinitionFiles->getAllConnecteursEntite(true);
         static::assertArrayHasKey('allowed-on-entite-racine', $result);
         static::assertArrayNotHasKey('not-allowed-on-entite-racine', $result);
         static::assertCount(1, $result);

@@ -57,7 +57,7 @@ class ConnecteurControler extends PastellControler
             'droitLectureAnnuaire',
             $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'annuaire:lecture', $id_e)
         );
-        $this->setViewParameter('menu_gauche_template', 'EntiteMenuGauche');
+        $this->setViewParameter('menu_gauche_template', "EntiteMenuGauche");
         $this->setViewParameter('menu_gauche_select', "Entite/connecteur?global=$global");
         $this->setDroitLectureOnConnecteur($id_e);
         $this->setCanActOnConnector($id_e);
@@ -122,55 +122,6 @@ class ConnecteurControler extends PastellControler
      * @throws LastErrorException
      * @throws LastMessageException
      */
-    public function doNewAction(): void
-    {
-        $recuperateur = $this->getPostInfo();
-        $id_e = $recuperateur->getInt('id_e');
-        $global = $recuperateur->getInt('global', 0);
-        $id_connecteur = $recuperateur->get('id_connecteur');
-        $libelle = $recuperateur->get('libelle');
-
-        try {
-            if ($id_e) {
-                $this->hasDroitEdition($id_e);
-            }
-            $connecteur_info = $this->getConnecteurDefinitionFile()->getInfo($id_connecteur, $global);
-            if (!$connecteur_info) {
-                throw new RuntimeException("Aucun connecteur du type « $id_connecteur »");
-            }
-            if (
-                !$global &&
-                $id_e === EntiteSQL::ID_E_ENTITE_RACINE &&
-                !$this->getConnecteurDefinitionFile()->isAllowedOnRootEntity($connecteur_info)
-            ) {
-                throw new RuntimeException(
-                    "Le connecteur « $id_connecteur » ne peut pas être ajouté sur l'entité racine."
-                );
-            }
-            $this->getConnecteurCreationService()->createConnecteur(
-                $id_connecteur,
-                $connecteur_info['type'],
-                $global,
-                $id_e,
-                $this->getId_u(),
-                $libelle,
-                [],
-                "Le connecteur $id_connecteur « $libelle » a été créé"
-            );
-
-            $this->setLastMessage('Connecteur ajouté avec succès');
-            $this->redirect("/Entite/connecteur?global=$global&id_e=$id_e");
-        } catch (Exception $ex) {
-            $this->setLastError($ex->getMessage());
-            $this->redirect("/Connecteur/new?global=$global&id_e=$id_e");
-        }
-    }
-
-
-    /**
-     * @throws LastErrorException
-     * @throws LastMessageException
-     */
     public function doDeleteAction()
     {
         $recuperateur = $this->getPostInfo();
@@ -228,7 +179,7 @@ class ConnecteurControler extends PastellControler
             false,
             $this->getConnecteurEntiteSQL()->getInfo($id_ce)['id_e'],
             $this->getId_u(),
-            'Modification du connecteur'
+            "Modification du connecteur"
         );
         if (! $result) {
             $this->setLastError($this->getConnecteurModificationService()->getLastMessage());
@@ -275,11 +226,12 @@ class ConnecteurControler extends PastellControler
         }
         $fileName = $donneesFormulaire->getFileName($field, $num);
 
-        header('Content-type: ' . mime_content_type($filePath));
+        header("Content-type: " . mime_content_type($filePath));
         header("Content-disposition: attachment; filename=\"$fileName\"");
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate, post-check=0,pre-check=0');
-        header('Pragma: public');
+        header("Expires: 0");
+        header("Cache-Control: must-revalidate, post-check=0,pre-check=0");
+        header("Pragma: public");
+
         readfile($filePath);
     }
 
@@ -395,17 +347,17 @@ class ConnecteurControler extends PastellControler
         $this->setViewParameter(
             'page_title',
             sprintf(
-                'Configuration du connecteur « %s » pour « %s »',
+                "Configuration du connecteur « %s » pour « %s »",
                 $this->getViewParameterOrObject('connecteur_entite_info')['libelle'],
                 $this->getViewParameterOrObject('entite_info')['denomination']
             )
         );
-        $this->setViewParameter('action_url', 'Connecteur/doEditionModif');
-        $this->setViewParameter('recuperation_fichier_url', 'Connecteur/recupFile?id_ce=' . $this->getViewParameterOrObject('id_ce'));
-        $this->setViewParameter('suppression_fichier_url', 'Connecteur/deleteFile?id_ce=' . $this->getViewParameterOrObject('id_ce'));
+        $this->setViewParameter('action_url', "Connecteur/doEditionModif");
+        $this->setViewParameter('recuperation_fichier_url', "Connecteur/recupFile?id_ce=" . $this->getViewParameterOrObject('id_ce'));
+        $this->setViewParameter('suppression_fichier_url', "Connecteur/deleteFile?id_ce=" . $this->getViewParameterOrObject('id_ce'));
         $this->setViewParameter('page', 0);
-        $this->setViewParameter('externalDataURL', 'Connecteur/externalData') ;
-        $this->setViewParameter('template_milieu', 'ConnecteurEditionModif');
+        $this->setViewParameter('externalDataURL', "Connecteur/externalData") ;
+        $this->setViewParameter('template_milieu', "ConnecteurEditionModif");
         $this->renderDefault();
     }
 
@@ -433,7 +385,7 @@ class ConnecteurControler extends PastellControler
         );
         $this->setViewParameter(
             'recuperation_fichier_url',
-            'Connecteur/recupFile?id_ce=' . $this->getViewParameterByKey('id_ce')
+            "Connecteur/recupFile?id_ce=" . $this->getViewParameterByKey('id_ce')
         );
         $this->setViewParameter('template_milieu', 'ConnecteurEdition');
         $this->setViewParameter(
@@ -517,7 +469,7 @@ class ConnecteurControler extends PastellControler
         $id_e = $connecteur_entite_info['id_e'];
         $entite_info = $this->getEntiteSQL()->getInfo($id_e) ?: [];
         if (! $id_e) {
-            $entite_info['denomination'] = 'Entité racine';
+            $entite_info['denomination'] = "Entité racine";
         }
         $this->setViewParameter('page_title', "États du connecteur « {$connecteur_entite_info['libelle']} » 
             pour « {$entite_info['denomination']} »");
@@ -527,7 +479,7 @@ class ConnecteurControler extends PastellControler
         $this->setViewParameter('connecteurAction', $this->getConnecteurActionService()
             ->getByIdCe($this->getViewParameterOrObject('id_ce'), $this->getViewParameterOrObject('offset'), $this->getViewParameterOrObject('limit')));
 
-        $this->setViewParameter('template_milieu', 'ConnecteurEtat');
+        $this->setViewParameter('template_milieu', "ConnecteurEtat");
         $this->renderDefault();
     }
 
@@ -541,24 +493,68 @@ class ConnecteurControler extends PastellControler
         $id_e = $this->getGetInfo()->getInt('id_e');
         $global = $this->getGetInfo()->getInt('global', 0);
 
-        $this->verifDroit($id_e, 'connecteur:edition');
+        $this->verifDroit($id_e, "connecteur:edition");
 
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('global', $global);
 
-        if ($global) {
-            $all_connecteur_dispo = $this->getConnecteurDefinitionFile()->getAllGlobal();
-        } elseif ($id_e === EntiteSQL::ID_E_ENTITE_RACINE) {
-            $all_connecteur_dispo = $this->getConnecteurDefinitionFile()->getAllRoot();
-        } else {
-            $all_connecteur_dispo = $this->getConnecteurDefinitionFile()->getAll();
-        }
+        $all_connecteur_dispo = $global ?
+            $this->getConnecteurDefinitionFile()->getAllConnecteursGlobaux() :
+            $this->getConnecteurDefinitionFile()->getAllConnecteursEntite($id_e === EntiteSQL::ID_E_ENTITE_RACINE);
 
         $this->setViewParameter('all_connecteur_dispo', $all_connecteur_dispo);
 
         $this->setViewParameter('page_title', "Ajout d'un connecteur");
         $this->setViewParameter('template_milieu', 'ConnecteurNew');
         $this->renderDefault();
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function doNewAction(): void
+    {
+        $recuperateur = $this->getPostInfo();
+        $id_e = $recuperateur->getInt('id_e');
+        $global = $recuperateur->getInt('global', 0);
+        $id_connecteur = $recuperateur->get('id_connecteur');
+        $libelle = $recuperateur->get('libelle');
+
+        try {
+            if ($id_e) {
+                $this->hasDroitEdition($id_e);
+            }
+            $connecteur_info = $this->getConnecteurDefinitionFile()->getInfo($id_connecteur, $global);
+            if (!$connecteur_info) {
+                throw new RuntimeException("Aucun connecteur du type « $id_connecteur »");
+            }
+            if (
+                !$global &&
+                $id_e === EntiteSQL::ID_E_ENTITE_RACINE &&
+                !$this->getConnecteurDefinitionFile()->isAllowedOnEntiteRacine($connecteur_info)
+            ) {
+                throw new RuntimeException(
+                    "Le connecteur « $id_connecteur » ne peut pas être ajouté sur l'entité racine."
+                );
+            }
+            $this->getConnecteurCreationService()->createConnecteur(
+                $id_connecteur,
+                $connecteur_info['type'],
+                $global,
+                $id_e,
+                $this->getId_u(),
+                $libelle,
+                [],
+                "Le connecteur $id_connecteur « $libelle » a été créé"
+            );
+
+            $this->setLastMessage('Connecteur ajouté avec succès');
+            $this->redirect("/Entite/connecteur?global=$global&id_e=$id_e");
+        } catch (Exception $ex) {
+            $this->setLastError($ex->getMessage());
+            $this->redirect("/Connecteur/new?global=$global&id_e=$id_e");
+        }
     }
 
     /**
@@ -574,7 +570,7 @@ class ConnecteurControler extends PastellControler
         $this->setViewParameter('connecteur_entite_info', $this->getConnecteurEntiteSQL()->getInfo($id_ce));
 
         $this->setViewParameter('page_title', "Modification du connecteur  « {$this->getViewParameterOrObject('connecteur_entite_info')['libelle']} »");
-        $this->setViewParameter('template_milieu', 'ConnecteurEditionLibelle');
+        $this->setViewParameter('template_milieu', "ConnecteurEditionLibelle");
         $this->renderDefault();
     }
 
@@ -693,7 +689,7 @@ class ConnecteurControler extends PastellControler
             $this->redirect("/Connecteur/import?id_ce=$id_ce");
         }
 
-        $message = 'Les données du connecteur ont été importées';
+        $message = "Les données du connecteur ont été importées";
         $this->getConnecteurActionService()->add(
             $this->getConnecteurEntiteSQL()->getInfo($id_ce)['id_e'],
             $this->getId_u(),

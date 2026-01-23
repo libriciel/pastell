@@ -667,7 +667,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
         $this->getInternalAPIAsUser($userId)->delete('/entite/1/connecteur/12/file/champs5');
     }
 
-    public function testCreateOnRootEntityWithAllowedConnecteur(): void
+    public function testCreateOnEntiteRacineWithAllowedConnecteur(): void
     {
         $info = $this->getInternalAPI()->post(
             '/entite/0/connecteur',
@@ -680,7 +680,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
         static::assertSame(0, $info['global']);
     }
 
-    public function testCreateOnRootEntityWithNotAllowedConnecteur(): void
+    public function testCreateOnEntiteRacineWithNotAllowedConnecteur(): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("Le connecteur « glaneur-sftp » ne peut pas être ajouté sur l'entité racine.");

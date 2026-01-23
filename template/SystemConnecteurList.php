@@ -2,6 +2,9 @@
 
 /** @var $all_connecteur_globaux array */
 /** @var $all_connecteur_entite array */
+
+use Pastell\Configuration\ConnectorConfiguration;
+
 ?>
 <div class="box">
     <h2>Connecteurs globaux</h2>
@@ -50,6 +53,7 @@
             <th class="w200">Libellé</th>
             <th>Description</th>
             <th>Restriction</th>
+            <th class="w100">Création sur l'entité racine</th>
             <th>Validation</th>
         </tr>
         <?php foreach ($all_connecteur_entite as $id_connecteur => $connecteur) : ?>
@@ -61,6 +65,17 @@
                     <?php if ($connecteur['list_restriction_pack']) : ?>
                         <?php hecho(implode(", ", $connecteur['list_restriction_pack'])); ?>
                     <?php endif;?>
+                </td>
+                <td class="text-center">
+                    <?php if ($connecteur[ConnectorConfiguration::ALLOW_ON_ENTITE_RACINE]) : ?>
+                        <p class="badge bg-success">
+                            Oui
+                        </p>
+                    <?php else : ?>
+                        <p class="badge bg-danger">
+                            Non
+                        </p>
+                    <?php endif ?>
                 </td>
                 <td>
                     <?php if ($connecteur['is_valid']) : ?>
