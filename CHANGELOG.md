@@ -8,6 +8,7 @@
 - Les pages ne sont plus indexées sur les moteurs de recherche #2369
 - Certains fichiers envoyés par API n'étaient pas correctement supprimés dans le répertoire temporaire #2396
 - Amélioration de la génération d'une archive en mode ZIP utilisant des expressions xpath #2382
+- Lors de la réponse à un mail sécurisé, le bouton pour supprimer une pièce jointe ne fonctionnait pas #2226
 
 ## Sécurité
 
