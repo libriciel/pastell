@@ -23,6 +23,10 @@
 
 - Ajout de la variable d'environnement `ARCHIVE_CREATION_TIMEOUT` pour définir le temps maximum (1200 secondes par défaut) pour la création d'une archive #2386
 
+## Évolutions
+
+- Types de dossiers issus du studio : Permettre de supprimer un dossier en état `erreur-envoie-sae` #2158
+
 # [4.0.27] - 2025-11-10
 
 ## Ajouts
