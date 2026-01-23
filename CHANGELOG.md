@@ -25,7 +25,7 @@
 
 ## Évolutions
 
-- Permettre de supprimer un dossier en état `erreur-envoie-sae` #2158
+- Types de dossiers issus du studio : Permettre de supprimer un dossier en état `erreur-envoie-sae` #2158
 
 # [4.0.27] - 2025-11-10
 
