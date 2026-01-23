@@ -88,7 +88,7 @@ class ConnectorConfiguration implements ConfigurationInterface
                     ->info('Fichier YML dont hérite le présent fichier')
                 ->end()
                 ->scalarNode(self::ALLOW_ON_ENTITE_RACINE)
-                    ->info('Indique si le connecteur peut être créé sur l\'entité racine')
+                    ->info('Indique si le connecteur d\'entité peut être créé sur l\'entité racine')
                     ->end()
                 ->arrayNode(self::RESTRICTION_PACK)
                     ->info("Indique que le connecteur fait partie d'un des packs")
