@@ -36,7 +36,7 @@ formulaire:
     iparapheur_type_id:
       name: "Identifiant du type iparapheur"
       no-show: true
-    iparapheur_subtype:
+    iparapheur_sous_type:
       name: "Sous-type iparapheur"
       type: externalData
       choice-action: iparapheur-subtype
@@ -54,7 +54,7 @@ formulaire:
       commentaire: 'Si le sous-type iparapheur le permet (Signature multi-document), alors les fichiers multiples envoyés seront des multi-documents signés'
 
 action:
-  test-connexion:
+  test-iparapheur:
     name: "Tester la connexion"
     action-class: Pastell\Connector\IparapheurRest\Action\IpRestTestConnexion
   tenant-name:
@@ -73,7 +73,7 @@ action:
     action-class: Pastell\Connector\IparapheurRest\Action\IpRestGetSubTypeList
     rule:
       internal-action: true
-  display-subtype:
+  display-sous-type:
     name: "Voir les sous-types"
     action-class: Pastell\Connector\IparapheurRest\Action\IpRestDisplaySubType
 
