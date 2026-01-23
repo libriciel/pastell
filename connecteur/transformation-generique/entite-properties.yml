@@ -1,7 +1,7 @@
 nom: 'Transformation générique'
 description: 'Permet de définir une expression twig dont le résultat sera affecté à l''élément associé'
 type: transformation
-allow_on_root_entity: true
+allow_on_entite_racine: true
 formulaire:
     page0:
         definition:

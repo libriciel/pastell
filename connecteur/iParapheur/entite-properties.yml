@@ -1,7 +1,7 @@
 nom: iparapheur soap - déprécié
 type: signature
 description: "Connecteur pour le iparapheur de Libriciel"
-allow_on_root_entity: true
+allow_on_entite_racine: true
 formulaire:
     page0:
         iparapheur_wsdl:

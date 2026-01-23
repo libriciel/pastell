@@ -22,7 +22,7 @@
 
 ## Évolutions
 
-- Le champ `allow_on_root_entity` permet de définir si un connecteur d'entité peut être créé au niveau de l'entité racine #2378
+- Le champ `allow_on_entite_racine` permet de définir si un connecteur d'entité peut être créé au niveau de l'entité racine #2378
 
 # [5.0.0] - 2025-12-16
 

@@ -1,0 +1,3 @@
+nom: 'test'
+description: 'Connecteur de test'
+allow_on_entite_racine: true

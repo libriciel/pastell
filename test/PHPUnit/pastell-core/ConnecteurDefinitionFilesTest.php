@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Pack\PackService;
+
 class ConnecteurDefinitionFilesTest extends PastellTestCase
 {
     /** @var  ConnecteurDefinitionFiles */
@@ -14,6 +16,7 @@ class ConnecteurDefinitionFilesTest extends PastellTestCase
 
     protected function tearDown(): void
     {
+        parent::tearDown();
         $this->setListPack(["suppl_test" => true]);
     }
 
@@ -46,5 +49,44 @@ class ConnecteurDefinitionFilesTest extends PastellTestCase
         $this->assertEmpty($result);
         $result = $this->connecteurDefinitionFiles->getAllRestricted(true);
         $this->assertEmpty($result);
+    }
+
+
+    private function mockExtensionsWithFixtures(): void
+    {
+        $fixturesPath = __DIR__ . '/fixtures/connectors';
+
+        $extensions = $this->createMock('Extensions');
+        $extensions
+            ->method('getAllConnecteur')
+            ->willReturn([
+                'allowed-on-entite-racine' => $fixturesPath . '/allowed-on-entite-racine',
+                'not-allowed-on-entite-racine' => $fixturesPath . '/not-allowed-on-entite-racine',
+            ]);
+
+        $this->getObjectInstancier()->setInstance(Extensions::class, $extensions);
+        $this->connecteurDefinitionFiles = new ConnecteurDefinitionFiles(
+            $extensions,
+            $this->getObjectInstancier()->getInstance(YMLLoader::class),
+            $this->getObjectInstancier()->getInstance(PackService::class)
+        );
+    }
+
+    public function testGetAll(): void
+    {
+        $this->mockExtensionsWithFixtures();
+        $result = $this->connecteurDefinitionFiles->getAll();
+        static::assertArrayHasKey('allowed-on-entite-racine', $result);
+        static::assertArrayHasKey('not-allowed-on-entite-racine', $result);
+        static::assertCount(2, $result);
+    }
+
+    public function testGetAllRoot(): void
+    {
+        $this->mockExtensionsWithFixtures();
+        $result = $this->connecteurDefinitionFiles->getAllRoot();
+        static::assertArrayHasKey('allowed-on-entite-racine', $result);
+        static::assertArrayNotHasKey('not-allowed-on-entite-racine', $result);
+        static::assertCount(1, $result);
     }
 }

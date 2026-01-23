@@ -1,7 +1,7 @@
 nom: 'Dépôt Pastell'
 type: GED
 description: 'Connecteur de dépôt sur un serveur Pastell'
-allow_on_root_entity: true
+allow_on_entite_racine: true
 formulaire:
     page0:
         pastell_url:

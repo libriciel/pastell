@@ -21,23 +21,35 @@ class ConnecteurDefinitionFiles
 
     public function getAll(): array
     {
-        return $this->getAllConnecteurByFile(self::ENTITE_PROPERTIES_FILENAME);
+        return $this->getAllConnecteurByFile(self::ENTITE_PROPERTIES_FILENAME, false);
+    }
+
+    public function getAllGlobal(): array
+    {
+        return $this->getAllConnecteurByFile(self::GLOBAL_PROPERTIES_FILENAME, false);
     }
 
     public function getAllRoot(): array
     {
+        return $this->getAllConnecteurByFile(self::ENTITE_PROPERTIES_FILENAME, true);
+    }
+
+    private function getAllConnecteurByFile(string $file_name, bool $only_root): array
+    {
         $result = [];
         foreach ($this->extensions->getAllConnecteur() as $id_connecteur => $connecteur_path) {
-            $definition_file_path = $connecteur_path . '/' . self::ENTITE_PROPERTIES_FILENAME;
+            $definition_file_path = $connecteur_path . '/' . $file_name;
             if (file_exists($definition_file_path)) {
                 $connecteur_definition = $this->yml_loader->getArray($definition_file_path);
                 if (!is_array($connecteur_definition) || $this->isRestrictedConnecteur($connecteur_definition)) {
                     continue;
                 }
 
-                if ($this->isAllowedOnRootEntity($connecteur_definition)) {
-                    $result[$id_connecteur] = $connecteur_definition;
+                if ($only_root && !$this->isAllowedOnRootEntity($connecteur_definition)) {
+                    continue;
                 }
+
+                $result[$id_connecteur] = $connecteur_definition;
             }
         }
         uasort($result, [$this, 'sortConnecteur']);
@@ -46,29 +58,8 @@ class ConnecteurDefinitionFiles
 
     public function isAllowedOnRootEntity(array $connecteur_definition): bool
     {
-        $allowOnRootEntity = $connecteur_definition[ConnectorConfiguration::ALLOW_ON_ROOT_ENTITY] ?? false;
-        return $allowOnRootEntity !== false;
-    }
-
-    public function getAllGlobal(): array
-    {
-        return $this->getAllConnecteurByFile(self::GLOBAL_PROPERTIES_FILENAME);
-    }
-
-    private function getAllConnecteurByFile(string $file_name): array
-    {
-        $result = [];
-        foreach ($this->extensions->getAllConnecteur() as $id_connecteur => $connecteur_path) {
-            $definition_file_path = $connecteur_path . '/' . $file_name;
-            if (file_exists($definition_file_path)) {
-                $connecteur_definition = $this->yml_loader->getArray($definition_file_path);
-                if (!($connecteur_definition && $this->isRestrictedConnecteur($connecteur_definition))) {
-                    $result[$id_connecteur] = $connecteur_definition;
-                }
-            }
-        }
-        uasort($result, [$this, 'sortConnecteur']);
-        return $result;
+        $allowOnRootEntity = $connecteur_definition[ConnectorConfiguration::ALLOW_ON_ENTITE_RACINE] ?? false;
+        return $allowOnRootEntity === true;
     }
 
     public function getAllDefinitionPath(string $filePath): array

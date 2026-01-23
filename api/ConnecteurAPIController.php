@@ -313,6 +313,16 @@ class ConnecteurAPIController extends BaseAPIController
             throw new Exception("Aucun connecteur du type « $id_connecteur »");
         }
 
+        if (
+            !$isGlobalConnecteur &&
+            $id_e === EntiteSQL::ID_E_ENTITE_RACINE &&
+            !$this->connecteurDefinitionFiles->isAllowedOnRootEntity($connecteur_info)
+        ) {
+            throw new RuntimeException(
+                "Le connecteur « $id_connecteur » ne peut pas être ajouté sur l'entité racine."
+            );
+        }
+
         $id_ce = $this->connecteurCreationService->createConnecteur(
             $id_connecteur,
             $connecteur_info['type'],
