@@ -19,9 +19,6 @@
 ## Évolutions
 
 - Ajout des paramètres optionnels `with_preuve` et `id_d` à la commande `app:journal:export-history` #2044
-
-## Évolutions
-
 - Le champ `allow_on_entite_racine` permet de définir si un connecteur d'entité peut être créé au niveau de l'entité racine #2378
 
 ## Suppressions
