@@ -1,4 +1,4 @@
-# [4.0.28]
+# [4.0.28] - 2026-02-02
 
 **Ce patch corrige des failles de sécurité**
 
