@@ -34,7 +34,9 @@ formulaire:
       type: date
     end_date:
       name: 'Date la plus récente des pes à récupérer'
-      commentaire: 'Date de fin de la période de récupération des pes'
+      commentaire: "Date de fin de la période de récupération des pes.<br/>
+      Pour les pes dans l'état Information disponible, si la date est comprise dans les 15 derniers jours, 
+      elle ne sera pas prise en compte au profit de la date J-15."
       type: date
     transaction_status:
       name: État des transactions à récupérer sur s2low

@@ -1,3 +1,11 @@
+# [4.1.15] - 2026-02-02
+
+## Évolutions
+
+- Récupération des arriérés pes de s2low : Pour les pes dans l'état 'Information disponible',
+si la date de fin de la période de récupération est comprise dans les 15 derniers jours, 
+elle ne sera pas prise en compte au profit de la date J-15 #2399
+
 # [4.1.14] - 2025-11-10
 
 ## Ajouts
