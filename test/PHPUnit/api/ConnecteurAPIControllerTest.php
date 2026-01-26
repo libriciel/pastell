@@ -666,4 +666,28 @@ class ConnecteurAPIControllerTest extends PastellTestCase
         $this->expectExceptionMessage('Acces interdit id_e=1, droit=connecteur:edition,id_u=3');
         $this->getInternalAPIAsUser($userId)->delete('/entite/1/connecteur/12/file/champs5');
     }
+
+    public function testCreateOnEntiteRacineWithAllowedConnecteur(): void
+    {
+        $info = $this->getInternalAPI()->post(
+            '/entite/0/connecteur',
+            ['libelle' => 'test', 'id_connecteur' => 'transformation-generique', 'global' => 0]
+        );
+
+        static::assertSame('0', $info['id_e']);
+        static::assertSame('test', $info['libelle']);
+        static::assertSame('transformation-generique', $info['id_connecteur']);
+        static::assertSame(0, $info['global']);
+    }
+
+    public function testCreateOnEntiteRacineWithNotAllowedConnecteur(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage("Le connecteur « glaneur-sftp » ne peut pas être ajouté sur l'entité racine.");
+
+        $this->getInternalAPI()->post(
+            '/entite/0/connecteur',
+            ['libelle' => 'test', 'id_connecteur' => 'glaneur-sftp', 'global' => 0]
+        );
+    }
 }

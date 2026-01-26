@@ -8,6 +8,7 @@
  * @var array $list_restriction_pack
  * @var array $formulaire_fields
  * @var array $all_action
+ * @var bool $allowOnEntiteRacine
  */
 ?>
 <a class='btn btn-link' href='<?php $this->url('System/connecteur')?>'>
@@ -48,6 +49,18 @@
     <?php endif;?>
 </div>
 
+<div class="box">
+    <h2>Création sur l'entité racine</h2>
+    <?php if ($allowOnEntiteRacine) : ?>
+        <div class='alert alert-success'>
+            Ce connecteur peut être créé sur l'entité racine
+        </div>
+    <?php else : ?>
+        <div class='alert alert-danger'>
+            Ce connecteur ne peut pas être créé sur l'entité racine
+        </div>
+    <?php endif ?>
+</div>
 
 <div class="box">
     <h2>Éléments du formulaire</h2>

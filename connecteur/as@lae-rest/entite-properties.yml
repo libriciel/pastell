@@ -1,6 +1,7 @@
 nom: 'asalae (Rest)'
 description: 'Connecteur pour le SAE asalae de Libriciel'
 type: SAE
+allow_on_entite_racine: true
 formulaire:
     page0:
         url:

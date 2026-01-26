@@ -2,6 +2,7 @@ nom: 'Dépôt FTP'
 type: GED
 heritage: ged-connecteur-common
 description: 'Connecteur de dépôt sur un répertoire FTP (ou FTPS)'
+allow_on_entite_racine: true
 formulaire:
     page0:
         depot_ftp_host:

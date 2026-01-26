@@ -504,13 +504,15 @@ class EntiteControler extends PastellControler
             $this->setViewParameter('all_connecteur', $this->getConnecteurEntiteSQL()->getAllGlobalByIde($id_e));
             $this->setViewParameter(
                 'all_connecteur_definition',
-                $this->getObjectInstancier()->getInstance(ConnecteurDefinitionFiles::class)->getAllGlobal()
+                $this->getObjectInstancier()->getInstance(ConnecteurDefinitionFiles::class)->getAllConnecteursGlobaux()
             );
         } else {
             $this->setViewParameter('all_connecteur', $this->getConnecteurEntiteSQL()->getAllLocalByIde($id_e));
             $this->setViewParameter(
                 'all_connecteur_definition',
-                $this->getObjectInstancier()->getInstance(ConnecteurDefinitionFiles::class)->getAll()
+                $this->getObjectInstancier()->getInstance(ConnecteurDefinitionFiles::class)->getAllConnecteursEntite(
+                    $id_e === EntiteSQL::ID_E_ENTITE_RACINE
+                )
             );
         }
         $this->setViewParameter('template_milieu', 'ConnecteurList');

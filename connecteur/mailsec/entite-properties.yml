@@ -1,6 +1,7 @@
 nom: 'Mail sécurisé'
 type: mailsec
 description: 'Connecteur permettant de configurer le mail sécurisé pour une entité.'
+allow_on_entite_racine: true
 formulaire:
     'Mail sécurisé':
         mailsec_from_description:

@@ -2,3 +2,4 @@ nom: 'Générateur SEDA Asalae (SEDA 2.1)'
 description: "Permet de générer des bordereaux SEDA 2.1 à destination d'Asalae"
 type: 'Bordereau SEDA'
 heritage: seda-generator-common
+allow_on_entite_racine: true

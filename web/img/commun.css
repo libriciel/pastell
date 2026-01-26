@@ -502,6 +502,10 @@ html body a:hover {
     width: 30px;
 }
 
+.w100 {
+    width: 100px;
+}
+
 .w140 {
     width: 140px;
 }

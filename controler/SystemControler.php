@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Configuration\ConnectorConfiguration;
 use Pastell\Configuration\ConnectorValidation;
 use Pastell\Configuration\DocumentTypeValidation;
 use Pastell\Mailer\Mailer;
@@ -227,7 +228,7 @@ class SystemControler extends PastellControler
 
         $connectorValidation = $this->getObjectInstancier()->getInstance(ConnectorValidation::class);
 
-        foreach ($this->getConnecteurDefinitionFiles()->getAllGlobal() as $id_connecteur => $connecteur) {
+        foreach ($this->getConnecteurDefinitionFiles()->getAllConnecteursGlobaux() as $id_connecteur => $connecteur) {
             $documentType = $this->getDocumentTypeFactory()->getGlobalDocumentType($id_connecteur);
             $all_connecteur_globaux[$id_connecteur]['nom'] = $documentType->getName();
             $all_connecteur_globaux[$id_connecteur]['description'] = $documentType->getDescription();
@@ -238,12 +239,14 @@ class SystemControler extends PastellControler
         }
         $this->setViewParameter('all_connecteur_globaux', $all_connecteur_globaux);
 
-        foreach ($this->getConnecteurDefinitionFiles()->getAll() as $id_connecteur => $connecteur) {
+        foreach ($this->getConnecteurDefinitionFiles()->getAllConnecteursEntite() as $id_connecteur => $connecteur) {
             $documentType = $this->getDocumentTypeFactory()->getEntiteDocumentType($id_connecteur);
             $all_connecteur_entite[$id_connecteur]['nom'] = $documentType->getName();
             $all_connecteur_entite[$id_connecteur]['description'] = $documentType->getDescription();
             $all_connecteur_entite[$id_connecteur]['list_restriction_pack'] = $documentType->getListRestrictionPack();
             $definitionFile = $this->getConnecteurDefinitionFiles()->getDefinitionPath($id_connecteur, false);
+            $all_connecteur_entite[$id_connecteur][ConnectorConfiguration::ALLOW_ON_ENTITE_RACINE] =
+                $this->getConnecteurDefinitionFiles()->isAllowedOnEntiteRacine($connecteur);
             $all_connecteur_entite[$id_connecteur]['is_valid'] =
                 $connectorValidation->isDefinitionFileValid($definitionFile);
         }
@@ -370,6 +373,7 @@ class SystemControler extends PastellControler
         $this->setViewParameter('formulaire_fields', $this->getFormsElement($documentType));
 
         $this->setViewParameter('isConnectorValid', $connectorValidation->isDefinitionFileValid($definitionFile));
+        $this->setViewParameter('allowOnEntiteRacine', $this->getConnecteurDefinitionFiles()->isAllowedOnEntiteRacineById($id_connecteur));
         $this->setViewParameter('connectorError', $connectorValidation->getError($definitionFile));
 
         $this->setViewParameter(
