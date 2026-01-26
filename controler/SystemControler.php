@@ -239,7 +239,7 @@ class SystemControler extends PastellControler
         }
         $this->setViewParameter('all_connecteur_globaux', $all_connecteur_globaux);
 
-        foreach ($this->getConnecteurDefinitionFiles()->getAllConnecteursEntite(false) as $id_connecteur => $connecteur) {
+        foreach ($this->getConnecteurDefinitionFiles()->getAllConnecteursEntite() as $id_connecteur => $connecteur) {
             $documentType = $this->getDocumentTypeFactory()->getEntiteDocumentType($id_connecteur);
             $all_connecteur_entite[$id_connecteur]['nom'] = $documentType->getName();
             $all_connecteur_entite[$id_connecteur]['description'] = $documentType->getDescription();

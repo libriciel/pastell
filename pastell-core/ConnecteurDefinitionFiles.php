@@ -19,17 +19,17 @@ class ConnecteurDefinitionFiles
     ) {
     }
 
-    public function getAllConnecteursEntite(bool $isEntiteRacine): array
+    public function getAllConnecteursEntite(bool $isEntiteRacine = false): array
     {
         return $this->getAllConnecteurByFile(self::ENTITE_PROPERTIES_FILENAME, $isEntiteRacine);
     }
 
     public function getAllConnecteursGlobaux(): array
     {
-        return $this->getAllConnecteurByFile(self::GLOBAL_PROPERTIES_FILENAME, false);
+        return $this->getAllConnecteurByFile(self::GLOBAL_PROPERTIES_FILENAME);
     }
 
-    private function getAllConnecteurByFile(string $file_name, bool $isEntiteRacine): array
+    private function getAllConnecteurByFile(string $file_name, bool $isEntiteRacine = false): array
     {
         $result = [];
         foreach ($this->extensions->getAllConnecteur() as $id_connecteur => $connecteur_path) {
@@ -86,7 +86,7 @@ class ConnecteurDefinitionFiles
 
     public function getAllType(): array
     {
-        return $this->getAllTypeByDef($this->getAllConnecteursEntite(false));
+        return $this->getAllTypeByDef($this->getAllConnecteursEntite());
     }
 
     public function getAllGlobalType(): array
@@ -155,7 +155,7 @@ class ConnecteurDefinitionFiles
     public function getAllByFamille(string $famille_connecteur, bool $global = false): array
     {
         $result = [];
-        $all_connectors = $global ? $this->getAllConnecteursGlobaux() : $this->getAllConnecteursEntite(false);
+        $all_connectors = $global ? $this->getAllConnecteursGlobaux() : $this->getAllConnecteursEntite();
         foreach ($all_connectors as $connecteur_id => $connecteur_properties) {
             if ($connecteur_properties['type'] === $famille_connecteur) {
                 $result[$connecteur_id] = true;
