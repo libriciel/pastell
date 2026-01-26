@@ -2,8 +2,14 @@
 
 **Ce patch corrige des failles de sécurité**
 
+## Ajouts
+
+- Ajout de la variable d'environnement `ARCHIVE_CREATION_TIMEOUT` pour définir le temps maximum
+  (1200 secondes par défaut) pour la création d'une archive #2386
+
 ## Évolutions
 
+- Types de dossiers issus du studio : Permettre de supprimer un dossier en état `erreur-envoie-sae` #2158
 - Récupération des arriérés pes de s2low : Pour les pes dans l'état 'Information disponible',
   si la date de fin de la période de récupération est comprise dans les 15 derniers jours,
   elle ne sera pas prise en compte au profit de la date J-15 #2399
@@ -312,6 +318,15 @@
 
 **Ce patch corrige des failles de sécurité**
 
+## Ajouts
+
+- Ajout de la variable d'environnement `ARCHIVE_CREATION_TIMEOUT` pour définir le temps maximum
+(1200 secondes par défaut) pour la création d'une archive #2386
+
+## Évolutions
+
+- Types de dossiers issus du studio : Permettre de supprimer un dossier en état `erreur-envoie-sae` #2158
+
 ## Corrections
 
 - Corrige une erreur qui survenait lors du passage d'un mauvais identifiant dans certaines pages de gestion utilisateurs. #2379
@@ -328,14 +343,6 @@
   (CVSS 8.8 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H) #2374
 - Faille XSS #2375
 - Possibilité de récupérer la liste des entités sans avoir les bonnes permissions #2397
-
-## Ajouts 
-
-- Ajout de la variable d'environnement `ARCHIVE_CREATION_TIMEOUT` pour définir le temps maximum (1200 secondes par défaut) pour la création d'une archive #2386
-
-## Évolutions
-
-- Types de dossiers issus du studio : Permettre de supprimer un dossier en état `erreur-envoie-sae` #2158
 
 # [4.0.27] - 2025-11-10
 
