@@ -81,6 +81,7 @@ services:
             USE_UUID_FOR_DOCUMENT: ${USE_UUID_FOR_DOCUMENT:-false}
             PASSWORD_MIN_ENTROPY: ${PASSWORD_MIN_ENTROPY:-80}
             RATE_LIMITER_VARIABLE: ${RATE_LIMITER_VARIABLE:-REMOTE_ADDR}
+            ARCHIVE_CREATION_TIMEOUT: ${ARCHIVE_CREATION_TIMEOUT:-1200}
             USE_CONNECTOR_ACTION_PERMISSION: ${USE_CONNECTOR_ACTION_PERMISSION:-false}
         ports:
             - "${WEB_HTTP_PORT:-8000}:80"
@@ -88,7 +89,7 @@ services:
         user: "${UID:-33}:${GID:-33}"
 
     db:
-        image: 'hubdocker.libriciel.fr/mariadb:10.11.14-jammy'
+        image: 'hubdocker.libriciel.fr/mariadb:10.11.15-jammy'
         restart: unless-stopped
         command:
             - "--character-set-server=utf8mb4"
@@ -116,11 +117,11 @@ services:
         restart: unless-stopped
 
     cloudooo:
-        image: 'registry.libriciel.fr/public/actes/cloudooo:24.8.7-PDFA'
+        image: 'registry.libriciel.fr/public/actes/cloudooo:25.2.7-rc.3'
         restart: unless-stopped
 
     pes-viewer:
-        image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.11'
+        image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.14'
         restart: unless-stopped
         deploy:
             resources:
@@ -136,7 +137,7 @@ services:
             - ${LOCAL_CACERTS_PATH:-local_cacerts}:/usr/local/share/ca-certificates
 
     libriciel-feedback:
-        image: 'registry.libriciel.fr:443/public/libriciel/deploiement/libriciel-feedback:2.0.1'
+        image: 'registry.libriciel.fr:443/public/libriciel/deploiement/libriciel-feedback:2.0.2'
         restart: unless-stopped
         user: "10001:10001"
         read_only: true

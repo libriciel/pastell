@@ -287,3 +287,7 @@ if (!defined('USE_CONNECTOR_ACTION_PERMISSION')) {
 if (!defined('DISPLAY_SECURITY_BANNER')) {
     define('DISPLAY_SECURITY_BANNER', true);
 }
+
+if (!defined('ARCHIVE_CREATION_TIMEOUT')) {
+    define('ARCHIVE_CREATION_TIMEOUT', 1200);
+}

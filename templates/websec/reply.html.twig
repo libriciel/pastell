@@ -12,7 +12,7 @@
         {{ gabarit.setViewParameter('donneesFormulaire', mailSecInfo.donneesFormulaireReponse) }}
         {{ gabarit.setViewParameter('fieldDataList', mailSecInfo.fieldDataListReponse) }}
         {{ gabarit.setViewParameter('recuperation_fichier_url', reponse_recuperation_fichier_url) }}
-        {{ gabarit.setViewParameter('suppression_fichier_url', suppression_fichier_url) }}
+        {{ gabarit.setViewParameter('suppression_fichier_url', suppression_fichier_url ~ '?') }}
         {{ gabarit.setViewParameter('inject', inject) }}
 
         {{ gabarit.setViewParameter('page', 0) }}

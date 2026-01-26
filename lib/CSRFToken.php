@@ -37,13 +37,23 @@ class CSRFToken
 
     public function verifToken()
     {
+        $this->verifParamToken();
+
+        return true;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function verifParamToken(?string $token = null): void
+    {
+        $to_test_token = $token ?? $this->post_parameter[self::TOKEN_NAME];
         if (
-            empty($this->post_parameter[self::TOKEN_NAME]) ||
-            $this->post_parameter[self::TOKEN_NAME] != $this->getCSRFToken()
+            empty($to_test_token) ||
+            $to_test_token != $this->getCSRFToken()
         ) {
             throw new Exception("Votre session n'était plus valide. Le formulaire doit-être réinitialisé.");
         }
-        return true;
     }
 
     public function deleteToken()

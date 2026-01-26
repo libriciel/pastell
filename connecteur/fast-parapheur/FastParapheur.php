@@ -345,7 +345,7 @@ class FastParapheur extends SignatureConnecteur
      */
     private function generateArchive(string $temporaryDirectory, $filename, $document, array $annexes)
     {
-        $zipPath = $temporaryDirectory . DIRECTORY_SEPARATOR . $filename . '.zip';
+        $zipPath = $temporaryDirectory . DIRECTORY_SEPARATOR . basename($filename) . '.zip';
         if (!$this->zipArchive->open($zipPath, ZipArchive::CREATE)) {
             throw new Exception("Impossible de créer le fichier d'archive : $zipPath");
         }

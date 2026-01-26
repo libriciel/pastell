@@ -159,7 +159,7 @@ if ($donneesFormulaire->getFormulaire()->getNbPage() > 1) {
                                         $field->getName(),
                                         $num
                                     ); ?>
-                                            <a href='<?php echo $fileDownloadUrl; ?>'><?php echo $fileName; ?></a>
+                                            <a href='<?php hecho($fileDownloadUrl); ?>'><?php hecho($fileName); ?></a>
                                             &nbsp;&nbsp;
                                             <?php if ($donneesFormulaire->isEditable($field->getName())) : ?>
                                                 <?php
@@ -169,7 +169,7 @@ if ($donneesFormulaire->getFormulaire()->getNbPage() > 1) {
                                                     $field->getName(),
                                                     $num
                                                 ); ?>
-                                                <a style='margin:4px 0' href='<?php echo $fileDeletionUrl; ?>'>
+                                                <a style='margin:4px 0' href='<?php hecho($fileDeletionUrl . '&csrf_token=' . $this->getCSRFToken()->getCSRFToken()); ?>'>
                                                     <i class="fa fa-times-circle" style="color:red"></i>
                                                 </a>
                                             <?php endif;?>
