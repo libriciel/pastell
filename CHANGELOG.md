@@ -2,7 +2,9 @@
 
 ## Évolutions
 
-- Les PES acquittés il y a moins de 15 jours ne sont plus récupérés par le supplément des arriérés PES #
+- Récupération des arriérés pes de s2low : Pour les pes dans l'état 'Information disponible',
+si la date de fin de la période de récupération est comprise dans les 15 derniers jours, 
+elle ne sera pas prise en compte au profit de la date J-15 #2399
 
 # [4.1.14] - 2025-11-10
 

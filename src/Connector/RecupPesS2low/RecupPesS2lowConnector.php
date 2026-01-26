@@ -52,7 +52,7 @@ class RecupPesS2lowConnector extends \Connecteur
         $dateFifteenDaysAgo->sub(new \DateInterval('P15D'));
         $connectorDate = new \DateTime($donneesFormulaire->get('end_date'));
 
-        if ($connectorDate > $dateFifteenDaysAgo) {
+        if ($connectorDate > $dateFifteenDaysAgo && $this->transactionStatus === self::STATUS_AVAILABLE) {
             $this->endDate = $dateFifteenDaysAgo->format('Y-m-d');
         } else {
             $this->endDate = $connectorDate->format('Y-m-d');
