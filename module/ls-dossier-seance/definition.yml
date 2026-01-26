@@ -102,6 +102,7 @@ action:
                 - termine
                 - fatal-error
                 - rejet-sae
+                - erreur-envoie-sae
         action-class: Supprimer
         warning: 'Êtes-vous sûr ?'
     importation:

@@ -35,7 +35,9 @@ abstract class AbstractSedaGeneratorConnector extends SEDAConnecteur
         private readonly ConnecteurFactory $connecteurFactory,
         private readonly TmpFolder $tmpFolder,
         private readonly SedaMessageBuilder $sedaMessageBuilder,
+        private readonly int $archiveCreationTimeout,
     ) {
+        parent::__construct($this->archiveCreationTimeout);
     }
 
     public function setConnecteurConfig(DonneesFormulaire $connecteurConfig): void

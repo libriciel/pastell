@@ -38,7 +38,7 @@ $backTitle = sprintf('Liste des "%s" de %s', $documentType->getName(), $infoEnti
                 <li class="nav-item" >
                     <a class="nav-link <?php echo ($page_num == $page) ? 'active' : '' ?>"
                        href='<?php $this->url("Document/detail?id_d=$id_d&id_e=$id_e") ?>&page=<?php echo $page_num?>'>
-                    <?php echo $name?>
+                    <?php hecho($name)?>
                     </a>
                 </li>
             <?php endforeach;?>
