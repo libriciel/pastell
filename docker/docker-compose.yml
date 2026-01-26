@@ -83,7 +83,7 @@ services:
         user: "${UID:-33}:${GID:-33}"
 
     db:
-        image: 'hubdocker.libriciel.fr/mariadb:10.11.14-jammy'
+        image: 'hubdocker.libriciel.fr/mariadb:10.11.15-jammy'
         restart: unless-stopped
         command:
             - "--character-set-server=utf8mb4"
@@ -107,11 +107,11 @@ services:
             - '/etc/localtime:/etc/localtime:ro'
 
     cloudooo:
-        image: 'registry.libriciel.fr/public/actes/cloudooo:24.8.7-PDFA'
+        image: 'registry.libriciel.fr/public/actes/cloudooo:25.2.7-rc.3'
         restart: unless-stopped
 
     pes-viewer:
-        image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.11'
+        image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.14'
         restart: unless-stopped
         deploy:
             resources:
@@ -127,7 +127,7 @@ services:
             - ${LOCAL_CACERTS_PATH:-local_cacerts}:/usr/local/share/ca-certificates
 
     libriciel-feedback:
-        image: 'registry.libriciel.fr:443/public/libriciel/deploiement/libriciel-feedback:2.0.1'
+        image: 'registry.libriciel.fr:443/public/libriciel/deploiement/libriciel-feedback:2.0.2'
         restart: unless-stopped
         user: "10001:10001"
         read_only: true
