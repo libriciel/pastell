@@ -291,7 +291,7 @@ class CurlWrapper
                 $fileProperty->filename
             );
         }
-        $this->curlFunctions->curl_setopt($this->curlHandle, CURLOPT_POSTFIELDS, $post);
+        $this->setProperties(CURLOPT_POSTFIELDS, $post);
     }
 
     private function curlSetPostDataWithSimilarFilename()
