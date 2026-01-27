@@ -224,4 +224,42 @@ class CurlWrapperTest extends PHPUnit\Framework\TestCase
         $curlWrapper = new CurlWrapper();
         $curlWrapper->get('file://test');
     }
+
+    /**
+     * @throws ReflectionException
+     */
+    public function testAddPostFilePreservesContentType(): void
+    {
+        $tmpFile = tempnam(sys_get_temp_dir(), 'test_');
+        file_put_contents($tmpFile, 'test content');
+
+        try {
+            $capturedPostFields = null;
+
+            $curlFunction = $this->createMock(CurlFunctions::class);
+            $curlFunction->method('curl_exec')->willReturn('OK');
+            $curlFunction->method('curl_getinfo')->willReturn('200');
+            $curlFunction->method('curl_setopt')
+                ->willReturnCallback(function ($curlHandle, $option, $value) use (&$capturedPostFields) {
+                    if ($option === CURLOPT_POSTFIELDS) {
+                        $capturedPostFields = $value;
+                    }
+                    return true;
+                });
+
+            $curlWrapper = new CurlWrapper($curlFunction);
+            $curlWrapper->addPostFile('document', $tmpFile, 'test.pdf', 'application/pdf');
+
+            $curlWrapper->get('https://example.com/upload');
+
+            $this->assertIsArray($capturedPostFields);
+            $this->assertArrayHasKey('document', $capturedPostFields);
+            $this->assertInstanceOf(CURLFile::class, $capturedPostFields['document']);
+            $this->assertEquals('application/pdf', $capturedPostFields['document']->getMimeType());
+        } finally {
+            if (file_exists($tmpFile)) {
+                unlink($tmpFile);
+            }
+        }
+    }
 }
