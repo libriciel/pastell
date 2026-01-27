@@ -1,4 +1,23 @@
-# [5.0.1] -
+# [5.0.1] - 2026-02-02
+
+**Ce patch corrige des failles de sécurité**
+
+## Ajouts
+
+- Liens vers entité et dossier/connecteur ajoutés sur les listes de tâches automatiques #2246
+- Ajout de la commande `app:connector:update-sftp-fingerprint` #2303
+- Ajout de la commande `app:connector:migrate-ip-soap-rest` #2342
+- Ajout de la variable d'environnement `ARCHIVE_CREATION_TIMEOUT` pour définir le temps maximum
+  (1200 secondes par défaut) pour la création d'une archive #2386
+
+## Évolutions
+
+- Ajout des paramètres optionnels `with_preuve` et `id_d` à la commande `app:journal:export-history` #2044
+- Le champ `allow_on_entite_racine` permet de définir si un connecteur d'entité peut être créé au niveau de l'entité racine #2378
+- Types de dossiers issus du studio : Permettre de supprimer un dossier en état `erreur-envoie-sae` #2158
+- Récupération des arriérés pes de s2low : Pour les pes dans l'état 'Information disponible',
+  si la date de fin de la période de récupération est comprise dans les 15 derniers jours,
+  elle ne sera pas prise en compte au profit de la date J-15 #2399
 
 ## Corrections
 
@@ -9,23 +28,26 @@
 - iparapheur REST, renommage de l'action `test-connexion` en `test-iparapheur` pour être à l'identique que iparapheur SOAP #2395
 - iparapheur REST, renommage de l'externalData `iparapheur_subtype` en `iparapheur_sous_type` et retour d'un tableau sans clé
   pour être à l'identique que iparapheur SOAP #2395
-
-## Ajouts
-
-- Liens vers entité et dossier/connecteur ajoutés sur les listes de tâches automatiques #2246
-- Ajout de la commande `app:connector:update-sftp-fingerprint` #2303
-- Ajout de la commande `app:connector:migrate-ip-soap-rest` #2342
-
-## Évolutions
-
-- Ajout des paramètres optionnels `with_preuve` et `id_d` à la commande `app:journal:export-history` #2044
-- Le champ `allow_on_entite_racine` permet de définir si un connecteur d'entité peut être créé au niveau de l'entité racine #2378
+- Corrige une erreur qui survenait lors du passage d'un mauvais identifiant dans certaines pages de gestion utilisateurs. #2379
+- Les pages ne sont plus indexées sur les moteurs de recherche #2369
+- Certains fichiers envoyés par API n'étaient pas correctement supprimés dans le répertoire temporaire #2396
+- Amélioration de la génération d'une archive en mode ZIP utilisant des expressions xpath #2382
+- Ajout de CURLOPT_TIMEOUT de 60 secondes pour les appels S2low #2083
+- Lors de la réponse à un mail sécurisé, le bouton pour supprimer une pièce jointe ne fonctionnait pas #2226
 
 ## Suppressions
 
 - Suppression de la fonction `ConnecteurDefinitionFiles::getAll(bool $global = false)` 
 remplacée par `ConnecteurDefinitionFiles::getAllConnecteursEntite(bool $isEntiteRacine = false)` 
 et `ConnecteurDefinitionFiles::getAllConnecteursGlobaux()` #2378
+
+## Sécurité
+
+- Faille XSRF #2373
+- Faille de création/écrasement de fichier arbitraire
+  (CVSS 8.8 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H) #2374
+- Faille XSS #2375
+- Possibilité de récupérer la liste des entités sans avoir les bonnes permissions #2397
 
 # [5.0.0] - 2025-12-16
 

@@ -1,9 +1,9 @@
-FROM hubdocker.libriciel.fr/node:22-alpine3.22 AS node_modules
+FROM hubdocker.libriciel.fr/node:24.13-alpine3.23 AS node_modules
 WORKDIR /app/
 COPY package*.json ./
 RUN npm install
 
-FROM hubdocker.libriciel.fr/httpd:2.4.66-alpine
+FROM hubdocker.libriciel.fr/httpd:2.4.66-alpine3.23
 
 RUN apk add --no-cache \
     certbot \
