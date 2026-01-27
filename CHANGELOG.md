@@ -10,7 +10,7 @@
 - Amélioration de la génération d'une archive en mode ZIP utilisant des expressions xpath #2382
 - Ajout de CURLOPT_TIMEOUT de 60 secondes pour les appels S2low #2083
 - Lors de la réponse à un mail sécurisé, le bouton pour supprimer une pièce jointe ne fonctionnait pas #2226
-- Les droits de lecture au lieu d'édition sont désormais requis pour consulter un document #2228
+- Les droits de lecture au lieu d'édition sont désormais requis pour consulter un document par API #2228
 
 ## Sécurité
 
