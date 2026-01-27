@@ -28,7 +28,6 @@ class SedaNGTest extends PastellTestCase
         ]
         ]);
 
-        /** @var FluxData $fluxData */
         $this->sedaNG->generateArchive($fluxData, $archive_path);
 
         exec("tar xvzf $archive_path -C $tmp_folder 2>/dev/null");
@@ -59,7 +58,6 @@ class SedaNGTest extends PastellTestCase
         ]
         ]);
 
-        /** @var FluxData $fluxData */
         $this->sedaNG->generateArchive($fluxData, $archive_path);
 
         exec("tar xvzf $archive_path -C $tmp_folder 2>/dev/null");

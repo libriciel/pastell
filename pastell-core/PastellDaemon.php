@@ -34,7 +34,6 @@ class PastellDaemon
             }
         }
 
-        /** @phpstan-ignore-next-line */
         while (true) {
             foreach ($this->daemonSQL->getRunningDaemons() as $daemon) {
                 $this->jobMasterOneRun($daemon);
