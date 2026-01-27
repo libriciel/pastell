@@ -28,7 +28,7 @@
 <div class="box">
 <h2>Description</h2>
 <?php if ($description) :?>
-    <?php echo nl2br($description)?>
+    <?php echo nl2br(get_hecho($description))?>
 <?php else : ?>
     <div class='alert'>Il n'y a pas de description pour ce type de dossier</div>
 <?php endif;?>

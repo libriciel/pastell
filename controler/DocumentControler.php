@@ -1415,6 +1415,9 @@ class DocumentControler extends PastellControler
      */
     public function supprimerFichierAction()
     {
+        $csrf_token = $this->getPostInfo()->get('csrf_token');
+        $this->getObjectInstancier()->getInstance(CSRFToken::class)->verifParamToken($csrf_token);
+
         $id_d = $this->getPostInfo()->get('id_d');
         $page = $this->getPostInfo()->get('page');
         $id_e = $this->getPostInfo()->get('id_e');

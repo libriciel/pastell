@@ -13,12 +13,14 @@ final class SedaGeneratorVitam21Connector extends AbstractSedaGeneratorConnector
         private readonly ConnecteurFactory $connecteurFactory,
         private readonly TmpFolder $tmpFolder,
         private readonly VitamSedaMessageBuilder $sedaMessageBuilder,
+        private readonly int $archiveCreationTimeout,
     ) {
         parent::__construct(
             $this->curlWrapperFactory,
             $this->connecteurFactory,
             $this->tmpFolder,
-            $this->sedaMessageBuilder
+            $this->sedaMessageBuilder,
+            $this->archiveCreationTimeout,
         );
     }
 

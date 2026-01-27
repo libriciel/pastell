@@ -121,6 +121,12 @@ class RoleControler extends PastellControler
         $this->verifDroit(0, "role:edition");
         $role = $this->getPostInfo()->get('role');
         $droit = $this->getPostInfo()->get('droit', []);
+
+        $roleDroit = $this->getInstance(RoleDroit::class);
+        if ($roleDroit->areExistingRolesDroits($droit) === false) {
+            $this->redirect("/Role/detail?role=$role");
+        }
+
         $this->getRoleSQL()->updateDroit($role, $droit);
         $this->setLastMessage("Le rôle $role a été mis à jour");
         $this->redirect("/Role/detail?role=$role");

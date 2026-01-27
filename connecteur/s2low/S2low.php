@@ -63,6 +63,7 @@ class S2low extends TdtConnecteur
         $this->specialHeaderAdded = false;
         $this->curlWrapper->setServerCertificate($donneesFormulaire->getFilePath('server_certificate'));
         $this->curlWrapper->dontVerifySSLCACert();
+        $this->curlWrapper->setProperties(CURLOPT_TIMEOUT, 60);
         $this->curlWrapper->setClientCertificate(
             $donneesFormulaire->getFilePath('user_certificat_pem'),
             $donneesFormulaire->getFilePath('user_key_pem'),

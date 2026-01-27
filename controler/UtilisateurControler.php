@@ -42,6 +42,10 @@ class UtilisateurControler extends PastellControler
         $id_e = 0;
         if ($id_u) {
             $info = $this->getUtilisateur()->getInfo($id_u);
+            if (! $info) {
+                $this->setLastError("L'utilisateur n'existe pas");
+                $this->redirect("/");
+            }
             $id_e = $info['id_e'];
             $this->setViewParameter('id_e_menu', $id_e);
             $this->setViewParameter('type_e_menu', "");
@@ -223,7 +227,7 @@ class UtilisateurControler extends PastellControler
     public function editionAction()
     {
         $recuperateur = $this->getGetInfo();
-        $id_u = $recuperateur->get('id_u');
+        $id_u = $recuperateur->getInt('id_u');
         $id_e = $recuperateur->getInt('id_e');
         $is_api = $recuperateur->getInt('is_api') ?: false;
         $infoUtilisateur = [
@@ -278,7 +282,7 @@ class UtilisateurControler extends PastellControler
     public function detailAction(): void
     {
         $recuperateur = $this->getGetInfo();
-        $id_u = $recuperateur->get('id_u');
+        $id_u = $recuperateur->getInt('id_u');
 
         $info = $this->getUtilisateur()->getInfo($id_u);
         if (!$info) {

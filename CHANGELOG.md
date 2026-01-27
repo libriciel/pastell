@@ -154,6 +154,39 @@ doivent être mises à jour #1667
 - Connecteur iparapheur soap #2268
 - Connecteur `chorus-par-csv` ChorusPro par CSV #2356
 
+# [4.1.15] - 2026-02-02
+
+**Ce patch corrige des failles de sécurité**
+
+## Ajouts
+
+- Ajout de la variable d'environnement `ARCHIVE_CREATION_TIMEOUT` pour définir le temps maximum
+  (1200 secondes par défaut) pour la création d'une archive #2386
+
+## Évolutions
+
+- Types de dossiers issus du studio : Permettre de supprimer un dossier en état `erreur-envoie-sae` #2158
+- Récupération des arriérés pes de s2low : Pour les pes dans l'état 'Information disponible',
+  si la date de fin de la période de récupération est comprise dans les 15 derniers jours,
+  elle ne sera pas prise en compte au profit de la date J-15 #2399
+
+## Corrections
+
+- Corrige une erreur qui survenait lors du passage d'un mauvais identifiant dans certaines pages de gestion utilisateurs. #2379
+- Les pages ne sont plus indexées sur les moteurs de recherche #2369
+- Certains fichiers envoyés par API n'étaient pas correctement supprimés dans le répertoire temporaire #2396
+- Amélioration de la génération d'une archive en mode ZIP utilisant des expressions xpath #2382
+- Ajout de CURLOPT_TIMEOUT de 60 secondes pour les appels S2low #2083
+- Lors de la réponse à un mail sécurisé, le bouton pour supprimer une pièce jointe ne fonctionnait pas #2226
+
+## Sécurité
+
+- Faille XSRF #2373
+- Faille de création/écrasement de fichier arbitraire
+  (CVSS 8.8 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H) #2374
+- Faille XSS #2375
+- Possibilité de récupérer la liste des entités sans avoir les bonnes permissions #2397
+
 # [4.1.14] - 2025-11-10
 
 ## Ajouts
@@ -436,6 +469,36 @@ doivent être mises à jour #1667
 - `pdf-generique` et `document-a-signer` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-document-pdf` #1870
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
+
+# [4.0.28] - 2026-02-02
+
+**Ce patch corrige des failles de sécurité**
+
+## Ajouts
+
+- Ajout de la variable d'environnement `ARCHIVE_CREATION_TIMEOUT` pour définir le temps maximum
+(1200 secondes par défaut) pour la création d'une archive #2386
+
+## Évolutions
+
+- Types de dossiers issus du studio : Permettre de supprimer un dossier en état `erreur-envoie-sae` #2158
+
+## Corrections
+
+- Corrige une erreur qui survenait lors du passage d'un mauvais identifiant dans certaines pages de gestion utilisateurs. #2379
+- Les pages ne sont plus indexées sur les moteurs de recherche #2369
+- Certains fichiers envoyés par API n'étaient pas correctement supprimés dans le répertoire temporaire #2396
+- Amélioration de la génération d'une archive en mode ZIP utilisant des expressions xpath #2382
+- Ajout de CURLOPT_TIMEOUT de 60 secondes pour les appels S2low #2083
+- Lors de la réponse à un mail sécurisé, le bouton pour supprimer une pièce jointe ne fonctionnait pas #2226
+
+## Sécurité
+
+- Faille XSRF #2373
+- Faille de création/écrasement de fichier arbitraire
+  (CVSS 8.8 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H) #2374
+- Faille XSS #2375
+- Possibilité de récupérer la liste des entités sans avoir les bonnes permissions #2397
 
 # [4.0.27] - 2025-11-10
 

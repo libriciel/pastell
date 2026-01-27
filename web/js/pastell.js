@@ -179,11 +179,12 @@ function addFlowControl(query_param, pastell_flow_upload) {
 
         // Show progress bar
         $(pastell_flow_upload).find('.flow-progress, .flow-list').show();
+		const nameSpan = $('<span class="flow-file-name"></span>').text(file.name);
 
         // Add the file to the list
         $(pastell_flow_upload).find('.flow-list').append(
             '<li class="flow-file flow-file-' + file.uniqueIdentifier + '">' +
-            'Téléchargement de <span class="flow-file-name">' + file.name + '</span> ' +
+            nameSpan +
             '<span class="flow-file-size"></span> ' +
             '<span class="flow-file-progress"></span> ' + "</li>"
         );
