@@ -22,7 +22,7 @@
 - Amélioration de la génération d'une archive en mode ZIP utilisant des expressions xpath #2382
 - Ajout de CURLOPT_TIMEOUT de 60 secondes pour les appels S2low #2083
 - Lors de la réponse à un mail sécurisé, le bouton pour supprimer une pièce jointe ne fonctionnait pas #2226
-- Correction du séparateur CSV (`,` devient `;`) dans l'import de l'annuaire mails sécurisés #2216
+- Correction du séparateur CSV dans l'import de l'annuaire mails sécurisés (désormais `,`) #2216
 
 ## Sécurité
 
