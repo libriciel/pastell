@@ -25,11 +25,12 @@ final class EntiteAPIController extends BaseAPIController
             return $this->getInfo($this->getFromQueryArgs(0));
         }
         $data['is_active'] = $this->getFromRequest('is_active', null);
-        if ($data['is_active'] !== null) {
-            $users = $this->entiteSQL->getEntiteFromData($data);
-        } else {
-            $users = $this->getRoleUtilisateur()->getAllEntiteWithFille($this->getUtilisateurId(), 'entite:lecture');
-        }
+
+        $users = $this->getRoleUtilisateur()->getAllEntiteWithFille(
+            $this->getUtilisateurId(),
+            'entite:lecture',
+            $data['is_active']
+        );
 
         foreach ($users as &$user) {
             $user['id_e'] = (string)$user['id_e'];

@@ -14,6 +14,11 @@ use UnrecoverableException;
 
 class SimpleTwigRendererTest extends PastellTestCase
 {
+    protected function setUp(): void
+    {
+        SimpleTwigRenderer\SimpleTwigXpathCommon::clearCache();
+    }
+
     public function renderDataProvider(): array
     {
         $xpath = '//*[local-name()="ActeRecu"]/@*[local-name()="Date"]';

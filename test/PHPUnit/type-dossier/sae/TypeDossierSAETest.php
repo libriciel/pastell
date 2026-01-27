@@ -233,4 +233,51 @@ class TypeDossierSAETest extends PastellTestCase
         $this->assertLastMessage("sélection automatique de l'action suivante");
         $this->assertLastDocumentAction('termine', $info['id_d']);
     }
+
+    /**
+     * @throws TypeDossierException
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    public function testDeleteDocumentInErrorEnvoieSaeState(): void
+    {
+        $this->typeDossierLoader->createTypeDossierDefinitionFile(self::SAE_ONLY);
+
+        $connector = $this->createConnector('FakeSEDA', 'Bordereau SEDA');
+        $this->associateFluxWithConnector($connector['id_ce'], self::SAE_ONLY, 'Bordereau SEDA');
+        $connector = $this->createConnector('as@lae-rest', 'SAE');
+        $this->associateFluxWithConnector($connector['id_ce'], self::SAE_ONLY, 'SAE');
+        $this->configureConnector($connector['id_ce'], [
+            'url' => 'https://sae',
+            'login' => 'login',
+            'password' => 'password',
+        ]);
+
+        $document = $this->createDocument(self::SAE_ONLY);
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document['id_d']);
+        $donneesFormulaire->setTabData([
+            'titre' => 'Foo',
+            'date' => '1977-02-18',
+            'select' => 'B',
+        ]);
+        $donneesFormulaire->addFileFromData('fichier', 'fichier.txt', 'bar');
+        $donneesFormulaire->addFileFromData('annexe', 'annexe1.txt', 'foo1', 0);
+
+        $this->assertTrue(
+            $this->triggerActionOnDocument($document['id_d'], 'orientation')
+        );
+        $this->assertTrue(
+            $this->triggerActionOnDocument($document['id_d'], 'generate-sip')
+        );
+        $this->assertFalse(
+            $this->triggerActionOnDocument($document['id_d'], 'send-archive')
+        );
+        $this->assertLastDocumentAction('erreur-envoie-sae', $document['id_d']);
+        $actionsPossibles = $this->getObjectInstancier()->getInstance(ActionPossible::class)->getActionPossible(
+            self::ID_E_COL,
+            0,
+            $document['id_d']
+        );
+        $this->assertContains('supression', $actionsPossibles);
+    }
 }

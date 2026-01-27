@@ -12,6 +12,7 @@ class TypeDossierSAEEtape implements TypeDossierEtapeSetSpecificInformation
     ): array {
         $config_sae = $stringMapper->get('Configuration SAE');
         $rejet_sae_action = $stringMapper->get('rejet-sae');
+        $erreurEnvoieSaeAction = $stringMapper->get('erreur-envoie-sae');
         $generateSipAction = $stringMapper->get('generate-sip');
         $saeConfig = $stringMapper->get('sae_config');
 
@@ -33,8 +34,9 @@ class TypeDossierSAEEtape implements TypeDossierEtapeSetSpecificInformation
             }
         }
 
-        $result[DocumentType::ACTION]['supression'][Action::ACTION_RULE][Action::ACTION_RULE_LAST_ACTION][] = $rejet_sae_action;
-
+        foreach ([$rejet_sae_action, $erreurEnvoieSaeAction] as $action) {
+            $result[DocumentType::ACTION]['supression'][Action::ACTION_RULE][Action::ACTION_RULE_LAST_ACTION][] = $action;
+        }
         return $result;
     }
 }

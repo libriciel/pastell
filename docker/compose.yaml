@@ -29,7 +29,7 @@ services:
       PLATEFORME_MAIL: ${PLATEFORME_MAIL:-noreply@libriciel.invalid}
       PASTELL_ADMIN_LOGIN: ${PASTELL_ADMIN_LOGIN:-admin}
       PASTELL_ADMIN_EMAIL: ${PASTELL_ADMIN_EMAIL:-test@libriciel.invalid}
-      DATABASE_HOST: db
+      DATABASE_HOST: ${DATABASE_HOST:-db}
       DATABASE_NAME: ${DATABASE_NAME:-pastell}
       DATABASE_USER: ${DATABASE_USER:-pastell}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD:?}
@@ -167,21 +167,21 @@ services:
       - /data:mode=750,rw,noexec,nosuid,nodev
 
   seda-generator:
-    image: 'registry.libriciel.fr/public/plateforme/seda-generator:1.1.3'
+    image: 'registry.libriciel.fr/public/plateforme/seda-generator:1.2.0'
     restart: unless-stopped
     read_only: true
     cap_drop:
       - ALL
-    cap_add:
-      - SETGID
-      - SETUID
     security_opt:
       - no-new-privileges:true
+    user: "app:app"
+    environment:
+      TZ: ${TZ:-Europe/Paris}
     tmpfs:
-      - /tmp:mode=770,rw,nosuid,nodev
-      - /var/run/apache2:mode=770,rw,nosuid,nodev
-    volumes:
-      - '/etc/localtime:/etc/localtime:ro'
+      - /tmp:mode=770,uid=10001,gid=10001,rw,noexec,nosuid,nodev
+      - /app/var:mode=770,uid=10001,gid=10001,rw,noexec,nosuid,nodev
+      - /data/run:mode=770,uid=10001,gid=10001,size=1M,rw,noexec,nosuid,nodev
+      - /var/lib/nginx/tmp:mode=770,uid=10001,gid=10001,rw,noexec,nosuid,nodev
 
   flow:
     image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.5.2'
@@ -195,7 +195,7 @@ services:
       - /tmp:mode=770,rw,noexec,nosuid,nodev
 
   cloudooo:
-    image: 'registry.libriciel.fr/public/actes/cloudooo:24.8.7-PDFA'
+    image: 'registry.libriciel.fr/public/actes/cloudooo:25.2.7-rc.3'
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -203,7 +203,7 @@ services:
       - no-new-privileges:true
 
   pes-viewer:
-    image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.13'
+    image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.14'
     restart: unless-stopped
     cap_drop:
       - ALL

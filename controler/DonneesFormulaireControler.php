@@ -1,5 +1,6 @@
 <?php
 
+use Flow\Request;
 use Pastell\File\Chunk\ChunkUploader;
 use Pastell\Viewer\ViewerFactory;
 
@@ -100,7 +101,7 @@ class DonneesFormulaireControler extends PastellControler
 
         $zipArchive = new ZipArchive();
         $zip_filename = $tmp_folder . "/fichier-{$id_e}-" . ($id_d ?: $id_ce) . "-{$field}.zip";
-        if (!$zipArchive->open($zip_filename, ZIPARCHIVE::CREATE)) {
+        if (!$zipArchive->open($zip_filename, ZipArchive::CREATE)) {
             throw new Exception("Impossible de créer le fichier d'archive $zip_filename");
         }
 
@@ -171,6 +172,10 @@ class DonneesFormulaireControler extends PastellControler
         }
 
         $chunkUploader = $this->getObjectInstancier()->getInstance(ChunkUploader::class);
+
+        $request = new Request();
+        $uploaded_filename = basename($request->getFileName());
+
         $upload_filepath = \sprintf(
             '%s/%s_%s_%s_%s_%s_%s',
             $chunkUploader->getUploadChunkDirectory(),
@@ -199,9 +204,9 @@ class DonneesFormulaireControler extends PastellControler
             if ($donneesFormulaire->getFormulaire()->getField($field)->isMultiple()) {
                 $nb_file = $donneesFormulaire->get($field) ? count($donneesFormulaire->get($field)) : 0;
                 $this->getLogger()->debug("ajout fichier $nb_file");
-                $donneesFormulaire->addFileFromCopy($field, $chunkUploader->getRequest()->getFileName(), $upload_filepath, $nb_file);
+                $donneesFormulaire->addFileFromCopy($field, $uploaded_filename, $upload_filepath, $nb_file);
             } else {
-                $donneesFormulaire->addFileFromCopy($field, $chunkUploader->getRequest()->getFileName(), $upload_filepath);
+                $donneesFormulaire->addFileFromCopy($field, $uploaded_filename, $upload_filepath);
             }
 
             foreach ($donneesFormulaire->getOnChangeAction() as $action_on_change) {

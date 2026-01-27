@@ -32,7 +32,7 @@ $id_e = $inject['id_e'];
             <td>
                 <?php foreach ($displayField->getValue() as $num => $value) :?>
                         <?php if ($displayField->isURL()) :?>
-                            <a href='<?php echo $displayField->getURL($recuperation_fichier_url, $num, $id_e)?>' id="link_<?php echo $num_field?>">
+                            <a href='<?php hecho($displayField->getURL($recuperation_fichier_url, $num, $id_e))?>' id="link_<?php echo $num_field?>">
                         <?php endif;?>
                             <?php if ($displayField->getField()->getType() == 'textarea') : ?>
                                 <?php
@@ -58,7 +58,7 @@ $id_e = $inject['id_e'];
                         $displayField->getField()->getName()
                     );
                     ?>
-                    <a href="<?php echo $downloadZipUrl; ?>" class="btn btn-primary">
+                    <a href="<?php hecho($downloadZipUrl); ?>" class="btn btn-primary">
                         <i class="fa fa-download"></i>&nbsp;Télécharger tous les fichiers :
                         <?php hecho($displayField->getField()->getLibelle()) ?>
                     </a>

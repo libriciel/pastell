@@ -45,7 +45,8 @@ class MailSecControler extends PastellControler
         $recuperateur = new Recuperateur($_GET);
         $id_e = $recuperateur->getInt('id_e');
         $this->setViewParameter('id_g', $recuperateur->getInt('id_g'));
-        $this->setViewParameter('search', $recuperateur->get('search', ''));
+        $search = $recuperateur->get('search', '');
+        $this->setViewParameter('search', get_hecho($search));
         $this->setViewParameter('offset', $recuperateur->getInt('offset'));
         $this->setViewParameter('limit', self::NB_MAIL_AFFICHE);
 
@@ -58,11 +59,11 @@ class MailSecControler extends PastellControler
             $id_e,
             $this->getViewParameterOrObject('offset'),
             $this->getViewParameterOrObject('limit'),
-            $this->getViewParameterOrObject('search'),
+            $search,
             $this->getViewParameterOrObject('id_g')
         );
 
-        $this->setViewParameter('nb_email', $this->getAnnuaireSQL()->getNbUtilisateur($id_e, $this->getViewParameterOrObject('search'), $this->getViewParameterOrObject('id_g')));
+        $this->setViewParameter('nb_email', $this->getAnnuaireSQL()->getNbUtilisateur($id_e, $search, $this->getViewParameterOrObject('id_g')));
 
         $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $id_e);
 

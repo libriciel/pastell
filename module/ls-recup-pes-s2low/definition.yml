@@ -160,6 +160,7 @@ action:
                 - fatal-error
                 - change-status-error_1
                 - rejet-sae
+                - erreur-envoie-sae
                 - transformation-fixe-error
                 - change-status-error_2
         action-class: Supprimer

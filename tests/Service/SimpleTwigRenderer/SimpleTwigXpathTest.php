@@ -7,6 +7,7 @@ namespace Pastell\Tests\Service\SimpleTwigRenderer;
 use Exception;
 use Pastell\Service\SimpleTwigRenderer;
 use Pastell\Service\SimpleTwigRenderer\SimpleTwigXpath;
+use Pastell\Service\SimpleTwigRenderer\SimpleTwigXpathCommon;
 use UnrecoverableException;
 
 class SimpleTwigXpathTest extends \PastellTestCase
@@ -19,6 +20,7 @@ class SimpleTwigXpathTest extends \PastellTestCase
         parent::setUp();
         $this->xml_file = file_get_contents(__DIR__ . '/test.xml');
         $this->method = SimpleTwigXpath::XPATH_FUNCTION;
+        SimpleTwigXpathCommon::clearCache();
     }
 
     public function twigRenderer(): SimpleTwigRenderer
