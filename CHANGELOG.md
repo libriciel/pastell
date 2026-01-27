@@ -18,6 +18,7 @@
 - Amélioration de la génération d'une archive en mode ZIP utilisant des expressions xpath #2382
 - Ajout de CURLOPT_TIMEOUT de 60 secondes pour les appels S2low #2083
 - Lors de la réponse à un mail sécurisé, le bouton pour supprimer une pièce jointe ne fonctionnait pas #2226
+- Correction de la perte des headers HTTP lors de l'envoi de fichiers multiples #2187
 
 ## Sécurité
 
