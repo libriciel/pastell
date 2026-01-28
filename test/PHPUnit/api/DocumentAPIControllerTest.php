@@ -576,4 +576,32 @@ class DocumentAPIControllerTest extends PastellTestCase
         $this->expectExceptionMessage("Le champ 'fichier' n'est pas autorisé sur un PATCH");
         $this->getInternalAPI()->patch("entite/1/document/$id_d", ['fichier' => 'toto']);
     }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     * @throws Exception
+     */
+    public function testGetDocumentWithOnlyReadPermission(): void
+    {
+        $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+        $roleSql->edit('readonly', 'readonly');
+        $roleSql->addDroit('readonly', 'entite:lecture');
+        $roleSql->addDroit('readonly', 'test:lecture');
+        $userId = $this->getObjectInstancier()->getInstance(UserCreationService::class)
+            ->create(
+                'readonly',
+                'readonly@example.org',
+                'readonly',
+                'readonly'
+            );
+        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole($userId, 'readonly', self::ID_E_COL);
+
+        $id_d = $this->createTestDocument();
+
+        $info = $this->getInternalAPIAsUser($userId)->get("entite/1/document/$id_d");
+
+        $this->assertEquals('test', $info['info']['type']);
+        $this->assertEquals($id_d, $info['info']['id_d']);
+    }
 }

@@ -1,3 +1,9 @@
+# [4.0.29] - 
+
+## Corrections
+
+- Les droits de lecture au lieu d'édition sont désormais requis pour consulter un document par API #2228
+
 # [4.0.28] - 2026-02-02
 
 **Ce patch corrige des failles de sécurité**

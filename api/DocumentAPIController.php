@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Document\DocumentDeletionService;
+
 class DocumentAPIController extends BaseAPIController
 {
     public function __construct(
@@ -16,6 +18,7 @@ class DocumentAPIController extends BaseAPIController
         private DocumentCount $documentCount,
         private DocumentCreationService $documentCreationService,
         private DocumentModificationService $documentModificationService,
+        private DocumentDeletionService $documentDeletionService,
         private DocumentEmail $documentEmail,
         private DocumentEmailReponseSQL $documentEmailReponseSQL,
     ) {
@@ -174,17 +177,9 @@ class DocumentAPIController extends BaseAPIController
      */
     private function internalDetail($id_e, $id_d): array
     {
-        $info = $this->document->getInfo($id_d);
-        if (!$info) {
-            throw new NotFoundException("Le document $id_d n'appartient pas à l'entité $id_e");
-        }
+        $info = $this->getDocumentInfo($id_e, $id_d);
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitLecture($info['type']));
         $result['info'] = $info;
-
-        $this->checkDroit($id_e, $info['type'] . ":edition");
-        $my_role = $this->documentEntite->getRole($id_e, $id_d);
-        if (! $my_role) {
-            throw new NotFoundException("Le document $id_d n'appartient pas à l'entité $id_e");
-        }
         $donneesFormulaire = $this->donneesFormulaireFactory->get($id_d, $info['type']);
 
         $result['data'] = $donneesFormulaire->getRawDataWithoutPassword();
@@ -290,15 +285,17 @@ class DocumentAPIController extends BaseAPIController
     }
 
 
+    /**
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
     public function externalDataAction($id_e, $id_d)
     {
 
         $field = $this->getFromQueryArgs(4);
 
-        $info = $this->document->getInfo($id_d);
-
-        $this->checkDroit($id_e, "{$info['type']}:edition");
-
+        $info = $this->getDocumentInfo($id_e, $id_d);
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitLecture($info['type']));
         $documentType = $this->documentTypeFactory->getFluxDocumentType($info['type']);
         $formulaire = $documentType->getFormulaire();
         $theField = $formulaire->getField($field);
@@ -311,10 +308,16 @@ class DocumentAPIController extends BaseAPIController
         return $this->actionExecutorFactory->displayChoice($id_e, $this->getUtilisateurId(), $id_d, $action_name, true, $field);
     }
 
+    /**
+     * @throws NotFoundException
+     * @throws ForbiddenException
+     */
     public function patchExternalData($id_e, $id_d)
     {
         $field = $this->getFromQueryArgs(4);
         $action_name = $this->getActionNameFromField($id_d, $field);
+        $info = $this->getDocumentInfo($id_e, $id_d);
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitEdition($info['type']));
         $this->actionExecutorFactory->goChoice(
             $id_e,
             $this->getUtilisateurId(),
@@ -344,19 +347,22 @@ class DocumentAPIController extends BaseAPIController
         return $theField->getProperties('choice-action');
     }
 
+    /**
+     * @throws UnrecoverableException
+     * @throws NotFoundException
+     * @throws ForbiddenException
+     */
     public function getFichier($id_e, $id_d)
     {
         $field = $this->getFromQueryArgs(4);
         $num = $this->getFromQueryArgs(5) ?: 0;
 
+        $info = $this->getDocumentInfo($id_e, $id_d);
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitLecture($info['type']));
         $mode_receive = $this->getFromRequest('receive');
         if ($mode_receive) {
             return $this->receiveFileAction($id_e, $id_d, $field, $num);
         }
-        $info = $this->document->getInfo($id_d);
-
-        $this->checkDroit($id_e, "{$info['type']}:edition");
-
         $donneesFormulaire = $this->donneesFormulaireFactory->get($id_d, $info['type']);
 
         $file_path = $donneesFormulaire->getFilePath($field, $num);
@@ -399,7 +405,8 @@ class DocumentAPIController extends BaseAPIController
         if ("action" == $this->getFromQueryArgs(3)) {
             return $this->actionAction($id_e, $id_d);
         }
-
+        $info = $this->getDocumentInfo($id_e, $id_d);
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitEdition($info['type']));
         if (!$this->actionPossible->isActionPossible($id_e, $this->getUtilisateurId(), $id_d, 'modification')) {
             throw new Exception("L'action « modification »  n'est pas permise");
         }
@@ -448,11 +455,14 @@ class DocumentAPIController extends BaseAPIController
         return $result;
     }
 
+    /**
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
     public function receiveFileAction($id_e, $id_d, $field_name, $file_number)
     {
-        $document = $this->document;
-        $info = $document->getInfo($id_d);
-        $this->checkDroit($id_e, "{$info['type']}:lecture");
+        $info = $this->getDocumentInfo($id_e, $id_d);
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitLecture($info['type']));
         $donneesFormulaire = $this->donneesFormulaireFactory->get($id_d);
 
         $result['file_name'] = $donneesFormulaire->getFileName($field_name, $file_number);
@@ -472,11 +482,8 @@ class DocumentAPIController extends BaseAPIController
         array $destId = [],
         array $actionParams = []
     ): array {
-        $info = $this->document->getInfo($documentId);
-        if (!$info) {
-            throw new NotFoundException("Le document $documentId n'appartient pas à l'entité $entityId");
-        }
-        $this->checkDroit($entityId, $info['type'] . ':edition');
+        $info = $this->getDocumentInfo($entityId, $documentId);
+        $this->checkDroit($entityId, $this->getDroitService()->getDroitEdition($info['type']));
         if (!$this->actionPossible->isActionPossible($entityId, $this->getUtilisateurId(), $documentId, $action)) {
             throw new Exception("L'action « $action »  n'est pas permise : " . $this->actionPossible->getLastBadRule());
         }
@@ -517,17 +524,15 @@ class DocumentAPIController extends BaseAPIController
     {
         $id_e = $this->checkedEntite();
         $id_d = $this->getFromQueryArgs(2);
+        $info = $this->getDocumentInfo($id_e, $id_d);
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitEdition($info['type']));
 
         if ($this->getFromQueryArgs(3) === 'file') {
             return $this->deleteFile($id_d, (int)$id_e);
         }
-
-        // TODO: Use DocumentDeletionService with a safe delete method
-        $result = $this->action($id_d, (int)$id_e, 'supression');
-
+        $this->documentDeletionService->delete($id_d);
         header_wrapper('HTTP/1.1 204 No Content');
-
-        return $result;
+        return [];
     }
 
     private function deleteFile(
@@ -546,5 +551,22 @@ class DocumentAPIController extends BaseAPIController
         );
 
         return $this->internalDetail($entityId, $documentId);
+    }
+
+    /**
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
+    private function getDocumentInfo(int $id_e, string $id_d): array
+    {
+        $info = $this->document->getInfo($id_d);
+        if (!$info) {
+            throw new NotFoundException("Le document $id_d n'existe pas");
+        }
+        $my_role = $this->documentEntite->getRole($id_e, $id_d);
+        if (! $my_role) {
+            throw new NotFoundException("Le document $id_d n'appartient pas à l'entité $id_e");
+        }
+        return $info;
     }
 }
