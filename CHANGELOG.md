@@ -1,3 +1,9 @@
+# [4.1.16] -
+
+## Corrections
+
+- Correction du séparateur CSV dans l'import de l'annuaire mails sécurisés (désormais `,`) #2216
+
 # [4.1.15] - 2026-02-02
 
 **Ce patch corrige des failles de sécurité**
