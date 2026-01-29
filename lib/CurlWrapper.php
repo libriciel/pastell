@@ -287,7 +287,7 @@ class CurlWrapper
         foreach ($this->filePropertiesList as $fileProperty) {
             $post[$fileProperty->field] = new CURLFile(
                 $fileProperty->filepath,
-                null,
+                $fileProperty->contentType,
                 $fileProperty->filename
             );
         }

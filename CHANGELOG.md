@@ -4,6 +4,7 @@
 
 - Les droits de lecture au lieu d'édition sont désormais requis pour consulter un document par API #2228
 - Correction de l'erreur "droits insuffisants" lors de l'accès à un événement versé dans le journal historique #2091
+- Correction de l'envoi du Content-Type des fichiers uploadés #2188
 
 # [4.0.28] - 2026-02-02
 
