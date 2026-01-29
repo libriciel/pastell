@@ -33,7 +33,6 @@ class DocumentTypeHTML
         ?>
         <select name='type' class='select2_document form-control col-md-3'>
             <?php $this->getOption("", $all_module) ?>
-            <option value='collectivite-properties'>Collectivite</option>
         </select>
         <?php
     }

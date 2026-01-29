@@ -8,6 +8,7 @@
 - Correction de la perte des headers HTTP lors de l'envoi de fichiers multiples #2187
 - Correction du tri des entités dans `RoleUtilisateur::getArbreFille` (tri numérique au lieu de lexicographique) #2029
 - Correction d'un warning sur la page d'import d'agents de l'entité racine #2401
+- Suppression de la valeur inutile "Collectivite" dans la liste des types de dossiers des notifications #2191
 
 # [4.0.28] - 2026-02-02
 
