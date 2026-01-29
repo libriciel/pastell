@@ -272,9 +272,7 @@ class EntiteControler extends PastellControler
 
         $onglet_content["collectivités"] = "EntiteImportCollectivite";
         if ($this->hasDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_ENTITE))) {
-            if ($id_e !== EntiteSQL::ID_E_ENTITE_RACINE) {
-                $onglet_content["agents"] = "EntiteImportAgent";
-            }
+            $onglet_content["agents"] = "EntiteImportAgent";
             $onglet_content["grades"] = "EntiteImportGrade";
         }
 

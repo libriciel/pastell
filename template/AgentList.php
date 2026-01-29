@@ -22,7 +22,7 @@
     <button type='submit' class='btn btn-primary'><i class='fa fa-search'></i>&nbsp;Rechercher</button>
 </form>
 
-<?php if ($droit_edition && $id_e !== EntiteSQL::ID_E_ENTITE_RACINE) : ?>
+<?php if ($droit_edition) : ?>
 <a href="Entite/import?id_e=<?php echo $id_e?>&onglet=agents&page_retour=2" class='btn btn-primary'><i class="fa fa-upload"></i>&nbsp;Importer</a>
 
 <?php endif;?>
