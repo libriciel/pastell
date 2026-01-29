@@ -262,4 +262,48 @@ class RoleUtilisateurSQLTest extends PastellTestCase
         static::assertCount(1, $childrenWithPermissions);
         static::assertSame($id_e_3, $childrenWithPermissions[0]['id_e']);
     }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testGetArbreFilleNumericSort(): void
+    {
+        $entityCreationService = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
+
+        $id_e_1 = $entityCreationService->create('Entité 1', '000000000');
+        $id_e_1_1 = $entityCreationService->create('Entité 1-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_1);
+        $entityCreationService->create('Entité 1-1-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_1_1);
+        $id_e_1_2 = $entityCreationService->create('Entité 1-2', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_1);
+        $entityCreationService->create('Entité 1-2-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_1_2);
+        $entityCreationService->create('Entité 2', '000000000');
+
+        $id_e_3 = $entityCreationService->create('Entité 3', '000000000');
+        $id_e_3_1 = $entityCreationService->create('Entité 3-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_3);
+        $id_e_3_1_1 = $entityCreationService->create('Entité 3-1-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_3_1);
+        $id_e_3_2 = $entityCreationService->create('Entité 3-2', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_3);
+        $entityCreationService->create('Entité 3-2-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_3_2);
+
+        $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
+        $id_u = $userCreationService->create('test_bug', 'test@test.fr', 'user', 'user');
+
+        $this->roleUtilisateurSQL->addRole($id_u, 'admin', $id_e_3_1);
+
+        $arbreFille = $this->roleUtilisateurSQL->getArbreFille($id_u, 'entite:lecture');
+        static::assertSame(
+            [
+                0 => [
+                    'id_e' => $id_e_3_1,
+                    'denomination' => 'Entité 3-1',
+                    'profondeur' => 0,
+                ],
+                1 => [
+                    'id_e' => $id_e_3_1_1,
+                    'denomination' => 'Entité 3-1-1',
+                    'profondeur' => 1,
+                ],
+            ],
+            $arbreFille
+        );
+    }
 }

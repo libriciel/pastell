@@ -6,6 +6,7 @@
 - Correction de l'erreur "droits insuffisants" lors de l'accès à un événement versé dans le journal historique #2091
 - Correction de l'envoi du Content-Type des fichiers uploadés #2188
 - Correction de la perte des headers HTTP lors de l'envoi de fichiers multiples #2187
+- Correction du tri des entités dans `RoleUtilisateur::getArbreFille` (tri numérique au lieu de lexicographique) #2029
 
 # [4.0.28] - 2026-02-02
 
