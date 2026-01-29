@@ -256,14 +256,17 @@ EOT;
     }
 
 
-    public function getArbreFille($id_u, $droit)
+    public function getArbreFille($id_u, $droit): array
     {
-        $sql = "SELECT DISTINCT entite.id_e,entite.denomination,entite.entite_mere FROM entite_ancetre " .
-                " JOIN utilisateur_role ON entite_ancetre.id_e_ancetre = utilisateur_role.id_e " .
-                " JOIN role_droit ON utilisateur_role.role=role_droit.role " .
-                " JOIN entite ON entite_ancetre.id_e=entite.id_e " .
-                " WHERE utilisateur_role.id_u=? AND droit=? " .
-                " ORDER BY entite_mere,denomination";
+        $sql = <<<SQL
+    SELECT DISTINCT entite.id_e, entite.denomination, entite.entite_mere 
+    FROM entite_ancetre
+    JOIN utilisateur_role ON entite_ancetre.id_e_ancetre = utilisateur_role.id_e
+    JOIN role_droit ON utilisateur_role.role = role_droit.role
+    JOIN entite ON entite_ancetre.id_e = entite.id_e
+    WHERE utilisateur_role.id_u = ? AND droit = ?
+    ORDER BY CAST(entite_mere AS UNSIGNED), denomination
+SQL;
                 $result = [];
         $db_result = $this->query($sql, $id_u, $droit);
 
