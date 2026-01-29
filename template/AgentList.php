@@ -6,6 +6,9 @@
  * @var bool $droit_edition
  * @var int $nbAgent
  * @var array $listAgent
+ * @var int $id_e
+ * @var int $offset
+ * @var string $search
  */
 ?>
 <div class="box">
@@ -20,7 +23,7 @@
 </form>
 
 <?php if ($droit_edition) : ?>
-<a href="Entite/import?id_e=<?php echo $id_e?>&page=1&page_retour=2" class='btn btn-primary'><i class="fa fa-upload"></i>&nbsp;Importer</a>
+<a href="Entite/import?id_e=<?php echo $id_e?>&onglet=agents&page_retour=2" class='btn btn-primary'><i class="fa fa-upload"></i>&nbsp;Importer</a>
 
 <?php endif;?>
 
