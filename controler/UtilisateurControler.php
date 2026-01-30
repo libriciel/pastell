@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Mailer\Mailer;
+use Pastell\Service\Droit\DroitService;
 use Pastell\Service\FeatureToggle\CertificateAuthentication;
 use Pastell\Service\PasswordEntropy;
 use Pastell\Service\Utilisateur\UserCreationService;
@@ -316,7 +317,7 @@ class UtilisateurControler extends PastellControler
      * @throws LastMessageException
      * @throws NotFoundException
      */
-    public function detailAction()
+    public function detailAction(): void
     {
         $recuperateur = new Recuperateur($_GET);
         $id_u = $recuperateur->getInt('id_u');
@@ -335,7 +336,7 @@ class UtilisateurControler extends PastellControler
             $this->getRoleUtilisateur()->getEntite($this->getId_u(), 'entite:edition')
         );
 
-        if ($id_u == $this->getId_u()) {
+        if ($id_u === $this->getId_u()) {
             $this->setViewParameter('notification_list', $this->getNotificationList($id_u));
         }
 
@@ -542,83 +543,56 @@ class UtilisateurControler extends PastellControler
     }
 
     /**
-     * @param $id_u
-     * @param $id_e
-     * @param $type
-     * @return bool
-     * @throws LastErrorException
-     * @throws LastMessageException
-     */
-    private function verifEditNotification($id_u, $id_e, $type): bool
-    {
-        $utilisateur_info = $this->getUtilisateur()->getInfo($id_u);
-
-        if ($type === null) {
-            $this->setLastError("Vous n'avez sélectionné aucun type de dossier");
-            $this->redirectToPageUtilisateur($id_u);
-            return false;
-        }
-
-        if (
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'entite:edition', $id_e)
-            &&
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'utilisateur:edition', $utilisateur_info['id_e'])
-        ) {
-            return true;
-        }
-
-        $this->setLastError("Vous n'avez pas les droits nécessaires pour accéder à cette page");
-        $this->redirectToPageUtilisateur($id_u);
-        return false;
-    }
-
-    /**
      * @throws LastMessageException
      * @throws LastErrorException
      */
-    private function verifEditMesNotifications(int $id_e, ?string $type): bool
+    private function verifEditMesNotifications(int $id_u, int $id_e, ?string $type, string $source): void
     {
-        $id_u = $this->getId_u();
-
         if ($type === null) {
             $this->setLastError("Vous n'avez sélectionné aucun type de dossier");
-            $this->redirectToPageUtilisateur($id_u, true);
-            return false;
+            $this->redirectToPageUtilisateur($source, $id_u, $type);
         }
 
-        if ($this->getRoleUtilisateur()->hasDroit($id_u, 'entite:edition', $id_e)) {
-            return true;
+        $fluxDefinitionFiles = $this->getObjectInstancier()->getInstance(FluxDefinitionFiles::class);
+        if (!$fluxDefinitionFiles->getInfo($type)) {
+            $this->setLastError("Le type de dossier n'existe pas");
+            $this->redirectToPageUtilisateur($source, $id_u, $type);
+        }
+
+        if ($this->hasDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE))) {
+            return;
         }
 
         if (
-            $this->getRoleUtilisateur()->hasDroit($id_u, 'entite:lecture', $id_e)
+            $this->getRoleUtilisateur()->hasDroit(
+                $id_u,
+                DroitService::getDroitLecture(DroitService::DROIT_ENTITE),
+                $id_e
+            )
             &&
             $this->getDroitService()->hasDroit(
                 $id_u,
-                $this->getDroitService()->getDroitLecture($type),
+                DroitService::getDroitLecture($type),
                 $id_e
             )
         ) {
-            return true;
+            return;
         }
 
         $this->setLastError("Vous n'avez pas les droits nécessaires pour accéder à cette page");
-        $this->redirectToPageUtilisateur($id_u, true);
-        return false;
+        $this->redirectToPageUtilisateur($source, $id_u, $type);
     }
 
     /**
-     * @param $id_u
-     * @param $page_moi
-     * @throws LastErrorException
      * @throws LastMessageException
+     * @throws LastErrorException
      */
-    private function redirectToPageUtilisateur($id_u, $page_moi = false)
+    private function redirectToPageUtilisateur($source, $id_u, $type = null): void
     {
-        if ($page_moi) {
+        if ($source === 'moi') {
             $this->redirect("/Utilisateur/moi");
         } else {
-            $this->redirect("/Utilisateur/detail?id_u=$id_u");
+            $this->redirect("/Utilisateur/$source?id_u=$id_u&type=$type");
         }
     }
 
@@ -629,24 +603,19 @@ class UtilisateurControler extends PastellControler
     public function notificationAjoutAction(): void
     {
         $recuperateur = $this->getPostInfo();
-
         $id_u = $recuperateur->getInt('id_u');
-        $id_e = $recuperateur->getInt('id_e', 0);
+        $source = $recuperateur->get('source', 'moi');
+        $id_e = $recuperateur->getInt('id_e');
         $type = $recuperateur->get('type', null);
-        $daily_digest = $recuperateur->getInt('daily_digest', 0);
-        $url = '/Utilisateur/notification?';
+        $daily_digest = $recuperateur->getInt('daily_digest');
 
-        if ($id_u === 0) {
-            $this->verifEditMesNotifications($id_e, $type);
-            $id_u = $this->getId_u();
-        } else {
-            $this->verifEditNotification($id_u, $id_e, $type);
-            $url .= "id_u=$id_u&";
+        if ($id_u !== $this->getId_u()) {
+            $this->setLastError("Vous ne pouvez pas ajouter de notifications à un autre utilisateur");
+            $this->redirectToPageUtilisateur($source, $id_u, $type);
         }
-
+        $this->verifEditMesNotifications($id_u, $id_e, $type, $source);
         $this->getNotification()->add($id_u, $id_e, $type, 0, $daily_digest);
-
-        $this->redirect($url . "id_e=$id_e&type=$type");
+        $this->redirect("/Utilisateur/notification?id_u=$id_u&id_e=$id_e&type=$type&source=$source");
     }
 
     /**
@@ -656,27 +625,22 @@ class UtilisateurControler extends PastellControler
      */
     public function notificationAction(): void
     {
-        $recuperateur = $this->getGetInfo();
+        $recuperateur = $this->getPostInfo();
 
         $id_u = $recuperateur->getInt('id_u');
         $id_e = $recuperateur->getInt('id_e');
         $type = $recuperateur->get('type');
+        $source = $recuperateur->get('source', 'moi');
 
-        if ($id_u === 0) {
-            $this->verifEditMesNotifications($id_e, $type);
-
-            $this->setViewParameter('pages_without_left_menu', true);
-            $this->setViewParameter('page_moi', true);
-            $this->setViewParameter('cancel_url', '/Utilisateur/moi');
-
-            $id_u = $this->getId_u();
-        } else {
-            $this->verifEditNotification($id_u, $id_e, $type);
-
-            $this->setViewParameter('page_moi', false);
-            $this->setViewParameter('id_u', $id_u);
-            $this->setViewParameter('cancel_url', "/Utilisateur/detail?id_u=$id_u&id_e=$id_e");
+        if ($id_u !== $this->getId_u()) {
+            $this->setLastError("Vous ne pouvez pas modifer les notifications d'un autre utilisateur");
+            $this->redirectToPageUtilisateur($source, $id_u, $type);
         }
+        $this->verifEditMesNotifications($id_u, $id_e, $type, $source);
+
+        $this->setViewParameter('pages_without_left_menu', $source === 'moi');
+        $this->setViewParameter('id_u', $id_u);
+        $this->setViewParameter('cancel_url', "/Utilisateur/$source?id_u=$id_u&id_e=$id_e");
 
         $utilisateur_info = $this->getUtilisateur()->getInfo($id_u);
 
@@ -695,6 +659,7 @@ class UtilisateurControler extends PastellControler
         );
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('type', $type);
+        $this->setViewParameter('source', $source);
         $this->setViewParameter(
             'page_title',
             get_hecho($utilisateur_info['login']) . ' - abonnement aux actions des documents '
@@ -710,53 +675,50 @@ class UtilisateurControler extends PastellControler
     public function notificationSuppressionAction()
     {
         $recuperateur = $this->getPostInfo();
-
+        $source = $recuperateur->get('source', 'moi');
         $id_n = $recuperateur->get('id_n');
-        $page_moi = false;
 
         $infoNotification = $this->getNotification()->getInfo($id_n);
+        if (!$infoNotification) {
+            $this->setLastError("La notification n'existe pas");
+            $this->redirectToPageUtilisateur($source, $this->getId_u());
+        }
         $id_u = $infoNotification['id_u'];
         $id_e = $infoNotification['id_e'];
         $type = $infoNotification['type'];
 
-        if ($id_u === $this->getId_u()) {
-            $page_moi = true;
-        } else {
-            $this->verifEditNotification($id_u, $id_e, $type);
+        if ($id_u !== $this->getId_u()) {
+            $this->setLastError("Vous ne pouvez pas supprimer les notifications d'un autre utilisateur");
+            $this->redirectToPageUtilisateur($source, $this->getId_u());
         }
+        $this->verifEditMesNotifications($id_u, $id_e, $type, $source);
 
         $this->getNotification()->removeAll($id_u, $id_e, $type);
         $this->setLastMessage("La notification a été supprimée");
-        $this->redirectToPageUtilisateur($id_u, $page_moi);
+        $this->redirectToPageUtilisateur($source, $id_u, $type);
     }
 
     /**
      * @throws LastErrorException
      * @throws LastMessageException
      */
-    public function doNotificationEditAction()
+    public function doNotificationEditAction(): void
     {
         $recuperateur = $this->getPostInfo();
         $id_u = $recuperateur->getInt('id_u');
         $id_e = $recuperateur->getInt('id_e');
         $type = $recuperateur->get('type');
         $daily_digest = $recuperateur->get('has_daily_digest');
-        $page_moi = false;
+        $source = $recuperateur->get('source', 'moi');
 
-        $this->getUtilisateur()->getInfo($id_u);
-        if ($id_u === 0) {
-            $this->verifEditMesNotifications($id_e, $type);
-
-            $id_u = $this->getId_u();
-            $page_moi = true;
-        } else {
-            $this->verifEditNotification($id_u, $id_e, $type);
+        if ($id_u !== $this->getId_u()) {
+            $this->setLastError("Vous ne pouvez pas modifer les notifications d'un autre utilisateur");
+            $this->redirectToPageUtilisateur($source, $id_u, $type);
         }
+        $this->verifEditMesNotifications($id_u, $id_e, $type, $source);
 
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($type);
-
         $action_list = $documentType->getAction()->getActionWithNotificationPossible();
-
         $all_checked = true;
         $no_checked = false;
         $action_checked = [];
@@ -771,11 +733,11 @@ class UtilisateurControler extends PastellControler
 
         $this->setLastMessage('Les notifications ont été modifiées');
         if (!$no_checked) {
-            $this->redirectToPageUtilisateur($id_u, $page_moi);
+            $this->redirectToPageUtilisateur($source, $id_u, $type);
         }
         if ($all_checked) {
             $this->getNotification()->add($id_u, $id_e, $type, Notification::ALL_TYPE, $daily_digest);
-            $this->redirectToPageUtilisateur($id_u, $page_moi);
+            $this->redirectToPageUtilisateur($source, $id_u, $type);
         }
         foreach ($action_list as $action) {
             if (!$action_checked[$action['id']]) {
@@ -783,7 +745,7 @@ class UtilisateurControler extends PastellControler
             }
             $this->getNotification()->add($id_u, $id_e, $type, $action['id'], $daily_digest);
         }
-        $this->redirectToPageUtilisateur($id_u, $page_moi);
+        $this->redirectToPageUtilisateur($source, $id_u, $type);
     }
 
     /**
@@ -795,21 +757,20 @@ class UtilisateurControler extends PastellControler
     {
         $recuperateur = $this->getPostInfo();
         $id_n = $recuperateur->getInt('id_n');
-        $page_moi = false;
+        $source = $this->getGetInfo()->get('source', 'moi');
         $infoNotification = $this->getNotification()->getInfo($id_n);
         $id_u = $infoNotification['id_u'];
         $id_e = $infoNotification['id_e'];
         $type = $infoNotification['type'];
 
-        if ($id_u === $this->getId_u()) {
-            $this->verifEditMesNotifications($id_e, $type);
-            $page_moi = true;
-        } else {
-            $this->verifEditNotification($id_u, $id_e, $type);
+        if ($id_u !== $this->getId_u()) {
+            $this->setLastError("Vous ne pouvez pas modifer les notifications d'un autre utilisateur");
+            $this->redirectToPageUtilisateur($source, $this->getId_u());
         }
+        $this->verifEditMesNotifications($id_u, $id_e, $type, $source);
         $this->getNotification()->toogleDailyDigest($id_u, $id_e, $type);
         $this->setLastMessage("La notification a été modifié");
-        $this->redirectToPageUtilisateur($id_u, $page_moi);
+        $this->redirectToPageUtilisateur($source, $id_u, $type);
     }
 
     public function getCertificatAction()
