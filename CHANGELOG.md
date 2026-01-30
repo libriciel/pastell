@@ -11,6 +11,7 @@
 - Suppression de la valeur inutile "Collectivite" dans la liste des types de dossiers des notifications #2191
 - Suppression des clés 'collectivite-properties','herited-properties' jamais utilisées et de 
   DocumentTypeHTML::displaySelectWithCollectivite #2191
+- Correction du serveur d'exemple dans le connecteur cloudooo #1963
 
 # [4.0.28] - 2026-02-02
 
