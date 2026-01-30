@@ -340,12 +340,10 @@ class DonneesFormulaireTest extends PastellTestCase
 
     public function testEmptyForms(): void
     {
-        $documentType = new DocumentType("test", []);
-        $donneesFormulaire = new DonneesFormulaire(
-            "/tmp/toto.yml",
-            $documentType,
-        );
-        $donneesFormulaire->setDocumentIndexor(new DocumentIndexor(new DocumentIndexSQL($this->getSQLQuery()), '1'));
+        $filepath = $this->getEmulatedDisk() . '/tmp/toto.yml';
+        $documentType = new DocumentType('test', []);
+        $donneesFormulaire = new DonneesFormulaire($filepath, $documentType);
+        $donneesFormulaire->setDocumentIndexor(new DocumentIndexor(new DocumentIndexSQL(self::getSQLQuery()), '1'));
         static::assertFileDoesNotExist($filepath);
         $donneesFormulaire->saveTab(new Recuperateur(), new FileUploader(), 0);
         static::assertFileExists($filepath);

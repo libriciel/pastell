@@ -24,11 +24,12 @@ class VaultAdapter implements StorageInterface
 
     public function __construct(string $vaultUrl, string $vaultUnsealKey, string $vaultToken)
     {
+        $httpClient = new Psr18Client();
         $this->vaultClient = new Client(
             new Uri($vaultUrl),
-            new Psr18Client(),
-            new RequestFactory(),
-            new StreamFactory()
+            $httpClient,
+            $httpClient,
+            $httpClient
         );
         $this->vaultToken = $vaultToken;
         $this->vaultUnsealKey = $vaultUnsealKey;

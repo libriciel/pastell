@@ -57,7 +57,7 @@ class DonneesFormulaireFactory
         $documentType = ($connecteur_entite_info['global']) ?
             $this->documentTypeFactory->getGlobalDocumentType($connecteur_entite_info['id_connecteur'])
             : $this->documentTypeFactory->getEntiteDocumentType($connecteur_entite_info['id_connecteur']);
-        $id_document = DonneesFormulaireFactory::ID_CONNECTEUR . "$id_ce";
+        $id_document = self::ID_CONNECTEUR . $id_ce;
         return $this->getConnecteurFromCache($id_document, $documentType);
     }
 
@@ -80,6 +80,7 @@ class DonneesFormulaireFactory
      * @param $id_document
      * @param DocumentType $documentType
      * @return DonneesFormulaire
+     * @throws Exception
      */
     private function getConnecteurFromCache($id_document, DocumentType $documentType): DonneesFormulaire
     {
@@ -101,6 +102,7 @@ class DonneesFormulaireFactory
      * @param $id_document
      * @param DocumentType $documentType
      * @return DonneesFormulaire
+     * @throws Exception
      */
     private function getDocumentFromCache($id_document, DocumentType $documentType): DonneesFormulaire
     {
@@ -141,6 +143,9 @@ class DonneesFormulaireFactory
         return $this->workspacePath . "/$a/$b/";
     }
 
+    /**
+     * @throws Exception
+     */
     public function getNonPersistingDonneesFormulaire()
     {
         $filename = sys_get_temp_dir() . "/pastell_phpunit_non_persinting_donnees_formulaire";
