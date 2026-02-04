@@ -19,20 +19,11 @@ class DocumentTypeHTML
         <?php
     }
 
-    public function displaySelect($type_selected = "", $all_module = [])
+    public function displaySelect($type_selected = '', $all_module = [])
     {
         ?>
         <select name='type' class="form-control col-md-3 select2_document">
             <?php $this->getOption($type_selected, $all_module) ?>
-        </select>
-        <?php
-    }
-
-    public function displaySelectWithCollectivite($all_module = [])
-    {
-        ?>
-        <select name='type' class='select2_document form-control col-md-3'>
-            <?php $this->getOption("", $all_module) ?>
         </select>
         <?php
     }
