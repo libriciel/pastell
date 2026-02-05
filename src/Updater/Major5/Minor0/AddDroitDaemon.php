@@ -21,6 +21,8 @@ final class AddDroitDaemon implements Version
 
     public function update(): void
     {
+        $this->logger?->info('Start');
+
         $roles = $this->roleSQL->getAllRole();
         $existing_daemon_role = false;
         $roles_droits = [];

@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Pastell\Updater\Major4\Minor1;
 
 use Pastell\Updater\Version;
+use PastellLogger;
 
 final class UpdateLoginPageConfiguration implements Version
 {
-    public function __construct(private readonly string $loginPageConfigurationLocation)
-    {
+    public function __construct(
+        private readonly string $loginPageConfigurationLocation,
+        private readonly ?PastellLogger $logger = null,
+    ) {
     }
 
     /**
@@ -17,6 +20,8 @@ final class UpdateLoginPageConfiguration implements Version
      */
     public function update(): void
     {
+        $this->logger?->info('Start');
+
         if (!\file_exists($this->loginPageConfigurationLocation)) {
             return;
         }

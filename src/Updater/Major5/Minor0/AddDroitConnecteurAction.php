@@ -21,6 +21,8 @@ final class AddDroitConnecteurAction implements Version
 
     public function update(): void
     {
+        $this->logger?->info('Start');
+
         $roles = $this->roleSQL->getAllRole();
         $existing_connecteur_action_role = false;
         $roles_droits = [];

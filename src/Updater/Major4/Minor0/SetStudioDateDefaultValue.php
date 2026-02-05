@@ -7,6 +7,7 @@ namespace Pastell\Updater\Major4\Minor0;
 use Exception;
 use Pastell\Configuration\ElementType;
 use Pastell\Updater\Version;
+use PastellLogger;
 use Recuperateur;
 use TypeDossierFormulaireElementProperties;
 use TypeDossierService;
@@ -17,6 +18,7 @@ final class SetStudioDateDefaultValue implements Version
     public function __construct(
         private readonly TypeDossierSQL $typeDossierSQL,
         private readonly TypeDossierService $typeDossierService,
+        private readonly ?PastellLogger $logger = null,
     ) {
     }
 
@@ -25,6 +27,8 @@ final class SetStudioDateDefaultValue implements Version
      */
     public function update(): void
     {
+        $this->logger?->info('Start');
+
         $modules = $this->typeDossierSQL->getAll();
         foreach ($modules as $module) {
             $studioId = $module['id_t'];

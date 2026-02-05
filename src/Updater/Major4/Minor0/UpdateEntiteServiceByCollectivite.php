@@ -22,6 +22,8 @@ final class UpdateEntiteServiceByCollectivite implements Version
      */
     public function update(): void
     {
+        $this->logger?->info('Start');
+
         $sql = 'UPDATE entite ' .
             " SET type = 'collectivite' " .
             " WHERE type = 'service' ";

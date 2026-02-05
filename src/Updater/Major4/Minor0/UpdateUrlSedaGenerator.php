@@ -23,7 +23,7 @@ final class UpdateUrlSedaGenerator implements Version
      */
     public function update(): void
     {
-        $this->logger->info('Mise à jour des urls des générateurs SEDA de la 3.1');
+        $this->logger->info('Start : Mise à jour des urls des générateurs SEDA de la 3.1');
         $connecteurSedaGlobaux = $this->connecteurEntiteSQL->getAllByConnecteurId('generateur-seda', true);
         foreach ($connecteurSedaGlobaux as $connecteurSedaGlobal) {
             $donneeFormulaire = $this->donneesFormulaireFactory
