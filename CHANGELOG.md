@@ -1,3 +1,10 @@
+# [5.0.2] - 
+
+## Corrections
+
+-  Correction de l'updater DeletePdfRelanceToMailsec qui bloquait le démarrage 
+   dans le cas d'un connecteur pdf-relance associé à un flux sans connecteur mailsec associé #2403
+
 # [5.0.1] - 2026-02-02
 
 **Ce patch corrige des failles de sécurité**
