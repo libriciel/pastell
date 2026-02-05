@@ -39,6 +39,8 @@ class CSRFToken
     {
         $this->verifParamToken();
 
+        $this->deleteToken();
+
         return true;
     }
 
