@@ -57,4 +57,16 @@ class CSRFTokenTest extends TestCase
         $this->expectExceptionMessage("Votre session n'était plus valide.");
         $this->csrfToken->verifToken();
     }
+
+    public function testVerifConsumesToken(): void
+    {
+        $this->session[CSRFToken::TOKEN_NAME] = 'foo';
+        $this->csrfToken->setPostParameter([CSRFToken::TOKEN_NAME => 'foo']);
+        $this->assertTrue($this->csrfToken->verifToken());
+        $this->assertArrayNotHasKey(CSRFToken::TOKEN_NAME, $this->session);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage("Votre session n'était plus valide.");
+        $this->csrfToken->verifToken();
+    }
 }

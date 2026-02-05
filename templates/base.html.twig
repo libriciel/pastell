@@ -123,10 +123,22 @@
                 {% if nouveau_bouton_url is defined %}
                     <div id="bloc_boutons">
                         {% for label,url in nouveau_bouton_url %}
-                            <a class="btn btn-primary grow" href="{{ url }}">
-                                <i class="fa {{ label == 'Ajouter' ?  'fa-plus-circle' : 'fa-plus' }}"></i>
-                                {{ label }}
-                            </a>
+                            {% if url is iterable %}
+                                <form action="{{ url.url }}" method="post" style="display: inline-block;">
+                                    {{ gabarit.displayCSRFInput() }}
+                                    <input type="hidden" name="id_e" value="{{ url.id_e }}">
+                                    <input type="hidden" name="type" value="{{ url.type }}">
+                                    <button type="submit" class="btn btn-primary grow">
+                                        <i class="fa {{ label == 'Ajouter' ?  'fa-plus-circle' : 'fa-plus' }}"></i>
+                                        {{ label }}
+                                    </button>
+                                </form>
+                            {% else %}
+                                <a class="btn btn-primary grow" href="{{ url }}">
+                                    <i class="fa {{ label == 'Ajouter' ?  'fa-plus-circle' : 'fa-plus' }}"></i>
+                                    {{ label }}
+                                </a>
+                            {% endif %}
                         {% endfor %}
                     </div>
                 {% endif %}
