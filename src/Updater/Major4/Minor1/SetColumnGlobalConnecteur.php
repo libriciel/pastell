@@ -22,6 +22,8 @@ final class SetColumnGlobalConnecteur implements Version
      */
     public function update(): void
     {
+        $this->logger?->info('Start');
+
         $selectConnectorsQuery = <<<EOT
 SELECT id_ce, id_e
 FROM connecteur_entite

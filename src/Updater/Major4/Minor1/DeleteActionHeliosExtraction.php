@@ -31,6 +31,8 @@ final class DeleteActionHeliosExtraction implements Version
      */
     public function update(): void
     {
+        $this->logger?->info('Start');
+
         $selectLastActionExtraction = <<<EOT
 SELECT *
 FROM document_entite

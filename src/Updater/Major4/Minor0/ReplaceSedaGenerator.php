@@ -25,6 +25,8 @@ final class ReplaceSedaGenerator implements Version
      */
     public function update(): void
     {
+        $this->logger?->info('Start');
+
         $selectConnectorsQuery = <<<EOT
 SELECT id_ce
 FROM connecteur_entite

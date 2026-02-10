@@ -29,6 +29,8 @@ final class AddConnectorPermission implements Version
      */
     public function update(): void
     {
+        $this->logger?->info('Start');
+
         $roleDroitConnecteur = [];
         $roleDroitEntite = [];
         foreach ($this->roleSQL->getAllRole() as $role) {

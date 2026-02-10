@@ -15,10 +15,10 @@ use PastellLogger;
 
 final class DeletePdfRelanceToMailsec implements Version
 {
-    private const PDF_RELANCE_CONNECTOR = 'pdf-relance';
-    private const MAILSEC_CONNECTOR = 'mailsec';
-    private const FEILD_NB_DAY_RELANCE = 'nb_day_relance';
-    private const FEILD_NB_DAY_NEXT_STATES = 'nb_day_next_state';
+    private const string PDF_RELANCE_CONNECTOR = 'pdf-relance';
+    private const string MAILSEC_CONNECTOR = 'mailsec';
+    private const string FEILD_NB_DAY_RELANCE = 'nb_day_relance';
+    private const string FEILD_NB_DAY_NEXT_STATES = 'nb_day_next_state';
 
     public function __construct(
         private readonly ConnecteurEntiteSQL $connecteurEntiteSql,
@@ -35,6 +35,8 @@ final class DeletePdfRelanceToMailsec implements Version
      */
     public function update(): void
     {
+        $this->logger?->info('Start');
+
         $pdfRelanceConnectors = array_merge(
             $this->connecteurEntiteSql->getAllByConnecteurId(self::PDF_RELANCE_CONNECTOR),
             $this->connecteurEntiteSql->getAllByConnecteurId(self::PDF_RELANCE_CONNECTOR, true)
@@ -50,6 +52,17 @@ final class DeletePdfRelanceToMailsec implements Version
                     $usage['flux'],
                     self::MAILSEC_CONNECTOR
                 );
+                if (!$mailsecId) {
+                    $this->logger?->info(
+                        \sprintf(
+                            'Usage id_e `%s` flux `%s` : There is no %s connector',
+                            $usage['id_e'],
+                            $usage['flux'],
+                            self::MAILSEC_CONNECTOR
+                        )
+                    );
+                    break;
+                }
                 $mailsecForm = $this->connecteurFactory->getConnecteurConfig($mailsecId);
                 $mailsecForm->setData(
                     self::FEILD_NB_DAY_RELANCE,
@@ -60,7 +73,7 @@ final class DeletePdfRelanceToMailsec implements Version
                     $pdfRelanceForm->get(self::FEILD_NB_DAY_NEXT_STATES)
                 );
                 $this->logger?->info(
-                    sprintf(
+                    \sprintf(
                         "Usage id_e `%s` flux `%s` : Update connector %s id_ce = '%s' with values connector %s id_ce = '%s'",
                         $usage['id_e'],
                         $usage['flux'],
@@ -74,7 +87,7 @@ final class DeletePdfRelanceToMailsec implements Version
             $this->connecteurDeletionService->disassociate($pdfRelanceId);
             $this->connecteurDeletionService->deleteConnecteur($pdfRelanceId);
             $this->logger?->info(
-                sprintf(
+                \sprintf(
                     "Delete connector %s id_ce = '%s'",
                     self::PDF_RELANCE_CONNECTOR,
                     $pdfRelanceId,

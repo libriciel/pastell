@@ -27,6 +27,8 @@ final class ForceUpdateFieldMailsec implements Version
      */
     public function update(): void
     {
+        $this->logger?->info('Start');
+
         $scope = UpdateFieldService::SCOPE_CONNECTOR;
         $scopeType = 'configuration';
         $type = "mailsec";
