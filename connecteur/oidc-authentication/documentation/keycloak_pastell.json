@@ -291,8 +291,10 @@
       ],
       "redirectUris": [
         "/auth/realms/pastell/account/*",
-        "https://127.0.0.1:8443",
-        "https://127.0.0.1:8443/Connexion/oidc"
+        "https://127.0.0.1:8443/Connexion/oidc",
+        "https://127.0.0.1:8443/Connexion/externalOIDCInfo*",
+        "https://localhost:8443/Connexion/oidc",
+        "https://localhost:8443/Connexion/externalOIDCInfo*"
       ],
       "webOrigins": [],
       "notBefore": 0,
