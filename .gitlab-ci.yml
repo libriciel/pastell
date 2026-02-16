@@ -4,6 +4,7 @@ include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
   - template: Security/Container-Scanning.gitlab-ci.yml
+  - component: $LIBRICIEL_CATALOG_PATH/renovate-runner/runner@1.4.0
   - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@2.2.0
   - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@1.2.0
     inputs:
@@ -112,8 +113,11 @@ unit_test:
 
 quality:
   stage: quality
-  only:
-    - master
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_TAG != null
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"
   image:
     name: hubdocker.libriciel.fr/sonarsource/sonar-scanner-cli:12.0
     entrypoint: [ "/bin/sh", "-c" ]
@@ -220,8 +224,11 @@ deploy_dev:
   environment:
     name: pastell-4-0.dev.libriciel.net
     url: https://pastell-4-0.dev.libriciel.net
-  only:
-    - master
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_TAG != null
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"
   variables:
     PAYLOAD: "payload={\"text\": \"[pastell-4-0.dev.libriciel.net](https://pastell-4-0.dev.libriciel.net) a été mis à jour - [build $CI_PIPELINE_ID]($CI_PROJECT_URL/pipelines/$CI_PIPELINE_ID)\"}"
   script:

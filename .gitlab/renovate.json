@@ -1,0 +1,47 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "assignees": ["project_39_bot_57db404f070b436a9293ee02922b1241"],
+  "extends": ["config:recommended"],
+  "branchPrefix": "renovate-",
+  "rangeStrategy": "update-lockfile",
+  "separateMajorMinor": true,
+  "major": {
+    "enabled": false
+  },
+  "constraintsFiltering": "strict",
+  "constraints": {
+    "php": "~8.4.0"
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["composer"],
+      "ignoreDeps": ["php"],
+      "groupName": "composer dependencies"
+    },
+    {
+      "matchManagers": ["npm"],
+      "groupName": "npm dependencies"
+    },
+    {
+      "matchManagers": ["dockerfile"],
+      "matchPackageNames": [
+        "hubdocker.libriciel.fr/php",
+        "hubdocker.libriciel.fr/mariadb"
+      ],
+      "matchUpdateTypes": ["minor"],
+      "enabled": false
+    },
+    {
+      "matchManagers": ["docker-compose"],
+      "matchPackageNames": [
+        "registry.libriciel.fr/public/plateforme/pastell-app",
+        "registry.libriciel.fr/public/plateforme/pastell-web"
+      ],
+      "enabled": false
+    },
+    {
+      "matchManagers": ["dockerfile", "docker-compose"],
+      "pinDigests": true
+    }
+  ]
+}
