@@ -25,7 +25,14 @@
     {
       "matchManagers": ["dockerfile"],
       "matchPackageNames": [
-        "hubdocker.libriciel.fr/php",
+        "hubdocker.libriciel.fr/php"
+      ],
+      "matchUpdateTypes": ["minor"],
+      "enabled": false
+    },
+    {
+      "matchManagers": ["docker-compose"],
+      "matchPackageNames": [
         "hubdocker.libriciel.fr/mariadb"
       ],
       "matchUpdateTypes": ["minor"],
