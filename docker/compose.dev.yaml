@@ -43,7 +43,7 @@ services:
       - "${DATABASE_PORT:-8306}:3306"
 
   db_test:
-    image: hubdocker.libriciel.fr/mariadb:11.4.9-noble
+    image: hubdocker.libriciel.fr/mariadb:11.4.9-noble@sha256:54ac814d243128263e18cf818f7abb611bf43a7a95ce8aa102d18f527b1516d1
     command:
       - "--character-set-server=utf8mb4"
       - "--collation-server=utf8mb4_unicode_ci"
@@ -58,7 +58,7 @@ services:
       - "${DATABASE_PORT_TEST:-13306}:3306"
 
   glaneur-sftp:
-    image: atmoz/sftp:alpine
+    image: atmoz/sftp:alpine@sha256:057b6868280fa4451ce14df9138ebbf9f90aaba385d6b4e7bd59e4a8d35475fe
     volumes:
       - ${PASTELL_GLANEUR:-pastell_glaneur}:/home/${SFTP_USER:-sftp}
     ports:
@@ -66,7 +66,7 @@ services:
     command: ${SFTP_USER:-sftp}:${SFTP_PASSWORD:-sftp}:${UID:-10001}
 
   mailpit:
-    image: axllent/mailpit
+    image: axllent/mailpit@sha256:7c38788069433ba9d2d9131abac8d17da0fb18f09b689207ec7a773dcb8d6eee
     ports:
       - "${MAILPIT_PORT:-8025}:8025"
 
