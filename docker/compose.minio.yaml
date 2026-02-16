@@ -8,7 +8,7 @@ services:
       USE_EXTERNAL_STORAGE_FOR_JOURNAL_PROOF: ${USE_EXTERNAL_STORAGE_FOR_JOURNAL_PROOF:-false}
 
   minio:
-    image: registry.libriciel.fr:443/public/plateforme/docker/minio:1.0.1
+    image: registry.libriciel.fr:443/public/plateforme/docker/minio:1.0.1@sha256:5f8eafc46e8d81f9d3ac3d72f10772f9f6aedaf1f582ea7fa784e7e278fcfe23
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio-root-user}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minio-root-password}

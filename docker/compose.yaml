@@ -129,7 +129,7 @@ services:
       - "${HTTPS_PORT:-443}:443"
 
   db:
-    image: 'hubdocker.libriciel.fr/mariadb:11.4.10-noble'
+    image: 'hubdocker.libriciel.fr/mariadb:11.4.10-noble@sha256:5224add29d506574e9f64e47a5023dfb4e5f28cea2011e3a938dc7be2fd55ee1'
     restart: unless-stopped
     command:
       - "--character-set-server=utf8mb4"
@@ -156,7 +156,7 @@ services:
       - ${DATABASE_DATADIR:-database_datadir}:/var/lib/mysql/:rw,noexec,nosuid,nodev
 
   redis:
-    image: 'hubdocker.libriciel.fr/redis:8.6.0-alpine3.23'
+    image: 'hubdocker.libriciel.fr/redis:8.6.0-alpine3.23@sha256:fd83658b0e40e2164617d262f13c02ca9ee9e1e6b276fd2fa06617e09bd5c780'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -167,7 +167,7 @@ services:
       - /data:mode=750,rw,noexec,nosuid,nodev
 
   seda-generator:
-    image: 'registry.libriciel.fr/public/plateforme/seda-generator:1.2.0'
+    image: 'registry.libriciel.fr/public/plateforme/seda-generator:1.2.0@sha256:b2e2b8ddf03cf9c1be2f8ff7d86f37d610d6d766bc46a138046784256b446953'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -184,7 +184,7 @@ services:
       - /var/lib/nginx/tmp:mode=770,uid=10001,gid=10001,rw,noexec,nosuid,nodev
 
   flow:
-    image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.5.2'
+    image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.5.2@sha256:4f5bfd28d3e37191e21192e87585b5fc2ab3af9b61044525ad79f8c8369b40fe'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -195,7 +195,7 @@ services:
       - /tmp:mode=770,rw,noexec,nosuid,nodev
 
   cloudooo:
-    image: 'registry.libriciel.fr/public/actes/cloudooo:25.2.7-rc.3'
+    image: 'registry.libriciel.fr/public/actes/cloudooo:25.2.7-rc.3@sha256:524987e6d9c389ed4cac08c5169774a0ade6dda95153a3f1e9ffd601782b03c5'
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -203,7 +203,7 @@ services:
       - no-new-privileges:true
 
   pes-viewer:
-    image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.15'
+    image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.15@sha256:020c9a0d9ec528d4d768cca2ea4013e82e22f4874fe0975d98720191f0e0e357'
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -217,7 +217,7 @@ services:
       - ${PES_PJ_PATH:-/data/pastell/pesPJ}:/pesPJ/
 
   cacerts:
-    image: 'registry.libriciel.fr/public/libriciel/ls-docker-cacerts:0.4.0'
+    image: 'registry.libriciel.fr/public/libriciel/ls-docker-cacerts:0.4.0@sha256:209976b9b07ce001403111203f7824bfc57068f033a9c498416a363709690a2d'
     cap_drop:
       - ALL
     cap_add:
@@ -230,7 +230,7 @@ services:
       - ${LOCAL_CACERTS_PATH:-local_cacerts}:/usr/local/share/ca-certificates:rw,noexec,nosuid,nodev
 
   libriciel-feedback:
-    image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-feedback:2.0.2'
+    image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-feedback:2.0.2@sha256:9293bc89bdd1db024c83d4c4cf3cbcdedb8798070831a3f70c3123f7b3bfa647'
     restart: unless-stopped
     read_only: true
     cap_drop:
