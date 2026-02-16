@@ -1,6 +1,6 @@
 services:
   keycloak:
-    image: keycloak/keycloak:26.1
+    image: keycloak/keycloak:26.5
     environment:
       - KC_BOOTSTRAP_ADMIN_USERNAME=${KEYCLOAK_USER:-admin}
       - KC_BOOTSTRAP_ADMIN_PASSWORD=${KEYCLOAK_PASSWORD:-admin}

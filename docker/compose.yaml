@@ -129,7 +129,7 @@ services:
       - "${HTTPS_PORT:-443}:443"
 
   db:
-    image: 'hubdocker.libriciel.fr/mariadb:11.4.9-noble'
+    image: 'hubdocker.libriciel.fr/mariadb:11.4.10-noble'
     restart: unless-stopped
     command:
       - "--character-set-server=utf8mb4"
@@ -156,7 +156,7 @@ services:
       - ${DATABASE_DATADIR:-database_datadir}:/var/lib/mysql/:rw,noexec,nosuid,nodev
 
   redis:
-    image: 'hubdocker.libriciel.fr/redis:8.2.3-alpine3.22'
+    image: 'hubdocker.libriciel.fr/redis:8.6.0-alpine3.23'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -203,7 +203,7 @@ services:
       - no-new-privileges:true
 
   pes-viewer:
-    image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.14'
+    image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.15'
     restart: unless-stopped
     cap_drop:
       - ALL
