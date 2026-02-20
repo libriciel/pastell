@@ -134,16 +134,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.369.35",
+            "version": "3.369.38",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "0f3e296342fe965271b5dd0bded4a18bdab8aba5"
+                "reference": "6b39dcc5284fae1a1f7e5d4fd64878092a56594b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/0f3e296342fe965271b5dd0bded4a18bdab8aba5",
-                "reference": "0f3e296342fe965271b5dd0bded4a18bdab8aba5",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/6b39dcc5284fae1a1f7e5d4fd64878092a56594b",
+                "reference": "6b39dcc5284fae1a1f7e5d4fd64878092a56594b",
                 "shasum": ""
             },
             "require": {
@@ -225,9 +225,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.369.35"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.369.38"
             },
-            "time": "2026-02-16T19:15:41+00:00"
+            "time": "2026-02-19T19:06:55+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -9268,16 +9268,16 @@
         },
         {
             "name": "codeception/codeception",
-            "version": "5.3.4",
+            "version": "5.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/Codeception.git",
-                "reference": "cb4c200ec0a7fe21964f51872bb403701f53f35b"
+                "reference": "83c2986ec2abe594cee2f706d9ec7aca2878fbe0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/cb4c200ec0a7fe21964f51872bb403701f53f35b",
-                "reference": "cb4c200ec0a7fe21964f51872bb403701f53f35b",
+                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/83c2986ec2abe594cee2f706d9ec7aca2878fbe0",
+                "reference": "83c2986ec2abe594cee2f706d9ec7aca2878fbe0",
                 "shasum": ""
             },
             "require": {
@@ -9288,13 +9288,13 @@
                 "ext-json": "*",
                 "ext-mbstring": "*",
                 "php": "^8.2",
-                "phpunit/php-code-coverage": "^9.2 | ^10.0 | ^11.0 | ^12.0",
-                "phpunit/php-text-template": "^2.0 | ^3.0 | ^4.0 | ^5.0",
-                "phpunit/php-timer": "^5.0.3 | ^6.0 | ^7.0 | ^8.0",
-                "phpunit/phpunit": "^9.5.20 | ^10.0 | ^11.0 | ^12.0",
+                "phpunit/php-code-coverage": "^9.2 | ^10.0 | ^11.0 | ^12.0 | ^13.0",
+                "phpunit/php-text-template": "^2.0 | ^3.0 | ^4.0 | ^5.0 | ^6.0",
+                "phpunit/php-timer": "^5.0.3 | ^6.0 | ^7.0 | ^8.0 | ^9.0",
+                "phpunit/phpunit": "^9.5.20 | ^10.0 | ^11.0 | ^12.0 | ^13.0",
                 "psy/psysh": "^0.11.2 | ^0.12",
-                "sebastian/comparator": "^4.0.5 | ^5.0 | ^6.0 | ^7.0",
-                "sebastian/diff": "^4.0.3 | ^5.0 | ^6.0 | ^7.0",
+                "sebastian/comparator": "^4.0.5 | ^5.0 | ^6.0 | ^7.0 | ^8.0",
+                "sebastian/diff": "^4.0.3 | ^5.0 | ^6.0 | ^7.0 | ^8.0",
                 "symfony/console": ">=5.4.24 <9.0",
                 "symfony/css-selector": ">=5.4.24 <9.0",
                 "symfony/event-dispatcher": ">=5.4.24 <9.0",
@@ -9313,7 +9313,7 @@
             "require-dev": {
                 "codeception/lib-innerbrowser": "*@dev",
                 "codeception/lib-web": "*@dev",
-                "codeception/module-asserts": "*@dev",
+                "codeception/module-asserts": "dev-master",
                 "codeception/module-cli": "*@dev",
                 "codeception/module-db": "*@dev",
                 "codeception/module-filesystem": "*@dev",
@@ -9383,7 +9383,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Codeception/Codeception/issues",
-                "source": "https://github.com/Codeception/Codeception/tree/5.3.4"
+                "source": "https://github.com/Codeception/Codeception/tree/5.3.5"
             },
             "funding": [
                 {
@@ -9391,7 +9391,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2026-01-14T11:55:19+00:00"
+            "time": "2026-02-18T06:18:00+00:00"
         },
         {
             "name": "codeception/lib-asserts",
@@ -11342,16 +11342,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.12.18",
+            "version": "v0.12.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "ddff0ac01beddc251786fe70367cd8bbdb258196"
+                "reference": "19678eb6b952a03b8a1d96ecee9edba518bb0373"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/ddff0ac01beddc251786fe70367cd8bbdb258196",
-                "reference": "ddff0ac01beddc251786fe70367cd8bbdb258196",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/19678eb6b952a03b8a1d96ecee9edba518bb0373",
+                "reference": "19678eb6b952a03b8a1d96ecee9edba518bb0373",
                 "shasum": ""
             },
             "require": {
@@ -11415,22 +11415,22 @@
             ],
             "support": {
                 "issues": "https://github.com/bobthecow/psysh/issues",
-                "source": "https://github.com/bobthecow/psysh/tree/v0.12.18"
+                "source": "https://github.com/bobthecow/psysh/tree/v0.12.20"
             },
-            "time": "2025-12-17T14:35:46+00:00"
+            "time": "2026-02-11T15:05:28+00:00"
         },
         {
             "name": "rector/rector",
-            "version": "2.3.6",
+            "version": "2.3.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "ca9ebb81d280cd362ea39474dabd42679e32ca6b"
+                "reference": "9c46ad17f57963932c9788fd1b0f1d07ff450370"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/ca9ebb81d280cd362ea39474dabd42679e32ca6b",
-                "reference": "ca9ebb81d280cd362ea39474dabd42679e32ca6b",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/9c46ad17f57963932c9788fd1b0f1d07ff450370",
+                "reference": "9c46ad17f57963932c9788fd1b0f1d07ff450370",
                 "shasum": ""
             },
             "require": {
@@ -11469,7 +11469,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/2.3.6"
+                "source": "https://github.com/rectorphp/rector/tree/2.3.7"
             },
             "funding": [
                 {
@@ -11477,7 +11477,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-02-06T14:25:06+00:00"
+            "time": "2026-02-19T14:44:16+00:00"
         },
         {
             "name": "sebastian/cli-parser",
