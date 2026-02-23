@@ -121,7 +121,6 @@ if ($donneesFormulaire->getFormulaire()->getNbPage() > 1) {
                                                 page: '<?php echo $page ?>',
                                                 field: '<?php echo $field->getName() ?>',
                                                 key: '<?php echo $mailsec_key ?>',
-                                                token_value: '<?php  echo $this->getCSRFToken()->getCSRFToken(); ?>',
                                                 single_file: false,
                                                 accept: '<?php echo implode(',', $field->getContentType()) ?>'
                                             };
@@ -141,7 +140,6 @@ if ($donneesFormulaire->getFormulaire()->getNbPage() > 1) {
                                                     page: '<?php echo $page ?>',
                                                     field: '<?php echo $field->getName() ?>',
                                                     key: '<?php echo $mailsec_key ?>',
-                                                    token_value: '<?php echo $this->getCSRFToken()->getCSRFToken(); ?>',
                                                     single_file: true,
                                                     accept: '<?php echo implode(',', $field->getContentType())?>'
                                                 };

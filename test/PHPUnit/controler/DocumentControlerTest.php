@@ -51,7 +51,8 @@ class DocumentControlerTest extends ControlerTestCase
         $documentController = $this->getObjectInstancier()->getInstance(DocumentControler::class);
         try {
             $this->expectOutputRegex("#id_e=1#");
-            $documentController->setGetInfo(new Recuperateur(
+            $documentController->setServerInfo(['REQUEST_METHOD' => 'POST']);
+            $documentController->setPostInfo(new Recuperateur(
                 [
                     'id_e' => 1,
                     'id_d' => $info['id_d'],
@@ -78,8 +79,9 @@ class DocumentControlerTest extends ControlerTestCase
         /** @var DocumentControler $documentController */
         $documentController = $this->getObjectInstancier()->getInstance(DocumentControler::class);
         try {
-            $this->expectOutputRegex("#id_e=1#");
-            $documentController->setGetInfo(new Recuperateur(
+             $this->expectOutputRegex("#id_e=1#");
+            $documentController->setServerInfo(['REQUEST_METHOD' => 'POST']);
+            $documentController->setPostInfo(new Recuperateur(
                 [
                     'id_e' => 1,
                     'id_d' => $info['id_d'],
@@ -393,14 +395,16 @@ Lignes',
         $this->triggerActionOnDocument($id_d, 'action-auto');
         $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
         static::assertTrue($jobQueueSQL->hasDocumentJob(self::ID_E_COL, $id_d));
-        $this->setGetInfo([
+        $this->setPostInfo([
             'id_d' => $id_d,
             'action' => FatalError::ACTION_ID,
             'id_e' => self::ID_E_COL,
             'go' => 1,
         ]);
         try {
-            $this->getControlerInstance(DocumentControler::class)->actionAction();
+            $controller = $this->getControlerInstance(DocumentControler::class);
+            $controller->setServerInfo(['REQUEST_METHOD' => 'POST']);
+            $controller->actionAction();
         } catch (Exception) {
         }
         static::assertFalse($jobQueueSQL->hasDocumentJob(self::ID_E_COL, $id_d));

@@ -89,7 +89,7 @@ services:
         user: "${UID:-33}:${GID:-33}"
 
     db:
-        image: 'hubdocker.libriciel.fr/mariadb:10.11.15-jammy'
+        image: 'hubdocker.libriciel.fr/mariadb:10.11.16-jammy'
         restart: unless-stopped
         command:
             - "--character-set-server=utf8mb4"
@@ -121,7 +121,7 @@ services:
         restart: unless-stopped
 
     pes-viewer:
-        image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.14'
+        image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.15'
         restart: unless-stopped
         deploy:
             resources:

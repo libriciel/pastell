@@ -165,6 +165,7 @@ class DonneesFormulaireControler extends PastellControler
         $id_ce = $this->getPostOrGetInfo()->getInt('id_ce');
         $field = $this->getPostOrGetInfo()->get('field');
 
+        $request = new Request();
         $this->verifDroitEditionOnDocumentOrConnecteur($id_e, $id_d, $id_ce);
 
         if (\preg_match('#[^\w-]#', $field)) {
@@ -173,7 +174,6 @@ class DonneesFormulaireControler extends PastellControler
 
         $chunkUploader = $this->getObjectInstancier()->getInstance(ChunkUploader::class);
 
-        $request = new Request();
         $uploaded_filename = basename($request->getFileName());
 
         $upload_filepath = \sprintf(
@@ -235,7 +235,8 @@ class DonneesFormulaireControler extends PastellControler
         }
 
         $chunkUploader->pruneChunks();
-        echo 'OK';
+        $response['csrf_token'] = $this->getInstance(CSRFToken::class)->getCSRFToken();
+        echo json_encode($response);
         exit_wrapper();
     }
 

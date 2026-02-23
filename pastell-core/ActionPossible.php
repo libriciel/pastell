@@ -356,7 +356,7 @@ class ActionPossible
             }
             return true;
         }
-        if (is_array($ruleValue) && ! in_array($ruleName, ['collectivite-properties','herited-properties','content','properties'])) {
+        if (is_array($ruleValue) && ! in_array($ruleName, ['content','properties'])) {
             foreach ($ruleValue as $ruleElement) {
                 if ($this->verifRule($id_u, $ruleName, $ruleElement)) {
                     return true;
