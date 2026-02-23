@@ -577,7 +577,7 @@ class DocumentAPIController extends BaseAPIController
      */
     public function postChunk(string $id_e, string $id_d): array
     {
-        $info = $this->getDocumentInfo($id_e, $id_d);
+        $info = $this->getDocumentInfo((int)$id_e, $id_d);
         $this->checkDroit($id_e, $this->getDroitService()->getDroitEdition($info['type']));
 
         $field_name = $this->getFromQueryArgs(4);

@@ -1,7 +1,17 @@
-# [4.1.16] -
+# [4.1.16] - 2026-03-02
 
 ## Corrections
 
+- Les droits de lecture au lieu d'édition sont désormais requis pour consulter un document par API #2228
+- Correction de l'erreur "droits insuffisants" lors de l'accès à un événement versé dans le journal historique #2091
+- Correction de l'envoi du Content-Type des fichiers uploadés #2188
+- Correction de la perte des headers HTTP lors de l'envoi de fichiers multiples #2187
+- Correction du tri des entités dans `RoleUtilisateur::getArbreFille` (tri numérique au lieu de lexicographique) #2029
+- Correction d'un warning sur la page d'import d'agents de l'entité racine #2401
+- Suppression de la valeur inutile "Collectivite" dans la liste des types de dossiers des notifications #2191
+- Suppression des clés 'collectivite-properties','herited-properties' jamais utilisées et de
+  DocumentTypeHTML::displaySelectWithCollectivite #2191
+- Correction du serveur d'exemple dans le connecteur cloudooo (déprécié en 5.0.0) #1963
 - Correction du séparateur CSV dans l'import de l'annuaire mails sécurisés (désormais `,`) #2216
 
 # [4.1.15] - 2026-02-02

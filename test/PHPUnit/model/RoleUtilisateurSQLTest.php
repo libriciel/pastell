@@ -151,7 +151,6 @@ class RoleUtilisateurSQLTest extends PastellTestCase
     }
 
     /**
-     * @fixme see issue 2029
      * @throws ConflictException
      * @throws UnrecoverableException
      */
@@ -227,20 +226,20 @@ class RoleUtilisateurSQLTest extends PastellTestCase
                     ],
                 5 =>
                     [
-                        'id_e' => $entity311,
-                        'denomination' => 'Entité 311',
+                        'id_e' => $entity31,
+                        'denomination' => 'Entité 31',
                         'profondeur' => 0,
                     ],
                 6 =>
                     [
-                        'id_e' => $entity321,
-                        'denomination' => 'Entité 321',
-                        'profondeur' => 0,
+                        'id_e' => $entity311,
+                        'denomination' => 'Entité 311',
+                        'profondeur' => 1,
                     ],
                 7 =>
                     [
-                        'id_e' => $entity31,
-                        'denomination' => 'Entité 31',
+                        'id_e' => $entity321,
+                        'denomination' => 'Entité 321',
                         'profondeur' => 0,
                     ],
             ],
@@ -290,20 +289,23 @@ class RoleUtilisateurSQLTest extends PastellTestCase
                 ],
                 1 =>
                     [
-                        'id_e' => $entity311,
-                        'denomination' => 'Entité 311',
+                        'id_e' => $entity31,
+                        'denomination' => 'Entité 31',
                         'profondeur' => 0,
+                        'children' =>
+                            [
+                                0 =>
+                                    [
+                                        'id_e' => $entity311,
+                                        'denomination' => 'Entité 311',
+                                        'profondeur' => 1,
+                                    ],
+                            ],
                     ],
                 2 =>
                     [
                         'id_e' => $entity321,
                         'denomination' => 'Entité 321',
-                        'profondeur' => 0,
-                    ],
-                3 =>
-                    [
-                        'id_e' => $entity31,
-                        'denomination' => 'Entité 31',
                         'profondeur' => 0,
                     ],
             ],

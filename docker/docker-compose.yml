@@ -113,7 +113,7 @@ services:
             - '/etc/localtime:/etc/localtime:ro'
 
     flow:
-        image: 'registry.libriciel.fr:443/public/libriciel/outils-documentaires/flow:1.5.2'
+        image: 'registry.libriciel.fr:443/public/libriciel/outils-documentaires/flow:1.5.3'
         restart: unless-stopped
 
     cloudooo:
