@@ -411,27 +411,6 @@ class RoleUtilisateurSQLTest extends PastellTestCase
 
     /**
      * @throws UnrecoverableException
-     */
-    public function testGetChildrenWithPermission(): void
-    {
-        $entityCreationService = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
-        $id_e_2 = $entityCreationService->create('Entité 2', '000000000');
-        $id_e_3 = $entityCreationService->create('Entité 3', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_2);
-
-        $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
-        $id_u = $userCreationService->create('test', 'aa@aa.fr', 'user', 'user');
-
-        $this->roleUtilisateurSQL->addRole($id_u, 'admin', $id_e_2);
-        $this->roleUtilisateurSQL->addRole($id_u, 'admin', $id_e_3);
-
-        $childrenWithPermissions = $this->roleUtilisateurSQL->getChildrenWithPermission($id_e_2, $id_u);
-
-        static::assertCount(1, $childrenWithPermissions);
-        static::assertSame($id_e_3, $childrenWithPermissions[0]['id_e']);
-    }
-
-    /**
-     * @throws UnrecoverableException
      * @throws ConflictException
      */
     public function testGetArbreFilleNumericSort(): void

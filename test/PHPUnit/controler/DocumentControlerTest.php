@@ -397,7 +397,7 @@ Lignes',
         $this->triggerActionOnDocument($id_d, 'action-auto');
         $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
         static::assertTrue($jobQueueSQL->hasDocumentJob(self::ID_E_COL, $id_d));
-        $this->setPostInfo([
+        $this->setGetInfo([
             'id_d' => $id_d,
             'id_e' => (int)self::ID_E_COL,
             'go' => 1,
