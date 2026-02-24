@@ -5,6 +5,9 @@
  * @var array $entite_info
  * @var int $page
  * @var string $template_onglet
+ * @var int $id_e
+ * @var array $onglet_tab
+ * @var string $onglet
  */
 ?>
 
@@ -18,10 +21,10 @@
 
 
 <ul class="nav nav-tabs">
-    <?php foreach ($onglet_tab as $onglet_number => $onglet_name) : ?>
+    <?php foreach ($onglet_tab as $onglet_key => $onglet_name) : ?>
     <li class="nav-item">
-        <a class="nav-link  <?php echo ($onglet_number == $page) ? 'active' : '' ?>" href='Entite/import?page=<?php echo $onglet_number?>&id_e=<?php echo $id_e ?>'>
-            <?php echo $onglet_name?>
+        <a class="nav-link  <?php echo ($onglet_name === $onglet) ? 'active' : '' ?>" href='Entite/import?onglet=<?php echo $onglet_name?>&id_e=<?php echo $id_e ?>'>
+            <?php echo ucfirst($onglet_name)?>
         </a>
     </li>
     <?php endforeach;?>

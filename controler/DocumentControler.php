@@ -441,7 +441,14 @@ class DocumentControler extends PastellControler
         }
 
         if ($this->getActionPossible()->isCreationPossible($id_e, $this->getId_u(), $type)) {
-            $this->setViewParameter('nouveau_bouton_url', ["Créer" => "Document/new?type=$type&id_e=$id_e"]);
+            $this->setViewParameter('nouveau_bouton_url', [
+                "Créer" =>
+                    [
+                        'url' => "Document/new",
+                        'type' => $type,
+                        'id_e' => $id_e,
+                    ]
+            ]);
         }
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('search', $search);
@@ -1052,8 +1059,7 @@ class DocumentControler extends PastellControler
 
     public function actionAction()
     {
-
-        $recuperateur = $this->getPostOrGetInfo();
+        $recuperateur = $this->getPostInfo();
         $id_d = $recuperateur->get('id_d');
         $action = $recuperateur->get('action');
         $id_e = $recuperateur->get('id_e');
@@ -1354,14 +1360,14 @@ class DocumentControler extends PastellControler
      */
     public function supprimerFichierAction()
     {
-        $csrf_token = $this->getPostInfo()->get('csrf_token');
+        $csrf_token = $this->getGetInfo()->get('csrf_token');
         $this->getObjectInstancier()->getInstance(CSRFToken::class)->verifParamToken($csrf_token);
 
-        $id_d = $this->getPostInfo()->get('id_d');
-        $page = $this->getPostInfo()->get('page');
-        $id_e = $this->getPostInfo()->get('id_e');
-        $field = $this->getPostInfo()->get('field');
-        $num = $this->getPostInfo()->getInt('num', 0);
+        $id_d = $this->getGetInfo()->get('id_d');
+        $page = $this->getGetInfo()->get('page');
+        $id_e = $this->getGetInfo()->get('id_e');
+        $field = $this->getGetInfo()->get('field');
+        $num = $this->getGetInfo()->getInt('num', 0);
 
         $documentModificationService = $this->getObjectInstancier()
             ->getInstance(DocumentModificationService::class);
@@ -1414,7 +1420,6 @@ class DocumentControler extends PastellControler
      */
     public function chunkUploadAction()
     {
-
         $id_e = $this->getPostOrGetInfo()->getInt('id_e');
         $id_d = $this->getPostOrGetInfo()->get('id_d');
         $page = $this->getPostOrGetInfo()->getInt('page');

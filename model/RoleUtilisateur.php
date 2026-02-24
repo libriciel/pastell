@@ -264,7 +264,7 @@ FROM entite_ancetre
     JOIN role_droit ON utilisateur_role.role=role_droit.role
     JOIN entite ON entite_ancetre.id_e=entite.id_e
 WHERE utilisateur_role.id_u=? AND droit=?
-ORDER BY entite_mere,denomination;
+ORDER BY CAST(entite_mere AS UNSIGNED), denomination;
 SQL;
         $db_result = $this->query($query, $userId, $permission);
         $result = [];
