@@ -297,7 +297,7 @@ use Pastell\Utilities\Certificate;
                     <?php endforeach; ?>
                 </select>
 
-                <?php $this->getDocumentTypeHtml()->displaySelectWithCollectivite($all_module); ?>
+                <?php $this->getDocumentTypeHtml()->displaySelect('', $all_module); ?>
                 <select name='daily_digest' class="form-select col-md-2 me-2">
                     <option value=''>Envoi à chaque événement</option>
                     <option value='1'>Résumé journalier</option>

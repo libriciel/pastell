@@ -287,11 +287,11 @@ class CurlWrapper
         foreach ($this->filePropertiesList as $fileProperty) {
             $post[$fileProperty->field] = new CURLFile(
                 $fileProperty->filepath,
-                null,
+                $fileProperty->contentType,
                 $fileProperty->filename
             );
         }
-        $this->curlFunctions->curl_setopt($this->curlHandle, CURLOPT_POSTFIELDS, $post);
+        $this->setProperties(CURLOPT_POSTFIELDS, $post);
     }
 
     private function curlSetPostDataWithSimilarFilename()
@@ -325,11 +325,9 @@ class CurlWrapper
 
         $content = join(self::POST_DATA_SEPARATOR, $body);
 
-        $curlHttpHeader[] = 'Content-Length: ' . strlen($content);
-        $curlHttpHeader[] = 'Expect: 100-continue';
-        $curlHttpHeader[] = "Content-Type: multipart/form-data; boundary=$boundary";
-
-        $this->setProperties(CURLOPT_HTTPHEADER, $curlHttpHeader);
+        $this->addHeader("Content-Length", strlen($content));
+        $this->addHeader("Expect", "100-continue");
+        $this->addHeader("Content-Type", "multipart/form-data; boundary=$boundary");
         $this->setProperties(CURLOPT_POSTFIELDS, $content);
     }
 

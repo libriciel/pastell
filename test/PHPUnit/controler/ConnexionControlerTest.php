@@ -96,4 +96,24 @@ class ConnexionControlerTest extends ControlerTestCase
         $this->connexionControler->sessionLogoutAction();
         $this->assertFalse($this->getObjectInstancier()->getInstance(Authentification::class)->isConnected());
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testLogoutRemovesCSRFToken(): void
+    {
+        $csrfToken = $this->getObjectInstancier()->getInstance(CSRFToken::class);
+        $_SESSION = [];
+        $csrfToken->setSession($_SESSION);
+        // Ensure token is generated
+        $csrfToken->getCSRFToken();
+        $this->assertArrayHasKey(CSRFToken::TOKEN_NAME, $_SESSION);
+
+        try {
+            $this->connexionControler->logoutAction();
+        } catch (LastMessageException $e) { // Expect redirection
+        }
+
+        $this->assertArrayNotHasKey(CSRFToken::TOKEN_NAME, $_SESSION);
+    }
 }

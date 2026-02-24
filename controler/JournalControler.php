@@ -52,17 +52,33 @@ class JournalControler extends PastellControler
         $this->renderDefault();
     }
 
-    public function detailAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
+    public function detailAction(): void
     {
         $recuperateur = new Recuperateur($_GET);
-        $this->setViewParameter('id_j', $recuperateur->getInt('id_j', 0));
-        $this->setViewParameter('offset', $recuperateur->getInt('offset', 0));
-        $this->setViewParameter('id_e', $recuperateur->getInt('id_e', 0));
-        $this->setViewParameter('type', $recuperateur->get('type'));
-        $this->setViewParameter('id_d', $recuperateur->get('id_d'));
+        $id_j = $recuperateur->getInt('id_j');
+        $id_e = $recuperateur->getInt('id_e');
+        $offset = $recuperateur->getInt('offset');
+        $type = $recuperateur->get('type');
+        $id_d = $recuperateur->get('id_d');
 
-        $this->setViewParameter('info', $this->getJournal()->getAllInfo($this->getViewParameterOrObject('id_j')));
-        $this->verifDroit($this->getViewParameterOrObject('info')['id_e'], "journal:lecture");
+        $this->setViewParameter('id_j', $id_j);
+        $this->setViewParameter('offset', $offset);
+        $this->setViewParameter('id_e', $id_e);
+        $this->setViewParameter('type', $type);
+        $this->setViewParameter('id_d', $id_d);
+
+        $info = $this->getJournal()->getAllInfo($id_j);
+        if (!$info) {
+            $this->setLastError("Événement introuvable");
+            $this->redirect("Journal/index?id_e={$id_e}&type={$type}&id_d={$id_d}&offset={$offset}");
+        }
+        $this->setViewParameter('info', $info);
+        $this->verifDroit($info['id_e'], "journal:lecture");
 
         /** @var OpensslTSWrapper $opensslTSWrapper */
         $opensslTSWrapper = $this->getInstance(OpensslTSWrapper::class);
