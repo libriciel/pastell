@@ -156,7 +156,6 @@ class RoleUtilisateurSQLTest extends PastellTestCase
     }
 
     /**
-     * @fixme see issue 2029
      * @throws ConflictException
      * @throws UnrecoverableException
      */
@@ -232,20 +231,20 @@ class RoleUtilisateurSQLTest extends PastellTestCase
                     ],
                 5 =>
                     [
-                        'id_e' => $entity311,
-                        'denomination' => 'Entité 311',
+                        'id_e' => $entity31,
+                        'denomination' => 'Entité 31',
                         'profondeur' => 0,
                     ],
                 6 =>
                     [
-                        'id_e' => $entity321,
-                        'denomination' => 'Entité 321',
-                        'profondeur' => 0,
+                        'id_e' => $entity311,
+                        'denomination' => 'Entité 311',
+                        'profondeur' => 1,
                     ],
                 7 =>
                     [
-                        'id_e' => $entity31,
-                        'denomination' => 'Entité 31',
+                        'id_e' => $entity321,
+                        'denomination' => 'Entité 321',
                         'profondeur' => 0,
                     ],
             ],
@@ -295,20 +294,23 @@ class RoleUtilisateurSQLTest extends PastellTestCase
                 ],
                 1 =>
                     [
-                        'id_e' => $entity311,
-                        'denomination' => 'Entité 311',
+                        'id_e' => $entity31,
+                        'denomination' => 'Entité 31',
                         'profondeur' => 0,
+                        'children' =>
+                            [
+                                0 =>
+                                    [
+                                        'id_e' => $entity311,
+                                        'denomination' => 'Entité 311',
+                                        'profondeur' => 1,
+                                    ],
+                            ],
                     ],
                 2 =>
                     [
                         'id_e' => $entity321,
                         'denomination' => 'Entité 321',
-                        'profondeur' => 0,
-                    ],
-                3 =>
-                    [
-                        'id_e' => $entity31,
-                        'denomination' => 'Entité 31',
                         'profondeur' => 0,
                     ],
             ],
@@ -404,6 +406,50 @@ class RoleUtilisateurSQLTest extends PastellTestCase
                 ],
             ],
             $tree
+        );
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testGetArbreFilleNumericSort(): void
+    {
+        $entityCreationService = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
+
+        $id_e_1 = $entityCreationService->create('Entité 1', '000000000');
+        $id_e_1_1 = $entityCreationService->create('Entité 1-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_1);
+        $entityCreationService->create('Entité 1-1-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_1_1);
+        $id_e_1_2 = $entityCreationService->create('Entité 1-2', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_1);
+        $entityCreationService->create('Entité 1-2-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_1_2);
+        $entityCreationService->create('Entité 2', '000000000');
+
+        $id_e_3 = $entityCreationService->create('Entité 3', '000000000');
+        $id_e_3_1 = $entityCreationService->create('Entité 3-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_3);
+        $id_e_3_1_1 = $entityCreationService->create('Entité 3-1-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_3_1);
+        $id_e_3_2 = $entityCreationService->create('Entité 3-2', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_3);
+        $entityCreationService->create('Entité 3-2-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_3_2);
+
+        $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
+        $id_u = $userCreationService->create('test_bug', 'test@test.fr', 'user', 'user');
+
+        $this->roleUtilisateurSQL->addRole($id_u, 'admin', $id_e_3_1);
+
+        $arbreFille = $this->roleUtilisateurSQL->getArbreFille($id_u, 'entite:lecture');
+        static::assertSame(
+            [
+                0 => [
+                    'id_e' => $id_e_3_1,
+                    'denomination' => 'Entité 3-1',
+                    'profondeur' => 0,
+                ],
+                1 => [
+                    'id_e' => $id_e_3_1_1,
+                    'denomination' => 'Entité 3-1-1',
+                    'profondeur' => 1,
+                ],
+            ],
+            $arbreFille
         );
     }
 }

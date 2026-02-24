@@ -51,7 +51,8 @@ class DocumentControlerTest extends ControlerTestCase
         $documentController = $this->getObjectInstancier()->getInstance(DocumentControler::class);
         try {
             $this->expectOutputRegex("#id_e=1#");
-            $documentController->setGetInfo(new Recuperateur(
+            $documentController->setServerInfo(['REQUEST_METHOD' => 'POST']);
+            $documentController->setPostInfo(new Recuperateur(
                 [
                     'id_e' => 1,
                     'id_d' => $info['id_d'],
@@ -78,8 +79,9 @@ class DocumentControlerTest extends ControlerTestCase
         /** @var DocumentControler $documentController */
         $documentController = $this->getObjectInstancier()->getInstance(DocumentControler::class);
         try {
-            $this->expectOutputRegex("#id_e=1#");
-            $documentController->setGetInfo(new Recuperateur(
+             $this->expectOutputRegex("#id_e=1#");
+            $documentController->setServerInfo(['REQUEST_METHOD' => 'POST']);
+            $documentController->setPostInfo(new Recuperateur(
                 [
                     'id_e' => 1,
                     'id_d' => $info['id_d'],
@@ -410,14 +412,16 @@ Lignes',
     {
         $id_d = $this->createDocument('test')['id_d'];
         $this->triggerActionOnDocument($id_d, 'action-auto');
-        $this->setGetInfo([
+        $this->setPostInfo([
             'id_d' => $id_d,
             'id_e' => self::ID_E_COL,
             'action' => FatalError::ACTION_ID,
             'go' => 1,
         ]);
         $this->expectExceptionMessage('La mise en erreur fatale ne peut pas être lancée via cette action');
-        $this->getControlerInstance(DocumentControler::class)->actionAction();
+        $controller = $this->getControlerInstance(DocumentControler::class);
+        $controller->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        $controller->actionAction();
     }
 
     public function testCreateDocumentOnDeactivatedEntity(): void

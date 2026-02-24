@@ -15,7 +15,7 @@ class AnnuaireImporter
 
     public function import($id_e, $file_path)
     {
-        $mail_list = $this->csv->get($file_path, ';');
+        $mail_list = $this->csv->get($file_path, ',');
 
         $nb_import = 0;
         foreach ($mail_list as $mail_info) {

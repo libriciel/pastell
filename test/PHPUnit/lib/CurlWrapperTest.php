@@ -224,4 +224,92 @@ class CurlWrapperTest extends PHPUnit\Framework\TestCase
         $curlWrapper = new CurlWrapper();
         $curlWrapper->get('file://test');
     }
+
+    public function testCustomHeadersArePreservedWithSimilarFilenames(): void
+    {
+        $capturedHeaders = null;
+
+        $curlFunction = $this->createMock(CurlFunctions::class);
+        $curlFunction->method('curl_exec')->willReturn('OK');
+        $curlFunction->method('curl_getinfo')->willReturn('200');
+        $curlFunction->method('curl_setopt')
+            ->willReturnCallback(function ($curlHandle, $option, $value) use (&$capturedHeaders) {
+                if ($option === CURLOPT_HTTPHEADER) {
+                    $capturedHeaders = $value;
+                }
+                return true;
+            });
+
+        $curlWrapper = new CurlWrapper($curlFunction);
+
+        $curlWrapper->addHeader('X-Custom-Header', 'custom-value');
+        $curlWrapper->addHeader('Authorization', 'Bearer token123');
+
+        $curlWrapper->addPostFile('documents', __DIR__ . '/fixtures/a.txt', 'a.txt');
+        $curlWrapper->addPostFile('documents', __DIR__ . '/fixtures/b.txt', 'b.txt');
+
+        $curlWrapper->get('http://example.com/upload');
+
+        $this->assertIsArray($capturedHeaders);
+        $this->assertContains('X-Custom-Header: custom-value', $capturedHeaders);
+        $this->assertContains('Authorization: Bearer token123', $capturedHeaders);
+
+        $contentLengthFound = false;
+        $expectFound = false;
+        $contentTypeFound = false;
+
+        foreach ($capturedHeaders as $header) {
+            if (str_starts_with($header, 'Content-Length:')) {
+                $contentLengthFound = true;
+            }
+            if (str_starts_with($header, 'Expect:')) {
+                $expectFound = true;
+            }
+            if (str_starts_with($header, 'Content-Type: multipart/form-data')) {
+                $contentTypeFound = true;
+            }
+        }
+
+        $this->assertTrue($contentLengthFound);
+        $this->assertTrue($expectFound);
+        $this->assertTrue($contentTypeFound);
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    public function testAddPostFilePreservesContentType(): void
+    {
+        $tmpFile = tempnam(sys_get_temp_dir(), 'test_');
+        file_put_contents($tmpFile, 'test content');
+
+        try {
+            $capturedPostFields = null;
+
+            $curlFunction = $this->createMock(CurlFunctions::class);
+            $curlFunction->method('curl_exec')->willReturn('OK');
+            $curlFunction->method('curl_getinfo')->willReturn('200');
+            $curlFunction->method('curl_setopt')
+                ->willReturnCallback(function ($curlHandle, $option, $value) use (&$capturedPostFields) {
+                    if ($option === CURLOPT_POSTFIELDS) {
+                        $capturedPostFields = $value;
+                    }
+                    return true;
+                });
+
+            $curlWrapper = new CurlWrapper($curlFunction);
+            $curlWrapper->addPostFile('document', $tmpFile, 'test.pdf', 'application/pdf');
+
+            $curlWrapper->get('https://example.com/upload');
+
+            $this->assertIsArray($capturedPostFields);
+            $this->assertArrayHasKey('document', $capturedPostFields);
+            $this->assertInstanceOf(CURLFile::class, $capturedPostFields['document']);
+            $this->assertEquals('application/pdf', $capturedPostFields['document']->getMimeType());
+        } finally {
+            if (file_exists($tmpFile)) {
+                unlink($tmpFile);
+            }
+        }
+    }
 }

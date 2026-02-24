@@ -8,10 +8,10 @@
 <div class="box">
     <form action="Entite/importAgent" method='post' enctype='multipart/form-data'>
         <?php $this->displayCSRFInput() ?>
-        <input type='hidden' name='id_e' value='<?php hecho($entite_info['id_e'])?>' />
+        <input type='hidden' name='id_e' value='<?php hecho($entite_info['id_e'] ?? 0)?>' />
 
         <table class="table">
-        <?php if ($entite_info['id_e']) : ?>
+        <?php if (! empty($entite_info['id_e'])) : ?>
         <tr>
             <th class='w200'>Collectivité (écrasera le SIREN du fichier) :</th>
             <td><?php hecho($entite_info['denomination']); ?></td>

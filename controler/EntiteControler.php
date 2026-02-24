@@ -285,25 +285,39 @@ class EntiteControler extends PastellControler
         $csvOutput->send($filename, $result);
     }
 
-    public function importAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
+    public function importAction(): void
     {
-        $recuperateur = new Recuperateur($_GET);
-        $id_e = $recuperateur->getInt('id_e', 0);
-        $page = (int)$recuperateur->getInt('page', 0);
+        $recuperateur = $this->getGetInfo();
+        $id_e = $recuperateur->getInt('id_e');
+        $onglet = $recuperateur->get('onglet');
         $this->hasDroitEdition($id_e);
         $this->setViewParameter('entite_info', $this->getEntiteSQL()->getInfo($id_e));
         $this->setViewParameter('template_milieu', "EntiteImport");
         $this->setViewParameter('page_title', "Importer (fichier CSV)");
 
-        if ($page === 0) {
+        if ($onglet === "collectivités") {
             $this->setViewParameter('allCDG', $this->getEntiteListe()->getAll(EntiteSQL::TYPE_CENTRE_DE_GESTION));
             $this->setViewParameter('cdg_selected', false);
         }
 
-        $this->setViewParameter('onglet_tab', ["Collectivités", "Agents", "Grades"]);
-        $onglet_content = ["EntiteImportCollectivite", "EntiteImportAgent", "EntiteImportGrade"];
-        $this->setViewParameter('template_onglet', $onglet_content[$page]);
-        $this->setViewParameter('page', $page);
+        $onglet_content["collectivités"] = "EntiteImportCollectivite";
+        if ($this->hasDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_ENTITE))) {
+            $onglet_content["agents"] = "EntiteImportAgent";
+            $onglet_content["grades"] = "EntiteImportGrade";
+        }
+
+        if (!array_key_exists($onglet, $onglet_content)) {
+            $onglet = "collectivités";
+        }
+
+        $this->setViewParameter('onglet_tab', array_keys($onglet_content));
+        $this->setViewParameter('onglet', $onglet);
+        $this->setViewParameter('template_onglet', $onglet_content[$onglet]);
         $this->setViewParameter('id_e', $id_e);
         $this->renderDefault();
     }
@@ -564,7 +578,11 @@ class EntiteControler extends PastellControler
         $this->redirect("/Entite/detail?id_e=$id_e");
     }
 
-    public function importAgentAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function importAgentAction(): void
     {
         $recuperateur = new Recuperateur($_POST);
 
@@ -572,13 +590,13 @@ class EntiteControler extends PastellControler
 
         $delete_all = $recuperateur->get('delete_all');
 
-        $this->verifDroit(0, "entite:edition");
+        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
 
         $fileUploader = new FileUploader();
         $file_path = $fileUploader->getFilePath('csv_agent');
         if (!$file_path) {
             $this->setLastError("Impossible de lire le fichier : " . $fileUploader->getLastError());
-            $this->redirect("/Entite/import?page=1");
+            $this->redirect("/Entite/import?onglet=agents");
         }
 
         $CSV = new CSV();
@@ -603,9 +621,8 @@ class EntiteControler extends PastellControler
             $nb_agent++;
         }
 
-
         $this->setLastMessage("$nb_agent agents ont été créés");
-        $this->redirect("/Entite/import?page=1&id_e=$id_e");
+        $this->redirect("/Entite/import?onglet=agents&id_e=$id_e");
     }
 
     /**
@@ -652,16 +669,20 @@ class EntiteControler extends PastellControler
         $this->redirect("/Entite/detail/?id_e=$id_e");
     }
 
-    public function importGradeAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function importGradeAction(): void
     {
-        $this->verifDroit(0, "entite:edition");
+        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
 
         $fileUploader = new FileUploader();
         $file_path = $fileUploader->getFilePath('csv_grade');
 
         if (!$file_path) {
             $this->setLastError("Impossible de lire le fichier : " . $fileUploader->getLastError());
-            $this->redirect("/Entite/import?page=1");
+            $this->redirect("/Entite/import?onglet=grades");
         }
 
         $CSV = new CSV();

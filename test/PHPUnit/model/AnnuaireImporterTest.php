@@ -31,7 +31,7 @@ class AnnuaireImporterTest extends PastellTestCase
 
     public function testOne()
     {
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com;Eric Pommateau"));
+        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau"));
         $annuaire = new AnnuaireSQL($this->getObjectInstancier()->getInstance(SQLQuery::class));
         $mail_list  = $this->getAnnuaireSQL()->getUtilisateur(1);
         $this->assertEquals("eric@sigmalis.com", $mail_list[0]['email']);
@@ -40,14 +40,14 @@ class AnnuaireImporterTest extends PastellTestCase
 
     public function testTwo()
     {
-        $this->assertEquals(2, $this->annuaire_import("eric@sigmalis.com;Eric Pommateau\ntoto@toto.fr;toto;"));
+        $this->assertEquals(2, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau\ntoto@toto.fr,toto,"));
         $annuaire = new AnnuaireSQL($this->getObjectInstancier()->getInstance(SQLQuery::class));
         $mail_list  = $this->getAnnuaireSQL()->getUtilisateur(1);
     }
 
     public function testNotMail()
     {
-        $this->assertEquals(0, $this->annuaire_import("eric_sigmalis.com;Eric Pommateau"));
+        $this->assertEquals(0, $this->annuaire_import("eric_sigmalis.com,Eric Pommateau"));
     }
 
     public function testDescriptionManquante()
@@ -57,8 +57,8 @@ class AnnuaireImporterTest extends PastellTestCase
 
     public function testCorrectionMail()
     {
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com;Eric Pommateau"));
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com;Eric B. Pommateau"));
+        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau"));
+        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric B. Pommateau"));
         $mail_list  = $this->getAnnuaireSQL()->getUtilisateur(1);
         $this->assertCount(1, $mail_list);
         $this->assertEquals("Eric B. Pommateau", $mail_list[0]['description']);
@@ -66,14 +66,14 @@ class AnnuaireImporterTest extends PastellTestCase
 
     public function testAddGroupe()
     {
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com;Eric Pommateau;Mon groupe"));
+        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau,Mon groupe"));
         $utilisateur = $this->getAnnuaireGroupsSQL()->getAllUtilisateur(1);
         $this->assertCount(1, $utilisateur);
     }
 
     public function testAdd2Groupe()
     {
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com;Eric Pommateau;Mon groupe;Elu;"));
+        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau,Mon groupe,Elu,"));
         $utilisateur = $this->getAnnuaireGroupsSQL()->getAllUtilisateur(1);
         $this->assertCount(1, $utilisateur);
         $utilisateur = $this->getAnnuaireGroupsSQL()->getAllUtilisateur(2);
@@ -82,8 +82,8 @@ class AnnuaireImporterTest extends PastellTestCase
 
     public function testModifyGroupe()
     {
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com;Eric Pommateau;Mon groupe;Elu;"));
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com;Eric Pommateau;Elu;"));
+        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau,Mon groupe,Elu,"));
+        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau,Elu,"));
         $utilisateur = $this->getAnnuaireGroupsSQL()->getAllUtilisateur(1);
         $this->assertCount(0, $utilisateur);
         $utilisateur = $this->getAnnuaireGroupsSQL()->getAllUtilisateur(2);
@@ -92,7 +92,7 @@ class AnnuaireImporterTest extends PastellTestCase
 
     public function add2NonExistentGroupe()
     {
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com;Eric Pommateau;Nonexistent;"));
+        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau,Nonexistent,"));
         $utilisateur = $this->getAnnuaireGroupsSQL()->getAllUtilisateur(1);
         $this->assertCount(0, $utilisateur);
         $utilisateur = $this->getAnnuaireGroupsSQL()->getAllUtilisateur(2);
