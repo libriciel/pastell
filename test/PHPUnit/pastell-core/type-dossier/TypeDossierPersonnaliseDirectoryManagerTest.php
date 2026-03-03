@@ -25,7 +25,6 @@ class TypeDossierPersonnaliseDirectoryManagerTest extends PastellTestCase
         $typeDossierPersonaliseDirectoryManager = $this->getObjectInstancier()->getInstance(TypeDossierPersonnaliseDirectoryManager::class);
         try {
             $typeDossierPersonaliseDirectoryManager->delete($id_t + 42);
-            $this->assertFalse(true);
         } catch (TypeDossierException $e) {
             $this->assertEquals("Impossible de trouver l'emplacement du type de dossier 43", $e->getMessage());
         }

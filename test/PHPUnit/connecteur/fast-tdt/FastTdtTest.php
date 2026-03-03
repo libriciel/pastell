@@ -84,11 +84,6 @@ class FastTdtTest extends PastellTestCase
         $webdavWrapper = $this->createMock(WebdavWrapper::class);
         $soapClientFactory = $this->createMock(SoapClientFactory::class);
 
-
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
 
@@ -127,10 +122,6 @@ class FastTdtTest extends PastellTestCase
             ->method('getInstance')
             ->willReturn($soapClient);
 
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $connecteurConfig = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
         $connecteurConfig->setData('url', $url);
@@ -156,10 +147,6 @@ class FastTdtTest extends PastellTestCase
             ->willThrowException(new Exception("Le serveur ne présente pas le header Dav"));
         $soapClientFactory = $this->createMock(SoapClientFactory::class);
 
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
 
         $this->fastTdt->testConnexion();
@@ -196,10 +183,6 @@ class FastTdtTest extends PastellTestCase
 
         $soapClientFactory = $this->createMock(SoapClientFactory::class);
 
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
 
@@ -239,10 +222,6 @@ class FastTdtTest extends PastellTestCase
 
         $soapClientFactory = $this->createMock(SoapClientFactory::class);
 
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
 
@@ -286,10 +265,6 @@ class FastTdtTest extends PastellTestCase
 
         $soapClientFactory = $this->createMock(SoapClientFactory::class);
 
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
 
@@ -342,10 +317,6 @@ class FastTdtTest extends PastellTestCase
             ->method('getInstance')
             ->willReturn($soapClient);
 
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
 
@@ -400,10 +371,6 @@ class FastTdtTest extends PastellTestCase
             ->method('getInstance')
             ->willReturn($soapClient);
 
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
 
@@ -476,10 +443,6 @@ class FastTdtTest extends PastellTestCase
             ->willReturn([]);
 
         $soapClientFactory = $this->createMock(SoapClientFactory::class);
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
         $this->fastTdt->setDocDonneesFormulaire($this->getDefaultActeDonneesFormulaire(1));
@@ -517,10 +480,6 @@ class FastTdtTest extends PastellTestCase
             ->willReturn(file_get_contents(__DIR__ . '/fixtures/999-1234----1-2_0.xml'));
 
         $soapClientFactory = $this->createMock(SoapClientFactory::class);
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
         $this->fastTdt->setDocDonneesFormulaire($this->getDefaultActeDonneesFormulaire(1));
@@ -567,10 +526,6 @@ class FastTdtTest extends PastellTestCase
             ->willReturn(file_get_contents(__DIR__ . '/fixtures/999-1234----1-3_0.xml'));
 
         $soapClientFactory = $this->createMock(SoapClientFactory::class);
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
         $docDonneesFormulaire = $this->getDefaultActeDonneesFormulaire(1);
@@ -622,10 +577,6 @@ class FastTdtTest extends PastellTestCase
             ->method('getInstance')
             ->willReturn($soapClient);
 
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $connecteurConfig = $this->getDefaultConnecteurConfig();
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
@@ -668,10 +619,6 @@ class FastTdtTest extends PastellTestCase
             ->method('getInstance')
             ->willReturn($soapClient);
 
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $connecteurConfig = $this->getDefaultConnecteurConfig();
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
@@ -703,10 +650,6 @@ class FastTdtTest extends PastellTestCase
             ->method('getInstance')
             ->willReturn($soapClient);
 
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $connecteurConfig = $this->getDefaultConnecteurConfig();
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
@@ -782,10 +725,6 @@ class FastTdtTest extends PastellTestCase
             ->method('getInstance')
             ->willReturn($soapClient);
 
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $connecteurConfig = $this->getDefaultConnecteurConfig();
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
@@ -814,10 +753,6 @@ class FastTdtTest extends PastellTestCase
             ->method('getInstance')
             ->willReturn($soapClient);
 
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $connecteurConfig = $this->getDefaultConnecteurConfig();
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
@@ -856,10 +791,6 @@ class FastTdtTest extends PastellTestCase
             ->method('getInstance')
             ->willReturn($soapClient);
 
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
 

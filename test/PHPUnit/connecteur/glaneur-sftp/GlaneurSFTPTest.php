@@ -45,7 +45,7 @@ class GlaneurSFTPTest extends PastellTestCase
      * @param $collectivite_properties
      * @return string
      * @throws Exception */
-    private function glanerWithProperties(array $collectivite_properties, SFTPFactory $sftpFactory = null)
+    private function glanerWithProperties(array $collectivite_properties, ?SFTPFactory $sftpFactory = null)
     {
 
         if (! $sftpFactory) {
@@ -82,10 +82,6 @@ class GlaneurSFTPTest extends PastellTestCase
         $sftpFactory->expects($this->any())
             ->method('getInstance')
             ->willReturn($sftp);
-
-
-        /** @var SFTPFactory $sftpFactory */
-
 
         mkdir($this->tmp_folder . "/" . "test1");
         copy(__DIR__ . "/fixtures/actes-automatique/vide1.pdf", $this->tmp_folder . "/vide1.pdf");
@@ -276,7 +272,6 @@ class GlaneurSFTPTest extends PastellTestCase
         $sftpFactory->expects($this->any())
             ->method('getInstance')
             ->willReturn($sftp);
-        /** @var SFTPFactory $sftpFactory */
         return $sftpFactory;
     }
 

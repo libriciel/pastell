@@ -23,7 +23,7 @@ class ForceSendGedAndDelete extends BaseCommand
 
     public function __construct(
         private readonly DocumentSQL $documentSQL,
-        private readonly entiteSQL $entiteSQL,
+        private readonly EntiteSQL $entiteSQL,
         private readonly ConnecteurFactory $connecteurFactory,
         private readonly DonneesFormulaireFactory $donneesFormulaireFactory,
         private readonly Journal $journal,

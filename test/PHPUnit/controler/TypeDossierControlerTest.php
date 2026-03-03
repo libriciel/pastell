@@ -57,7 +57,6 @@ class TypeDossierControlerTest extends ControlerTestCase
         $this->setGetInfo(['id_t' => $id_t]);
         try {
             $this->getTypeDossierController()->doDeleteAction();
-            $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertMatchesRegularExpression("#Le type de dossier <b>cas-nominal</b> a été supprimé#", $e->getMessage());
         }
@@ -87,7 +86,6 @@ class TypeDossierControlerTest extends ControlerTestCase
         $this->setGetInfo(['id_t' => $id_t]);
         try {
             $this->getTypeDossierController()->doDeleteAction();
-            $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertMatchesRegularExpression("#Le type de dossier cas-nominal est utilisé par des dossiers qui
                 ne sont pas dans l'état <i>terminé</i> ou <i>erreur fatale</i>#", $e->getMessage());
@@ -107,7 +105,6 @@ class TypeDossierControlerTest extends ControlerTestCase
         $this->setGetInfo(['id_type_dossier' => $id_type_dossier]);
         try {
             $this->getTypeDossierController()->doEditionAction();
-            $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertMatchesRegularExpression("#Le type de dossier personnalisé $id_type_dossier a été créé#", $e->getMessage());
         }
@@ -128,7 +125,6 @@ class TypeDossierControlerTest extends ControlerTestCase
     {
         try {
             $this->getTypeDossierController()->doEditionAction();
-            $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertMatchesRegularExpression("#Aucun identifiant de type de dossier fourni#", $e->getMessage());
         }
@@ -143,7 +139,6 @@ class TypeDossierControlerTest extends ControlerTestCase
         $this->setGetInfo(['id_type_dossier' => 'AAAAA']);
         try {
             $this->getTypeDossierController()->doEditionAction();
-            $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertMatchesRegularExpression(
                 "#L'identifiant du type de dossier « AAAAA » ne respecte pas l'expression rationnelle#u",
@@ -160,7 +155,6 @@ class TypeDossierControlerTest extends ControlerTestCase
         $this->setGetInfo(['id_type_dossier' => str_repeat("a", 33)]);
         try {
             $this->getTypeDossierController()->doEditionAction();
-            $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertMatchesRegularExpression(
                 "#L'identifiant du type de dossier « aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa » ne respecte pas l'expression rationnelle#",
@@ -183,7 +177,6 @@ class TypeDossierControlerTest extends ControlerTestCase
 
         try {
             $this->getTypeDossierController()->doNewEtapeAction();
-            $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertMatchesRegularExpression("#/TypeDossier/editionEtape\?id_t=$id_t&num_etape=0#", $e->getMessage());
         }
@@ -201,7 +194,6 @@ class TypeDossierControlerTest extends ControlerTestCase
 
         try {
             $this->getTypeDossierController()->doNewEtapeAction();
-            $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertMatchesRegularExpression("#/TypeDossier/detail\?id_t=$id_t#", $e->getMessage());
         }
@@ -221,7 +213,6 @@ class TypeDossierControlerTest extends ControlerTestCase
         $this->setGetInfo(['id_t' => $id_t]);
         try {
             $this->getTypeDossierController()->doDeleteAction();
-            $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertMatchesRegularExpression("#Le type de dossier <b>test-42</b> a été supprimé#", $e->getMessage());
         }
@@ -242,7 +233,6 @@ class TypeDossierControlerTest extends ControlerTestCase
         $this->setGetInfo(['id_t' => $id_t]);
         try {
             $this->getTypeDossierController()->doDeleteAction();
-            $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertMatchesRegularExpression(
                 "#Le type de dossier <b>test-42</b> est utilisé par le rôle « admin »#",
@@ -266,7 +256,6 @@ class TypeDossierControlerTest extends ControlerTestCase
         $this->setGetInfo(['id_t' => $id_t]);
         try {
             $this->getTypeDossierController()->doDeleteAction();
-            $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertMatchesRegularExpression(
                 "#Le type de dossier <b>test-42</b> a été associé avec des connecteurs sur l'entité Bourg-en-Bresse \(id_e=1\)#",

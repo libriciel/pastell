@@ -28,10 +28,9 @@ class SedaNGTest extends PastellTestCase
         ]
         ]);
 
-        /** @var FluxData $fluxData */
         $this->sedaNG->generateArchive($fluxData, $archive_path);
 
-        exec("tar xvzf $archive_path -C $tmp_folder");
+        exec("tar xvzf $archive_path -C $tmp_folder 2>/dev/null");
         $tmp_content = scandir($tmp_folder);
         $this->assertEquals('connecteur_exemple.yml', $tmp_content[3]);
         $this->assertFileEquals(
@@ -59,10 +58,9 @@ class SedaNGTest extends PastellTestCase
         ]
         ]);
 
-        /** @var FluxData $fluxData */
         $this->sedaNG->generateArchive($fluxData, $archive_path);
 
-        exec("tar xvzf $archive_path -C $tmp_folder");
+        exec("tar xvzf $archive_path -C $tmp_folder 2>/dev/null");
         $tmp_content = scandir($tmp_folder . "/fixtures/");
         $this->assertEquals('connecteur_exemple.yml', $tmp_content[2]);
         $this->assertFileEquals(

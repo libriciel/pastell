@@ -37,11 +37,6 @@ class AgentSQLTest extends PastellTestCase
         return $agentSQL;
     }
 
-    public function testNothing()
-    {
-        $this->assertTrue(true);
-    }
-
     public function testAdd(): void
     {
         $agentSQL = $this->getAgentSQLWithInfo();
