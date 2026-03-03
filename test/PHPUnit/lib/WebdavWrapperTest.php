@@ -22,8 +22,6 @@ class WebdavWrapperTest extends PHPUnit\Framework\TestCase
             ->method('getInstance')
             ->willReturn($client);
 
-        /** @var WebdavClientFactory $webdavClientFactory */
-
         $webdavWrapper = new WebdavWrapper();
         $webdavWrapper->setWebdavClientFactory($webdavClientFactory);
         $webdavWrapper->setDataConnexion('i', 'j', 'k');
@@ -45,8 +43,6 @@ class WebdavWrapperTest extends PHPUnit\Framework\TestCase
         $webdavClientFactory
             ->method('getInstance')
             ->willReturn($client);
-
-        /** @var WebdavClientFactory $webdavClientFactory */
 
         $webdavWrapper = new WebdavWrapper();
         $webdavWrapper->setWebdavClientFactory($webdavClientFactory);
@@ -72,8 +68,6 @@ class WebdavWrapperTest extends PHPUnit\Framework\TestCase
         $webdavClientFactory
             ->method('getInstance')
             ->willReturn($client);
-
-        /** @var WebdavClientFactory $webdavClientFactory */
 
         $webdavWrapper = new WebdavWrapper();
         $webdavWrapper->setWebdavClientFactory($webdavClientFactory);
@@ -106,8 +100,6 @@ class WebdavWrapperTest extends PHPUnit\Framework\TestCase
             ->method('getInstance')
             ->willReturn($client);
 
-        /** @var WebdavClientFactory $webdavClientFactory */
-
         $webdavWrapper = new WebdavWrapper();
         $webdavWrapper->setWebdavClientFactory($webdavClientFactory);
         $webdavWrapper->setDataConnexion('https://domain.tld', '', '');
@@ -137,8 +129,6 @@ class WebdavWrapperTest extends PHPUnit\Framework\TestCase
         $webdavClientFactory
             ->method('getInstance')
             ->willReturn($client);
-
-        /** @var WebdavClientFactory $webdavClientFactory */
 
         $webdavWrapper = new WebdavWrapper();
         $webdavWrapper->setWebdavClientFactory($webdavClientFactory);
@@ -191,7 +181,6 @@ class WebdavWrapperTest extends PHPUnit\Framework\TestCase
             ->method('getInstance')
             ->willReturn($client);
 
-        /** @var WebdavClientFactory $webdavClientFactory */
         $webdavWrapper = new WebdavWrapper();
         $webdavWrapper->setWebdavClientFactory($webdavClientFactory);
         $webdavWrapper->setDataConnexion('https://domain.tld', '', '');
@@ -225,7 +214,6 @@ class WebdavWrapperTest extends PHPUnit\Framework\TestCase
             ->method('getInstance')
             ->willReturn($client);
 
-        /** @var WebdavClientFactory $webdavClientFactory */
         $webdavWrapper = new WebdavWrapper();
         $webdavWrapper->setWebdavClientFactory($webdavClientFactory);
         $webdavWrapper->setDataConnexion('https://domain.tld', '', '');

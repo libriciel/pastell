@@ -221,7 +221,7 @@ class GlaneurConnecteurTest extends PastellTestCase
         mkdir($this->tmp_folder . "/" . "test1");
         $src = __DIR__ . "/fixtures/many_files";
         $dest = $this->tmp_folder . "/" . "test1";
-        `cp  $src/* $dest`;
+        shell_exec("cp  $src/* $dest");
 
 
         $this->glanerWithProperties([

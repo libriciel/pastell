@@ -25,7 +25,7 @@ class DonneesFormulaireTest extends PastellTestCase
     public function getPassword()
     {
         return [
-                ['215900689B']
+            ['215900689B']
         ];
     }
 
@@ -331,13 +331,16 @@ class DonneesFormulaireTest extends PastellTestCase
         $this->assertEquals("Ceci est un autre texte de défaut", $this->getDonneesFormulaire()->getWithDefault('test_default_onglet_2'));
     }
 
-    public function testEmptyForms()
+    public function testEmptyForms(): void
     {
-        $documentType = new DocumentType("test", []);
-        $donneesFormulaire = new DonneesFormulaire("/tmp/toto.yml", $documentType);
-        $donneesFormulaire->setDocumentIndexor(new DocumentIndexor(new DocumentIndexSQL($this->getSQLQuery()), '1'));
+        $filepath = $this->getEmulatedDisk() . '/tmp/toto.yml';
+        $documentType = new DocumentType('test', []);
+        $donneesFormulaire = new DonneesFormulaire($filepath, $documentType);
+        $donneesFormulaire->setDocumentIndexor(new DocumentIndexor(new DocumentIndexSQL(self::getSQLQuery()), '1'));
+        static::assertFileDoesNotExist($filepath);
         $donneesFormulaire->saveTab(new Recuperateur(), new FileUploader(), 0);
-        $this->assertTrue(true);
+        static::assertFileExists($filepath);
+        static::assertNull($donneesFormulaire->getRawData());
     }
 
     /**

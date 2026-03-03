@@ -69,7 +69,6 @@ final class ViewerFactory
             throw new RecoverableException("La classe $viewerClassName n'a pas été trouvée.");
         }
 
-        /** @var Viewer $viewer */
         $viewer = $this->objectInstancier->newInstance($viewerClassName);
 
         if (!$viewer instanceof Viewer) {

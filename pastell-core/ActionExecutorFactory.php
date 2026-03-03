@@ -464,7 +464,6 @@ class ActionExecutorFactory
      */
     private function getInstance(string $action_class_name, $id_e, $id_u, string $action_name): \ActionExecutor
     {
-        /** @var ActionExecutor $actionClass */
         $actionClass = $this->objectInstancier->newInstance($action_class_name);
 
         if (!$actionClass instanceof ActionExecutor) {

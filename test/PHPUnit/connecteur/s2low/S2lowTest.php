@@ -33,8 +33,6 @@ class S2lowTest extends PastellTestCase
                 return false;
             });
 
-        /** @var ObjectInstancier $objectInstancier */
-        /** @var DonneesFormulaire $collectiviteProperties */
         $s2low = new S2low($objectInstancier);
         $s2low->setConnecteurConfig($collectiviteProperties);
 

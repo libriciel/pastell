@@ -385,7 +385,6 @@ class DocumentAPIControllerTest extends PastellTestCase
     public function testMailSecBidir()
     {
         $id_d = $this->createDocument('mailsec-bidir')['id_d'];
-        $this->assertTrue(true);
 
         $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
         $key = $documentEmail->add($id_d, "foo@bar.com", "to");

@@ -11,17 +11,13 @@ class DepotSFTPTest extends PastellTestCase
         $SFTP = $this->createMock('SFTP');
         $SFTP->method('listDirectory')->willReturn(['foo']);
 
-
-        $SFTPFactory = $this->createMock('SFTPFactory');
+        $SFTPFactory = $this->createMock(SFTPFactory::class);
         $SFTPFactory->method('getInstance')->willReturn($SFTP);
 
         $connecteurConfig = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
         $connecteurConfig->setData(DepotSFTP::DEPOT_SFTP_DIRECTORY, '/foo/');
 
-        $this->getObjectInstancier()->setInstance("SFTPFactory", $SFTPFactory);
-
-
-        /** @var SFTPFactory $SFTPFactory*/
+        $this->getObjectInstancier()->setInstance(SFTPFactory::class, $SFTPFactory);
 
         $this->depotSFTP = $this->getObjectInstancier()->getInstance(DepotSFTP::class);
         $this->depotSFTP->setLogger($this->getLogger());
@@ -69,15 +65,13 @@ class DepotSFTPTest extends PastellTestCase
         $SFTP = $this->createMock('SFTP');
         $SFTP->method('listDirectory')->willReturn(['foo']);
 
-
-        $SFTPFactory = $this->createMock('SFTPFactory');
+        $SFTPFactory = $this->createMock(SFTPFactory::class);
         $SFTPFactory->method('getInstance')->willReturn($SFTP);
 
         $connecteurConfig = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
         $connecteurConfig->setData(DepotSFTP::DEPOT_SFTP_DIRECTORY, '/foo/');
         $connecteurConfig->setData(DepotSFTP::DEPOT_SFTP_RENAME_SUFFIX, ".part");
 
-        /** @var SFTPFactory $SFTPFactory*/
         $this->depotSFTP = new DepotSFTP($SFTPFactory);
         $this->depotSFTP->setConnecteurConfig($connecteurConfig);
         $this->depotSFTP->setLogger($this->getLogger());
