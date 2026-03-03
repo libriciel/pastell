@@ -41,7 +41,7 @@ class GlaneurLocalMock extends GlaneurConnecteur
         $finder = new Finder();
         $found = $finder->in($directory);
 
-        /** @var SplFileInfo $file */
+        /** @var Symfony\Component\Finder\SplFileInfo $file */
         foreach ($found as $file) {
             return $file->getBasename();
         }

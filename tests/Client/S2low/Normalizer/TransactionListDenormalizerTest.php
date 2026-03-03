@@ -86,7 +86,7 @@ class TransactionListDenormalizerTest extends TestCase
 
         $this->innerDenormalizer
             ->method('denormalize')
-            ->willReturnOnConsecutiveCalls(...$transactions);
+            ->willReturnOnConsecutiveCalls(...\array_values($transactions));
 
         $transactionsList = $this->denormalizer->denormalize($data, ActeListResponse::class, 'json');
 

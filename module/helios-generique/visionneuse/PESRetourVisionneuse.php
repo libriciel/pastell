@@ -31,12 +31,17 @@ class PESRetourVisionneuse implements Viewer
 
         $xml = \simplexml_load_file($filepath);
 
+        if ($xml === false) {
+            echo 'Le fichier n\'existe pas';
+            return;
+        }
+
         $nomFic = $xml->Enveloppe->Parametres->NomFic['V'];
 
         $nb_erreur = 0;
         if (!empty($xml->ACQUIT->ElementACQUIT)) {
             foreach ($xml->ACQUIT->ElementACQUIT as $elementACQUIT) {
-                if ($elementACQUIT->EtatAck['V'] != 1) {
+                if ((int)$elementACQUIT->EtatAck['V'] !== 1) {
                     $nb_erreur++;
                 }
             }
@@ -78,14 +83,14 @@ class PESRetourVisionneuse implements Viewer
                             <td><?php hecho((string)$elementACQUIT->ExerciceBord['V']); ?></td>
                             <td><?php hecho((string)$elementACQUIT->NumBord['V']); ?></td>
                             <td>
-                                <?php if ($elementACQUIT->EtatAck['V'] == 1) : ?>
+                                <?php if ((int)$elementACQUIT->EtatAck['V'] === 1) : ?>
                                     <b style='color:green'>OUI</b>
                                 <?php else : ?>
                                     <b style='color:red'>NON</b>
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <?php if ($elementACQUIT->EtatAck['V'] == 1) : ?>
+                                <?php if ((int)$elementACQUIT->EtatAck['V'] === 1) : ?>
                                     &nbsp;
                                 <?php else : ?>
                                     <?php if ($elementACQUIT->Erreur) : ?>

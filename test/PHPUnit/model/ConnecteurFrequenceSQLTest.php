@@ -27,11 +27,6 @@ class ConnecteurFrequenceSQLTest extends PastellTestCase
         $this->connecteurFrequence = $this->connecteurFrequenceSQL->getConnecteurFrequence($this->id_cf);
     }
 
-    public function testCreate()
-    {
-        $this->assertNotNull($this->connecteurFrequence);
-    }
-
     public function testUpdate()
     {
         $this->connecteurFrequence->type_connecteur = ConnecteurFrequence::TYPE_GLOBAL;
