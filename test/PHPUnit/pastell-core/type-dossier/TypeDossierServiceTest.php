@@ -175,7 +175,6 @@ class TypeDossierServiceTest extends PastellTestCase
                 $id_t,
                 new Recuperateur(['element_id' => 'prenom_agent', 'type' => 'text'])
             );
-            $this->assertFalse(true);
         } catch (TypeDossierException $e) {
             $this->assertEquals("L'identifiant « prenom_agent » existe déjà sur ce formulaire", $e->getMessage());
         }

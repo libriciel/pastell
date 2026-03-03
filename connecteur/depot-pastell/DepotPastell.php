@@ -65,7 +65,7 @@ class DepotPastell extends GEDConnecteur
         $result = [];
         foreach ($metadata_list as $metadata) {
             $l = explode(":", $metadata, 2);
-            $key = trim($l[0] ?? "");
+            $key = trim($l[0]);
             $value = trim($l[1] ?? "");
             if ($key && $value) {
                 $result[$key] = $value;

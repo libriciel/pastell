@@ -33,7 +33,6 @@ class PastellDaemon
             }
         }
 
-        /** @phpstan-ignore-next-line */
         while (true) {
             $this->jobMasterOneRun();
             pcntl_signal_dispatch();

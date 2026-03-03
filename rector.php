@@ -2,25 +2,29 @@
 
 declare(strict_types=1);
 
-use Rector\Core\Configuration\Option;
+use Rector\Config\RectorConfig;
 
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Utils\Rector\UseGetViewParametersInsteadMagicMethod;
-
-return static function (ContainerConfigurator $containerConfigurator): void {
-    // get parameters
-    $parameters = $containerConfigurator->parameters();
-    $parameters->set(Option::PATHS, [
-        __DIR__ . '/controler'
-    ]);
-
-    // Define what rule sets will be applied
-    //$containerConfigurator->import(LevelSetList::UP_TO_PHP_81);
-
-    // get services (needed for register a single rule)
-    $services = $containerConfigurator->services();
-    $services->set(UseGetViewParametersInsteadMagicMethod::class);
-
-    // register a single rule
-    // $services->set(TypedPropertyRector::class);
-};
+return RectorConfig::configure()
+    ->withPhpVersion(\Rector\ValueObject\PhpVersion::PHP_84)
+    ->withPaths([
+        __DIR__ . '/action',
+        __DIR__ . '/api',
+        __DIR__ . '/connecteur',
+        __DIR__ . '/connecteur-type',
+        __DIR__ . '/controler',
+        __DIR__ . '/lib',
+        __DIR__ . '/mailsec',
+        __DIR__ . '/model',
+        __DIR__ . '/module',
+        __DIR__ . '/pastell-core',
+        __DIR__ . '/src',
+        __DIR__ . '/test',
+        __DIR__ . '/tests',
+        __DIR__ . '/type-dossier',
+    ])
+    ->withRules([
+        \Rector\Php84\Rector\Param\ExplicitNullableParamTypeRector::class,
+        \Rector\Php84\Rector\FuncCall\AddEscapeArgumentRector::class,
+        \Rector\Php82\Rector\FuncCall\Utf8DecodeEncodeToMbConvertEncodingRector::class
+    ])
+    ;
