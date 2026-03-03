@@ -1,4 +1,4 @@
-FROM hubdocker.libriciel.fr/node:24.13-alpine3.23@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03 AS node_modules
+FROM hubdocker.libriciel.fr/node:24.14-alpine3.23@sha256:7fddd9ddeae8196abf4a3ef2de34e11f7b1a722119f91f28ddf1e99dcafdf114 AS node_modules
 WORKDIR /app/
 COPY package*.json ./
 RUN npm install
