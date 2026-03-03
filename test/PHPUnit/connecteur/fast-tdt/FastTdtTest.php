@@ -187,7 +187,7 @@ class FastTdtTest extends PastellTestCase
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
 
         $this->assertSame(
-            utf8_decode(file_get_contents(__DIR__ . '/fixtures/999-1234----7-2_1.xml')),
+            mb_convert_encoding(file_get_contents(__DIR__ . '/fixtures/999-1234----7-2_1.xml'), 'ISO-8859-1'),
             $this->fastTdt->getClassification()
         );
     }
@@ -826,10 +826,6 @@ class FastTdtTest extends PastellTestCase
 
         $soapClientFactory = $this->createMock(SoapClientFactory::class);
 
-        /**
-         * @var WebdavWrapper $webdavWrapper
-         * @var SoapClientFactory $soapClientFactory
-         */
         $this->fastTdt = new FastTdt($webdavWrapper, $soapClientFactory, $this->getJournal());
         $this->fastTdt->setConnecteurConfig($connecteurConfig);
 
