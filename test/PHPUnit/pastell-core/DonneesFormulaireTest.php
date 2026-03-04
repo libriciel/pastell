@@ -25,7 +25,7 @@ class DonneesFormulaireTest extends PastellTestCase
     public function getPassword()
     {
         return [
-                ['215900689B']
+            ['215900689B']
         ];
     }
 
