@@ -16,10 +16,10 @@
     <h2><?php hecho($titreSelectAction); ?></h2>
     <form action='Utilisateur/doNotificationEdit' method='post'>
         <?php $this->displayCSRFInput() ?>
-        <input type='hidden' name='id_u' value='<?= $id_u ?>'/>
-        <input type='hidden' name='id_e' value='<?= $id_e ?>'/>
+        <input type='hidden' name='id_u' value='<?php hecho($id_u); ?>'/>
+        <input type='hidden' name='id_e' value='<?php hecho($id_e); ?>'/>
         <input type='hidden' name='type' value='<?php hecho($type); ?>'/>
-        <input type='hidden' name='source' value='<?php hecho($source) ?>'/>
+        <input type='hidden' name='source' value='<?php hecho($source); ?>'/>
 
         <table class="table table-striped">
             <tr>
