@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pastell\Storage;
+namespace Pastell\Storage\Password;
 
-class StorageInterfaceDummy implements StorageInterface
+class PasswordStorageDummy implements PasswordStorageInterface
 {
     public function write(string $id, string $content): string
     {
@@ -12,6 +12,11 @@ class StorageInterfaceDummy implements StorageInterface
     }
 
     public function read(string $id): string
+    {
+        return '';
+    }
+
+    public function delete(string $id): string
     {
         return '';
     }

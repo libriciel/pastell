@@ -1,12 +1,14 @@
 <?php
 
 use Pastell\Configuration\ElementType;
-use Pastell\Storage\MissingVaultException;
+use Pastell\Storage\Password\EmptyPasswordException;
+use Pastell\Storage\Password\MissingVaultException;
+use Pastell\Storage\Password\PasswordStorageDummy;
+use Pastell\Storage\Password\PasswordStorageInterface;
+use Pastell\Storage\Password\Vault\Exceptions\VaultIdNotFoundException;
+use Pastell\Storage\Password\Vault\Exceptions\VaultPasswordAlreadyStoredException;
 use Pastell\Storage\StorageInterface;
-use Pastell\Storage\EmptyPasswordException;
 use Pastell\Storage\StorageInterfaceDummy;
-use Pastell\Storage\VaultIdNotFoundException;
-use Pastell\Storage\VaultPasswordAlreadyStoredException;
 use Pastell\Utilities\Identifier\UuidGenerator;
 
 /**
@@ -47,7 +49,7 @@ class DonneesFormulaire
         DocumentType $documentType,
         ?YMLLoader $ymlLoader = null,
         private readonly bool $useExternalStorageForPasswordConnector = false,
-        private readonly ?StorageInterface $passwordStorage = null,
+        private readonly ?PasswordStorageInterface $passwordStorage = null,
         private readonly ?UuidGenerator $uuidGenerator = null,
     ) {
         $this->filePath = $filePath;
@@ -1189,7 +1191,7 @@ class DonneesFormulaire
      */
     public function updatePasswordValue(Field $passwordField, string $value): void
     {
-        if ($this->passwordStorage instanceof StorageInterfaceDummy) {
+        if ($this->passwordStorage instanceof PasswordStorageDummy) {
             throw new MissingVaultException('Le vault n\'est pas configuré');
         }
         if ($value !== '' && array_key_exists($passwordField->getName(), $this->fichierCleValeur->getInfo())) {

@@ -44,10 +44,4 @@ class S3Adapter implements StorageInterface
         ]);
         return $object->get('Body')->__toString();
     }
-
-    public function delete(string $id): string
-    {
-        // TODO: Implement delete() method.
-        return '';
-    }
 }

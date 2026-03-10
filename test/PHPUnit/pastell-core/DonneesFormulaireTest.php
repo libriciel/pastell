@@ -1,7 +1,7 @@
 <?php
 
-use Pastell\Storage\StorageInterfaceFake;
-use Pastell\Storage\VaultIdNotFoundException;
+use Pastell\Storage\Password\PasswordStorageFake;
+use Pastell\Storage\Password\Vault\Exceptions\VaultIdNotFoundException;
 use Pastell\Utilities\Identifier\UuidGenerator;
 
 class DonneesFormulaireTest extends PastellTestCase
@@ -98,10 +98,7 @@ class DonneesFormulaireTest extends PastellTestCase
         $module_definition = $ymlLoader->getArray($path_to_yaml_definition);
         $documentType = new DocumentType("test-fichier", $module_definition);
 
-        return new DonneesFormulaire(
-            $filePath,
-            $documentType,
-        );
+        return new DonneesFormulaire($filePath, $documentType);
     }
 
     public function testModifOngletCache()
@@ -781,7 +778,7 @@ class DonneesFormulaireTest extends PastellTestCase
         $id_ce = $this->createConnector('vitam', 'VITAM', 1)['id_ce'];
 
         $donneesFormulaireFactory = $this->getDonneesFormulaireFactory();
-        $data['storage'] = new StorageInterfaceFake();
+        $data['storage'] = new PasswordStorageFake();
         $donneesFormulaireFactory->setPasswordStorage($data['storage']);
         $donneesFormulaireFactory->setUuidGenerator(new UuidGenerator());
 

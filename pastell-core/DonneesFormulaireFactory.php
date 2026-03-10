@@ -1,6 +1,6 @@
 <?php
 
-use Pastell\Storage\StorageInterface;
+use Pastell\Storage\Password\PasswordStorageInterface;
 use Pastell\Utilities\Identifier\UuidGenerator;
 
 /**
@@ -9,7 +9,7 @@ use Pastell\Utilities\Identifier\UuidGenerator;
  */
 class DonneesFormulaireFactory
 {
-    private ?StorageInterface $passwordStorage = null;
+    private ?PasswordStorageInterface $passwordStorage = null;
     private ?UuidGenerator $uuidGenerator = null;
     public const ID_CONNECTEUR = 'connecteur_';
 
@@ -181,7 +181,7 @@ class DonneesFormulaireFactory
         return $doc;
     }
 
-    public function setPasswordStorage(StorageInterface $passwordStorage): void
+    public function setPasswordStorage(PasswordStorageInterface $passwordStorage): void
     {
         $this->passwordStorage = $passwordStorage;
     }

@@ -2,22 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Pastell\Storage;
+namespace Pastell\Storage\Password\Vault;
 
 use Exception;
 use GuzzleHttp\Psr7\Uri;
-use Http\Factory\Guzzle\RequestFactory;
-use Http\Factory\Guzzle\StreamFactory;
+use Pastell\Storage\Password\PasswordStorageInterface;
+use Pastell\Storage\Password\Vault\Exceptions\VaultIdNotFoundException;
+use Pastell\Storage\Password\Vault\Exceptions\VaultKvEngineNotMountedException;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Symfony\Component\HttpClient\Psr18Client;
 use Vault\AuthenticationStrategies\TokenAuthenticationStrategy;
 use Vault\Client;
+use Vault\Exceptions\RequestException;
 use Vault\Exceptions\RuntimeException;
 
-class VaultAdapter implements StorageInterface
+class VaultAdapter implements PasswordStorageInterface
 {
-    public const NOT_FOUND_CODE = 404;
+    public const int NOT_FOUND_CODE = 404;
     private Client $vaultClient;
     private string $vaultUnsealKey;
     private string $vaultToken;
@@ -39,10 +41,11 @@ class VaultAdapter implements StorageInterface
      * @throws ClientExceptionInterface
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws \JsonException
      */
     private function unseal(): void
     {
-        $this->vaultClient->post('v1/sys/unseal', json_encode(['key' => $this->vaultUnsealKey]));
+        $this->vaultClient->post('v1/sys/unseal', json_encode(['key' => $this->vaultUnsealKey], JSON_THROW_ON_ERROR));
         $this->vaultClient->setAuthenticationStrategy(new TokenAuthenticationStrategy($this->vaultToken))
             ->authenticate();
     }
@@ -51,11 +54,22 @@ class VaultAdapter implements StorageInterface
      * @throws ClientExceptionInterface
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws VaultKvEngineNotMountedException
+     * @throws \JsonException
      */
     public function write(string $id, string $content): string
     {
         $this->unseal();
-        $response = $this->vaultClient->write('/secret/data/' . $id, ['data' => ['password' => $content]]);
+        try {
+            $response = $this->vaultClient->write('/secret/data/' . $id, ['data' => ['password' => $content]]);
+        } catch (RequestException $e) {
+            if ($e->getCode() === self::NOT_FOUND_CODE) {
+                throw new VaultKvEngineNotMountedException(
+                    'Le moteur KV Vault n\'est pas monté sur /secret.'
+                );
+            }
+            throw $e;
+        }
         return $response->getData()['created_time'];
     }
 
@@ -84,6 +98,7 @@ class VaultAdapter implements StorageInterface
      * @throws ClientExceptionInterface
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws \JsonException
      */
     public function delete(string $id): string
     {

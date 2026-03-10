@@ -7,12 +7,13 @@
 use Monolog\Logger;
 use Pastell\Database\DatabaseUpdater;
 use Pastell\Service\FeatureToggleService;
-use Pastell\Storage\StorageInterfaceDummy;
-use Pastell\Storage\VaultAdapter;
 use Pastell\Utilities\Identifier\IdentifierGeneratorInterface;
 use Pastell\Utilities\Identifier\UuidGenerator;
+use Pastell\Storage\Password\PasswordStorageDummy;
+use Pastell\Storage\Password\Vault\VaultAdapter;
 use Pastell\Storage\S3Adapter;
 use Pastell\Storage\StorageInterface;
+use Pastell\Storage\StorageInterfaceDummy;
 use Pastell\Storage\StorageInterfaceFake;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\InMemoryStore;
@@ -91,10 +92,11 @@ $objectInstancier->setInstance('vaultToken', VAULT_TOKEN);
 $objectInstancier->setInstance('vaultUnsealKey', VAULT_UNSEAL_KEY);
 
 $donneesFormulaireFactory = $objectInstancier->getInstance(DonneesFormulaireFactory::class);
-$donneesFormulaireFactory->setPasswordStorage(new StorageInterfaceDummy());
 $donneesFormulaireFactory->setUuidGenerator(new UuidGenerator());
 if (USE_EXTERNAL_STORAGE_FOR_PASSWORD_CONNECTOR) {
     $donneesFormulaireFactory->setPasswordStorage($objectInstancier->getInstance(VaultAdapter::class));
+} else {
+    $donneesFormulaireFactory->setPasswordStorage($objectInstancier->getInstance(PasswordStorageDummy::class));
 }
 
 try {
@@ -129,7 +131,6 @@ $authentification = $objectInstancier->getInstance(Authentification::class);
 
 $journal = $objectInstancier->getInstance(Journal::class);
 $documentTypeFactory = $objectInstancier->getInstance(DocumentTypeFactory::class);
-
 $roleUtilisateur = $objectInstancier->getInstance(RoleUtilisateur::class);
 
 if (PHP_SAPI !== 'cli' || $objectInstancier->getInstance(SQLQuery::class)->isConnected()) {

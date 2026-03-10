@@ -8,9 +8,10 @@ use ConnecteurEntiteSQL;
 use ConnecteurFactory;
 use Exception;
 use Pastell\Command\BaseCommand;
-use Pastell\Storage\EmptyPasswordException;
-use Pastell\Storage\MissingVaultException;
-use Pastell\Storage\VaultPasswordAlreadyStoredException;
+use Pastell\Storage\Password\EmptyPasswordException;
+use Pastell\Storage\Password\MissingVaultException;
+use Pastell\Storage\Password\Vault\Exceptions\VaultKvEngineNotMountedException;
+use Pastell\Storage\Password\Vault\Exceptions\VaultPasswordAlreadyStoredException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -54,6 +55,9 @@ class SendPasswordsToVault extends BaseCommand
                         $this->getIO()->writeln('Field ' . $passwordField->getName() . ' is empty.');
                     } catch (MissingVaultException) {
                         $this->getIO()->error('Vault is not configurated.');
+                        return self::FAILURE;
+                    } catch (VaultKvEngineNotMountedException $e) {
+                        $this->getIO()->error($e->getMessage());
                         return self::FAILURE;
                     }
                 }
