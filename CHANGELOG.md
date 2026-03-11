@@ -3,6 +3,7 @@
 ## Corrections
 
 - Il manquait des contrôles pour l'évolution en 4.0.6 "Seul l'utilisateur peut gérer ses notifications, l'administrateur n'a plus les droits #1886" #2402
+- Les boutons `exporter` et `Traitement par lot` n'apparaissent pas sur la première page de la liste des documents #1425
 
 # [4.0.29] - 2026-03-02
 
