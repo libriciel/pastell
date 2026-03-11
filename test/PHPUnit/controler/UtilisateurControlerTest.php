@@ -279,68 +279,46 @@ class UtilisateurControlerTest extends ControlerTestCase
         self::assertSame($userCreated['password'], $userUpdated['password']);
     }
 
-    public function testNotificationAjoutActionByAdmin(): void
-    {
-        $this->setPostInfo([
-            'id_u' => 2,
-            'id_e' => 1,
-            'type' => 'actes-generique',
-        ]);
-        try {
-            $this->getUtilisateurControler()->notificationAjoutAction();
-        } catch (LastMessageException $e) {
-            static::assertStringContainsString(
-                'Utilisateur/notification?id_u=2&id_e=1&type=actes-generique:',
-                $e->getMessage()
-            );
-        }
-    }
-
     /**
-     * @throws UnrecoverableException
-     * @throws NotFoundException
-     * @throws ConflictException
      * @throws LastErrorException
      */
     public function testNotificationAjoutActionBySelf(): void
     {
-        $utilisateurControler = $this->getUtilisateurControler();
-        $id_u = $this->authenticateNewUserWithPermission(
-            ['entite:lecture', 'actes-generique:edition', 'actes-generique:lecture'],
-            1
-        );
         $this->setPostInfo([
+            'id_u' => 1,
             'id_e' => 1,
             'type' => 'actes-generique',
         ]);
         try {
-            $utilisateurControler->notificationAjoutAction();
+            $this->getUtilisateurControler()->notificationAjoutAction();
         } catch (LastMessageException $e) {
-            static::assertSame(3, $id_u);
             static::assertStringContainsString(
-                'Utilisateur/notification?id_e=1&type=actes-generique:',
+                'Utilisateur/notification',
                 $e->getMessage()
             );
         }
     }
 
-    public function testNotificationAjoutActionByAdminWithoutType(): void
+    /**
+     * @throws LastMessageException
+     */
+    public function testNotificationAjoutActionByOther(): void
     {
         $this->setPostInfo([
             'id_u' => 2,
             'id_e' => 1,
-            'type' => '',
+            'type' => 'actes-generique',
         ]);
-        try {
-            $this->getUtilisateurControler()->notificationAjoutAction();
-        } catch (LastErrorException $e) {
-            static::assertStringContainsString("Vous n'avez sélectionné aucun type de dossier", $e->getMessage());
-        }
+
+        $this->expectException(LastErrorException::class);
+        $this->getUtilisateurControler()->notificationAjoutAction();
+        static::assertLastMessage('Vous ne pouvez pas ajouter de notifications à un autre utilisateur',);
     }
 
-    public function testNotificationAjoutActionBySelfWithoutType(): void
+    public function testNotificationAjoutActionWithoutType(): void
     {
         $this->setPostInfo([
+            'id_u' => 1,
             'id_e' => 1,
             'type' => '',
         ]);
@@ -354,19 +332,19 @@ class UtilisateurControlerTest extends ControlerTestCase
     /**
      * @throws LastErrorException
      */
-    public function testNotificationByAdminSuppressionActionBySelf(): void
+    public function testNotificationSuppressionActionBySelf(): void
     {
         $utilisateurControler = $this->getUtilisateurControler();
         $utilisateurControler->getNotification()->add(
-            2,
+            1,
             1,
             'actes-generique',
             Notification::ALL_TYPE,
             false
         );
-        $this->getObjectInstancier()->getInstance(Authentification::class)->connexion('eric', 2);
 
         $this->setPostInfo([
+            'id_u' => 1,
             'id_n' => 1,
             'id_e' => 1,
             'type' => 'actes-generique',
@@ -392,22 +370,20 @@ class UtilisateurControlerTest extends ControlerTestCase
     {
         $utilisateurControler = $this->getUtilisateurControler();
         $utilisateurControler->getNotification()->add(
-            2,
+            1,
             1,
             'actes-generique',
             Notification::ALL_TYPE,
             false
         );
-        $this->getObjectInstancier()->getInstance(Authentification::class)->connexion('eric', 2);
 
         $this->setPostInfo([
+            'id_u' => 1,
             'id_e' => 1,
             'type' => 'actes-generique',
         ]);
 
-        \ob_start();
         $this->getUtilisateurControler()->notificationAction();
-        \ob_get_clean();
         static::assertSame(
             'UtilisateurNotification',
             $utilisateurControler->getViewParameterByKey('template_milieu')
@@ -415,12 +391,11 @@ class UtilisateurControlerTest extends ControlerTestCase
     }
 
     /**
-     * @throws UnrecoverableException
      * @throws NotFoundException
      * @throws LastMessageException
      * @throws LastErrorException
      */
-    public function testNotificationModifByAdmin(): void
+    public function testNotificationModifByOther(): void
     {
         $utilisateurControler = $this->getUtilisateurControler();
         $utilisateurControler->getNotification()->add(
@@ -437,17 +412,12 @@ class UtilisateurControlerTest extends ControlerTestCase
             'type' => 'actes-generique',
         ]);
 
-        \ob_start();
+        $this->expectException(LastErrorException::class);
         $this->getUtilisateurControler()->notificationAction();
-        \ob_get_clean();
-        static::assertSame(
-            'UtilisateurNotification',
-            $utilisateurControler->getViewParameterByKey('template_milieu')
-        );
+        static::assertLastMessage("Vous ne pouvez pas modifer les notifications d'un autre utilisateur",);
     }
 
     /**
-     * @throws LastMessageException
      * @throws UnrecoverableException
      * @throws LastErrorException
      * @throws NotFoundException
@@ -456,20 +426,17 @@ class UtilisateurControlerTest extends ControlerTestCase
     {
         $utilisateurControler = $this->getUtilisateurControler();
         $utilisateurControler->getNotification()->add(
-            2,
+            1,
             1,
             'actes-generique',
             'creation',
             false
         );
-        $this->getObjectInstancier()->getInstance(Authentification::class)->connexion('eric', 2);
-        \ob_start();
         $utilisateurControler->moiAction();
-        \ob_get_clean();
-
         $this->setPostInfo([
             'id_e' => 1,
             'type' => 'actes-generique',
+            'id_u' => 1,
             'modification' => [
                 'name' => 'modification',
                 'type' => 'checkbox',
