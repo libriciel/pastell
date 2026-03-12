@@ -273,10 +273,14 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                     $annexe_element
                 );
             } else {
+                $signedFile = $signature->getSignedFile($info);
+                if ($signedFile->filename === null) {
+                    $signedFile->filename = $document_original_name;
+                }
                 $donneesFormulaire->addFileFromData(
                     $document_element,
-                    $document_original_name,
-                    $signature->getSignedFile($info)
+                    $signedFile->filename,
+                    $signedFile->content
                 );
             }
         }

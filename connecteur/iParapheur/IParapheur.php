@@ -815,13 +815,13 @@ class IParapheur extends SignatureConnecteur
 
     /**
      * Workaround because IParapheur::getSignature() does not return only the signature
-     *
-     * @param $file
-     * @return mixed
      */
-    public function getSignedFile($file)
+    public function getSignedFile($info_from_get_signature): Fichier
     {
-        return $file['signature'] ?: $file['document_signe']['document'];
+        $signedFile = new Fichier();
+        $signedFile->content = $info_from_get_signature['signature'] ?: $info_from_get_signature['document_signe']['document'];
+        $signedFile->filename = $info_from_get_signature['signature'] ? null : $info_from_get_signature['document_signe']['nom_document'];
+        return $signedFile;
     }
 
     /**
