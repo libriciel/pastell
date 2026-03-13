@@ -6,7 +6,6 @@
  * @var array $info
  * @var string $denominationEntiteDeBase
  * @var bool $utilisateur_edition
- * @var array $arbre
  * @var array $notification_list
  * @var array $all_module
  * @var int $id_u
@@ -198,6 +197,11 @@ use Pastell\Utilities\Certificate;
             </select>
 
             <div class="treeselect-role-entity p-2"></div>
+            <?php
+            $this->setViewParameter('treeselect_container_class', 'treeselect-role-entity');
+            $this->setViewParameter('treeselect_input_id', 'role-entity_id');
+            $this->render('EntityTreeSelect');
+            ?>
 
             <button type='submit' class='btn btn-primary'>
                 <i class="fas fa-plus-circle"></i>&nbsp;Ajouter
@@ -292,16 +296,13 @@ use Pastell\Utilities\Certificate;
                 <?php $this->displayCSRFInput(); ?>
                 <input type='hidden' name='source' value='detail'/>
                 <input type='hidden' name='id_u' value='<?php echo $id_u ?>'/>
-                <select name='id_e' class='select2_entite form-select col-md-1'>
-                    <option></option>
-                    <option value='0'>Entité racine</option>
-                    <?php foreach ($arbre as $entiteInfo) : ?>
-                        <option value='<?php echo $entiteInfo['id_e'] ?>'>
-                            <?php echo str_repeat("-", $entiteInfo['profondeur']); ?>
-                            <?php hecho($entiteInfo['denomination']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+                <input id='notification-entity_id' type='hidden' name='id_e' value=''/>
+                <div class="treeselect-notification-entity me-2" style="flex: 0 0 25%"></div>
+                <?php
+                $this->setViewParameter('treeselect_container_class', 'treeselect-notification-entity');
+                $this->setViewParameter('treeselect_input_id', 'notification-entity_id');
+                $this->render('EntityTreeSelect');
+                ?>
 
                 <?php $this->getDocumentTypeHtml()->displaySelect('', $all_module); ?>
                 <select name='daily_digest' class="form-select col-md-2 me-2">
@@ -370,20 +371,3 @@ if ($id_u == $id_current_u || ($utilisateur_edition && $info['is_api'])) : ?>
             un jeton</a>
     </div>
 <?php endif; ?>
-
-
-<script type="module">
-    const domElement = document.querySelector('.treeselect-role-entity')
-    const treeselect = new Treeselect({
-        placeholder: 'Sélectionner une entité',
-        parentHtmlContainer: domElement,
-        options: <?php echo $tree; ?>,
-        isSingleSelect: true,
-        showTags: false,
-        openLevel: 3
-    })
-
-    treeselect.srcElement.addEventListener('input', (e) => {
-        document.getElementById('role-entity_id').value = e.detail;
-    })
-</script>

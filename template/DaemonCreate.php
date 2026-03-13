@@ -5,7 +5,6 @@ declare(strict_types=1);
 /**
  * @var Gabarit $this
  * @var int $nb_free_workers
- * @var array $tree
  */
 
 ?>
@@ -17,8 +16,13 @@ declare(strict_types=1);
                     <label for="type_connecteur">Entité <span class="obl">*</span></label>
                 </th>
                 <td>
-                    <input id='role-entity_id' type='hidden' name='id_e' value=''/>
-                    <div class="treeselect-role-entity"></div>
+                    <input id='daemon-entity_id' type='hidden' name='id_e' value=''/>
+                    <div class="treeselect-daemon-entity"></div>
+                    <?php
+                    $this->setViewParameter('treeselect_container_class', 'treeselect-daemon-entity');
+                    $this->setViewParameter('treeselect_input_id', 'daemon-entity_id');
+                    $this->render('EntityTreeSelect');
+                    ?>
                 </td>
             </tr>
             <tr>
@@ -68,19 +72,3 @@ declare(strict_types=1);
 
     </form>
 </div>
-
-<script type="module">
-    const domElement = document.querySelector('.treeselect-role-entity')
-    const treeselect = new Treeselect({
-        placeholder: 'Sélectionner une entité',
-        parentHtmlContainer: domElement,
-        options: <?php echo $tree; ?>,
-        isSingleSelect: true,
-        showTags: false,
-        openLevel: 3
-    })
-
-    treeselect.srcElement.addEventListener('input', (e) => {
-        document.getElementById('role-entity_id').value = e.detail;
-    })
-</script>

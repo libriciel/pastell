@@ -8,6 +8,7 @@
 
 ## Évolutions
 
+- Les listes de sélection d'entité sont désormais présentées sous forme d'arbre navigable avec recherche  #767
 - Migration de Fork Awesome vers la bibliothèque d'icônes officielle Font Awesome #2462
 - Le bouton `Modifier l'identifiant` des dossiers studio est désormais sur la page `TypeDossier/detail` #2445
 

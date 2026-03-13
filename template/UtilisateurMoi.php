@@ -8,10 +8,8 @@ declare(strict_types=1);
  * @var string $denominationEntiteDeBase
  * @var int $id_u
  * @var array $notification_list
- * @var array $arbre
  * @var array $all_module
  * @var array $tokens
- * @var bool $droit_entite_racine
  */
 
 ?>
@@ -167,17 +165,13 @@ declare(strict_types=1);
             <?php $this->displayCSRFInput(); ?>
             <input type='hidden' name='source' value='moi'/>
             <input type='hidden' name='id_u' value='<?php echo $id_u ?>'/>
-            <select name='id_e' class='select2_entite form-select col-md-1'>
-                <?php if ($droit_entite_racine) : ?>
-                    <option value='0'>Entité racine</option>
-                <?php endif; ?>
-                <?php foreach ($arbre as $entiteInfo) : ?>
-                    <option value='<?php echo $entiteInfo['id_e']; ?>'>
-                        <?php echo str_repeat("-", $entiteInfo['profondeur']); ?>
-                        <?php hecho($entiteInfo['denomination']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+            <input id='notification-entity_id' type='hidden' name='id_e' value=''/>
+            <div class="treeselect-notification-entity me-2" style="flex: 0 0 25%"></div>
+            <?php
+            $this->setViewParameter('treeselect_container_class', 'treeselect-notification-entity');
+            $this->setViewParameter('treeselect_input_id', 'notification-entity_id');
+            $this->render('EntityTreeSelect');
+            ?>
 
             <?php $this->getDocumentTypeHtml()->displaySelect('', $all_module); ?>
             <select name='daily_digest' class="form-select col-md-2 me-2">

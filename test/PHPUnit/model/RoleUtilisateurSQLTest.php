@@ -1,6 +1,8 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityCreationService;
+use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Utilisateur\UserCreationService;
 
 class RoleUtilisateurSQLTest extends PastellTestCase
@@ -251,7 +253,10 @@ class RoleUtilisateurSQLTest extends PastellTestCase
             $arbre_fille
         );
 
-        $tree = $this->roleUtilisateurSQL->getEntityTree($id_u, 'entite:lecture');
+        $tree = $this->getObjectInstancier()->getInstance(EntityUtilitiesService::class)->buildEntityTree(
+            $this->roleUtilisateurSQL->getArbreFille($id_u, DroitService::getDroitLecture(DroitService::DROIT_ENTITE)),
+            false
+        );
         self::assertSame(
             [
                 [
@@ -372,7 +377,10 @@ class RoleUtilisateurSQLTest extends PastellTestCase
             $arbre_fille
         );
 
-        $tree = $this->roleUtilisateurSQL->getEntityTree($id_u, 'entite:lecture');
+        $tree = $this->getObjectInstancier()->getInstance(EntityUtilitiesService::class)->buildEntityTree(
+            $this->roleUtilisateurSQL->getArbreFille($id_u, DroitService::getDroitLecture(DroitService::DROIT_ENTITE)),
+            false
+        );
         self::assertSame(
             [
                 [
