@@ -678,6 +678,18 @@ class DonneesFormulaireTest extends PastellTestCase
     }
 
 
+    /**
+     * @throws Exception
+     */
+    public function testGetTitreOnDocumentTitle(): void
+    {
+        $donneesFormulaire = $this->getCustomDonneesFormulaire(
+            __DIR__ . '/fixtures/definition-file-as-title.yml'
+        );
+        $donneesFormulaire->addFileFromData('document', 'test.pdf', 'contenu');
+        self::assertSame('test.pdf', $donneesFormulaire->getTitre());
+    }
+
     public function contentTypeProvider(): array
     {
         return [
