@@ -103,4 +103,14 @@ class ConnecteurAssociationServiceTest extends PastellTestCase
         $connecteur_action_message = $this->getConnecteurActionService()->getByIdCe(1)[0]['message'];
         $this->assertEquals("Dissociation du type de dossier actes-generique en position 1 du type de connecteur signature pour l'entité id_e = 1", $connecteur_action_message);
     }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function testNoTypeDossierAssociation(): void
+    {
+        $this->expectException(UnrecoverableException::class);
+        $this->expectExceptionMessage("Le type de dossier est manquant.");
+        $this->getConnecteurAssociationService()->addConnecteurAssociation(1, 1);
+    }
 }
