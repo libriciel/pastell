@@ -248,7 +248,7 @@ class DonneesFormulaire
     public function getTitre(): string
     {
         $titre_field = $this->getFormulaire()->getTitreField();
-        $titre = $this->get($titre_field);
+        $titre = $this->get($titre_field, "");
         if (is_array($titre)) {
             $titre = $titre[0] ?? $this->id_d;
         }
