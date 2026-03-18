@@ -78,4 +78,9 @@ class FakeTdT extends TdtAdapter
     {
         return [];
     }
+
+    public function annulationActes($id_transaction)
+    {
+        return $id_transaction;
+    }
 }
