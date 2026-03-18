@@ -6,6 +6,7 @@
 - Les boutons `exporter` et `Traitement par lot` n'apparaissent pas sur la première page de la liste des documents #1425
 - Un mail sécurisé protégé par mot de passe n'est plus marqué comme 'lu' tant que le mot de passe n'a pas été saisi #2410
 - Il n'est plus possible de créer une association de connecteur sans préciser le type de dossier #2417
+- Le bouton `Retamponner l'acte et les annexes` n'est plus présent après une annulation tdt actes #2264
 
 # [4.0.29] - 2026-03-02
 
