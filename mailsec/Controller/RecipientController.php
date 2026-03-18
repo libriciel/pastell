@@ -120,10 +120,9 @@ final class RecipientController extends AbstractController
     #[Route('/mail/{key}/password', name: 'mailsec_recipient_password', methods: ['GET', 'POST'])]
     public function password(string $key, Request $request): Response
     {
-        $mailSecInfo = $this->mailsecManager->getMailsecInfo($key, $request, false);
         if ($request->isMethod(Request::METHOD_POST)) {
             $password = $request->request->get('password');
-            if ($mailSecInfo->donneesFormulaire->get('password') === $password) {
+            if ($this->mailsecManager->verifyPassword($key, $password)) {
                 $ip = $request->getClientIp();
                 $request->getSession()->set("consult_ok_{$key}_{$ip}", true);
                 return $this->redirectToRoute('mailsec_recipient_index', ['key' => $key]);
@@ -135,7 +134,7 @@ final class RecipientController extends AbstractController
             'gabarit' => $this->gabarit,
             'manifest_info' => $this->manifestFactory->getPastellManifest(),
             'timer' => $this->pastellTimer,
-            'mailSecInfo' => $mailSecInfo,
+            'key' => $key,
         ]);
     }
 
