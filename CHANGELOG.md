@@ -8,6 +8,7 @@
 - Un mail sécurisé n'était pas envoyé lorsque le champ configuré comme titre dans le studio était de type fichier #1880
 - Il n'est plus possible de créer une association de connecteur sans préciser le type de dossier #2417
 - Le bouton `Retamponner l'acte et les annexes` n'est plus présent après une annulation tdt actes #2264
+- Correction de l'arrondi de `Age du premier enregistrement de la table journal` du test du système #2231
 
 # [4.0.29] - 2026-03-02
 
