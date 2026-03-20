@@ -826,9 +826,6 @@ class IParapheur extends SignatureConnecteur
 
     /**
      * Workaround because it is embedded in IParapheur::getSignature()
-     *
-     * @param $signature
-     * @return Fichier
      */
     public function getBordereauFromSignature($signature): ?Fichier
     {
@@ -840,7 +837,6 @@ class IParapheur extends SignatureConnecteur
 
     /**
      * @param array $info_from_get_signature output of IParapheur::getSignature()
-     * @return bool
      */
     public function hasMultiDocumentSigne($info_from_get_signature): bool
     {
@@ -849,7 +845,6 @@ class IParapheur extends SignatureConnecteur
 
     /**
      * @param array $info_from_get_signature output of IParapheur::getSignature()
-     * @return array $all_document_signe
      * Au retour du i-parapheur les fichiers DocPrincipal et DocumentsSupplementaires peuvent être inversés
      */
     public function getAllDocumentSigne(array $info_from_get_signature): array
@@ -861,6 +856,7 @@ class IParapheur extends SignatureConnecteur
             $file->content = $fileInfo['document'];
             $files[] = $file;
         }
+        $files[] = $this->getSignedFile($info_from_get_signature);
         return $files;
     }
 }
