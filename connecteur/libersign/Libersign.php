@@ -166,10 +166,8 @@ class Libersign extends SignatureConnecteur
     /**
      * Workaround because IParapheur::getSignature() does not return only the signature
      *
-     * @param $file
-     * @return mixed
      */
-    public function getSignedFile($file)
+    public function getSignedFile($info_from_get_signature): Fichier
     {
         throw new BadMethodCallException('Not implemented');
     }

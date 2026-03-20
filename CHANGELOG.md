@@ -4,6 +4,7 @@
 
 - Il manquait des contrôles pour l'évolution en 4.0.6 "Seul l'utilisateur peut gérer ses notifications, l'administrateur n'a plus les droits #1886" #2402
 - Les boutons `exporter` et `Traitement par lot` n'apparaissent pas sur la première page de la liste des documents #1425
+- En signature PAdES via iParapheur, le fichier signé est désormais enregistré avec le nom et l'extension retournés #2134
 - Un mail sécurisé protégé par mot de passe n'est plus marqué comme 'lu' tant que le mot de passe n'a pas été saisi #2410
 - Un mail sécurisé n'était pas envoyé lorsque le champ configuré comme titre dans le studio était de type fichier #1880
 - Il n'est plus possible de créer une association de connecteur sans préciser le type de dossier #2417

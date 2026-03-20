@@ -268,16 +268,12 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
             if ($signature->hasMultiDocumentSigne($info)) {
                 $this->addMultiDocumentSigne(
                     $signature->getAllDocumentSigne($info),
-                    $document_element,
                     $multi_document_original_element,
+                    $document_element,
                     $annexe_element
                 );
             } else {
-                $donneesFormulaire->addFileFromData(
-                    $document_element,
-                    $document_original_name,
-                    $signature->getSignedFile($info)
-                );
+                $this->addMainSignedFile($signature->getSignedFile($info), $document_element);
             }
         }
 
@@ -347,23 +343,16 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
     }
 
     /**
-     * @param array $all_document_signe output of IParapheur::getSignature()
-     * @param string $document_element
-     * @param string $multi_document_original_element
-     * @param string $annexe_element
-     * @return bool
      * @throws NotFoundException
      * @throws Exception
      */
     private function addMultiDocumentSigne(
-        array $all_document_signe,
-        string $document_element,
+        array $allSignedFiles,
         string $multi_document_original_element,
+        string $document_element,
         string $annexe_element
-    ): bool {
-
+    ): void {
         $donneesFormulaire = $this->getDonneesFormulaire();
-
         // Copie des $annexe_element dans $multi_document_original_element
         if ($donneesFormulaire->get($annexe_element)) {
             foreach ($donneesFormulaire->get($annexe_element) as $num => $fileName) {
@@ -382,25 +371,39 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
             }
         }
 
-        $document_original_name = $donneesFormulaire->getFileName($document_element);
         $i = 0;
-        foreach ($all_document_signe as $document_signe) {
-            if ($document_signe['nom_document'] === $document_original_name) {
-                $donneesFormulaire->addFileFromData(
-                    $document_element,
-                    $document_signe['nom_document'],
-                    $document_signe['document']
-                );
-            } else {
-                $donneesFormulaire->addFileFromData(
-                    $annexe_element,
-                    $document_signe['nom_document'],
-                    $document_signe['document'],
-                    $i
-                );
-                $i++;
+        foreach ($allSignedFiles as $file) {
+            /** @var Fichier $file */
+            $fileBasename = pathinfo($file->filename, PATHINFO_FILENAME);
+            $originalFileBasename = pathinfo($donneesFormulaire->getFileName($document_element), PATHINFO_FILENAME);
+            if ($fileBasename === $originalFileBasename) {
+                $this->addMainSignedFile($file, $document_element);
+                continue;
             }
+            $donneesFormulaire->addFileFromData(
+                $annexe_element,
+                $file->filename,
+                $file->content,
+                $i
+            );
+            $i++;
         }
-        return true;
+    }
+
+    /**
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    private function addMainSignedFile(
+        Fichier $main_file,
+        string $document_element
+    ): void {
+        $donneesFormulaire = $this->getDonneesFormulaire();
+        $document_original_name = $donneesFormulaire->getFileName($document_element);
+        $donneesFormulaire->addFileFromData(
+            $document_element,
+            $main_file->filename ?: $document_original_name,
+            $main_file->content
+        );
     }
 }
