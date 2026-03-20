@@ -854,8 +854,13 @@ class IParapheur extends SignatureConnecteur
      */
     public function getAllDocumentSigne(array $info_from_get_signature): array
     {
-        $all_document_signe = $info_from_get_signature['multi_document_signe'];
-        $all_document_signe[] = $info_from_get_signature['document_signe'];
-        return $all_document_signe;
+        $files = [];
+        foreach ($info_from_get_signature['multi_document_signe'] as $fileInfo) {
+            $file = new Fichier();
+            $file->filename = $fileInfo['nom_document'];
+            $file->content = $fileInfo['document'];
+            $files[] = $file;
+        }
+        return $files;
     }
 }
