@@ -383,7 +383,9 @@ class UtilisateurControlerTest extends ControlerTestCase
             'type' => 'actes-generique',
         ]);
 
+        \ob_start();
         $this->getUtilisateurControler()->notificationAction();
+        \ob_get_clean();
         static::assertSame(
             'UtilisateurNotification',
             $utilisateurControler->getViewParameterByKey('template_milieu')
@@ -432,7 +434,9 @@ class UtilisateurControlerTest extends ControlerTestCase
             'creation',
             false
         );
+        \ob_start();
         $utilisateurControler->moiAction();
+        \ob_get_clean();
         $this->setPostInfo([
             'id_e' => 1,
             'type' => 'actes-generique',
