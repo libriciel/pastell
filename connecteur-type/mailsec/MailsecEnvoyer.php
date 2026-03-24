@@ -45,6 +45,7 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
      */
     public function go()
     {
+        $mailsecConnecteur = $this->getMailSecConnecteur();
         $numberOfRecipients = 0;
         foreach (['to', 'cc', 'bcc'] as $type) {
             $typeMapped = $this->getMappingValue($type);
@@ -69,7 +70,7 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
             $this->getMappingValue(self::SENT_MAIL_NUMBER_FIELD),
             $numberOfRecipients
         );
-        $this->getMailSecConnecteur()->sendAllMail($this->id_e, $this->id_d);
+        $mailsecConnecteur->sendAllMail($this->id_e, $this->id_d);
 
         $this->getActionCreator()->addAction(
             $this->id_e,
