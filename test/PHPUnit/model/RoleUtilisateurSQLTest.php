@@ -255,7 +255,6 @@ class RoleUtilisateurSQLTest extends PastellTestCase
 
         $tree = $this->getObjectInstancier()->getInstance(EntityUtilitiesService::class)->buildEntityTree(
             $this->roleUtilisateurSQL->getArbreFille($id_u, DroitService::getDroitLecture(DroitService::DROIT_ENTITE)),
-            false
         );
         self::assertSame(
             [
@@ -379,7 +378,6 @@ class RoleUtilisateurSQLTest extends PastellTestCase
 
         $tree = $this->getObjectInstancier()->getInstance(EntityUtilitiesService::class)->buildEntityTree(
             $this->roleUtilisateurSQL->getArbreFille($id_u, DroitService::getDroitLecture(DroitService::DROIT_ENTITE)),
-            false
         );
         self::assertSame(
             [

@@ -8,7 +8,7 @@ use EntiteSQL;
 
 final class EntityUtilitiesService
 {
-    public function buildEntityTree(array $flatList, bool $includeRoot = true): array
+    public function buildEntityTree(array $flatList): array
     {
         $hierarchy = [];
 
@@ -28,15 +28,16 @@ final class EntityUtilitiesService
             }
         }
 
-        if (!$includeRoot) {
-            return $hierarchy;
-        }
+        return $hierarchy;
+    }
 
+    public function buildEntityTreeWithRoot(array $flatList): array
+    {
         return [
             [
                 'id_e' => EntiteSQL::ID_E_ENTITE_RACINE,
                 'denomination' => EntiteSQL::ENTITE_RACINE_DENOMINATION,
-                'children' => $hierarchy,
+                'children' => $this->buildEntityTree($flatList),
             ],
         ];
     }

@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\EntityUtilitiesService;
+
 class MailSecControler extends PastellControler
 {
     public const NB_MAIL_AFFICHE = 100;
@@ -187,6 +190,12 @@ class MailSecControler extends PastellControler
         $this->renderDefault();
     }
 
+    /**
+     * @throws NotFoundException
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws JsonException
+     */
     public function groupeRoleListAction()
     {
         $recuperateur = new Recuperateur($_GET);
@@ -194,7 +203,11 @@ class MailSecControler extends PastellControler
         $this->verifDroit($id_e, "annuaire:lecture");
         $this->setViewParameter('can_edit', $this->hasDroit($id_e, "annuaire:edition"));
 
-        $this->setViewParameter('arbre', $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), "entite:edition"));
+        $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
+        $tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree(
+            $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
+        ));
+        $this->setViewParameter('treeselect_data', json_encode($tree, JSON_THROW_ON_ERROR));
 
         $this->setViewParameter('listGroupe', $this->getAnnuaireRoleSQL()->getAll($id_e));
 

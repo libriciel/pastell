@@ -797,12 +797,8 @@ class DaemonControler extends PastellControler
             DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
         );
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
-        $tree = $entityUtilitiesService->toTreeselectOptions(
-            $entityUtilitiesService->buildEntityTree(
-                $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE)),
-                includeRoot: false
-            )
-        );
+        $arbreFille = $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+        $tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree($arbreFille));
         $this->setViewParameter('treeselect_data', \json_encode($tree, \JSON_THROW_ON_ERROR));
         $this->setViewParameter('nb_free_workers', $this->getDaemonSQL()->getNbSharedWorkers() - 1);
         $this->setViewParameter('template_milieu', 'DaemonCreate');
