@@ -11,6 +11,7 @@
 - Le bouton `Retamponner l'acte et les annexes` n'est plus présent après une annulation tdt actes #2264
 - Correction de l'arrondi de `Age du premier enregistrement de la table journal` du test du système #2231
 - Suppression d'un warning lors d'un dépôt `depot-pastell` si les fichiers annexes ne sont pas présents #2411
+- L'envoi d'un mail sécurisé sans connecteur associé échoue désormais avant d'alimenter la liste des envois #1721
 
 # [4.0.29] - 2026-03-02
 
