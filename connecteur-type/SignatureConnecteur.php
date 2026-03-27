@@ -78,11 +78,8 @@ abstract class SignatureConnecteur extends Connecteur
 
     /**
      * Workaround because IParapheur::getSignature() does not return only the signature
-     *
-     * @param $file
-     * @return mixed
      */
-    abstract public function getSignedFile($file);
+    abstract public function getSignedFile($info_from_get_signature): Fichier;
 
     /**
      * Workaround because it is embedded in IParapheur::getSignature()

@@ -507,9 +507,7 @@ class S2low extends TdtConnecteur
         $donneesFormulaire->setData("id_retour", $pes['id']);
         $donneesFormulaire->setData("envoi_ged", true);
 
-        $titre_fieldname = $donneesFormulaire->getFormulaire()->getTitreField();
-        $titre = $donneesFormulaire->get($titre_fieldname);
-        $this->objectInstancier->getInstance(DocumentSQL::class)->setTitre($new_id_d, $titre);
+        $this->objectInstancier->getInstance(DocumentSQL::class)->setTitre($new_id_d, $donneesFormulaire->getTitre());
 
         $donneesFormulaire->addFileFromData("fichier_pes", $nom_pes, $fic_pes);
 
@@ -771,9 +769,7 @@ class S2low extends TdtConnecteur
         }
         $tmpFolder->delete($tmp_folder);
 
-        $titre_fieldname = $donneesFormulaire->getFormulaire()->getTitreField();
-        $titre = $donneesFormulaire->get($titre_fieldname);
-        $this->objectInstancier->getInstance(DocumentSQL::class)->setTitre($new_id_d, $titre);
+        $this->objectInstancier->getInstance(DocumentSQL::class)->setTitre($new_id_d, $donneesFormulaire->getTitre());
 
         $actionCreatorSQL = $this->objectInstancier->getInstance(ActionCreatorSQL::class);
 

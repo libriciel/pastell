@@ -1,0 +1,8 @@
+nom: 'Flux de test titre fichier'
+description: 'Flux avec un champ fichier marqué comme titre'
+formulaire:
+    onglet:
+        document:
+            type: file
+            title: true
+action: []

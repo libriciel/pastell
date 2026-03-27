@@ -55,9 +55,7 @@ class FactureFormulaireExtrairePivot extends ActionExecutor
         $donneesFormulaire->setData('facture_numero_engagement', $donnees_facture['facture_numero_engagement']);
         $donneesFormulaire->setData('facture_numero_marche', $donnees_facture['facture_numero_marche']);
 
-        $titre_fieldname = $donneesFormulaire->getFormulaire()->getTitreField();
-        $titre = $donneesFormulaire->get($titre_fieldname);
-        $this->objectInstancier->getInstance(DocumentSQL::class)->setTitre($this->id_d, $titre);
+        $this->objectInstancier->getInstance(DocumentSQL::class)->setTitre($this->id_d, $donneesFormulaire->getTitre());
 
         $message = "Le formulaire a été renseigné d'après le fichier CPPFacturePivot";
         $this->addActionOK($message);

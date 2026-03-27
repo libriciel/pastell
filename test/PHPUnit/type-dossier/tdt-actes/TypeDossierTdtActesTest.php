@@ -47,31 +47,45 @@ class TypeDossierTdtActesTest extends PastellTestCase
 
         $this->associateFluxWithConnector($info_connecteur['id_ce'], self::TDT_ACTES_ONLY, 'TdT');
 
-        $info = $this->createDocument(self::TDT_ACTES_ONLY);
-        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($info['id_d']);
+        $id_d = $this->createDocument(self::TDT_ACTES_ONLY)['id_d'];
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
         $donneesFormulaire->setTabData(['titre' => 'Foo']);
         $donneesFormulaire->addFileFromData('fichier', 'fichier.txt', 'bar');
 
         $this->assertTrue(
-            $this->triggerActionOnDocument($info['id_d'], "orientation")
+            $this->triggerActionOnDocument($id_d, "orientation")
         );
         $this->assertLastMessage("sélection automatique de l'action suivante");
 
         $this->assertTrue(
-            $this->triggerActionOnDocument($info['id_d'], "send-tdt")
+            $this->triggerActionOnDocument($id_d, "send-tdt")
         );
         $this->assertLastMessage("Le document a été envoyé au contrôle de légalité");
 
         $this->assertTrue(
-            $this->triggerActionOnDocument($info['id_d'], "verif-tdt")
+            $this->triggerActionOnDocument($id_d, "verif-tdt")
         );
         $this->assertLastMessage("L'acquittement du contrôle de légalité a été reçu.");
 
         $this->assertTrue(
-            $this->triggerActionOnDocument($info['id_d'], "orientation")
+            $this->triggerActionOnDocument($id_d, "orientation")
         );
         $this->assertLastMessage("sélection automatique de l'action suivante");
 
-        $this->assertLastDocumentAction('termine', $info['id_d']);
+        $this->assertLastDocumentAction('termine', $id_d);
+
+        $this->assertTrue(
+            $this->triggerActionOnDocument($id_d, "annulation-tdt")
+        );
+        $this->assertLastMessage("Une notification d'annulation a été envoyée au contrôle de légalité");
+        $this->assertTrue(
+            $this->triggerActionOnDocument($id_d, "verif-annulation-tdt")
+        );
+        $this->assertLastMessage("L'acquittement pour l'annulation de l'acte a été reçu.");
+        $this->assertLastDocumentAction('annuler-tdt', $id_d);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage("L'action « tamponner-tdt »  n'est pas permise : no-action n'est pas vérifiée");
+        $this->getInternalAPI()->post("/entite/1/document/$id_d/action/tamponner-tdt");
     }
 }

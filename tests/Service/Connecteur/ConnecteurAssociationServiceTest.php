@@ -183,4 +183,14 @@ class ConnecteurAssociationServiceTest extends PastellTestCase
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
         static::assertSame('bar', $donneesFormulaire->get('foo'));
     }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function testNoTypeDossierAssociation(): void
+    {
+        $this->expectException(UnrecoverableException::class);
+        $this->expectExceptionMessage("Le type de dossier est manquant.");
+        $this->getConnecteurAssociationService()->addConnecteurAssociation(1, 1);
+    }
 }

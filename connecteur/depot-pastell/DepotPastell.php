@@ -167,16 +167,20 @@ class DepotPastell extends GEDConnecteur
         );
 
         foreach ($files as $id_file_cible => $id_file_source) {
-            foreach ($donneesFormulaire->get($id_file_source) as $nb_file => $filename) {
-                $last_call = $this->callPastell(
-                    "/entite/$id_e/document/$id_d/file/$id_file_cible/$nb_file",
-                    CurlWrapper::POST_METHOD,
-                    [
-                        'file_name' => $filename,
-                        'file_content' => curl_file_create($donneesFormulaire->getFilePath($id_file_source, $nb_file))
-                    ],
-                    false
-                );
+            if ($donneesFormulaire->get($id_file_source)) {
+                foreach ($donneesFormulaire->get($id_file_source) as $nb_file => $filename) {
+                    $last_call = $this->callPastell(
+                        "/entite/$id_e/document/$id_d/file/$id_file_cible/$nb_file",
+                        CurlWrapper::POST_METHOD,
+                        [
+                            'file_name' => $filename,
+                            'file_content' => curl_file_create(
+                                $donneesFormulaire->getFilePath($id_file_source, $nb_file)
+                            )
+                        ],
+                        false
+                    );
+                }
             }
         }
         return $last_call;
