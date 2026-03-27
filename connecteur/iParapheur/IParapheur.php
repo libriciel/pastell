@@ -852,7 +852,7 @@ class IParapheur extends SignatureConnecteur
     }
 
     /**
-     * @param array $info_from_get_signature output of IParapheur::getSignature()
+     * @param array $info output of IParapheur::getSignature()
      */
     public function hasMultiDocumentSigne($info): bool
     {
@@ -860,19 +860,19 @@ class IParapheur extends SignatureConnecteur
     }
 
     /**
-     * @param array $info_from_get_signature output of IParapheur::getSignature()
+     * @param array $info output of IParapheur::getSignature()
      * Au retour du i-parapheur les fichiers DocPrincipal et DocumentsSupplementaires peuvent être inversés
      */
     public function getAllDocumentSigne(array $info): array
     {
         $files = [];
-        foreach ($info_from_get_signature['multi_document_signe'] as $fileInfo) {
+        foreach ($info['multi_document_signe'] as $fileInfo) {
             $file = new Fichier();
             $file->filename = $fileInfo['nom_document'];
             $file->content = $fileInfo['document'];
             $files[] = $file;
         }
-        $files[] = $this->getSignedFile($info_from_get_signature);
+        $files[] = $this->getSignedFile($info);
         return $files;
     }
 

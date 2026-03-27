@@ -709,11 +709,9 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     /**
      * @param array $info output of IparapheurRestConnector::getSignature()
      */
-    public function getSignedFile($info)
+    public function getSignedFile($info): Fichier
     {
-        /** @var Fichier $signedFile */
-        $signedFile = $info['documents'][0];
-        return $signedFile->content;
+        return $info['documents'][0];
     }
 
     /**
