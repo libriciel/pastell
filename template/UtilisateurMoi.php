@@ -166,7 +166,7 @@ use Pastell\Utilities\Certificate;
 
                     <a class="btn btn-danger"
                        href='Utilisateur/notificationSuppression?id_n=<?php
-                       echo($infoNotification['id_n']); ?>&source=detail'
+                        echo($infoNotification['id_n']); ?>&source=detail'
                     >
                         <i class="fa fa-trash"></i>&nbsp;Supprimer
                     </a>
