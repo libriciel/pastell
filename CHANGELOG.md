@@ -1,3 +1,11 @@
+# [4.1.17] - 2026-
+
+## Ajouts
+
+- Gestion des utilisateurs exclusivement API par API #1943 :
+  - Ajout du paramètre `is_api` à la création d'un utilisateur : crée un utilisateur sans email, authentifiable par jeton uniquement
+  - Ajout de la route `POST /api/v2/utilisateur/:id_u/token` pour créer un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
+
 # [4.1.16] - 2026-03-02
 
 ## Corrections
