@@ -52,6 +52,7 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
      */
     public function go()
     {
+        $mailsecConnecteur = $this->getMailSecConnecteur();
         $numberOfRecipients = 0;
         $uniqueRecipients = [];
 
@@ -81,7 +82,7 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
             $this->getMappingValue(self::SENT_MAIL_NUMBER_FIELD),
             $numberOfRecipients
         );
-        $this->getMailSecConnecteur()->sendAllMail($this->id_e, $this->id_d);
+        $mailsecConnecteur->sendAllMail($this->id_e, $this->id_d);
 
         $this->changeAction($this->action, 'Le document a été envoyé');
         $this->setLastMessage('Le document a été envoyé au(x) destinataire(s)');

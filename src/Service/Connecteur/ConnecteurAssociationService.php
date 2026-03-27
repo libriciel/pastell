@@ -3,6 +3,7 @@
 namespace Pastell\Service\Connecteur;
 
 use ConnecteurEntiteSQL;
+use EntiteSQL;
 use FluxDefinitionFiles;
 use FluxEntiteSQL;
 use Exception;
@@ -46,7 +47,11 @@ class ConnecteurAssociationService
         if (! $this->droitService->hasDroitConnecteurEdition($id_e, $id_u)) {
             throw new UnrecoverableException("Vous n'avez pas le droit d'édition pour les connecteurs");
         }
-        if ($type_dossier !== '') {
+        if ($type_dossier === '') {
+            if ($id_e !== EntiteSQL::ID_E_ENTITE_RACINE) {
+                throw new UnrecoverableException("Le type de dossier est manquant.");
+            }
+        } else {
             $info = $this->fluxDefinitionFiles->getInfo($type_dossier);
             if (!$info) {
                 throw new UnrecoverableException("Le type de dossier « $type_dossier » n'existe pas.");

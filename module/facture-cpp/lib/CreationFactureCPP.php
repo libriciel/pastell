@@ -126,12 +126,9 @@ class CreationFactureCPP
     }
 
     /**
-     * @param $id_d
-     * @param array $cpp_array
-     * @return array|string
      * @throws NotFoundException
      */
-    public function alimenter($id_d, array $cpp_array)
+    public function alimenter($id_d, array $cpp_array): string
     {
         /** @var DonneesFormulaire $donneesFormulaire */
         $donneesFormulaire = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)->get($id_d);
@@ -154,11 +151,8 @@ class CreationFactureCPP
         $donneesFormulaire->setData(AttrFactureCPP::ATTR_FOURNISSEUR_RAISON_SOCIALE, $cpp_array['fournisseur_raison_sociale']);
         $donneesFormulaire->setData(AttrFactureCPP::ATTR_TYPE_INTEGRATION, $cpp_array['type_integration']);
 
-        // Affectation du titre au document
-        $titre_fieldname = $donneesFormulaire->getFormulaire()->getTitreField();
-        $titre = $donneesFormulaire->get($titre_fieldname);
+        $titre = $donneesFormulaire->getTitre();
         $this->objectInstancier->getInstance(DocumentSQL::class)->setTitre($id_d, $titre);
-
         return $titre;
     }
 

@@ -127,4 +127,20 @@ class MailsecEnvoyerTest extends PastellTestCase
         $actionPossible = $action->getActionPossible(2, 1, $id_d);
         self::assertSame([0 => 'modification', 1 => 'supression'], $actionPossible);
     }
+
+    public function testEnvoiMailSansConnecteurAssocieEchoue(): void
+    {
+        $id_d = $this->createDocument(self::MAILSEC_FLUX_ID, 2)['id_d'];
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
+        $donneesFormulaire->setTabData(['to' => 'foo@bar.com']);
+
+        $result = $this->triggerActionOnDocument($id_d, 'envoi', 2);
+
+        self::assertFalse($result);
+        $this->assertLastMessage(
+            "Aucun connecteur de type mailsec n'est associé au type de dossier mailsec"
+        );
+        $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
+        self::assertEmpty($documentEmail->getAllEmail($id_d));
+    }
 }

@@ -77,9 +77,7 @@ class ActesPreversementSEDACreate extends ActionExecutor
             $this->getDonneesFormulaire()->getFilePath('aractes', 0)
         );
 
-        $titleFieldName = $donneesFormulaireNewDoc->getFormulaire()->getTitreField();
-        $title = $donneesFormulaireNewDoc->get($titleFieldName);
-        $this->getDocument()->setTitre($documentId, $title);
+        $this->getDocument()->setTitre($new_id_d, $donneesFormulaire->getTitre());
 
         $donneesFormulaireNewDoc = $this->getDonneesFormulaireFactory()->get($documentId);
         if (!$donneesFormulaireNewDoc->isValidable()) {
