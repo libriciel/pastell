@@ -130,6 +130,35 @@ final class RecipientControllerTest extends WebTestCase
         self::assertStringContainsString('Veuillez saisir le mot de passe', $this->client->getResponse()->getContent());
     }
 
+    public function testPasswordPageDoesNotMarkMailAsRead(): void
+    {
+        $mailsecInfo = $this->mailsec->createMailSec(
+            MailSecTestHelper::FLUX_MAILSEC,
+            MailSecTestHelper::ACTION_MAILSEC_ENVOI_MAIL
+        );
+        $this->mailsec->getObjectInstancier()
+            ->getInstance(DonneesFormulaireFactory::class)
+            ->get($mailsecInfo['id_d'])
+            ->setTabData(['password' => 'secret', 'password2' => 'secret']);
+
+        $this->client->request('GET', '/mail/' . $mailsecInfo['key'] . '/password');
+        self::assertResponseIsSuccessful();
+
+        $this->client->request('POST', '/mail/' . $mailsecInfo['key'] . '/password', ['password' => 'wrong']);
+        self::assertResponseIsSuccessful();
+
+        $documentEmail = $this->mailsec->getObjectInstancier()->getInstance(DocumentEmail::class);
+        $info = $documentEmail->getInfoFromKey($mailsecInfo['key']);
+        self::assertSame(0, $info['lu']);
+
+        $this->client->request('POST', '/mail/' . $mailsecInfo['key'] . '/password', ['password' => 'secret']);
+        $this->client->followRedirect();
+        self::assertResponseIsSuccessful();
+
+        $info = $documentEmail->getInfoFromKey($mailsecInfo['key']);
+        self::assertSame(1, $info['lu']);
+    }
+
     public function testInvalid(): void
     {
         $this->client->request('GET', '/mail/invalid');

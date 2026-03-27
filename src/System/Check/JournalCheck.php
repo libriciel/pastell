@@ -14,7 +14,7 @@ class JournalCheck implements CheckInterface
 
     public function check(): array
     {
-        $firstLineDate = round(
+        $firstLineDate = floor(
             (time() - strtotime(
                 $this->journal->getFirstLineDate() ?: date('Y-m-d H:i:s')
             )) / 86400

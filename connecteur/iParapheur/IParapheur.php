@@ -825,21 +825,17 @@ class IParapheur extends SignatureConnecteur
 
     /**
      * Workaround because IParapheur::getSignature() does not return only the signature
-     *
-     * @param $file
-     * @return mixed
      */
-    public function getSignedFile($file)
+    public function getSignedFile($info_from_get_signature): Fichier
     {
-        return $file['signature'] ?: $file['document_signe']['document'];
+        $signedFile = new Fichier();
+        $signedFile->content = $info_from_get_signature['signature'] ?: $info_from_get_signature['document_signe']['document'];
+        $signedFile->filename = $info_from_get_signature['signature'] ? null : $info_from_get_signature['document_signe']['nom_document'];
+        return $signedFile;
     }
 
     /**
      * Workaround because it is embedded in IParapheur::getSignature()
-     *
-     * @param $signature
-     * @param string $documentId
-     * @return ?Fichier
      */
     public function getBordereauFromSignature($signature, string $documentId = ''): ?Fichier
     {
@@ -869,7 +865,6 @@ class IParapheur extends SignatureConnecteur
 
     /**
      * @param array $info_from_get_signature output of IParapheur::getSignature()
-     * @return bool
      */
     public function hasMultiDocumentSigne($info_from_get_signature): bool
     {
@@ -878,14 +873,19 @@ class IParapheur extends SignatureConnecteur
 
     /**
      * @param array $info_from_get_signature output of IParapheur::getSignature()
-     * @return array $all_document_signe
      * Au retour du i-parapheur les fichiers DocPrincipal et DocumentsSupplementaires peuvent être inversés
      */
     public function getAllDocumentSigne(array $info_from_get_signature): array
     {
-        $all_document_signe = $info_from_get_signature['multi_document_signe'];
-        $all_document_signe[] = $info_from_get_signature['document_signe'];
-        return $all_document_signe;
+        $files = [];
+        foreach ($info_from_get_signature['multi_document_signe'] as $fileInfo) {
+            $file = new Fichier();
+            $file->filename = $fileInfo['nom_document'];
+            $file->content = $fileInfo['document'];
+            $files[] = $file;
+        }
+        $files[] = $this->getSignedFile($info_from_get_signature);
+        return $files;
     }
 
     public function getRefusalMessage($dossierID): string

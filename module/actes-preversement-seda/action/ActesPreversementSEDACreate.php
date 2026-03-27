@@ -101,9 +101,7 @@ class ActesPreversementSEDACreate extends ActionExecutor
             $this->getDonneesFormulaire()->getFilePath('aractes', 0)
         );
 
-        $titre_fieldname = $donneesFormulaire->getFormulaire()->getTitreField();
-        $titre = $donneesFormulaire->get($titre_fieldname);
-        $this->getDocument()->setTitre($new_id_d, $titre);
+        $this->getDocument()->setTitre($new_id_d, $donneesFormulaire->getTitre());
 
         if (!$donneesFormulaire->isValidable()) {
             $message = "Le document $new_id_d créé n'est pas valide : " . $donneesFormulaire->getLastError();

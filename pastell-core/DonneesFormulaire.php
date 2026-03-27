@@ -245,10 +245,14 @@ class DonneesFormulaire
     /**
      * @return string contenu du champs déclaré comme titre dans le formulaire
      */
-    public function getTitre()
+    public function getTitre(): string
     {
         $titre_field = $this->getFormulaire()->getTitreField();
-        return $this->get($titre_field);
+        $titre = $this->get($titre_field, "");
+        if (is_array($titre)) {
+            $titre = $titre[0] ?? $this->id_d;
+        }
+        return $titre;
     }
 
     /*Fonctions utilisées pour le rendu/l'affichage des données*/

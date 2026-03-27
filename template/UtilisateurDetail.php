@@ -274,7 +274,7 @@ use Pastell\Utilities\Certificate;
                         <?php if ($utilisateur_edition) : ?>
                             <?php
                             $userNotificationUrl = \sprintf(
-                                'Utilisateur/notification?id_u=%s&id_e=%s&type=%s',
+                                'Utilisateur/notification?id_u=%s&id_e=%s&type=%s&source=detail',
                                 $infoNotification['id_u'],
                                 $infoNotification['id_e'],
                                 $infoNotification['type'],
@@ -284,8 +284,8 @@ use Pastell\Utilities\Certificate;
                                href='<?php echo $userNotificationUrl; ?>'
                             ><i class="fa fa-pencil"></i>&nbsp;Modifier</a>
 
-                            <a class='btn btn-danger'
-                               href='Utilisateur/notificationSuppression?id_n=<?php echo $infoNotification['id_n'] ?>'>
+                            <a class="btn btn-danger"
+                               href="Utilisateur/notificationSuppression?id_n=<?= $infoNotification['id_n'] ?>&source=detail">
                                 <i class="fa fa-trash"></i>&nbsp;Supprimer
                             </a>
                         <?php endif; ?>
@@ -297,6 +297,7 @@ use Pastell\Utilities\Certificate;
             <h3>Ajouter une notification</h3>
             <form action='Utilisateur/notificationAjout' method='post' class='input-group align-items-center'>
                 <?php $this->displayCSRFInput(); ?>
+                <input type='hidden' name='source' value='detail'/>
                 <input type='hidden' name='id_u' value='<?php echo $id_u ?>'/>
                 <select name='id_e' class='select2_entite form-select col-md-1'>
                     <option></option>

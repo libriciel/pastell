@@ -52,8 +52,7 @@ class PieceMarcheParEtapeCreationPiece
         $donneesFormulaire->addFileFromCopy('document', $file_name, $file_path);
 
         // Affectation du titre au document
-        $titre_fieldname = $donneesFormulaire->getFormulaire()->getTitreField();
-        $titre = $donneesFormulaire->get($titre_fieldname);
+        $titre = $donneesFormulaire->getTitre();
         $this->objectInstancier->getInstance(DocumentSQL::class)->setTitre($new_id_d, $titre);
 
         $actionCreator = new ActionCreatorSQL($this->objectInstancier->getInstance(SQLQuery::class), $this->objectInstancier->getInstance(Journal::class));

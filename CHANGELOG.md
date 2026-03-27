@@ -241,58 +241,58 @@
 ## Ajouts
 
 - Connecteurs :
-    - Connecteur de purge global : Possibilité de sélectionner une entité et ses entités filles #1704
-    - Connecteur LDAP : Permettre la configuration des attributs nom, prénom et email #1975
-    - Expression twig : Ajout de la fonction jsonpath_array pour récupérer des listes de données
-      (Connecteurs Transformation et Générateur SEDA) #1376
-    - Connecteur Transformation : Ajout d'un fichier de configuration #2021
-    - Connecteur iparapheur : Possibilité d'envoyer des PES PJ autonomes vers iparapheur (iparapheur >=v5) #644
-    - Connecteurs Générateurs SEDA :
-        - Ajout du connecteur Générateur SEDA Vitam (SEDA 2.2) #1984
-        - Possibilité d'ajouter des méta-données entité, utilisateur, document
-          (Voir "Liste des métadonnées communes à tous les types de dossier" au niveau du connecteur) #1397
-        - Permettre d'utiliser le champ Données JSON #2098
-    - Connecteur Fast Parapheur :
-        - Récupération via l'API Fast des circuits disponibles #1912
-        - Récupération du bordereau de signature #1925
-        - Récupération du message de refus lors du rejet #1391
-        - Connecteur Fast Tdt :
-            - Récupération de l'acte tamponné #1558
-            - Possibilité d'envoyer en mode préparation #1541
+  - Connecteur de purge global : Possibilité de sélectionner une entité et ses entités filles #1704
+  - Connecteur LDAP : Permettre la configuration des attributs nom, prénom et email #1975
+  - Expression twig : Ajout de la fonction jsonpath_array pour récupérer des listes de données
+    (Connecteurs Transformation et Générateur SEDA) #1376
+  - Connecteur Transformation : Ajout d'un fichier de configuration #2021
+  - Connecteur iparapheur : Possibilité d'envoyer des PES PJ autonomes vers iparapheur (iparapheur >=v5) #644
+  - Connecteurs Générateurs SEDA :
+    - Ajout du connecteur Générateur SEDA Vitam (SEDA 2.2) #1984
+    - Possibilité d'ajouter des méta-données entité, utilisateur, document
+      (Voir "Liste des métadonnées communes à tous les types de dossier" au niveau du connecteur) #1397
+    - Permettre d'utiliser le champ Données JSON #2098
+  - Connecteur Fast Parapheur :
+    - Récupération via l'API Fast des circuits disponibles #1912
+    - Récupération du bordereau de signature #1925
+    - Récupération du message de refus lors du rejet #1391
+    - Connecteur Fast Tdt :
+      - Récupération de l'acte tamponné #1558
+      - Possibilité d'envoyer en mode préparation #1541
 - Nouveaux Types de dossiers issus du studio (voir aussi Dépréciations au profit de ...) :
-    - Ajout de Dossier de séance (archivage) `ls-dossier-seance` #1946
-    - Ajout de Helios PES PJ `ls-helios-pj` pour envoyer des PES PJ autonomes vers iparapheur (iparapheur >=v5) #2034
-    - Ajout de Document `ls-document` (identique à `ls-document-pdf` sans restriction sur le type de fichier) #2018
+  - Ajout de Dossier de séance (archivage) `ls-dossier-seance` #1946
+  - Ajout de Helios PES PJ `ls-helios-pj` pour envoyer des PES PJ autonomes vers iparapheur (iparapheur >=v5) #2034
+  - Ajout de Document `ls-document` (identique à `ls-document-pdf` sans restriction sur le type de fichier) #2018
 - Types de dossier personnalisés (studio) :
-    - Ajout du contrôle d'expression régulière pour valider le format d'un champ textarea #1967
-    - Ajustement de la zone de sélection dans la gestion d'éléments #1281
-    - Nouvelle étape pour définir des `Transformation fixe` (de la forme 'id_element:expression_twig') #1979
-    - Possibilité d'afficher le contenu d'un type de dossier sur un seul onglet en consultation #1980
-    - Possibilité de définir des restrictions sur la disponibilité d'étapes studio (interne cf "restriction_pack") #2095
+  - Ajout du contrôle d'expression régulière pour valider le format d'un champ textarea #1967
+  - Ajustement de la zone de sélection dans la gestion d'éléments #1281
+  - Nouvelle étape pour définir des `Transformation fixe` (de la forme 'id_element:expression_twig') #1979
+  - Possibilité d'afficher le contenu d'un type de dossier sur un seul onglet en consultation #1980
+  - Possibilité de définir des restrictions sur la disponibilité d'étapes studio (interne cf "restriction_pack") #2095
 - Étape Signature des types de dossiers issus du studio :
-    - Ajout de l'option de co-signature #684
-    - Ajout des champs annotations publiques et privées pour l'envoi vers iparapheur #1883
-    - Ajout du champ 'Date de dernière signature' sur l'onglet Signature #2005
+  - Ajout de l'option de co-signature #684
+  - Ajout des champs annotations publiques et privées pour l'envoi vers iparapheur #1883
+  - Ajout du champ 'Date de dernière signature' sur l'onglet Signature #2005
 - Étape tdt_actes des types de dossiers issus du studio :
-    - Ajout du contrôle sur le total des fichiers Acte et Annexes < 157.29 MB #1602
-    - Possibilité de dupliquer un acte #499
+  - Ajout du contrôle sur le total des fichiers Acte et Annexes < 157.29 MB #1602
+  - Possibilité de dupliquer un acte #499
 - Étape tdt_helios des types de dossiers issus du studio :
-    - Ajout du contrôle sur la taille du fichier PES ALLER < 128 MB #1602
-    - Ajout de la possibilité de définir le champ "Objet PES ALLER" (prend la valeur NomFic du Fichier PES) #1969
-    - L'extraction des informations du PES ALLER se fait sur le onchange du Fichier PES ALLER,
-      (suppression des actions `helios-pre-extraction` et `helios-extraction` et dépréciation de la classe TdTExtractionHelios) #2084
-    - Ajout de l'extraction de la balise `MtBordHt` PesRecette ou `MtBordHT` PesDepense #2084
+  - Ajout du contrôle sur la taille du fichier PES ALLER < 128 MB #1602
+  - Ajout de la possibilité de définir le champ "Objet PES ALLER" (prend la valeur NomFic du Fichier PES) #1969
+  - L'extraction des informations du PES ALLER se fait sur le onchange du Fichier PES ALLER,
+    (suppression des actions `helios-pre-extraction` et `helios-extraction` et dépréciation de la classe TdTExtractionHelios) #2084
+  - Ajout de l'extraction de la balise `MtBordHt` PesRecette ou `MtBordHT` PesDepense #2084
 - Étape Mail sécurisé des types de dossiers issus du studio :
-    - Ajout d'un fichier pdf 'Accusé de notification' #1128
-    - Les champs indexés dans le flux de réponse sont affichés dans le récapitulatif du mail sécurisé
-      sans avoir besoin de visualiser la réponse (mail sécurisé avec réponse) #2073
+  - Ajout d'un fichier pdf 'Accusé de notification' #1128
+  - Les champs indexés dans le flux de réponse sont affichés dans le récapitulatif du mail sécurisé
+    sans avoir besoin de visualiser la réponse (mail sécurisé avec réponse) #2073
 - Autres :
-    - Possibilité de créer un utilisateur exclusivement API et de gérer ses tokens via l'administrateur de son entité #1943
-    - Possibilité d'envoyer des fichiers lourds en chunk par API
-      (`POST /entite/:id_e/document/:id_d/chunk/:field/:number`)#1350
-    - Ajout d'un captcha avant la lecture d'un mail sécurisé #942
-    - Ajout dans le journal du nom du document consulté par mail #2076
-    - Sur la page d'un connecteur, ajout du numéro d'entité des types de dossiers utilisant ce connecteur #2041
+  - Possibilité de créer un utilisateur exclusivement API et de gérer ses tokens via l'administrateur de son entité #1943
+  - Possibilité d'envoyer des fichiers lourds en chunk par API
+    (`POST /entite/:id_e/document/:id_d/chunk/:field/:number`)#1350
+  - Ajout d'un captcha avant la lecture d'un mail sécurisé #942
+  - Ajout dans le journal du nom du document consulté par mail #2076
+  - Sur la page d'un connecteur, ajout du numéro d'entité des types de dossiers utilisant ce connecteur #2041
 
 ## Évolutions
 
@@ -329,6 +329,21 @@
 - `pdf-generique` et `document-a-signer` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-document-pdf` #1870
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
+
+# [4.0.30] -
+
+## Corrections
+
+- Il manquait des contrôles pour l'évolution en 4.0.6 "Seul l'utilisateur peut gérer ses notifications, l'administrateur n'a plus les droits #1886" #2402
+- Les boutons `exporter` et `Traitement par lot` n'apparaissent pas sur la première page de la liste des documents #1425
+- En signature PAdES via iParapheur, le fichier signé est désormais enregistré avec le nom et l'extension retournés #2134
+- Un mail sécurisé protégé par mot de passe n'est plus marqué comme 'lu' tant que le mot de passe n'a pas été saisi #2410
+- Un mail sécurisé n'était pas envoyé lorsque le champ configuré comme titre dans le studio était de type fichier #1880
+- Il n'est plus possible de créer une association de connecteur sans préciser le type de dossier #2417
+- Le bouton `Retamponner l'acte et les annexes` n'est plus présent après une annulation tdt actes #2264
+- Correction de l'arrondi de `Age du premier enregistrement de la table journal` du test du système #2231
+- Suppression d'un warning lors d'un dépôt `depot-pastell` si les fichiers annexes ne sont pas présents #2411
+- L'envoi d'un mail sécurisé sans connecteur associé échoue désormais avant d'alimenter la liste des envois #1721
 
 # [4.0.29] - 2026-03-02
 
@@ -519,9 +534,9 @@
 
 - Permettre de récupérer les aractes sur fast même si le numéro d'acte contient un tiret #2061
 - Permettre de définir la variable de vérification du rate limiter (par défaut, il s'agit de l'IP) #2065
-    - En cas d'utilisation d'un header de la requête, préfixer par `HTTP_`, remplacer les `-` par des `_` et tout mettre
-      en majuscule.
-    - Exemple : Header `X-Forwarded-For` => `HTTP_X_FORWARDED_FOR`
+  - En cas d'utilisation d'un header de la requête, préfixer par `HTTP_`, remplacer les `-` par des `_` et tout mettre
+    en majuscule.
+  - Exemple : Header `X-Forwarded-For` => `HTTP_X_FORWARDED_FOR`
 - Mise à jour du service seda-generator en version 1.0.4
   (Permettre d'utiliser "SystemId" pour les rattachements des AU sur vitam)
 
@@ -879,13 +894,13 @@
 - Suppression du modèle `Entite`, remplacé par `EntiteSQL`
   (suppression du type d'entité "service" et des classes dépréciées AccuserReception, Envoyer)
 - Suppression des fonctions :
-    - SAEConnecteur::getAcuseReception
-    - SAEConnecteur::getReply
-    - SAEConnecteur::getLastErrorCode
-    - SAEConnecteur::generateArchive
-    - SAEConnecteur::getTransferId
-    - SAEConnecteur::getURL
-    - SAEConnecteur::getErrorString
+  - SAEConnecteur::getAcuseReception
+  - SAEConnecteur::getReply
+  - SAEConnecteur::getLastErrorCode
+  - SAEConnecteur::generateArchive
+  - SAEConnecteur::getTransferId
+  - SAEConnecteur::getURL
+  - SAEConnecteur::getErrorString
 - Suppression de TdtConnecteur::postHelios(), remplacé par TdtConnecteur::sendHelios()
 - Suppression de la méthode magique `Controler::__get`
 - Suppression de TdtConnecteur::postActes(), remplacé par TdtConnecteur::sendActes()
@@ -904,11 +919,11 @@
 - Suppression du certificat utilisateur sur le connecteur i-Parapheur ; Suppression du connecteur global i-Parapheur #1476
 - Suppression de AIDE_URL remplacé par le connecteur help-url
 - Suppression de Visionneuse.php, les visionneuses doivent désormais implémenter l'interface Viewer
-    - XMLVisionneuse devient Pastell\Viewer\XmlViewer
-    - TypologieActesVisionneuse devient Pastell\Viewer\TypologyActesViewer
-    - RawVisionneuse devient Pastell\Viewer\RawViewer
-    - ReponsePrefectureLinkVisionneuse devient Pastell\Viewer\ReponsePrefectureLinkViewer
-    - GedIdDocumentsVisionneuse devient Pastell\Viewer\GedIdDocumentsViewer
+  - XMLVisionneuse devient Pastell\Viewer\XmlViewer
+  - TypologieActesVisionneuse devient Pastell\Viewer\TypologyActesViewer
+  - RawVisionneuse devient Pastell\Viewer\RawViewer
+  - ReponsePrefectureLinkVisionneuse devient Pastell\Viewer\ReponsePrefectureLinkViewer
+  - GedIdDocumentsVisionneuse devient Pastell\Viewer\GedIdDocumentsViewer
 - Suppression de la fonction SEDAConnecteur::getInfoARActes()
 - Suppression du script script/plateform-update/database-update.php, remplacé par un script console app:database:update
 - Suppression du script installation/filedbupdate.php, remplacé par un script console dev:database:update-definition
@@ -1219,8 +1234,8 @@
 - Le breadcrumb pouvait faire planter le navigateur s'il y avait trop d'entités #1321
 - Correction d'un appel déprécié dans FluxDataSedaHelios #1308
 - Connecteur de transformation #1318:
-    - N'exécuter que les onchange des champs modifiés
-    - Passage en état `transformation-error` si le dossier est invalidé par la transformation
+  - N'exécuter que les onchange des champs modifiés
+  - Passage en état `transformation-error` si le dossier est invalidé par la transformation
 - Fast TdT : Permettre la récupération d'un acquittement PES lorsque le dernier état est "Classé" ou "Archivé" #1325
 - Fast Parapheur : Permettre la récupération de la signature lorsque le dernier état est "Signé" ou "Archivé" #1325
 - Fast parapheur : L'état "Visa désapprouvé" n'était pas considéré comme un état rejeté #1327
@@ -1231,8 +1246,8 @@
 - Connecteur generateur-seda: ajout du choix "Ne pas inclure le MimeType lors de la création du bordereau" pour les fichiers (nécessite générateur SEDA v>0.5.0) #1305
 - Le test de connexion du connecteur generateur-seda retourne la version (nécessite générateur SEDA v>0.4.0) #1311
 - Connecteur de bouchon signature :
-    - Ajout d'un type "Custom" pour lequel la liste des sous types est personnalisable
-    - Si une signature ou un bordereau est déposé par API avant l'exécution de l'action, les fichiers ne seront pas écrasés
+  - Ajout d'un type "Custom" pour lequel la liste des sous types est personnalisable
+  - Si une signature ou un bordereau est déposé par API avant l'exécution de l'action, les fichiers ne seront pas écrasés
 
 # [3.1.3] - 2021-06-07
 
@@ -1245,8 +1260,8 @@
 ## Corrections
 
 - Mail sécurisé #1260:
-    - Lors de l'envoi, mailsec_from prend la valeur de PLATEFORME_MAIL en mode saas/mutualisé (MODE_MUTUALISE à true dans le settings, visible dans le test du système)
-    - ajout de mailsec_reply_to (lors de l'envoi, prend la valeur de l'emetteur si non renseigné)
+  - Lors de l'envoi, mailsec_from prend la valeur de PLATEFORME_MAIL en mode saas/mutualisé (MODE_MUTUALISE à true dans le settings, visible dans le test du système)
+  - ajout de mailsec_reply_to (lors de l'envoi, prend la valeur de l'emetteur si non renseigné)
 - Vérification que les PES Acquit sont bien formés sur le connecteur s2low #1248
 - Le script de mise à jour de la base de données échoue si le fichier de définition de la base n'existe pas #690
 - Lors du test d'envoi de mail dans le test du système, la redirection était sur une mauvaise page #1289
@@ -1264,7 +1279,7 @@
 - Les mails n'étaient pas toujours reçus si le nom du destinataire était accentué #1274
 - La récupération de la signature d'un document venant du connecteur Fast Parapheur entraînait une erreur #1275
 - Les connecteurs dépréciés parametrage-flux-doc et parametrage-flux-pdf-generique sont supprimés du coeur Pastell #1023
-    - (Si ces connecteurs étaient associés à des types de dossier et qu'ils apparaissent comme manquants, les commandes `/installation/force-delete-connecteur.php parametrage-flux-doc` et `/installation/force-delete-connecteur.php parametrage-flux-pdf-generique` permettent de les supprimer)
+  - (Si ces connecteurs étaient associés à des types de dossier et qu'ils apparaissent comme manquants, les commandes `/installation/force-delete-connecteur.php parametrage-flux-doc` et `/installation/force-delete-connecteur.php parametrage-flux-pdf-generique` permettent de les supprimer)
 - Afficher la visionneuse avec le droit de lecture #1261
 - Sur le générateur SEDA, il n'était pas possible de mettre des virgules sur les mots-clés (rendant entre autre impossible l'utilisation de XPath sur les mots-clés) #1267
 - Modification de la taille des champs sur les formulaires de document et de connecteur, ainsi que sur les spécificités des connecteurs de transformation et génération SEDA #1230
@@ -1279,7 +1294,7 @@
 - Ajout d'un bouton dans le test du système permettant de vider le cache Redis #1257
 - Ajout des informations facultatives lors de l'utilisation du circuit à la volée pour signature avec le connecteur fast-parapheur #1259
 - Connecteur i-Parapheur: Ajout du choix "Appliquer le multi-document". Si le sous-type i-Parapheur le permet (Signature multi-document, 6 par défaut), alors les autres documents envoyés seront des multi-documents signés #1032
-    - Implémenté pour les types de dossier studio, document-a-signer, pdf-generique, facture-cpp, piece-marche
+  - Implémenté pour les types de dossier studio, document-a-signer, pdf-generique, facture-cpp, piece-marche
 
 ## Corrections
 
@@ -1697,10 +1712,10 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 ## Evolution
 
 - Implémentation de la nouvelle notice Actes 2.2 #657 :
-    - La liste des type ne dépend plus que de la nature
-    - On supprime le code 99_AU
-    - La liste est ordonnée suivant l'ordre alphabétique du libellé
-    - On mets en tête les code 99_XX
+  - La liste des type ne dépend plus que de la nature
+  - On supprime le code 99_AU
+  - La liste est ordonnée suivant l'ordre alphabétique du libellé
+  - On mets en tête les code 99_XX
 
 
 ## Ajout
@@ -1726,7 +1741,7 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 - Les documents helios n'étaient pas supprimables en état `info-tdt` #636
 - Le filtre sur le rôle lors de la recherche d'utilisateur n'était pas conservé lors d'un changement de page #638
 - Il n'y a plus besoin de s'abonner aux notifications Mail sécurisé pour les flux utilisant ce connecteur #642
-    - **Les utilisateurs abonnés aux notifications "reception" et "reception-partielle"  de flux hors mailsec (pdf-generique, flux spécifique...) doivent changer leurs notifications pour sélectionner le bon flux.**
+  - **Les utilisateurs abonnés aux notifications "reception" et "reception-partielle"  de flux hors mailsec (pdf-generique, flux spécifique...) doivent changer leurs notifications pour sélectionner le bon flux.**
 - flux actes: permettre la modification de la typologie des pièces après la récupération i-parapheur #634
 - Rester sur la page d'information après la création d'une entité #643
 - Le script de migration a pu "oublier" d'encoder des tables en UTF-8,
@@ -1905,7 +1920,7 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 ## Evolutions
 
 - Connecteur i-Parapheur
-    - Fonction du connecteur parapheur permettant de récupérer les annexes ajoutés sur le parapheur après l'envoi
+  - Fonction du connecteur parapheur permettant de récupérer les annexes ajoutés sur le parapheur après l'envoi
 
 - Récupération des annexes de sortie du connecteur de signature pour les flux du coeur utilisant le parapheur
 
@@ -1914,15 +1929,15 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 ## Corrections
 
 - Interface:
-    - Correction du bug rendant impossible le changement de fréquence des notifications
+  - Correction du bug rendant impossible le changement de fréquence des notifications
 - Librairie:
-    - classe SSH2: suppression du test file_exists qui renvoi toujours false (depuis php7) pour la suppression du fichier glané #396
+  - classe SSH2: suppression du test file_exists qui renvoi toujours false (depuis php7) pour la suppression du fichier glané #396
 - Démarrage:
-    - le démon redémarre correctement après un redémarrage de MySQL
+  - le démon redémarre correctement après un redémarrage de MySQL
 - Connecteur as@lae:
-    - correction d'un bug empechant la récupération d'un identifiant de transfert contenant des espaces
+  - correction d'un bug empechant la récupération d'un identifiant de transfert contenant des espaces
 - API:
-    - Correction de l'inversion des APIs `modif-connecteur-entite` et `edit-connecteur-entite` #402
+  - Correction de l'inversion des APIs `modif-connecteur-entite` et `edit-connecteur-entite` #402
 
 
 # [2.0.5] - 2018-04-30
@@ -1930,97 +1945,97 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 ## Corrections
 
 - Interface:
-    - le lien suivant sur la liste des utilisateurs renvoyait sur le détail de l'entité
-    - un bug rendait impossible la modification d'une entité de base d'un utilisateur #328
-    - un bug permettait de supprimer une entité référencé comme entité de base d'un utilisateur #329
-    - le champ dernier état de la recherche avancée n'affiche que les états liés au type du document sélectionné #187
-    - suppression du bouton *modifier* sur les connecteurs ci ceux-ci ne contiennent pas de formulaires #371
-    - suppression du message d'erreur et ajout de la redirection vers la page demandée lors de l'authentification CAS #363
-    - adullact-projet -> libriciel dans le commentaire du connecteur Libersign #349
+  - le lien suivant sur la liste des utilisateurs renvoyait sur le détail de l'entité
+  - un bug rendait impossible la modification d'une entité de base d'un utilisateur #328
+  - un bug permettait de supprimer une entité référencé comme entité de base d'un utilisateur #329
+  - le champ dernier état de la recherche avancée n'affiche que les états liés au type du document sélectionné #187
+  - suppression du bouton *modifier* sur les connecteurs ci ceux-ci ne contiennent pas de formulaires #371
+  - suppression du message d'erreur et ajout de la redirection vers la page demandée lors de l'authentification CAS #363
+  - adullact-projet -> libriciel dans le commentaire du connecteur Libersign #349
 - Installation:
-    - correction du fichier de configuration Apache de l'installation pour Libersign #311
-    - le script installation/bulk-action-auto.php nettoie maintenant les action déjà en cours #326
-    - Fix de l'installatin sous CentOS : la configuration de cloudoo prend en compte l'utilisateur apache défini dans DAEMON_USER #370
+  - correction du fichier de configuration Apache de l'installation pour Libersign #311
+  - le script installation/bulk-action-auto.php nettoie maintenant les action déjà en cours #326
+  - Fix de l'installatin sous CentOS : la configuration de cloudoo prend en compte l'utilisateur apache défini dans DAEMON_USER #370
 - Compatibilité API V1:
-    - le tableau JSON est systématiquement encodé en string #338
-    - décoder les données issues de l'API avant d'appliquer les filtres de contrôle #362
-    - vérification systématique du droit d'édition pour les actions (ce faisait via l'API ou via des rules explicite) #347
-    - les entrées de receive-file.php était incorrecte (field => field_name et num=>file_number)
-    - la recherche de documents par type ne renvoyait plus d'erreur lorsque l'utilisateur n'avait pas les droits de lecture #394
+  - le tableau JSON est systématiquement encodé en string #338
+  - décoder les données issues de l'API avant d'appliquer les filtres de contrôle #362
+  - vérification systématique du droit d'édition pour les actions (ce faisait via l'API ou via des rules explicite) #347
+  - les entrées de receive-file.php était incorrecte (field => field_name et num=>file_number)
+  - la recherche de documents par type ne renvoyait plus d'erreur lorsque l'utilisateur n'avait pas les droits de lecture #394
 - Démon Pastell:
-    - bug sur la fréquence des connecteurs sur ie11 #342
-    - supression des jobs sur les documents si on en réinscrit un nouveau #305
-    - la surveillance du démon prend en compte les jobs uniquement si ceux-ci sont en retard et qu'ils ont tourné au moins une fois
-    - poser d'un verrou avant la lecture ou l'écriture d'un fichier YML, cela pouvait entrainer des disparitions de données en cas de forte charge #330
+  - bug sur la fréquence des connecteurs sur ie11 #342
+  - supression des jobs sur les documents si on en réinscrit un nouveau #305
+  - la surveillance du démon prend en compte les jobs uniquement si ceux-ci sont en retard et qu'ils ont tourné au moins une fois
+  - poser d'un verrou avant la lecture ou l'écriture d'un fichier YML, cela pouvait entrainer des disparitions de données en cas de forte charge #330
 - Connecteur LDAP: ~Connecteur
-    - suppression de l'encode en ISO-8859 lors de la synchronisation LDAP
-    - modification de la description de l'attribut pour le connecteur LDAP (sensibilité des attributs à la casse) #374
+  - suppression de l'encode en ISO-8859 lors de la synchronisation LDAP
+  - modification de la description de l'attribut pour le connecteur LDAP (sensibilité des attributs à la casse) #374
 - Connecteurs de dépôt: ~Connecteur
-    - correction du test d'éxistence de répértoire ou fichier
-    - retrait des 'Expérimental' pour les développements en cours #345
+  - correction du test d'éxistence de répértoire ou fichier
+  - retrait des 'Expérimental' pour les développements en cours #345
 - Connecteur glaneur-local : #346  ~Connecteur
-    - désactivation du traitement du glaneur en cas d'erreur lors de la suppression ou du déplacement du fichier récupéré
-    - lister le contenu des répértoires
-    - permettre le test via un fichier exemple
-    - les propriété multiple n'étaient pas prise en compte
+  - désactivation du traitement du glaneur en cas d'erreur lors de la suppression ou du déplacement du fichier récupéré
+  - lister le contenu des répértoires
+  - permettre le test via un fichier exemple
+  - les propriété multiple n'étaient pas prise en compte
 - Connecteur SEDA NG:  ~Connecteur
-    - correction des balises repeat ajoutées à la fin des enfants du noeud parent plutot qu'immédiatement après le noeud en question
-    - possibilité de mixer les annotations repeat avec les autres annotations au sein du même commentaire #340
-    - correction d'un bug si on essaye de mettre des caractère de contrôle XML dans un noeud texte (&) #236
-    - correction d'un problème de comptage du nombre de propriété dans le connecteur SEDA-NG #304
-    - correction autorisant les fichiers commençant par `-` lors du versement au SAE #381
-    - la commande pastell:now du connecteur SEDA-NG prend en compte un paramètre de formatage de date. Le format est celui de la [fonction PHP date](http://php.net/manual/fr/function.date.php). #379
-    - possibilité de traiter le cas des repeat dans les repeat.
-    - possibilité de traiter les sous-repertoire pour la génération d'archive
+  - correction des balises repeat ajoutées à la fin des enfants du noeud parent plutot qu'immédiatement après le noeud en question
+  - possibilité de mixer les annotations repeat avec les autres annotations au sein du même commentaire #340
+  - correction d'un bug si on essaye de mettre des caractère de contrôle XML dans un noeud texte (&) #236
+  - correction d'un problème de comptage du nombre de propriété dans le connecteur SEDA-NG #304
+  - correction autorisant les fichiers commençant par `-` lors du versement au SAE #381
+  - la commande pastell:now du connecteur SEDA-NG prend en compte un paramètre de formatage de date. Le format est celui de la [fonction PHP date](http://php.net/manual/fr/function.date.php). #379
+  - possibilité de traiter le cas des repeat dans les repeat.
+  - possibilité de traiter les sous-repertoire pour la génération d'archive
 - Génération du bordereau SEDA PES:
-    - date du PES AQUIT/NACK, si inexistante (flux antérieurs à 2014) date du PES_Aller #343
-    - correction d'un warning lors de la génération d'un bordereau SEDA PES ne contenant pas de PJ.
-    - si le LibelleCodBud n'est pas disponible, on mets le CodCol à la place
+  - date du PES AQUIT/NACK, si inexistante (flux antérieurs à 2014) date du PES_Aller #343
+  - correction d'un warning lors de la génération d'un bordereau SEDA PES ne contenant pas de PJ.
+  - si le LibelleCodBud n'est pas disponible, on mets le CodCol à la place
 - Flux Hélios: ~Flux
-    - l'objet du PES ne disparaît plus s'il est déjà mis #373
-    - correction de l'ordre des champs de recherche avancée pour les modules helios #372
-    - récupération de l'erreur Helios en cas d'erreur sur le TdT #375
-    - helios-automatique: il manquait l'action prepare-iparapheur #395
+  - l'objet du PES ne disparaît plus s'il est déjà mis #373
+  - correction de l'ordre des champs de recherche avancée pour les modules helios #372
+  - récupération de l'erreur Helios en cas d'erreur sur le TdT #375
+  - helios-automatique: il manquait l'action prepare-iparapheur #395
 - Flux Actes: ~Flux
-    - correction du bouton "Transmettre au TdT" présent alors que le doc a été envoyé #306
-    - Actes : Si le certificat de dépot est sans login/mot de passe alors il y a une limitation sur le certificat de télétransmission qui doit aussi être sans login/passe #385
-    - Actes-preversement-seda : passage en majuscule du numéro interne pour les versement vers actes-automatiques
+  - correction du bouton "Transmettre au TdT" présent alors que le doc a été envoyé #306
+  - Actes : Si le certificat de dépot est sans login/mot de passe alors il y a une limitation sur le certificat de télétransmission qui doit aussi être sans login/passe #385
+  - Actes-preversement-seda : passage en majuscule du numéro interne pour les versement vers actes-automatiques
 - Flux Commande: #276 ~Flux
-    - possibilité de choisir l'envoi en GED alors que le document a commencé le cheminement
-    - le bouton d'envoi au i-parapheur était de nouveau visible en cas de modification
-    - si le libéllé de la commande contenait des caractères de controles, on ne pouvait pas envoyer le document au parapheur
+  - possibilité de choisir l'envoi en GED alors que le document a commencé le cheminement
+  - le bouton d'envoi au i-parapheur était de nouveau visible en cas de modification
+  - si le libéllé de la commande contenait des caractères de controles, on ne pouvait pas envoyer le document au parapheur
 
 ## Évolutions
 
 - Interface:
-    - les entités mères et filles ne sont plus au même niveau dans "Navigation dans les collectivités" #368
-    - prise en compte du filtre lors du traitement par lot lorsqu'il est défini #369
-    - mails sécurisés : amélioration de l'affichage demande des mots de passe #358
+  - les entités mères et filles ne sont plus au même niveau dans "Navigation dans les collectivités" #368
+  - prise en compte du filtre lors du traitement par lot lorsqu'il est défini #369
+  - mails sécurisés : amélioration de l'affichage demande des mots de passe #358
 - Connecteur as@lae:  ~Connecteur
-    - possibilité d'envoyer les archives sur le connecteur as@lae par morceaux (pour dépasser la limite des 2Go des versions 1.6) #339
+  - possibilité d'envoyer les archives sur le connecteur as@lae par morceaux (pour dépasser la limite des 2Go des versions 1.6) #339
 - Flux Hélios: ~Flux
-    - ajout de la possibilité de supprimer le document Pastell une fois archivé sur le SAE pour les flux helios-generique et helios-automatique
+  - ajout de la possibilité de supprimer le document Pastell une fois archivé sur le SAE pour les flux helios-generique et helios-automatique
 - Flux PDF générique: ~Flux
-    - le champs is_recupere (mail récupéré) est maintenant mis à jour après l'état "Reçu" (égale à 1). Il est donc renseigné avec les métadonnées envoyées en GED2 #341
-    - les annexes sont maintenant transmises au i-Parapheur #360
-    - changement du libellé du lien "Liste des sous-types" sur pdf-generique et doc-a-faire-signer #357
-    - redirection sur le flux PDF Générique vers un onglet lorsqu'on clique sur enregistrer #359
+  - le champs is_recupere (mail récupéré) est maintenant mis à jour après l'état "Reçu" (égale à 1). Il est donc renseigné avec les métadonnées envoyées en GED2 #341
+  - les annexes sont maintenant transmises au i-Parapheur #360
+  - changement du libellé du lien "Liste des sous-types" sur pdf-generique et doc-a-faire-signer #357
+  - redirection sur le flux PDF Générique vers un onglet lorsqu'on clique sur enregistrer #359
 
 ## Ajouts
 
 - Interface:
-    - le CHANGELOG est disponible pour l'administrateur #336
+  - le CHANGELOG est disponible pour l'administrateur #336
 - Installation:
-    - script add-action-connecteur.php pour déclencher l'action d'un type de connecteur
-    - contrôle sur la page système pour vérifier que Curl est compilé avec OpenSSL et pas NSS #322
-    - contrôle sur la page système pour vérifier que l'encodage pour accéder à la base de données est bien UTF-8 #293
+  - script add-action-connecteur.php pour déclencher l'action d'un type de connecteur
+  - contrôle sur la page système pour vérifier que Curl est compilé avec OpenSSL et pas NSS #322
+  - contrôle sur la page système pour vérifier que l'encodage pour accéder à la base de données est bien UTF-8 #293
 - API V2:
-    - fonction de l'API PATCH /entite/:id_e/document/:id_d/externalData/:field oublié jusqu'ici
+  - fonction de l'API PATCH /entite/:id_e/document/:id_d/externalData/:field oublié jusqu'ici
 - Flux Actes: ~Flux
-    - ajout des actes V2 (envoi papier + typologie des pièces)
+  - ajout des actes V2 (envoi papier + typologie des pièces)
 - Divers:
-    - nouvelle action DefautNotify permettant de passer par l'état et notifier
-    - fonction CurlWrapper:getLastOutput() pour récupérer la derniere sortie de curl
+  - nouvelle action DefautNotify permettant de passer par l'état et notifier
+  - fonction CurlWrapper:getLastOutput() pour récupérer la derniere sortie de curl
 
 
 # [2.0.4] - 2018-02-08
@@ -2034,8 +2049,8 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 - Bug sur les fichiers envoyés en GED qui étaient considérés comme des fichiers de type "texte"
 - Bug sur les métadonnées incorrectes (en XML) lors de l'envoi en GED avec le connecteur depot-cmis
 - Correctif sur la compatibilité du retour des fonctions de l'API V1 :
-    - action-connecteur-entite.php "1" à la place de true
-    - les réponses ne sont plus en mode pretty-print (pour les appels V1)
+  - action-connecteur-entite.php "1" à la place de true
+  - les réponses ne sont plus en mode pretty-print (pour les appels V1)
 
 
 ## Évolutions
@@ -2057,9 +2072,9 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 ## Corrections
 
 - Correctif majeur sur la compatibilité du retour des fonctions de l'API V1 :
-    - action.php:result "1" à la place de true
-    - modif-document.php:formulaire_ok "1" à la place de 1
-    - renvoi d'une erreur 400 à la place d'une erreur 200
+  - action.php:result "1" à la place de true
+  - modif-document.php:formulaire_ok "1" à la place de 1
+  - renvoi d'une erreur 400 à la place d'une erreur 200
 - modification menu gauche sur "nouveau utilisateur" #247
 - Correction fichier avec des caractères accentué (compatibilité V1)
 - Typo fonctionnement libersign actes et helios

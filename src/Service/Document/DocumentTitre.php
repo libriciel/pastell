@@ -19,11 +19,6 @@ class DocumentTitre
     public function update(string $id_d): void
     {
         $donnesFormulaire = $this->donneesFormulaireFactory->get($id_d);
-        $titre_field = $donnesFormulaire->getFormulaire()->getTitreField();
-        $titre = $donnesFormulaire->get($titre_field);
-        if (is_array($titre)) {
-            $titre = $titre[0] ?? $id_d;
-        }
-        $this->documentSQL->setTitre($id_d, $titre);
+        $this->documentSQL->setTitre($id_d, $donnesFormulaire->getTitre());
     }
 }

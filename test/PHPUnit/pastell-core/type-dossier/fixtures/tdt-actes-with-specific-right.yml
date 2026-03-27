@@ -370,6 +370,8 @@ action:
         rule:
             has-action:
                 - acquiter-tdt
+            no-action:
+                - annulation-tdt
         action-class: StandardAction
         connecteur-type: TdT
         connecteur-type-action: TdTRestamp
