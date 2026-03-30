@@ -1,5 +1,11 @@
 <?php
 
+use GuzzleHttp\Psr7\Response as HttpResponse;
+use Pastell\Client\IparapheurV5\ApiClientFactory;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 class SignatureRecupTest extends PastellTestCase
 {
     use SoapUtilitiesTestTrait;
@@ -285,6 +291,122 @@ class SignatureRecupTest extends PastellTestCase
         $connecteurDonneesFormulaire->setTabData([
             'iparapheur_wsdl' => 'https://foo',
             'iparapheur_multi_doc' => true
+        ]);
+        $this->associateFluxWithConnector($connecteur_info['id_ce'], 'document-a-signer', 'signature');
+
+        $document_info = $this->createDocument('document-a-signer');
+
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document_info['id_d']);
+        $donneesFormulaire->setTabData([
+            'iparapheur_type' => 'FOO',
+            'iparapheur_sous_type' => 'BAR',
+            'libelle' => 'LIBELLE',
+        ]);
+        $donneesFormulaire->addFileFromData('document', 'document.odt', 'odt document content');
+        $donneesFormulaire->addFileFromData('autre_document_attache', 'annexe-1.odt', 'annexe 1 odt content', 0);
+        $donneesFormulaire->addFileFromData('autre_document_attache', 'annexe-2.odt', 'annexe 2 odt content', 1);
+        $donneesFormulaire->addFileFromData('autre_document_attache', 'annexe-3.odt', 'annexe 3 odt content', 2);
+
+        $this->triggerActionOnDocument($document_info['id_d'], 'send-iparapheur');
+        $this->assertLastMessage('Le document a été envoyé au parapheur électronique');
+
+        $this->triggerActionOnDocument($document_info['id_d'], 'verif-iparapheur');
+        $this->assertLastMessage('La signature a été récupérée');
+
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document_info['id_d']);
+
+        $this->assertSame(
+            'document.pdf',
+            $donneesFormulaire->getFileName('document')
+        );
+        $this->assertSame(
+            'document_orig.odt',
+            $donneesFormulaire->getFileName('document_orignal')
+        );
+
+        $annexe_names = [];
+        foreach ($donneesFormulaire->get('autre_document_attache') as $num => $fileName) {
+            $annexe_names[] = $fileName;
+        }
+        $this->assertContains('annexe-1.pdf', $annexe_names);
+        $this->assertContains('annexe-2.pdf', $annexe_names);
+        $this->assertContains('annexe-3.pdf', $annexe_names);
+
+        $multi_document_original_names = [];
+        foreach ($donneesFormulaire->get('multi_document_original') as $num => $fileName) {
+            $multi_document_original_names[] = $fileName;
+        }
+        $this->assertContains('annexe-1_orig.odt', $multi_document_original_names);
+        $this->assertContains('annexe-2_orig.odt', $multi_document_original_names);
+        $this->assertContains('annexe-3_orig.odt', $multi_document_original_names);
+    }
+
+    private function setupRestMockForOdtMultiDoc(): void
+    {
+        $tenantId = 'tenant-test';
+        $deskId = 'desk-test';
+        $folderId = 'ODT-MULTI-DOC-FOLDER-ID';
+
+        $createFolderJson = json_encode(['id' => $folderId, 'name' => 'LIBELLE'], JSON_THROW_ON_ERROR);
+        $premisXml = file_get_contents(__DIR__ . '/fixtures/odt_multi_doc_folder.xml');
+        $fixturesDir = __DIR__ . '/../../../../tests/Connector/IparapheurRest/fixtures/';
+
+        $routes = [
+            'POST /auth/realms/api/protocol/openid-connect/token' => new HttpResponse(200, ['Content-type' => 'application/json'], file_get_contents($fixturesDir . 'authenticate_ok.json')),
+            "POST /api/standard/v1/tenant/$tenantId/desk/$deskId/folder" => new HttpResponse(201, ['Content-type' => 'application/json'], $createFolderJson),
+            "GET /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId/premis" => new HttpResponse(200, ['Content-type' => 'application/xml; charset=UTF-8'], $premisXml),
+            "PUT /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId/task/odt-start-task-id/start" => new HttpResponse(200, ['Content-type' => 'application/json'], ''),
+            "GET /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId/zip" => new HttpResponse(200, ['Content-type' => 'application/octet-stream'], $this->buildOdtMultiDocZip()),
+            "DELETE /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId" => new HttpResponse(204, ['Content-type' => 'application/json'], ''),
+        ];
+
+        $client = $this->getMockBuilder(ClientInterface::class)->getMock();
+        $client->method('sendRequest')
+            ->willReturnCallback(function (RequestInterface $request) use ($routes): ResponseInterface {
+                $key = $request->getMethod() . ' ' . $request->getUri()->getPath();
+                if (!array_key_exists($key, $routes)) {
+                    throw new UnrecoverableException('Unknown path : ' . $key);
+                }
+                return $routes[$key];
+            });
+
+        $clientFactory = $this->getObjectInstancier()->getInstance(ApiClientFactory::class);
+        $clientFactory->setClientInterface($client);
+    }
+
+    private function buildOdtMultiDocZip(): string
+    {
+        $zip = new ZipArchive();
+        $path = tempnam(sys_get_temp_dir(), 'odt-multi-doc-zip-');
+        $zip->open($path, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        $zip->addFromString('document.pdf', 'pdf signed content');
+        $zip->addFromString('annexe-1.pdf', 'annexe 1 pdf content');
+        $zip->addFromString('annexe-2.pdf', 'annexe 2 pdf content');
+        $zip->addFromString('annexe-3.pdf', 'annexe 3 pdf content');
+        $zip->close();
+        $content = file_get_contents($path);
+        unlink($path);
+        return $content;
+    }
+
+    /**
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    public function testPadesSignatureWithOdtFilesConvertsToMultiDocumentPdfWithRestConnector(): void
+    {
+        $this->setupRestMockForOdtMultiDoc();
+
+        $connecteur_info = $this->createConnector('iparapheur-rest', 'i-Parapheur REST');
+        $connecteurDonneesFormulaire = $this->getDonneesFormulaireFactory()
+            ->getConnecteurEntiteFormulaire($connecteur_info['id_ce']);
+        $connecteurDonneesFormulaire->setTabData([
+            'url' => 'https://url',
+            'username' => 'user',
+            'password' => 'pass',
+            'tenant_id' => 'tenant-test',
+            'desk_id' => 'desk-test',
+            'iparapheur_multi_doc' => 'on',
         ]);
         $this->associateFluxWithConnector($connecteur_info['id_ce'], 'document-a-signer', 'signature');
 
