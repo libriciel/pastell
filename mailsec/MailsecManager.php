@@ -173,6 +173,24 @@ final class MailsecManager
     }
 
     /**
+     * @throws InvalidKeyException
+     * @throws NotFoundException
+     */
+    public function verifyPassword(string $key, string $password): bool
+    {
+        $info = $this->objectInstancier->getInstance(DocumentEmail::class)->getInfoFromKey($key);
+        if (!$info) {
+            throw new InvalidKeyException('Unable to find key');
+        }
+        $typeDocument = $this->objectInstancier->getInstance(DocumentSQL::class)->getInfo($info['id_d'])['type'];
+        $donneesFormulaire = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)->get(
+            $info['id_d'],
+            $this->getRecipientFlux($typeDocument)
+        );
+        return $donneesFormulaire->get('password') === $password;
+    }
+
+    /**
      * @throws MissingPasswordException
      */
     private function validatePassword(\DonneesFormulaire $donneesFormulaire, string $key, Request $request): void

@@ -78,7 +78,7 @@ class IParapheurRecup extends ActionExecutor
             $actes->addFileFromData(
                 'signature',
                 $filename_signe,
-                $signature->getSignedFile($info)
+                $signature->getSignedFile($info)->content
             );
         }
 

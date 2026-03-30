@@ -394,13 +394,12 @@ class FastParapheur extends SignatureConnecteur
 
     /**
      * Workaround because IParapheur::getSignature() does not return only the signature
-     *
-     * @param $info - output of FastParapheur::getSignature()
-     * @return mixed
      */
-    public function getSignedFile($info)
+    public function getSignedFile($info_from_get_signature): Fichier
     {
-        return $info;
+        $signedFile = new Fichier();
+        $signedFile->content = $info_from_get_signature;
+        return $signedFile;
     }
 
 

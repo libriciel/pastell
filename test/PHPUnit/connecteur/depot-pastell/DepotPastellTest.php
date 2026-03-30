@@ -74,12 +74,34 @@ class DepotPastellTest extends PastellTestCase
     }
 
     /**
+     * @throws DonneesFormulaireException
+     * @throws Exception
+     */
+    private function createActeGenerique(): string
+    {
+        $connecteur_info = $this->createConnector("fakeTdt", "Bouchon tdt");
+
+        $connecteurDonneesFormulaire = $this->getDonneesFormulaireFactory()
+            ->getConnecteurEntiteFormulaire($connecteur_info['id_ce']);
+
+        $connecteurDonneesFormulaire->addFileFromCopy(
+            'classification_file',
+            "classification.xml",
+            __DIR__ . "/../../module/actes-generique/fixtures/classification.xml"
+        );
+        $this->associateFluxWithConnector($connecteur_info['id_ce'], "actes-generique", "TdT");
+
+        $document_info = $this->createDocument("actes-generique");
+        return $document_info['id_d'];
+    }
+
+    /**
      * @return DonneesFormulaire
      * @throws Exception
      */
     private function getDonneesFormulaire(): DonneesFormulaire
     {
-        $id_d = $this->createDocument('actes-generique')['id_d'];
+        $id_d = $this->createActeGenerique();
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
         $donneesFormulaire->setTabData([
             'objet' => 'Mon objet',
@@ -344,5 +366,58 @@ class DepotPastellTest extends PastellTestCase
             ['68hpWOt' => '68hpWOt'],
             $depotPastell->send($donneesFormulaire)
         );
+    }
+
+    /**
+     * @throws NotFoundException
+     * @throws DonneesFormulaireException
+     * @throws Exception
+     */
+    public function testSendWithoutAnnexe(): void
+    {
+        $this->setCurlWrapperMock(function ($a) {
+            if ($a === "https://pastell2.test.libriciel.fr/api/v2/entite/34/document?type=actes-generique") {
+                return file_get_contents(__DIR__ . "/fixtures/api-response-create-document.json");
+            }
+            if ($a === "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt") {
+                return file_get_contents(__DIR__ . "/fixtures/api-response-patch-document.json");
+            }
+            if ($a === "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/file/arrete/0") {
+                return file_get_contents(__DIR__ . "/fixtures/api-response-post-file.json");
+            }
+            if ($a === "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/action/send-tdt") {
+                return file_get_contents(__DIR__ . "/fixtures/api-response-action.json");
+            }
+            throw new UnrecoverableException("Appel à une URL inattendue $a");
+        });
+
+        /** @var DepotPastell $depotPastell */
+        $depotPastell = $this->getDepotPastell();
+        $id_ce = $depotPastell->getConnecteurInfo()['id_ce'];
+        $this->associateFluxWithConnector($id_ce, 'actes-generique', "GED", 1);
+        $id_d = $this->createActeGenerique();
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
+        $donneesFormulaire->setTabData([
+            'objet' => 'Mon objet',
+            'acte_nature' => 3,
+            'envoi_tdt' => false,
+            'numero_de_lacte' => '201905161006',
+            'date_de_lacte' => '2019-05-01',
+            'classification' => '1.1',
+            'envoi_ged' => 1
+        ]);
+        $donneesFormulaire->addFileFromData('arrete', 'arrete.pdf', __DIR__ . "/../../fixtures/vide.pdf");
+        $this->getInternalAPI()->patch("/entite/1/document/$id_d/externalData/type_piece", ['type_pj' => ['22_NE']]);
+
+        set_error_handler(function ($errno, $errstr) {
+            $this->fail("Warning PHP inattendu: $errstr");
+        }, E_WARNING);
+
+        try {
+            $info = $this->getInternalAPI()->post("entite/1/document/$id_d/action/send-ged");
+            $this->assertSame('Le dossier Mon objet a été versé sur le dépôt', $info['message']);
+        } finally {
+            restore_error_handler();
+        }
     }
 }

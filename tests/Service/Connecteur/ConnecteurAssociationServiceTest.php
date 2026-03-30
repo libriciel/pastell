@@ -180,6 +180,16 @@ class ConnecteurAssociationServiceTest extends PastellTestCase
 
     /**
      * @throws UnrecoverableException
+     */
+    public function testNoTypeDossierAssociation(): void
+    {
+        $this->expectException(UnrecoverableException::class);
+        $this->expectExceptionMessage("Le type de dossier est manquant.");
+        $this->getConnecteurAssociationService()->addConnecteurAssociation(1, 1);
+    }
+
+    /**
+     * @throws UnrecoverableException
      * @throws Exception
      */
     public function testMigrateConnecteurAssociation(): void

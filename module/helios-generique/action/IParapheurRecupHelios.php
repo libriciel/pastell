@@ -170,7 +170,7 @@ class IParapheurRecupHelios extends ActionExecutor
         $helios->addFileFromData(
             'fichier_pes_signe',
             $filename_signe,
-            $signature->getSignedFile($info)
+            $signature->getSignedFile($info)->content
         );
 
         $bordereau = $signature->getBordereauFromSignature($info, $dossierID);

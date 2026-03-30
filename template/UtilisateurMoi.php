@@ -145,13 +145,14 @@ declare(strict_types=1);
                         class="btn btn-primary"
                         href='Utilisateur/notification?id_e=<?php
                         echo $infoNotification['id_e']; ?>&type=<?php
-                        echo $infoNotification['type']; ?>'
+                        echo $infoNotification['type']; ?>&id_u=<?php echo($id_u); ?>&source=detail'
                     >
                         <i class="fa fa-pencil"></i>&nbsp;Modifier
                     </a>
 
-                    <a class='btn btn-danger'
-                       href='Utilisateur/notificationSuppression?id_n=<?php echo $infoNotification['id_n']; ?>'
+                    <a class="btn btn-danger"
+                       href='Utilisateur/notificationSuppression?id_n=<?php
+                        echo($infoNotification['id_n']); ?>&source=detail'
                     >
                         <i class="fa fa-trash"></i>&nbsp;Supprimer
                     </a>
@@ -164,7 +165,8 @@ declare(strict_types=1);
 
         <form action='Utilisateur/notificationAjout' method='post' class='input-group align-items-center'>
             <?php $this->displayCSRFInput(); ?>
-
+            <input type='hidden' name='source' value='moi'/>
+            <input type='hidden' name='id_u' value='<?php echo $id_u ?>'/>
             <select name='id_e' class='select2_entite form-select col-md-1'>
                 <?php if ($droit_entite_racine) : ?>
                     <option value='0'>Entité racine</option>
