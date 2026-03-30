@@ -162,7 +162,7 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
             $donneesFormulaire->addFileFromData(
                 $document_element,
                 $filename_signe,
-                $signature->getSignedFile($info)
+                $signature->getSignedFile($info)->content
             );
         }
 
