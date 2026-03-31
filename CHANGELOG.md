@@ -12,6 +12,7 @@
 - Correction de l'arrondi de `Age du premier enregistrement de la table journal` du test du système #2231
 - Suppression d'un warning lors d'un dépôt `depot-pastell` si les fichiers annexes ne sont pas présents #2411
 - L'envoi d'un mail sécurisé sans connecteur associé échoue désormais avant d'alimenter la liste des envois #1721
+- Suppression d'un warning lors de la récupération iParapheur quand le champ annotation est absent de l'historique #2428
 
 # [4.0.29] - 2026-03-02
 
