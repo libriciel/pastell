@@ -109,6 +109,7 @@ class UtilisateurAPIController extends BaseAPIController
      * @throws ConflictException
      * @throws UnrecoverableException
      * @throws NotFoundException
+     * @throws Exception
      */
     public function post(): array
     {
@@ -132,6 +133,11 @@ class UtilisateurAPIController extends BaseAPIController
                 }
 
                 $this->utilisateur->disable($id_u);
+            } elseif ($action === 'token') {
+                if (!$this->utilisateur->getInfo($id_u)['is_api']) {
+                    throw new ForbiddenException('Les jetons ne peuvent être créés que pour des utilisateurs de type API');
+                }
+                return $this->postUserToken((int)$id_u);
             } else {
                 throw new UnrecoverableException('Cette action n\'existe pas.');
             }
@@ -140,15 +146,24 @@ class UtilisateurAPIController extends BaseAPIController
 
         $this->checkDroit($id_e, 'utilisateur:creation');
 
-        $id_u = $this->userCreationService->create(
-            $this->getFromRequest('login'),
-            $this->getFromRequest('email'),
-            $this->getFromRequest('prenom'),
-            $this->getFromRequest('nom'),
-            (int)$id_e,
-            $this->getFromRequest('password', null),
-            $this->getFileUploader()->getFileContent('certificat') ?: null,
-        );
+        if ($this->getFromRequest('is_api')) {
+            $id_u = $this->userCreationService->createAPI(
+                $this->getFromRequest('login'),
+                (int)$id_e,
+                $this->getFromRequest('nom'),
+                $this->getFromRequest('prenom'),
+            );
+        } else {
+            $id_u = $this->userCreationService->create(
+                $this->getFromRequest('login'),
+                $this->getFromRequest('email'),
+                $this->getFromRequest('prenom'),
+                $this->getFromRequest('nom'),
+                (int)$id_e,
+                $this->getFromRequest('password', null),
+                $this->getFileUploader()->getFileContent('certificat') ?: null,
+            );
+        }
         return $this->getDetailInfoForAPI($id_u);
     }
 
@@ -257,13 +272,13 @@ class UtilisateurAPIController extends BaseAPIController
     /**
      * @throws Exception
      */
-    private function postUserToken(): array
+    private function postUserToken(?int $id_u = null): array
     {
         if ($this->getFromQueryArgs(2) === 'renew') {
             return $this->renewUserToken();
         }
 
-        $id_u = $this->getUtilisateurId();
+        $id_u = $id_u ?? $this->getUtilisateurId();
         $name = $this->getFromRequest('name') ?: null;
         $expiration = $this->getFromRequest('expiration') ?: null;
 
