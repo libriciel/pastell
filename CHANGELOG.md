@@ -1,3 +1,9 @@
+# [4.1.18] - 2026-05-04
+
+## Corrections
+
+- Correction des doublons lors de la récupération des actes S2low #2429
+
 # [4.1.17] - 2026-04-07
 
 ## Ajouts
