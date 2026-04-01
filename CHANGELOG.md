@@ -1,8 +1,9 @@
-# [4.0.30] -
+# [4.0.30] - 2026-04-07
 
 ## Corrections
 
-- Il manquait des contrôles pour l'évolution en 4.0.6 "Seul l'utilisateur peut gérer ses notifications, l'administrateur n'a plus les droits #1886" #2402
+- Il manquait des contrôles pour l'évolution en 4.0.6
+"Seul l'utilisateur peut gérer ses notifications, l'administrateur n'a plus les droits #1886" #2402
 - Les boutons `exporter` et `Traitement par lot` n'apparaissent pas sur la première page de la liste des documents #1425
 - En signature PAdES via iParapheur, le fichier signé est désormais enregistré avec le nom et l'extension retournés #2134
 - Un mail sécurisé protégé par mot de passe n'est plus marqué comme 'lu' tant que le mot de passe n'a pas été saisi #2410
@@ -14,6 +15,7 @@
 - L'envoi d'un mail sécurisé sans connecteur associé échoue désormais avant d'alimenter la liste des envois #1721
 - Suppression d'un warning lors de la récupération iParapheur quand le champ annotation est absent de l'historique #2428
 - Ajout des champs `Destinataire(s)` et `Copie à` manquants dans les formulaires destinataire de mails sécurisés #2366
+- Le rate limit sur les tentatives de connexion n'était pas assez restrictif #2202
 
 # [4.0.29] - 2026-03-02
 

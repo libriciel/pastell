@@ -62,9 +62,12 @@ class LoginAttemptLimit
         return new RateLimiterFactory(
             [
                 'id' => 'login',
-                'policy' => 'fixed_window',
+                'policy' => 'token_bucket',
                 'limit' => self::RATE_LIMIT_LOGIN_ATTEMPT_PER_MINUTE,
-                'interval' => '1 minute'
+                'rate' => [
+                    'interval' => '1 minute',
+                    'amount' => 1,
+                ],
             ],
             $cacheStorage
         );
