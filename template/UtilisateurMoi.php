@@ -154,12 +154,12 @@ use Pastell\Utilities\Certificate;
 
                 <td>
                     <a class="btn btn-primary"
-                       href="Utilisateur/notification?id_e=<?php echo($infoNotification['id_e']); ?>&type=<?php echo($infoNotification['type']); ?>&id_u=<?php echo($id_u); ?>&source=detail">
+                       href="Utilisateur/notification?id_e=<?php echo($infoNotification['id_e']); ?>&type=<?php echo($infoNotification['type']); ?>&id_u=<?php echo($id_u); ?>&source=moi">
                         <i class="fa fa-pencil"></i>&nbsp;Modifier
                     </a>
 
                     <a class="btn btn-danger"
-                       href="Utilisateur/notificationSuppression?id_n=<?php echo($infoNotification['id_n']); ?>&source=detail">
+                       href="Utilisateur/notificationSuppression?id_n=<?php echo($infoNotification['id_n']); ?>&source=moi">
                         <i class="fa fa-trash"></i>&nbsp;Supprimer
                     </a>
                 </td>
