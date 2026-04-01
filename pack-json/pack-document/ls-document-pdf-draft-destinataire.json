@@ -1,1 +1,88 @@
-{"id_type_dossier":"ls-document-pdf-draft-destinataire","pastell-version":"%VERSION%","timestamp":1671788005,"raw_data":{"id_type_dossier":"ls-document-pdf-draft-destinataire","nom":"Document PDF (destinataire)","type":"Types de dossier personnalis\u00e9s","description":"","nom_onglet":"Information","restriction_pack":"","formulaireElement":[{"element_id":"libelle","name":"Libell\u00e9","type":"text","commentaire":"","requis":"","champs_affiches":"","champs_recherche_avancee":"","titre":"on","select_value":"","preg_match":"","preg_match_error":"","content_type":""},{"element_id":"document","name":"Document","type":"file","commentaire":"","requis":"on","champs_affiches":"","champs_recherche_avancee":"","titre":"","select_value":"","preg_match":"","preg_match_error":"","content_type":""},{"element_id":"annexe","name":"Annexe(s)","type":"multi_file","commentaire":"","requis":"","champs_affiches":"","champs_recherche_avancee":"","titre":"","select_value":"","preg_match":"","preg_match_error":"","content_type":""}],"etape":[]}}
+{
+  "id_type_dossier": "ls-document-pdf-draft-destinataire",
+  "pastell-version": "%VERSION%",
+  "timestamp": 1671788005,
+  "raw_data": {
+    "id_type_dossier": "ls-document-pdf-draft-destinataire",
+    "nom": "Document PDF (destinataire)",
+    "type": "Types de dossier personnalis\u00e9s",
+    "description": "",
+    "nom_onglet": "Information",
+    "restriction_pack": "",
+    "formulaireElement": [
+      {
+        "element_id": "to",
+        "name": "Destinataire(s)",
+        "type": "text",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "cc",
+        "name": "Copie \u00e0",
+        "type": "text",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "libelle",
+        "name": "Libell\u00e9",
+        "type": "text",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "on",
+        "select_value": "",
+        "preg_match": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "document",
+        "name": "Document",
+        "type": "file",
+        "commentaire": "",
+        "requis": "on",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "annexe",
+        "name": "Annexe(s)",
+        "type": "multi_file",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "preg_match_error": "",
+        "content_type": ""
+      }
+    ],
+    "etape": []
+  }
+}

@@ -13,6 +13,7 @@
 - Suppression d'un warning lors d'un dépôt `depot-pastell` si les fichiers annexes ne sont pas présents #2411
 - L'envoi d'un mail sécurisé sans connecteur associé échoue désormais avant d'alimenter la liste des envois #1721
 - Suppression d'un warning lors de la récupération iParapheur quand le champ annotation est absent de l'historique #2428
+- Ajout des champs `Destinataire(s)` et `Copie à` manquants dans les formulaires destinataire de mails sécurisés #2366
 
 # [4.0.29] - 2026-03-02
 
