@@ -2,6 +2,7 @@
 
 ## Corrections
 
+- les URLs des mails sécurisés n'affichent plus le port 443 par défaut #2430
 -  iParapheur REST : suppression du LogDossier superflu (sans timestamp ni nom) qui apparaissait en dernier 
  dans `iparapheur_historique.xml` #2443
 - Migration iParapheur SOAP → REST : correspondance d'identifiant de dossier iParapheur REST pour les dossiers créés avec un connecteur SOAP #2444
