@@ -16,6 +16,7 @@
 - Suppression d'un warning lors de la récupération iParapheur quand le champ annotation est absent de l'historique #2428
 - Ajout des champs `Destinataire(s)` et `Copie à` manquants dans les formulaires destinataire de mails sécurisés #2366
 - Le rate limit sur les tentatives de connexion n'était pas assez restrictif #2202
+- Correction de l'encodage des espaces dans l'URL du connecteur `dépôt WebDAV` #1761
 
 # [4.0.29] - 2026-03-02
 
