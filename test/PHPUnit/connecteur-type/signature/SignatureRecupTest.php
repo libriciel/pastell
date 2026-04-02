@@ -224,10 +224,10 @@ class SignatureRecupTest extends PastellTestCase
      * @throws NotFoundException
      * @throws Exception
      */
-    public function testPadesSignatureWithOdtFilesConvertsToMultiDocumentPdf()
+    public function testPadesSignatureWithOdtFilesConvertsToMultiDocumentPdf(): void
     {
         $this->mockSoapClient(
-            function ($soapMethod, $arguments) {
+            function ($soapMethod) {
                 if ($soapMethod === 'CreerDossier') {
                     return json_decode(
                         '{"MessageRetour":{"codeRetour":"OK","message":"","severite":"INFO"}}',
@@ -315,7 +315,7 @@ class SignatureRecupTest extends PastellTestCase
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document_info['id_d']);
 
-        $this->assertSame(
+        static::assertSame(
             'document.pdf',
             $donneesFormulaire->getFileName('document')
         );
@@ -328,19 +328,22 @@ class SignatureRecupTest extends PastellTestCase
         foreach ($donneesFormulaire->get('autre_document_attache') as $num => $fileName) {
             $annexe_names[] = $fileName;
         }
-        $this->assertContains('annexe-1.pdf', $annexe_names);
-        $this->assertContains('annexe-2.pdf', $annexe_names);
-        $this->assertContains('annexe-3.pdf', $annexe_names);
+        static::assertContains('annexe-1.pdf', $annexe_names);
+        static::assertContains('annexe-2.pdf', $annexe_names);
+        static::assertContains('annexe-3.pdf', $annexe_names);
 
         $multi_document_original_names = [];
         foreach ($donneesFormulaire->get('multi_document_original') as $num => $fileName) {
             $multi_document_original_names[] = $fileName;
         }
-        $this->assertContains('annexe-1_orig.odt', $multi_document_original_names);
-        $this->assertContains('annexe-2_orig.odt', $multi_document_original_names);
-        $this->assertContains('annexe-3_orig.odt', $multi_document_original_names);
+        static::assertContains('annexe-1_orig.odt', $multi_document_original_names);
+        static::assertContains('annexe-2_orig.odt', $multi_document_original_names);
+        static::assertContains('annexe-3_orig.odt', $multi_document_original_names);
     }
 
+    /**
+     * @throws JsonException
+     */
     private function setupRestMockForOdtMultiDoc(): void
     {
         $tenantId = 'tenant-test';
@@ -352,12 +355,36 @@ class SignatureRecupTest extends PastellTestCase
         $fixturesDir = __DIR__ . '/../../../../tests/Connector/IparapheurRest/fixtures/';
 
         $routes = [
-            'POST /auth/realms/api/protocol/openid-connect/token' => new HttpResponse(200, ['Content-type' => 'application/json'], file_get_contents($fixturesDir . 'authenticate_ok.json')),
-            "POST /api/standard/v1/tenant/$tenantId/desk/$deskId/folder" => new HttpResponse(201, ['Content-type' => 'application/json'], $createFolderJson),
-            "GET /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId/premis" => new HttpResponse(200, ['Content-type' => 'application/xml; charset=UTF-8'], $premisXml),
-            "PUT /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId/task/odt-start-task-id/start" => new HttpResponse(200, ['Content-type' => 'application/json'], ''),
-            "GET /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId/zip" => new HttpResponse(200, ['Content-type' => 'application/octet-stream'], $this->buildOdtMultiDocZip()),
-            "DELETE /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId" => new HttpResponse(204, ['Content-type' => 'application/json'], ''),
+            'POST /auth/realms/api/protocol/openid-connect/token' => new HttpResponse(
+                200,
+                ['Content-type' => 'application/json'],
+                file_get_contents($fixturesDir . 'authenticate_ok.json')
+            ),
+            "POST /api/standard/v1/tenant/$tenantId/desk/$deskId/folder" => new HttpResponse(
+                201,
+                ['Content-type' => 'application/json'],
+                $createFolderJson
+            ),
+            "GET /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId/premis" => new HttpResponse(
+                200,
+                ['Content-type' => 'application/xml; charset=UTF-8'],
+                $premisXml
+            ),
+            "PUT /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId/task/odt-start-task-id/start" => new HttpResponse(
+                200,
+                ['Content-type' => 'application/json'],
+                ''
+            ),
+            "GET /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId/zip" => new HttpResponse(
+                200,
+                ['Content-type' => 'application/octet-stream'],
+                $this->buildOdtMultiDocZip()
+            ),
+            "DELETE /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId" => new HttpResponse(
+                204,
+                ['Content-type' => 'application/json'],
+                ''
+            ),
         ];
 
         $client = $this->getMockBuilder(ClientInterface::class)->getMock();
@@ -431,11 +458,11 @@ class SignatureRecupTest extends PastellTestCase
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document_info['id_d']);
 
-        $this->assertSame(
+        static::assertSame(
             'document.pdf',
             $donneesFormulaire->getFileName('document')
         );
-        $this->assertSame(
+        static::assertSame(
             'document_orig.odt',
             $donneesFormulaire->getFileName('document_orignal')
         );
@@ -444,17 +471,17 @@ class SignatureRecupTest extends PastellTestCase
         foreach ($donneesFormulaire->get('autre_document_attache') as $num => $fileName) {
             $annexe_names[] = $fileName;
         }
-        $this->assertContains('annexe-1.pdf', $annexe_names);
-        $this->assertContains('annexe-2.pdf', $annexe_names);
-        $this->assertContains('annexe-3.pdf', $annexe_names);
+        static::assertContains('annexe-1.pdf', $annexe_names);
+        static::assertContains('annexe-2.pdf', $annexe_names);
+        static::assertContains('annexe-3.pdf', $annexe_names);
 
         $multi_document_original_names = [];
         foreach ($donneesFormulaire->get('multi_document_original') as $num => $fileName) {
             $multi_document_original_names[] = $fileName;
         }
-        $this->assertContains('annexe-1_orig.odt', $multi_document_original_names);
-        $this->assertContains('annexe-2_orig.odt', $multi_document_original_names);
-        $this->assertContains('annexe-3_orig.odt', $multi_document_original_names);
+        static::assertContains('annexe-1_orig.odt', $multi_document_original_names);
+        static::assertContains('annexe-2_orig.odt', $multi_document_original_names);
+        static::assertContains('annexe-3_orig.odt', $multi_document_original_names);
     }
 
     /**
