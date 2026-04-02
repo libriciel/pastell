@@ -14,6 +14,7 @@ use Pastell\Client\S2low\S2lowClientFactory;
 use Pastell\Service\Document\DocumentDeletionService;
 use Psr\Http\Client\ClientExceptionInterface;
 use Recuperateur;
+use DocumentIndexSQL;
 
 class RecupPesS2lowConnector extends \Connecteur
 {
@@ -35,6 +36,7 @@ class RecupPesS2lowConnector extends \Connecteur
         private readonly \DonneesFormulaireFactory $formFactory,
         private readonly \JobManager $jobManager,
         private readonly \DocumentEntite $documentEntite,
+        private readonly DocumentIndexSQL $documentIndexSQL,
     ) {
     }
 
@@ -149,8 +151,19 @@ class RecupPesS2lowConnector extends \Connecteur
                 break;
             }
 
+            $createdInThisPage = 0;
             foreach ($listPes->transactions as $transaction) {
+                if ($createdDocuments >= $numberOfDocumentsToCreate) {
+                    break;
+                }
                 $transactionId = $transaction['id'];
+                if ($this->documentIndexSQL->getByFieldValue('transaction_id', $transactionId)) {
+                    $message[] = \sprintf(
+                        'Transaction %s déjà importée, ignorée',
+                        $transactionId,
+                    );
+                    continue;
+                }
                 $documentId = $this->documentCreationService->createDocumentWithoutAuthorizationChecking(
                     $entityId,
                     self::FLUX
@@ -158,15 +171,12 @@ class RecupPesS2lowConnector extends \Connecteur
                 try {
                     $this->createDocument($entityId, $documentId, $transactionId);
                     ++$createdDocuments;
-
+                    ++$createdInThisPage;
                     $message[] = \sprintf(
                         'Création du document lié à la transaction %s : %s',
                         $transactionId,
                         $documentId,
                     );
-                    if ($createdDocuments >= $numberOfDocumentsToCreate) {
-                        break;
-                    }
                 } catch (\Throwable $e) {
                     $message[] = \sprintf(
                         'Impossible de créer le document lié à la transaction %s => %s',
@@ -176,7 +186,11 @@ class RecupPesS2lowConnector extends \Connecteur
                     $this->documentDeletionService->delete($documentId);
                 }
             }
-            $offset += $numberOfDocumentsToCreate;
+
+            if ($createdInThisPage === 0) {
+                break;
+            }
+            $offset += $this->numberOfDocumentsPerJob;
         }
 
         return $message;
