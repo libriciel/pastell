@@ -17,7 +17,7 @@ if ($id_e != 0) : ?>
 
 </div>
     <?php
-    $this->SuivantPrecedent($offset, $limit, $count, "Document/index?id_e=$id_e&search=$search");
+    $this->SuivantPrecedent($offset, $limit, $count, "Document/index?id_e=$id_e" . ($search ? "&search=$search" : ""));
     $this->render("DocumentListBox");
 endif;
 ?>
