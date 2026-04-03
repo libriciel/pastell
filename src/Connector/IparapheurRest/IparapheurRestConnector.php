@@ -706,12 +706,9 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         return $zipContent ?: '';
     }
 
-    /**
-     * @param array $info output of IparapheurRestConnector::getSignature()
-     */
-    public function getSignedFile($info): Fichier
+    public function getSignedFile($info_from_get_signature): Fichier
     {
-        return $info['documents'][0];
+        return $info_from_get_signature['documents'][0];
     }
 
     /**
@@ -753,15 +750,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
      */
     public function getAllDocumentSigne(array $info): array
     {
-        $documents = [];
-        foreach ($info['documents'] as $document) {
-            /** @var Fichier $document */
-            $documents[] = [
-                'nom_document' => $document->filename,
-                'document' => $document->content,
-            ];
-        }
-        return $documents;
+        return $info['documents'];
     }
 
     /**

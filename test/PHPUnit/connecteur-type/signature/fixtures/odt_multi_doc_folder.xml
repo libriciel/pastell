@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<premis xmlns="http://www.loc.gov/premis/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd">
+    <object xsi:type="intellectualEntity">
+        <objectIdentifier>
+            <objectIdentifierType>folderId</objectIdentifierType>
+            <objectIdentifierValue>ODT-MULTI-DOC-FOLDER-ID</objectIdentifierValue>
+        </objectIdentifier>
+        <significantProperties>
+            <significantPropertiesType>i_Parapheur_reserved_type</significantPropertiesType>
+            <significantPropertiesValue>FOO</significantPropertiesValue>
+        </significantProperties>
+        <significantProperties>
+            <significantPropertiesType>i_Parapheur_reserved_subtype</significantPropertiesType>
+            <significantPropertiesValue>BAR</significantPropertiesValue>
+        </significantProperties>
+        <originalName>LIBELLE</originalName>
+    </object>
+    <object xsi:type="file">
+        <objectIdentifier>
+            <objectIdentifierType>documentId</objectIdentifierType>
+            <objectIdentifierValue>doc-id-1</objectIdentifierValue>
+        </objectIdentifier>
+        <significantProperties>
+            <significantPropertiesType>i_Parapheur_reserved_mainDocument</significantPropertiesType>
+            <significantPropertiesValue>true</significantPropertiesValue>
+        </significantProperties>
+        <originalName>document.pdf</originalName>
+    </object>
+    <object xsi:type="file">
+        <objectIdentifier>
+            <objectIdentifierType>documentId</objectIdentifierType>
+            <objectIdentifierValue>doc-id-2</objectIdentifierValue>
+        </objectIdentifier>
+        <significantProperties>
+            <significantPropertiesType>i_Parapheur_reserved_mainDocument</significantPropertiesType>
+            <significantPropertiesValue>true</significantPropertiesValue>
+        </significantProperties>
+        <originalName>annexe-1.pdf</originalName>
+    </object>
+    <object xsi:type="file">
+        <objectIdentifier>
+            <objectIdentifierType>documentId</objectIdentifierType>
+            <objectIdentifierValue>doc-id-3</objectIdentifierValue>
+        </objectIdentifier>
+        <significantProperties>
+            <significantPropertiesType>i_Parapheur_reserved_mainDocument</significantPropertiesType>
+            <significantPropertiesValue>true</significantPropertiesValue>
+        </significantProperties>
+        <originalName>annexe-2.pdf</originalName>
+    </object>
+    <object xsi:type="file">
+        <objectIdentifier>
+            <objectIdentifierType>documentId</objectIdentifierType>
+            <objectIdentifierValue>doc-id-4</objectIdentifierValue>
+        </objectIdentifier>
+        <significantProperties>
+            <significantPropertiesType>i_Parapheur_reserved_mainDocument</significantPropertiesType>
+            <significantPropertiesValue>true</significantPropertiesValue>
+        </significantProperties>
+        <originalName>annexe-3.pdf</originalName>
+    </object>
+    <event>
+        <eventIdentifier>
+            <eventIdentifierType>taskId</eventIdentifierType>
+            <eventIdentifierValue>odt-start-task-id</eventIdentifierValue>
+        </eventIdentifier>
+        <eventType>START</eventType>
+        <eventDateTime>2025-08-05T10:00:00.000+0200</eventDateTime>
+        <linkingAgentIdentifier>
+            <linkingAgentIdentifierType>userId</linkingAgentIdentifierType>
+            <linkingAgentIdentifierValue>agent-id</linkingAgentIdentifierValue>
+            <linkingAgentRole>test</linkingAgentRole>
+        </linkingAgentIdentifier>
+    </event>
+    <event>
+        <eventIdentifier>
+            <eventIdentifierType>taskId</eventIdentifierType>
+            <eventIdentifierValue>odt-archive-task-id</eventIdentifierValue>
+        </eventIdentifier>
+        <eventType>ARCHIVE</eventType>
+        <eventDateTime>2025-08-06T10:00:00.000+0200</eventDateTime>
+        <linkingAgentIdentifier>
+            <linkingAgentIdentifierType>userId</linkingAgentIdentifierType>
+            <linkingAgentIdentifierValue>agent-id</linkingAgentIdentifierValue>
+            <linkingAgentRole>test</linkingAgentRole>
+        </linkingAgentIdentifier>
+    </event>
+    <agent>
+        <agentIdentifier>
+            <agentIdentifierType>userId</agentIdentifierType>
+            <agentIdentifierValue>agent-id</agentIdentifierValue>
+        </agentIdentifier>
+        <agentName>Test Agent</agentName>
+    </agent>
+</premis>
