@@ -188,6 +188,27 @@ class WebdavWrapperTest extends PHPUnit\Framework\TestCase
         $webdavWrapper->get('test.xml');
     }
 
+    public function testSetDataConnexionEncodesSpacesInPath(): void
+    {
+        $capturedSettings = [];
+
+        $client = $this->createMock(Client::class);
+
+        $webdavClientFactory = $this->createMock(WebdavClientFactory::class);
+        $webdavClientFactory
+            ->method('getInstance')
+            ->willReturnCallback(function (array $settings) use (&$capturedSettings, $client) {
+                $capturedSettings = $settings;
+                return $client;
+            });
+
+        $webdavWrapper = new WebdavWrapper();
+        $webdavWrapper->setWebdavClientFactory($webdavClientFactory);
+        $webdavWrapper->setDataConnexion('https://domain.tld/mon repertoire/sous dossier', '', '');
+
+        $this->assertSame('https://domain.tld/mon%20repertoire/sous%20dossier/', $capturedSettings['baseUri']);
+    }
+
     /**
      * @throws ClientHttpException
      */
