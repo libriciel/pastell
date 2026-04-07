@@ -5,7 +5,8 @@ RUN npm install
 
 FROM hubdocker.libriciel.fr/httpd:2.4.66-alpine3.23@sha256:8f26f33a7002658050e9ab2cd6b77502619dfc89d0a6ba2e9e4a202e0ef04596
 
-RUN apk add --no-cache \
+RUN apk update && apk upgrade --no-cache && \
+    apk add --no-cache \
     certbot \
     coreutils \
     curl \
