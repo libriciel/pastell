@@ -41,7 +41,7 @@ class DepotWebDAV extends DepotConnecteur
     public function saveDocument(string $directory_name, string $filename, string $filepath)
     {
         $this->webDavWrapper->addDocument($directory_name, $filename, file_get_contents($filepath));
-        return rtrim($this->connecteurConfig->get(self::DEPOT_WEBDAV_URL), '/') . "/" . $directory_name . "/" . $filename;
+        return rtrim($this->connecteurConfig->get(self::DEPOT_WEBDAV_URL), '/') . "/" . rawurlencode($directory_name) . "/" . rawurlencode($filename);
     }
 
     public function directoryExists(string $directory_name)

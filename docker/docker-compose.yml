@@ -103,7 +103,7 @@ services:
             - ${MARIADB_DATADIR:-mariadb_datadir}:/var/lib/mysql/
 
     redis:
-        image: 'hubdocker.libriciel.fr/redis:7.2.12'
+        image: 'hubdocker.libriciel.fr/redis:7.2.13'
         restart: unless-stopped
 
     seda-generator:
@@ -121,7 +121,7 @@ services:
         restart: unless-stopped
 
     pes-viewer:
-        image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.15'
+        image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.18'
         restart: unless-stopped
         deploy:
             resources:
