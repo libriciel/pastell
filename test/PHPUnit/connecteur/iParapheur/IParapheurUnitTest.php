@@ -442,7 +442,7 @@ class IParapheurUnitTest extends PastellTestCase
         $log->timestamp = $timestamp;
         $log->status = 'Archive';
         $historique = new stdClass();
-        $historique->LogDossier = $log;
+        $historique->LogDossier[] = $log;
 
         $expected = date("d/m/Y H:i:s", strtotime($timestamp)) . " : [Archive] ";
 
