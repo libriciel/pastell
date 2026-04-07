@@ -338,7 +338,7 @@ class IParapheur extends SignatureConnecteur
             '%s : [%s] %s',
             date('d/m/Y H:i:s', strtotime($lastLog->timestamp)),
             $lastLog->status,
-            $lastLog->annotation
+            $lastLog->annotation ?? ''
         );
     }
 

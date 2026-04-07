@@ -11,6 +11,36 @@
     "restriction_pack": "",
     "formulaireElement": [
       {
+        "element_id": "to",
+        "name": "Destinataire(s)",
+        "type": "text",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
+        "element_id": "cc",
+        "name": "Copie \u00e0",
+        "type": "text",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
         "element_id": "libelle",
         "name": "Libell\u00e9",
         "type": "text",

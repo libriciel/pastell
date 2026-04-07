@@ -24,7 +24,7 @@ class WebdavWrapper
     public function setDataConnexion(string $url, string $user, string $password): void
     {
         $settings = [
-            'baseUri' => rtrim($url, '/') . '/',
+            'baseUri' => $this->normalizeBaseUri($url),
             'userName' => $user,
             'password' => $password,
         ];
@@ -198,6 +198,20 @@ class WebdavWrapper
             throw new Exception('Erreur lors du dépôt webdav : code ' . $response['statusCode']);
         }
         return $response;
+    }
+
+    private function normalizeBaseUri(string $url): string
+    {
+        $parts = parse_url($url);
+        if (empty($parts['scheme']) || empty($parts['host'])) {
+            return rtrim($url, '/') . '/';
+        }
+        $result = $parts['scheme'] . '://' . $parts['host'];
+        if (isset($parts['port'])) {
+            $result .= ':' . $parts['port'];
+        }
+        $result .= rtrim($this->normalize($parts['path'] ?? ''), '/') . '/';
+        return $result;
     }
 
     private function normalize(string $folder): string

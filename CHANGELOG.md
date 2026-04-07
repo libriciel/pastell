@@ -1,7 +1,28 @@
-# [5.0.3] - 
+# [5.0.3] - 2026-04-07
+
+## Ajouts
+
+- Gestion des utilisateurs exclusivement API par API #1943 :
+    - Ajout du paramètre `is_api` à la création d'un utilisateur : crée un utilisateur sans email, authentifiable par jeton uniquement
+    - Ajout de la route `POST /api/v2/utilisateur/:id_u/token` pour créer un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
 
 ## Corrections
 
+- Il manquait des contrôles pour l'évolution en 4.0.6
+  "Seul l'utilisateur peut gérer ses notifications, l'administrateur n'a plus les droits #1886" #2402
+- Les boutons `Exporter` et `Traitement par lot` apparaissaient si on changeait de page sans avoir fait de recherche #1425
+- En signature PAdES via iParapheur, le fichier signé est désormais enregistré avec le nom et l'extension retournés #2134
+- Un mail sécurisé protégé par mot de passe n'est plus marqué comme 'lu' tant que le mot de passe n'a pas été saisi #2410
+- Un mail sécurisé n'était pas envoyé lorsque le champ configuré comme titre dans le studio était de type fichier #1880
+- Il n'est plus possible de créer une association de connecteur sans préciser le type de dossier #2417
+- Le bouton `Retamponner l'acte et les annexes` n'est plus présent après une annulation tdt actes #2264
+- Correction de l'arrondi de `Age du premier enregistrement de la table journal` du test du système #2231
+- Suppression d'un warning lors d'un dépôt `depot-pastell` si les fichiers annexes ne sont pas présents #2411
+- L'envoi d'un mail sécurisé sans connecteur associé échoue désormais avant d'alimenter la liste des envois #1721
+- Suppression d'un warning lors de la récupération iParapheur quand le champ annotation est absent de l'historique #2428
+- Ajout des champs `Destinataire(s)` et `Copie à` manquants dans les formulaires destinataire de mails sécurisés #2366
+- Le rate limit sur les tentatives de connexion n'était pas assez restrictif #2202
+- Correction de l'encodage des espaces dans l'URL du connecteur `dépôt WebDAV` #1761
 - Il y avait un message `Syntax error` lors de la vérification du visa facture-cpp (régression 5.0.0) #2416
 
 # [5.0.2] - 2026-03-02
@@ -199,6 +220,32 @@
   Seules les factures importées de Chorus Pro seront traitées. #1856
 - Connecteur iparapheur soap #2268
 - Connecteur `chorus-par-csv` ChorusPro par CSV #2356
+
+# [4.1.17] - 2026-04-07
+
+## Ajouts
+
+- Gestion des utilisateurs exclusivement API par API #1943 :
+  - Ajout du paramètre `is_api` à la création d'un utilisateur : crée un utilisateur sans email, authentifiable par jeton uniquement
+  - Ajout de la route `POST /api/v2/utilisateur/:id_u/token` pour créer un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
+
+## Corrections
+
+- Il manquait des contrôles pour l'évolution en 4.0.6
+  "Seul l'utilisateur peut gérer ses notifications, l'administrateur n'a plus les droits #1886" #2402
+- Les boutons `Exporter` et `Traitement par lot` apparaissaient si on changeait de page sans avoir fait de recherche #1425
+- En signature PAdES via iParapheur, le fichier signé est désormais enregistré avec le nom et l'extension retournés #2134
+- Un mail sécurisé protégé par mot de passe n'est plus marqué comme 'lu' tant que le mot de passe n'a pas été saisi #2410
+- Un mail sécurisé n'était pas envoyé lorsque le champ configuré comme titre dans le studio était de type fichier #1880
+- Il n'est plus possible de créer une association de connecteur sans préciser le type de dossier #2417
+- Le bouton `Retamponner l'acte et les annexes` n'est plus présent après une annulation tdt actes #2264
+- Correction de l'arrondi de `Age du premier enregistrement de la table journal` du test du système #2231
+- Suppression d'un warning lors d'un dépôt `depot-pastell` si les fichiers annexes ne sont pas présents #2411
+- L'envoi d'un mail sécurisé sans connecteur associé échoue désormais avant d'alimenter la liste des envois #1721
+- Suppression d'un warning lors de la récupération iParapheur quand le champ annotation est absent de l'historique #2428
+- Ajout des champs `Destinataire(s)` et `Copie à` manquants dans les formulaires destinataire de mails sécurisés #2366
+- Le rate limit sur les tentatives de connexion n'était pas assez restrictif #2202
+- Correction de l'encodage des espaces dans l'URL du connecteur `dépôt WebDAV` #1761
 
 # [4.1.16] - 2026-03-02
 
@@ -532,12 +579,13 @@
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
 
-# [4.0.30] -
+# [4.0.30] - 2026-04-07
 
 ## Corrections
 
-- Il manquait des contrôles pour l'évolution en 4.0.6 "Seul l'utilisateur peut gérer ses notifications, l'administrateur n'a plus les droits #1886" #2402
-- Les boutons `exporter` et `Traitement par lot` n'apparaissent pas sur la première page de la liste des documents #1425
+- Il manquait des contrôles pour l'évolution en 4.0.6
+"Seul l'utilisateur peut gérer ses notifications, l'administrateur n'a plus les droits #1886" #2402
+- Les boutons `Exporter` et `Traitement par lot` apparaissaient si on changeait de page sans avoir fait de recherche #1425
 - En signature PAdES via iParapheur, le fichier signé est désormais enregistré avec le nom et l'extension retournés #2134
 - Un mail sécurisé protégé par mot de passe n'est plus marqué comme 'lu' tant que le mot de passe n'a pas été saisi #2410
 - Un mail sécurisé n'était pas envoyé lorsque le champ configuré comme titre dans le studio était de type fichier #1880
@@ -546,6 +594,10 @@
 - Correction de l'arrondi de `Age du premier enregistrement de la table journal` du test du système #2231
 - Suppression d'un warning lors d'un dépôt `depot-pastell` si les fichiers annexes ne sont pas présents #2411
 - L'envoi d'un mail sécurisé sans connecteur associé échoue désormais avant d'alimenter la liste des envois #1721
+- Suppression d'un warning lors de la récupération iParapheur quand le champ annotation est absent de l'historique #2428
+- Ajout des champs `Destinataire(s)` et `Copie à` manquants dans les formulaires destinataire de mails sécurisés #2366
+- Le rate limit sur les tentatives de connexion n'était pas assez restrictif #2202
+- Correction de l'encodage des espaces dans l'URL du connecteur `dépôt WebDAV` #1761
 
 # [4.0.29] - 2026-03-02
 
