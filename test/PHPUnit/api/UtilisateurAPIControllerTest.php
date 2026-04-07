@@ -372,7 +372,6 @@ class UtilisateurAPIControllerTest extends PastellTestCase
                 'nom' => 'Bot',
                 'prenom' => 'Api',
                 'email' => '',
-                'certificat' => '',
                 'id_e' => '0',
                 'active' => true,
             ],

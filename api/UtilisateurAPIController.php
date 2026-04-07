@@ -153,14 +153,16 @@ class UtilisateurAPIController extends BaseAPIController
                 $this->getFromRequest('nom'),
                 $this->getFromRequest('prenom'),
             );
-        } else {$id_u = $this->userCreationService->create(
-            $this->getFromRequest('login'),
-            $this->getFromRequest('email'),
-            $this->getFromRequest('prenom'),
-            $this->getFromRequest('nom'),
-            (int)$id_e,
-            $this->getFromRequest('password', null),
-        );}
+        } else {
+            $id_u = $this->userCreationService->create(
+                $this->getFromRequest('login'),
+                $this->getFromRequest('email'),
+                $this->getFromRequest('prenom'),
+                $this->getFromRequest('nom'),
+                (int)$id_e,
+                $this->getFromRequest('password', null),
+            );
+        }
         return $this->getDetailInfoForAPI($id_u);
     }
 
