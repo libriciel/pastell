@@ -103,7 +103,7 @@ final class UserCreationService
         $this->utilisateurSQL->setIsAPI($userId, true);
         $this->utilisateurSQL->setColBase($userId, $id_e);
         $this->utilisateurSQL->setLogin($userId, $login);
-        $this->utilisateurSQL->setNomPrenom($userId, $firstname, $lastname);
+        $this->utilisateurSQL->setNomPrenom($userId, $lastname, $firstname);
         $this->roleUtilisateur->addRole($userId, RoleUtilisateur::AUCUN_DROIT, $id_e);
 
         $info = \implode('; ', [

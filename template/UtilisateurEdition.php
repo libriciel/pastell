@@ -83,7 +83,12 @@ use Pastell\Utilities\Certificate;
             </tr>
             <?php if ($new_user || $is_api) : ?>
             <tr>
-                <th><label for='api_user'>Utilisateur API pour authentification exclusivement par jetons</label></th>
+                <th>
+                    <label for='api_user'>Utilisateur API</label>
+                    <p class='form_commentaire'>
+                        pour authentification exclusivement par jetons
+                    </p>
+                </th>
                 <td>
                     <input
                         type='checkbox'
