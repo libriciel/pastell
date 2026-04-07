@@ -434,4 +434,19 @@ class IParapheurUnitTest extends PastellTestCase
         $iParapheurConnector = $this->getIParapheurConnecteur();
         $this->assertEquals($expected, $iParapheurConnector->isRejected($lastState));
     }
+
+    public function testGetLastHistoriqueWithoutAnnotation(): void
+    {
+        $timestamp = '2019-07-23T13:58:16.000+00:00';
+        $log = new stdClass();
+        $log->timestamp = $timestamp;
+        $log->status = 'Archive';
+        $historique = new stdClass();
+        $historique->LogDossier[] = $log;
+
+        $expected = date("d/m/Y H:i:s", strtotime($timestamp)) . " : [Archive] ";
+
+        $iParapheurConnector = $this->getIParapheurConnecteur();
+        $this->assertEquals($expected, $iParapheurConnector->getLastHistorique($historique));
+    }
 }
