@@ -157,7 +157,7 @@ class RecupPesS2lowConnector extends \Connecteur
                     break;
                 }
                 $transactionId = $transaction['id'];
-                if ($this->documentIndexSQL->getByFieldValue('transaction_id', $transactionId)) {
+                if ($this->documentIndexSQL->getByFieldValueAndType('transaction_id', $transactionId, self::FLUX)) {
                     $message[] = \sprintf(
                         'Transaction %s déjà importée, ignorée',
                         $transactionId,

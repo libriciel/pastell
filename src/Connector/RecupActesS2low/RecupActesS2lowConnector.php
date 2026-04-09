@@ -165,7 +165,7 @@ class RecupActesS2lowConnector extends \Connecteur
                 if (!$transaction->isActes()) {
                     continue;
                 }
-                if ($this->documentIndexSQL->getByFieldValue('transaction_id', $transaction->id)) {
+                if ($this->documentIndexSQL->getByFieldValueAndType('transaction_id', $transaction->id, self::FLUX)) {
                     $message[] = \sprintf(
                         'Transaction %s %s déjà importée, ignorée',
                         $transaction->id,

@@ -34,6 +34,18 @@ class DocumentIndexSQL extends SQL
         return $this->queryOne($sql, $field_name, $field_value);
     }
 
+    public function getByFieldValueAndType(string $field_name, string $field_value, string $type): mixed
+    {
+        $field_name = $this->fieldNameSubstring($field_name);
+        $field_value = $this->fieldValueSubstring($field_value);
+        $sql = <<<SQL
+SELECT document_index.id_d FROM document_index
+JOIN document ON document_index.id_d = document.id_d
+WHERE document_index.field_name = ? AND document_index.field_value = ? AND document.type = ?
+SQL;
+        return $this->queryOne($sql, $field_name, $field_value, $type);
+    }
+
     private function fieldNameSubstring($field_name)
     {
         return substr($field_name, 0, self::FIELD_NAME_LENGTH);
