@@ -26,9 +26,11 @@ class UtilisateurNewEmailSQL extends SQL
         return $this->queryOne($sql, $password, $date);
     }
 
-    public function delete($id_u)
+    public function delete($id_u): void
     {
-        $sql = "DELETE FROM utilisateur_new_email WHERE id_u=?";
+        $sql = <<<SQL
+DELETE FROM utilisateur_new_email WHERE id_u=?;
+SQL;
         $this->query($sql, $id_u);
     }
 }

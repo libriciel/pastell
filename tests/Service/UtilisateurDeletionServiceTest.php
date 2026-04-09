@@ -2,13 +2,16 @@
 
 namespace Pastell\Tests\Service;
 
+use Notification;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
 use PastellTestCase;
+use UtilisateurNewEmailSQL;
 use UtilisateurSQL;
+use UsersToken;
 
 class UtilisateurDeletionServiceTest extends PastellTestCase
 {
-    public function testDelete()
+    public function testDelete(): void
     {
         $utilisateurSQL = $this->getObjectInstancier()->getInstance(UtilisateurSQL::class);
         $this->assertTrue($utilisateurSQL->exists(2));
@@ -29,5 +32,38 @@ class UtilisateurDeletionServiceTest extends PastellTestCase
             "#^Ajout au journal \(id_j=1\): 4 - 0 - 1 - 0 - Supprimé - $expected_journal_message#",
             $log_message
         );
+    }
+
+    public function testDeleteCleansNotifications(): void
+    {
+        $notification = $this->getObjectInstancier()->getInstance(Notification::class);
+        $notification->add(2, 1, 'type-fake', 'action-fake', 0);
+        self::assertNotEmpty($notification->getAll(2));
+
+        $this->getObjectInstancier()->getInstance(UtilisateurDeletionService::class)->delete(2);
+
+        self::assertEmpty($notification->getAll(2));
+    }
+
+    public function testDeleteCleansTokens(): void
+    {
+        $usersToken = $this->getObjectInstancier()->getInstance(UsersToken::class);
+        $usersToken->create(2, 'token-test', 'my-token');
+        self::assertNotEmpty($usersToken->getTokensOfUser(2));
+
+        $this->getObjectInstancier()->getInstance(UtilisateurDeletionService::class)->delete(2);
+
+        self::assertEmpty($usersToken->getTokensOfUser(2));
+    }
+
+    public function testDeleteCleansNewEmail(): void
+    {
+        $utilisateurNewEmailSQL = $this->getObjectInstancier()->getInstance(UtilisateurNewEmailSQL::class);
+        $password = $utilisateurNewEmailSQL->add(2, 'newemail@test.fr');
+        self::assertNotEmpty($utilisateurNewEmailSQL->confirm($password));
+
+        $this->getObjectInstancier()->getInstance(UtilisateurDeletionService::class)->delete(2);
+
+        self::assertEmpty($utilisateurNewEmailSQL->confirm($password));
     }
 }
