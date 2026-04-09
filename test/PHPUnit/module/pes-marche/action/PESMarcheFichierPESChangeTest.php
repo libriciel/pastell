@@ -69,4 +69,19 @@ class PESMarcheFichierPESChangeTest extends PastellMarcheTestCase
 
         $this->assertTrue($donneesFormulaire->isEditable('objet'));
     }
+
+    public function testAffectationPesPJDoesNotFailOnNullIdContrat()
+    {
+        $id_d = $this->createPesMarche();
+
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
+        $donneesFormulaire->addFileFromCopy(
+            'fichier_pes',
+            'PES_PJ_TEST',
+            __DIR__ . "/../fixtures/PES_PJ_TEST"
+        );
+
+        $this->assertTrue($this->triggerActionOnDocument($id_d, 'affectation'));
+        $this->assertLastMessage("Les données du PES Aller ont été extraites");
+    }
 }
