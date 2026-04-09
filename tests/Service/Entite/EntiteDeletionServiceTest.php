@@ -2,15 +2,20 @@
 
 namespace Pastell\Tests\Service\Entite;
 
+use AnnuaireGroupe;
+use AnnuaireRoleSQL;
+use AnnuaireSQL;
 use ConnecteurEntiteSQL;
 use DocumentEntite;
 use DocumentSQL;
 use EntiteSQL;
 use FluxEntiteHeritageSQL;
 use FluxEntiteSQL;
+use Notification;
 use Pastell\Service\Entite\EntiteDeletionService;
 use PastellTestCase;
 use RoleUtilisateur;
+use SQLQuery;
 use UnrecoverableException;
 use UtilisateurSQL;
 
@@ -113,5 +118,50 @@ class EntiteDeletionServiceTest extends PastellTestCase
 
         $isSupprimable = $this->entiteDeletionService->canDelete($this->id_entity_exemple);
         self::assertFalse($isSupprimable);
+    }
+
+    public function testIsNotSupprimableBecauseHasAnnuaireContacts(): void
+    {
+        self::getObjectInstancier()->getInstance(AnnuaireSQL::class)->add(
+            $this->id_entity_exemple,
+            'Contact Test',
+            'contact@test.fr'
+        );
+
+        $isSupprimable = $this->entiteDeletionService->canDelete($this->id_entity_exemple);
+        self::assertFalse($isSupprimable);
+    }
+
+    public function testIsNotSupprimableBecauseHasAnnuaireGroupe(): void
+    {
+        $annuaireGroupe = new AnnuaireGroupe(
+            self::getObjectInstancier()->getInstance(SQLQuery::class),
+            $this->id_entity_exemple
+        );
+        $annuaireGroupe->add('Groupe Test');
+
+        $isSupprimable = $this->entiteDeletionService->canDelete($this->id_entity_exemple);
+        self::assertFalse($isSupprimable);
+    }
+
+    public function testDeleteCleansAnnuaireRoles(): void
+    {
+        $annuaireRoleSQL = self::getObjectInstancier()->getInstance(AnnuaireRoleSQL::class);
+        $annuaireRoleSQL->add('Rôle Test', $this->id_entity_exemple, $this->id_entity_exemple, 'role-fake');
+
+        $this->entiteDeletionService->delete($this->id_entity_exemple);
+
+        self::assertEmpty($annuaireRoleSQL->getAll($this->id_entity_exemple));
+    }
+
+    public function testDeleteCleansNotifications(): void
+    {
+        $notification = self::getObjectInstancier()->getInstance(Notification::class);
+        $notification->add(1, $this->id_entity_exemple, 'type-fake', 'action-fake', 0);
+        self::assertNotEmpty($notification->getAll(1));
+
+        $this->entiteDeletionService->delete($this->id_entity_exemple);
+
+        self::assertEmpty($notification->getAll(1));
     }
 }
