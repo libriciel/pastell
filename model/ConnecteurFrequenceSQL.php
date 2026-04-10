@@ -108,6 +108,14 @@ class ConnecteurFrequenceSQL extends SQL
         $this->query($sql, $id_cf);
     }
 
+    public function deleteByIdCe(int $id_ce): void
+    {
+        $sql = <<<SQL
+DELETE FROM connecteur_frequence WHERE id_ce = ?;
+SQL;
+        $this->query($sql, $id_ce);
+    }
+
     public function deleteAll()
     {
         $sql = "DELETE FROM connecteur_frequence";
