@@ -129,7 +129,7 @@ services:
       - "${HTTPS_PORT:-443}:443"
 
   db:
-    image: 'hubdocker.libriciel.fr/mariadb:11.4.10-noble@sha256:5559e323266d86bea94f48c338014b102a2031af2895484cf9d99d58d2cb9cd3'
+    image: 'hubdocker.libriciel.fr/mariadb:11.4.10-noble@sha256:bdd77d2a639e5e123025e4c5f7e0a2373b06f733631c57d53034709b23dae807'
     restart: unless-stopped
     command:
       - "--character-set-server=utf8mb4"
