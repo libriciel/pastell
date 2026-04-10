@@ -30,6 +30,16 @@ class DocumentIndexSQLTest extends PastellTestCase
         $this->assertEquals("FOO", $this->documentIndexSQL->getByFieldValue("bar", "baz"));
     }
 
+    public function testGetByFieldValueAndType(): void
+    {
+        $doc = $this->createDocument('test');
+        $id_d = $doc['id_d'];
+        $this->documentIndexSQL->index($id_d, 'transaction_id', 'TX-001');
+
+        static::assertSame($id_d, $this->documentIndexSQL->getByFieldValueAndType('transaction_id', 'TX-001', 'test'));
+        static::assertFalse($this->documentIndexSQL->getByFieldValueAndType('transaction_id', 'TX-001', 'another-test'));
+    }
+
     public function testSaveBigField()
     {
         $value = str_repeat("01234567890", 20);
