@@ -49,6 +49,18 @@ class RoleControlerTest extends ControlerTestCase
         $this->roleControler->doDeleteAction();
     }
 
+    /**
+     * @throws LastMessageException
+     */
+    public function testDoDeleteActionBlockedWhenRoleUsedInAnnuaire(): void
+    {
+        $this->expectException("LastErrorException");
+        $annuaireRoleSQL = $this->getObjectInstancier()->getInstance(AnnuaireRoleSQL::class);
+        $annuaireRoleSQL->add('Groupe Test', self::ID_E_COL, self::ID_E_COL, 'admin');
+        $this->setPostInfo(['role' => 'admin']);
+        $this->roleControler->doDeleteAction();
+    }
+
     public function testDoDetailAction()
     {
         $this->expectException("LastMessageException");
