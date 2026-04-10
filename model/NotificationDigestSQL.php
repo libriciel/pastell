@@ -23,4 +23,12 @@ class NotificationDigestSQL extends SQL
         $sql = "DELETE FROM notification_digest WHERE id_nd = ?";
         $this->query($sql, $id_nd);
     }
+
+    public function deleteByDocument(string $id_d): void
+    {
+        $sql = <<<SQL
+DELETE FROM notification_digest WHERE id_d = ?;
+SQL;
+        $this->query($sql, $id_d);
+    }
 }
