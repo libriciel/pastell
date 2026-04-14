@@ -6,6 +6,7 @@
 - Lors de la suppression d'une entité, nettoyer les rôles d'annuaire et notifications associés #2432
 - Lors de la suppression d'un connecteur, nettoyer les fréquences de connecteur associées #2435
 - Lors de la suppression d'une tâche automatique, nettoyer les workers associés #2438
+- Lors de la suppression d'un groupe d'annuaire, nettoyer les appartenances des contacts associés #2439
 
 # [4.0.30] - 2026-04-07
 
