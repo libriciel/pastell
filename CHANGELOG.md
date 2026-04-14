@@ -5,6 +5,7 @@
 - Bloquer la suppression d'une entité si des contacts ou groupes existent dans son annuaire #2432
 - Lors de la suppression d'une entité, nettoyer les rôles d'annuaire et notifications associés #2432
 - Lors de la suppression d'un connecteur, nettoyer les fréquences de connecteur associées #2435
+- Lors de la suppression d'un document, nettoyer les notifications en attente d'envoi associées #2436
 - Lors de la suppression d'une tâche automatique, nettoyer les workers associés #2438
 - Lors de la suppression d'un groupe d'annuaire, nettoyer les appartenances des contacts associés #2439
 
