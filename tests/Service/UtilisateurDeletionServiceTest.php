@@ -3,6 +3,7 @@
 namespace Pastell\Tests\Service;
 
 use Notification;
+use NotificationDigestSQL;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
 use PastellTestCase;
 use UtilisateurNewEmailSQL;
@@ -65,5 +66,16 @@ class UtilisateurDeletionServiceTest extends PastellTestCase
         $this->getObjectInstancier()->getInstance(UtilisateurDeletionService::class)->delete(2);
 
         self::assertEmpty($utilisateurNewEmailSQL->confirm($password));
+    }
+
+    public function testDeleteCleansNotificationDigest(): void
+    {
+        $notificationDigestSQL = $this->getObjectInstancier()->getInstance(NotificationDigestSQL::class);
+        $notificationDigestSQL->add('eric2@sigmalis.com', 1, 'id-d-fake', 'action-fake', 'type-fake', 'message-fake');
+        self::assertNotEmpty($notificationDigestSQL->getAll());
+
+        $this->getObjectInstancier()->getInstance(UtilisateurDeletionService::class)->delete(2);
+
+        self::assertEmpty($notificationDigestSQL->getAll());
     }
 }
