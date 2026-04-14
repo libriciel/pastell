@@ -31,4 +31,13 @@ DELETE FROM notification_digest WHERE id_d = ?;
 SQL;
         $this->query($sql, $id_d);
     }
+
+    public function deleteByEmail(string $mail): void
+    {
+        $sql = <<<SQL
+DELETE FROM notification_digest WHERE mail = ?;
+SQL;
+
+        $this->query($sql, $mail);
+    }
 }
