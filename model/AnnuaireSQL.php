@@ -98,4 +98,12 @@ class AnnuaireSQL extends SQL
         $sql = "UPDATE annuaire SET description=?, email=? WHERE id_a=?";
         $this->query($sql, $description, $email, $id_a);
     }
+
+    public function getNbGroupe($id_e): int
+    {
+        $sql = <<<SQL
+SELECT count(*) FROM annuaire_groupe WHERE id_e=?;
+SQL;
+        return (int)$this->queryOne($sql, $id_e);
+    }
 }

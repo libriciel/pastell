@@ -42,6 +42,14 @@ class AnnuaireRoleSQL extends SQL
         $this->query($sql, $id_r);
     }
 
+    public function deleteByEntite(int $id_e): void
+    {
+        $sql = <<<SQL
+DELETE FROM annuaire_role WHERE id_e_owner = ? OR id_e = ?;
+SQL;
+        $this->query($sql, $id_e, $id_e);
+    }
+
     public function getList($id_e, $debut)
     {
         $sql = "SELECT nom FROM annuaire_role WHERE id_e_owner=? AND nom LIKE ?";
