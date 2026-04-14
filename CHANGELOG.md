@@ -3,6 +3,9 @@
 ## Corrections
 
 - Correction des doublons lors de la récupération des actes S2low #2429
+- Gestion des utilisateurs exclusivement API par API #2441 :
+  - Ajout de la route `POST /api/v2/utilisateur/:id_u/token/:id_token/renew` pour renouveler un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
+  - Ajout de la route `DELETE /api/v2/utilisateur/:id_u/token/:id_token` pour supprimer un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
 
 # [4.1.17] - 2026-04-07
 

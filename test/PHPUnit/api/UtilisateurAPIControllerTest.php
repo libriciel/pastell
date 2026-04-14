@@ -6,6 +6,31 @@ use Pastell\Service\Utilisateur\UserCreationService;
 
 class UtilisateurAPIControllerTest extends PastellTestCase
 {
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    private function createApiUser(): int
+    {
+        return $this->getObjectInstancier()->getInstance(UserCreationService::class)
+            ->createAPI('api-bot', 0, 'Bot', 'Api');
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    private function createUnprivilegedUser(): int
+    {
+        return $this->getObjectInstancier()->getInstance(UserCreationService::class)
+            ->create('unprivileged', 'unprivileged@example.org', 'Unprivileged', 'User');
+    }
+
+    private function createTokenForApiUser(int $apiUser): array
+    {
+        return $this->getInternalAPI()->post("/utilisateur/$apiUser/token", ['name' => 'token-for-other']);
+    }
+
     public function testCreate(): void
     {
         $info = $this->getInternalAPI()->post(
@@ -375,7 +400,7 @@ class UtilisateurAPIControllerTest extends PastellTestCase
 
     public function testRenewTokenFail(): void
     {
-        self::expectExceptionMessage('Impossible de renouveller ce jeton');
+        self::expectExceptionMessage('Impossible de renouveler ce jeton');
         $this->getInternalAPI()->post('utilisateur/token/1/renew');
     }
 
@@ -411,13 +436,8 @@ class UtilisateurAPIControllerTest extends PastellTestCase
      */
     public function testCreateTokenForOther(): void
     {
-        $apiUser = $this->getObjectInstancier()->getInstance(UserCreationService::class)
-            ->createAPI('api-bot', 0, 'Bot', 'Api');
-
-        $token = $this->getInternalAPI()->post(
-            "/utilisateur/$apiUser/token",
-            ['name' => 'token-for-other']
-        );
+        $apiUser = $this->createApiUser();
+        $token = $this->createTokenForApiUser($apiUser);
 
         static::assertSame('token-for-other', $token['name']);
         static::assertSame((string)$apiUser, $token['id_u']);
@@ -435,10 +455,7 @@ class UtilisateurAPIControllerTest extends PastellTestCase
 
         $this->expectException(ForbiddenException::class);
         $this->expectExceptionMessage('Les jetons ne peuvent être créés que pour des utilisateurs de type API');
-        $this->getInternalAPI()->post(
-            "/utilisateur/$classicUser/token",
-            ['name' => 'token-for-other']
-        );
+        $this->getInternalAPI()->post("/utilisateur/$classicUser/token", ['name' => 'token-for-other']);
     }
 
     /**
@@ -447,16 +464,99 @@ class UtilisateurAPIControllerTest extends PastellTestCase
      */
     public function testCreateTokenForOtherForbidden(): void
     {
-        $apiUser = $this->getObjectInstancier()->getInstance(UserCreationService::class)
-            ->createAPI('api-bot', 0, 'Bot', 'Api');
-        $unprivilegedUser = $this->getObjectInstancier()->getInstance(UserCreationService::class)
-            ->create('unprivileged', 'unprivileged@example.org', 'Unprivileged', 'User');
+        $apiUser = $this->createApiUser();
+        $unprivilegedUser = $this->createUnprivilegedUser();
 
         $this->expectException(ForbiddenException::class);
         $this->expectExceptionMessage("Acces interdit id_e=0, droit=utilisateur:edition,id_u=$unprivilegedUser");
-        $this->getInternalAPIAsUser($unprivilegedUser)->post(
-            "/utilisateur/$apiUser/token",
-            ['name' => 'token-for-other']
-        );
+        $this->getInternalAPIAsUser($unprivilegedUser)->post("/utilisateur/$apiUser/token", ['name' => 'token-for-other']);
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testRenewTokenForOther(): void
+    {
+        $apiUser = $this->createApiUser();
+        $token = $this->createTokenForApiUser($apiUser);
+        $tokenId = $token['id'];
+
+        $renewed = $this->getInternalAPI()->post("/utilisateur/$apiUser/token/$tokenId/renew");
+
+        static::assertSame(43, strlen($renewed['token']));
+        static::assertNotSame($token['token'], $renewed['token']);
+        static::assertSame((string)$apiUser, $renewed['id_u']);
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testRenewTokenForOtherForbidden(): void
+    {
+        $apiUser = $this->createApiUser();
+        $unprivilegedUser = $this->createUnprivilegedUser();
+        $tokenId = $this->createTokenForApiUser($apiUser)['id'];
+
+        $this->expectException(ForbiddenException::class);
+        $this->expectExceptionMessage("Acces interdit id_e=0, droit=utilisateur:edition,id_u=$unprivilegedUser");
+        $this->getInternalAPIAsUser($unprivilegedUser)->post("/utilisateur/$apiUser/token/$tokenId/renew");
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testRenewTokenForOtherWrongToken(): void
+    {
+        $apiUser = $this->createApiUser();
+        $adminTokenId = $this->getInternalAPI()->post('utilisateur/token', ['name' => 'admin-token'])['id'];
+
+        $this->expectException(ForbiddenException::class);
+        $this->expectExceptionMessage('Impossible de renouveler ce jeton');
+        $this->getInternalAPI()->post("/utilisateur/$apiUser/token/$adminTokenId/renew");
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testDeleteTokenForOther(): void
+    {
+        $apiUser = $this->createApiUser();
+        $tokenId = $this->createTokenForApiUser($apiUser)['id'];
+
+        $this->getInternalAPI()->delete("/utilisateur/$apiUser/token/$tokenId");
+        $this->expectOutputRegex('/HTTP\/1.1 204 No Content/');
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testDeleteTokenForOtherForbidden(): void
+    {
+        $apiUser = $this->createApiUser();
+        $unprivilegedUser = $this->createUnprivilegedUser();
+        $tokenId = $this->createTokenForApiUser($apiUser)['id'];
+
+        $this->expectException(ForbiddenException::class);
+        $this->expectExceptionMessage("Acces interdit id_e=0, droit=utilisateur:edition,id_u=$unprivilegedUser");
+        $this->getInternalAPIAsUser($unprivilegedUser)->delete("/utilisateur/$apiUser/token/$tokenId");
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testDeleteTokenForOtherWrongToken(): void
+    {
+        $apiUser = $this->createApiUser();
+        $adminTokenId = $this->getInternalAPI()->post('utilisateur/token', ['name' => 'admin-token'])['id'];
+
+        $this->expectException(ForbiddenException::class);
+        $this->expectExceptionMessage('Impossible de supprimer ce jeton');
+        $this->getInternalAPI()->delete("/utilisateur/$apiUser/token/$adminTokenId");
     }
 }
