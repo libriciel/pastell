@@ -6,6 +6,7 @@ namespace Pastell\Service\Utilisateur;
 
 use ConflictException;
 use Journal;
+use NotificationDigestSQL;
 use Pastell\Utilities\Certificate;
 use Pastell\Validator\UserValidator;
 use RoleUtilisateur;
@@ -19,6 +20,7 @@ final class UserUpdateService
         private readonly RoleUtilisateur $roleUtilisateur,
         private readonly Journal $journal,
         private readonly UserValidator $userValidator,
+        private readonly NotificationDigestSQL $notificationDigestSQL,
     ) {
     }
 
@@ -58,6 +60,7 @@ final class UserUpdateService
         $this->utilisateurSQL->validMailAuto($userId);
         $this->utilisateurSQL->setNomPrenom($userId, $lastname, $firstname);
         $this->utilisateurSQL->setEmail($userId, $email);
+        $this->notificationDigestSQL->updateEmail($oldInfo['email'], $email);
         $this->utilisateurSQL->setLogin($userId, $login);
         $this->utilisateurSQL->setColBase($userId, $entityId);
 
