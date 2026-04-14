@@ -96,6 +96,9 @@ class Notification extends SQL
 
     public function removeAllForEntite(int $id_e): void
     {
-        $this->query("DELETE FROM notification WHERE id_e=?", $id_e);
+        $sql = <<<SQL
+DELETE FROM notification WHERE id_e=?
+SQL;
+        $this->query($sql, $id_e);
     }
 }

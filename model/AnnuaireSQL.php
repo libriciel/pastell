@@ -101,6 +101,9 @@ class AnnuaireSQL extends SQL
 
     public function getNbGroupe($id_e): int
     {
-        return (int)$this->queryOne("SELECT count(*) FROM annuaire_groupe WHERE id_e=?", $id_e);
+        $sql = <<<SQL
+SELECT count(*) FROM annuaire_groupe WHERE id_e=?;
+SQL;
+        return (int)$this->queryOne($sql, $id_e);
     }
 }
