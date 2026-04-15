@@ -1,3 +1,10 @@
+# [5.0.4] - 2026-05-04
+
+## Corrections
+
+-  iparapheur REST, dans le fichier iparapheur_historique.xml, il y avait en dernier élément LogDossier le prochain status 
+  sans timestamp et nom. Il n'est maintenant plus présent #2443
+
 # [5.0.3] - 2026-04-07
 
 ## Ajouts

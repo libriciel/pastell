@@ -597,6 +597,11 @@ class IparapheurRestConnector extends SignatureConnecteur implements
             ];
         }
 
+        //supprime le dernier élément logDossier (évènement qui n'a pas eu lieu)
+        if (end($logDossier) && end($logDossier)->timestamp === '') {
+            array_pop($logDossier);
+        }
+
         $result = new stdClass();
         $result->LogDossier = $logDossier;
 

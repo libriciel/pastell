@@ -305,7 +305,7 @@ final class IparapheurRestConnectorTest extends PastellTestCase
         $this->getConnectorId();
         $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
         $all_historique = $connector->getAllHistoriqueInfo(self::ONGOING_FOLDER_ID);
-        self::assertCount(3, $all_historique->LogDossier);
+        self::assertCount(2, $all_historique->LogDossier);
         self::assertSame(Action::START, $all_historique->LogDossier[0]->status);
     }
 
@@ -319,7 +319,7 @@ final class IparapheurRestConnectorTest extends PastellTestCase
         $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
         $history = $connector->getAllHistoriqueInfo(self::ONGOING_FOLDER_ID);
         $last = $connector->getLastHistorique($history);
-        self::assertSame('Étape en cours : [SIGNATURE] (bureau test pour [SIGNATURE])', $last);
+        self::assertSame('Étape en cours : [READ] (bureau test pour [SIGNATURE])', $last);
     }
 
     /**
