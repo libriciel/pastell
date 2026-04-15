@@ -24,7 +24,6 @@ body > #global {
     overflow: hidden;
     display: block;
     position: relative;
-    padding-bottom: 20px;
 }
 
 html body h4 {
@@ -357,8 +356,9 @@ html body .bloc_btn_list {
     flex-direction: row-reverse;
     justify-content: space-between;
     align-items: center;
-    height: 100%;
-    padding: 0 20px;
+    height: 40px;
+    padding: 0 24px;
+    background-color: var(--bs-ls-grey-900);
 }
 
 div#bloc_left {
@@ -370,38 +370,38 @@ div#bloc_left {
     text-decoration: none;
 }
 
-.bloc_copyright a:hover {
-    color: var(--bs-ls-primary-200);
-    text-decoration: underline;
-}
-
 .bloc_logo_libriciel {
-    width: 10%;
     float: right;
     text-align: right;
 }
 
 .bloc_logo_libriciel a img {
-    filter: grayscale(1);
-    -webkit-filter: grayscale(1);
+    opacity: 50%;
+    height: 22px;
 }
 
 .bloc_logo_libriciel a img:hover {
-    filter: grayscale(0);
-    -webkit-filter: grayscale(0);
+    opacity: 100%;
 }
 
 .bloc_mentions {
-    color: var(--bs-ls-primary-200);
+    color: var(--bs-ls-grey-50);
     text-align: center;
 }
 
 .bloc_mentions p {
     margin: 0;
+    font-size: 14px;
 }
 
 .bloc_mentions a {
-    color: #fff;
+    text-decoration: underline;
+    color: var(--bs-ls-grey-50);
+}
+
+.bloc_mentions a:hover {
+    text-decoration: underline;
+    color: var(--bs-ls-info-500);
 }
 
 .box_suiv {
