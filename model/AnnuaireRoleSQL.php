@@ -42,6 +42,14 @@ class AnnuaireRoleSQL extends SQL
         $this->query($sql, $id_r);
     }
 
+    public function getNbByRole(string $role): int
+    {
+        $sql = <<<SQL
+SELECT count(*) FROM annuaire_role WHERE role = ?;
+SQL;
+        return (int) $this->queryOne($sql, $role);
+    }
+
     public function deleteByEntite(int $id_e): void
     {
         $sql = <<<SQL
