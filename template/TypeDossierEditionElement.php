@@ -22,7 +22,8 @@
             <tr>
                 <th class="w400">
                     <label for="element_id" >Identifiant de l'élément<span class="obl">*</span></label>
-                    <p class='form_commentaire'>Chiffres, lettres minuscules ou _. 64 caractères maximum.</p>
+                    <p class='form_commentaire'>Commence par une lettre minuscule ou _. Puis chiffres, lettres
+                        minuscules ou _. 64 caractères maximum.</p>
 
                 </th>
                 <td>

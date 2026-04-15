@@ -16,6 +16,11 @@ class TypeDossierFormulaireElementManagerTest extends \PHPUnit\Framework\TestCas
                 "L'identifiant de l'élément ne peut comporter que des chiffres, des lettres minuscules et le caractère _"
             ],
             [
+                '1_matricule_agent',
+                false,
+                "L'identifiant de l'élément ne doit pas commencer par un chiffre"
+            ],
+            [
                 str_pad(
                     "",
                     TypeDossierFormulaireElementManager::ELEMENT_ID_MAX_LENGTH + 1,
@@ -116,21 +121,21 @@ class TypeDossierFormulaireElementManagerTest extends \PHPUnit\Framework\TestCas
         $typeDossierFormulaireElement = new TypeDossierFormulaireElementProperties();
         $typeDossierFormulaireElementManager = new TypeDossierFormulaireElementManager();
         $typeDossierFormulaireElementManager->edition($typeDossierFormulaireElement, new Recuperateur([
-            'element_id' => '1',
+            'element_id' => 'id_1',
             'name' => 'nomtest',
             'type' => 'text',
             'default_value' => 'Mon nom',
         ]));
         $this->assertEquals('Mon nom', $typeDossierFormulaireElement->default_value);
         $typeDossierFormulaireElementManager->edition($typeDossierFormulaireElement, new Recuperateur([
-            'element_id' => '2',
+            'element_id' => 'id_2',
             'name' => 'checkboxtest',
             'type' => 'checkbox',
             'default_value' => 'on',
         ]));
         $this->assertEquals('on', $typeDossierFormulaireElement->default_value);
         $typeDossierFormulaireElementManager->edition($typeDossierFormulaireElement, new Recuperateur([
-            'element_id' => '3',
+            'element_id' => 'id_3',
             'name' => 'selectiontest',
             'type' => 'select',
             'default_value' => '1',

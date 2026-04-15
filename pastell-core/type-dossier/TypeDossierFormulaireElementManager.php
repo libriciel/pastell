@@ -6,7 +6,7 @@ class TypeDossierFormulaireElementManager
     public const ELEMENT_ID_MAX_LENGTH = 64;
 
     //Même remarque
-    public const ELEMENT_ID_REGEXP = "^[0-9a-z_]+$";
+    public const ELEMENT_ID_REGEXP = "^[a-z_][0-9a-z_]*$";
 
     public const ELEMENT_ID = "element_id";
     public const NAME = "name";
@@ -112,13 +112,16 @@ class TypeDossierFormulaireElementManager
      * @param $element_id
      * @throws TypeDossierException
      */
-    private function verifElementId($element_id)
+    private function verifElementId($element_id): void
     {
         if (! $element_id) {
             throw new TypeDossierException("L'identifiant ne peut être vide");
         }
         if (strlen($element_id) > self::ELEMENT_ID_MAX_LENGTH) {
             throw new TypeDossierException("La longueur de l'identifiant ne peut dépasser 64 caractères");
+        }
+        if (preg_match("#^\d#", $element_id)) {
+            throw new TypeDossierException("L'identifiant de l'élément ne doit pas commencer par un chiffre");
         }
         if (! preg_match("#" . self::ELEMENT_ID_REGEXP . "#", $element_id)) {
             throw new TypeDossierException(
