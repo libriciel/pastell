@@ -55,6 +55,9 @@ class PESMarcheInfo extends PESV2XMLFile
         }
 
         //PES_Marche
+        $info[self::ID_CONTRAT] = '';
+        $info[self::ID_PJ] = '';
+
         if ($info['is_marche']) {
             $info[self::ID_CONTRAT] = strval($zone_id_marche->IdContrat['V']);
             $info['SequenceEnvoi'] = strval($zone_id_marche->SequenceEnvoi['V']);
@@ -76,8 +79,10 @@ class PESMarcheInfo extends PESV2XMLFile
                 $info['accord_cadre'] = strval($zone_marche->ConditionsExecution->IdAccordCadre['V']) . " - " . strval($zone_marche->ConditionsExecution->SiretPAAccordCadre['V']);
                 $info['date_notification'] = strval($zone_marche->DateNotification['V']);
             }
+        }
 
-            //PES_PJ
+        //PES_PJ
+        if ($info['is_pj']) {
             $info[self::ID_PJ] = $this->getValueFromXPath($xml, "//PES_PJ/PJ/IdUnique/@V");
         }
 

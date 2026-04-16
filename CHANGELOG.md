@@ -3,6 +3,7 @@
 ## Corrections
 
 - Les identifiants de champs ne peuvent plus commencer par un chiffre (erreur Twig lors de la génération de bordereaux SEDA) #2161
+- Correction de l'extraction des données pour les fichiers PES de type PJ dans le flux pes-marche #2172
 - Bloquer la suppression d'une entité si des contacts ou groupes existent dans son annuaire #2432
 - Lors de la suppression d'une entité, nettoyer les rôles d'annuaire et notifications associés #2432
 - Lors de la suppression d'un utilisateur, nettoyer les notifications, tokens API et demandes de changement d'email associés #2434
