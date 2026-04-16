@@ -2,8 +2,7 @@
 
 ## Corrections
 
--  iparapheur REST, dans le fichier iparapheur_historique.xml, il y avait en dernier élément LogDossier le prochain status 
-  sans timestamp et nom. Il n'est maintenant plus présent #2443
+-  iParapheur REST : suppression du LogDossier superflu (sans timestamp ni nom) qui apparaissait en dernier dans `iparapheur_historique.xml` #2443
 
 # [5.0.3] - 2026-04-07
 
