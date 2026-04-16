@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UserUpdateService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
@@ -228,23 +229,32 @@ class UtilisateurAPIController extends BaseAPIController
     }
 
     /**
-     * @return mixed
+     * @return array
      * @throws Exception
      * @throws ForbiddenException
      * @throws NotFoundException
      */
-    public function delete()
+    public function delete(): array
     {
         if ($this->getFromQueryArgs(0) === 'token') {
             return $this->deleteUserToken();
         }
 
-        $data['id_u'] = $this->getFromQueryArgs(0);
+        $id_u = $this->getFromQueryArgs(0);
+        if ($id_u !== false && $this->getFromQueryArgs(1) === 'token') {
+            $this->verifExists($id_u);
+            return $this->deleteUserToken((int)$id_u);
+        }
+
+        $data['id_u'] = $id_u;
         $data['login'] = $this->getFromRequest('login');
 
         $infoUtilisateur = $this->utilisateur->getUserFromData($data);
 
-        $this->checkDroit($infoUtilisateur['id_e'], "utilisateur:edition");
+        $this->checkDroit(
+            $infoUtilisateur['id_e'],
+            DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR)
+        );
 
         $this->utilisateurDeletionService->delete($infoUtilisateur['id_u']);
 
@@ -274,7 +284,10 @@ class UtilisateurAPIController extends BaseAPIController
      */
     private function postUserToken(?int $id_u = null): array
     {
-        if ($this->getFromQueryArgs(2) === 'renew') {
+        if ($id_u !== null && $this->getFromQueryArgs(3) === 'renew') {
+            return $this->renewUserToken($id_u);
+        }
+        if ($id_u === null && $this->getFromQueryArgs(2) === 'renew') {
             return $this->renewUserToken();
         }
 
@@ -283,16 +296,16 @@ class UtilisateurAPIController extends BaseAPIController
         $expiration = $this->getFromRequest('expiration') ?: null;
 
         if ($name === null) {
-            throw new Exception('Le nom du token est obligatoire');
+            throw new \RuntimeException('Le nom du token est obligatoire');
         }
 
         if ($expiration !== null) {
             $date = DateTime::createFromFormat('Y-m-d', $expiration);
             if (!$date || ($date->format('Y-m-d') !== $expiration)) {
-                throw new Exception("La date d'expiration est fausse, format attendu : 2020-03-31");
+                throw new \RuntimeException("La date d'expiration est fausse, format attendu : 2020-03-31");
             }
             if ($date->format('Y-m-d') === $expiration && $expiration < date('Y-m-d H:i:s')) {
-                throw new Exception("La date d'expiration est antérieure à la date d'aujourd'hui");
+                throw new \RuntimeException("La date d'expiration est antérieure à la date d'aujourd'hui");
             }
         }
 
@@ -303,12 +316,21 @@ class UtilisateurAPIController extends BaseAPIController
     /**
      * @throws ForbiddenException
      */
-    private function deleteUserToken(): array
+    private function deleteUserToken(?int $id_u = null): array
     {
-        $id_u = $this->getUtilisateurId();
-        $tokenId = $this->getFromQueryArgs(1);
-        $user = $this->userTokenService->getUser($tokenId);
-        if ($user !== $id_u) {
+        if ($id_u !== null) {
+            $tokenId = $this->getFromQueryArgs(2);
+            $infoUtilisateur = $this->utilisateur->getInfo($id_u);
+            $this->checkDroit(
+                $infoUtilisateur['id_e'],
+                DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR)
+            );
+        } else {
+            $tokenId = $this->getFromQueryArgs(1);
+            $id_u = $this->getUtilisateurId();
+        }
+        $tokenOwner = $this->userTokenService->getUser($tokenId);
+        if ($tokenOwner !== $id_u) {
             throw new ForbiddenException('Impossible de supprimer ce jeton');
         }
         $this->userTokenService->deleteToken($tokenId);
@@ -319,13 +341,22 @@ class UtilisateurAPIController extends BaseAPIController
     /**
      * @throws ForbiddenException
      */
-    private function renewUserToken(): array
+    private function renewUserToken(?int $id_u = null): array
     {
-        $id_u = $this->getUtilisateurId();
-        $tokenId = $this->getFromQueryArgs(1);
-        $user = $this->userTokenService->getUser($tokenId);
-        if ($user !== $id_u) {
-            throw new ForbiddenException('Impossible de renouveller ce jeton');
+        if ($id_u !== null) {
+            $infoUtilisateur = $this->utilisateur->getInfo($id_u);
+            $this->checkDroit(
+                $infoUtilisateur['id_e'],
+                DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR)
+            );
+            $tokenId = $this->getFromQueryArgs(2);
+        } else {
+            $tokenId = $this->getFromQueryArgs(1);
+            $id_u = $this->getUtilisateurId();
+        }
+        $tokenOwner = $this->userTokenService->getUser($tokenId);
+        if ($tokenOwner !== $id_u) {
+            throw new ForbiddenException('Impossible de renouveler ce jeton');
         }
         $token = $this->userTokenService->renewToken($tokenId);
         return $this->getTokenInfo($token);
