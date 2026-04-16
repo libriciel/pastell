@@ -589,17 +589,14 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                 $event->eventOutcomeInformation->eventOutcomeDetail->eventOutcomeDetailNote ?? '',
             );
 
-            $logDossier[] = (object)[
-                'timestamp' => $timestamp,
-                'nom' => $agentName,
-                'status' => $event->eventType,
-                'annotation' => trim($annotation),
-            ];
-        }
-
-        //supprime le dernier élément logDossier (évènement qui n'a pas eu lieu)
-        if (end($logDossier) && end($logDossier)->timestamp === '') {
-            array_pop($logDossier);
+            if ($timestamp !== '') {
+                $logDossier[] = (object)[
+                    'timestamp' => $timestamp,
+                    'nom' => $agentName,
+                    'status' => $event->eventType,
+                    'annotation' => trim($annotation),
+                ];
+            }
         }
 
         $result = new stdClass();

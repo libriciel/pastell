@@ -2,7 +2,8 @@
 
 ## Corrections
 
--  iParapheur REST : suppression du LogDossier superflu (sans timestamp ni nom) qui apparaissait en dernier dans `iparapheur_historique.xml` #2443
+-  iParapheur REST : suppression du LogDossier superflu (sans timestamp ni nom) qui apparaissait en dernier 
+ dans `iparapheur_historique.xml` #2443
 
 # [5.0.3] - 2026-04-07
 
