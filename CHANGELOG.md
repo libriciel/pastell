@@ -11,6 +11,7 @@
 - Lors de la suppression d'un document, nettoyer les notifications en attente d'envoi associées #2436
 - Lors de la suppression d'une tâche automatique, nettoyer les workers associés #2438
 - Lors de la suppression d'un groupe d'annuaire, nettoyer les appartenances des contacts associés #2439
+- Mise à jour du mail dans `notifications_digest` à la modification #2442
 
 # [4.0.30] - 2026-04-07
 

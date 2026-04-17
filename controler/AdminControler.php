@@ -89,6 +89,7 @@ class AdminControler extends Controler
         }
         $pastellLogger->info("L'utilisateur {$login} existe déjà");
         $this->getUtilisateur()->setEmail($utilisateurInfo['id_u'], $email);
+        $this->getObjectInstancier()->getInstance(NotificationDigestSQL::class)->updateEmail($utilisateurInfo['email'], $email);
         $pastellLogger->info("Mise à jour de l'utilisateur $login.");
     }
 }

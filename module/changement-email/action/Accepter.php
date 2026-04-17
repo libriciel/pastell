@@ -11,12 +11,13 @@ class Accepter extends ActionExecutor
         $message = $this->getDonneesFormulaire()->get('message');
         $email = $this->getDonneesFormulaire()->get('email_demande');
 
-        $this->objectInstancier->getInstance(UtilisateurSQL::class)->setEmail($id_u, $email);
-
-        $utilisateur_info = $this->objectInstancier->getInstance(UtilisateurSQL::class)->getInfo($id_u);
+        $utilisateurSQL = $this->objectInstancier->getInstance(UtilisateurSQL::class);
+        $oldEmail = $utilisateurSQL->getInfo($id_u)['email'];
+        $utilisateurSQL->setEmail($id_u, $email);
+        $this->objectInstancier->getInstance(NotificationDigestSQL::class)->updateEmail($oldEmail, $email);
 
         $templatedEmail = (new TemplatedEmail())
-            ->to($utilisateur_info['email'])
+            ->to($email)
             ->subject('[Pastell] Votre changement de mail a été accepté')
             ->htmlTemplate('changement-email-accepter.html.twig')
             ->context(["message" => $message]);

@@ -24,6 +24,15 @@ class NotificationDigestSQL extends SQL
         $this->query($sql, $id_nd);
     }
 
+    public function updateEmail(string $oldMail, string $newMail): void
+    {
+        $sql = <<<SQL
+UPDATE notification_digest SET mail = ? WHERE mail = ?;
+SQL;
+
+        $this->query($sql, $newMail, $oldMail);
+    }
+
     public function deleteByDocument(string $id_d): void
     {
         $sql = <<<SQL
