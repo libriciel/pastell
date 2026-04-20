@@ -5,6 +5,7 @@
   "branchPrefix": "renovate-",
   "rangeStrategy": "update-lockfile",
   "separateMajorMinor": true,
+  "separateMinorPatch": true,
   "major": {
     "enabled": false
   },
