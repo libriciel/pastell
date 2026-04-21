@@ -625,6 +625,10 @@ class DaemonControler extends PastellControler
             DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
         );
         $nb_workers = (int)$this->getPostInfo()->get('nb_workers');
+        if ($nb_workers < 1) {
+            $this->setLastError('Le nombre de processus doit être supérieur ou égal à 1');
+            $this->redirect('Daemon/editConfiguration');
+        }
         $allocatedWorkers = $this->getDaemonSQL()->getNbAllocatedWorkers();
         if ($allocatedWorkers > $nb_workers) {
             $this->setLastError(
@@ -660,6 +664,10 @@ class DaemonControler extends PastellControler
             foreach ($allocatedWorkers as $id_daemon => $nb_workers_daemon) {
                 if ($id_daemon === DaemonSQL::GLOBAL_DAEMON) {
                     continue;
+                }
+                if ((int)$nb_workers_daemon < 1) {
+                    $this->setLastError('Chaque gestionnaire de tâches doit avoir au moins 1 processus alloué');
+                    $this->redirect('Daemon/configuration');
                 }
                 $this->getDaemonManager()->allocateWorkers($id_daemon, (int)$nb_workers_daemon);
             }
@@ -850,6 +858,11 @@ class DaemonControler extends PastellControler
             $this->getDaemonManager()->checkRFC2822Email($daemon_admin_email);
         } catch (UnrecoverableException $e) {
             $this->setLastError($e->getMessage());
+            $this->redirect('Daemon/create');
+        }
+
+        if ($nb_allocated_workers < 1) {
+            $this->setLastError('Le nombre de processus à allouer doit être supérieur ou égal à 1');
             $this->redirect('Daemon/create');
         }
 

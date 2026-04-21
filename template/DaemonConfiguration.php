@@ -102,7 +102,7 @@ declare(strict_types=1);
                     <td>
                         <?php if ($entity['id_daemon'] !== null) : ?>
                             <input type="number" id="daemon_<?= $entity['id_daemon'] ?>"
-                                   name="data[<?= $entity['id_daemon'] ?>]" value="<?= $entity['nb_workers'] ?>" min="0"
+                                   name="data[<?= $entity['id_daemon'] ?>]" value="<?= $entity['nb_workers'] ?>" min="1"
                                    max="<?= $nb_workers - 1 ?>"/>
                         <?php else : ?>
                             <?= $entity['nb_workers'] ?>
