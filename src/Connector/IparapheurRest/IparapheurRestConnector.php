@@ -25,6 +25,7 @@ use Libriciel\IparapheurV5\Client\ApiException;
 use Pastell\Action\TestConnectionInterface;
 use Pastell\Client\IparapheurV5\IparapheurAuthConfig;
 use Pastell\Client\IparapheurV5\ApiClientFactory;
+use Pastell\Client\IparapheurV5\IparapheurInternalApi;
 use Pastell\Client\IparapheurV5\Model\Premis;
 use Pastell\Client\IparapheurV5\Model\PremisObject;
 use Pastell\Client\IparapheurV5\Model\SignificantProperties;
@@ -39,6 +40,7 @@ use Psr\Http\Client\ClientInterface;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
+use Symfony\Component\Uid\Uuid;
 use TmpFolder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
@@ -69,6 +71,8 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     private string $iparapheur_metadata;
     private ?array $sending_metadata = null;
     private bool $iparapheur_multi_doc;
+
+    private string $resolvedFolderId;
 
     public function __construct(
         private readonly ApiClientFactory $apiClientFactory,
@@ -419,14 +423,15 @@ class IparapheurRestConnector extends SignatureConnecteur implements
      */
     public function getSignature($dossierID): array
     {
-        $premis = $this->getPremis($dossierID);
+        $resolvedId = $this->getFolderId($dossierID);
+        $premis = $this->getPremis($resolvedId);
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID, '');
         $deskId = $this->connecteurConfig->get(self::DESK_ID, '');
         try {
             $zipData = new FolderApi($this->client, $this->configuration)->downloadFolderZip(
                 $tenantId,
                 $deskId,
-                $dossierID
+                $resolvedId
             );
         } catch (ApiException $e) {
             throw new IpRestApiException(
@@ -440,7 +445,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
 
         $tmpFolder = new TmpFolder();
         $tmp_folder = $tmpFolder->create();
-        $tmp_path = $tmp_folder . "/$dossierID.zip";
+        $tmp_path = $tmp_folder . "/$resolvedId.zip";
         file_put_contents($tmp_path, $zipData);
 
         try {
@@ -453,6 +458,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
             }
 
             $info = [];
+            $info['dossier_id'] = $resolvedId;
             $info['bordereau'] = null;
             $info['meta_donnees'] = [];
             $info['documents'] = [];
@@ -535,17 +541,21 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         }
     }
 
+    /**
+     * @throws IpRestApiException
+     */
     public function archiver($dossierID): bool
     {
-        return $this->deleteFolder($dossierID);
+        return $this->deleteFolder($this->getFolderId($dossierID));
     }
 
     /**
      * @throws IpRestApiException
+     * @throws Exception
      */
     public function getAllHistoriqueInfo($dossierID): stdClass
     {
-        $premis = $this->getPremis($dossierID);
+        $premis = $this->getPremis($this->getFolderId($dossierID));
         $events = $premis->getAllCurrentEvents();
 
         $logDossier = [];
@@ -641,9 +651,12 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         return isset($logSignature) ? date('Y-m-d', strtotime($logSignature->timestamp)) : '';
     }
 
+    /**
+     * @throws IpRestApiException
+     */
     public function effacerDossierRejete($dossierID): bool
     {
-        return $this->deleteFolder($dossierID);
+        return $this->deleteFolder($this->getFolderId($dossierID));
     }
 
     public function exercerDroitRemordDossier($dossierID): bool
@@ -831,5 +844,39 @@ class IparapheurRestConnector extends SignatureConnecteur implements
             }
         }
         return 'Aucune étape complétée';
+    }
+
+    /**
+     * @throws IpRestApiException
+     * @throws JsonException
+     */
+    private function getFolderId(string $folderId): string
+    {
+        if (Uuid::isValid($folderId)) {
+            return $folderId;
+        }
+        if (!isset($this->resolvedFolderId)) {
+            $this->resolvedFolderId = $this->getFolderIdByLegacyId($folderId);
+            $donneesFormulaire = $this->getDocDonneesFormulaire();
+            foreach ($donneesFormulaire->getRawData() as $fieldName => $value) {
+                if ($value === $folderId) {
+                    $donneesFormulaire->setData($fieldName, $this->resolvedFolderId);
+                }
+            }
+        }
+        return $this->resolvedFolderId;
+    }
+
+    /**
+     * @throws IpRestApiException
+     */
+    private function getFolderIdByLegacyId(string $legacyFolderId): string
+    {
+        try {
+            return new IparapheurInternalApi($this->client, $this->configuration)
+                ->getFolderIdByLegacyId($this->connecteurConfig->get(self::TENANT_ID, ''), $legacyFolderId);
+        } catch (ApiException $e) {
+            throw new IpRestApiException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 }

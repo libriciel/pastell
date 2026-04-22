@@ -11,6 +11,7 @@ use Exception;
 use Fichier;
 use FileToSign;
 use JsonException;
+use NotFoundException;
 use Pastell\Client\IparapheurV5\Model\Premis;
 use Pastell\Connector\IparapheurRest\IpRestApiException;
 use Psr\Http\Message\RequestInterface;
@@ -33,10 +34,12 @@ final class IparapheurRestConnectorTest extends PastellTestCase
     private const string TENANT_ID = 'tenant-test';
     private const string DESK_ID = 'desk-test';
     private const string TYPE_ID = 'type-test';
-    private const string ONGOING_FOLDER_ID = 'ONGOING-FOLDER-ID';
-    private const string FINISHED_FOLDER_ID = 'FINISHED-FOLDER-ID';
-    private const string REFUSED_FOLDER_ID = 'REFUSED-FOLDER-ID';
-    private const string ERROR_FOLDER_ID = 'ERROR-FOLDER-ID';
+    private const string ONGOING_FOLDER_ID = '95cf58f4-71d2-11f0-878d-426b451987f3';
+    private const string FINISHED_FOLDER_ID = 'ffffffff-71d2-11f0-878d-000000000001';
+    private const string REFUSED_FOLDER_ID = 'eeeeeeee-71d2-11f0-878d-000000000001';
+    private const string ERROR_FOLDER_ID = 'cccccccc-71d2-11f0-878d-000000000001';
+    private const string LEGACY_FOLDER_ID = 'LEGACY-FOLDER-ID';
+    private const string UNKNOWN_LEGACY_FOLDER_ID = 'UNKNOWN-LEGACY-FOLDER-ID';
 
     public function getConnectorId(): int
     {
@@ -52,6 +55,9 @@ final class IparapheurRestConnectorTest extends PastellTestCase
         return (int) $connectorId;
     }
 
+    /**
+     * @throws JsonException
+     */
     private function buildFixtureClient(): ClientInterface
     {
         $routes = [
@@ -85,8 +91,30 @@ final class IparapheurRestConnectorTest extends PastellTestCase
                     '/api/standard/v1/tenant/' . self::TENANT_ID . '/desk/' . self::DESK_ID . '/folder/' . self::ERROR_FOLDER_ID . '/premis',
                 )
             ),
-            'DELETE /api/standard/v1/tenant/' . self::TENANT_ID . '/desk/' . self::DESK_ID . '/folder/' . self::ONGOING_FOLDER_ID => new HttpResponse(204, ['Content-type' => 'application/json'], ''),
-            'DELETE /api/standard/v1/tenant/' . self::TENANT_ID . '/desk/' . self::DESK_ID . '/folder/' . self::ERROR_FOLDER_ID => new HttpResponse(404, ['Content-type' => 'application/json'], ''),
+            'DELETE /api/standard/v1/tenant/' . self::TENANT_ID . '/desk/' . self::DESK_ID . '/folder/' . self::ONGOING_FOLDER_ID
+            => new HttpResponse(
+                204,
+                ['Content-type' => 'application/json'],
+                '',
+            ),
+            'DELETE /api/standard/v1/tenant/' . self::TENANT_ID . '/desk/' . self::DESK_ID . '/folder/' . self::ERROR_FOLDER_ID
+            => new HttpResponse(
+                404,
+                ['Content-type' => 'application/json'],
+                '',
+            ),
+            'GET /api/internal/tenant/' . self::TENANT_ID . '/folder/by-legacy-id/' . self::LEGACY_FOLDER_ID
+            => new HttpResponse(
+                200,
+                ['Content-type' => 'application/json'],
+                json_encode(['id' => self::ONGOING_FOLDER_ID], JSON_THROW_ON_ERROR),
+            ),
+            'GET /api/internal/tenant/' . self::TENANT_ID . '/folder/by-legacy-id/' . self::UNKNOWN_LEGACY_FOLDER_ID
+            => new HttpResponse(
+                404,
+                ['Content-type' => 'application/json'],
+                '',
+            ),
         ];
 
         $client = $this->getMockBuilder(ClientInterface::class)->getMock();
@@ -282,6 +310,28 @@ final class IparapheurRestConnectorTest extends PastellTestCase
 
     /**
      * @throws ClientExceptionInterface
+     * @throws JsonException
+     * @throws IpRestApiException
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    public function testGetSignatureWithLegacyIdFallback(): void
+    {
+        $this->getConnectorId();
+        $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
+
+        $id_d = $this->createDocument('test')['id_d'];
+        $docDonneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
+        $connector->setDocDonneesFormulaire($docDonneesFormulaire);
+
+        $info = $connector->getSignature(self::LEGACY_FOLDER_ID);
+
+        self::assertSame(self::ONGOING_FOLDER_ID, $info['dossier_id']);
+        self::assertArrayHasKey('bordereau', $info);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
      * @throws JsonException|IpRestException
      */
     public function testGetPremis(): void
@@ -398,6 +448,62 @@ final class IparapheurRestConnectorTest extends PastellTestCase
         $connector->getPremis(self::ERROR_FOLDER_ID);
     }
 
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws JsonException
+     * @throws IpRestApiException
+     * @throws NotFoundException
+     */
+    public function testGetAllHistoriqueInfoWithLegacyIdFallback(): void
+    {
+        $this->getConnectorId();
+        $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
+
+        $id_d = $this->createDocument('test')['id_d'];
+        $docDonneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
+        $docDonneesFormulaire->setData('iparapheur_dossier_id', self::LEGACY_FOLDER_ID);
+        $connector->setDocDonneesFormulaire($docDonneesFormulaire);
+
+        $history = $connector->getAllHistoriqueInfo(self::LEGACY_FOLDER_ID);
+        self::assertNotEmpty($history->LogDossier);
+        self::assertSame(self::ONGOING_FOLDER_ID, $docDonneesFormulaire->get('iparapheur_dossier_id'));
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws JsonException
+     * @throws IpRestApiException
+     * @throws NotFoundException
+     */
+    public function testGetAllHistoriqueInfoWithLegacyIdFallbackOnCustomField(): void
+    {
+        $this->getConnectorId();
+        $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
+
+        $id_d = $this->createDocument('test')['id_d'];
+        $docDonneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
+        $docDonneesFormulaire->setData('iparapheur_dossier_id_2', self::LEGACY_FOLDER_ID);
+        $connector->setDocDonneesFormulaire($docDonneesFormulaire);
+
+        $history = $connector->getAllHistoriqueInfo(self::LEGACY_FOLDER_ID);
+        self::assertNotEmpty($history->LogDossier);
+        self::assertEmpty($docDonneesFormulaire->get('iparapheur_dossier_id'));
+        self::assertSame(self::ONGOING_FOLDER_ID, $docDonneesFormulaire->get('iparapheur_dossier_id_2'));
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws JsonException
+     */
+    public function testGetSignatureWithUnknownLegacyIdThrowsException(): void
+    {
+        $this->getConnectorId();
+        $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
+
+        $this->expectException(IpRestApiException::class);
+        $connector->getSignature(self::UNKNOWN_LEGACY_FOLDER_ID);
+    }
 
     /**
      * @throws Exception
