@@ -348,7 +348,7 @@ class SignatureRecupTest extends PastellTestCase
     {
         $tenantId = 'tenant-test';
         $deskId = 'desk-test';
-        $folderId = 'ODT-MULTI-DOC-FOLDER-ID';
+        $folderId = 'a1b2c3d4-e5f6-4890-abcd-ef1234567890';
 
         $createFolderJson = json_encode(['id' => $folderId, 'name' => 'LIBELLE'], JSON_THROW_ON_ERROR);
         $premisXml = file_get_contents(__DIR__ . '/fixtures/odt_multi_doc_folder.xml');
