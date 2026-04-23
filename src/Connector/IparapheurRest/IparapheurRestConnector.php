@@ -852,17 +852,8 @@ class IparapheurRestConnector extends SignatureConnecteur implements
      */
     private function getFolderId(string $folderId): string
     {
-        if (Uuid::isValid($folderId)) {
-            return $folderId;
-        }
         if (!isset($this->resolvedFolderId)) {
-            $this->resolvedFolderId = $this->getFolderIdByLegacyId($folderId);
-            $donneesFormulaire = $this->getDocDonneesFormulaire();
-            foreach ($donneesFormulaire->getRawData() as $fieldName => $value) {
-                if ($value === $folderId) {
-                    $donneesFormulaire->setData($fieldName, $this->resolvedFolderId);
-                }
-            }
+            $this->resolvedFolderId = Uuid::isValid($folderId) ? $folderId : $this->getFolderIdByLegacyId($folderId);
         }
         return $this->resolvedFolderId;
     }

@@ -467,7 +467,7 @@ final class IparapheurRestConnectorTest extends PastellTestCase
 
         $history = $connector->getAllHistoriqueInfo(self::LEGACY_FOLDER_ID);
         self::assertNotEmpty($history->LogDossier);
-        self::assertSame(self::ONGOING_FOLDER_ID, $docDonneesFormulaire->get('iparapheur_dossier_id'));
+        self::assertSame(self::LEGACY_FOLDER_ID, $docDonneesFormulaire->get('iparapheur_dossier_id'));
     }
 
     /**
@@ -489,7 +489,7 @@ final class IparapheurRestConnectorTest extends PastellTestCase
         $history = $connector->getAllHistoriqueInfo(self::LEGACY_FOLDER_ID);
         self::assertNotEmpty($history->LogDossier);
         self::assertEmpty($docDonneesFormulaire->get('iparapheur_dossier_id'));
-        self::assertSame(self::ONGOING_FOLDER_ID, $docDonneesFormulaire->get('iparapheur_dossier_id_2'));
+        self::assertSame(self::LEGACY_FOLDER_ID, $docDonneesFormulaire->get('iparapheur_dossier_id_2'));
     }
 
     /**
