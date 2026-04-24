@@ -7,6 +7,7 @@
 -  iParapheur REST : suppression du LogDossier superflu (sans timestamp ni nom) qui apparaissait en dernier 
  dans `iparapheur_historique.xml` #2443
 - Migration iParapheur SOAP → REST : correspondance d'identifiant de dossier iParapheur REST pour les dossiers créés avec un connecteur SOAP #2444
+- Correction d'une erreur REST lors de l'envoi d'un dossier sans titre dans le PREMIS iParapheur V5 #2454
 
 # [5.0.3] - 2026-04-07
 

@@ -280,6 +280,7 @@ final class IparapheurRestConnectorTest extends PastellTestCase
         $fts->annexes = [];
         $fts->type = 'TYPE';
         $fts->sousType = 'SOUS-TYPE';
+        $fts->dossierTitre = 'Test';
         $fts->metadata = [
             'nom_metadonne_parapheur_1' => 'valeur_pastell_1',
             'nom_metadonne_parapheur_2' => 'valeur_pastell_2'
