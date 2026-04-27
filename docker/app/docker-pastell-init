@@ -3,11 +3,16 @@ set -e
 
 #Utiliser pour créer un fichier de settings en fonction des variables d'environnement (envoyé par Docker)
 
+HTTPS_PORT_SUFFIX=""
+if [ "${HTTPS_PORT}" != "443" ]; then
+  HTTPS_PORT_SUFFIX=":${HTTPS_PORT}"
+fi
+
 cat <<EOF
 <?php
 
-define("SITE_BASE","https://${APP_HOST}:${HTTPS_PORT}");
-define("WEBSEC_BASE","https://${MAILSEC_HOST}:${HTTPS_PORT}");
+define("SITE_BASE","https://${APP_HOST}${HTTPS_PORT_SUFFIX}");
+define("WEBSEC_BASE","https://${MAILSEC_HOST}${HTTPS_PORT_SUFFIX}");
 
 define("TIMEZONE", "${TZ:-Europe/Paris}");
 define("BD_DSN","mysql:dbname=${DATABASE_NAME:-pastell};host=${DATABASE_HOST:-db};port=${DATABASE_PORT:-3306};charset=utf8mb4");
