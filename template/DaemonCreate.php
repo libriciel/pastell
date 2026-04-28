@@ -30,7 +30,7 @@ declare(strict_types=1);
                 </th>
                 <td>
                     <input class="form-control col-md-4" type="number" id="nb_allocated_workers"
-                           name="nb_allocated_workers" value="0" min="0" max="<?= $nb_free_workers ?>"
+                           name="nb_allocated_workers" value="1" min="1" max="<?= $nb_free_workers ?>"
                     />
                 </td>
             </tr>

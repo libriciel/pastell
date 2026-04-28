@@ -2,6 +2,7 @@
 
 ## Corrections
 
+- Il n'est plus possible de créer ou modifier des gestionnaires de tâches avec 0 processus alloués #2414
 - les URLs des mails sécurisés n'affichent plus le port 443 par défaut #2430
 -  iParapheur REST : suppression du LogDossier superflu (sans timestamp ni nom) qui apparaissait en dernier 
  dans `iparapheur_historique.xml` #2443

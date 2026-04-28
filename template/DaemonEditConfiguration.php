@@ -18,7 +18,7 @@ declare(strict_types=1);
                     <label for="type_connecteur">Nombre de processus disponibles sur pastell</label>
                 </th>
                 <td>
-                    <input type="number" name="nb_workers" id="nb_workers" class="form-control col-md-4" value="<?= $nb_workers?>"/>
+                    <input type="number" name="nb_workers" id="nb_workers" class="form-control col-md-4" value="<?= $nb_workers?>" min="1"/>
                 </td>
             </tr>
         </table>
