@@ -1,5 +1,9 @@
 # [4.1.18] - 2026-05-04
 
+## Ajout
+
+- Ajout de ls-dossier-marche activable #2455
+
 ## Corrections
 
 - Correction des doublons lors de la récupération des actes S2low #2429
