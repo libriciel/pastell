@@ -311,6 +311,17 @@ class PastellControler extends Controler
 
             $this->setViewParameter('daemon_stopped_warning', $daemonManager->status() === DaemonManager::IS_STOPPED);
         }
+
+        if (
+            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitLecture(DroitService::DROIT_SYSTEM), 0)
+        ) {
+            $threshold = $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->getWorkspaceAlertThreshold();
+            $workspaceAlertWarning = $this->getObjectInstancier()->getInstance(FreeSpace::class)->getUsagePercent(
+                WORKSPACE_PATH
+            ) >= $threshold;
+            $this->setViewParameter('workspace_alert_warning', $workspaceAlertWarning);
+        }
+
         $this->setViewParameter('helpURL', $this->getHelpURL());
         parent::renderDefault();
     }

@@ -19,6 +19,7 @@ TRUNCATE TABLE `annuaire_role`;
 TRUNCATE TABLE `configuration`;
 INSERT INTO `configuration` (`config_key`, `config_value`, `id_e`) VALUES ('ADMIN_EMAIL', 'test@libriciel.invalid', -1);
 INSERT INTO `configuration` (`config_key`, `config_value`, `id_e`) VALUES ('LIBELLE_PLATEFORME_MAIL', 'Pastell', -1);
+INSERT INTO `configuration` (`config_key`, `config_value`, `id_e`) VALUES ('WORKSPACE_ALERT_THRESHOLD', '90', -1);
 TRUNCATE TABLE `connecteur_entite`;
 INSERT INTO `connecteur_entite` (`id_ce`, `id_e`, `libelle`, `id_connecteur`, `type`, `frequence_en_minute`, `id_verrou`, `global`) VALUES
 (1, 1, 'Fake iParapheur', 'fakeIparapheur', 'signature', 1, '', 0),

@@ -51,4 +51,22 @@ class ConfigurationSQLTest extends PastellTestCase
         static::assertTrue($this->configurationSQL->hasConfiguration($key, ConfigurationSQL::NULL_ID_E));
         static::assertFalse($this->configurationSQL->hasConfiguration('missing_key', ConfigurationSQL::NULL_ID_E));
     }
+
+    public function testWorkspaceThreshold(): void
+    {
+        $this->configurationSQL->setWorkspaceAlertThreshold(75);
+        static::assertSame(75, $this->configurationSQL->getWorkspaceAlertThreshold());
+    }
+
+    public function testWorkspaceThresholdRejectsNegativeValue(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->configurationSQL->setWorkspaceAlertThreshold(-1);
+    }
+
+    public function testWorkspaceThresholdRejectsValueOver100(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->configurationSQL->setWorkspaceAlertThreshold(101);
+    }
 }

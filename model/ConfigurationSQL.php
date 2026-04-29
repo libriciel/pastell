@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Pastell\Bootstrap\SystemConfiguration;
 use Pastell\Exception\ConfigurationNotFoundException;
 
 class ConfigurationSQL extends SQL
@@ -10,6 +11,7 @@ class ConfigurationSQL extends SQL
 
     public const string ADMIN_EMAIL = 'ADMIN_EMAIL';
     public const string LIBELLE_PLATEFORME_MAIL = 'LIBELLE_PLATEFORME_MAIL';
+    public const string WORKSPACE_ALERT_THRESHOLD = 'WORKSPACE_ALERT_THRESHOLD';
     public function setConfiguration(string $config_key, string $config_value, int $id_e): void
     {
         $sql = <<<SQL
@@ -65,5 +67,18 @@ SQL;
     public function getLibellePlateformeMail(): string
     {
         return $this->getConfiguration(self::LIBELLE_PLATEFORME_MAIL, self::NULL_ID_E);
+    }
+
+    public function setWorkspaceAlertThreshold(int $threshold): void
+    {
+        if ($threshold < 0 || $threshold > 100) {
+            throw new InvalidArgumentException('Le seuil doit être compris entre 0 et 100');
+        }
+        $this->setConfiguration(self::WORKSPACE_ALERT_THRESHOLD, (string) $threshold, self::NULL_ID_E);
+    }
+
+    public function getWorkspaceAlertThreshold(): int
+    {
+        return (int) $this->getConfiguration(self::WORKSPACE_ALERT_THRESHOLD, self::NULL_ID_E);
     }
 }

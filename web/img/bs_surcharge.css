@@ -58,7 +58,7 @@ html body .input-group-text {
     max-width: calc(66.666667% - 2.85rem) !important;
 }
 
-.badge-daemon {
+.badge-warning {
     position: relative;
     background-color: red;
     display: inline;

@@ -86,13 +86,16 @@
             {% endif %}
             {% if roleUtilisateur.hasDroit(authentification.getId, 'system:lecture', 0) %}
                 <a href="{{ path('app.legacy.system_index') }}" class="new_picto" style="float: right;">
+                    {% if workspace_alert_warning %}
+                        <p class="badge badge-warning">!</p>
+                    {% endif %}
                     <i class="fas fa-puzzle-piece"></i><span>Administration avancée</span>
                 </a>
             {% endif %}
             {% if roleUtilisateur.hasDroit(authentification.getId, 'daemon:lecture', 0) %}
                 <a href="{{ path('app.legacy.daemon_index') }}" class='new_picto' style="float: right;">
                     {% if daemon_stopped_warning %}
-                        <p class="badge badge-daemon">!</p>
+                        <p class="badge badge-warning">!</p>
                     {% endif %}
                     {% if nb_job_lock %}
                         <p class="badge badge-job-lock">{{ nb_job_lock }}</p>

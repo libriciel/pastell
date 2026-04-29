@@ -2,19 +2,22 @@
 
 class FreeSpace
 {
-    public function getFreeSpace($filesystem)
+    public function getUsagePercent(string $filesystem): float
     {
         $disk_free_space = disk_free_space($filesystem);
         $disk_total_space = disk_total_space($filesystem);
-        $disk_use_percent = sprintf(
-            "%0.2f",
-            ($disk_total_space - $disk_free_space) / $disk_total_space * 100
-        );
+        return ($disk_total_space - $disk_free_space) / $disk_total_space * 100;
+    }
+
+    public function getFreeSpace($filesystem): array
+    {
+        $disk_use_percent = sprintf('%0.2f', $this->getUsagePercent($filesystem));
+        $disk_free_space = disk_free_space($filesystem);
+        $disk_total_space = disk_total_space($filesystem);
         return [
             'disk_use_space' => $this->human_filesize($disk_total_space - $disk_free_space),
             'disk_total_space' => $this->human_filesize($disk_total_space),
-            'disk_use_percent' =>  $disk_use_percent . " %",
-            'disk_use_too_big' => $disk_use_percent > 90
+            'disk_use_percent' =>  $disk_use_percent . ' %'
         ];
     }
 

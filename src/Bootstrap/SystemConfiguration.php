@@ -12,6 +12,7 @@ class SystemConfiguration implements InstallableBootstrap
         private readonly ConfigurationSQL $configurationSQL,
         private readonly array $admin_email,
         private readonly string $libelle_plateforme_mail,
+        private readonly int $workspace_alert_threshold_default,
     ) {
     }
 
@@ -26,6 +27,9 @@ class SystemConfiguration implements InstallableBootstrap
                 $this->libelle_plateforme_mail,
                 ConfigurationSQL::NULL_ID_E
             );
+        }
+        if (!$this->configurationSQL->hasConfiguration(ConfigurationSQL::WORKSPACE_ALERT_THRESHOLD, ConfigurationSQL::NULL_ID_E)) {
+            $this->configurationSQL->setWorkspaceAlertThreshold($this->workspace_alert_threshold_default);
         }
         return InstallResult::InstallOk;
     }
