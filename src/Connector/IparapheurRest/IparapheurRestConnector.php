@@ -35,6 +35,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
 use SignatureConnecteur;
+use SignatureException;
 use SplFileObject;
 use stdClass;
 use Psr\Http\Client\ClientInterface;
@@ -400,8 +401,11 @@ class IparapheurRestConnector extends SignatureConnecteur implements
             );
             return $folderId;
         } catch (InvalidArgumentException $e) {
-            throw new IpRestApiException($e->getMessage());
+            throw new SignatureException($e->getMessage());
         } catch (ApiException $e) {
+            if ($e->getCode() === 500) {
+                throw new SignatureException((string) $e->getResponseBody());
+            }
             throw new IpRestApiException(
                 sprintf(
                     '[%d] Error connecting to the API (%s)',
