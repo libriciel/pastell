@@ -62,24 +62,4 @@ class SignatureEnvoieTest extends PastellTestCase
 
         $this->assertLastMessage('Le document a été envoyé au parapheur électronique');
     }
-
-    /**
-     * @throws NotFoundException
-     * @throws Exception
-     */
-    public function testEmptyObjetSetsErrorMessageWithoutChangingState(): void
-    {
-        $connecteur_info = $this->createConnector('fakeIparapheur', 'Bouchon parapheur');
-        $this->associateFluxWithConnector($connecteur_info['id_ce'], 'document-a-signer', 'signature');
-
-        $document_info = $this->createDocument('document-a-signer');
-        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document_info['id_d']);
-        $donneesFormulaire->setTabData(['iparapheur_type' => 'FOO', 'iparapheur_sous_type' => 'BAR']);
-        $donneesFormulaire->addFileFromData('document', 'document.pdf', 'test');
-
-        $this->triggerActionOnDocument($document_info['id_d'], 'send-iparapheur');
-
-        $this->assertLastDocumentAction('send-signature-error', $document_info['id_d']);
-        $this->assertLastMessage("L'objet du dossier est obligatoire");
-    }
 }

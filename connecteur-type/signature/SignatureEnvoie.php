@@ -93,13 +93,6 @@ class SignatureEnvoie extends ConnecteurTypeActionExecutor
         }
 
         $fileToSign->dossierTitre = $donneesFormulaire->get($objet_element);
-        if (!$fileToSign->dossierTitre) {
-            $sendSignatureError = $this->getMappingValue(self::SEND_SIGNATURE_ERROR_STATE);
-            $message = "L'objet du dossier est obligatoire";
-            $this->changeAction($sendSignatureError, $message);
-            $this->notify($sendSignatureError, $this->type, $message);
-            return false;
-        }
 
         $fileToSign->metadata = json_decode(
             $donneesFormulaire->getFileContent($json_metadata),

@@ -24,10 +24,7 @@ final class Premis
     {
         $intellectual = new PremisObject();
         $intellectual->type = PremisObject::INTELLECTUAL_ENTITY;
-        if (empty($fileToSign->dossierTitre)) {
-            throw new RuntimeException('Le titre du dossier (dossierTitre) est obligatoire');
-        }
-        $intellectual->originalName = $fileToSign->dossierTitre;
+        $intellectual->originalName = (string) $fileToSign->dossierTitre;
 
         $significantProperties = [];
 

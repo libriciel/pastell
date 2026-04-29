@@ -12,6 +12,7 @@ use DonneesFormulaire;
 use Exception;
 use Fichier;
 use FileToSign;
+use InvalidArgumentException;
 use JsonException;
 use Libriciel\IparapheurV5\Client\Api\DeskApi;
 use Libriciel\IparapheurV5\Client\Api\FolderApi;
@@ -360,9 +361,13 @@ class IparapheurRestConnector extends SignatureConnecteur implements
             file_put_contents($premisPath, $xml);
             $folderFile = new SplFileObject($premisPath, 'r');
 
-            $mainPath = $tmp_folder . DIRECTORY_SEPARATOR . $dossier->document->filename;
-            file_put_contents($mainPath, $dossier->document->content);
-            $documents = [new SplFileObject($mainPath, 'r')];
+            /** @var SplFileObject[] $documents */
+            $documents = [];
+            if ($dossier->document->filename) {
+                $mainPath = $tmp_folder . DIRECTORY_SEPARATOR . $dossier->document->filename;
+                file_put_contents($mainPath, $dossier->document->content);
+                $documents[] = new SplFileObject($mainPath, 'r');
+            }
 
             foreach ($dossier->annexes as $annexe) {
                 $annexePath = $tmp_folder . DIRECTORY_SEPARATOR . $annexe->filename;
@@ -394,6 +399,8 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                 $simple_task_params
             );
             return $folderId;
+        } catch (InvalidArgumentException $e) {
+            throw new IpRestApiException($e->getMessage());
         } catch (ApiException $e) {
             throw new IpRestApiException(
                 sprintf(
