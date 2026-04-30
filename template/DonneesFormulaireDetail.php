@@ -59,7 +59,7 @@ $id_e = $inject['id_e'];
                     );
                     ?>
                     <a href="<?php hecho($downloadZipUrl); ?>" class="btn btn-primary">
-                        <i class="fa fa-download"></i>&nbsp;Télécharger tous les fichiers :
+                        <i class="fas fa-download"></i>&nbsp;Télécharger tous les fichiers :
                         <?php hecho($displayField->getField()->getLibelle()) ?>
                     </a>
                 <?php endif;?>
@@ -79,7 +79,7 @@ $id_e = $inject['id_e'];
                             class=' btn btn-primary'
                             href='<?php hecho($viewerUrl); ?>'
                     >
-                        <i class="fa fa-eye"></i>
+                        <i class="fas fa-eye"></i>
                         &nbsp;Voir
                     </a>
                     <div class='visionneuse_result'></div>

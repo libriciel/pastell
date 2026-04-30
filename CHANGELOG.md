@@ -1,5 +1,9 @@
 # [6.0.0] -
 
+## Évolutions
+
+- Migration de Fork Awesome vers la bibliothèque d'icônes officielle Font Awesome #2462
+
 ## Correction
 
 - Standardisation du footer selon la charte Libriciel SCOP #2440

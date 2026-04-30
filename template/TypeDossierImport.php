@@ -18,10 +18,10 @@
         </table>
 
         <a class='btn btn-outline-primary' href='<?php $this->url("TypeDossier/list")?>'>
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
         <button type="submit" class="btn btn-primary">
-            <i class="fa fa-floppy-o"></i>&nbsp;Importer
+            <i class="fas fa-floppy-disk"></i>&nbsp;Importer
         </button>
 
     </form>

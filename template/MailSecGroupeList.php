@@ -15,7 +15,7 @@
 ?>
 <a class='btn btn-link'
    href='MailSec/annuaire?id_e=<?php echo $id_e; ?>'
-><i class="fa fa-arrow-left"></i>&nbsp;Voir la liste des contacts</a>
+><i class="fas fa-arrow-left"></i>&nbsp;Voir la liste des contacts</a>
 
 
 <div class="box">
@@ -59,7 +59,7 @@
         </table>
         <?php if ($can_edit) : ?>
             <button type="submit" class="btn btn-danger">
-                <i class="fa fa-trash"></i>&nbsp;Supprimer</button>
+                <i class="fas fa-trash"></i>&nbsp;Supprimer</button>
         <?php endif; ?>
 
     </form>
@@ -84,7 +84,7 @@
 
             </table>
             <button type="submit" class="btn btn-primary">
-                <i class="fa fa-plus"></i>&nbsp;Créer
+                <i class="fas fa-plus"></i>&nbsp;Créer
             </button>
         </form>
     </div>

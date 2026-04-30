@@ -57,10 +57,10 @@ foreach ($job_queue_info_list as $job_queue_list) :?>
                 ?>
 
                 <a href='<?php $this->url($lockUrl); ?>' class="btn btn-warning">
-                    <i class="fa fa-lock"></i>&nbsp;
+                    <i class="fas fa-lock"></i>&nbsp;
                     Suspendre</a>
                 <a href='<?php $this->url($unlockUrl); ?>' class="btn btn-warning">
-                    <i class="fa fa-unlock-alt"></i>&nbsp;
+                    <i class="fas fa-unlock-keyhole"></i>&nbsp;
                     Reprendre</a>
             </td>
         <?php endif; ?>

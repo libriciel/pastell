@@ -40,7 +40,7 @@
             </style>
             <div class="forgot-form-addons">
                 <div class="alert alert-info">
-                    <i class="fa fa-info-circle"></i>
+                    <i class="fas fa-info-circle"></i>
                     <?php echo $this->getHTMLPurifier()->purify(nl2br($config->get('message'))); ?>
                 </div>
             </div>

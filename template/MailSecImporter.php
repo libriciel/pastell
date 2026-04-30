@@ -2,7 +2,7 @@
 
 /** @var Gabarit $this */
 ?>
-<a class='btn btn-link' href='<?php echo "MailSec/annuaire?id_e={$id_e}" ?>'><i class="fa fa-arrow-left"></i>&nbsp;<?php hecho($infoEntite['denomination']) ?></a>
+<a class='btn btn-link' href='<?php echo "MailSec/annuaire?id_e={$id_e}" ?>'><i class="fas fa-arrow-left"></i>&nbsp;<?php hecho($infoEntite['denomination']) ?></a>
 
 <div class="box">
     <form action="MailSec/doImport" method='post' enctype='multipart/form-data'>
@@ -16,7 +16,7 @@
         </tr>
         </table>
         <button type="submit" class="btn btn-primary">
-            <i class="fa fa-upload"></i>&nbsp;Importer
+            <i class="fas fa-upload"></i>&nbsp;Importer
         </button>
     </form>
 </div>

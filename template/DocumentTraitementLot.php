@@ -21,7 +21,7 @@ if ($search) {
 <a class='btn btn-link'
    href='<?php $this->url(get_hecho($return_url)) ?>'
 >
-    <i class="fa fa-arrow-left"></i>&nbsp;Retour à la liste des dossiers
+    <i class="fas fa-arrow-left"></i>&nbsp;Retour à la liste des dossiers
 </a>
 <div class="box">
     <form action='<?php $this->url('Document/confirmTraitementLot'); ?>' >
@@ -33,7 +33,7 @@ if ($search) {
             <button type="submit"
                     class="btn btn-primary"
                     id="action-select-submit"
-            ><i class="fa fa-cogs"></i>&nbsp;Exécuter
+            ><i class="fas fa-cogs"></i>&nbsp;Exécuter
             </button>
         </div>
         <br/>
@@ -160,11 +160,11 @@ if ($search) {
         $("#action-select").change(function(){
             if (['supression','suppression'].indexOf(this.value) !== -1){
                 $("#action-select-submit")
-                    .html("<i class=\"fa fa-trash\"></i>&nbsp;Supprimer")
+                    .html("<i class=\"fas fa-trash\"></i>&nbsp;Supprimer")
                     .replaceClass('btn-primary','btn-danger');
             } else {
                 $("#action-select-submit")
-                    .html("<i class=\"fa fa-cogs\"></i>&nbsp;Exécuter")
+                    .html("<i class=\"fas fa-cogs\"></i>&nbsp;Exécuter")
                     .replaceClass('btn-danger','btn-primary');
             }
             $("#action-select-submit").prop('disabled', false);

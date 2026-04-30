@@ -104,19 +104,19 @@ use Pastell\Utilities\Certificate;
         <?php if ($id_u) : ?>
             <a class='btn btn-outline-primary'
                href='Utilisateur/detail?id_u=<?php echo $id_u ?>'
-            ><i class="fa fa-times-circle"></i>&nbsp;Annuler</a>
+            ><i class="fas fa-circle-xmark"></i>&nbsp;Annuler</a>
         <?php elseif ($id_e) : ?>
             <a class='btn btn-outline-primary'
                href='Entite/utilisateur?id_e=<?php echo $id_e ?>'
-            ><i class="fa fa-times-circle"></i>&nbsp;Annuler</a>
+            ><i class="fas fa-circle-xmark"></i>&nbsp;Annuler</a>
         <?php else : ?>
             <a class='btn btn-outline-primary'
                href='Entite/utilisateur?id_e=<?php echo $id_e ?>'
-            ><i class="fa fa-times-circle"></i>&nbsp;Annuler</a>
+            ><i class="fas fa-circle-xmark"></i>&nbsp;Annuler</a>
         <?php endif; ?>
 
         <button type="submit" class="btn btn-primary">
-            <i class="fa fa-floppy-o"></i>&nbsp;Enregistrer
+            <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
         </button>
 
     </form>

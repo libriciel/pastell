@@ -13,7 +13,7 @@
         </tr>
         </table>
         <button type="submit" class="btn btn-primary">
-            <i class="fa fa-upload"></i>&nbsp;Importer
+            <i class="fas fa-upload"></i>&nbsp;Importer
         </button>   </form>
 </div>
 

@@ -17,11 +17,11 @@
                 class='btn btn-outline-primary'
                 href='<?php $this->url("Utilisateur/detail?id_u=$id_u"); ?>'
         >
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
 
         <button type='submit' class='btn btn-danger'>
-            <i class="fa fa-trash"></i> Supprimer
+            <i class="fas fa-trash"></i> Supprimer
         </button>
     </form>
 </div>

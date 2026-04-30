@@ -44,7 +44,7 @@
                     Depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since);?>
                 <?php if ($daemon_edition) : ?>
                     <a href='<?php $this->url($unlockUrl); ?>' class=" btn-warning btn">
-                        <i class="fa fa-unlock-alt"></i>&nbsp;
+                        <i class="fas fa-unlock-keyhole"></i>&nbsp;
 
                         Reprendre
                     </a></p>
@@ -59,7 +59,7 @@
                 ?>
                 <?php if ($daemon_edition) : ?>
                     <p>NON <a href='<?php $this->url($lockUrl); ?>' class="btn btn-warning">
-                            <i class="fa fa-lock"></i>&nbsp;
+                            <i class="fas fa-lock"></i>&nbsp;
 
                             Suspendre
                         </a></p>

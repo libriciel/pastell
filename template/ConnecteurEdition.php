@@ -31,7 +31,7 @@ $listConnectorsUrl = \sprintf(
 
 <a class='btn btn-link'
    href='<?php echo $listConnectorsUrl; ?>'
-><i class="fa fa-arrow-left"></i>&nbsp;Retour à la liste des connecteurs</a>
+><i class="fas fa-arrow-left"></i>&nbsp;Retour à la liste des connecteurs</a>
 
 <div class="box">
     <h2>
@@ -53,7 +53,7 @@ $listConnectorsUrl = \sprintf(
     ?>
     <?php if ($canEditConnector && $fieldDataList) : ?>
     &nbsp;<a class='btn btn-primary' href="<?php $this->url("Connecteur/editionModif?id_ce=$id_ce") ?>">
-        <i class="fa fa-pencil"></i>&nbsp;Modifier
+        <i class="fas fa-pen"></i>&nbsp;Modifier
     </a>
     <?php endif ?>
 
@@ -65,7 +65,7 @@ $listConnectorsUrl = \sprintf(
                 <input type='hidden' name='action' value='<?php echo $action_name ?>'/>
 
                 <button type='submit' class='btn btn-outline-primary'>
-                    <i class="fa fa-cogs"></i>&nbsp; <?php hecho($action->getActionName($action_name)) ?>
+                    <i class="fas fa-cogs"></i>&nbsp; <?php hecho($action->getActionName($action_name)) ?>
                 </button>
             </form>
         <?php endforeach; ?>
@@ -150,20 +150,20 @@ $listConnectorsUrl = \sprintf(
     </table>
 
     <a class='btn btn-primary' href="<?php $this->url("Connecteur/editionLibelle?id_ce=$id_ce") ?>" >
-        <i class="fa fa-pencil"></i>&nbsp;Modifier le libellé
+        <i class="fas fa-pen"></i>&nbsp;Modifier le libellé
     </a>
 
     <a class='btn btn-outline-primary' href="<?php $this->url("Connecteur/export?id_ce=$id_ce") ?>" >
-        <i class="fa fa-download"></i>&nbsp;Exporter
+        <i class="fas fa-download"></i>&nbsp;Exporter
     </a>
     <a class='btn btn-outline-primary' href="<?php $this->url("Connecteur/import?id_ce=$id_ce") ?>" >
-        <i class="fa fa-upload"></i>&nbsp;Importer
+        <i class="fas fa-upload"></i>&nbsp;Importer
     </a>
 
     <a class='btn btn-danger <?php echo $usage_flux_list ? 'disabled' : '' ?>'
        href="<?php $this->url("Connecteur/delete?id_ce=$id_ce") ?>"
          >
-        <i class="fa fa-trash"></i>&nbsp;Supprimer
+        <i class="fas fa-trash"></i>&nbsp;Supprimer
     </a>
 </div>
 
@@ -202,7 +202,7 @@ $listConnectorsUrl = \sprintf(
                             OUI  <br/>Depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since);?><br/>
                         <?php if ($daemon_edition) : ?>
                             <a href='<?php $this->url("Daemon/unlock?id_job={$job->id_job}&return_url={$return_url}") ?>'
-                           class=" btn-warning btn"> <i class="fa fa-unlock"></i>&nbsp;Reprendre</a></p>
+                           class=" btn-warning btn"> <i class="fas fa-unlock"></i>&nbsp;Reprendre</a></p>
                         <?php endif;?>
                     <?php else : ?>
                         <p>
@@ -216,7 +216,7 @@ $listConnectorsUrl = \sprintf(
                                 );
                                 ?>
                                 <a href='<?php $this->url($lockJobUrl); ?>'
-                                   class="btn btn-warning"><i class="fa fa-lock"></i>&nbsp;Suspendre</a></p>
+                                   class="btn btn-warning"><i class="fas fa-lock"></i>&nbsp;Suspendre</a></p>
                             <?php endif;?>
                     <?php endif;?>
                 </td>
@@ -244,7 +244,7 @@ $listConnectorsUrl = \sprintf(
                                 );
                                 ?>
                                 <a href='<?php $this->url($killJobUrl); ?>' class='btn btn-danger'>
-                                    <i class="fa fa-power-off"></i>&nbsp;Tuer
+                                    <i class="fas fa-power-off"></i>&nbsp;Tuer
                                 </a>
                             <?php endif; ?>
                         <?php else : ?>
@@ -265,7 +265,7 @@ $listConnectorsUrl = \sprintf(
                         $deleteJobUrl = "Daemon/deleteJob?id_job={$job->id_job}&id_ce={$job->id_ce}";
                         ?>
                         <a href="<?php echo $deleteJobUrl; ?>" class="btn btn-danger">
-                            <i class="fa fa-trash"></i>&nbsp;Supprimer
+                            <i class="fas fa-trash"></i>&nbsp;Supprimer
                         </a>
                     <?php endif; ?>
                 </td>
@@ -278,7 +278,7 @@ $listConnectorsUrl = \sprintf(
 <div class="row">
     <div class="col float-right">
         <a class='btn btn-link'
-           href='Connecteur/etat?id_ce=<?php echo $id_ce ?>'><i class='fa fa-list-alt'
+           href='Connecteur/etat?id_ce=<?php echo $id_ce ?>'><i class='fas fa-rectangle-list'
             ></i>&nbsp;Voir les états du connecteur</a>
     </div>
 </div>

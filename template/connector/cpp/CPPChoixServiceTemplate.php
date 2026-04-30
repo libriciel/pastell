@@ -11,7 +11,7 @@
  */
 ?>
 
-<a class='btn btn-link' href='Connecteur/editionModif?id_ce=<?php echo $id_ce?>'><i class="fa fa-arrow-left"></i>&nbsp;Retour à la définition du connecteur</a>
+<a class='btn btn-link' href='Connecteur/editionModif?id_ce=<?php echo $id_ce?>'><i class="fas fa-arrow-left"></i>&nbsp;Retour à la définition du connecteur</a>
 
 <?php $this->suivantPrecedent($offset, $limit, $count, "/Connecteur/externalData?id_ce=$id_ce&field=$field"); ?>
 <div class="box">
@@ -48,7 +48,7 @@
     <input type='hidden' name='field' value='<?php echo $field; ?>'/>
     <input type='hidden' name='idService' value=''/>
     <button type="submit" class="btn btn-danger" name="submit" value="Supprimer la sélection du service">
-        <i class="fa fa-trash"></i>&nbsp;Supprimer la sélection du service
+        <i class="fas fa-trash"></i>&nbsp;Supprimer la sélection du service
     </button>
 </form>
 </div>

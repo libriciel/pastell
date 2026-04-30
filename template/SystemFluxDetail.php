@@ -3,7 +3,7 @@
 /** @var Gabarit $this */
 ?>
 <a class='btn btn-link' href='<?php $this->url("System/flux")?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Retour à la liste des types de dossier
+    <i class="fas fa-arrow-left"></i>&nbsp;Retour à la liste des types de dossier
 </a>
 
 <div class="box">

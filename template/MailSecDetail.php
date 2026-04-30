@@ -30,7 +30,7 @@
 <table>
 <tr>
     <td>
-    <a class='btn btn-outline-primary mr-2' href='MailSec/annuaire?id_e=<?php echo $info['id_e'] ?>'><i class="fa fa-times-circle"></i>&nbsp;Annuler</a>
+    <a class='btn btn-outline-primary mr-2' href='MailSec/annuaire?id_e=<?php echo $info['id_e'] ?>'><i class="fas fa-circle-xmark"></i>&nbsp;Annuler</a>
     </td>
     <td>
 
@@ -39,7 +39,7 @@
     <input type='hidden' name='id_e' value='<?php echo $info['id_e'] ?>' />
     <input type='hidden' name='id_a' value='<?php echo $info['id_a'] ?>' />
     <button type="submit" class="btn btn-danger mr-2">
-        <i class="fa fa-trash"></i>&nbsp;Supprimer
+        <i class="fas fa-trash"></i>&nbsp;Supprimer
     </button>
 </form>
 </td>
@@ -48,7 +48,7 @@
     <input type='hidden' name='id_e' value='<?php echo $info['id_e'] ?>' />
     <input type='hidden' name='id_a' value='<?php echo $info['id_a'] ?>' />
     <button type="submit" class="btn btn-primary">
-        <i class="fa fa-pencil"></i>&nbsp;Modifier
+        <i class="fas fa-pen"></i>&nbsp;Modifier
     </button></form>
 </td>
 </tr>

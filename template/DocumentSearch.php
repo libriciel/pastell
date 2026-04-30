@@ -24,7 +24,7 @@
 
     <a class='btn btn-link'
        href='Document/list?id_e=<?php echo $id_e?>&type=<?php echo $type?>'
-    ><i class="fa fa-arrow-left"></i>&nbsp;Retour à la liste des dossiers </a>
+    ><i class="fas fa-arrow-left"></i>&nbsp;Retour à la liste des dossiers </a>
 
 
     <div class="accordion" id="accordionExample">
@@ -34,8 +34,8 @@
                data-bs-toggle="collapse" data-bs-target="#collapseOne"
                aria-expanded="true" aria-controls="collapseOne"
             >
-                <i class="fa fa-search"></i> Recherche avancée
-                <i class="fa fa-plus-square plier"></i><i class="fa fa-minus-square deplier"></i>
+                <i class="fas fa-search"></i> Recherche avancée
+                <i class="fas fa-plus-square plier"></i><i class="fas fa-minus-square deplier"></i>
             </a>
 
             <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
@@ -50,19 +50,19 @@
                             <a class='btn btn-outline-primary'
                                href='<?php $this->url("Document/list?id_e=$id_e&type=$type"); ?>'
                             >
-                                <i class="fa fa-times-circle"></i>
+                                <i class="fas fa-circle-xmark"></i>
                                 Annuler
                             </a>
 
                             <a class='btn btn-outline-primary'
                                href='Document/search?id_e=<?php echo $id_e ?>&type=<?php echo $type ?>'
                             >
-                                <i class="fa fa-undo"></i>&nbsp;
+                                <i class="fas fa-undo"></i>&nbsp;
                                 Réinitialiser
                             </a>
 
                             <button type="submit" class="btn btn-primary">
-                                <i class="fa fa-search"></i>&nbsp;Rechercher
+                                <i class="fas fa-search"></i>&nbsp;Rechercher
                             </button>
                         </form>
                     </div>
@@ -153,12 +153,12 @@ if ($go = 'go') {
 
 
         <a href="Document/traitementLot?<?php hecho($url); ?>" class="btn btn-primary">
-            <i class='fa fa-cogs'></i>&nbsp;Traitement par lot
+            <i class='fas fa-cogs'></i>&nbsp;Traitement par lot
         </a>
 
             <a class='btn btn-primary'
                href='Document/export?<?php hecho($url); ?>'
-            ><i class='fa fa-download'></i>&nbsp;Exporter</a>
+            ><i class='fas fa-download'></i>&nbsp;Exporter</a>
         <?php
     } else {
         ?>

@@ -9,7 +9,7 @@ $extensionId = get_hecho($extension_info['id_e']);
 ?>
 
 <a class='btn btn-link' href='<?php $this->url('Extension/index')?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Liste des extensions
+    <i class="fas fa-arrow-left"></i>&nbsp;Liste des extensions
 </a>
 
 <div class="box">
@@ -36,11 +36,11 @@ $extensionId = get_hecho($extension_info['id_e']);
 
     <a href='<?php $this->url("Extension/edition?id_extension=$extensionId"); ?>'
        class='btn btn-primary'
-    ><i class="fa fa-pencil"></i>&nbsp;Modifier</a>
+    ><i class="fas fa-pen"></i>&nbsp;Modifier</a>
     <a href='<?php $this->url("Extension/delete?id_extension=$extensionId"); ?>'
        class='btn btn-danger'
        onclick='return confirm("Êtes-vous sûr de vouloir supprimer cette extension ?")'
-    ><i class="fa fa-trash"></i>&nbsp;Supprimer</a>
+    ><i class="fas fa-trash"></i>&nbsp;Supprimer</a>
 </div>
 
 <div class='box'>

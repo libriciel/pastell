@@ -30,11 +30,11 @@ declare(strict_types=1);
             class='btn btn-outline-primary'
             href='<?php $this->url(get_hecho("Document/detail?id_d={$id_d}&id_e={$id_e}&page={$page}")); ?>'
         >
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
 
         <button type='submit' class='btn btn-danger'>
-            <i class="fa fa-trash"></i> Passer en erreur fatale
+            <i class="fas fa-trash"></i> Passer en erreur fatale
         </button>
     </form>
 </div>

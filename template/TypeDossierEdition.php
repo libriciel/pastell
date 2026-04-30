@@ -11,7 +11,7 @@ use Pastell\Service\TypeDossier\TypeDossierEditionService;
 <div class="box" style="min-height: 500px;">
 
     <div class="alert-warning alert">
-        <i class="fa fa-exclamation-triangle"></i> Une fois les premiers dossiers créés, l'identifiant ne sera plus modifiable.
+        <i class="fas fa-exclamation-triangle"></i> Une fois les premiers dossiers créés, l'identifiant ne sera plus modifiable.
     </div>
 
     <form action='<?php $this->url("TypeDossier/doEdition"); ?>' method='post' >
@@ -39,10 +39,10 @@ use Pastell\Service\TypeDossier\TypeDossierEditionService;
         </table>
 
         <a class='btn btn-outline-primary' href='<?php $this->url("TypeDossier/list")?>'>
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
         <button type="submit" class="btn btn-primary">
-            <i class="fa fa-floppy-o"></i>&nbsp;Enregistrer
+            <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
         </button>
 
     </form>

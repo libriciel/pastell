@@ -10,7 +10,7 @@
  */
 ?>
 <a class='btn btn-link' href='Flux/index?id_e=<?php echo $id_e?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Retour à la liste des types de dossier
+    <i class="fas fa-arrow-left"></i>&nbsp;Retour à la liste des types de dossier
 </a>
 
 <div class="box">
@@ -66,7 +66,7 @@
                         );
                         ?>
                         <a class='btn btn-primary' href='<?php $this->url($fluxEditionUrl); ?>'>
-                            <i class="fa fa-link"></i>&nbsp;
+                            <i class="fas fa-link"></i>&nbsp;
                             Associer
                         </a>
                     <?php endif;?>
@@ -82,14 +82,14 @@
             <?php if ($flux_connecteur_list[0]['inherited_flux']) :?>
                 <?php if ($droit_edition) : ?>
                     <button type='submit' class='btn btn-primary'>
-                        <i class='fa fa-minus-circle'></i>&nbsp;Supprimer l'héritage
+                        <i class='fas fa-minus-circle'></i>&nbsp;Supprimer l'héritage
                     </button>
                 <?php endif;?>
                 <br/>
                 <em>(type de dossier hérité de la mère)</em>
             <?php elseif ($droit_edition) :?>
                 <button type='submit' class='btn btn-primary'>
-                    <i class='fa fa-plus-circle'></i>&nbsp;Faire hériter
+                    <i class='fas fa-plus-circle'></i>&nbsp;Faire hériter
                 </button>
             <?php endif;?>
         </form>

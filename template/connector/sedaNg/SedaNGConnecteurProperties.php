@@ -27,10 +27,10 @@ $this->url("Connecteur/doExternalData") ?>' method='post'>
     <?php endforeach; ?>
     </table>
     <a class='btn btn-secondary' href='Connecteur/edition?id_ce=<?php echo $id_ce?>'>
-        <i class="fa fa-times-circle"></i>&nbsp;Annuler
+        <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
     </a>
     <button type="submit" class="btn btn-primary">
-        <i class="fa fa-floppy-o"></i>&nbsp;Enregistrer
+        <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
     </button>
 </form>
 </div>

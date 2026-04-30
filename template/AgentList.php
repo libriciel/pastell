@@ -20,11 +20,11 @@
         <input type='hidden' name='id_e' value='<?php echo $id_e; ?>'/>
         <input type='hidden' name='page' value='<?php echo $page; ?>'/>
         <input type='text' name='search' value='<?php hecho($search); ?>' class="form-control col-md-2 me-2"/>
-        <button type='submit' class='btn btn-primary'><i class='fa fa-search'></i>&nbsp;Rechercher</button>
+        <button type='submit' class='btn btn-primary'><i class='fas fa-search'></i>&nbsp;Rechercher</button>
 
         <?php if ($droit_edition) : ?>
             <a href="Entite/import?id_e=<?php echo $id_e; ?>&onglet=agents&page_retour=2"
-               class='btn btn-primary ms-2'><i class="fa fa-upload"></i>&nbsp;Importer</a>
+               class='btn btn-primary ms-2'><i class="fas fa-upload"></i>&nbsp;Importer</a>
         <?php endif; ?>
     </form>
 

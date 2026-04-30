@@ -74,12 +74,12 @@ $id_e = $entiteExtendedInfo['id_e'];
 
     <?php if ($droit_edition) : ?>
         <a class='btn btn-primary' href="Entite/edition?id_e=<?php echo $id_e?>">
-            <i class="fa fa-pencil"></i>&nbsp;
+            <i class="fas fa-pen"></i>&nbsp;
             Modifier
         </a>
         <?php if ($is_supprimable) : ?>
             <a class='btn btn-danger' href='Entite/supprimer?id_e=<?php echo $id_e ?>'>
-                <i class="fa fa-trash"></i>&nbsp;
+                <i class="fas fa-trash"></i>&nbsp;
                 Supprimer
 
 
@@ -90,9 +90,9 @@ $id_e = $entiteExtendedInfo['id_e'];
            href='Entite/activer?id_e=<?php echo $id_e?>&active=<?php echo ! $entiteExtendedInfo['is_active']?>'
         >
             <?php if ($entiteExtendedInfo['is_active']) : ?>
-                <i class="fa fa-toggle-on"></i>&nbsp;Désactiver
+                <i class="fas fa-toggle-on"></i>&nbsp;Désactiver
             <?php else :?>
-                <i class="fa fa-toggle-off"></i>&nbsp;Activer
+                <i class="fas fa-toggle-off"></i>&nbsp;Activer
             <?php endif;?>
 
         </a>
@@ -110,14 +110,14 @@ $id_e = $entiteExtendedInfo['id_e'];
             <a class='btn btn-primary <?php echo !$entiteExtendedInfo['is_active'] ? 'disabled' : ''; ?>'
                href="Entite/edition?entite_mere=<?php echo $id_e?>"
             >
-                <i class="fa fa-plus-circle"></i>&nbsp;Ajouter une entité fille
+                <i class="fas fa-plus-circle"></i>&nbsp;Ajouter une entité fille
             </a>&nbsp;&nbsp;
             <a class='btn btn-outline-primary' href="Entite/import?id_e=<?php echo $id_e?>" >
-                <i class="fa fa-upload"></i>&nbsp;Importer des entités filles (fichier CSV)
+                <i class="fas fa-upload"></i>&nbsp;Importer des entités filles (fichier CSV)
             </a>
         <?php endif;?>
         &nbsp;&nbsp;<a class='btn btn-outline-primary' href='<?php $this->url("Entite/export?id_e={$id_e}"); ?>'>
-            <i class="fa fa-download"></i>&nbsp;Exporter la liste (fichier CSV)
+            <i class="fas fa-download"></i>&nbsp;Exporter la liste (fichier CSV)
         </a>
 
     <?php endif; ?>
@@ -163,13 +163,13 @@ $id_e = $entiteExtendedInfo['id_e'];
         <a class='btn btn-primary <?php echo !$entiteExtendedInfo['is_active'] ? 'disabled' : ''; ?>'
            href="Entite/edition?entite_mere=<?php echo $id_e?>"
         >
-            <i class="fa fa-plus-circle"></i>&nbsp;Ajouter une entité fille
+            <i class="fas fa-plus-circle"></i>&nbsp;Ajouter une entité fille
         </a>&nbsp;&nbsp;
         <a class='btn btn-outline-primary' href="Entite/import?id_e=<?php echo $id_e?>" >
-            <i class="fa fa-upload"></i>&nbsp;Importer des entités filles (fichier CSV)
+            <i class="fas fa-upload"></i>&nbsp;Importer des entités filles (fichier CSV)
         </a>
     <?php endif;?>
     &nbsp;&nbsp;<a class='btn btn-outline-primary' href='<?php $this->url("Entite/export?id_e={$id_e}"); ?>'>
-        <i class="fa fa-download"></i>&nbsp;Exporter la liste (fichier CSV)
+        <i class="fas fa-download"></i>&nbsp;Exporter la liste (fichier CSV)
     </a>
 </div>

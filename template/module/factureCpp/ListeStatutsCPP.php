@@ -35,11 +35,11 @@
     </table>
 
     <a class='btn btn-outline-primary'
-       href='<?php $this->url("Document/edition?id_d=$id_d&id_e=$id_e&page=$page") ?>'><i class="fa fa-times-circle"></i>&nbsp;Annuler</a>
+       href='<?php $this->url("Document/edition?id_d=$id_d&id_e=$id_e&page=$page") ?>'><i class="fas fa-circle-xmark"></i>&nbsp;Annuler</a>
 
 
     <button type='submit' class='btn btn-primary' id="valider">
-        <i class="fa fa-check"></i>&nbsp;Valider
+        <i class="fas fa-check"></i>&nbsp;Valider
     </button>
 </form>
 </div>

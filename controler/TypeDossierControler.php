@@ -688,7 +688,7 @@ class TypeDossierControler extends PastellControler
                 ne sont pas dans l'état <i>terminé</i> ou <i>erreur fatale</i>: $content<br/>
                 
                 <a href='TypeDossier/putInFatalError?id_t=$id_t&id_type_dossier={$id_type_dossier}' class='btn btn-danger'>
-                    <i class='fa fa-folder'></i>&nbsp;Mettre tous les dossiers en erreur fatale
+                    <i class='fas fa-folder'></i>&nbsp;Mettre tous les dossiers en erreur fatale
                 </a><br>"
         );
         $this->redirect($redirectTo);

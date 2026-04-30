@@ -3,7 +3,7 @@
 /** @var Gabarit $this */
 ?>
 <a class='btn btn-link' href='Connecteur/edition?id_ce=<?php echo $connecteur_entite_info['id_ce']?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Retour à la définition du connecteur
+    <i class="fas fa-arrow-left"></i>&nbsp;Retour à la définition du connecteur
 </a>
 
 <div class="box">
@@ -18,7 +18,7 @@ Attention, la suppression du connecteur est irréversible !
     <?php $this->getCSRFToken()->displayFormInput(); ?>
     <input type='hidden' name='id_ce' value='<?php echo $connecteur_entite_info['id_ce'] ?>' />
     <button type="submit" class="btn btn-danger">
-        <i class="fa fa-trash"></i>&nbsp;Supprimer
+        <i class="fas fa-trash"></i>&nbsp;Supprimer
     </button></form>
 
 </div>

@@ -10,7 +10,7 @@
 
 ?>
 <a class='btn btn-link' href='Connecteur/editionModif?id_ce=<?php hecho((string)$id_ce); ?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Retour au connecteur
+    <i class="fas fa-arrow-left"></i>&nbsp;Retour au connecteur
 </a>
 <div class="box">
     <h2 id="desc-entite-table">Choisissez une entité</h2>
@@ -38,7 +38,7 @@
         <?php endforeach; ?>
     </select>
     <button type='submit' class='btn btn-primary'>
-        <i class="fa fa-check"></i>&nbsp;Choisir
+        <i class="fas fa-check"></i>&nbsp;Choisir
     </button>
 </form>
 </div>

@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 ?>
 
-<a href='Utilisateur/moi' class="btn btn-link"><i class="fa fa-arrow-left"></i>&nbsp;Espace utilisateur</a>
+<a href='Utilisateur/moi' class="btn btn-link"><i class="fas fa-arrow-left"></i>&nbsp;Espace utilisateur</a>
 
 <div class="box">
 
@@ -41,7 +41,7 @@ declare(strict_types=1);
                        class="form-control"
                 />
             </div>
-            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
         </div>
         <script type="text/javascript">
             jQuery.datepicker.setDefaults(jQuery.datepicker.regional['fr']);
@@ -53,11 +53,11 @@ declare(strict_types=1);
         </script>
 
         <a class='btn btn-outline-primary' href='Utilisateur/moi'>
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
 
         <button type="submit" class="btn btn-primary">
-            <i class="fa fa-floppy-o"></i>&nbsp;Enregistrer
+            <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
         </button>
     </form>
 

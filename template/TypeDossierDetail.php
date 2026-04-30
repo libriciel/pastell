@@ -14,7 +14,7 @@
 ?>
 
 <a class='btn btn-link' href='<?php $this->url("TypeDossier/list")?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Liste des types de dossier
+    <i class="fas fa-arrow-left"></i>&nbsp;Liste des types de dossier
 </a>
 
 <div class='alert alert-warning'>
@@ -56,7 +56,7 @@
     </table>
 
     <a class='btn btn-primary inline' href='<?php $this->url("/TypeDossier/editionLibelle?id_t={$id_t}") ?>'>
-        <i class='fa fa-pencil'></i>&nbsp;Modifier
+        <i class='fas fa-pen'></i>&nbsp;Modifier
     </a>
 
 </div>
@@ -64,7 +64,7 @@
 <div class="box">
     <h2>Gestion des éléments du formulaire</h2>
     <a class='btn btn-primary inline' href='<?php $this->url("/TypeDossier/editionElement?id_t={$id_t}") ?>'>
-        <i class='fa fa-plus-circle'></i>&nbsp;Ajouter
+        <i class='fas fa-plus-circle'></i>&nbsp;Ajouter
     </a>
     <?php if (empty($typeDossierProperties->formulaireElement)) : ?>
         <div class="alert alert-warning">
@@ -82,14 +82,14 @@
             <tbody id="sortElement" class="type-dossier-sortable">
             <?php foreach ($typeDossierProperties->formulaireElement as $formulaireElement) : ?>
                 <tr id="tr-<?php  hecho($formulaireElement->element_id) ?>">
-                    <td><i class="fa fa-arrows handle"></i>&nbsp;<?php hecho($formulaireElement->element_id) ?>
+                    <td><i class="fas fa-arrows handle"></i>&nbsp;<?php hecho($formulaireElement->element_id) ?>
                         <?php if (in_array($formulaireElement->element_id, $fieldsFromEtape, true)) :?>
                             <p><strong style='color:red'>Identifiant en doublon </strong>
                                 <em class="text-muted"
                                     data-toggle="tooltip"
                                     title="Cet élément du formulaire est déjà automatiquement créé via une étape du cheminement.
                                     Il ne doit pas être créé manuellement.">
-                                    <i class="fa fa-info-circle"></i>
+                                    <i class="fas fa-info-circle"></i>
                                 </em>
                             </p>
                         <?php endif;?>
@@ -114,11 +114,11 @@
                         <?php $queryParams = 'id_t=' . $id_t . '&element_id=' . $formulaireElement->element_id; ?>
                         <a class='btn btn-primary'
                            href="<?php $this->url('/TypeDossier/editionElement?' . $queryParams); ?>"
-                        ><i class='fa fa-pencil'></i>&nbsp;Modifier</a>
+                        ><i class='fas fa-pen'></i>&nbsp;Modifier</a>
                         &nbsp;
                         <a class='btn btn-danger'
                            href="<?php $this->url('/TypeDossier/deleteElement?' . $queryParams) ?>"
-                        ><i class='fa fa-trash'></i>&nbsp;Supprimer</a>
+                        ><i class='fas fa-trash'></i>&nbsp;Supprimer</a>
                     </td>
                 </tr>
             <?php endforeach;?>
@@ -131,7 +131,7 @@
 <div class="box">
     <h2>Gestion des étapes du cheminement</h2>
     <a class='btn btn-primary inline' href='<?php $this->url("/TypeDossier/newEtape?id_t={$id_t}") ?>'>
-        <i class='fa fa-plus-circle'></i>&nbsp;Ajouter
+        <i class='fas fa-plus-circle'></i>&nbsp;Ajouter
     </a>
     <?php if (empty($typeDossierProperties->etape)) : ?>
         <div class="alert alert-warning">
@@ -148,7 +148,7 @@
             <tbody id="sortEtape" class="type-dossier-sortable">
             <?php foreach ($typeDossierProperties->etape as $num_etape => $etape) : ?>
                 <tr id="tr-<?php  hecho($num_etape) ?>">
-                    <td><i class="fa fa-arrows handle"></i>&nbsp;<?php hecho($all_etape_type[$etape->type]) ?></td>
+                    <td><i class="fas fa-arrows handle"></i>&nbsp;<?php hecho($all_etape_type[$etape->type]) ?></td>
                     <td><?php hecho($etape->label ?: $all_etape_type[$etape->type]); ?></td>
                     <td>
                         <?php if ($etape->defaultChecked && ! $etape->requis) :?>
@@ -166,8 +166,8 @@
                         <?php endif;?>
                     </td>
                     <td>
-                        <a class='btn btn-primary btn-modifier' href="#"><i class='fa fa-pencil'></i>&nbsp;Modifier</a>&nbsp;
-                        <a class='btn btn-danger btn-supprimer' href="#"><i class='fa fa-trash'></i>&nbsp;Supprimer</a>
+                        <a class='btn btn-primary btn-modifier' href="#"><i class='fas fa-pen'></i>&nbsp;Modifier</a>&nbsp;
+                        <a class='btn btn-danger btn-supprimer' href="#"><i class='fas fa-trash'></i>&nbsp;Supprimer</a>
                     </td>
                 </tr>
             <?php endforeach;?>
@@ -179,7 +179,7 @@
 
 <div class="row">
     <div class="col float-right">
-        <a class='btn btn-link' href='TypeDossier/etat?id_t=<?php echo $id_t ?>'><i class='fa fa-list-alt'></i>&nbsp;Voir les états du type de dossier</a>
+        <a class='btn btn-link' href='TypeDossier/etat?id_t=<?php echo $id_t ?>'><i class='fas fa-rectangle-list'></i>&nbsp;Voir les états du type de dossier</a>
     </div>
 </div>
 

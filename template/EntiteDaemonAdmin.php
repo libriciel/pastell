@@ -41,7 +41,7 @@ declare(strict_types=1);
         </table>
         <?php $this->displayCSRFInput() ?>
         <button type="submit" class="btn btn-primary">
-            <i class="fa fa-save"></i>&nbsp;Enregistrer
+            <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
         </button>
     </form>
 </div>

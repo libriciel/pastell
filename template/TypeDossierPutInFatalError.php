@@ -20,10 +20,10 @@
         <input type='hidden' name='id_type_dossier' value='<?php hecho($type_de_dossier_info['id_type_dossier'])?>' />
         <?php $id_t = $type_de_dossier_info['id_t'] ?>
         <a class='btn btn-outline-primary' href='<?php $this->url("TypeDossier/detail?id_t=$id_t")?>'>
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
         <button type="submit" class="btn btn-danger">
-            <i class="fa fa-folder"></i>&nbsp;Mettre tous les dossiers en erreur fatale
+            <i class="fas fa-folder"></i>&nbsp;Mettre tous les dossiers en erreur fatale
         </button>
 
     </form>

@@ -46,12 +46,12 @@ declare(strict_types=1);
     </table>
 
     <a class='btn btn-primary' href="Daemon/editConfiguration">
-        <i class="fa fa-pencil"></i> 
+        <i class="fas fa-pen"></i> 
         Modifier
     </a>
     <br>
     <a class="btn btn-outline-primary"  href="<?= "Daemon/create" ?>" style="margin-top:10px;">
-        <i class="fa fa-plus"></i>
+        <i class="fas fa-plus"></i>
          Créer un nouveau gestionnaire de tâches
     </a>
 </div>
@@ -65,7 +65,7 @@ declare(strict_types=1);
             <input type='text' name='search' id='search'
                    value='<?php echo $search; ?>' class="form-control"
                    placeholder="Rechercher par dénomination d'entité"/>
-            <button type='submit' class='btn btn-primary btn-search' id="search-entite"><i class='fa fa-search'></i>
+            <button type='submit' class='btn btn-primary btn-search' id="search-entite"><i class='fas fa-search'></i>
             </button>
             <div class="col-md-8"></div>
         </form>
@@ -114,16 +114,16 @@ declare(strict_types=1);
                             if ($entity['state']) : ?>
                                 <a href="<?= "Daemon/daemonStop?id_daemon={$entity['id_daemon']}" ?>" class="btn btn-danger"
                                    id="arreter_deamon"
-                                   name="arreter_deamon"><i class="fa fa-stop"></i>&nbsp; Arrêter
+                                   name="arreter_deamon"><i class="fas fa-stop"></i>&nbsp; Arrêter
                                 </a>
                             <?php else : ?>
                                 <a href="<?= "Daemon/daemonStart?id_daemon={$entity['id_daemon']}" ?>" class="btn btn-success">
-                                    <i class="fa fa-play"></i>&nbsp;Démarrer
+                                    <i class="fas fa-play"></i>&nbsp;Démarrer
                                 </a>
                             <?php endif ?>
                             <a class='btn btn-danger'
                                href='Daemon/deleteDaemon?id_daemon=<?=$entity['id_daemon']?>'
-                            ><i class="fa fa-trash"></i>&nbsp;Supprimer</a>
+                            ><i class="fas fa-trash"></i>&nbsp;Supprimer</a>
                         <?php endif ?>
                     </td>
                 </tr>
@@ -131,7 +131,7 @@ declare(strict_types=1);
             <?php endforeach; ?>
         </table>
         <button type="submit" class="btn btn-primary">
-            <i class="fa fa-floppy-o"></i>&nbsp;Enregistrer
+            <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
         </button>
     </form>
 </div>

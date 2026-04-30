@@ -33,7 +33,7 @@ $exportUrl = sprintf(
 ?>
 <?php if ($id_d) : ?>
     <a class='btn btn-link' href='Journal/index?id_e=<?php echo $id_e ?>'>
-        <i class="fa fa-arrow-left"></i>&nbsp;Journal de <?php hecho($infoEntite['denomination']); ?>
+        <i class="fas fa-arrow-left"></i>&nbsp;Journal de <?php hecho($infoEntite['denomination']); ?>
     </a>
 <?php endif;?>
 
@@ -62,9 +62,9 @@ $exportUrl = sprintf(
                        value='<?php hecho($recherche); ?>'
                        placeholder="Date, dossier, message"
                 />
-                <button type='submit' class='btn btn-primary btn-search'><i class='fa fa-search'></i></button>
+                <button type='submit' class='btn btn-primary btn-search'><i class='fas fa-search'></i></button>
                 <a class='btn btn-outline-primary ms-2' href='<?php hecho($exportUrl); ?>'>
-                    <i class='fa fa-download'></i>&nbsp;Exporter le journal
+                    <i class='fas fa-download'></i>&nbsp;Exporter le journal
                 </a>
             </div>
 
@@ -134,7 +134,7 @@ $exportUrl = sprintf(
             <?php endforeach;?>
         </table>
         <a class='btn btn-outline-primary' href='<?php hecho($exportUrl); ?>'>
-            <i class='fa fa-download'></i>&nbsp;Exporter le journal
+            <i class='fas fa-download'></i>&nbsp;Exporter le journal
         </a>
     </div>
 

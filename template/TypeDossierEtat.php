@@ -10,7 +10,7 @@
 ?>
 
 <a class='btn btn-link' href='TypeDossier/detail?id_t=<?php echo $id_t?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Détail du type de dossier
+    <i class="fas fa-arrow-left"></i>&nbsp;Détail du type de dossier
 </a>
 
 <?php $this->SuivantPrecedent($offset, $limit, $count, "TypeDossier/etat?id_t=$id_t"); ?>

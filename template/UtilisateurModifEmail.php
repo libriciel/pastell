@@ -6,7 +6,7 @@
  */
 
 ?>
-<a class='btn btn-link' href='Utilisateur/moi'><i class="fa fa-arrow-left"></i>&nbsp;Espace utilisateur</a>
+<a class='btn btn-link' href='Utilisateur/moi'><i class="fas fa-arrow-left"></i>&nbsp;Espace utilisateur</a>
 
 
 <div class="box">
@@ -37,7 +37,7 @@
         </table>
 
         <button type="submit" class="btn btn-primary">
-            <i class="fa fa-pencil"></i>&nbsp;Modifier
+            <i class="fas fa-pen"></i>&nbsp;Modifier
         </button>
     </form>
 

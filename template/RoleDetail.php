@@ -10,7 +10,7 @@
 ?>
 <?php $i = 0; ?>
 
-<a class='btn btn-link' href='<?php $this->url("Role/index") ?>'><i class="fa fa-arrow-left"></i>&nbsp;Retour à la liste des rôles</a>
+<a class='btn btn-link' href='<?php $this->url("Role/index") ?>'><i class="fas fa-arrow-left"></i>&nbsp;Retour à la liste des rôles</a>
 
 
 <div class="box">
@@ -18,13 +18,13 @@
 <h2>Gestion du rôle : <?php  hecho($role_info['libelle'] ?? '') ?></h2>
 
 <div class="bloc-flex">
-<a class='btn btn-primary inline' href='<?php $this->url("Role/edition?role=" . get_hecho($role)) ?>'><i class='fa fa-pencil'></i>&nbsp;Modifier le libellé</a>
+<a class='btn btn-primary inline' href='<?php $this->url("Role/edition?role=" . get_hecho($role)) ?>'><i class='fas fa-pen'></i>&nbsp;Modifier le libellé</a>
 
 <form action='<?php $this->url("Role/doDelete") ?>' method='post' class="form-suppression">
     <?php $this->displayCSRFInput() ?>
     <input type='hidden' name='role' value='<?php hecho($role) ?>' />
     <button type="submit" class="btn btn-danger">
-        <i class="fa fa-trash"></i>&nbsp;Supprimer le rôle
+        <i class="fas fa-trash"></i>&nbsp;Supprimer le rôle
     </button>
 </form>
 </div>
@@ -38,7 +38,7 @@
     <?php if ($role_edition) : ?>
         <input type='hidden' name='role' value='<?php hecho($role); ?>'/>
         <button type="submit" class="btn btn-primary">
-            <i class="fa fa-floppy-o"></i>&nbsp;Enregistrer
+            <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
         </button>
     <?php endif;?>
 
@@ -62,7 +62,7 @@
     </table>
     <?php if ($role_edition) : ?>
         <button type="submit" class="btn btn-primary">
-            <i class="fa fa-floppy-o"></i>&nbsp;Enregistrer
+            <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
         </button>
     <?php endif;?>
 </form>

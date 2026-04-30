@@ -59,9 +59,9 @@ declare(strict_types=1);
 
 
     <a href='Utilisateur/modifPassword' class='btn btn-primary margin-right'>
-        <i class="fa fa-pencil"></i>&nbsp;Modifier mon mot de passe
+        <i class="fas fa-pen"></i>&nbsp;Modifier mon mot de passe
     </a>
-    <a href='Utilisateur/modifEmail' class='btn btn-primary'><i class="fa fa-pencil"></i>&nbsp;Modifier mon email</a>
+    <a href='Utilisateur/modifEmail' class='btn btn-primary'><i class="fas fa-pen"></i>&nbsp;Modifier mon email</a>
 </div>
 
 <div class="box">
@@ -147,14 +147,14 @@ declare(strict_types=1);
                         echo $infoNotification['id_e']; ?>&type=<?php
                         echo $infoNotification['type']; ?>&id_u=<?php echo($id_u); ?>&source=moi'
                     >
-                        <i class="fa fa-pencil"></i>&nbsp;Modifier
+                        <i class="fas fa-pen"></i>&nbsp;Modifier
                     </a>
 
                     <a class="btn btn-danger"
                        href='Utilisateur/notificationSuppression?id_n=<?php
                         echo($infoNotification['id_n']); ?>&source=moi'
                     >
-                        <i class="fa fa-trash"></i>&nbsp;Supprimer
+                        <i class="fas fa-trash"></i>&nbsp;Supprimer
                     </a>
                 </td>
             </tr>
@@ -185,7 +185,7 @@ declare(strict_types=1);
                 <option value='1'>Résumé journalier</option>
             </select>
 
-            <button type='submit' class='btn btn-primary'><i class="fa fa-plus-circle"></i>&nbsp;Ajouter</button>
+            <button type='submit' class='btn btn-primary'><i class="fas fa-plus-circle"></i>&nbsp;Ajouter</button>
         </form>
     </div>
 </div>
@@ -221,14 +221,14 @@ declare(strict_types=1);
                                 'Êtes-vous certain de vouloir renouveler ce jeton (l\'ancien token sera perdu) ?'
                                 )"
                     >
-                        <i class="fa fa-refresh"></i>&nbsp;Renouveler
+                        <i class="fas fa-arrows-rotate"></i>&nbsp;Renouveler
                     </a>
                     <a
                         class='btn btn-danger'
                         href='Utilisateur/deleteToken?id=<?php echo $token['id']; ?>'
                         onclick="return confirm('Êtes-vous certain de vouloir supprimer définitivement ce jeton ?')"
                     >
-                        <i class="fa fa-trash"></i>&nbsp;Supprimer
+                        <i class="fas fa-trash"></i>&nbsp;Supprimer
                     </a>
 
                 </td>
@@ -236,5 +236,5 @@ declare(strict_types=1);
         <?php endforeach;?>
     </table>
 
-    <a href='Utilisateur/addToken' class='btn btn-primary'><i class="fa fa-pencil"></i>&nbsp;Ajouter un jeton</a>
+    <a href='Utilisateur/addToken' class='btn btn-primary'><i class="fas fa-pen"></i>&nbsp;Ajouter un jeton</a>
 </div>

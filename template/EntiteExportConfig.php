@@ -29,7 +29,7 @@ use Pastell\Service\ImportExportConfig\ExportConfigService;
             <?php endforeach; ?>
         </table>
 
-        <button type='submit' class='btn btn-primary'><i class="fa fa-download"></i>&nbsp;Vérifier l'export</button>
+        <button type='submit' class='btn btn-primary'><i class="fas fa-download"></i>&nbsp;Vérifier l'export</button>
 
     </form>
 </div>

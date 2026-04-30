@@ -5,7 +5,7 @@
  * @var int $password_min_entropy
  */
 ?>
-<a href='Utilisateur/moi' class="btn btn-link"><i class="fa fa-arrow-left"></i>&nbsp;Espace utilisateur</a>
+<a href='Utilisateur/moi' class="btn btn-link"><i class="fas fa-arrow-left"></i>&nbsp;Espace utilisateur</a>
 
 
 <div class="box">
@@ -34,11 +34,11 @@
     </div>
 
         <a class='btn btn-outline-primary' href='Utilisateur/moi'>
-                <i class="fa fa-times-circle"></i>&nbsp;Annuler
+                <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
 
     <button type="submit" class="btn btn-primary">
-        <i class="fa fa-floppy-o"></i>&nbsp;Enregistrer
+        <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
     </button></form>
 
 </div>

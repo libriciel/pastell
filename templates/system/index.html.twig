@@ -101,7 +101,7 @@
         <form action='{{ path('app.legacy.system_emptyCache') }}' method='post'>
             {{ gabarit.displayCSRFInput() }}
             <button type="submit" class="btn btn-warning">
-                <em class="fa fa-trash"></em>&nbsp;Vider le cache
+                <em class="fas fa-trash"></em>&nbsp;Vider le cache
             </button>
         </form>
     </div>
@@ -341,7 +341,7 @@
                                 href="{{ path('app.legacy.system_missingConnecteur') }}"
                                 class="btn btn-primary"
                         >
-                            <i class="fa fa-eye"></i>&nbsp;Voir
+                            <i class="fas fa-eye"></i>&nbsp;Voir
                         </a>
                     {% endif %}
                 </td>
@@ -371,10 +371,10 @@
                     <input type="hidden" name="email" value="{{ admin_email }}">
                     <td>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fa fa-paper-plane"></i>&nbsp;Envoyer
+                            <i class="fas fa-paper-plane"></i>&nbsp;Envoyer
                         </button>
                         <a class='btn btn-primary' href="{{ path('app.legacy.system_editAdminEmail') }}">
-                            <i class="fa fa-pencil"></i>&nbsp;Modifier
+                            <i class="fas fa-pen"></i>&nbsp;Modifier
                         </a>
                     </td>
                 </form>
@@ -390,7 +390,7 @@
                 <input type="hidden" name="email" value="{{ libelle_plateforme_mail }}">
                 <td>
                     <a class='btn btn-primary' href="{{ path('app.legacy.system_editLibellePlateformeMail') }}">
-                        <i class="fa fa-pencil"></i>&nbsp;Modifier
+                        <i class="fas fa-pen"></i>&nbsp;Modifier
                     </a>
                 </td>
             </tr>
@@ -411,7 +411,7 @@
                     />
                 </td>
                     <td><button type="submit" class="btn btn-primary">
-                            <i class="fa fa-paper-plane"></i>&nbsp;Envoyer
+                            <i class="fas fa-paper-plane"></i>&nbsp;Envoyer
                         </button></td>
                 </form>
             </tr>
@@ -424,13 +424,13 @@
                 href="{{ path('app.legacy.system_sendWarning') }}"
                 class="btn btn-warning"
         >
-            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;Provoquer un warning
+            <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;Provoquer un warning
         </a>
         <a
                 href="{{ path('app.legacy.system_sendFatalError') }}"
                 class="btn btn-danger"
         >
-            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;Provoquer une erreur fatale
+            <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;Provoquer une erreur fatale
         </a>
     </div>
 {% endblock %}

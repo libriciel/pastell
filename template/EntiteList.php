@@ -20,14 +20,14 @@ $search = get_hecho($search);
     if ($this->getRoleUtilisateur()->hasDroit($this->getAuthentification()->getId(), 'entite:edition', 0)) : ?>
         <a class='btn btn-primary grow'
            href="<?php $this->url('Entite/edition'); ?>"
-        ><i class="fa fa-plus-circle"></i> Ajouter</a>
+        ><i class="fas fa-plus-circle"></i> Ajouter</a>
         <a class='btn btn-outline-primary'
            href='<?php $this->url(\sprintf('Entite/export?id_e=%s&search=%s', $id_e, $search)); ?>'
-        ><i class='fa fa-download'></i>&nbsp;Exporter
+        ><i class='fas fa-download'></i>&nbsp;Exporter
             (fichier CSV)</a>
         <a class='btn btn-outline-primary'
            href="<?php $this->url('Entite/import'); ?>"
-        ><i class="fa fa-upload"></i>&nbsp;Importer
+        ><i class="fas fa-upload"></i>&nbsp;Importer
             (fichier CSV)</a>
     <?php endif; ?>
 
@@ -36,7 +36,7 @@ $search = get_hecho($search);
             <input type='text' name='search' id='search'
                    value='<?php echo $search; ?>' class="form-control"
                    placeholder="Rechercher par dénomination"/>
-            <button type='submit' class='btn btn-primary btn-search' id="search-entite"><i class='fa fa-search'></i>
+            <button type='submit' class='btn btn-primary btn-search' id="search-entite"><i class='fas fa-search'></i>
             </button>
             <div class="col-md-8"></div>
         </form>
@@ -81,5 +81,5 @@ $search = get_hecho($search);
 
     <a class='btn btn-outline-primary'
        href='<?php $this->url(\sprintf('Entite/export?id_e=%s&search=%s', $id_e, $search)); ?>'
-    ><i class='fa fa-download'></i>&nbsp;Exporter (fichier CSV)</a>
+    ><i class='fas fa-download'></i>&nbsp;Exporter (fichier CSV)</a>
 </div>

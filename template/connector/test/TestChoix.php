@@ -7,7 +7,7 @@
  */
 ?>
 <a class='btn btn-mini' href='<?php $this->url("Document/edition?id_ce=$id_ce"); ?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Retour à la définition du connecteur <em><?php echo $id_ce?></em></a>
+    <i class="fas fa-arrow-left"></i>&nbsp;Retour à la définition du connecteur <em><?php echo $id_ce?></em></a>
 
 
 <div class="box">

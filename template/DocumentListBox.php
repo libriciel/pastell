@@ -16,12 +16,12 @@
     <h2 id="title-result" class="ls-off">Résultat(s) de la recherche
         <?php if (!empty($type)) : ?>
             <a href="Document/traitementLot?<?php hecho($url); ?>" class="btn btn-primary">
-                <i class='fa fa-cogs'></i>&nbsp;Traitement par lot
+                <i class='fas fa-cogs'></i>&nbsp;Traitement par lot
             </a>
         <?php endif; ?>
 
         <a class='btn btn-primary' href='Document/export?<?php hecho($url); ?>'>
-            <i class='fa fa-download'></i>&nbsp;Exporter
+            <i class='fas fa-download'></i>&nbsp;Exporter
         </a>
     </h2>
 
@@ -44,9 +44,9 @@
                             <?php endif;?>
                             <?php if ($champs == $tri) : ?>
                                 <?php if ($sens_tri == 'ASC') :?>
-                                    <i class="fa fa-sort-alpha-asc"></i>
+                                    <i class="fas fa-arrow-up-a-z"></i>
                                 <?php else : ?>
-                                    <i class="fa fa-sort-alpha-desc"></i>
+                                    <i class="fas fa-arrow-down-z-a"></i>
                                 <?php endif;?>
                             <?php endif;?>
                         </th>

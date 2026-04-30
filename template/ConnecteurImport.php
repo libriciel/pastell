@@ -38,7 +38,7 @@
                             value=''
                         />
                         <span class="input-group-text">
-                            <i class="fa fa-eye-slash" onclick="switchInputType('password',this)"></i>
+                            <i class="fas fa-eye-slash" onclick="switchInputType('password',this)"></i>
                         </span>
                     </div>
                 </td>
@@ -49,12 +49,12 @@
             class='btn btn-outline-primary'
             href='Connecteur/edition?id_ce=<?php echo $connecteur_entite_info['id_ce']?>'
         >
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
 
 
         <button type="submit" class="btn btn-primary">
-            <i class="fa fa-upload"></i>&nbsp;Importer
+            <i class="fas fa-upload"></i>&nbsp;Importer
         </button>
     </form>
 

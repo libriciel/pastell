@@ -25,7 +25,7 @@ $exportUserUrl = sprintf(
     <?php if ($droitCreation) : ?>
         <a href="Utilisateur/edition?id_e=<?php echo $id_e?>"
            class='btn btn-primary grow'
-        ><i class="fa fa-plus-circle"></i>&nbsp;Ajouter</a>
+        ><i class="fas fa-plus-circle"></i>&nbsp;Ajouter</a>
     <?php endif;?>
 
     <h2>Rechercher un utilisateur</h2>
@@ -60,9 +60,9 @@ $exportUserUrl = sprintf(
         </table>
         <a href="Entite/utilisateur?id_e=<?php hecho($id_e) ?>"
            class="btn btn-outline-primary"
-        ><i class="fa fa-undo"></i>&nbsp;Réinitialiser</a>
+        ><i class="fas fa-undo"></i>&nbsp;Réinitialiser</a>
         <button type="submit" class="btn btn-primary">
-            <i class="fa fa-search"></i>&nbsp;Rechercher
+            <i class="fas fa-search"></i>&nbsp;Rechercher
         </button>
     </form>
 
@@ -70,7 +70,7 @@ $exportUserUrl = sprintf(
 
 <a class='btn btn-outline-primary'
    href='<?php hecho($exportUserUrl); ?>'
-><i class='fa fa-download'></i>&nbsp;Exporter</a>
+><i class='fas fa-download'></i>&nbsp;Exporter</a>
 
     <?php
     $this->suivantPrecedent(
@@ -165,5 +165,5 @@ $exportUserUrl = sprintf(
 
     <a class='btn btn-outline-primary'
        href='<?php hecho($exportUserUrl); ?>'
-    ><i class='fa fa-download'></i>&nbsp;Exporter</a>
+    ><i class='fas fa-download'></i>&nbsp;Exporter</a>
 </div>

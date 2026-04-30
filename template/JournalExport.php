@@ -57,7 +57,7 @@
                      <input type='text' id='date_debut'
                             class="col-md-3 form-control ls-box-input" name='date_debut'
                             value='<?php hecho(date_iso_to_fr($date_debut))?>'/>
-                     <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                     <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                  </div>
              </td>
         </tr>
@@ -69,7 +69,7 @@
                  <div class="input-group">
                      <input type='text' id='date_fin' class="col-md-3 form-control ls-box-input"
                             name='date_fin' value='<?php hecho(date_iso_to_fr($date_fin))?>' />
-                     <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                     <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                  </div>
 
              </td>
@@ -93,10 +93,10 @@
     ?>
     <a class='btn btn-outline-primary'
        href='<?php hecho($journalBackLink); ?>'>
-        <i class="fa fa-times-circle"></i>&nbsp;Annuler
+        <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
     </a>
 
-    <button type='submit' class='btn btn-primary'><i class="fa fa-download"></i>&nbsp;Récupérer le journal</button>
+    <button type='submit' class='btn btn-primary'><i class="fas fa-download"></i>&nbsp;Récupérer le journal</button>
 
 </form>
 </div>

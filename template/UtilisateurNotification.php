@@ -43,8 +43,8 @@
                 </td>
             </tr>
         </table>
-        <a href='<?php echo $cancel_url ?>' class='btn btn-outline-primary'><i class="fa fa-times-circle"></i>&nbsp;Annuler</a>
-        <button type='submit' class='btn btn-primary'><i class="fa fa-floppy-o"></i>&nbsp;Enregistrer</button>
+        <a href='<?php echo $cancel_url ?>' class='btn btn-outline-primary'><i class="fas fa-circle-xmark"></i>&nbsp;Annuler</a>
+        <button type='submit' class='btn btn-primary'><i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer</button>
     </form>
 </div>
 
