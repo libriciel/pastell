@@ -43,6 +43,7 @@ class IParapheurRecupDocumentASignerTest extends PastellTestCase
         $document = $this->createDocument('document-a-signer');
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document['id_d']);
+        $donneesFormulaire->setTabData(['libelle' => 'Test']);
         $donneesFormulaire->addFileFromCopy(
             'document',
             'vide_signe.pdf',

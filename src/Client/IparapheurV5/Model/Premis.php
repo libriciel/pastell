@@ -24,7 +24,7 @@ final class Premis
     {
         $intellectual = new PremisObject();
         $intellectual->type = PremisObject::INTELLECTUAL_ENTITY;
-        $intellectual->originalName = $fileToSign->dossierTitre;
+        $intellectual->originalName = (string) $fileToSign->dossierTitre;
 
         $significantProperties = [];
 
