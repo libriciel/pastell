@@ -12,6 +12,7 @@
 - Lors de la suppression d'une tâche automatique, nettoyer les workers associés #2438
 - Lors de la suppression d'un groupe d'annuaire, nettoyer les appartenances des contacts associés #2439
 - Mise à jour du mail dans `notifications_digest` à la modification #2442
+- Correction d'un commentaire du connecteur mailsec #2459
 
 # [4.0.30] - 2026-04-07
 
