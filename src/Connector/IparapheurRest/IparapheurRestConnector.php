@@ -404,7 +404,13 @@ class IparapheurRestConnector extends SignatureConnecteur implements
             throw new SignatureException($e->getMessage());
         } catch (ApiException $e) {
             if ($e->getCode() === 500) {
-                throw new SignatureException((string) $e->getResponseBody());
+                throw new SignatureException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $e->getCode(),
+                        $e->getResponseBody(),
+                    )
+                );
             }
             throw new IpRestApiException(
                 sprintf(
