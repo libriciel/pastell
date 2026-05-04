@@ -71,7 +71,14 @@ class AnnuaireGroupe extends SQL
     public function delete(array $lesId_g)
     {
         foreach ($lesId_g as $id_g) {
-            $sql = "DELETE FROM annuaire_groupe WHERE id_e = ? AND id_g=?";
+            $sql = <<<SQL
+DELETE FROM annuaire_groupe_contact WHERE id_g=?;
+SQL;
+            $this->query($sql, $id_g);
+
+            $sql = <<<SQL
+DELETE FROM annuaire_groupe WHERE id_e = ? AND id_g=?;
+SQL;
             $this->query($sql, $this->id_e, $id_g);
         }
     }

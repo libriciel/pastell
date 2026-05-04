@@ -138,7 +138,7 @@ security-check:
   stage: test
   allow_failure: true
   image:
-    name: hubdocker.libriciel.fr/aquasec/trivy:0.69.3
+    name: hubdocker.libriciel.fr/aquasec/trivy:0.70.0
     entrypoint: [ "" ]
   services:
     - docker:dind

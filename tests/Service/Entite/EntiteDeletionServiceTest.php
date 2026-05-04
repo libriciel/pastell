@@ -2,21 +2,26 @@
 
 namespace Pastell\Tests\Service\Entite;
 
+use AnnuaireGroupe;
+use AnnuaireRoleSQL;
+use AnnuaireSQL;
 use ConnecteurEntiteSQL;
 use DocumentEntite;
 use DocumentSQL;
 use EntiteSQL;
 use FluxEntiteHeritageSQL;
 use FluxEntiteSQL;
+use Notification;
 use Pastell\Service\Entite\EntiteDeletionService;
 use PastellTestCase;
 use RoleUtilisateur;
+use SQLQuery;
 use UnrecoverableException;
 use UtilisateurSQL;
 
 class EntiteDeletionServiceTest extends PastellTestCase
 {
-    private int $id_entity_exemple = 2;
+    private int $entityId = 2;
     private EntiteDeletionService $entiteDeletionService;
 
     public function setUp(): void
@@ -51,97 +56,144 @@ class EntiteDeletionServiceTest extends PastellTestCase
         );
     }
 
-    public function testIsSupprimable(): void
+    public function testCanDelete(): void
     {
-        $isSupprimable = $this->entiteDeletionService->canDelete($this->id_entity_exemple);
+        $isSupprimable = $this->entiteDeletionService->canDelete($this->entityId);
         self::assertTrue($isSupprimable);
     }
 
-    public function testIsNotSupprimableBecauseHasEntiteFille(): void
+    public function testCannotDeleteWhenHasChildEntity(): void
     {
-        self::getObjectInstancier()->getInstance(EntiteSQL::class)->create(
+        $this->getObjectInstancier()->getInstance(EntiteSQL::class)->create(
             'name-fake',
             'siren-fake',
             EntiteSQL::TYPE_COLLECTIVITE,
-            $this->id_entity_exemple
+            $this->entityId
         );
 
-        $isSupprimable = $this->entiteDeletionService->canDelete($this->id_entity_exemple);
+        $isSupprimable = $this->entiteDeletionService->canDelete($this->entityId);
         self::assertFalse($isSupprimable);
     }
 
-    public function testIsNotSupprimableBecauseHasUsersWithEntiteDeBase(): void
+    public function testCannotDeleteWhenHasUsersWithBaseEntity(): void
     {
-        self::getObjectInstancier()->getInstance(UtilisateurSQL::class)->query(
+        $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->query(
             'UPDATE utilisateur SET id_e = ? WHERE id_u = 1',
-            $this->id_entity_exemple
+            $this->entityId
         );
 
-        $isSupprimable = $this->entiteDeletionService->canDelete($this->id_entity_exemple);
+        $isSupprimable = $this->entiteDeletionService->canDelete($this->entityId);
         self::assertFalse($isSupprimable);
     }
 
-    public function testIsNotSupprimableBecauseHasDocumentEntity(): void
+    public function testCannotDeleteWhenHasDocumentEntity(): void
     {
         $id_d = 'IDENTIFIANT-FAKE';
-        self::getObjectInstancier()->getInstance(DocumentSQL::class)->save($id_d, 'type');
-        self::getObjectInstancier()->getInstance(DocumentEntite::class)->addRole(
+        $this->getObjectInstancier()->getInstance(DocumentSQL::class)->save($id_d, 'type');
+        $this->getObjectInstancier()->getInstance(DocumentEntite::class)->addRole(
             $id_d,
-            $this->id_entity_exemple,
+            $this->entityId,
             'ROLE-FAKE'
         );
-
-        $isSupprimable = $this->entiteDeletionService->canDelete($this->id_entity_exemple);
+        $isSupprimable = $this->entiteDeletionService->canDelete($this->entityId);
         self::assertFalse($isSupprimable);
     }
 
-    public function testIsNotSupprimableBecauseHasUser(): void
+    public function testCannotDeleteWhenHasUser(): void
     {
-        self::getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole(
+        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole(
             1,
             'role-fake',
-            $this->id_entity_exemple
+            $this->entityId
         );
-
-        $isSupprimable = $this->entiteDeletionService->canDelete($this->id_entity_exemple);
+        $isSupprimable = $this->entiteDeletionService->canDelete($this->entityId);
         self::assertFalse($isSupprimable);
     }
 
-    public function testIsNotSupprimableBecauseHasConnector(): void
+    public function testCannotDeleteWhenHasConnector(): void
     {
-        self::getObjectInstancier()->getInstance(ConnecteurEntiteSQL::class)->addConnecteur(
-            $this->id_entity_exemple,
+        $this->getObjectInstancier()->getInstance(ConnecteurEntiteSQL::class)->addConnecteur(
+            $this->entityId,
             4,
             'type-fake',
             'libelle-fake',
             0
         );
-
-        $isSupprimable = $this->entiteDeletionService->canDelete($this->id_entity_exemple);
+        $isSupprimable = $this->entiteDeletionService->canDelete($this->entityId);
         self::assertFalse($isSupprimable);
     }
 
-    public function testIsNotSupprimableBecauseHasfluxEntity(): void
+    public function testCannotDeleteWhenHasFluxEntity(): void
     {
-        self::getObjectInstancier()->getInstance(FluxEntiteSQL::class)->addConnecteur(
-            $this->id_entity_exemple,
+        $this->getObjectInstancier()->getInstance(FluxEntiteSQL::class)->addConnecteur(
+            $this->entityId,
             'flux-fake',
             'type-fake',
             4
         );
 
+        $isSupprimable = $this->entiteDeletionService->canDelete($this->entityId);
+        self::assertFalse($isSupprimable);
+    }
+
+    public function testCannotDeleteWhenHasFluxEntityInheritance(): void
+    {
+        $this->getObjectInstancier()->getInstance(FluxEntiteHeritageSQL::class)->setInheritance(
+            $this->entityId,
+            'flux-fake'
+        );
         $isSupprimable = $this->entiteDeletionService->canDelete($this->id_entity_exemple);
         self::assertFalse($isSupprimable);
     }
 
-    public function testIsNotSupprimableBecauseHasfluxEntityHeritage(): void
+    public function testCannotDeleteWhenHasDirectoryContacts(): void
     {
-        self::getObjectInstancier()->getInstance(FluxEntiteHeritageSQL::class)->setInheritance(
-            $this->id_entity_exemple,
-            'flux-fake'
+        $this->getObjectInstancier()->getInstance(AnnuaireSQL::class)->add(
+            $this->entityId,
+            'Contact Test',
+            'contact@test.fr'
         );
 
-        $isSupprimable = $this->entiteDeletionService->canDelete($this->id_entity_exemple);
+        $isSupprimable = $this->entiteDeletionService->canDelete($this->entityId);
         self::assertFalse($isSupprimable);
+    }
+
+    public function testCannotDeleteWhenHasDirectoryGroup(): void
+    {
+        $annuaireGroupe = new AnnuaireGroupe(
+            $this->getObjectInstancier()->getInstance(SQLQuery::class),
+            $this->entityId
+        );
+        $annuaireGroupe->add('Groupe Test');
+
+        $isSupprimable = $this->entiteDeletionService->canDelete($this->entityId);
+        self::assertFalse($isSupprimable);
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function testDeleteRemovesDirectoryRoles(): void
+    {
+        $annuaireRoleSQL = $this->getObjectInstancier()->getInstance(AnnuaireRoleSQL::class);
+        $annuaireRoleSQL->add('Rôle Test', $this->entityId, $this->entityId, 'role-fake');
+
+        $this->entiteDeletionService->delete($this->entityId);
+
+        self::assertEmpty($annuaireRoleSQL->getAll($this->entityId));
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function testDeleteRemovesNotifications(): void
+    {
+        $notification = $this->getObjectInstancier()->getInstance(Notification::class);
+        $notification->add(1, $this->entityId, 'type-fake', 'action-fake', 0);
+        self::assertNotEmpty($notification->getAll(1));
+
+        $this->entiteDeletionService->delete($this->entityId);
+
+        self::assertEmpty($notification->getAll(1));
     }
 }

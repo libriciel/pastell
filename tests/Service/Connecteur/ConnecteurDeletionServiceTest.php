@@ -3,6 +3,8 @@
 namespace Pastell\Tests\Service\Connecteur;
 
 use ConnecteurEntiteSQL;
+use ConnecteurFrequence;
+use ConnecteurFrequenceSQL;
 use Exception;
 use Pastell\Service\Connecteur\ConnecteurDeletionService;
 use PastellTestCase;
@@ -45,6 +47,28 @@ final class ConnecteurDeletionServiceTest extends PastellTestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Ce connecteur est utilisé par des flux :  test');
         $this->connectorDeletionService->deleteConnecteur($testConnectors[1]['id_ce']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testDeleteConnecteurAlsoDeletesFrequences(): void
+    {
+        $testConnectors = $this->connectorEntitySql->getAllByConnecteurId('test');
+        $id_ce = $testConnectors[0]['id_ce'];
+
+        $connecteurFrequenceSQL = $this->getObjectInstancier()->getInstance(ConnecteurFrequenceSQL::class);
+        $connecteurFrequence = new ConnecteurFrequence();
+        $connecteurFrequence->type_connecteur = ConnecteurFrequence::TYPE_ENTITE;
+        $connecteurFrequence->famille_connecteur = 'test';
+        $connecteurFrequence->id_connecteur = 'test';
+        $connecteurFrequence->id_ce = $id_ce;
+        $connecteurFrequence->action_type = ConnecteurFrequence::TYPE_ACTION_CONNECTEUR;
+        $id_cf = $connecteurFrequenceSQL->edit($connecteurFrequence);
+
+        $this->connectorDeletionService->deleteConnecteur($id_ce);
+
+        $this->assertEmpty($connecteurFrequenceSQL->getInfo($id_cf));
     }
 
     /**

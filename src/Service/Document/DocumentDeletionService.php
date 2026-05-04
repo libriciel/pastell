@@ -8,6 +8,7 @@ use DocumentSQL;
 use DonneesFormulaireFactory;
 use JobManager;
 use Journal;
+use NotificationDigestSQL;
 use NotFoundException;
 
 class DocumentDeletionService
@@ -19,6 +20,7 @@ class DocumentDeletionService
         private readonly JobManager $jobManager,
         private readonly Journal $journal,
         private readonly DocumentEmailReponseSQL $documentEmailReponseSQL,
+        private readonly NotificationDigestSQL $notificationDigestSQL,
     ) {
     }
 
@@ -44,6 +46,7 @@ class DocumentDeletionService
         $this->donneesFormulaireFactory->get($id_d)->delete();
         $this->documentSQL->delete($id_d);
         $this->jobManager->deleteDocumentForAllEntities($id_d);
+        $this->notificationDigestSQL->deleteByDocument($id_d);
 
         $message = sprintf(
             'Le document « %s » (%s) a été supprimé %s',

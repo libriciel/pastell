@@ -23,9 +23,16 @@ class JobQueueSQL extends SQL
         $this->query($sql, $id_d);
     }
 
-    public function deleteJob($id_job)
+    public function deleteJob($id_job): void
     {
-        $sql = "DELETE FROM job_queue WHERE id_job=?";
+        $sql = <<<SQL
+DELETE FROM worker WHERE id_job=?;
+SQL;
+        $this->query($sql, $id_job);
+
+        $sql = <<<SQL
+DELETE FROM job_queue WHERE id_job=?;
+SQL;
         $this->query($sql, $id_job);
     }
 

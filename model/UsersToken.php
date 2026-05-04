@@ -81,6 +81,14 @@ EOT;
         $this->query($query, $tokenId);
     }
 
+    public function deleteAllForUser(int $userId): void
+    {
+        $sql = <<<SQL
+DELETE FROM users_token WHERE id_u=?;
+SQL;
+        $this->query($sql, $userId);
+    }
+
     public function getTokenInfo(int $tokenId): array
     {
         $query = 'SELECT * FROM users_token WHERE id=?';

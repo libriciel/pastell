@@ -15,11 +15,11 @@ if ($result) : ?>
 </div>  
 
 <?php else : ?>
-<div class="alert alert-danger">
-Un problème empêche de satisfaire votre demande.
+<div class="alert alert-warning">
+Ce lien de confirmation est invalide ou a déjà été utilisé.
 <br/>
-Veuillez recommencer la procédure de changement d'email.
-</div>  
+Si votre changement d'email n'a pas été pris en compte, veuillez recommencer la procédure.
+</div>
 <?php endif;?>
 
 </div>
