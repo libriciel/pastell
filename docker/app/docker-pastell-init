@@ -58,6 +58,9 @@ if (${PACK_CHORUS_PRO:-false}) {
 if (${PACK_MARCHE:-false}) {
   \$packs["pack_marche"]=true;
 }
+if (${PACK_MARCHE_LS_DOSSIER_MARCHE:-false}) {
+  \$packs["pack_marche_ls_dossier_marche"]=true;
+}
 if (${PACK_URBANISME:-false}) {
   \$packs["pack_urbanisme"]=true;
 }

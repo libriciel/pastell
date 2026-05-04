@@ -94,4 +94,20 @@ class Notification extends SQL
         $sql = "UPDATE notification SET daily_digest = 1 - daily_digest WHERE id_u=? AND id_e=? AND type=?";
         $this->query($sql, $id_u, $id_e, $type);
     }
+
+    public function removeAllForEntite(int $id_e): void
+    {
+        $sql = <<<SQL
+DELETE FROM notification WHERE id_e=?
+SQL;
+        $this->query($sql, $id_e);
+    }
+
+    public function removeAllForUser(int $id_u): void
+    {
+        $sql = <<<SQL
+DELETE FROM notification WHERE id_u=?;
+SQL;
+        $this->query($sql, $id_u);
+    }
 }

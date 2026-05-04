@@ -101,6 +101,10 @@ class RoleControler extends PastellControler
         $this->redirect("/Role/detail?role=$role");
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function doDeleteAction()
     {
         $this->verifDroit(0, "role:edition");
@@ -108,6 +112,11 @@ class RoleControler extends PastellControler
 
         if ($this->getRoleUtilisateur()->anybodyHasRole($role)) {
             $this->setLastError("Le rôle $role est attribué à des utilisateurs");
+            $this->redirect("/Role/detail?role=$role");
+        }
+
+        if ($this->getInstance(AnnuaireRoleSQL::class)->getNbByRole($role) > 0) {
+            $this->setLastError("Le rôle $role est utilisé dans l'annuaire");
             $this->redirect("/Role/detail?role=$role");
         }
 

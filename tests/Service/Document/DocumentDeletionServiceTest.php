@@ -4,6 +4,7 @@ namespace Pastell\Tests\Service\Document;
 
 use DocumentSQL;
 use JobQueueSQL;
+use NotificationDigestSQL;
 use NotFoundException;
 use Pastell\Service\Document\DocumentDeletionService;
 use PastellTestCase;
@@ -50,6 +51,21 @@ class DocumentDeletionServiceTest extends PastellTestCase
         static::assertTrue($jobQueueSQL->hasDocumentJob(self::ID_E_COL, $id_d));
         $this->getDocumentDeletionService()->delete($id_d);
         static::assertFalse($jobQueueSQL->hasDocumentJob(self::ID_E_COL, $id_d));
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    public function testDeleteClearsNotificationDigest(): void
+    {
+        $id_d = $this->createDocument('test')['id_d'];
+
+        $notificationDigestSQL = $this->getObjectInstancier()->getInstance(NotificationDigestSQL::class);
+        $notificationDigestSQL->add('user@example.com', self::ID_E_COL, $id_d, 'action', 'test', 'message');
+
+        $this->assertNotEmpty($notificationDigestSQL->getAll());
+        $this->getDocumentDeletionService()->delete($id_d);
+        $this->assertEmpty($notificationDigestSQL->getAll());
     }
 
     /**

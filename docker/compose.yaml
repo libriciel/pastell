@@ -39,6 +39,7 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL:-test@libriciel.invalid}
       PACK_CHORUS_PRO: ${PACK_CHORUS_PRO:-false}
       PACK_MARCHE: ${PACK_MARCHE:-false}
+      PACK_MARCHE_LS_DOSSIER_MARCHE: ${PACK_MARCHE_LS_DOSSIER_MARCHE:-false}
       PACK_URBANISME: ${PACK_URBANISME:-false}
       PACK_RH: ${PACK_RH:-false}
       PACK_TEST: ${PACK_TEST:-false}

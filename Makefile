@@ -132,7 +132,10 @@ module-json-urbanisme: docker-compose-up ## Run make-module json-urbanisme
 	$(MAKE_MODULE) ./json-studio/json-urbanisme/draft-document-autorisation-urbanisme-destinataire.json ./module/ --id document-autorisation-urbanisme-destinataire --name "Document d'autorisation d'urbanisme (destinataire)" --restriction_pack 'pack_urbanisme'
 	$(MAKE_MODULE) ./json-studio/json-urbanisme/draft-dossier-autorisation-urbanisme.json ./module/ --id dossier-autorisation-urbanisme --name "Dossier d'autorisation d'urbanisme (archivage)" --restriction_pack 'pack_urbanisme'
 
-all-module: module-json-actes module-json-document module-json-gfc module-json-helios module-json-mailsec module-json-rh module-json-urbanisme
+module-json-marche: docker-compose-up ## Run make-module json-marche
+	$(MAKE_MODULE) ./json-studio/json-marche/draft-ls-dossier-marche.json ./module/ --id ls-dossier-marche --name "Dossier de marché (archivage)" --restriction_pack 'pack_marche_ls_dossier_marche'
+
+all-module: module-json-actes module-json-document module-json-gfc module-json-helios module-json-mailsec module-json-rh module-json-urbanisme module-json-marche
 
 build-app: ## Build app container
 	$(DOCKER_COMPOSE) build app

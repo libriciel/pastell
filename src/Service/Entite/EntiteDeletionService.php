@@ -2,12 +2,15 @@
 
 namespace Pastell\Service\Entite;
 
+use AnnuaireRoleSQL;
+use AnnuaireSQL;
 use ConnecteurEntiteSQL;
 use DocumentEntite;
 use EntiteSQL;
 use FluxEntiteHeritageSQL;
 use FluxEntiteSQL;
 use Journal;
+use Notification;
 use UnrecoverableException;
 use UtilisateurListe;
 
@@ -21,6 +24,9 @@ class EntiteDeletionService
         private readonly FluxEntiteSQL $fluxEntiteSQL,
         private readonly FluxEntiteHeritageSQL $fluxEntiteHeritageSQL,
         private readonly UtilisateurListe $utilisateurListe,
+        private readonly AnnuaireSQL $annuaireSQL,
+        private readonly Notification $notification,
+        private readonly AnnuaireRoleSQL $annuaireRoleSQL,
         private readonly \DaemonSQL $daemonSQL,
     ) {
     }
@@ -33,6 +39,8 @@ class EntiteDeletionService
     {
         $this->canDeleteOrThrow($id_e);
         $info = $this->entiteSQL->getInfo($id_e);
+        $this->notification->removeAllForEntite($id_e);
+        $this->annuaireRoleSQL->deleteByEntite($id_e);
         $this->entiteSQL->removeEntite($id_e);
         $this->journal->add(
             Journal::MODIFICATION_ENTITE,
@@ -92,6 +100,16 @@ class EntiteDeletionService
         if (count($this->fluxEntiteHeritageSQL->getInheritance($id_e)) > 0) {
             throw new UnrecoverableException(
                 "Suppression impossible : des flux herités sont définis sur l'entité {id_e=$id_e}"
+            );
+        }
+        if ($this->annuaireSQL->getNbUtilisateur($id_e, '', 0) > 0) {
+            throw new UnrecoverableException(
+                "Suppression impossible : des contacts sont définis dans l'annuaire de l'entité {id_e=$id_e}"
+            );
+        }
+        if ($this->annuaireSQL->getNbGroupe($id_e) > 0) {
+            throw new UnrecoverableException(
+                "Suppression impossible : des groupes sont définis dans l'annuaire de l'entité {id_e=$id_e}"
             );
         }
         if ($this->daemonSQL->getDaemonByEntity($id_e) !== null) {

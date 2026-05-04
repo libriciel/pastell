@@ -1,11 +1,30 @@
 # [5.0.4] - 2026-05-04
 
+## Ajout
+
+- Ajout de ls-dossier-marche activable #2455
+
 ## Corrections
 
+- Les identifiants de champs ne peuvent plus commencer par un chiffre (erreur Twig lors de la génération de bordereaux SEDA) #2161
+- Correction de l'extraction des données pour les fichiers PES de type PJ dans le flux pes-marche #2172
+- Bloquer la suppression d'une entité si des contacts ou groupes existent dans son annuaire #2432
+- Lors de la suppression d'une entité, nettoyer les rôles d'annuaire et notifications associés #2432
+- Lors de la suppression d'un utilisateur, nettoyer les notifications, tokens API et demandes de changement d'email associés #2434
+- Lors de la suppression d'un connecteur, nettoyer les fréquences de connecteur associées #2435
+- Lors de la suppression d'un document, nettoyer les notifications en attente d'envoi associées #2436
+- Lors de la suppression d'une tâche automatique, nettoyer les workers associés #2438
+- Lors de la suppression d'un groupe d'annuaire, nettoyer les appartenances des contacts associés #2439
+- Mise à jour du mail dans `notifications_digest` à la modification #2442
+- Correction d'un commentaire du connecteur mailsec #2459
+- Correction des doublons lors de la récupération des actes S2low #2429
+- Gestion des utilisateurs exclusivement API par API #2441 :
+  - Ajout de la route `POST /api/v2/utilisateur/:id_u/token/:id_token/renew` pour renouveler un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
+  - Ajout de la route `DELETE /api/v2/utilisateur/:id_u/token/:id_token` pour supprimer un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
 - Il n'est plus possible de créer ou modifier des gestionnaires de tâches avec 0 processus alloués #2414
 - les URLs des mails sécurisés n'affichent plus le port 443 par défaut #2430
--  iParapheur REST : suppression du LogDossier superflu (sans timestamp ni nom) qui apparaissait en dernier 
- dans `iparapheur_historique.xml` #2443
+-  iParapheur REST : suppression du LogDossier superflu (sans timestamp ni nom) qui apparaissait en dernier
+   dans `iparapheur_historique.xml` #2443
 - Migration iParapheur SOAP → REST : correspondance d'identifiant de dossier iParapheur REST pour les dossiers créés avec un connecteur SOAP #2444
 - Corrections d'erreurs silencieuses à l'envoi d'un dossier en signature iParapheur REST V5 avec un dossier mal configuré #2454
 
@@ -14,8 +33,8 @@
 ## Ajouts
 
 - Gestion des utilisateurs exclusivement API par API #1943 :
-    - Ajout du paramètre `is_api` à la création d'un utilisateur : crée un utilisateur sans email, authentifiable par jeton uniquement
-    - Ajout de la route `POST /api/v2/utilisateur/:id_u/token` pour créer un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
+  - Ajout du paramètre `is_api` à la création d'un utilisateur : crée un utilisateur sans email, authentifiable par jeton uniquement
+  - Ajout de la route `POST /api/v2/utilisateur/:id_u/token` pour créer un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
 
 ## Corrections
 
@@ -231,6 +250,30 @@
   Seules les factures importées de Chorus Pro seront traitées. #1856
 - Connecteur iparapheur soap #2268
 - Connecteur `chorus-par-csv` ChorusPro par CSV #2356
+
+# [4.1.18] - 2026-05-04
+
+## Ajout
+
+- Ajout de ls-dossier-marche activable #2455
+
+## Corrections
+
+- Les identifiants de champs ne peuvent plus commencer par un chiffre (erreur Twig lors de la génération de bordereaux SEDA) #2161
+- Correction de l'extraction des données pour les fichiers PES de type PJ dans le flux pes-marche #2172
+- Bloquer la suppression d'une entité si des contacts ou groupes existent dans son annuaire #2432
+- Lors de la suppression d'une entité, nettoyer les rôles d'annuaire et notifications associés #2432
+- Lors de la suppression d'un utilisateur, nettoyer les notifications, tokens API et demandes de changement d'email associés #2434
+- Lors de la suppression d'un connecteur, nettoyer les fréquences de connecteur associées #2435
+- Lors de la suppression d'un document, nettoyer les notifications en attente d'envoi associées #2436
+- Lors de la suppression d'une tâche automatique, nettoyer les workers associés #2438
+- Lors de la suppression d'un groupe d'annuaire, nettoyer les appartenances des contacts associés #2439
+- Mise à jour du mail dans `notifications_digest` à la modification #2442
+- Correction d'un commentaire du connecteur mailsec #2459
+- Correction des doublons lors de la récupération des actes S2low #2429
+- Gestion des utilisateurs exclusivement API par API #2441 :
+  - Ajout de la route `POST /api/v2/utilisateur/:id_u/token/:id_token/renew` pour renouveler un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
+  - Ajout de la route `DELETE /api/v2/utilisateur/:id_u/token/:id_token` pour supprimer un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
 
 # [4.1.17] - 2026-04-07
 
@@ -590,12 +633,28 @@
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
 
+# [4.0.31] - 2026-05-04
+
+## Corrections
+
+- Les identifiants de champs ne peuvent plus commencer par un chiffre (erreur Twig lors de la génération de bordereaux SEDA) #2161
+- Correction de l'extraction des données pour les fichiers PES de type PJ dans le flux pes-marche #2172
+- Bloquer la suppression d'une entité si des contacts ou groupes existent dans son annuaire #2432
+- Lors de la suppression d'une entité, nettoyer les rôles d'annuaire et notifications associés #2432
+- Lors de la suppression d'un utilisateur, nettoyer les notifications, tokens API et demandes de changement d'email associés #2434
+- Lors de la suppression d'un connecteur, nettoyer les fréquences de connecteur associées #2435
+- Lors de la suppression d'un document, nettoyer les notifications en attente d'envoi associées #2436
+- Lors de la suppression d'une tâche automatique, nettoyer les workers associés #2438
+- Lors de la suppression d'un groupe d'annuaire, nettoyer les appartenances des contacts associés #2439
+- Mise à jour du mail dans `notifications_digest` à la modification #2442
+- Correction d'un commentaire du connecteur mailsec #2459
+
 # [4.0.30] - 2026-04-07
 
 ## Corrections
 
 - Il manquait des contrôles pour l'évolution en 4.0.6
-"Seul l'utilisateur peut gérer ses notifications, l'administrateur n'a plus les droits #1886" #2402
+  "Seul l'utilisateur peut gérer ses notifications, l'administrateur n'a plus les droits #1886" #2402
 - Les boutons `Exporter` et `Traitement par lot` apparaissaient si on changeait de page sans avoir fait de recherche #1425
 - En signature PAdES via iParapheur, le fichier signé est désormais enregistré avec le nom et l'extension retournés #2134
 - Un mail sécurisé protégé par mot de passe n'est plus marqué comme 'lu' tant que le mot de passe n'a pas été saisi #2410

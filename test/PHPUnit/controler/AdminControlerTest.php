@@ -30,4 +30,16 @@ class AdminControlerTest extends ControlerTestCase
         self::assertEquals('foo', $utilisateurSQL->getInfo($id_u)['login']);
         self::assertMatchesRegularExpression("/Mot de passe de l'administrateur : (.*)/", $this->getLogRecords()[2]['message']);
     }
+
+    public function testUpdateAdminUpdatesNotificationDigestEmail(): void
+    {
+        $notificationDigestSQL = $this->getObjectInstancier()->getInstance(NotificationDigestSQL::class);
+        $notificationDigestSQL->add('eric@sigmalis.com', 1, 'id-d-fake', 'action-fake', 'type-fake', 'message-fake');
+
+        $this->adminControler->createOrUpdateAdmin('admin', 'new@example.com');
+
+        $all = $notificationDigestSQL->getAll();
+        self::assertArrayHasKey('new@example.com', $all);
+        self::assertArrayNotHasKey('eric@sigmalis.com', $all);
+    }
 }

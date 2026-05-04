@@ -184,6 +184,11 @@ class PastellPackTest extends PastellTestCase
             'dossier-autorisation-urbanisme',
             "Dossier d'autorisation d'urbanisme (archivage)"
         ],
+        'draft-ls-dossier-marche' => [
+            'pack_marche_ls_dossier_marche',
+            'ls-dossier-marche',
+            "Dossier de marché (archivage)"
+        ],
     ];
 
     public function jsonProvider(): array
