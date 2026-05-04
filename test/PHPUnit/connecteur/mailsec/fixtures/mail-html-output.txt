@@ -48,10 +48,9 @@ cid:NOTTESTABLE@symfony' alt=3D''/>
 </html>
 --NOTTESTABLE
 Content-ID: <NOTTESTABLE@symfony>
-Content-Type: image/png; name="NOT_TESTABLE@symfony"
+Content-Type: image/png; name=image0
 Content-Transfer-Encoding: base64
-Content-Disposition: inline;
- name="NOT_TESTABLE@symfony"; filename=image0
+Content-Disposition: inline; name=image0; filename=image0
 
 iVBORw0KGgoAAAANSUhEUgAAAJYAAAAiCAYAAAC9WiCBAAAACXBIWXMAAC4jAAAuIwF4pT92AAAA
 BGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VG
@@ -195,10 +194,9 @@ ekMjVid6tshagnMioC9rH3SkAGfNufYt8cyJff5F1UhdUY/0RarV31YpwWOLLO+r/8bo1eN3Ujbz
 6hS8erwKrFeP/2+O/zsAXn/Tcnw21IEAAAAASUVORK5CYII=
 --NOTTESTABLE
 Content-ID: <NOTTESTABLE@symfony>
-Content-Type: image/png; name="NOT_TESTABLE@symfony"
+Content-Type: image/png; name=image1
 Content-Transfer-Encoding: base64
-Content-Disposition: inline;
- name="NOT_TESTABLE@symfony"; filename=image1
+Content-Disposition: inline; name=image1; filename=image1
 
 iVBORw0KGgoAAAANSUhEUgAAAJYAAAAiCAYAAAC9WiCBAAAACXBIWXMAAC4jAAAuIwF4pT92AAAA
 BGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VG
