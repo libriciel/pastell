@@ -121,7 +121,7 @@ acceptance_test:
     services:
         - name: hubdocker.libriciel.fr/mariadb:10.11.16-jammy
           alias: mariadb
-        - name: hubdocker.libriciel.fr/redis:7.2.12
+        - name: hubdocker.libriciel.fr/redis:7.2.13
           alias: redis
     script:
         - cd /var/www/pastell
@@ -138,7 +138,7 @@ security-check:
   stage: test
   allow_failure: true
   image:
-    name: hubdocker.libriciel.fr/aquasec/trivy:0.69.2
+    name: hubdocker.libriciel.fr/aquasec/trivy:0.70.0
     entrypoint: [ "" ]
   services:
     - docker:dind
