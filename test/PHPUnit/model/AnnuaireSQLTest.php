@@ -73,6 +73,16 @@ class AnnuaireSQLTest extends PastellTestCase
         $this->assertEquals("eric@sigmalis.com", $result[0]['email']);
     }
 
+    public function testDeleteGroupeClearsGroupeContact(): void
+    {
+        $id_a = $this->getAnnuaireSQL()->add(1, 'Eric Pommateau', 'eric@sigmalis.com');
+        $id_g = $this->getAnnuaireGroupsSQL()->add('test');
+        $this->getAnnuaireGroupsSQL()->addToGroupe($id_g, $id_a);
+        $this->assertTrue((bool) $this->getAnnuaireGroupsSQL()->isInGroupe($id_g, $id_a));
+        $this->getAnnuaireGroupsSQL()->delete([$id_g]);
+        $this->assertSame(0, $this->getAnnuaireGroupsSQL()->isInGroupe($id_g, $id_a));
+    }
+
     public function testNbUtilisateurList()
     {
         $id_a = $this->getAnnuaireSQL()->add(1, "Eric Pommateau", "eric@sigmalis.com");

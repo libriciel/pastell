@@ -122,7 +122,7 @@ services:
         restart: unless-stopped
 
     pes-viewer:
-        image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.18'
+        image: 'registry.libriciel.fr/public/signature/pes-viewer:3.1.21'
         restart: unless-stopped
         deploy:
             resources:

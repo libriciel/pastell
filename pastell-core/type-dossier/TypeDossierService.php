@@ -64,7 +64,7 @@ class TypeDossierService
      * @throw TypeDossierException
      * @throws Exception
      */
-    public function editionElement($id_t, Recuperateur $recuperateur)
+    public function editionElement($id_t, Recuperateur $recuperateur): void
     {
         $typeDossierData = $this->typeDossierManager->getTypeDossierProperties($id_t);
 
