@@ -15,7 +15,7 @@ class TypeDossierFormulaireElementManagerTest extends \PHPUnit\Framework\TestCas
             [
                 'MATRICULE_AGENT',
                 false,
-                "L'identifiant de l'élément « MATRICULE_AGENT » ne respecte pas l'expression rationnelle : ^[0-9a-z_]+$"
+                "L'identifiant de l'élément « MATRICULE_AGENT » ne respecte pas l'expression rationnelle : ^[a-z_][0-9a-z_]*$"
             ],
             [
                 '1_matricule_agent',
@@ -43,7 +43,7 @@ class TypeDossierFormulaireElementManagerTest extends \PHPUnit\Framework\TestCas
             [
                 '',
                 false,
-                "L'identifiant de l'élément «  » ne respecte pas l'expression rationnelle : ^[0-9a-z_]+$"
+                "L'identifiant de l'élément «  » ne respecte pas l'expression rationnelle : ^[a-z_][0-9a-z_]*$"
             ]
         ];
     }

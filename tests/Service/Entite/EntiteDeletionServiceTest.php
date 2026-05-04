@@ -142,7 +142,7 @@ class EntiteDeletionServiceTest extends PastellTestCase
             $this->entityId,
             'flux-fake'
         );
-        $isSupprimable = $this->entiteDeletionService->canDelete($this->id_entity_exemple);
+        $isSupprimable = $this->entiteDeletionService->canDelete($this->entityId);
         self::assertFalse($isSupprimable);
     }
 
