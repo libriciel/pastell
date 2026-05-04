@@ -78,8 +78,7 @@ class JobQueueSQLTest extends PastellTestCase
         $workerSQL->attachJob($id_worker, $id_job);
 
         $this->jobQueueSQL->deleteJob($id_job);
-
-        $this->assertEmpty($workerSQL->getInfo($id_worker));
+        $this->assertNull($workerSQL->getWorker($id_worker));
     }
 
     /**
