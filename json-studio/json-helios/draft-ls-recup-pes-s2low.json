@@ -18,7 +18,7 @@
         "commentaire": "",
         "requis": "on",
         "champs_affiches": "",
-        "champs_recherche_avancee": "",
+        "champs_recherche_avancee": "on",
         "titre": false,
         "select_value": "",
         "preg_match": "",

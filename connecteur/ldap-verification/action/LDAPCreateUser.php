@@ -30,7 +30,9 @@ class LDAPCreateUser extends ActionExecutor
             }
             if ($user['synchronize']) {
                 $utilisateur->setNomPrenom($user['id_u'], $user['nom'], $user['prenom']);
+                $oldEmail = $utilisateur->getInfo($user['id_u'])['email'];
                 $utilisateur->setEmail($user['id_u'], $user['email']);
+                $this->objectInstancier->getInstance(NotificationDigestSQL::class)->updateEmail($oldEmail, $user['email']);
                 $this->objectInstancier->getInstance(Journal::class)->add(
                     Journal::MODIFICATION_UTILISATEUR,
                     0,

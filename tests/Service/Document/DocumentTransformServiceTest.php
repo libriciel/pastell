@@ -37,7 +37,7 @@ class DocumentTransformServiceTest extends PastellTestCase
                 'objet document' => '{{ objet  ? objet :  "objet par défaut" }}',
             ],
             false,
-            "L'identifiant de l'élément « objet document » ne respecte pas l'expression rationnelle : ^[0-9a-z_]+$"
+            "L'identifiant de l'élément « objet document » ne respecte pas l'expression rationnelle : ^[a-z_][0-9a-z_]*$"
         ];
         yield 'TransformationData with wrong expressionTwig' => [
             [

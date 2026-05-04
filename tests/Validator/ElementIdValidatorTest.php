@@ -16,12 +16,12 @@ class ElementIdValidatorTest extends TestCase
         yield 'Empty ElementId' => [
             '',
             false,
-            "L'identifiant de l'élément «  » ne respecte pas l'expression rationnelle : ^[0-9a-z_]+$"
+            "L'identifiant de l'élément «  » ne respecte pas l'expression rationnelle : ^[a-z_][0-9a-z_]*$"
         ];
         yield 'ElementId with capital' => [
             'Objet_document',
             false,
-            "L'identifiant de l'élément « Objet_document » ne respecte pas l'expression rationnelle : ^[0-9a-z_]+$"
+            "L'identifiant de l'élément « Objet_document » ne respecte pas l'expression rationnelle : ^[a-z_][0-9a-z_]*$"
         ];
         yield 'ElementId with 65 character' => [
             str_pad('', ElementIdValidator::ELEMENT_ID_MAX_LENGTH + 1, 'a'),
@@ -31,7 +31,7 @@ class ElementIdValidatorTest extends TestCase
         yield 'ElementId with space' => [
             'objet document',
             false,
-            "L'identifiant de l'élément « objet document » ne respecte pas l'expression rationnelle : ^[0-9a-z_]+$"
+            "L'identifiant de l'élément « objet document » ne respecte pas l'expression rationnelle : ^[a-z_][0-9a-z_]*$"
         ];
     }
 

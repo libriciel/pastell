@@ -328,21 +328,21 @@ class TypeDossierControler extends PastellControler
     /**
      * @throws Exception
      */
-    public function doEditionElementAction()
+    public function doEditionElementAction(): void
     {
         $this->commonEdition();
-        $id_type_dossier = $this->getViewParameterOrObject('type_de_dossier_info')['id_type_dossier'];
-        $this->verifyNoDocumentIsUsingTypeDossier($id_type_dossier, '/TypeDossier/detail?id_t=' . $this->getViewParameterOrObject('id_t'));
+        $id_type_dossier = $this->getViewParameterByKey('type_de_dossier_info')['id_type_dossier'];
+        $this->verifyNoDocumentIsUsingTypeDossier($id_type_dossier, '/TypeDossier/detail?id_t=' . $this->getViewParameterByKey('id_t'));
         try {
-            $this->getTypeDossierService()->editionElement($this->getViewParameterOrObject('id_t'), $this->getPostOrGetInfo());
+            $this->getTypeDossierService()->editionElement($this->getViewParameterByKey('id_t'), $this->getPostOrGetInfo());
         } catch (Exception $e) {
             $this->setLastError($e->getMessage());
-            $this->redirect("/TypeDossier/detail?id_t={$this->getViewParameterOrObject('id_t')}");
+            $this->redirect("/TypeDossier/detail?id_t={$this->getViewParameterByKey('id_t')}");
         }
         $message = "La modification d'éléments du formulaire a été enregistrée";
-        $this->getTypeDossierActionService()->add($this->getId_u(), $this->getViewParameterOrObject('id_t'), TypeDossierActionService::ACTION_MODIFFIE, $message);
+        $this->getTypeDossierActionService()->add($this->getId_u(), $this->getViewParameterByKey('id_t'), TypeDossierActionService::ACTION_MODIFFIE, $message);
         $this->setLastMessage($message);
-        $this->redirect("/TypeDossier/detail?id_t={$this->getViewParameterOrObject('id_t')}");
+        $this->redirect("/TypeDossier/detail?id_t={$this->getViewParameterByKey('id_t')}");
     }
 
 

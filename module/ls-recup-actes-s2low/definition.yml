@@ -15,6 +15,7 @@ formulaire:
             requis: true
             multiple: false
             commentaire: ''
+            index: true
         acte_nature:
             name: "Nature de l'acte"
             type: select
@@ -168,6 +169,7 @@ champs-recherche-avancee:
     - state_begin
     - notEtatTransit
     - search
+    - transaction_id
 page-condition:
     'Statut s2low #1':
         envoi_update_status_actes_s2low_1: true

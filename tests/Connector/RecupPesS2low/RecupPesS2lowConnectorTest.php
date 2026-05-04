@@ -62,6 +62,17 @@ class RecupPesS2lowConnectorTest extends \PastellTestCase
         self::assertMatchesRegularExpression('/Création du document lié à la transaction/', $lastMessage);
     }
 
+    public function testFetchPesSkipsDuplicate(): void
+    {
+        $connectorId = $this->getConnectorId();
+        $documentEntite = $this->getObjectInstancier()->getInstance(\DocumentEntite::class);
+        $this->triggerActionOnConnector($connectorId, 'fetch_once');
+        $this->triggerActionOnConnector($connectorId, 'fetch_once');
+        self::assertSame(1, $documentEntite->getNbAll(self::ID_E_COL, 'ls-recup-pes-s2low'));
+        $lastMessage = $this->getObjectInstancier()->getInstance(ActionExecutorFactory::class)->getLastMessage();
+        self::assertStringContainsString('déjà importée, ignorée', $lastMessage);
+    }
+
     public function testListPes(): void
     {
         $connectorId = $this->getConnectorId();

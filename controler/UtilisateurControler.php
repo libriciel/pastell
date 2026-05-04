@@ -178,9 +178,8 @@ class UtilisateurControler extends PastellControler
         $info = $this->getUtilisateurNewEmailSQL()->confirm($password);
         if ($info) {
             $this->createChangementEmail($info['id_u'], $info['email']);
+            $this->getUtilisateurNewEmailSQL()->delete($info['id_u']);
         }
-
-        $this->getUtilisateurNewEmailSQL()->delete($info['id_u']);
         $this->setViewParameter('result', $info);
         $this->setViewParameter('page_title', "Procédure de changement d'email");
         $this->setViewParameter('template_milieu', 'UtilisateurModifEmailConfirm');

@@ -9,13 +9,17 @@ use UnrecoverableException;
 final class ElementIdValidator
 {
     public const ELEMENT_ID_MAX_LENGTH = 64;
-    public const ELEMENT_ID_REGEXP = '^[0-9a-z_]+$';
+    public const ELEMENT_ID_REGEXP = '^[a-z_][0-9a-z_]*$';
 
     /**
      * @throws UnrecoverableException
      */
     public function validate(string $elementId = ''): bool
     {
+        if (preg_match('#^\d#', $elementId)) {
+            throw new UnrecoverableException("L'identifiant de l'élément ne doit pas commencer par un chiffre");
+        }
+
         if (!preg_match("#" . self::ELEMENT_ID_REGEXP . "#", $elementId)) {
             throw new UnrecoverableException(
                 "L'identifiant de l'élément « " . get_hecho(

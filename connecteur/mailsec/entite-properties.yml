@@ -14,7 +14,7 @@ formulaire:
         mailsec_subject:
             name: 'Sujet du mail sécurisé'
             default: '[Pastell] Vous avez reçu un mail sécurisé'
-            commentaire: "Vous pouvez utiliser les mêmes méta-informations que le contenu du mail texte\npar le nom de l'entité et par le titre du dossier Pastell."
+            commentaire: "Vous pouvez utiliser les mêmes méta-informations que pour le contenu du mail texte"
         content_html:
             name: 'Mail HTML'
             commentaire: "Un fichier HTML susceptible d'être envoyé par mail. Peut contenir les mêmes méta-informations que le contenu texte"
