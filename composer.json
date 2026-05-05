@@ -27,7 +27,7 @@
     "ext-xsl": "*",
     "ext-zend-opcache": "*",
     "ext-zip": "*",
-    "apereo/phpcas": "dev-master#77309b6a7f304a5f9e351bc52d8adc831989734f",
+    "apereo/phpcas": "^1.6",
     "aws/aws-sdk-php": "^3.263",
     "dragonmantank/cron-expression": "^3.1",
     "erusev/parsedown": "^1.8",
