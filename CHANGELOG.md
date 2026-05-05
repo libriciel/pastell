@@ -1,3 +1,9 @@
+# [5.0.5] - 2026-06-01
+
+## Corrections
+
+- Assignation des tâches orphelines au lancement de pastell #2457
+
 # [5.0.4] - 2026-05-04
 
 ## Ajout

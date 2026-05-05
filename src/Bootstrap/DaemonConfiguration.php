@@ -27,9 +27,10 @@ class DaemonConfiguration implements InstallableBootstrap
 
         if ($this->daemonSQL->getGlobalDaemon() === null) {
             $this->daemonSQL->insertGlobalDaemon(implode(',', $this->admin_email));
-            foreach ($this->jobQueueSQL->getJobsByDaemon(DaemonSQL::UNASSIGNED_DAEMON) as $job) {
-                $this->jobQueueSQL->updateDaemon($job->id_job, $this->daemonSQL->getClosestDaemon($job->id_e));
-            }
+        }
+
+        foreach ($this->jobQueueSQL->getJobsByDaemon(DaemonSQL::UNASSIGNED_DAEMON) as $job) {
+            $this->jobQueueSQL->updateDaemon($job->id_job, $this->daemonSQL->getClosestDaemon($job->id_e));
         }
         return InstallResult::InstallOk;
     }
