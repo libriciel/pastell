@@ -50,7 +50,8 @@ class UtilisateurAPIController extends BaseAPIController
 
         $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_UTILISATEUR));
 
-        $listUtilisateur = $this->utilisateurListe->getAllUtilisateurSimple($id_e);
+        $descendance = (bool)$this->getFromRequest('descendance', false);
+        $listUtilisateur = $this->utilisateurListe->getAllUtilisateurSimple($id_e, $descendance);
         $result = [];
         if ($listUtilisateur) {
             // Création d'un nouveau tableau pour ne retourner que les valeurs retenues

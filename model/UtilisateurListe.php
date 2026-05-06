@@ -102,11 +102,22 @@ class UtilisateurListe extends SQL
     }
 
         // AJout de cette méthode pour l'API qui liste les utilisateurs
-    public function getAllUtilisateurSimple($id_e = null)
+    public function getAllUtilisateurSimple(?int $id_e = null, bool $with_fille = false): array
     {
-        $sql = "SELECT utilisateur.* FROM utilisateur";
+        $sql = <<<SQL
+SELECT utilisateur.* FROM utilisateur
+SQL;
         if (isset($id_e)) {
-            $sql .= " WHERE id_e = ?";
+            if ($with_fille) {
+                $sql .= <<<SQL
+ JOIN entite_ancetre ON utilisateur.id_e = entite_ancetre.id_e
+ WHERE entite_ancetre.id_e_ancetre = ?;
+SQL;
+            } else {
+                $sql .= <<<SQL
+ WHERE id_e = ?;
+SQL;
+            }
             return $this->query($sql, $id_e);
         }
         return $this->query($sql);
