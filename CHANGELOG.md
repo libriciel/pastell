@@ -1,3 +1,9 @@
+# [6.0.0] -
+
+## Correction
+
+- Standardisation du footer selon la charte Libriciel SCOP #2440
+
 # [5.0.4] - 2026-05-04
 
 ## Ajout
