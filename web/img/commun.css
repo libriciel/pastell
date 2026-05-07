@@ -221,7 +221,7 @@ html body h3 {
     color: var(--bs-ls-primary-300);
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
-    font-family: "ForkAwesome";
+    font-family: "Font Awesome 7 Free";
     font-weight: 900;
     content: "\f078";
 }

@@ -57,11 +57,11 @@
         <div class="control-group">
             <a class='btn btn-outline-primary'
                href='<?php $this->url($cancelRedirectUrl); ?>'>
-                <i class="fa fa-times-circle"></i>&nbsp;Annuler
+                <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
             </a>
 
             <button type="submit" class="btn btn-primary">
-                <i class="fa fa-floppy-o"></i>&nbsp;Enregistrer
+                <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
             </button>
         </div>
     </form>

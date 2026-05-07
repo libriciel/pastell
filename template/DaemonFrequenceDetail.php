@@ -6,7 +6,7 @@
  */
 ?>
 <a class='btn btn-link' href='<?php $this->url("Daemon/frequenceConfiguration") ?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Retour à la liste des fréquences
+    <i class="fas fa-arrow-left"></i>&nbsp;Retour à la liste des fréquences
 </a>
 <div class="box">
     <h2>Détail d'une fréquence</h2>
@@ -65,11 +65,11 @@
     <a class='btn btn-primary'
        href="<?php $this->url("Daemon/editFrequence?id_cf={$connecteurFrequence->id_cf}") ?>"
     >
-        <i class="fa fa-pencil"></i>&nbsp;Modifier
+        <i class="fas fa-pen"></i>&nbsp;Modifier
     </a>
     <a class='btn btn-danger'
        href="<?php $this->url("Daemon/deleteFrequence?id_cf={$connecteurFrequence->id_cf}") ?>"
     >
-        <i class="fa fa-trash"></i>&nbsp;Supprimer
+        <i class="fas fa-trash"></i>&nbsp;Supprimer
     </a>
 </div>

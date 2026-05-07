@@ -20,10 +20,10 @@ declare(strict_types=1);
         <input type='hidden' name='id_d' value='<?php hecho((string)$daemon->id_daemon)?>' />
 
         <a class='btn btn-outline-primary' href='<?php $this->url('Daemon/configuration')?>'>
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
         <button type="submit" class="btn btn-danger">
-            <i class="fa fa-trash"></i>&nbsp;Supprimer
+            <i class="fas fa-trash"></i>&nbsp;Supprimer
         </button>
 
     </form>

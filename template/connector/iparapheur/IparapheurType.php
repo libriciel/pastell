@@ -9,7 +9,7 @@
 ?>
 
 <a class='btn btn-link' href='Connecteur/editionModif?id_ce=<?php echo $id_ce?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Retour au connecteur
+    <i class="fas fa-arrow-left"></i>&nbsp;Retour au connecteur
 </a>
 <div class="box">
     <form action='Connecteur/doExternalData' method='post'>
@@ -32,7 +32,7 @@
         </table>
 
         <button type='submit' class='btn btn-primary' id="valider">
-            <i class="fa fa-check"></i>&nbsp;Sélectionner
+            <i class="fas fa-check"></i>&nbsp;Sélectionner
         </button>
     </form>
 </div>

@@ -18,23 +18,23 @@
                         aria-haspopup="true"
                         aria-expanded="false"
                 >
-                    <i class="fa fa-bars"></i>
+                    <i class="fas fa-bars"></i>
                 </button>
 
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     {% if helpURL %}
                         <a href="{{ helpURL }}" class="new_picto dropdown-item" target="_blank">
-                            <i class="fa fa-question"></i>&nbsp;<span>Aide</span>
+                            <i class="fas fa-question"></i>&nbsp;<span>Aide</span>
                         </a>
                     {% endif %}
                     <a href="{{ path('app.legacy.aide_APropos') }}" class="new_picto dropdown-item">
-                        <i class="fa fa-info"></i>&nbsp;<span>À propos</span>
+                        <i class="fas fa-info"></i>&nbsp;<span>À propos</span>
                     </a>
                     <a href="{{ path('app.legacy.aide_RGPD') }}" class="new_picto dropdown-item">
-                        <i class="fa fa-user-secret"></i>&nbsp;<span>RGPD</span>
+                        <i class="fas fa-user-secret"></i>&nbsp;<span>RGPD</span>
                     </a>
                     <a href="{{ path('app.legacy.connexion_logout') }}" class="dropdown-item separator">
-                        <i class="fa fa-sign-out"></i>&nbsp;<span>Se déconnecter</span>
+                        <i class="fas fa-right-from-bracket"></i>&nbsp;<span>Se déconnecter</span>
                     </a>
                 </div>
             </div>
@@ -46,7 +46,7 @@
     {% if libricielFeedback.hasSecurityAlert() %}
         <div class="security-banner security-banner">
             <div class="security-banner-warning-icon">
-                <i class="fa fa-exclamation-triangle"></i>
+                <i class="fas fa-exclamation-triangle"></i>
             </div>
             <div class="security-banner-warning-text">
                 <p>Cette version de l'application présente <strong>une faille de sécurité critique</strong> activement

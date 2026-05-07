@@ -53,15 +53,15 @@ use Pastell\Validator\ElementIdValidator;
 
         <a class='btn btn-secondary'
            href='Connecteur/editionModif?id_ce=<?php echo $id_ce ?>'>
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
 
         <button type="submit" class="btn btn-primary" id="add_button" name="add_button" value="add">
-            <i class="fa fa-check"></i>&nbsp;Ajouter un élement
+            <i class="fas fa-check"></i>&nbsp;Ajouter un élement
         </button>
 
         <button type="submit" class="btn btn-primary" id="submit_button" name="submit_button">
-            <i class="fa fa-check"></i>&nbsp;Enregistrer
+            <i class="fas fa-check"></i>&nbsp;Enregistrer
         </button>
     </form>
 

@@ -3,7 +3,7 @@
 /** @var Gabarit $this */
 ?>
 <a class='btn btn-link' href='Connecteur/edition?id_ce=<?php echo $connecteur_entite_info['id_ce']?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Retour à la définition du connecteur
+    <i class="fas fa-arrow-left"></i>&nbsp;Retour à la définition du connecteur
 </a>
 
 

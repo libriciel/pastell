@@ -27,7 +27,7 @@ $journalBackLink = sprintf(
 ?>
 <a class='btn btn-link'
    href='<?php echo $journalBackLink; ?>'
-><i class="fa fa-arrow-left"></i>&nbsp;Retour au journal </a>
+><i class="fas fa-arrow-left"></i>&nbsp;Retour au journal </a>
 
 <div class="box">
 
@@ -90,7 +90,7 @@ $journalBackLink = sprintf(
             <td>
                 <?php hecho($info['message_horodate']) ?><br/>
                 <a href='Journal/message?id_j=<?php echo $id_j ?>' class="btn btn-primary"
-                ><i class='fa fa-download'></i>&nbsp;Télécharger</a>
+                ><i class='fas fa-download'></i>&nbsp;Télécharger</a>
             </td>
         </tr>
         <tr>
@@ -102,7 +102,7 @@ $journalBackLink = sprintf(
             <td>
                 <pre><?php echo $preuve_txt; ?></pre>
                 <a href='Journal/preuve?id_j=<?php echo $id_j ?>' class="btn btn-primary"
-                ><i class='fa fa-download'></i>&nbsp;Télécharger</a><br/><br/>
+                ><i class='fas fa-download'></i>&nbsp;Télécharger</a><br/><br/>
             </td>
         </tr>
         <tr>

@@ -75,9 +75,9 @@ use Pastell\Service\ImportExportConfig\ExportConfigService;
             <input type="hidden" name="<?php hecho($id) ?>" value="<?php hecho($options[$id])?>"/>
         <?php endforeach; ?>
         <a class='btn btn-outline-primary' href='Entite/exportConfig?id_e=<?php hecho($id_e); ?>'>
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
-        <button type='submit' class='btn btn-primary'><i class="fa fa-download"></i>&nbsp;Récupérer le fichier</button>
+        <button type='submit' class='btn btn-primary'><i class="fas fa-download"></i>&nbsp;Récupérer le fichier</button>
 
     </form>
 </div>

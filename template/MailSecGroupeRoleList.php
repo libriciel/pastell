@@ -10,7 +10,7 @@
  * @var array $arbre
  */
 ?>
-<a class='btn btn-link' href='MailSec/annuaire?id_e=<?php echo $id_e ?>'><i class="fa fa-arrow-left"></i>&nbsp;Voir la liste des contacts</a>
+<a class='btn btn-link' href='MailSec/annuaire?id_e=<?php echo $id_e ?>'><i class="fas fa-arrow-left"></i>&nbsp;Voir la liste des contacts</a>
 
 
 <div class="box">
@@ -54,15 +54,15 @@
 </table>
 <?php if ($can_edit) : ?>
     <button type="submit" class="btn btn-danger" name="submit" value="Supprimer">
-        <i class="fa fa-trash"></i>&nbsp;Supprimer
+        <i class="fas fa-trash"></i>&nbsp;Supprimer
     </button>
 
     <button type="submit" class="btn btn-primary" name="submit" value="Partager">
-        <i class="fa fa-share-alt"></i>&nbsp;Partager
+        <i class="fas fa-share-nodes"></i>&nbsp;Partager
     </button>
 
     <button type="submit" class="btn btn-warning" name="submit" value="Enlever le partage">
-        <i class="fa fa-share-alt"></i>&nbsp;Ne plus partager
+        <i class="fas fa-share-nodes"></i>&nbsp;Ne plus partager
     </button>
 
 <?php endif; ?>
@@ -111,7 +111,7 @@
             </tr>
     </table>
     <button type="submit" class="btn btn-primary">
-        <i class="fa fa-plus"></i>&nbsp;Créer
+        <i class="fas fa-plus"></i>&nbsp;Créer
     </button></form>
 </div>
 <?php endif;?>

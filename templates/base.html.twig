@@ -16,7 +16,7 @@
 
     {% set cssFiles = [
         'node_modules/bootstrap/dist/css/bootstrap.min.css',
-        'node_modules/fork-awesome/css/fork-awesome.min.css',
+        'node_modules/@fortawesome/fontawesome-free/css/all.min.css',
         'node_modules/select2/dist/css/select2.min.css',
         'node_modules/jquery-ui/dist/themes/cupertino/jquery-ui.min.css',
         'img/commun.css',
@@ -68,25 +68,25 @@
             <a href="{{ path('app.legacy.document_list', {'id_e': id_e_menu}) }}"
                class="new_picto"
             >
-                <i class="fa fa-folder-open"></i>&nbsp;Dossiers
+                <i class="fas fa-folder-open"></i>&nbsp;Dossiers
             </a>
             <a href="{{ path('app.legacy.journal_index', {'type': type_e_menu, 'id_e': id_e_menu}) }}"
                class="new_picto"
                id="journal_link"
             >
-                <i class="fa fa-list-alt"></i>&nbsp;Journal des évènements
+                <i class="fas fa-rectangle-list"></i>&nbsp;Journal des évènements
             </a>
             {% if roleUtilisateur.hasOneDroit(authentification.getId, 'entite:edition')
                 or roleUtilisateur.hasOneDroit(authentification.getId, 'annuaire:edition') %}
                 <a href="{{ path('app.legacy.entite_detail', {'id_e': id_e_menu}) }}"
                    class="new_picto"
                 >
-                    <i class="fa fa-wrench"></i>&nbsp;Administration
+                    <i class="fas fa-wrench"></i>&nbsp;Administration
                 </a>
             {% endif %}
             {% if roleUtilisateur.hasDroit(authentification.getId, 'system:lecture', 0) %}
                 <a href="{{ path('app.legacy.system_index') }}" class="new_picto" style="float: right;">
-                    <i class="fa fa-puzzle-piece"></i><span>Administration avancée</span>
+                    <i class="fas fa-puzzle-piece"></i><span>Administration avancée</span>
                 </a>
             {% endif %}
             {% if roleUtilisateur.hasDroit(authentification.getId, 'daemon:lecture', 0) %}
@@ -97,7 +97,7 @@
                     {% if nb_job_lock %}
                         <p class="badge badge-job-lock">{{ nb_job_lock }}</p>
                     {% endif %}
-                    <i class="fa fa-clock-o"></i>Tâches automatiques</a>
+                    <i class="fas fa-clock"></i>Tâches automatiques</a>
             {% endif %}
         </div>
     {% endif %}
@@ -125,13 +125,13 @@
                                     <input type="hidden" name="id_e" value="{{ url.id_e }}">
                                     <input type="hidden" name="type" value="{{ url.type }}">
                                     <button type="submit" class="btn btn-primary grow">
-                                        <i class="fa {{ label == 'Ajouter' ?  'fa-plus-circle' : 'fa-plus' }}"></i>
+                                        <i class="fas {{ label == 'Ajouter' ?  'fa-plus-circle' : 'fa-plus' }}"></i>
                                         {{ label }}
                                     </button>
                                 </form>
                             {% else %}
                                 <a class="btn btn-primary grow" href="{{ url }}">
-                                    <i class="fa {{ label == 'Ajouter' ?  'fa-plus-circle' : 'fa-plus' }}"></i>
+                                    <i class="fas {{ label == 'Ajouter' ?  'fa-plus-circle' : 'fa-plus' }}"></i>
                                     {{ label }}
                                 </a>
                             {% endif %}

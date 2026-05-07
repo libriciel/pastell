@@ -39,10 +39,10 @@ use Pastell\Configuration\ConnectorConfiguration;
 
 </table>
     <a class='btn btn-outline-primary' href='Entite/connecteur?global=<?php echo $global?>&id_e=<?php echo $id_e?>'>
-        <i class="fa fa-times-circle"></i>&nbsp;Annuler</a>
+        <i class="fas fa-circle-xmark"></i>&nbsp;Annuler</a>
 
     <button type="submit" class="btn btn-primary">
-        <i class="fa fa-plus"></i>&nbsp; Créer
+        <i class="fas fa-plus"></i>&nbsp; Créer
     </button>
 
 </form>

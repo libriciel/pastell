@@ -10,7 +10,7 @@
 ?>
 
 <a class='btn btn-link' href='Connecteur/editionModif?id_ce=<?php hecho((string)$id_ce); ?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Retour au connecteur
+    <i class="fas fa-arrow-left"></i>&nbsp;Retour au connecteur
 </a>
 <div class="box">
     <h2 id="desc-module-type-table">Choisissez un état du dossier</h2>
@@ -42,7 +42,7 @@
         </table>
 
         <button type='submit' class='btn btn-primary' id="valider">
-            <i class="fa fa-check"></i>&nbsp;Sélectionner
+            <i class="fas fa-check"></i>&nbsp;Sélectionner
         </button>
 
     </form>

@@ -21,7 +21,7 @@ use Pastell\Utilities\Certificate;
 ?>
 
 <a class='btn btn-link' href='Entite/utilisateur?id_e=<?php echo $info['id_e'] ?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Retour à la liste des utilisateurs</a>
+    <i class="fas fa-arrow-left"></i>&nbsp;Retour à la liste des utilisateurs</a>
 
 <?php if (!$info['is_enabled']) : ?>
     <div class="alert alert-danger">Cet utilisateur est désactivé</div>
@@ -105,7 +105,7 @@ use Pastell\Utilities\Certificate;
             <tr>
                 <td>
                     <a class='btn btn-primary' href="Utilisateur/edition?id_u=<?php echo $id_u ?>">
-                        <i class="fa fa-pencil"></i>&nbsp;Modifier
+                        <i class="fas fa-pen"></i>&nbsp;Modifier
                     </a>&nbsp;
                 </td>
                 <td>
@@ -118,7 +118,7 @@ use Pastell\Utilities\Certificate;
                         <?php $this->displayCSRFInput() ?>
                         <input type='hidden' name='id_u' value='<?php echo $id_u ?>'/>
                         <button type='submit' class='btn btn-warning'>
-                            <i class="fa <?php echo $info['is_enabled'] ? 'fa-toggle-on' : 'fa-toggle-off' ?>"></i>
+                            <i class="fas <?php echo $info['is_enabled'] ? 'fa-toggle-on' : 'fa-toggle-off' ?>"></i>
                             <?php echo $info['is_enabled'] ? 'Désactiver' : 'Activer' ?>
                         </button>&nbsp;
                     </form>
@@ -127,7 +127,7 @@ use Pastell\Utilities\Certificate;
                     <a
                             class='btn btn-danger'
                             href="<?php $this->url("Utilisateur/suppression?id_u=$id_u") ?>"
-                    ><i class='fa fa-trash'></i>&nbsp;Supprimer</a>
+                    ><i class='fas fa-trash'></i>&nbsp;Supprimer</a>
                 </td>
             </tr>
         </table>
@@ -172,7 +172,7 @@ use Pastell\Utilities\Certificate;
                         ?>
                         <a class='btn btn-danger'
                            href='<?php echo $deleteRoleUrl; ?>'>
-                            <i class="fa fa-times-circle"></i>&nbsp;Retirer le rôle
+                            <i class="fas fa-circle-xmark"></i>&nbsp;Retirer le rôle
                         </a>
                     <?php endif; ?>
                 </td>
@@ -200,7 +200,7 @@ use Pastell\Utilities\Certificate;
             <div class="treeselect-role-entity p-2"></div>
 
             <button type='submit' class='btn btn-primary'>
-                <i class="fa fa-plus-circle"></i>&nbsp;Ajouter
+                <i class="fas fa-plus-circle"></i>&nbsp;Ajouter
             </button>
         </form>
 
@@ -275,11 +275,11 @@ use Pastell\Utilities\Certificate;
                             ?>
                             <a class="btn btn-primary"
                                href='<?php echo $userNotificationUrl; ?>'
-                            ><i class="fa fa-pencil"></i>&nbsp;Modifier</a>
+                            ><i class="fas fa-pen"></i>&nbsp;Modifier</a>
 
                             <a class="btn btn-danger"
                                href="Utilisateur/notificationSuppression?id_n=<?= $infoNotification['id_n'] ?>&source=detail">
-                                <i class="fa fa-trash"></i>&nbsp;Supprimer
+                                <i class="fas fa-trash"></i>&nbsp;Supprimer
                             </a>
                         <?php endif; ?>
                     </td>
@@ -309,7 +309,7 @@ use Pastell\Utilities\Certificate;
                     <option value='1'>Résumé journalier</option>
                 </select>
 
-                <button type='submit' class='btn btn-primary'><i class="fa fa-plus-circle"></i>&nbsp;Ajouter</button>
+                <button type='submit' class='btn btn-primary'><i class="fas fa-plus-circle"></i>&nbsp;Ajouter</button>
             </form>
         <?php endif; ?>
 
@@ -349,7 +349,7 @@ if ($id_u == $id_current_u || ($utilisateur_edition && $info['is_api'])) : ?>
                                 'Êtes-vous certain de vouloir renouveler ce jeton (l\'ancien token sera perdu) ?'
                                 )"
                         >
-                            <i class="fa fa-refresh"></i>&nbsp;Renouveler
+                            <i class="fas fa-arrows-rotate"></i>&nbsp;Renouveler
                         </a>
                         <a
                                 class='btn btn-danger'
@@ -357,7 +357,7 @@ if ($id_u == $id_current_u || ($utilisateur_edition && $info['is_api'])) : ?>
                                 echo $token['id'] . '&source=detail'; ?>'
                                 onclick="return confirm('Êtes-vous certain de vouloir supprimer définitivement ce jeton ?')"
                         >
-                            <i class="fa fa-trash"></i>&nbsp;Supprimer
+                            <i class="fas fa-trash"></i>&nbsp;Supprimer
                         </a>
 
                     </td>
@@ -366,7 +366,7 @@ if ($id_u == $id_current_u || ($utilisateur_edition && $info['is_api'])) : ?>
         </table>
 
         <a href='Utilisateur/addToken?<?php
-        echo '&id_u=' . $id_u . '&source=detail' ?>' class='btn btn-primary'><i class="fa fa-pencil"></i>&nbsp;Ajouter
+        echo '&id_u=' . $id_u . '&source=detail' ?>' class='btn btn-primary'><i class="fas fa-pen"></i>&nbsp;Ajouter
             un jeton</a>
     </div>
 <?php endif; ?>

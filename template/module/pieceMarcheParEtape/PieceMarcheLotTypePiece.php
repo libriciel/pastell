@@ -16,7 +16,7 @@
 <a class='btn btn-link'
    href='Document/edition?id_d=<?php echo $id_d ?>&id_e=<?php echo $id_e ?>&page=<?php echo $page ?>'
 >
-    <i class="fa fa-arrow-left"></i>&nbsp;<?php echo $info['titre'] ?: $info['id_d'] ?>
+    <i class="fas fa-arrow-left"></i>&nbsp;<?php echo $info['titre'] ?: $info['id_d'] ?>
 </a>
 
 
@@ -56,7 +56,7 @@
 
         </table>
 
-        <button type='submit' class='btn btn-primary'><i class='fa fa-plus-circle'></i>&nbsp;Enregistrer</button>
+        <button type='submit' class='btn btn-primary'><i class='fas fa-plus-circle'></i>&nbsp;Enregistrer</button>
 
     </form>
 

@@ -16,15 +16,15 @@
 
 ?>
 <a class='btn btn-link' href='Entite/detail?id_e=<?php echo $id_e ?>'
-><i class="fa fa-arrow-left"></i>&nbsp;Administration de <?php hecho($infoEntite['denomination']); ?></a>
+><i class="fas fa-arrow-left"></i>&nbsp;Administration de <?php hecho($infoEntite['denomination']); ?></a>
 
 <div class='box'>
 
     <a class='btn btn-link' href='MailSec/groupeList?id_e=<?php echo $id_e ?>'
-    ><i class='fa fa-eye'></i>&nbsp;Visualiser les groupes</a>
+    ><i class='fas fa-eye'></i>&nbsp;Visualiser les groupes</a>
 
     <a class='btn btn-link' href='MailSec/groupeRoleList?id_e=<?php echo $id_e ?>'
-    ><i class='fa fa-eye'></i>&nbsp;Visualiser les groupes basés sur les rôles</a>
+    ><i class='fas fa-eye'></i>&nbsp;Visualiser les groupes basés sur les rôles</a>
 
 </div>
 
@@ -43,10 +43,10 @@
                 ><?php hecho($groupe['nom']) ?></option>
             <?php endforeach; ?>
         </select>
-        <button type='submit' class='btn btn-primary'><i class='fa fa-search'></i>&nbsp;Rechercher</button>
+        <button type='submit' class='btn btn-primary'><i class='fas fa-search'></i>&nbsp;Rechercher</button>
         <?php if ($can_edit) : ?>
             <a href="MailSec/import?id_e=<?php echo $id_e ?>" class='btn btn-primary ms-2'
-            ><i class="fa fa-upload"></i>&nbsp;Importer</a>
+            ><i class="fas fa-upload"></i>&nbsp;Importer</a>
         <?php endif; ?>
 
     </form>
@@ -97,7 +97,7 @@
 
         <?php if ($can_edit) : ?>
             <button type="submit" class="btn btn-danger">
-                <i class="fa fa-trash"></i>&nbsp;Supprimer
+                <i class="fas fa-trash"></i>&nbsp;Supprimer
             </button>
         <?php endif; ?>
     </form>
@@ -129,10 +129,10 @@
                 </tr>
 
             </table>
-            <button type='submit' class='btn btn-primary'><i class='fa fa-plus-circle'></i>&nbsp;Ajouter</button>
+            <button type='submit' class='btn btn-primary'><i class='fas fa-plus-circle'></i>&nbsp;Ajouter</button>
         </form>
     </div>
 <?php endif; ?>
 
 <a class='btn btn-outline-primary' href='MailSec/export?id_e=<?php echo $id_e ?>'
-><i class='fa fa-upload'></i>&nbsp;Exporter l'annuaire (CSV)</a>
+><i class='fas fa-upload'></i>&nbsp;Exporter l'annuaire (CSV)</a>

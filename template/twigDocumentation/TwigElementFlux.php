@@ -10,7 +10,7 @@
 <?php if ($flux) : ?>
     <div class="box" >
         <a class="collapse-link" data-bs-toggle="collapse" data-bs-target="#collapseModuleElements">
-            <h2> <i class="fa fa-plus-square"></i>Liste des éléments du flux <b><?php hecho($flux) ?></b> possibles</h2>
+            <h2> <i class="fas fa-plus-square"></i>Liste des éléments du flux <b><?php hecho($flux) ?></b> possibles</h2>
         </a>
 
         <div class="collapse" id="collapseModuleElements">

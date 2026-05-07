@@ -31,7 +31,7 @@
                     <?php hecho($connecteurFrequence->id_verrou) ?>
                 </td>
                 <td>
-                    <a class='btn btn-primary' href='<?php $this->url("Daemon/connecteurFrequenceDetail?id_cf={$connecteurFrequence->id_cf}") ?>'><i class="fa fa-eye"></i>&nbsp;Visualiser</a>
+                    <a class='btn btn-primary' href='<?php $this->url("Daemon/connecteurFrequenceDetail?id_cf={$connecteurFrequence->id_cf}") ?>'><i class="fas fa-eye"></i>&nbsp;Visualiser</a>
                 </td>
             </tr>
         <?php endforeach; ?>

@@ -42,18 +42,18 @@
             <?php endforeach;?>
         </table>
         <a class='btn btn-outline-primary'
-                href='<?php $this->url("Document/traitementLot?id_e=$id_e&type=$type&search=$search&filtre=$filtre&offset=$offset") ?>'> <i class="fa fa-times-circle"></i>
+                href='<?php $this->url("Document/traitementLot?id_e=$id_e&type=$type&search=$search&filtre=$filtre&offset=$offset") ?>'> <i class="fas fa-circle-xmark"></i>
             Annuler
         </a>
 
         <?php if (in_array($action_selected, ['supression','supression'])) :?>
             <button type="submit" class="btn btn-danger">
-                <i class="fa fa-trash"></i>&nbsp;
+                <i class="fas fa-trash"></i>&nbsp;
                 Supprimer
             </button>
         <?php else : ?>
             <button type="submit" class="btn btn-primary">
-                <i class="fa fa-cogs"></i>&nbsp;
+                <i class="fas fa-cogs"></i>&nbsp;
                 Exécuter
             </button>
         <?php endif; ?>

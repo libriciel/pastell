@@ -137,7 +137,7 @@ function addFlowControl(query_param, pastell_flow_upload) {
         "        </div>\n" +
         "\n" +
         "         <div>\n " +
-        "            <a class=\"flow-browse btn btn-outline-primary\"><i class='fa fa-plus-circle'></i>&nbsp;" + button_libelle + "</a>\n" +
+        "            <a class=\"flow-browse btn btn-outline-primary\"><i class='fas fa-plus-circle'></i>&nbsp;" + button_libelle + "</a>\n" +
         "            <a href=\"#\" class=\"progress-resume-link btn\">Reprendre</a>\n" +
         "            <a href=\"#\" class=\"progress-pause-link btn\">Pause</a>\n" +
         "            <a href=\"#\" class=\"progress-cancel-link btn\">Abandon</a>\n" +

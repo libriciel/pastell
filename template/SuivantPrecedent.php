@@ -16,7 +16,7 @@
                         href="<?php hecho($link); ?>offset=<?php echo max(0, $offset - $limit); ?>"
                         class="page-link btn-link"
                 >
-                    <i class="fa fa-chevron-left"></i>&nbsp;<?php echo "Page précédente"; ?>
+                    <i class="fas fa-chevron-left"></i>&nbsp;<?php echo "Page précédente"; ?>
                 </a>
             <?php else : ?>
                 &nbsp;
@@ -33,7 +33,7 @@
                         href="<?php hecho($link); ?>offset=<?php echo $offset + $limit ?>"
                         class="page-link btn-link"
                 >
-                    <?php echo "Page suivante"; ?>&nbsp;<i class="fa fa-chevron-right"></i>
+                    <?php echo "Page suivante"; ?>&nbsp;<i class="fas fa-chevron-right"></i>
                 </a>
             <?php else : ?>
                 &nbsp;

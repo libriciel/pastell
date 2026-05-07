@@ -15,7 +15,7 @@
  */
 
 ?>
-<a class='btn btn-link' href='<?php echo $lien_retour ?>'><i class="fa fa-arrow-left"></i>&nbsp;Retour à la liste des associations</a>
+<a class='btn btn-link' href='<?php echo $lien_retour ?>'><i class="fas fa-arrow-left"></i>&nbsp;Retour à la liste des associations</a>
 
 <div class="box">
 
@@ -118,8 +118,8 @@ aucun connecteur sélectionné
     <?php endforeach;?>
     </table>
     <a class='btn btn-outline-primary' href='Flux/index?id_e=<?php echo $id_e?>'>
-        <i class="fa fa-times-circle"></i>&nbsp;Annuler
+        <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
     </a>
-<button type='submit' class='btn btn-primary'><i class='fa fa-floppy-o'></i>&nbsp;Enregistrer</button>
+<button type='submit' class='btn btn-primary'><i class='fas fa-floppy-disk'></i>&nbsp;Enregistrer</button>
 </form>
 </div>

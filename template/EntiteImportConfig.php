@@ -36,7 +36,7 @@
                             required
                         />
                         <span class="input-group-text">
-                            <i class="fa fa-eye-slash" onclick="switchInputType('password',this)"></i>
+                            <i class="fas fa-eye-slash" onclick="switchInputType('password',this)"></i>
                         </span>
                     </div>
                 </td>
@@ -44,7 +44,7 @@
         </table>
 
         <button type='submit' class='btn btn-primary' value="go">
-            <i class="fa fa-download"></i>&nbsp;Importer les élements
+            <i class="fas fa-download"></i>&nbsp;Importer les élements
         </button>
 
     </form>

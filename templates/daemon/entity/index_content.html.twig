@@ -6,14 +6,14 @@
                 {% if daemon.state %}
                     {% if daemon_edition %}
                         <a href="{{ path('app.legacy.daemon_daemonStop',{'id_daemon': daemon.id_daemon, 'return_url': return_url}) }}" class="btn btn-danger" id="arreter_deamon" name="arreter_deamon">
-                            <i class="fa fa-stop"></i>&nbsp; Arrêter
+                            <i class="fas fa-stop"></i>&nbsp; Arrêter
                         </a>
                     {% endif %}
                     <span class="alert alert-success">Le gestionnaire de tâches est actif</span>
                 {% else %}
                     {% if daemon_edition %}
                         <a href="{{ path('app.legacy.daemon_daemonStart',  {'id_daemon': daemon.id_daemon, 'return_url': return_url}) }}" class="btn btn-success" id="arreter_deamon" name="arreter_deamon">
-                            <i class="fa fa-play"></i>&nbsp; Démarrer
+                            <i class="fas fa-play"></i>&nbsp; Démarrer
                         </a>
                     {% endif %}
                     <span class="alert alert-danger">Le gestionnaire de tâches est arrêté</span>

@@ -70,15 +70,15 @@
 
     <?php if ($id_e) : ?>
         <a class='btn btn-outline-primary' href='Entite/detail?id_e=<?php echo $id_e?>'>
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
     <?php elseif ($entite_mere) : ?>
         <a class='btn btn-outline-primary' href='Entite/detail?id_e=<?php echo $infoMere['id_e']?>'>
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
     <?php else : ?>
         <a class='btn btn-outline-primary' href='Entite/detail'>
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
     <?php endif;?>
 
@@ -88,7 +88,7 @@
     <?php endif;?>
 
     <button type="submit" class="btn btn-primary" id="entity-edit">
-        <i class="fa fa-floppy-o"></i>&nbsp;Enregistrer
+        <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
     </button>
 
 </form>

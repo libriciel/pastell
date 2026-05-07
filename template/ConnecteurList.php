@@ -12,7 +12,7 @@
 <div class="box">
     <?php if ($droit_edition) : ?>
 <a href="<?php $this->url("Connecteur/new?global=$global&id_e=$id_e") ?>" class='btn btn-primary grow'>
-    <i class="fa fa-plus-circle"></i>&nbsp; Ajouter
+    <i class="fas fa-plus-circle"></i>&nbsp; Ajouter
 </a>
     <?php endif;?>
 
@@ -35,13 +35,13 @@
                 <a class='btn btn-primary'
                    href='<?php $this->url("Connecteur/edition?id_ce={$connecteur['id_ce']}") ?>'
                 >
-                    <i class="fa fa-pencil"></i> Modifier
+                    <i class="fas fa-pen"></i> Modifier
                 </a>
             <?php elseif ($droit_lecture_on_connecteur) : ?>
                 <a class='btn btn-primary'
                    href='<?php $this->url("Connecteur/edition?id_ce={$connecteur['id_ce']}") ?>'
                 >
-                    <i class="fa fa-eye"></i> Voir
+                    <i class="fas fa-eye"></i> Voir
                 </a>
             <?php endif;?>
         </td>

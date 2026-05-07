@@ -33,11 +33,11 @@
                     ><?php echo $libelle_etat; ?></option>
                 <?php endforeach; ?>
             </select>
-            <button type='submit' class='btn btn-primary me-2'><i class="fa fa-search"></i>Rechercher</button>
+            <button type='submit' class='btn btn-primary me-2'><i class="fas fa-search"></i>Rechercher</button>
 
             <div class="float_right">
                 <a class='btn btn-outline-primary' href='<?php $this->url("Document/search?id_e=$id_e&type=$type"); ?>'>
-                    <i class="fa fa-search-plus"></i>
+                    <i class="fas fa-magnifying-glass-plus"></i>
                     Recherche avancée
                 </a>
                 <?php if ($type && $id_e) : ?>
@@ -52,7 +52,7 @@
                     ); ?>
                     <a href="<?php hecho($bulkProcessUrl); ?>"
                        class="btn btn-outline-primary me-2"
-                    ><i class="fa fa-cogs"></i>
+                    ><i class="fas fa-cogs"></i>
                         Traitement par lot
                     </a>
                 <?php endif; ?>
@@ -90,6 +90,6 @@
 <?php if ($id_e) : ?>
     <?php $journalUrl = \sprintf('Journal/index?id_e=%s&type=%s', $id_e, $type); ?>
     <a class="btn btn-link" href="<?php echo $journalUrl; ?>">
-        <i class='fa fa-list-alt'></i>&nbsp;Voir le journal des événements
+        <i class='fas fa-rectangle-list'></i>&nbsp;Voir le journal des événements
     </a>
 <?php endif; ?>

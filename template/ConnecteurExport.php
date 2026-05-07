@@ -19,10 +19,10 @@
         <input type='hidden' name='id_ce' value='<?php hecho($id_ce)?>'>
 
         <a class='btn btn-outline-primary' href='Connecteur/edition?id_ce=<?php hecho($id_ce); ?>'>
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
 
-        <button type='submit' class='btn btn-primary'><i class="fa fa-download"></i>&nbsp;Récupérer le connecteur</button>
+        <button type='submit' class='btn btn-primary'><i class="fas fa-download"></i>&nbsp;Récupérer le connecteur</button>
 
     </form>
 </div>

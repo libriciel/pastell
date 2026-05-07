@@ -12,7 +12,7 @@
 ?>
 <a class='btn btn-link'
    href='Document/edition?id_d=<?php echo $id_d?>&id_e=<?php echo $id_e?>&page=<?php echo $page?>'
-><i class="fa fa-arrow-left"></i>&nbsp;<?php echo $info['titre'] ?: $info['id_d']; ?></a>
+><i class="fas fa-arrow-left"></i>&nbsp;<?php echo $info['titre'] ?: $info['id_d']; ?></a>
 
 <div class="box">
     <h2>Listes des lignes de poste</h2>
@@ -92,7 +92,7 @@
         </tr>
 
     </table>
-        <button type='submit' class='btn btn-primary'><i class='fa fa-plus-circle'></i>&nbsp;Ajouter</button>
+        <button type='submit' class='btn btn-primary'><i class='fas fa-plus-circle'></i>&nbsp;Ajouter</button>
     </form>
 
 </div>

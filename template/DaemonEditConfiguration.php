@@ -23,11 +23,11 @@ declare(strict_types=1);
             </tr>
         </table>
         <a class='btn btn-outline-primary' href='<?php $this->url('Daemon/configuration') ?>'>
-            <i class="fa fa-times-circle"></i>&nbsp;
+            <i class="fas fa-circle-xmark"></i>&nbsp;
             Annuler</a>
 
         <button type="submit" class="btn btn-primary" id="daemonedit-frequence-enregistrer">
-            <i class="fa fa-floppy-o"></i>&nbsp;Enregistrer
+            <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
         </button>
     </form>
 </div>

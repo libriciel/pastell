@@ -5,7 +5,7 @@ use Pastell\Service\Document\DocumentPastellMetadataService;
 ?>
 <div class="box" >
     <a class="collapse-link" data-bs-toggle="collapse" data-bs-target="#collapseDataPastell">
-        <h2> <i class="fa fa-plus-square"></i>Liste des métadonnées communes à tous les types de dossier</h2>
+        <h2> <i class="fas fa-plus-square"></i>Liste des métadonnées communes à tous les types de dossier</h2>
     </a>
 
     <div class="collapse" id="collapseDataPastell">

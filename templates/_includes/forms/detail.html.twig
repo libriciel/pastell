@@ -38,7 +38,7 @@
                     download_all_link ~ '?&field=' ~ displayedField.getField().getName() :
                     "/DonneesFormulaire/downloadAll?id_e=$id_e&id_d=$id_d&id_ce=$id_ce&field=" ~ displayedField.getField().getName() }}"
                        class="btn btn-primary">
-                        <i class="fa fa-download"></i>&nbsp;Télécharger tous les fichiers
+                        <i class="fas fa-download"></i>&nbsp;Télécharger tous les fichiers
                         : {{ displayedField.getField().getLibelle() }}
                     </a>
                 {% endif %}
@@ -50,7 +50,7 @@
                             href="{{ path('app.legacy.donneesformulaire_visionneuse',
                                 {'id_e': id_e, 'id_d': id_d, 'id_ce': id_ce, 'field': displayedField.getField().getName()}) }}"
                     >
-                        <i class="fa fa-eye"></i>
+                        <i class="fas fa-eye"></i>
                         &nbsp;Voir
                     </a>
                     <div class='visionneuse_result'></div>

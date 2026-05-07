@@ -21,11 +21,11 @@
 </table>
 
     <a class='btn btn-outline-primary' href='Connecteur/edition?id_ce=<?php echo $connecteur_entite_info['id_ce']?>'>
-        <i class="fa fa-times-circle"></i>&nbsp;Annuler
+        <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
     </a>
 
     <button type="submit" class="btn btn-primary">
-        <i class="fa fa-pencil"></i>&nbsp;Modifier
+        <i class="fas fa-pen"></i>&nbsp;Modifier
     </button>
 </form>
 

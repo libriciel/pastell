@@ -168,7 +168,7 @@ if ($donneesFormulaire->getFormulaire()->getNbPage() > 1) {
                                                     $num
                                                 ); ?>
                                                 <a style='margin:4px 0' href='<?php hecho($fileDeletionUrl . '&csrf_token=' . $this->getCSRFToken()->getCSRFToken()); ?>'>
-                                                    <i class="fa fa-times-circle" style="color:red"></i>
+                                                    <i class="fas fa-circle-xmark" style="color:red"></i>
                                                 </a>
                                             <?php endif;?>
                                         <br/>
@@ -223,7 +223,7 @@ if ($donneesFormulaire->getFormulaire()->getNbPage() > 1) {
                                         name="external_data_button"
                                         value="<?php echo $connectorExternalDataUrl; ?>"
                                 >
-                                    <i class="fa fa-hand-o-up"></i>&nbsp;
+                                    <i class="fas fa-hand"></i>&nbsp;
                                     <?php echo $field->getProperties('link_name')?>
                                 </button>
                             <?php elseif ($field->isEnabled($id_e, $id_d) && isset($id_e)) :?>
@@ -239,7 +239,7 @@ if ($donneesFormulaire->getFormulaire()->getNbPage() > 1) {
                                 name="external_data_button"
                                 value="<?php echo $documentExternalDataUrl; ?>"
                         >
-                            <i class="fa fa-hand-o-up"></i>&nbsp; <?php
+                            <i class="fas fa-hand"></i>&nbsp; <?php
                             echo $field->getProperties('link_name')?>
                         </button>
                             <?php else :?>
@@ -287,7 +287,7 @@ if ($donneesFormulaire->getFormulaire()->getNbPage() > 1) {
 
                                     <?php echo $donneesFormulaire->isEditable($field->getName()) ?: "disabled='disabled'" ?>
                                     />
-                            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                         </div>
                                 <script type="text/javascript">
                                      jQuery.datepicker.setDefaults(jQuery.datepicker.regional['fr']);
@@ -323,7 +323,7 @@ if ($donneesFormulaire->getFormulaire()->getNbPage() > 1) {
 
 
             <button type="submit" class="btn btn-primary" name="enregistrer" value="enregistrer">
-                <i class="fa fa-floppy-o"></i>&nbsp; Enregistrer
+                <i class="fas fa-floppy-disk"></i>&nbsp; Enregistrer
             </button>
 
 

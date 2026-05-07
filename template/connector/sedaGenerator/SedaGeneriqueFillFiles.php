@@ -49,7 +49,7 @@ if ($node_id) {
         <div class="box">
             <h2>Liste des fichiers</h2>
             <button type="submit" class="btn btn-primary inline" name="add-file" value="root">
-                <i class='fa fa-plus-circle'></i>&nbsp;Ajouter
+                <i class='fas fa-plus-circle'></i>&nbsp;Ajouter
             </button>
 
                 <table class="table table-striped">
@@ -86,19 +86,19 @@ if ($node_id) {
                                             class="btn btn-primary inline"
                                             name="up"
                                             value="<?php hecho($file['id']) ?>">
-                                        <i class="fa fa-caret-square-o-up"></i>
+                                        <i class="fas fa-square-caret-up"></i>
                                     </button>
                                     <button type="submit"
                                             class="btn btn-primary inline"
                                             name="down"
                                             value="<?php hecho($file['id']) ?>">
-                                        <i class="fa fa-caret-square-o-down"></i>
+                                        <i class="fas fa-square-caret-down"></i>
                                     </button>
                                     <button type="submit"
                                             class="btn btn-danger inline"
                                             name="delete-file"
                                             value="<?php hecho($file['id']) ?>">
-                                        <i class="fa fa-trash"></i>&nbsp;Supprimer
+                                        <i class="fas fa-trash"></i>&nbsp;Supprimer
                                     </button>
                                 </td>
                             </tr>
@@ -121,7 +121,7 @@ if ($node_id) {
             <div class="box">
                 <h2>Liste des objets d'archives</h2>
                 <button type="submit" class="btn btn-primary inline" name="add-unit" value="root">
-                    <i class='fa fa-plus-circle'></i>&nbsp;Ajouter
+                    <i class='fas fa-plus-circle'></i>&nbsp;Ajouter
                 </button>
 
                 <table class="table table-striped">
@@ -152,20 +152,20 @@ if ($node_id) {
                             <td>
                                 <button type="submit" class="btn btn-primary inline" name="up"
                                         value="<?php hecho($file['id']) ?>">
-                                    <em class="fa  fa-caret-square-o-up"></em>
+                                    <em class="fas  fa-square-caret-up"></em>
                                 </button>
                                 <button type="submit" class="btn btn-primary inline" name="down"
                                         value="<?php hecho($file['id']) ?>">
-                                    <em class="fa  fa-caret-square-o-down"></em>
+                                    <em class="fas  fa-square-caret-down"></em>
                                 </button>
                                 <button type="submit" class="btn btn-primary inline" name="unit-content"
                                         value="<?php hecho($file['id']) ?>">
-                                    <em class="fa fa-folder-open"></em>&nbsp;Contenu
+                                    <em class="fas fa-folder-open"></em>&nbsp;Contenu
                                     (<?php echo $generateurSedaFillFiles->countChildNode($file['id']) ?>)
                                 </button>
                                 <button type="submit" class="btn btn-danger inline" name="delete-unit"
                                         value="<?php hecho($file['id']) ?>">
-                                    <em class="fa fa-trash"></em>&nbsp;Supprimer
+                                    <em class="fas fa-trash"></em>&nbsp;Supprimer
                                 </button>
                             </td>
                         </tr>
@@ -177,7 +177,7 @@ if ($node_id) {
             <?php if ($node_id) : ?>
                 <div class="box">
                     <a class="collapse-link" data-bs-toggle="collapse" data-bs-target="#collapseProperties">
-                        <h2><i class="fa fa-plus-square"></i>Propriétés spécifiques des objets d'archives</h2>
+                        <h2><i class="fas fa-plus-square"></i>Propriétés spécifiques des objets d'archives</h2>
                     </a>
 
                     <div class="collapse" id="collapseProperties">
@@ -217,11 +217,11 @@ if ($node_id) {
             <?php endif; ?>
         <a class='btn btn-outline-primary'
            href='Connecteur/editionModif?id_ce=<?php echo $id_ce ?>'>
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
 
         <button type="submit" class="btn btn-primary" name="enregistrer" value="enregistrer">
-            <i class="fa fa-check"></i>&nbsp;Enregistrer
+            <i class="fas fa-check"></i>&nbsp;Enregistrer
         </button>
     </form>
 </div>

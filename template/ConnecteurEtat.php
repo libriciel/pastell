@@ -11,7 +11,7 @@
 ?>
 
 <a class='btn btn-link' href='Connecteur/edition?id_ce=<?php echo $id_ce?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Retour à la définition du connecteur
+    <i class="fas fa-arrow-left"></i>&nbsp;Retour à la définition du connecteur
 </a>
 
 <?php $this->suivantPrecedent($offset, $limit, $count, "Connecteur/etat?id_ce=$id_ce"); ?>

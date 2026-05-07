@@ -10,7 +10,7 @@
  * @var array $infoEntite
  */
 ?>
-<a class='btn btn-link' href='MailSec/groupeList?id_e=<?php echo $id_e ?>'><i class="fa fa-arrow-left"></i>&nbsp; Voir tous les groupes</a>
+<a class='btn btn-link' href='MailSec/groupeList?id_e=<?php echo $id_e ?>'><i class="fas fa-arrow-left"></i>&nbsp; Voir tous les groupes</a>
 
 <br/><br/>
 <div class="box">
@@ -103,7 +103,7 @@ Cliquer pour partager ce groupe avec les entités filles de <?php hecho($infoEnt
         <?php $this->displayCSRFInput() ?>
     <input type='hidden' name='id_e' value='<?php echo $id_e ?>' />
     <input type='hidden' name='id_g' value='<?php echo $id_g ?>' />
-        <button type='submit' class='btn btn-primary'><i class="fa fa-globe"></i>&nbsp;Partager</button>
+        <button type='submit' class='btn btn-primary'><i class="fas fa-globe"></i>&nbsp;Partager</button>
 </form>
 <?php endif;?>
 

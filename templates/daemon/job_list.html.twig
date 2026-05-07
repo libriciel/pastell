@@ -9,7 +9,7 @@
         {% else %}
             <a class='btn btn-warning mb-2' href="{{ path(unlock_all_action) }}">
         {% endif %}
-            <i class="fa fa-unlock-alt"></i>&nbsp;Reprendre l'exécution de tous les travaux
+            <i class="fas fa-unlock-keyhole"></i>&nbsp;Reprendre l'exécution de tous les travaux
         </a>
     {% endif %}
 
@@ -45,7 +45,7 @@
                             {% if  daemon_edition %}
                                 <a href="{{ path('app.legacy.daemon_unlock', {'id_job': job.id_job, 'return_url': return_url}) }}"
                                    class="btn-warning btn">
-                                    <i class="fa fa-unlock-alt"></i>&nbsp;
+                                    <i class="fas fa-unlock-keyhole"></i>&nbsp;
                                     Reprendre
                                 </a>
                             {% endif %}
@@ -55,7 +55,7 @@
                             {% if  daemon_edition %}
                                 <a href="{{ path('app.legacy.daemon_lock', {'id_job': job.id_job, 'return_url': return_url}) }}"
                                    class="btn btn-warning">
-                                    <i class="fa fa-lock"></i>&nbsp;
+                                    <i class="fas fa-lock"></i>&nbsp;
                                     Suspendre</a></p>
                             {% endif %}
                     {% endif %}
@@ -96,7 +96,7 @@
                         {% if not job.worker.termine|default(false) %}
                             <a href="{{ path('app.legacy.daemon_kill', {'id_worker': job.worker.id_worker|default(''), 'return_url': return_url}) }}"
                                class='btn btn-danger'>
-                                <i class="fa fa-bolt"></i>&nbsp;
+                                <i class="fas fa-bolt"></i>&nbsp;
                                 Tuer
                             </a>
                         {% else %}
@@ -120,7 +120,7 @@
         {% else %}
             <a class='btn btn-warning mb-2' href="{{ path(unlock_all_action) }}">
         {% endif %}
-            <i class="fa fa-unlock-alt"></i>&nbsp;Reprendre l'exécution de tous les travaux
+            <i class="fas fa-unlock-keyhole"></i>&nbsp;Reprendre l'exécution de tous les travaux
         </a>
     {% endif %}
 </div>

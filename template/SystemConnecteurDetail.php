@@ -12,7 +12,7 @@
  */
 ?>
 <a class='btn btn-link' href='<?php $this->url('System/connecteur')?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Retour à la liste des connecteurs
+    <i class="fas fa-arrow-left"></i>&nbsp;Retour à la liste des connecteurs
 </a>
 
 

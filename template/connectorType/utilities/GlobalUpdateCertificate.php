@@ -12,7 +12,7 @@
  */
 ?>
 <a class='btn btn-link' href='Connecteur/edition?id_ce=<?php hecho((string)$id_ce); ?>'>
-    <i class="fa fa-arrow-left"></i>&nbsp;Retour au connecteur
+    <i class="fas fa-arrow-left"></i>&nbsp;Retour au connecteur
 </a>
 
 <div class='box'>
@@ -57,7 +57,7 @@
                 <td><input type='password' name='user_certificat_password' class="col-md-4"/></td>
             </tr>
         </table>
-        <button type="submit" class="btn btn-primary"><i class="fa fa-cogs"></i>&nbsp;Remplacer</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-cogs"></i>&nbsp;Remplacer</button>
     </form>
 
 </div>

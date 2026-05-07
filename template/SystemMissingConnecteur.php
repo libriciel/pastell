@@ -6,7 +6,7 @@
 ?>
 <div class="box">
 
-    <a href="<?php $this->url("/System/exportAllMissingConnecteur"); ?>" class="btn btn-primary"><i class='fa fa-upload'></i>&nbsp;Exporter tous les connecteurs</a>
+    <a href="<?php $this->url("/System/exportAllMissingConnecteur"); ?>" class="btn btn-primary"><i class='fas fa-upload'></i>&nbsp;Exporter tous les connecteurs</a>
     (Attention, les fichiers associés sont exportés séparément)
     <br/><br/>
 <?php foreach ($connecteur_manquant_list as $connecteur_id => $connecteur_list) : ?>

@@ -32,7 +32,7 @@ $backTitle = sprintf('Liste des "%s" de %s', $documentType->getName(), $infoEnti
 ?>
 <a class='btn btn-link'
    href='Document/list?type=<?php echo $info['type']?>&id_e=<?php echo $id_e?>&last_id=<?php echo $id_d ?>'>
-<i class="fa fa-arrow-left"></i>&nbsp;<?php hecho($backTitle); ?></a>
+<i class="fas fa-arrow-left"></i>&nbsp;<?php hecho($backTitle); ?></a>
 
 <?php if ($donneesFormulaire->getNbOnglet() > 1) : ?>
         <ul class="nav nav-tabs" style="margin-top:10px;">
@@ -76,11 +76,11 @@ $backTitle = sprintf('Liste des "%s" de %s', $documentType->getName(), $infoEnti
                         }
                         ?>
                         <button type="submit" class="btn <?php echo $submitButtonClass; ?>"
-                        ><i class="fa <?php
+                        ><i class="fas <?php
                             $icon = [
                                 'supression' => 'fa-trash',
                                 'suppression' => 'fa-trash',
-                                'modification' => 'fa-pencil',
+                                'modification' => 'fa-pen',
                             ];
                             if (isset($icon[$action_name])) {
                                 echo $icon[$action_name];
@@ -222,7 +222,7 @@ if ($infoDocumentEmail) :
                                 <input type='hidden' name='page' value='<?php echo $page; ?>'/>
                                 <input type='hidden' name='action' value='renvoi'/>
                                 <button type="submit" class="btn btn-outline-primary">
-                                    <i class="fa fa-cogs"></i>&nbsp;Envoyer à nouveau
+                                    <i class="fas fa-cogs"></i>&nbsp;Envoyer à nouveau
                                 </button>
                             </form>
                         </td>
@@ -265,7 +265,7 @@ if ($infoDocumentEmail) :
                         <a href='Journal/detail?<?php echo $journalDetailQueryParams; ?>'
                            title="Consulter le détail des événements"
                         >
-                            <i class="fa fa-eye"></i>
+                            <i class="fas fa-eye"></i>
                         </a>
                     <?php endif; ?>
                 </td>
@@ -276,7 +276,7 @@ if ($infoDocumentEmail) :
         <div class="col float-right">
             <a class='btn btn-link'
                href='Journal/index?id_e=<?php echo $id_e ?>&id_d=<?php echo $id_d ?>&type=<?php echo $info['type'] ?>'
-            ><i class='fa fa-list-alt'></i>&nbsp;Voir le journal des événements</a>
+            ><i class='fas fa-rectangle-list'></i>&nbsp;Voir le journal des événements</a>
         </div>
     </div>
 
@@ -285,7 +285,7 @@ if ($infoDocumentEmail) :
 <?php if ($daemon_lecture && $job_list) : ?>
     <div class="box">
         <a class="collapse-link" data-bs-toggle="collapse" data-bs-target="#daemonCollapse">
-            <h2><i class="fa fa-plus-square"></i>&nbsp;Travaux programmés</h2>
+            <h2><i class="fas fa-plus-square"></i>&nbsp;Travaux programmés</h2>
         </a>
         <div class="collapse" id="daemonCollapse">
             <div class='box'>
@@ -328,7 +328,7 @@ if ($infoDocumentEmail) :
                                         <?php if ($daemon_edition) : ?>
                                             <a href='<?php $this->url("Daemon/unlock?$daemonQueryParams"); ?>'
                                                class=" btn-warning btn">
-                                                <i class="fa fa-unlock-alt"></i>&nbsp;
+                                                <i class="fas fa-unlock-keyhole"></i>&nbsp;
                                                 Reprendre
                                             </a>
                                         <?php endif; ?>
@@ -339,7 +339,7 @@ if ($infoDocumentEmail) :
                                         <?php if ($daemon_edition) : ?>
                                             <a href='<?php $this->url("Daemon/lock?$daemonQueryParams"); ?>'
                                                class="btn btn-warning">
-                                                <i class="fa fa-lock"></i>&nbsp;
+                                                <i class="fas fa-lock"></i>&nbsp;
                                                 Suspendre
                                             </a>
                                         <?php endif; ?>
@@ -373,7 +373,7 @@ if ($infoDocumentEmail) :
                                             );
                                             ?>
                                             <a href='<?php $this->url($killUrl); ?>' class='btn btn-danger'>
-                                                <i class="fa fa-power-off"></i>&nbsp;Tuer
+                                                <i class="fas fa-power-off"></i>&nbsp;Tuer
                                             </a>
                                         <?php endif; ?>
                                     <?php else : ?>
@@ -400,7 +400,7 @@ if ($infoDocumentEmail) :
                                     );
                                     ?>
                                     <a href="<?php echo $deleteJobUrl; ?>" class="btn btn-danger">
-                                        <i class="fa fa-trash"></i>&nbsp;
+                                        <i class="fas fa-trash"></i>&nbsp;
                                         Supprimer
                                     </a>
                                 </td>
@@ -415,7 +415,7 @@ if ($infoDocumentEmail) :
 <?php if ($system_edition) : ?>
     <div class="box">
         <a class="collapse-link" data-bs-toggle="collapse" data-bs-target="#collapseExample">
-            <h2><i class="fa fa-plus-square"></i>&nbsp;Administration avancée</h2>
+            <h2><i class="fas fa-plus-square"></i>&nbsp;Administration avancée</h2>
         </a>
 
         <div class="collapse" id="collapseExample">
@@ -440,7 +440,7 @@ if ($infoDocumentEmail) :
                     Texte à mettre dans le journal : <input class="form-control" type='text' value='' name='message'>
                     <br/>
                     <button type="submit"
-                            class="btn btn-danger"><i class="fa fa-floppy-o"
+                            class="btn btn-danger"><i class="fas fa-floppy-disk"
                         ></i>&nbsp;Valider le changement d'état
                     </button>
                     <button
@@ -450,7 +450,7 @@ if ($infoDocumentEmail) :
                             name="action"
                             value="fatal-error"
                     >
-                        <i class="fa fa-exclamation-triangle"></i>&nbsp;Passer en erreur fatale
+                        <i class="fas fa-exclamation-triangle"></i>&nbsp;Passer en erreur fatale
                     </button>
                 </form>
             </div>
