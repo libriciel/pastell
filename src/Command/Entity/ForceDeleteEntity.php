@@ -154,7 +154,7 @@ class ForceDeleteEntity extends Command
                 $io->writeln("Suppression du connecteur {$id_ce} : " . ($do ? '[OK]' : '[PASS]'));
             }
 
-            $all_utilisateur = $this->utilisateurListe->getAllUtilisateurSimple($id_e);
+            $all_utilisateur = $this->utilisateurListe->getAllUtilisateurSimple((int)$id_e);
             $id_u_list = array_map(static function ($a) {
                 return $a[self::ID_U];
             }, $all_utilisateur);

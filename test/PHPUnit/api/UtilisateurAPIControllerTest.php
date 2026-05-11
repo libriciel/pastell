@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Pastell\Service\Utilisateur\UserCreationService;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class UtilisateurAPIControllerTest extends PastellTestCase
 {
@@ -144,6 +145,22 @@ class UtilisateurAPIControllerTest extends PastellTestCase
             ],
             $info[0]
         );
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws TransportExceptionInterface
+     * @throws ConflictException
+     */
+    public function testListIncludesChildEntityUsers(): void
+    {
+        $this->getObjectInstancier()->getInstance(UserCreationService::class)
+            ->create('child_user', 'child@example.org', 'Child', 'User', 2);
+
+        $info = $this->getInternalAPI()->get('/utilisateur?id_e=1&descendance=1');
+
+        $logins = array_column($info, 'login');
+        static::assertContains('child_user', $logins);
     }
 
     public function testListV1()

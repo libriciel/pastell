@@ -1,5 +1,9 @@
 # [6.0.0] -
 
+## Ajouts
+
+- Ajout du paramètre `descendance` sur la route `GET /api/v2/utilisateur` pour inclure les utilisateurs des entités filles #2463
+
 ## Évolutions
 
 - Migration de Fork Awesome vers la bibliothèque d'icônes officielle Font Awesome #2462
