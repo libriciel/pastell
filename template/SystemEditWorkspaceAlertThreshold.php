@@ -27,10 +27,10 @@ declare(strict_types=1);
         </table>
         <?php $this->displayCSRFInput() ?>
         <a class='btn btn-outline-primary' href='<?php $this->url('System/index')?>'>
-            <i class="fa fa-times-circle"></i>&nbsp;Annuler
+            <i class="fas fa-times-circle"></i>&nbsp;Annuler
         </a>
         <button type="submit" class="btn btn-primary">
-            <i class="fa fa-save"></i>&nbsp;Enregistrer
+            <i class="fas fa-save"></i>&nbsp;Enregistrer
         </button>
     </form>
 </div>
