@@ -3,7 +3,8 @@
 ## Ajouts
 
 - Ajout du paramètre `descendance` sur la route `GET /api/v2/utilisateur` pour inclure les utilisateurs des entités filles #2463
-- Alerte taux d'occupation du workspace : alerte quotidienne par mail à l'administrateur lorsque le seuil configurable est dépassé #1935
+- Alerte du taux d'occupation du workspace : alerte quotidienne par mail à l'administrateur lorsque le seuil 
+  est dépassé (configurable, 90% par défaut) #1935
 
 ## Évolutions
 
