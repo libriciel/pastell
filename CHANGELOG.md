@@ -1,3 +1,10 @@
+# [4.0.32] - 2026-06-01
+
+## Sécurité
+
+- Faille d'exécution de commande shell
+  (CVSS 7.2 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H) #2465
+
 # [4.0.31] - 2026-05-04
 
 ## Corrections

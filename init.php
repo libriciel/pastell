@@ -6,6 +6,8 @@
 
 use Monolog\Logger;
 use Pastell\Database\DatabaseUpdater;
+use Pastell\Process\CommandRunner;
+use Pastell\Process\SymfonyCommandRunner;
 use Pastell\Service\FeatureToggleService;
 use Pastell\Utilities\Identifier\IdentifierGeneratorInterface;
 use Pastell\Utilities\Identifier\UuidGenerator;
@@ -39,6 +41,7 @@ $objectInstancier->setInstance('template_path', TEMPLATE_PATH);
 $objectInstancier->setInstance('uploadChunkDirectory', UPLOAD_CHUNK_DIRECTORY);
 
 $objectInstancier->setInstance('opensslPath', OPENSSL_PATH);
+$objectInstancier->setInstance(CommandRunner::class, new SymfonyCommandRunner());
 
 $objectInstancier->setInstance('bd_dsn', BD_DSN);
 $objectInstancier->setInstance('bd_user', BD_USER);
