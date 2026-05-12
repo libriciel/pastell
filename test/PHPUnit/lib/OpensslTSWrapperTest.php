@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Pastell\Process\SymfonyCommandRunner;
 use PHPUnit\Framework\TestCase;
 
 class OpensslTSWrapperTest extends TestCase
@@ -13,7 +14,7 @@ class OpensslTSWrapperTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->opensslTSWrapper = new OpensslTSWrapper(OPENSSL_PATH);
+        $this->opensslTSWrapper = new OpensslTSWrapper(OPENSSL_PATH, new SymfonyCommandRunner());
     }
 
     public function testGetTimestampQuery(): void
