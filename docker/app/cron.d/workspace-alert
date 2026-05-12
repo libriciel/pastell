@@ -1,0 +1,1 @@
+0 8 * * * /app/bin/console app:system:workspace-alert >> /data/log/workspace-alert.log 2>&1

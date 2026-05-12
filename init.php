@@ -35,6 +35,7 @@ $objectInstancier->setInstance('list_pack', LIST_PACK);
 $objectInstancier->setInstance('temp_directory', sys_get_temp_dir());
 
 $objectInstancier->setInstance('workspacePath', WORKSPACE_PATH);
+$objectInstancier->setInstance('workspace_alert_threshold_default', 90);
 $objectInstancier->setInstance('template_path', TEMPLATE_PATH);
 $objectInstancier->setInstance('uploadChunkDirectory', UPLOAD_CHUNK_DIRECTORY);
 $objectInstancier->setInstance('libricielFeedbackDirectory', '/data/libriciel_feedback');

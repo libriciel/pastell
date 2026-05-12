@@ -46,7 +46,7 @@
             {% for workspace in checkWorkspace %}
                 <tr>
                     <th class='w400' scope="row">{{ workspace.label }}</th>
-                    <td>
+                    <td class="w400">
                         {% if workspace.isInfo() %}
                             {{ workspace.result }}
                         {% elseif workspace.isSuccess() %}
@@ -55,8 +55,18 @@
                             <strong style='color:red'>{{ workspace.result }}</strong>
                         {% endif %}
                     </td>
+                    <td></td>
                 </tr>
             {% endfor %}
+            <tr>
+                <th class='w400' scope="row">Seuil d'alerte taux d'occupation du workspace</th>
+                <td class="w400">{{ workspace_alert_threshold }} %</td>
+                <td>
+                    <a class='btn btn-primary' href="{{ path('app.legacy.system_editWorkspaceAlertThreshold') }}">
+                        <i class="fas fa-pen"></i>&nbsp;Modifier
+                    </a>
+                </td>
+            </tr>
         </table>
     </div>
 

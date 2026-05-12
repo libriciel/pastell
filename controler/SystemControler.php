@@ -79,6 +79,7 @@ class SystemControler extends PastellControler
             'libelle_plateforme_mail',
             $this->getConfigurationSQL()->getLibellePlateformeMail()
         );
+        $this->setViewParameter('workspace_alert_threshold', $this->getConfigurationSQL()->getWorkspaceAlertThreshold());
         $this->setViewParameter('page_title', 'Test du système');
         $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
         $this->setViewParameter('twigTemplate', 'system/index.html.twig');
@@ -573,6 +574,40 @@ class SystemControler extends PastellControler
             ConfigurationSQL::NULL_ID_E
         );
         $this->setLastMessage('Le libellé de la plateforme mail a été modifié');
+        $this->redirect(self::SYSTEM_INDEX_PAGE);
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
+    public function editWorkspaceAlertThresholdAction(): void
+    {
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->setViewParameter('page_title', "Modification du seuil d'alerte taux d'occupation du workspace");
+        $this->setViewParameter('template_milieu', 'SystemEditWorkspaceAlertThreshold');
+        $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
+        $this->setViewParameter('workspace_alert_threshold', $this->getConfigurationSQL()->getWorkspaceAlertThreshold());
+        $this->renderDefault();
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function doEditWorkspaceAlertThresholdAction(): void
+    {
+        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        try {
+            $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->setWorkspaceAlertThreshold(
+                (int) $this->getPostInfo()->get('workspace_alert_threshold')
+            );
+        } catch (InvalidArgumentException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect('System/editWorkspaceAlertThreshold');
+        }
+        $this->setLastMessage("Le seuil d'alerte taux d'occupation du workspace a été modifié");
         $this->redirect(self::SYSTEM_INDEX_PAGE);
     }
 }

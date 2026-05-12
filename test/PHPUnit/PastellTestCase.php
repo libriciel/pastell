@@ -158,6 +158,7 @@ iparapheur_retour: Archive',
         vfsStream::setup('test', null, $structure);
         $this->emulated_disk = vfsStream::url('test');
         $this->objectInstancier->setInstance('workspacePath', $this->getEmulatedDisk() . "/workspace/");
+        $this->objectInstancier->setInstance('workspace_alert_threshold_default', 90);
         $this->objectInstancier->setInstance('upload_chunk_directory', $this->getEmulatedDisk() . '/upload_chunk');
         $this->objectInstancier->setInstance(
             'loginPageConfigurationLocation',
