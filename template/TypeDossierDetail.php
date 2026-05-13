@@ -58,6 +58,10 @@
     <a class='btn btn-primary inline' href='<?php $this->url("/TypeDossier/editionLibelle?id_t={$id_t}") ?>'>
         <i class='fas fa-pen'></i>&nbsp;Modifier
     </a>
+    &nbsp;
+    <a href="<?php $this->url("TypeDossier/edition?id_t={$id_t}") ?>" class="btn inline btn-warning">
+        <i class="fas fa-triangle-exclamation"></i>&nbsp;Modifier l'identifiant
+    </a>
 
 </div>
 

@@ -322,4 +322,91 @@ class TypeDossierControlerTest extends ControlerTestCase
         }
         static::assertFalse($jobQueueSQL->hasDocumentJob(self::ID_E_COL, $id_d));
     }
+
+    public static function provideEditionActionsWithFolder(): array
+    {
+        return [
+            ['editionAction'],
+            ['doEditionAction'],
+            ['deleteAction'],
+            ['doDeleteAction'],
+        ];
+    }
+
+    /**
+     * @dataProvider provideEditionActionsWithFolder
+     * @throws TypeDossierException
+     */
+    public function testEditionBlockedWithFolder(string $action): void
+    {
+        $type_dossier_id = 'test-42';
+        $id_t = $this->createTypeDossier($type_dossier_id);
+
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "$type_dossier_id:lecture");
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "$type_dossier_id:edition");
+        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->deleteCache(self::ID_E_COL, self::ID_U_ADMIN);
+
+        $this->createDocument($type_dossier_id);
+
+        $this->setGetInfo(['id_t' => $id_t, 'id_type_dossier' => "$type_dossier_id-new"]);
+        try {
+            $this->getTypeDossierController()->$action();
+            static::fail();
+        } catch (LastErrorException $e) {
+            static::assertMatchesRegularExpression(
+                "#/TypeDossier/list#",
+                $e->getMessage()
+            );
+            static::assertMatchesRegularExpression(
+                "#Le type de dossier $type_dossier_id est utilisé par des dossiers#",
+                $e->getMessage()
+            );
+        }
+    }
+
+    public static function provideActionsWithActiveFolder(): array
+    {
+        return [
+            ['editionElementAction'],
+            ['doEditionElementAction'],
+            ['deleteElementAction'],
+            ['editionEtapeAction'],
+            ['doEditionEtapeAction'],
+            ['deleteEtapeAction'],
+            ['sortEtapeAction'],
+            ['newEtapeAction'],
+            ['doNewEtapeAction'],
+        ];
+    }
+
+    /**
+     * @dataProvider provideActionsWithActiveFolder
+     * @throws TypeDossierException
+     */
+    public function testBlockedWithActiveFolder(string $action): void
+    {
+        $type_dossier_id = 'test-42';
+        $id_t = $this->createTypeDossier($type_dossier_id);
+
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "$type_dossier_id:lecture");
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "$type_dossier_id:edition");
+        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->deleteCache(self::ID_E_COL, self::ID_U_ADMIN);
+
+        $this->createDocument($type_dossier_id);
+
+        $this->setGetInfo(['id_t' => $id_t]);
+        try {
+            $this->getTypeDossierController()->$action();
+            static::fail();
+        } catch (LastErrorException $e) {
+            static::assertMatchesRegularExpression(
+                "#/TypeDossier/detail\?id_t=$id_t#",
+                $e->getMessage()
+            );
+            static::assertMatchesRegularExpression(
+                "#Le type de dossier $type_dossier_id est utilisé par des dossiers#",
+                $e->getMessage()
+            );
+        }
+    }
 }

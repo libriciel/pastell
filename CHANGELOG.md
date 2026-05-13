@@ -9,6 +9,7 @@
 ## Évolutions
 
 - Migration de Fork Awesome vers la bibliothèque d'icônes officielle Font Awesome #2462
+- Le bouton `Modifier l'identifiant` des dossiers studio est désormais sur la page `TypeDossier/detail` #2445
 
 ## Correction
 
