@@ -3,6 +3,7 @@
 ## Corrections
 
 - Assignation des tâches orphelines au lancement de pastell #2457
+- Fix : échec de l'envoi d'archive pour les fichiers découpés en de nombreux morceaux (suffixe de découpage porté à 6 caractères) #2464
 
 # [5.0.4] - 2026-05-04
 
