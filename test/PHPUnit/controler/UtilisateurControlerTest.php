@@ -3,6 +3,7 @@
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Entite\EntityCreationService;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class UtilisateurControlerTest extends ControlerTestCase
 {
@@ -51,32 +52,85 @@ class UtilisateurControlerTest extends ControlerTestCase
         $this->expectOutputRegex('#<h1>Modification de votre mot de passe</h1#');
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
     public function testsuppressionAction(): void
     {
-        $this->setGetInfo(['id_u' => 2]);
+        $this->setGetInfo(['id_u_list' => [2]]);
         $this->getUtilisateurControler()->suppressionAction();
-        $this->expectOutputRegex("#<title>Utilisateur Eric Pommateau - Suppression de l(.*)utilisateur  - Pastell</title>#");
+        $this->expectOutputRegex('~<title>Suppression d&#039;utilisateur\(s\) - Pastell</title>~');
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws TransportExceptionInterface
+     * @throws NotFoundException
+     * @throws ConflictException
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function testSuppressionActionBatch(): void
+    {
+        $id_u3 = $this->getObjectInstancier()->getInstance(UserCreationService::class)
+            ->create('tester', 'tester@example.org', 'tester', 'tester');
+        $this->setGetInfo(['id_u_list' => [2, $id_u3]]);
+        $this->getUtilisateurControler()->suppressionAction();
+        $this->expectOutputRegex('#Eric Pommateau#');
+        $this->expectOutputRegex('#tester tester#');
     }
 
     public function testDoSuppressionAction(): void
     {
         $utilisateurSQL = $this->getObjectInstancier()->getInstance(UtilisateurSQL::class);
         self::assertTrue($utilisateurSQL->exists(2));
-        $this->setPostInfo(['id_u' => 2]);
+        $this->setPostInfo(['id_u_list' => [2]]);
         try {
             $this->getUtilisateurControler()->doSuppressionAction();
         } catch (Exception $e) {
             echo $e->getMessage();
         }
         self::assertFalse($utilisateurSQL->exists(2));
-        $this->expectOutputRegex("#L'utilisateur 2 a été supprimé#");
+        $logMessages = array_column($this->getLogRecords(), 'message');
+        self::assertNotEmpty(preg_grep('#eric \(id_u=2\) a été supprimé par admin#u', $logMessages));
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws TransportExceptionInterface
+     * @throws ConflictException
+     */
+    public function testDoSuppressionActionBatch(): void
+    {
+        $id_u3 = $this->getObjectInstancier()->getInstance(UserCreationService::class)
+            ->create('tester', 'tester@example.org', 'tester', 'tester');
+
+        $utilisateurSQL = $this->getObjectInstancier()->getInstance(UtilisateurSQL::class);
+        self::assertTrue($utilisateurSQL->exists(2));
+        self::assertTrue($utilisateurSQL->exists($id_u3));
+
+        $this->setPostInfo(['id_u_list' => [2, $id_u3]]);
+        try {
+            $this->getUtilisateurControler()->doSuppressionAction();
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+
+        self::assertFalse($utilisateurSQL->exists(2));
+        self::assertFalse($utilisateurSQL->exists($id_u3));
+
+        $logMessages = array_column($this->getLogRecords(), 'message');
+        self::assertNotEmpty(preg_grep('#eric \(id_u=2\) a été supprimé par admin#u', $logMessages));
+        self::assertNotEmpty(preg_grep("#tester \(id_u=$id_u3\) a été supprimé par admin#u", $logMessages));
     }
 
     public function testDoSuppressionActionWhenSuicide(): void
     {
         $utilisateurSQL = $this->getObjectInstancier()->getInstance(UtilisateurSQL::class);
         self::assertTrue($utilisateurSQL->exists(2));
-        $this->setPostInfo(['id_u' => 1]);
+        $this->setPostInfo(['id_u_list' => [1]]);
         try {
             $this->getUtilisateurControler()->doSuppressionAction();
         } catch (Exception $e) {

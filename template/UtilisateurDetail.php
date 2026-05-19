@@ -125,10 +125,15 @@ use Pastell\Utilities\Certificate;
                     </form>
                 </td>
                 <td>
-                    <a
-                            class='btn btn-danger'
-                            href="<?php $this->url("Utilisateur/suppression?id_u=$id_u") ?>"
-                    ><i class='fas fa-trash'></i>&nbsp;Supprimer</a>
+                    <form action='Utilisateur/suppression' method='post'>
+                        <?php $this->displayCSRFInput() ?>
+                        <input type='hidden' name='id_u_list[]' value='<?= $id_u ?>'/>
+                        <input type='hidden' name='id_e' value='<?= $info['id_e'] ?>'/>
+                        <input type='hidden' name='source' value='detail'/>
+                        <button type='submit' class='btn btn-danger'>
+                            <i class='fas fa-trash'></i>&nbsp;Supprimer
+                        </button>
+                    </form>
                 </td>
             </tr>
         </table>
