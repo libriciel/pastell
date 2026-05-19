@@ -1,5 +1,9 @@
 # [4.0.32] - 2026-06-01
 
+## Correction
+
+- Un utilisateur qui n'a pas le droit `utilisateur:lecture` ne pouvait pas ajouter/modifier ses notifications #2466
+
 ## Sécurité
 
 - Faille d'exécution de commande shell
