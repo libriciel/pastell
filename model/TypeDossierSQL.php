@@ -65,4 +65,10 @@ class TypeDossierSQL extends SQL
             " AND document.type = ? " ;
         return $this->query($sql, $flux);
     }
+
+    public function getByIdT(int $id_t)
+    {
+        $sql = "SELECT id_type_dossier FROM type_dossier WHERE id_t = ?";
+        return $this->queryOne($sql, $id_t);
+    }
 }

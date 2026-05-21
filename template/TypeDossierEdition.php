@@ -14,7 +14,7 @@ use Pastell\Service\TypeDossier\TypeDossierEditionService;
         <i class="fas fa-exclamation-triangle"></i> Une fois les premiers dossiers créés, l'identifiant ne sera plus modifiable.
     </div>
 
-    <form action='<?php $this->url("TypeDossier/doEdition"); ?>' method='post' >
+    <form action='<?php $this->url('TypeDossier/doEdition'); ?>' method='post' >
         <?php $this->displayCSRFInput() ?>
         <input type='hidden' name='id_t' value='<?php hecho($flux_info['id_t'] ?? ''); ?>' />
         <table class='table table-striped'>
@@ -38,12 +38,16 @@ use Pastell\Service\TypeDossier\TypeDossierEditionService;
             </tr>
         </table>
 
-        <a class='btn btn-outline-primary' href='<?php $this->url("TypeDossier/list")?>'>
+        <a class='btn btn-outline-primary' href='<?php
+        $this->url(
+            !empty($flux_info['id_t']) ?
+                    "TypeDossier/detail?id_t={$flux_info['id_t']}" :
+                    'TypeDossier/list'
+        ) ?>'>
             <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
         </a>
         <button type="submit" class="btn btn-primary">
             <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
         </button>
-
     </form>
 </div>

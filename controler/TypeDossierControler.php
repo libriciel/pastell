@@ -114,9 +114,16 @@ class TypeDossierControler extends PastellControler
     {
         $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
         $info = $this->getTypeDossierSQL()->getInfo($this->getPostOrGetInfo()->getInt('id_t'));
-        $this->verifyTypeDossierIsUnused($info['id_type_dossier']);
-        $this->setViewParameter('flux_info', $info);
-        $this->setViewParameter('page_title', "Création d'un type de dossier personnalisé");
+        if ($info) {
+            $this->verifyTypeDossierHasNoFolder($info['id_type_dossier']);
+        }
+        $this->setViewParameter('flux_info', $info ?: []);
+        $this->setViewParameter(
+            'page_title',
+            $info ?
+                "Modifier l'identifiant du type de dossier {$info['id_type_dossier']}" :
+                'Créer un type de dossier personnalisé'
+        );
         $this->setViewParameter('menu_gauche_select', 'TypeDossier/list');
         $this->setViewParameter('template_milieu', 'TypeDossierEdition');
         $this->renderDefault();
@@ -137,13 +144,14 @@ class TypeDossierControler extends PastellControler
             $typeDossierEditionService->checkTypeDossierId($target_type_dossier_id);
         } catch (Exception $e) {
             $this->setLastError($e->getMessage());
-            $this->redirect('/TypeDossier/list');
+            $return_url = $is_new ? '/TypeDossier/list' : '/TypeDossier/detail?id_t=' . $id_t;
+            $this->redirect($return_url);
         }
 
         $typeDossierProperties = $this->getTypeDossierManager()->getTypeDossierProperties($id_t);
-        if (! $is_new) {
+        if (!$is_new) {
             $source_type_dossier_id = $typeDossierProperties->id_type_dossier;
-            $this->verifyTypeDossierIsUnused($source_type_dossier_id);
+            $this->verifyTypeDossierHasNoFolder($source_type_dossier_id);
             $typeDossierEditionService->renameTypeDossierId($source_type_dossier_id, $target_type_dossier_id);
         }
         $typeDossierProperties->id_type_dossier = $target_type_dossier_id;
@@ -197,13 +205,12 @@ class TypeDossierControler extends PastellControler
     }
 
     /**
-     * @param $id_type_dossier
      * @throws LastErrorException
      * @throws LastMessageException
      */
-    private function verifyTypeDossierIsUnused($id_type_dossier): void
+    private function verifyTypeDossierIsUnused(string $id_type_dossier): void
     {
-        $this->verifyNoDocumentIsUsingTypeDossier($id_type_dossier);
+        $this->verifyNoDocumentIsUsingTypeDossier($id_type_dossier, 'TypeDossier/list');
         $this->verifyNoRoleIsUsingTypeDossier($id_type_dossier);
         $this->verifyNoConnectorIsAssociatedToTypeDossier($id_type_dossier);
     }
@@ -212,11 +219,25 @@ class TypeDossierControler extends PastellControler
      * @throws LastMessageException
      * @throws LastErrorException
      */
-    private function verifyTypeDossierHasNoActiveFolder($id_t): void
+    private function verifyTypeDossierHasNoActiveFolder(string $id_type_dossier): void
     {
-        $info = $this->getTypeDossierSQL()->getInfo($id_t);
-        $id_type_dossier = $info['id_type_dossier'];
-        $this->verifyNoDocumentIsUsingTypeDossier($id_type_dossier, '/TypeDossier/detail?id_t=' . $id_t);
+        $id_t = $this->getTypeDossierSQL()->getByIdTypeDossier($id_type_dossier);
+        $this->verifyNoDocumentIsUsingTypeDossier($id_type_dossier, "TypeDossier/detail?id_t=$id_t");
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    private function verifyTypeDossierHasNoFolder(string $id_type_dossier): void
+    {
+        if ($this->getDocumentSQL()->isTypePresent($id_type_dossier)) {
+            $this->setLastError(
+                "Des dossiers du type <b>$id_type_dossier</b> existent déjà sur ce Pastell. Impossible de modifier l'identifiant."
+            );
+            $id_t = $this->getTypeDossierSQL()->getByIdTypeDossier($id_type_dossier);
+            $this->redirect('/TypeDossier/detail?id_t=' . $id_t);
+        }
     }
 
     /**
@@ -227,7 +248,8 @@ class TypeDossierControler extends PastellControler
     public function doDeleteAction(): void
     {
         $this->commonEdition();
-        $id_type_dossier = $this->getViewParameterOrObject('type_de_dossier_info')['id_type_dossier'];
+        $id_t = $this->getPostOrGetInfo()->getInt('id_t');
+        $id_type_dossier =  $this->getTypeDossierSQL()->getByIdT($id_t);
         $this->verifyTypeDossierIsUnused($id_type_dossier);
 
         $this->getObjectInstancier()->getInstance(TypeDossierDeletionService::class)->delete($this->getViewParameterOrObject('id_t'));
@@ -329,7 +351,8 @@ class TypeDossierControler extends PastellControler
     {
         $this->commonEdition();
         $id_t = $this->getPostOrGetInfo()->getInt('id_t');
-        $this->verifyTypeDossierHasNoActiveFolder($id_t);
+        $id_type_dossier =  $this->getTypeDossierSQL()->getByIdT($id_t);
+        $this->verifyTypeDossierHasNoActiveFolder($id_type_dossier);
         $element_id = $this->getPostOrGetInfo()->get('element_id');
         $this->setViewParameter('formulaireElement', $this->getTypeDossierService()->getFormulaireElement($id_t, $element_id));
         $this->setViewParameter('template_milieu', 'TypeDossierEditionElement');
@@ -343,7 +366,8 @@ class TypeDossierControler extends PastellControler
     {
         $this->commonEdition();
         $id_t = $this->getPostOrGetInfo()->getInt('id_t');
-        $this->verifyTypeDossierHasNoActiveFolder($id_t);
+        $id_type_dossier =  $this->getTypeDossierSQL()->getByIdT($id_t);
+        $this->verifyTypeDossierHasNoActiveFolder($id_type_dossier);
         try {
             $this->getTypeDossierService()->editionElement($id_t, $this->getPostOrGetInfo());
         } catch (Exception $e) {
@@ -365,7 +389,8 @@ class TypeDossierControler extends PastellControler
     {
         $this->commonEdition();
         $id_t = $this->getPostOrGetInfo()->getInt('id_t');
-        $this->verifyTypeDossierHasNoActiveFolder($id_t);
+        $id_type_dossier =  $this->getTypeDossierSQL()->getByIdT($id_t);
+        $this->verifyTypeDossierHasNoActiveFolder($id_type_dossier);
         $element_id = $this->getPostOrGetInfo()->get('element_id');
         try {
             $this->getTypeDossierService()->deleteElement($id_t, $element_id);
@@ -390,7 +415,8 @@ class TypeDossierControler extends PastellControler
         $this->commonEdition();
         $num_etape = $this->getPostOrGetInfo()->get('num_etape', 0);
         $id_t = $this->getPostOrGetInfo()->getInt('id_t');
-        $this->verifyTypeDossierHasNoActiveFolder($id_t);
+        $id_type_dossier =  $this->getTypeDossierSQL()->getByIdT($id_t);
+        $this->verifyTypeDossierHasNoActiveFolder($id_type_dossier);
         $typeDossierService = $this->getTypeDossierService();
         $this->setViewParameter('file_field_list', $typeDossierService->getFieldWithType($id_t, 'file'));
         $this->setViewParameter('multi_file_field_list', $typeDossierService->getFieldWithType($id_t, 'multi_file'));
@@ -415,7 +441,8 @@ class TypeDossierControler extends PastellControler
     {
         $this->commonEdition();
         $id_t = $this->getPostOrGetInfo()->getInt('id_t');
-        $this->verifyTypeDossierHasNoActiveFolder($id_t);
+        $id_type_dossier =  $this->getTypeDossierSQL()->getByIdT($id_t);
+        $this->verifyTypeDossierHasNoActiveFolder($id_type_dossier);
         try {
             $this->getTypeDossierService()->editionEtape($id_t, $this->getPostOrGetInfo());
         } catch (Exception $e) {
@@ -436,7 +463,8 @@ class TypeDossierControler extends PastellControler
     {
         $this->commonEdition();
         $id_t = $this->getPostOrGetInfo()->getInt('id_t');
-        $this->verifyTypeDossierHasNoActiveFolder($id_t);
+        $id_type_dossier =  $this->getTypeDossierSQL()->getByIdT($id_t);
+        $this->verifyTypeDossierHasNoActiveFolder($id_type_dossier);
         $num_etape = $this->getPostOrGetInfo()->getInt('num_etape');
         try {
             $this->getTypeDossierService()->deleteEtape($id_t, $num_etape);
@@ -471,7 +499,8 @@ class TypeDossierControler extends PastellControler
     {
         $this->commonEdition();
         $id_t = $this->getPostOrGetInfo()->getInt('id_t');
-        $this->verifyTypeDossierHasNoActiveFolder($id_t);
+        $id_type_dossier =  $this->getTypeDossierSQL()->getByIdT($id_t);
+        $this->verifyTypeDossierHasNoActiveFolder($id_type_dossier);
         $tr = $this->getPostInfo()->get("tr");
         $this->getTypeDossierService()->sortEtape($this->getViewParameterOrObject('id_t'), $tr);
         $message = "L'ordre des étapes du cheminement a été modifié";
@@ -491,7 +520,8 @@ class TypeDossierControler extends PastellControler
     {
         $this->commonEdition();
         $id_t = $this->getPostOrGetInfo()->getInt('id_t');
-        $this->verifyTypeDossierHasNoActiveFolder($id_t);
+        $id_type_dossier =  $this->getTypeDossierSQL()->getByIdT($id_t);
+        $this->verifyTypeDossierHasNoActiveFolder($id_type_dossier);
         $this->setViewParameter('template_milieu', 'TypeDossierNewÉtape');
         $this->setViewParameter('etapeInfo', $this->getTypeDossierService()->getEtapeInfo($this->getViewParameterOrObject('id_t'), "new"));
         $this->renderDefault();
@@ -507,7 +537,8 @@ class TypeDossierControler extends PastellControler
     {
         $this->commonEdition();
         $id_t = $this->getPostOrGetInfo()->getInt('id_t');
-        $this->verifyTypeDossierHasNoActiveFolder($id_t);
+        $id_type_dossier =  $this->getTypeDossierSQL()->getByIdT($id_t);
+        $this->verifyTypeDossierHasNoActiveFolder($id_type_dossier);
 
         $num_etape = 0;
         try {
@@ -633,7 +664,7 @@ class TypeDossierControler extends PastellControler
                     "Le type de dossier <b>{$id_type_dossier}</b> est utilisé par les rôles suivants " . implode(",", $role_list)
                 );
             }
-            $this->redirect("/TypeDossier/list");
+            $this->redirect('TypeDossier/list');
         }
     }
 
@@ -657,19 +688,17 @@ class TypeDossierControler extends PastellControler
                 $message = "Le type de dossier <b>{$id_type_dossier}</b> a été associé avec des connecteurs sur les entités : ";
             }
             $this->setLastError(
-                $message . implode(", ", $output)
+                $message . implode(', ', $output)
             );
-            $this->redirect("/TypeDossier/list");
+            $this->redirect('TypeDossier/list');
         }
     }
 
     /**
-     * @param $id_type_dossier
-     * @param string $redirectTo
      * @throws LastErrorException
      * @throws LastMessageException
      */
-    private function verifyNoDocumentIsUsingTypeDossier($id_type_dossier, $redirectTo = '/TypeDossier/list'): void
+    private function verifyNoDocumentIsUsingTypeDossier(string $id_type_dossier, string $return_url): void
     {
         $entite_list = $this->getDocumentSQL()->getEntiteWhichUsedDocument($id_type_dossier);
         $id_t = $this->getTypeDossierSQL()->getByIdTypeDossier($id_type_dossier);
@@ -682,7 +711,7 @@ class TypeDossierControler extends PastellControler
                 'entite_list' => $entite_list,
                 'id_type_dossier' => $id_type_dossier
         ]);
-        $content = $gabarit->getRender("TypeDossierCountByEntiteBox");
+        $content = $gabarit->getRender('TypeDossierCountByEntiteBox');
 
         $this->setLastError(
             "La modification n'est pas possible. Le type de dossier {$id_type_dossier} est utilisé par des dossiers qui
@@ -692,7 +721,7 @@ class TypeDossierControler extends PastellControler
                     <i class='fas fa-folder'></i>&nbsp;Mettre tous les dossiers en erreur fatale
                 </a><br>"
         );
-        $this->redirect($redirectTo);
+        $this->redirect($return_url);
     }
 
     /**
