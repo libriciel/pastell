@@ -6,6 +6,7 @@
  * @var array $info
  * @var string $denominationEntiteDeBase
  * @var bool $utilisateur_edition
+ * @var bool $utilisateur_suppression
  * @var array $notification_list
  * @var string $module_treeselect_data
  * @var string $entity_treeselect_data

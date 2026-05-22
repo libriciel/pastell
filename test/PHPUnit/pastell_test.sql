@@ -124,6 +124,7 @@ INSERT INTO `role_droit` (`role`, `droit`) VALUES
 ('admin', 'utilisateur:creation'),
 ('admin', 'utilisateur:edition'),
 ('admin', 'utilisateur:lecture'),
+('admin', 'utilisateur:suppression'),
 ('admin', 'daemon:edition'),
 ('admin', 'daemon:lecture'),
 ('admin', 'actes-preversement-seda:edition'),

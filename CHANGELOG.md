@@ -12,6 +12,7 @@
 - Les sélections d'entité, de type de dossier et de rôle sont désormais présentées sous forme d'arbre navigable avec recherche #767
 - Migration de Fork Awesome vers la bibliothèque d'icônes officielle Font Awesome #2462
 - Le bouton `Modifier l'identifiant` des dossiers studio est désormais sur la page `TypeDossier/detail` #2445
+- Le droit `utilisateur:suppression` est maintenant nécessaire pour supprimer des utilisateurs #1821
 
 ## Correction
 

@@ -11,6 +11,7 @@ class DroitService
     public const string DROIT_ECRITURE = 'edition';
     public const string DROIT_ACTION = 'action';
     public const string DROIT_CREATION = 'creation';
+    public const string DROIT_SUPPRESSION = 'suppression';
 
     public const string DROIT_CONNECTEUR = 'connecteur';
     public const string DROIT_SYSTEM = 'system';
@@ -50,6 +51,11 @@ class DroitService
     public static function getDroitCreation(string $part): string
     {
         return self::getPermission($part, self::DROIT_CREATION);
+    }
+
+    public static function getDroitSuppression(string $part): string
+    {
+        return self::getPermission($part, self::DROIT_SUPPRESSION);
     }
 
     /**

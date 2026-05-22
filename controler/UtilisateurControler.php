@@ -328,6 +328,10 @@ class UtilisateurControler extends PastellControler
             'utilisateur_edition',
             $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'utilisateur:edition', $info['id_e'])
         );
+        $this->setViewParameter(
+            'utilisateur_suppression',
+            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitSuppression(DroitService::DROIT_UTILISATEUR), $info['id_e'])
+        );
 
         if (
             (int) $id_u === $this->getId_u()
@@ -812,7 +816,7 @@ class UtilisateurControler extends PastellControler
             $id_u = (int)$id_u;
             $this->checkSelfSuppression($id_u, $redirect_url);
             $userInfo = $this->getUtilisateur()->getInfo($id_u);
-            $this->verifDroit($userInfo['id_e'], DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR));
+            $this->verifDroit($userInfo['id_e'], DroitService::getDroitSuppression(DroitService::DROIT_UTILISATEUR));
             $users_to_delete[] = ['id_u' => $id_u, 'info' => $userInfo];
         }
 
@@ -843,7 +847,7 @@ class UtilisateurControler extends PastellControler
             $id_u = (int)$id_u;
             $this->checkSelfSuppression($id_u, $redirect_url);
             $userInfo = $this->getUtilisateur()->getInfo($id_u);
-            $this->verifDroit($userInfo['id_e'], DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR));
+            $this->verifDroit($userInfo['id_e'], DroitService::getDroitSuppression(DroitService::DROIT_UTILISATEUR));
             $deletionService->delete($id_u);
             $this->getJournal()->add(
                 Journal::MODIFICATION_UTILISATEUR,
@@ -858,7 +862,7 @@ class UtilisateurControler extends PastellControler
                 "L'utilisateur a été supprimé" :
                 count($id_u_list) . ' utilisateurs ont été supprimés'
         );
-        $this->redirect($redirect_url);
+        $this->redirect("/Entite/utilisateur?id_e=$id_e");
     }
 
     /**
