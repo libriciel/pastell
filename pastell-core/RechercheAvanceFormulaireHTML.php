@@ -1,6 +1,8 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityUtilitiesService;
+use Pastell\Service\Module\ModuleListService;
 
 //WTF ???
 class RechercheAvanceFormulaireHTML extends PastellControler
@@ -290,28 +292,51 @@ class RechercheAvanceFormulaireHTML extends PastellControler
         <?php
     }
 
-    private function displayTypeDocument()
+    /**
+     * @throws JsonException
+     */
+    private function displayTypeDocument(): void
     {
-        $this->getInstance(DocumentTypeHTML::class)->displaySelect($this->getParameter('type'), $this->getAllModule());
+        $type = $this->getParameter('type');
+        $tree = $this->getInstance(ModuleListService::class)->toTreeselectOptions($this->getId_u());
+        ?>
+        <input id='recherche-avance-type_id' type='hidden' name='type' value='<?php echo $type ?>'/>
+        <div class="treeselect-recherche-avance-type"></div>
+        <?php
+        $this->renderTreeSelect(
+            json_encode($tree, JSON_THROW_ON_ERROR),
+            'treeselect-recherche-avance-type',
+            'recherche-avance-type_id',
+            'Sélectionner un type de dossier'
+        );
     }
-    private function displayEntite()
+
+    /**
+     * @throws JsonException
+     */
+    private function displayEntite(): void
     {
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
         $tree = $entityUtilitiesService->toTreeselectOptions(
             $entityUtilitiesService->buildEntityTree(
-                $this->getInstance(RoleUtilisateur::class)->getArbreFille($this->getId_u(), "entite:lecture"),
-                false
+                $this->getInstance(RoleUtilisateur::class)->getArbreFille(
+                    $this->getId_u(),
+                    DroitService::getDroitLecture(DroitService::DROIT_ENTITE)
+                ),
             )
         );
         $id_e = $this->getParameter('id_e');
         ?>
-        <input id='recherche-avance-entity_id' type='hidden' name='id_e' value='<?php echo (int)$id_e ?>'/>
+        <input id='recherche-avance-entity_id' type='hidden' name='id_e' value='<?php echo $id_e ?>'/>
         <div class="treeselect-recherche-avance-entity"></div>
         <?php
-        $this->setViewParameter('treeselect_data', json_encode($tree, JSON_THROW_ON_ERROR));
-        $this->setViewParameter('treeselect_container_class', 'treeselect-recherche-avance-entity');
-        $this->setViewParameter('treeselect_input_id', 'recherche-avance-entity_id');
-        $this->renderLegacy('EntityTreeSelect');
+        $this->renderTreeSelect(
+            json_encode($tree, JSON_THROW_ON_ERROR),
+            'treeselect-recherche-avance-entity',
+            'recherche-avance-entity_id',
+            'Sélectionner une entité',
+            3
+        );
     }
 
     private function getLibelle($field_name)

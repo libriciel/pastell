@@ -5,6 +5,7 @@ declare(strict_types=1);
 /**
  * @var Gabarit $this
  * @var int $nb_free_workers
+ * @var string $entity_treeselect_data
  */
 
 ?>
@@ -19,10 +20,13 @@ declare(strict_types=1);
                     <input id='daemon-entity_id' type='hidden' name='id_e' value=''/>
                     <div class="treeselect-daemon-entity"></div>
                     <?php
-                    $this->setViewParameter('treeselect_container_class', 'treeselect-daemon-entity');
-                    $this->setViewParameter('treeselect_input_id', 'daemon-entity_id');
-                    $this->render('EntityTreeSelect');
-                    ?>
+                    $this->renderTreeSelect(
+                        $entity_treeselect_data,
+                        'treeselect-daemon-entity',
+                        'daemon-entity_id',
+                        'Sélectionner une entité',
+                        3
+                    ); ?>
                 </td>
             </tr>
             <tr>

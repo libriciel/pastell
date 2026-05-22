@@ -32,6 +32,7 @@ class GetModuleList extends ConnecteurTypeChoiceActionExecutor
 
     /**
      * @throws NotFoundException
+     * @throws JsonException
      */
     public function display(): true
     {
@@ -41,8 +42,11 @@ class GetModuleList extends ConnecteurTypeChoiceActionExecutor
         );
 
         $this->setViewParameter(
-            'moduleList',
-            $this->objectInstancier->getInstance(ModuleListService::class)->getModuleListOrderByType($this->id_u)
+            'module_treeselect_data',
+            json_encode(
+                $this->objectInstancier->getInstance(ModuleListService::class)->toTreeselectOptions($this->id_u),
+                JSON_THROW_ON_ERROR
+            )
         );
         $this->renderPage(
             $this->getMappingValue(self::PAGE_TITLE),

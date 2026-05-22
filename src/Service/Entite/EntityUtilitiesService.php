@@ -45,7 +45,7 @@ final class EntityUtilitiesService
     public function toTreeselectOptions(array $tree): array
     {
         return array_map(function (array $node): array {
-            $option = ['name' => $node['denomination'], 'value' => $node['id_e']];
+            $option = ['name' => $node['denomination'], 'value' => (string) $node['id_e']];
             if (isset($node['children'])) {
                 $option['children'] = $this->toTreeselectOptions($node['children']);
             }

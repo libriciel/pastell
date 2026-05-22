@@ -258,6 +258,16 @@ class Controler
         $this->getGabarit()->render($template);
     }
 
+    public function renderTreeSelect(
+        string $data,
+        string $containerClass,
+        string $inputId,
+        string $placeholder,
+        int $openLevel = 0
+    ): void {
+        $this->getGabarit()->renderTreeSelect($data, $containerClass, $inputId, $placeholder, $openLevel);
+    }
+
     public function setTwigEnvironment(Environment $twig): void
     {
         $this->twig = $twig;

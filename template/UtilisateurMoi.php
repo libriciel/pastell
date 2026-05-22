@@ -8,7 +8,8 @@ declare(strict_types=1);
  * @var string $denominationEntiteDeBase
  * @var int $id_u
  * @var array $notification_list
- * @var array $all_module
+ * @var string $entity_treeselect_data
+ * @var string $module_treeselect_data
  * @var array $tokens
  */
 
@@ -161,24 +162,34 @@ declare(strict_types=1);
     <h3>Ajouter une notification</h3>
     <div class="row">
 
-        <form action='Utilisateur/notificationAjout' method='post' class='input-group align-items-center'>
+        <form action='Utilisateur/notificationAjout' method='post' class='d-flex align-items-center gap-2'>
             <?php $this->displayCSRFInput(); ?>
             <input type='hidden' name='source' value='moi'/>
             <input type='hidden' name='id_u' value='<?php echo $id_u ?>'/>
             <input id='notification-entity_id' type='hidden' name='id_e' value=''/>
-            <div class="treeselect-notification-entity me-2" style="flex: 0 0 25%"></div>
+            <div class="treeselect-notification-entity notification-select"></div>
             <?php
-            $this->setViewParameter('treeselect_container_class', 'treeselect-notification-entity');
-            $this->setViewParameter('treeselect_input_id', 'notification-entity_id');
-            $this->render('EntityTreeSelect');
-            ?>
+            $this->renderTreeSelect(
+                $entity_treeselect_data,
+                'treeselect-notification-entity',
+                'notification-entity_id',
+                'Sélectionner une entité',
+                3
+            ); ?>
 
-            <?php $this->getDocumentTypeHtml()->displaySelect('', $all_module); ?>
-            <select name='daily_digest' class="form-select col-md-2 me-2">
+            <input id='notification-type_id' type='hidden' name='type' value=''/>
+            <div class="notification-module-treeselect notification-select"></div>
+            <?php
+            $this->renderTreeSelect(
+                $module_treeselect_data,
+                'notification-module-treeselect',
+                'notification-type_id',
+                'Sélectionner un type de dossier'
+            ); ?>
+            <select name='daily_digest' class="form-select notification-select">
                 <option value=''>Envoi à chaque événement</option>
                 <option value='1'>Résumé journalier</option>
             </select>
-
             <button type='submit' class='btn btn-primary'><i class="fas fa-plus-circle"></i>&nbsp;Ajouter</button>
         </form>
     </div>

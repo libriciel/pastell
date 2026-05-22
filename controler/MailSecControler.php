@@ -204,10 +204,10 @@ class MailSecControler extends PastellControler
         $this->setViewParameter('can_edit', $this->hasDroit($id_e, "annuaire:edition"));
 
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
-        $tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree(
+        $entity_tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree(
             $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
         ));
-        $this->setViewParameter('treeselect_data', json_encode($tree, JSON_THROW_ON_ERROR));
+        $this->setViewParameter('entity_treeselect_data', json_encode($entity_tree, JSON_THROW_ON_ERROR));
 
         $this->setViewParameter('listGroupe', $this->getAnnuaireRoleSQL()->getAll($id_e));
 

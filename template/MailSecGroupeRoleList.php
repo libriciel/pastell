@@ -7,6 +7,7 @@
  * @var AnnuaireRoleSQL $annuaireRole
  * @var bool $can_edit
  * @var array $groupe_herited
+ * @var string $entity_treeselect_data
  */
 ?>
 <a class='btn btn-link' href='MailSec/annuaire?id_e=<?php echo $id_e ?>'><i class="fas fa-arrow-left"></i>&nbsp;Voir la liste des contacts</a>
@@ -97,10 +98,13 @@
                     <input id='mailsec-groupe-role-entity_id' type='hidden' name='id_e' value=''/>
                     <div class="treeselect-mailsec-groupe-role-entity"></div>
                     <?php
-                    $this->setViewParameter('treeselect_container_class', 'treeselect-mailsec-groupe-role-entity');
-                    $this->setViewParameter('treeselect_input_id', 'mailsec-groupe-role-entity_id');
-                    $this->render('EntityTreeSelect');
-                    ?>
+                    $this->renderTreeSelect(
+                        $entity_treeselect_data,
+                        'treeselect-mailsec-groupe-role-entity',
+                        'mailsec-groupe-role-entity_id',
+                        'Sélectionner une entité',
+                        3
+                    ); ?>
                 </td>
             </tr>
     </table>

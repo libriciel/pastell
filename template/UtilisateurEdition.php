@@ -9,6 +9,7 @@
  * @var int $id_e
  * @var bool $new_user
  * @var bool $is_api
+ * @var string $entity_treeselect_data
  */
 
 use Pastell\Utilities\Certificate;
@@ -68,10 +69,13 @@ use Pastell\Utilities\Certificate;
                     <input id='role-entity_id' type='hidden' name='id_e' value='<?php echo $infoUtilisateur['id_e'] ?>'/>
                     <div class="treeselect-role-entity"></div>
                     <?php
-                    $this->setViewParameter('treeselect_container_class', 'treeselect-role-entity');
-                    $this->setViewParameter('treeselect_input_id', 'role-entity_id');
-                    $this->render('EntityTreeSelect');
-                    ?>
+                    $this->renderTreeSelect(
+                        $entity_treeselect_data,
+                        'treeselect-role-entity',
+                        'role-entity_id',
+                        'Sélectionner une entité',
+                        3
+                    ); ?>
                 </td>
             </tr>
             <?php if ($new_user || $is_api) : ?>

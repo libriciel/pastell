@@ -3,7 +3,7 @@
 /**
  * @var Gabarit $this
  * @var array $flux_list
- * @var array $possibleFluxList
+ * @var string $module_treeselect_data
  * @var int $id_e_mere
  * @var array $all_herited
  * @var int $id_e
@@ -81,17 +81,14 @@
                         <label for="module_type">Type de dossier</label>
                     </th>
                     <td>
-                        <select name="flux" id="module_type" class="select2_type_dossier form-select col-md-3">
-                            <?php foreach ($possibleFluxList as $fluxType => $fluxByType) : ?>
-                                <optgroup label="<?php hecho($fluxType) ?>">
-                                <?php foreach ($fluxByType as $fluxId => $fluxNom) : ?>
-                                    <option value="<?php hecho($fluxId); ?>">
-                                        <?php hecho($fluxNom); ?>
-                                    </option>
-                                <?php endforeach ?>
-                                </optgroup>
-                            <?php endforeach ?>
-                        </select>
+                        <input id='flux_id' type='hidden' name='flux' value=''/>
+                        <div class="treeselect-flux"></div>
+                        <?php $this->renderTreeSelect(
+                            $module_treeselect_data,
+                            'treeselect-flux',
+                            'flux_id',
+                            'Sélectionner un type de dossier'
+                        ); ?>
                     </td>
                 </tr>
                 <tr>
@@ -107,7 +104,4 @@
     <?php endif; ?>
 </div>
 
-<script>
-    $(document).ready(function() { $(".select2_type_dossier").select2(); });
-</script>
 
