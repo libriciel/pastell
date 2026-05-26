@@ -39,10 +39,6 @@
                                 <i class="fas fa-download"></i>&nbsp;Exporter
                             </a>
                             &nbsp;
-                            <a href="<?php $this->url("TypeDossier/edition?id_t={$type_dossier_info['id_t']}") ?>" class="btn btn-warning">
-                                <i class="fas fa-triangle-exclamation"></i>&nbsp;Modifier l'identifiant
-                            </a>
-                            &nbsp;
                             <a href="<?php $this->url("TypeDossier/delete?id_t={$type_dossier_info['id_t']}") ?>" class="btn btn-danger">
                                 <i class="fas fa-trash"></i>&nbsp;Supprimer
                             </a>
