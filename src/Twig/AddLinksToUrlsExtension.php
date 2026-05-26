@@ -14,7 +14,11 @@ final class AddLinksToUrlsExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter(self::PASTELL_ADD_LINKS_FILTER, [$this, 'addLinks']),
+            new TwigFilter(
+                self::PASTELL_ADD_LINKS_FILTER,
+                [$this, 'addLinks'],
+                ['is_safe' => ['html'], 'pre_escape' => 'html'],
+            ),
         ];
     }
 
