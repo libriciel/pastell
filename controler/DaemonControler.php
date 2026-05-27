@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Module\ModuleListService;
 use Symfony\Component\Process\Process;
 
@@ -787,6 +788,7 @@ class DaemonControler extends PastellControler
      * @throws LastMessageException
      * @throws LastErrorException
      * @throws NotFoundException
+     * @throws JsonException
      */
     public function createAction(): void
     {
@@ -794,38 +796,14 @@ class DaemonControler extends PastellControler
             EntiteSQL::ID_E_ENTITE_RACINE,
             DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
         );
-        $tree = $this->getRoleUtilisateur()->getEntityTree($this->getId_u(), 'entite:edition');
-
-        $this->replaceArrayKeyRecursive($tree, 'denomination', 'name');
-        $this->replaceArrayKeyRecursive($tree, 'id_e', 'value');
-        array_unshift($tree, [
-            'name' => 'Entité Racine',
-            'value' => '0',
-        ]);
-        $this->setViewParameter(
-            'tree',
-            \json_encode($tree, \JSON_THROW_ON_ERROR)
-        );
+        $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
+        $arbreFille = $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+        $entity_tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree($arbreFille));
+        $this->setViewParameter('entity_treeselect_data', \json_encode($entity_tree, \JSON_THROW_ON_ERROR));
         $this->setViewParameter('nb_free_workers', $this->getDaemonSQL()->getNbSharedWorkers() - 1);
         $this->setViewParameter('template_milieu', 'DaemonCreate');
         $this->setViewParameter('page_title', 'Création d\'un gestionnaire de tâches');
         $this->renderDefault();
-    }
-
-    private function replaceArrayKeyRecursive(array &$array, string $oldName, string $newName): void
-    {
-        foreach ($array as &$element) {
-            if (\is_array($element)) {
-                $this->replaceArrayKeyRecursive($element, $oldName, $newName);
-            }
-            if (isset($element[$oldName])) {
-                $element[$newName] = $element[$oldName];
-                unset($element[$oldName]);
-            }
-            if (isset($element['children']) && \is_array($element['children'])) {
-                $this->replaceArrayKeyRecursive($element['children'], $oldName, $newName);
-            }
-        }
     }
 
     /**

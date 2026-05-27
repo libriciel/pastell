@@ -7,7 +7,7 @@
  * @var AnnuaireRoleSQL $annuaireRole
  * @var bool $can_edit
  * @var array $groupe_herited
- * @var array $arbre
+ * @var string $entity_treeselect_data
  */
 ?>
 <a class='btn btn-link' href='MailSec/annuaire?id_e=<?php echo $id_e ?>'><i class="fas fa-arrow-left"></i>&nbsp;Voir la liste des contacts</a>
@@ -95,18 +95,16 @@
             <tr>
                 <th>Collectivité ou service</th>
                 <td>
-                <select name='id_e' class="form-select col-md-4">
-                    <option value=''>...</option>
-                    <?php foreach ($arbre as $entiteInfo) : ?>
-                    <option value='<?php echo $entiteInfo['id_e']?>'>
-                        <?php for (
-                        $i = 0; $i < $entiteInfo['profondeur']; $i++
-) {
-                                       echo "&nbsp&nbsp;";
-                        }?>
-                        |_<?php hecho($entiteInfo['denomination']); ?> </option>
-                    <?php endforeach ; ?>
-                </select>
+                    <input id='mailsec-groupe-role-entity_id' type='hidden' name='id_e' value=''/>
+                    <div class="treeselect-mailsec-groupe-role-entity"></div>
+                    <?php
+                    $this->renderTreeSelect(
+                        $entity_treeselect_data,
+                        'treeselect-mailsec-groupe-role-entity',
+                        'mailsec-groupe-role-entity_id',
+                        'Sélectionner une entité',
+                        3
+                    ); ?>
                 </td>
             </tr>
     </table>

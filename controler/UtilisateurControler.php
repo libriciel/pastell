@@ -2,7 +2,9 @@
 
 use Pastell\Mailer\Mailer;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\PasswordEntropy;
+use Pastell\Service\Module\ModuleListService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Utilisateur\UserUpdateService;
@@ -223,8 +225,9 @@ class UtilisateurControler extends PastellControler
      * @throws LastErrorException
      * @throws LastMessageException
      * @throws NotFoundException
+     * @throws JsonException
      */
-    public function editionAction()
+    public function editionAction(): void
     {
         $recuperateur = $this->getGetInfo();
         $id_u = $recuperateur->getInt('id_u');
@@ -247,10 +250,12 @@ class UtilisateurControler extends PastellControler
         }
 
         $this->setViewParameter('infoEntite', $this->getEntiteSQL()->getInfo($infoUtilisateur['id_e']));
-        $this->setViewParameter(
-            'arbre',
-            $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), 'entite:edition')
-        );
+        $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
+        $entity_tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTreeWithRoot(
+            $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
+        ));
+
+        $this->setViewParameter('entity_treeselect_data', \json_encode($entity_tree, \JSON_THROW_ON_ERROR));
 
         if ($id_u) {
             $this->verifDroit($infoUtilisateur['id_e'], 'utilisateur:edition');
@@ -302,11 +307,13 @@ class UtilisateurControler extends PastellControler
             $this->setViewParameter('notification_list', $this->getNotificationList($id_u));
         }
 
-        if ($this->hasDroit($info['id_e'], 'role:lecture')) {
-            $this->setViewParameter('role_authorized', $this->apiGet('role'));
-        } else {
-            $this->setViewParameter('role_authorized', []);
-        }
+        $roleAuthorized = $this->hasDroit(
+            $info['id_e'],
+            DroitService::getDroitLecture(DroitService::DROIT_ROLE)
+        ) ? $this->apiGet('role') : [];
+        $this->setViewParameter('role_authorized', $roleAuthorized);
+        $roleTree = array_map(static fn($r) => ['name' => $r['libelle'], 'value' => $r['role']], $roleAuthorized);
+        $this->setViewParameter('role_treeselect_data', \json_encode($roleTree, \JSON_THROW_ON_ERROR));
 
         if (!$this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'utilisateur:lecture', $info['id_e'])) {
             $this->setLastError(
@@ -342,42 +349,20 @@ class UtilisateurControler extends PastellControler
         }
         $this->setViewParameter('info', $info);
         $this->setViewParameter('id_u', $id_u);
-        $this->setViewParameter(
-            'arbre',
-            $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), 'entite:edition')
-        );
+        $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
+        $entity_tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTreeWithRoot(
+            $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
+        ));
+        $this->setViewParameter('entity_treeselect_data', \json_encode($entity_tree, \JSON_THROW_ON_ERROR));
 
-        $tree = $this->getRoleUtilisateur()->getEntityTree($this->getId_u(), 'entite:edition');
-
-        $this->replaceArrayKeyRecursive($tree, 'denomination', 'name');
-        $this->replaceArrayKeyRecursive($tree, 'id_e', 'value');
-        array_unshift($tree, [
-            'name' => 'Entité Racine',
-            'value' => '0',
-        ]);
+        $moduleListService = $this->getInstance(ModuleListService::class);
         $this->setViewParameter(
-            'tree',
-            \json_encode($tree, \JSON_THROW_ON_ERROR)
+            'module_treeselect_data',
+            \json_encode($moduleListService->toTreeselectOptions($id_u), \JSON_THROW_ON_ERROR)
         );
 
         $this->setViewParameter('template_milieu', 'UtilisateurDetail');
         $this->renderDefault();
-    }
-
-    private function replaceArrayKeyRecursive(array &$array, string $oldName, string $newName): void
-    {
-        foreach ($array as &$element) {
-            if (\is_array($element)) {
-                $this->replaceArrayKeyRecursive($element, $oldName, $newName);
-            }
-            if (isset($element[$oldName])) {
-                $element[$newName] = $element[$oldName];
-                unset($element[$oldName]);
-            }
-            if (isset($element['children']) && \is_array($element['children'])) {
-                $this->replaceArrayKeyRecursive($element['children'], $oldName, $newName);
-            }
-        }
     }
 
     private function getNotificationList($id_u)
@@ -394,8 +379,9 @@ class UtilisateurControler extends PastellControler
 
     /**
      * @throws NotFoundException
+     * @throws JsonException
      */
-    public function moiAction()
+    public function moiAction(): void
     {
         $id_u = $this->getId_u();
         $info = $this->getUtilisateur()->getInfo($id_u);
@@ -412,10 +398,6 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('notification_list', $this->getNotificationList($id_u));
 
         $this->setViewParameter('roleInfo', $this->getRoleUtilisateur()->getRole($id_u));
-        $this->setViewParameter(
-            'droit_entite_racine',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'entite:lecture', 0)
-        );
 
         if ($info['id_e']) {
             $infoEntiteDeBase = $this->getEntiteSQL()->getInfo($info['id_e']);
@@ -423,9 +405,17 @@ class UtilisateurControler extends PastellControler
         }
         $this->setViewParameter('info', $info);
         $this->setViewParameter('id_u', $id_u);
+        $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
+        $entity_tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTreeWithRoot(
+            $this->getRoleUtilisateur()->getArbreFille($id_u, DroitService::getDroitLecture(DroitService::DROIT_ENTITE))
+        ));
+        $this->setViewParameter('entity_treeselect_data', \json_encode($entity_tree, \JSON_THROW_ON_ERROR));
+
+        $moduleListService = $this->getInstance(ModuleListService::class);
+        $module_tree = $moduleListService->toTreeselectOptions($id_u);
         $this->setViewParameter(
-            'arbre',
-            $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), 'entite:lecture')
+            'module_treeselect_data',
+            \json_encode($module_tree, \JSON_THROW_ON_ERROR)
         );
 
         $tokens = $this->getObjectInstancier()

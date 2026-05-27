@@ -6,9 +6,10 @@
  * @var array $info
  * @var string $denominationEntiteDeBase
  * @var bool $utilisateur_edition
- * @var array $arbre
  * @var array $notification_list
- * @var array $all_module
+ * @var string $module_treeselect_data
+ * @var string $entity_treeselect_data
+ * @var string $role_treeselect_data
  * @var int $id_u
  * @var int $id_current_u
  * @var Authentification $authentification
@@ -183,21 +184,30 @@ use Pastell\Utilities\Certificate;
     <?php if ($utilisateur_edition && $role_authorized) : ?>
         <h3>Ajouter un rôle</h3>
 
-        <form action='Utilisateur/ajoutRole' method='post' class='d-flex flex-row align-items-center'>
+        <form action='Utilisateur/ajoutRole' method='post' class='d-flex align-items-center gap-2'>
             <?php $this->displayCSRFInput(); ?>
             <input type='hidden' name='id_u' value='<?php echo $id_u ?>'/>
             <input id='role-entity_id' type='hidden' name='id_e' value=''/>
+            <input id='role_id' type='hidden' name='role' value=''/>
 
-            <select name='role' class='select2_role p-0'>
-                <option value=''>...</option>
-                <?php foreach ($role_authorized as $role_info) : ?>
-                    <option value='<?php hecho($role_info['role']); ?>'>
-                        <?php hecho($role_info['libelle']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+            <div class="treeselect-role notification-select"></div>
+            <?php
+            $this->renderTreeSelect(
+                $role_treeselect_data,
+                'treeselect-role',
+                'role_id',
+                'Sélectionner un rôle'
+            ); ?>
 
-            <div class="treeselect-role-entity p-2"></div>
+            <div class="treeselect-role-entity notification-select"></div>
+            <?php
+            $this->renderTreeSelect(
+                $entity_treeselect_data,
+                'treeselect-role-entity',
+                'role-entity_id',
+                'Sélectionner une entité',
+                3
+            ); ?>
 
             <button type='submit' class='btn btn-primary'>
                 <i class="fas fa-plus-circle"></i>&nbsp;Ajouter
@@ -288,23 +298,32 @@ use Pastell\Utilities\Certificate;
         </table>
         <?php if ($utilisateur_edition) : ?>
             <h3>Ajouter une notification</h3>
-            <form action='Utilisateur/notificationAjout' method='post' class='input-group align-items-center'>
+            <form action='Utilisateur/notificationAjout' method='post' class='d-flex align-items-center gap-2'>
                 <?php $this->displayCSRFInput(); ?>
                 <input type='hidden' name='source' value='detail'/>
                 <input type='hidden' name='id_u' value='<?php echo $id_u ?>'/>
-                <select name='id_e' class='select2_entite form-select col-md-1'>
-                    <option></option>
-                    <option value='0'>Entité racine</option>
-                    <?php foreach ($arbre as $entiteInfo) : ?>
-                        <option value='<?php echo $entiteInfo['id_e'] ?>'>
-                            <?php echo str_repeat("-", $entiteInfo['profondeur']); ?>
-                            <?php hecho($entiteInfo['denomination']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+                <input id='notification-detail-entity_id' type='hidden' name='id_e' value=''/>
+                <div class="treeselect-notification-detail-entity notification-select"></div>
+                <?php
+                $this->renderTreeSelect(
+                    $entity_treeselect_data,
+                    'treeselect-notification-detail-entity',
+                    'notification-detail-entity_id',
+                    'Sélectionner une entité',
+                    3
+                ); ?>
 
-                <?php $this->getDocumentTypeHtml()->displaySelect('', $all_module); ?>
-                <select name='daily_digest' class="form-select col-md-2 me-2">
+                <input id='notification-detail-type_id' type='hidden' name='type' value=''/>
+                <div class="notification-module-detail-treeselect notification-select"></div>
+                <?php
+                $this->renderTreeSelect(
+                    $module_treeselect_data,
+                    'notification-module-detail-treeselect',
+                    'notification-detail-type_id',
+                    'Sélectionner un type de dossier'
+                ); ?>
+
+                <select name='daily_digest' class="form-select notification-select">
                     <option value=''>Envoi à chaque événement</option>
                     <option value='1'>Résumé journalier</option>
                 </select>
@@ -370,20 +389,3 @@ if ($id_u == $id_current_u || ($utilisateur_edition && $info['is_api'])) : ?>
             un jeton</a>
     </div>
 <?php endif; ?>
-
-
-<script type="module">
-    const domElement = document.querySelector('.treeselect-role-entity')
-    const treeselect = new Treeselect({
-        placeholder: 'Sélectionner une entité',
-        parentHtmlContainer: domElement,
-        options: <?php echo $tree; ?>,
-        isSingleSelect: true,
-        showTags: false,
-        openLevel: 3
-    })
-
-    treeselect.srcElement.addEventListener('input', (e) => {
-        document.getElementById('role-entity_id').value = e.detail;
-    })
-</script>

@@ -37,6 +37,19 @@ final readonly class ModuleListService
         return $moduleList;
     }
 
+    public function toTreeselectOptions(int $id_u, bool $hasAllDroit = false): array
+    {
+        $tree = [];
+        foreach ($this->getModuleListOrderByType($id_u, $hasAllDroit) as $type => $modules) {
+            $children = [];
+            foreach ($modules as $idFlux => $nom) {
+                $children[] = ['name' => $nom, 'value' => $idFlux];
+            }
+            $tree[] = ['name' => $type, 'value' => $type, 'isGroupSelectable' => false, 'children' => $children];
+        }
+        return $tree;
+    }
+
     public function getModuleListOrderByType(int $id_u, bool $hasAllDroit = false): array
     {
         $moduleListByType = [];

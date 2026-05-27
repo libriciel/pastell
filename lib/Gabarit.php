@@ -49,6 +49,23 @@ class Gabarit
         }
     }
 
+    public function renderTreeSelect(
+        string $data,
+        string $containerClass,
+        string $inputId,
+        string $placeholder,
+        int $openLevel = 0
+    ): void {
+        $this->setParameters([
+            'treeselect_data' => $data,
+            'treeselect_container_class' => $containerClass,
+            'treeselect_input_id' => $inputId,
+            'treeselect_placeholder' => $placeholder,
+            'treeselect_open_level' => $openLevel,
+        ]);
+        $this->render('module/select/TreeSelect');
+    }
+
     public function templateExists($template)
     {
         return file_exists("{$this->template_path}/$template.php");

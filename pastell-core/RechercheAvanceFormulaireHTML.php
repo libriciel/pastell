@@ -1,5 +1,9 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\EntityUtilitiesService;
+use Pastell\Service\Module\ModuleListService;
+
 //WTF ???
 class RechercheAvanceFormulaireHTML extends PastellControler
 {
@@ -288,29 +292,52 @@ class RechercheAvanceFormulaireHTML extends PastellControler
         <?php
     }
 
-    private function displayTypeDocument()
+    /**
+     * @throws JsonException
+     */
+    private function displayTypeDocument(): void
     {
-        $this->getInstance(DocumentTypeHTML::class)->displaySelect($this->getParameter('type'), $this->getAllModule());
-    }
-
-    private function displayEntite()
-    {
-        $arbre = $this->getInstance(RoleUtilisateur::class)->getArbreFille($this->getId_u(), "entite:lecture");
-        $id_e = $this->getParameter('id_e');
-
+        $type = $this->getParameter('type');
+        $tree = $this->getInstance(ModuleListService::class)->toTreeselectOptions($this->getId_u());
         ?>
-        <select class="form-select col-md-8 select2_entite" name='id_e'>
-            <?php foreach ($arbre as $entiteInfo) : ?>
-                <option value='<?php echo $entiteInfo['id_e'] ?>' <?php echo $entiteInfo['id_e'] == $id_e ? "selected='selected'" : ""; ?>>
-                    <?php for ($i = 0; $i < $entiteInfo['profondeur']; $i++) {
-                        echo "&nbsp&nbsp;";
-                    } ?>
-                    |_<?php hecho($entiteInfo['denomination']); ?> </option>
-            <?php endforeach; ?>
-        </select>
+        <input id='recherche-avance-type_id' type='hidden' name='type' value='<?php echo $type ?>'/>
+        <div class="treeselect-recherche-avance-type"></div>
         <?php
+        $this->renderTreeSelect(
+            json_encode($tree, JSON_THROW_ON_ERROR),
+            'treeselect-recherche-avance-type',
+            'recherche-avance-type_id',
+            'Sélectionner un type de dossier'
+        );
     }
 
+    /**
+     * @throws JsonException
+     */
+    private function displayEntite(): void
+    {
+        $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
+        $tree = $entityUtilitiesService->toTreeselectOptions(
+            $entityUtilitiesService->buildEntityTree(
+                $this->getInstance(RoleUtilisateur::class)->getArbreFille(
+                    $this->getId_u(),
+                    DroitService::getDroitLecture(DroitService::DROIT_ENTITE)
+                ),
+            )
+        );
+        $id_e = $this->getParameter('id_e');
+        ?>
+        <input id='recherche-avance-entity_id' type='hidden' name='id_e' value='<?php echo $id_e ?>'/>
+        <div class="treeselect-recherche-avance-entity"></div>
+        <?php
+        $this->renderTreeSelect(
+            json_encode($tree, JSON_THROW_ON_ERROR),
+            'treeselect-recherche-avance-entity',
+            'recherche-avance-entity_id',
+            'Sélectionner une entité',
+            3
+        );
+    }
 
     private function getLibelle($field_name)
     {

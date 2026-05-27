@@ -5,7 +5,7 @@
  * @var int $id_ce
  * @var string $field
  * @var string $moduleType
- * @var array $moduleList
+ * @var string $module_treeselect_data
  */
 ?>
 <a class='btn btn-link' href='Connecteur/editionModif?id_ce=<?php hecho((string)$id_ce); ?>'>
@@ -25,19 +25,15 @@
                     <label for="module_type">Type de dossier</label>
                 </th>
                 <td>
-                    <select name="module_type" id="module_type" class="form-select col-md-2">
-                        <option></option>
-                        <?php foreach ($moduleList as $fluxType => $fluxByType) : ?>
-                            <optgroup label="<?php hecho($fluxType) ?>">
-                                <?php foreach ($fluxByType as $fluxId => $fluxNom) :?>
-                                    <option value='<?php hecho($fluxId)?>'
-                                            <?= ($fluxId === $moduleType) ? 'selected' : '' ?>>
-                                        <?php hecho($fluxNom) ?>
-                                    </option>
-                                <?php endforeach;?>
-                            </optgroup>
-                        <?php endforeach ; ?>
-                    </select>
+                    <input id='module_type' type='hidden' name='module_type' value='<?php hecho($moduleType); ?>'/>
+                    <div class="treeselect-module-type"></div>
+                    <?php
+                    $this->renderTreeSelect(
+                        $module_treeselect_data,
+                        'treeselect-module-type',
+                        'module_type',
+                        'Sélectionner un type de dossier'
+                    ); ?>
                 </td>
             </tr>
         </table>

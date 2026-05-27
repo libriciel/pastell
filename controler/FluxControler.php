@@ -41,6 +41,7 @@ class FluxControler extends PastellControler
 
     /**
      * @throws NotFoundException
+     * @throws JsonException
      */
     public function indexAction()
     {
@@ -77,6 +78,16 @@ class FluxControler extends PastellControler
                 }
             }
             $moduleListByType = array_filter($moduleListByType);
+
+            $moduleTree = [];
+            foreach ($moduleListByType as $type => $modules) {
+                $children = [];
+                foreach ($modules as $idFlux => $nom) {
+                    $children[] = ['name' => $nom, 'value' => $idFlux];
+                }
+                $moduleTree[] = ['name' => $type, 'value' => $type, 'isGroupSelectable' => false, 'children' => $children];
+            }
+            $this->setViewParameter('module_treeselect_data', json_encode($moduleTree, JSON_THROW_ON_ERROR));
 
             foreach ($fluxList as $fluxId => $fluxInfo) {
                 if ($fluxInfo['nb_connector'] === 0) {

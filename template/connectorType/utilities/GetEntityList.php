@@ -4,8 +4,8 @@
  * @var Gabarit $this
  * @var int $id_ce
  * @var string $field
- * @var array $entityList
  * @var string $selectedEntity
+ * @var string $entity_treeselect_data
  */
 
 ?>
@@ -13,30 +13,22 @@
     <i class="fas fa-arrow-left"></i>&nbsp;Retour au connecteur
 </a>
 <div class="box">
-    <h2 id="desc-entite-table">Choisissez une entité</h2>
 
 <form action='Connecteur/doExternalData' method='post'>
     <input type='hidden' name='id_ce' value='<?php hecho((string)$id_ce); ?>'/>
     <input type='hidden' name='field' value='<?php hecho($field); ?>'/>
     <?php $this->displayCSRFInput(); ?>
 
-    <select name='entity_id' class='select2_entite form-select col-md-1'>
-        <option
-                value='0'
-            <?php echo $selectedEntity == EntiteSQL::ID_E_ENTITE_RACINE ? 'selected' : '' ?>
-        >
-            <?php hecho(EntiteSQL::ENTITE_RACINE_DENOMINATION); ?>
-        </option>
-        <?php foreach ($entityList as $entiteInfo) : ?>
-            <option
-                    value='<?php echo $entiteInfo['id_e'] ?>'
-                <?php echo $selectedEntity == $entiteInfo['id_e'] ? 'selected' : '' ?>
-            >
-                <?php echo str_repeat("-", $entiteInfo['profondeur']); ?>
-                <?php hecho($entiteInfo['denomination'] . ' ( id_e=' . $entiteInfo['id_e'] . ')'); ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
+    <table class="table table-striped">
+        <tr>
+            <th class="w300">Entité</th>
+            <td>
+                <input id='get-entity-list_id' type='hidden' name='entity_id' value='<?php hecho($selectedEntity); ?>'/>
+                <div class="treeselect-get-entity-list col-md-4"></div>
+                <?php $this->renderTreeSelect($entity_treeselect_data, 'treeselect-get-entity-list', 'get-entity-list_id', 'Sélectionner une entité', 3); ?>
+            </td>
+        </tr>
+    </table>
     <button type='submit' class='btn btn-primary'>
         <i class="fas fa-check"></i>&nbsp;Choisir
     </button>

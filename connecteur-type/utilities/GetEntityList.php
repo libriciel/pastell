@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\EntityUtilitiesService;
+
 class GetEntityList extends ConnecteurTypeChoiceActionExecutor
 {
     private const ENTITY_ID = 'entity_id';
@@ -24,12 +27,17 @@ class GetEntityList extends ConnecteurTypeChoiceActionExecutor
 
     /**
      * @throws NotFoundException
+     * @throws JsonException
      */
     public function display()
     {
-        $this->setViewParameter('entityList', $this->objectInstancier
-            ->getInstance(RoleUtilisateur::class)
-            ->getArbreFille($this->id_u, 'entite:edition'));
+        $entityUtilitiesService = $this->objectInstancier->getInstance(EntityUtilitiesService::class);
+        $arbreFille = $this->objectInstancier->getInstance(RoleUtilisateur::class)->getArbreFille(
+            $this->id_u,
+            DroitService::getDroitEdition(DroitService::DROIT_ENTITE)
+        );
+        $tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTreeWithRoot($arbreFille));
+        $this->setViewParameter('entity_treeselect_data', json_encode($tree, JSON_THROW_ON_ERROR));
 
         $this->setViewParameter(
             'selectedEntity',

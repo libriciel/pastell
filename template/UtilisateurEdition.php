@@ -6,10 +6,10 @@
  * @var array $infoUtilisateur
  * @var RoleUtilisateur $roleUtilisateur
  * @var SQLQuery $sqlQuery
- * @var array $arbre
  * @var int $id_e
  * @var bool $new_user
  * @var bool $is_api
+ * @var string $entity_treeselect_data
  */
 
 use Pastell\Utilities\Certificate;
@@ -66,19 +66,16 @@ use Pastell\Utilities\Certificate;
             <tr>
                 <th>Entité de base</th>
                 <td>
-                    <select name='id_e' class="form-select col-md-4">
-                        <option value=''>Entité racine</option>
-                        <?php foreach ($arbre as $entiteInfo) : ?>
-                            <option value='<?php echo $entiteInfo['id_e'] ?>'
-                                <?php echo $entiteInfo['id_e'] == $infoUtilisateur['id_e'] ? 'selected' : '' ?>
-                            >
-                                <?php for ($i = 0; $i < $entiteInfo['profondeur']; $i++) {
-                                    echo "&nbsp&nbsp;";
-                                } ?>
-                                |_<?php hecho($entiteInfo['denomination']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+                    <input id='role-entity_id' type='hidden' name='id_e' value='<?php echo $infoUtilisateur['id_e'] ?>'/>
+                    <div class="treeselect-role-entity"></div>
+                    <?php
+                    $this->renderTreeSelect(
+                        $entity_treeselect_data,
+                        'treeselect-role-entity',
+                        'role-entity_id',
+                        'Sélectionner une entité',
+                        3
+                    ); ?>
                 </td>
             </tr>
             <?php if ($new_user || $is_api) : ?>
