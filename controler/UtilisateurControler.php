@@ -842,20 +842,12 @@ class UtilisateurControler extends PastellControler
         $this->checkNotEmptyList($id_u_list, $id_e);
         $redirect_url = $source === 'list' ? "Entite/utilisateur?id_e=$id_e" : "/Utilisateur/detail?id_u=$id_u_list[0]";
         $deletionService = $this->getObjectInstancier()->getInstance(UtilisateurDeletionService::class);
-        $adminInfo = $this->getUtilisateur()->getInfo($this->getId_u());
         foreach ($id_u_list as $id_u) {
             $id_u = (int)$id_u;
             $this->checkSelfSuppression($id_u, $redirect_url);
             $userInfo = $this->getUtilisateur()->getInfo($id_u);
             $this->verifDroit($userInfo['id_e'], DroitService::getDroitSuppression(DroitService::DROIT_UTILISATEUR));
             $deletionService->delete($id_u);
-            $this->getJournal()->add(
-                Journal::MODIFICATION_UTILISATEUR,
-                $userInfo['id_e'],
-                Journal::NO_ID_D,
-                'suppression',
-                "L'utilisateur {$userInfo['login']} (id_u=$id_u) a été supprimé par {$adminInfo['login']}"
-            );
         }
         $this->setLastMessage(
             count($id_u_list) === 1 ?

@@ -94,7 +94,7 @@ class UtilisateurControlerTest extends ControlerTestCase
         }
         self::assertFalse($utilisateurSQL->exists(2));
         $logMessages = array_column($this->getLogRecords(), 'message');
-        self::assertNotEmpty(preg_grep('#eric \(id_u=2\) a été supprimé par admin#u', $logMessages));
+        self::assertNotEmpty(preg_grep('#Suppression de l\'utilisateur eric \(id_u=2\)#u', $logMessages));
     }
 
     /**
@@ -122,8 +122,8 @@ class UtilisateurControlerTest extends ControlerTestCase
         self::assertFalse($utilisateurSQL->exists($id_u3));
 
         $logMessages = array_column($this->getLogRecords(), 'message');
-        self::assertNotEmpty(preg_grep('#eric \(id_u=2\) a été supprimé par admin#u', $logMessages));
-        self::assertNotEmpty(preg_grep("#tester \(id_u=$id_u3\) a été supprimé par admin#u", $logMessages));
+        self::assertNotEmpty(preg_grep('#Suppression de l\'utilisateur eric \(id_u=2\)#u', $logMessages));
+        self::assertNotEmpty(preg_grep("#Suppression de l'utilisateur tester \(id_u=$id_u3\)#u", $logMessages));
     }
 
     public function testDoSuppressionActionWhenSuicide(): void

@@ -61,7 +61,7 @@ class UtilisateurDeletionService
             EntiteSQL::ID_E_ENTITE_RACINE,
             Journal::NO_ID_D,
             Journal::ACTION_SUPPRIME,
-            "Suppression de l'utilisateur id_u=$id_u"
+            "Suppression de l'utilisateur {$userInfo['login']} (id_u=$id_u)"
         );
     }
 }
