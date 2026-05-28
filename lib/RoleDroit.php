@@ -15,6 +15,7 @@ class RoleDroit
             'utilisateur:lecture',
             'utilisateur:edition',
             'utilisateur:creation',
+            'utilisateur:suppression',
             'role:lecture',
             'role:edition',
             'journal:lecture',

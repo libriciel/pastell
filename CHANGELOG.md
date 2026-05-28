@@ -5,12 +5,14 @@
 - Ajout du paramètre `descendance` sur la route `GET /api/v2/utilisateur` pour inclure les utilisateurs des entités filles #2463
 - Alerte du taux d'occupation du workspace : alerte quotidienne par mail à l'administrateur lorsque le seuil
   est dépassé (configurable, 90% par défaut) #1935
+- Possibilité de supprimer des utilisateurs en lot #1821
 
 ## Évolutions
 
 - Les sélections d'entité, de type de dossier et de rôle sont désormais présentées sous forme d'arbre navigable avec recherche #767
 - Migration de Fork Awesome vers la bibliothèque d'icônes officielle Font Awesome #2462
 - Le bouton `Modifier l'identifiant` des dossiers studio est désormais sur la page `TypeDossier/detail` #2445
+- Le droit `utilisateur:suppression` est maintenant nécessaire pour supprimer des utilisateurs #1821
 
 ## Correction
 

@@ -243,7 +243,7 @@ class UtilisateurAPIController extends BaseAPIController
 
         $this->checkDroit(
             $infoUtilisateur['id_e'],
-            DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR)
+            DroitService::getDroitSuppression(DroitService::DROIT_UTILISATEUR)
         );
 
         $this->utilisateurDeletionService->delete($infoUtilisateur['id_u']);

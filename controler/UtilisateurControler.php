@@ -328,6 +328,10 @@ class UtilisateurControler extends PastellControler
             'utilisateur_edition',
             $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'utilisateur:edition', $info['id_e'])
         );
+        $this->setViewParameter(
+            'utilisateur_suppression',
+            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitSuppression(DroitService::DROIT_UTILISATEUR), $info['id_e'])
+        );
 
         if (
             (int) $id_u === $this->getId_u()
@@ -800,16 +804,26 @@ class UtilisateurControler extends PastellControler
      */
     public function suppressionAction(): void
     {
-        $id_u = $this->getPostOrGetInfo()->getInt('id_u');
-        $this->checkSelfSuppression($id_u);
-        $userInfo = $this->getUtilisateur()->getInfo($id_u);
-        $this->verifDroit($userInfo['id_e'], 'utilisateur:edition');
-        $this->setViewParameter('id_u', $id_u);
-        $this->setViewParameter('info', $userInfo);
-        $this->setViewParameter(
-            'page_title',
-            sprintf("Utilisateur %s %s - Suppression de l'utilisateur ", $userInfo['prenom'], $userInfo['nom'])
-        );
+        $id_e = (int)$this->getPostOrGetInfo()->get('id_e');
+        $source = $this->getPostOrGetInfo()->get('source');
+        $id_u_list = $this->getPostOrGetInfo()->get('id_u_list');
+        $id_u_list = is_array($id_u_list) ? $id_u_list : array_filter([$id_u_list]);
+
+        $this->checkNotEmptyList($id_u_list, $id_e);
+        $redirect_url = $source === 'list' ? "Entite/utilisateur?id_e=$id_e" : "/Utilisateur/detail?id_u={$id_u_list[0]}";
+        $users_to_delete = [];
+        foreach ($id_u_list as $id_u) {
+            $id_u = (int)$id_u;
+            $this->checkSelfSuppression($id_u, $redirect_url);
+            $userInfo = $this->getUtilisateur()->getInfo($id_u);
+            $this->verifDroit($userInfo['id_e'], DroitService::getDroitSuppression(DroitService::DROIT_UTILISATEUR));
+            $users_to_delete[] = ['id_u' => $id_u, 'info' => $userInfo];
+        }
+
+        $this->setViewParameter('users_to_delete', $users_to_delete);
+        $this->setViewParameter('id_e', $id_e);
+        $this->setViewParameter('source', $source);
+        $this->setViewParameter('page_title', "Suppression d'utilisateur(s)");
         $this->setViewParameter('template_milieu', 'UtilisateurSuppression');
         $this->renderDefault();
     }
@@ -820,26 +834,52 @@ class UtilisateurControler extends PastellControler
      */
     public function doSuppressionAction(): void
     {
-        $id_u = $this->getPostInfo()->getInt('id_u');
-        $this->checkSelfSuppression($id_u);
-        $userInfo = $this->getUtilisateur()->getInfo($id_u);
-        $this->verifDroit($userInfo['id_e'], 'utilisateur:edition');
-        $this->getObjectInstancier()->getInstance(UtilisateurDeletionService::class)->delete($id_u);
-        $this->setLastMessage("L'utilisateur $id_u a été supprimé");
-        $this->redirect("/Entite/utilisateur?id_e={$userInfo['id_e']}");
+        $id_e = (int)$this->getPostInfo()->get('id_e');
+        $source = $this->getPostInfo()->get('source');
+        $id_u_list = $this->getPostInfo()->get('id_u_list');
+        $id_u_list = is_array($id_u_list) ? $id_u_list : array_filter([$id_u_list]);
+
+        $this->checkNotEmptyList($id_u_list, $id_e);
+        $redirect_url = $source === 'list' ? "Entite/utilisateur?id_e=$id_e" : "/Utilisateur/detail?id_u=$id_u_list[0]";
+        $deletionService = $this->getObjectInstancier()->getInstance(UtilisateurDeletionService::class);
+        foreach ($id_u_list as $id_u) {
+            $id_u = (int)$id_u;
+            $this->checkSelfSuppression($id_u, $redirect_url);
+            $userInfo = $this->getUtilisateur()->getInfo($id_u);
+            $this->verifDroit($userInfo['id_e'], DroitService::getDroitSuppression(DroitService::DROIT_UTILISATEUR));
+            $deletionService->delete($id_u);
+        }
+        $this->setLastMessage(
+            count($id_u_list) === 1 ?
+                "L'utilisateur a été supprimé" :
+                count($id_u_list) . ' utilisateurs ont été supprimés'
+        );
+        $this->redirect("/Entite/utilisateur?id_e=$id_e");
     }
 
     /**
      * @throws LastMessageException
      * @throws LastErrorException
      */
-    private function checkSelfSuppression(int $id_u): void
+    private function checkSelfSuppression(int $id_u, string $redirect_url): void
     {
         if ($id_u !== (int)$this->getId_u()) {
             return;
         }
         $this->setLastError('Impossible de vous supprimer vous-même');
-        $this->redirect("/Utilisateur/detail?id_u=$id_u");
+        $this->redirect($redirect_url);
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    private function checkNotEmptyList(array $user_list, int $id_e): void
+    {
+        if (!$user_list) {
+            $this->setLastError('Aucun utilisateur sélectionné');
+            $this->redirect("Entite/utilisateur?id_e=$id_e");
+        }
     }
 
     /**

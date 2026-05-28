@@ -22,7 +22,7 @@ class UtilisateurDeletionServiceTest extends PastellTestCase
         );
         $entiteDeletionService->delete(2);
         $journal_message = $this->getJournal()->getAll()[0]['message'];
-        $expected_journal_message = "Suppression de l'utilisateur id_u=2";
+        $expected_journal_message = "Suppression de l'utilisateur eric (id_u=2)";
         $this->assertEquals(
             $expected_journal_message,
             $journal_message
@@ -30,7 +30,7 @@ class UtilisateurDeletionServiceTest extends PastellTestCase
         $this->assertFalse($utilisateurSQL->exists(2));
         $log_message = $this->getLogRecords()[0]['message'];
         $this->assertMatchesRegularExpression(
-            "#^Ajout au journal \(id_j=1\): 4 - 0 - 1 - 0 - Supprimé - $expected_journal_message#",
+            "#^Ajout au journal \(id_j=1\): 4 - 0 - 1 - 0 - Supprimé - " . preg_quote($expected_journal_message, '#') . "#",
             $log_message
         );
     }

@@ -141,6 +141,7 @@ class RoleUtilisateurSQLTest extends PastellTestCase
             'utilisateur:creation',
             'utilisateur:edition',
             'utilisateur:lecture',
+            'utilisateur:suppression',
         ], $all_droit);
     }
 

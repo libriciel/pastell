@@ -111,7 +111,16 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('offset', $offset);
         $this->setViewParameter('search', $search);
         $this->setViewParameter('descendance', $descendance);
+        $this->setViewParameter(
+            'droitSuppression',
+            $this->getRoleUtilisateur()->hasDroit(
+                $this->getId_u(),
+                DroitService::getDroitSuppression(DroitService::DROIT_UTILISATEUR),
+                $id_e
+            )
+        );
 
+        $this->setViewParameter('id_u_courant', $this->getId_u());
         $this->setViewParameter('template_milieu', 'UtilisateurList');
         $this->setViewParameter('menu_gauche_select', 'Entite/utilisateur');
         $this->setPageTitle('Liste des utilisateurs');

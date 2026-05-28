@@ -6,6 +6,7 @@
  * @var array $info
  * @var string $denominationEntiteDeBase
  * @var bool $utilisateur_edition
+ * @var bool $utilisateur_suppression
  * @var array $notification_list
  * @var string $module_treeselect_data
  * @var string $entity_treeselect_data
@@ -125,10 +126,15 @@ use Pastell\Utilities\Certificate;
                     </form>
                 </td>
                 <td>
-                    <a
-                            class='btn btn-danger'
-                            href="<?php $this->url("Utilisateur/suppression?id_u=$id_u") ?>"
-                    ><i class='fas fa-trash'></i>&nbsp;Supprimer</a>
+                    <form action='Utilisateur/suppression' method='post'>
+                        <?php $this->displayCSRFInput() ?>
+                        <input type='hidden' name='id_u_list[]' value='<?= $id_u ?>'/>
+                        <input type='hidden' name='id_e' value='<?= $info['id_e'] ?>'/>
+                        <input type='hidden' name='source' value='detail'/>
+                        <button type='submit' class='btn btn-danger'>
+                            <i class='fas fa-trash'></i>&nbsp;Supprimer
+                        </button>
+                    </form>
                 </td>
             </tr>
         </table>

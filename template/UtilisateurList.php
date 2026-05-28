@@ -3,6 +3,7 @@
 /**
  * @var Gabarit $this
  * @var bool $droitCreation
+ * @var bool $droitSuppression
  * @var string $descendance
  * @var array $all_role
  * @var string $role_selected
@@ -11,6 +12,7 @@
  * @var array $liste_utilisateur
  * @var int $id_e
  * @var int $offset
+ * @var int $id_u_courant
  */
 
 $exportUserUrl = sprintf(
@@ -72,6 +74,12 @@ $exportUserUrl = sprintf(
    href='<?php hecho($exportUserUrl); ?>'
 ><i class='fas fa-download'></i>&nbsp;Exporter</a>
 
+<?php if ($droitSuppression) : ?>
+    <button type='submit' form='form-suppression-lot' class='btn btn-danger' id='btn-suppression-lot-top' disabled>
+        <i class='fa fa-trash'></i>&nbsp;Supprimer la sélection
+    </button>
+<?php endif; ?>
+
     <?php
     $this->suivantPrecedent(
         $offset,
@@ -80,9 +88,22 @@ $exportUserUrl = sprintf(
         "Entite/utilisateur?id_e=$id_e&page=1&search=$search&descendance=$descendance&role_selected=$role_selected"
     ); ?>
 
+<?php if ($droitSuppression) : ?>
+<form action='Utilisateur/suppression' method='post' id='form-suppression-lot'>
+    <?php $this->displayCSRFInput() ?>
+    <input type='hidden' name='id_e' value='<?= $id_e ?>'/>
+    <input type='hidden' name='source' value='list'/>
+    <input type='hidden' name='search' value='<?php hecho($search) ?>'/>
+    <input type='hidden' name='descendance' value='<?php hecho($descendance) ?>'/>
+    <input type='hidden' name='role_selected' value='<?php hecho($role_selected) ?>'/>
+<?php endif; ?>
+
 <table class='table table-striped'>
 <thead>
 <tr>
+    <?php if ($droitSuppression) : ?>
+        <th><input type='checkbox' id='select-all-users' title='Tout sélectionner'/></th>
+    <?php endif; ?>
     <th class='w200'>Prénom Nom</th>
     <th>login</th>
     <th>email</th>
@@ -96,6 +117,13 @@ $exportUserUrl = sprintf(
 
 <?php foreach ($liste_utilisateur as $user) : ?>
     <tr>
+        <?php if ($droitSuppression) : ?>
+            <td>
+                <?php if ($user['id_u'] !== $id_u_courant) : ?>
+                    <input type='checkbox' name='id_u_list[]' value='<?= $user['id_u'] ?>' class='user-checkbox'/>
+                <?php endif; ?>
+            </td>
+        <?php endif; ?>
         <td>
             <a href='Utilisateur/detail?id_u=<?php echo $user['id_u'] ?>'>
                 <?php hecho($user['prenom']); ?> <?php hecho($user['nom']); ?>
@@ -166,4 +194,23 @@ $exportUserUrl = sprintf(
     <a class='btn btn-outline-primary'
        href='<?php hecho($exportUserUrl); ?>'
     ><i class='fas fa-download'></i>&nbsp;Exporter</a>
+
+<?php if ($droitSuppression) : ?>
+    <button type='submit' form='form-suppression-lot' class='btn btn-danger' id='btn-suppression-lot' disabled>
+        <i class='fa fa-trash'></i>&nbsp;Supprimer la sélection
+    </button>
+</form>
+<script>
+    document.getElementById('select-all-users').addEventListener('change', function () {
+        document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = this.checked);
+        updateDeleteButton();
+    });
+    document.querySelectorAll('.user-checkbox').forEach(cb => cb.addEventListener('change', updateDeleteButton));
+    function updateDeleteButton() {
+        const anyChecked = document.querySelectorAll('.user-checkbox:checked').length > 0;
+        document.getElementById('btn-suppression-lot').disabled = !anyChecked;
+        document.getElementById('btn-suppression-lot-top').disabled = !anyChecked;
+    }
+</script>
+<?php endif; ?>
 </div>
