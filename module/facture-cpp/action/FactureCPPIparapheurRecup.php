@@ -18,7 +18,7 @@ class FactureCPPIparapheurRecup extends SignatureRecuperation
         if ($result_parapheur) {
             $donneesFormulaire = $this->getDonneesFormulaire();
             $metadata = json_decode(
-                $donneesFormulaire->getFileContent('iparapheur_metadata_sortie'),
+                $donneesFormulaire->getFileContent('iparapheur_metadata_sortie') ?: '{}',
                 true,
                 512,
                 JSON_THROW_ON_ERROR

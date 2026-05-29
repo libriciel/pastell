@@ -1,3 +1,10 @@
+# [4.1.19] - 2026-06-01
+
+## Corrections
+
+- Il y avait un message `Syntax error` lors de la vérification du visa facture-cpp (régression 4.1.3) #2470
+
+
 # [4.1.18] - 2026-05-04
 
 ## Ajout
