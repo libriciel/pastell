@@ -119,6 +119,12 @@ class InternalAPI
         if (! $controller_name) {
             throw new Exception("Ressource absente");
         }
+
+        if (isset($query_arg[0]) && $controller_name == 'Annuaire' && strtolower($query_arg[0]) == 'groupe') {
+            $controller_name = 'AnnuaireGroupe';
+            array_shift($query_arg);
+        }
+
         if (isset($query_arg[1]) && $controller_name == 'Utilisateur' && ucfirst($query_arg[1]) == 'Role') {
             $controller_name = "UtilisateurRole";
         }
