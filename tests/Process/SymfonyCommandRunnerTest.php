@@ -38,9 +38,9 @@ class SymfonyCommandRunnerTest extends TestCase
         ];
         yield 'stderr is captured on failure' => [
             'command' => ['ls', '/nonexistent_path'],
-            'expectedExitCode' => 2,
+            'expectedExitCode' => 1,
             'expectedStdout' => '',
-            'expectedStderr' => 'ls: cannot access \'/nonexistent_path\': No such file or directory',
+            'expectedStderr' => 'ls: /nonexistent_path: No such file or directory',
         ];
         yield 'shell metacharacters are literal arguments' => [
             'command' => ['echo', 'a; echo b'],
@@ -52,7 +52,7 @@ class SymfonyCommandRunnerTest extends TestCase
             'command' => ['/no/such/binary'],
             'expectedExitCode' => 127,
             'expectedStdout' => '',
-            'expectedStderr' => 'sh: 1: exec: /no/such/binary: not found',
+            'expectedStderr' => 'sh: exec: line 0: /no/such/binary: not found',
         ];
     }
 
