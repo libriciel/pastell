@@ -51,7 +51,9 @@ class UtilisateurControler extends PastellControler
             $id_e = $info['id_e'];
             $this->setViewParameter('id_e_menu', $id_e);
             $this->setViewParameter('type_e_menu', "");
-            $this->hasUtilisateurDroitLecture($id_e);
+            if ($this->getGetInfo()->get('source') !== 'moi') {
+                $this->hasUtilisateurDroitLecture($id_e);
+            }
             $this->setNavigationInfo($id_e, "Entite/utilisateur?");
         } elseif ($this->getGetInfo()->get('id_e')) {
             $this->setViewParameter('type_e_menu', "");
@@ -711,7 +713,8 @@ class UtilisateurControler extends PastellControler
 
         $this->setViewParameter('pages_without_left_menu', $source === 'moi');
         $this->setViewParameter('id_u', $id_u);
-        $this->setViewParameter('cancel_url', "/Utilisateur/$source?id_u=$id_u&id_e=$id_e");
+        $cancel_url = $source === 'moi' ? '/Utilisateur/moi' : "/Utilisateur/detail?id_u=$id_u&id_e=$id_e";
+        $this->setViewParameter('cancel_url', $cancel_url);
 
         $utilisateur_info = $this->getUtilisateur()->getInfo($id_u);
 
