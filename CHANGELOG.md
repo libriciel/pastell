@@ -2,8 +2,16 @@
 
 ## Corrections
 
+- Un utilisateur qui n'a pas le droit `utilisateur:lecture` ne pouvait pas ajouter/modifier ses notifications #2466
+- Il y avait un message `Syntax error` lors de la vérification du visa facture-cpp (régression 4.1.3) #2470
 - Assignation des tâches orphelines au lancement de pastell #2457
 - Fix : échec de l'envoi d'archive pour les fichiers découpés en de nombreux morceaux (suffixe de découpage porté à 6 caractères) #2464
+
+## Sécurité
+
+- Faille d'exécution de commande shell
+  (CVSS 7.2 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H) #2465
+- Faille XSS #2468
 
 # [5.0.4] - 2026-05-04
 
@@ -26,8 +34,8 @@
 - Correction d'un commentaire du connecteur mailsec #2459
 - Correction des doublons lors de la récupération des actes S2low #2429
 - Gestion des utilisateurs exclusivement API par API #2441 :
-  - Ajout de la route `POST /api/v2/utilisateur/:id_u/token/:id_token/renew` pour renouveler un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
-  - Ajout de la route `DELETE /api/v2/utilisateur/:id_u/token/:id_token` pour supprimer un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
+    - Ajout de la route `POST /api/v2/utilisateur/:id_u/token/:id_token/renew` pour renouveler un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
+    - Ajout de la route `DELETE /api/v2/utilisateur/:id_u/token/:id_token` pour supprimer un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
 - Il n'est plus possible de créer ou modifier des gestionnaires de tâches avec 0 processus alloués #2414
 - les URLs des mails sécurisés n'affichent plus le port 443 par défaut #2430
 -  iParapheur REST : suppression du LogDossier superflu (sans timestamp ni nom) qui apparaissait en dernier
@@ -40,8 +48,8 @@
 ## Ajouts
 
 - Gestion des utilisateurs exclusivement API par API #1943 :
-  - Ajout du paramètre `is_api` à la création d'un utilisateur : crée un utilisateur sans email, authentifiable par jeton uniquement
-  - Ajout de la route `POST /api/v2/utilisateur/:id_u/token` pour créer un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
+    - Ajout du paramètre `is_api` à la création d'un utilisateur : crée un utilisateur sans email, authentifiable par jeton uniquement
+    - Ajout de la route `POST /api/v2/utilisateur/:id_u/token` pour créer un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
 
 ## Corrections
 
@@ -258,6 +266,19 @@
 - Connecteur iparapheur soap #2268
 - Connecteur `chorus-par-csv` ChorusPro par CSV #2356
 
+# [4.1.19] - 2026-06-01
+
+## Corrections
+
+- Un utilisateur qui n'a pas le droit `utilisateur:lecture` ne pouvait pas ajouter/modifier ses notifications #2466
+- Il y avait un message `Syntax error` lors de la vérification du visa facture-cpp (régression 4.1.3) #2470
+
+## Sécurité
+
+- Faille d'exécution de commande shell
+  (CVSS 7.2 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H) #2465
+- Faille XSS #2468
+
 # [4.1.18] - 2026-05-04
 
 ## Ajout
@@ -286,7 +307,7 @@
 
 ## Ajouts
 
-- Gestion des utilisateurs exclusivement API par API #1943 :
+- Gestion des utilisateurs exclusivement API par API #2418 :
   - Ajout du paramètre `is_api` à la création d'un utilisateur : crée un utilisateur sans email, authentifiable par jeton uniquement
   - Ajout de la route `POST /api/v2/utilisateur/:id_u/token` pour créer un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
 
@@ -640,6 +661,18 @@
 - `helios-generique` et `helios-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-helios` #1969
 - `actes-generique` et `actes-automatique` sont dépréciés au profit du nouveau type de dossier issu du studio `ls-actes` #1967
 
+# [4.0.32] - 2026-06-01
+
+## Correction
+
+- Un utilisateur qui n'a pas le droit `utilisateur:lecture` ne pouvait pas ajouter/modifier ses notifications #2466
+
+## Sécurité
+
+- Faille d'exécution de commande shell
+  (CVSS 7.2 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H) #2465
+- Faille XSS #2468
+
 # [4.0.31] - 2026-05-04
 
 ## Corrections
@@ -898,7 +931,7 @@
 - L'ordre des entités (dénomination au lieu de id_e) lors de l'import provoquait des erreurs
   `L'entité mère est inconnue` #2049
 - L'action d'envoi d'un PES à l'archivage renvoyait un warning si la balise `BlocPiece` ne contenait pas de balise
-  `InfoPce` (dans le cas de l'utilisation d'un connecteur Bordereau SEDA - seda-ng) #2050
+`InfoPce` (dans le cas de l'utilisation d'un connecteur Bordereau SEDA - seda-ng) #2050
 - Définition de studio : Il y avait une erreur pour les valeurs par défaut des Zones de texte multilignes #2002
 - La balise `MessageDigest` était mal écrite dans les bordereaux SEDA à destination de Vitam #2035
 - Connecteur iParapheur : Il y avait un warning pour la sélection d'un type en cas de problème de connexion #2027
@@ -1724,7 +1757,6 @@
 
 - Permettre l'utilisation d'un proxy authentifié sur la constante HTTP_PROXY_URL #1107
 
-
 # [3.0.8] - 2020-08-03
 
 ## Correction
@@ -1998,6 +2030,7 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 - Les caractères multioctets pouvaient être tronqués lors de l'envoi au iparapheur #944
 
 ## Evolution
+
 - Ajout de la constante NB_JOB_PAR_VERROU (à éviter) #924
 
 # [2.0.14] - 2019-09-03
@@ -2047,7 +2080,6 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
   - On supprime le code 99_AU
   - La liste est ordonnée suivant l'ordre alphabétique du libellé
   - On mets en tête les code 99_XX
-
 
 ## Ajout
 
@@ -2114,7 +2146,6 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 - Ajout de la variable d'environnement docker AUTHENTICATION_WITH_CLIENT_CERTIFICATE permettant d'activer l'authentification par certificat client (désactivée par défaut) #507
 - Possibilité d'ajouter une barre de progression pour l'upload des fichiers (propriété progress_bar) #17
 
-
 ## Ajouts
 
 - Actions des connecteur-type: mise à jour des actions Signature et ajout des actions SAE #484
@@ -2122,7 +2153,6 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 - Ajout de tests et d'information sur la page "Test du système" sur le journal #512
 - Ajout de la constante UPLOAD_CHUNK_DIRECTORY pour le téléchargement partiel des fichiers
 - Check de la base de données sur la page système #519
-
 
 # [2.0.9] - 2018-10-29
 
@@ -2153,11 +2183,9 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 
 # [2.0.8] - 2018-08-21
 
-
 ***Cette version nécessite une modification de la base de données***
 
 ***Cette version nécessite le passage du script script/plateform-update/2.0.x/to-2.0.8.php***
-
 
 ## Correction
 
@@ -2196,13 +2224,9 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 - Connecteur de purge : possibilité de selectionner les document qui sont passé par un certain état #389
 - Log : ajout du contexte (id_e,id_d,id_verrou,...) sur les messages de logs #317
 
-
-
 # [2.0.7] - 2018-07-18
 
-
 ***Cette version nécessite une modification (potentiellement longue, ajout d'un index) de la base de données***
-
 
 ## Ajouts
 
@@ -2241,7 +2265,6 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 - Docker : mise à jour de libersign
 - Il manquait connecteur-type: SAE sur l'action validation-sae du flux actes-automatique
 
-
 # [2.0.6] - 2018-06-06
 
 ## Ajouts
@@ -2269,7 +2292,6 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
   - correction d'un bug empechant la récupération d'un identifiant de transfert contenant des espaces
 - API:
   - Correction de l'inversion des APIs `modif-connecteur-entite` et `edit-connecteur-entite` #402
-
 
 # [2.0.5] - 2018-04-30
 
@@ -2368,7 +2390,6 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
   - nouvelle action DefautNotify permettant de passer par l'état et notifier
   - fonction CurlWrapper:getLastOutput() pour récupérer la derniere sortie de curl
 
-
 # [2.0.4] - 2018-02-08
 
 ## Corrections
@@ -2397,7 +2418,6 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 - Flux préversement actes permettant avec l'utilisation du glaneur précédent de faire du versement à partir d'un export SRCI ou FAST
 - force-delete-connecteur et force-delete-module pour la suppression des éléments et documents obsolètes (test du système) lors du passage 1.4 -> 2
 
-
 # [2.0.3] - 2017-12-13
 
 ## Corrections
@@ -2423,7 +2443,6 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 - Connecteur Glaneur de document
 - Flux Document PDF (Générique)
 
-
 # [2.0.2] - 2017-11-24
 
 ## Corrections
@@ -2433,7 +2452,7 @@ Les fonctions suivantes sont dépréciées et seront retirées dans une prochain
 - Correction de la signature locale (actes et helios) qui n'était pas fonctionnelle
 - La mise à jour automatique de la page démon est à nouveau fonctionnelle
 - Problème archivage i-Parapheur en cas de full disk (uniquement pour les flux standard) #313
-- Problème de selection des action sur la fréquence des connecteurs
+- Problème de sélection des actions sur la fréquence des connecteurs
 - Compatibilité de l'API V1 : la clé action-possible n'était plus générée sur la fonction detail-document.php
 
 ## Évolutions

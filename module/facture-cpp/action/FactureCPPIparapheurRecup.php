@@ -17,13 +17,12 @@ class FactureCPPIparapheurRecup extends SignatureRecuperation
 
         if ($result_parapheur) {
             $donneesFormulaire = $this->getDonneesFormulaire();
-            $metadataContent = $donneesFormulaire->getFileContent('iparapheur_metadata_sortie');
-            $metadata = $metadataContent ? json_decode(
-                $metadataContent,
+            $metadata = json_decode(
+                $donneesFormulaire->getFileContent('iparapheur_metadata_sortie') ?: '{}',
                 true,
                 512,
                 JSON_THROW_ON_ERROR
-            ) : [];
+            );
             if ($this->getActionName() === self::ACTION_NAME_RECU) {
                 $donneesFormulaire->setData(
                     AttrFactureCPP::ATTR_STATUT_CIBLE_LISTE,
