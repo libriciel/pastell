@@ -478,23 +478,36 @@ class UtilisateurControlerTest extends ControlerTestCase
     }
 
     /**
+     * @throws UnrecoverableException
      * @throws LastErrorException
+     * @throws ConflictException|LastMessageException
      */
     public function testNotificationAjoutActionBySelf(): void
     {
+        $utilisateurControler = $this->getUtilisateurControler();
+        $id_u = $this->authenticateNewUserWithPermission(
+            ['entite:lecture', 'actes-generique:edition', 'actes-generique:lecture'],
+            1
+        );
+
         $this->setPostInfo([
-            'id_u' => 1,
+            'id_u' => $id_u,
             'id_e' => 1,
             'type' => 'actes-generique',
+            'source' => 'moi',
         ]);
         try {
-            $this->getUtilisateurControler()->notificationAjoutAction();
+            $utilisateurControler->notificationAjoutAction();
         } catch (LastMessageException $e) {
+            static::assertSame(3, $id_u);
             static::assertStringContainsString(
-                'Utilisateur/notification',
+                'Utilisateur/notification?id_u=3&id_e=1&type=actes-generique&source=moi',
                 $e->getMessage()
             );
         }
+
+        $this->setGetInfo(['id_u' => $id_u, 'source' => 'moi']);
+        $utilisateurControler->_beforeAction();
     }
 
     /**

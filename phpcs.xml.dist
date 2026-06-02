@@ -30,6 +30,7 @@
 
     <exclude-pattern>./extensions/*/vendor</exclude-pattern>
     <exclude-pattern>./extensions/*/build</exclude-pattern>
+    <exclude-pattern>./test/codeception/tests/_support/_generated</exclude-pattern>
 
     <rule ref="PSR12">
         <!-- require and require_once before classes declarations -->
