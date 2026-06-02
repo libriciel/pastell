@@ -23,7 +23,7 @@
                         >
                     {% endif %}
                     {% if displayedField.getField().getType() == 'textarea' %}
-                        {{ value | pastell_add_links_to_urls | raw | nl2br }}
+                        {{ value | pastell_add_links_to_urls | nl2br }}
                     {% else %}
                         <span> {{ value }}</span>
                     {% endif %}

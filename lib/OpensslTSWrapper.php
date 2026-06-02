@@ -1,33 +1,34 @@
 <?php
 
+use Pastell\Process\CommandResult;
+use Pastell\Process\CommandRunner;
+
 class OpensslTSWrapper
 {
-    private $opensslPath;
-    private $lastError;
+    private string $lastError;
+    private string $hashAlgorithm;
 
-    private $hash_algorithm;
-
-    public function __construct($opensslPath)
-    {
-        $this->opensslPath = $opensslPath;
+    public function __construct(
+        private readonly string $opensslPath,
+        private readonly CommandRunner $commandRunner,
+    ) {
         $this->setHashAlgorithm('sha1');
     }
 
-    public function setHashAlgorithm($hash_algorithm)
+    public function setHashAlgorithm(string $hashAlgorithm): void
     {
-        if (in_array($hash_algorithm, ['sha1','sha256',])) {
-            $this->hash_algorithm = $hash_algorithm;
+        if (in_array($hashAlgorithm, ['sha1','sha256',])) {
+            $this->hashAlgorithm = $hashAlgorithm;
         }
     }
 
-    public function getLastError()
+    public function getLastError(): string
     {
         return $this->lastError;
     }
-
-    private function execute($command)
+    private function execute(array $command): CommandResult
     {
-        return shell_exec($command);
+        return $this->commandRunner->run($command);
     }
 
     private function getTmpFile($data = "")
@@ -40,54 +41,71 @@ class OpensslTSWrapper
     public function getTimestampQuery($data)
     {
         $dataFilePath = $this->getTmpFile($data);
-        $result = $this->execute($this->opensslPath . " ts -query -{$this->hash_algorithm} -data $dataFilePath -cert 2>/dev/null");
+
+        $command = [
+            $this->opensslPath, 'ts', '-query',
+            '--' . $this->hashAlgorithm,
+            '-data', $dataFilePath,
+            '-cert',
+        ];
+        $result = $this->execute($command);
+
         unlink($dataFilePath);
-        return $result;
+        return $result->stdout;
     }
 
     public function getTimestampQueryString($timestampQuery)
     {
         $timestampQueryFilePath = $this->getTmpFile($timestampQuery);
-        $result =  $this->execute($this->opensslPath . " ts -query -in $timestampQueryFilePath -text 2>/dev/null");
+        $command = [
+            $this->opensslPath, 'ts', '-query',
+            '-in',  $timestampQueryFilePath,
+            '-text',
+        ];
+        $result = $this->execute($command);
+
         unlink($timestampQueryFilePath);
-        return $result;
+        return $result->stdout;
     }
 
     public function getTimestampReplyString($timestampReply)
     {
         $timestampReplyFilePath = $this->getTmpFile($timestampReply);
-        $commande = $this->opensslPath . " ts -reply -in $timestampReplyFilePath -text 2>/dev/null" ;
-        $result =  $this->execute($commande);
+        $command = [
+            $this->opensslPath, 'ts', '-reply',
+            '-in', $timestampReplyFilePath,
+            '-text',
+        ];
+        $result = $this->execute($command);
+
         unlink($timestampReplyFilePath);
-        return $result;
+        return $result->stdout;
     }
 
 
     public function verify($data, $timestampReply, $CAFilePath, $certFilePath, $configFile)
     {
-
         $dataFilePath = $this->getTmpFile($data);
         $timestampReplyFilePath = $this->getTmpFile($timestampReply);
 
-        // redirect the output to /dev/null and get the shell return code
-        // 0 means everything worked out
-        $command =  $this->opensslPath . " ts -verify " .
-                    " -data $dataFilePath " .
-                    " -in $timestampReplyFilePath " .
-                    " -CAfile $CAFilePath" .
-                    " -untrusted $certFilePath " .
-                    " -config $configFile  2>/dev/null";
+        $command = [
+            $this->opensslPath, 'ts', '-verify',
+            '-data', $dataFilePath,
+            '-in', $timestampReplyFilePath,
+            '-CAfile', $CAFilePath,
+            '-untrusted', $certFilePath,
+            '-config', $configFile,
+        ];
+        $result = $this->execute($command);
 
-        $result =  trim($this->execute($command . ' > /dev/null ; echo $?'));
-
-        if ($result !== '0') {
-            $this->lastError = trim($this->execute($command));
+        if (!$result->isSuccessful()) {
+            $this->lastError = $result->stdout;
         }
 
         unlink($dataFilePath);
         unlink($timestampReplyFilePath);
 
-        return $result === '0';
+        return $result->isSuccessful();
     }
 
     public function createTimestampReply(
@@ -100,16 +118,18 @@ class OpensslTSWrapper
         $timestampRequestFile = $this->getTmpFile($timestampRequest);
         $timestampReplyFile = $this->getTmpFile("");
 
-        $command = $this->opensslPath . " ts -reply " .
-                    " -queryfile $timestampRequestFile" .
-                    " -signer " . $signerCertificate .
-                    " -inkey " . $signerKey .
-                    " -passin pass:" . $signerKeyPassword .
-                    " -out $timestampReplyFile " .
-                    " -config " . $configFile . " 2>&1";
+        $command = [
+            $this->opensslPath, 'ts', '-reply',
+            '-queryfile', $timestampRequestFile,
+            '-signer', $signerCertificate,
+            '-inkey', $signerKey,
+            '-passin', 'pass:' . $signerKeyPassword,
+            '-out', $timestampReplyFile,
+            '-config', $configFile,
+        ];
 
-        shell_exec($command);
         //TODO vérifier le retour
+        $this->execute($command);
 
         $timestampReply = file_get_contents($timestampReplyFile);
         unlink($timestampRequestFile);

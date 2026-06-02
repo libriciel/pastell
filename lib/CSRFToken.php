@@ -49,7 +49,7 @@ class CSRFToken
      */
     public function verifParamToken(?string $token = null): void
     {
-        $to_test_token = $token ?? $this->post_parameter[self::TOKEN_NAME];
+        $to_test_token = $token ?? ($this->post_parameter[self::TOKEN_NAME] ?? null);
         if (
             empty($to_test_token) ||
             $to_test_token != $this->getCSRFToken()

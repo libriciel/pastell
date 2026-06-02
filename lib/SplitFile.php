@@ -10,31 +10,24 @@ class SplitFile
     }
 
     /**
-     * @param $filepath
-     * @param $size
-     * @param $chunk_name
-     * @return array
      * @throws Exception
      */
-
-    public function split($filepath, int $size, $chunk_name)
+    public function split($filepath, int $size, $chunk_name): array
     {
         $dirname = dirname($filepath);
-        $filename = basename($filepath);
-
-        $command = "cd $dirname && split -b $size $filepath $chunk_name";
-        $this->logger->debug("Execute shell command", [$command]);
+        $command = "cd $dirname && split -a 6 -b $size $filepath $chunk_name";
+        $this->logger->debug('Execute shell command', [$command]);
         exec($command, $ouput, $return_var);
         if ($return_var !== 0) {
             $message = "Unable to split $filepath into chunk ";
             $this->logger->error($message);
-            throw new Exception($message);
+            throw new \RuntimeException($message);
         }
 
-        $this->logger->debug("Execute shell command, result ok", [$command,$ouput]);
+        $this->logger->debug('Execute shell command, result ok', [$command,$ouput]);
 
-        return array_values(array_filter(scandir($dirname), function ($a) use ($chunk_name) {
-            return (substr($a, 0, strlen($chunk_name)) == $chunk_name);
+        return array_values(array_filter(scandir($dirname), static function ($a) use ($chunk_name) {
+            return (str_starts_with($a, $chunk_name));
         }));
     }
 }
