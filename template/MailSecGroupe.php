@@ -16,7 +16,7 @@
 <div class="box">
 <h2>Liste des contacts de «<?php hecho($infoGroupe['nom']); ?>» </h2>
 
-<?php $this->SuivantPrecedent($offset, AnnuaireGroupe::NB_MAX, $nbUtilisateur, "MailSec/groupe?id_e=$id_e&id_g=$id_g"); ?>
+<?php $this->SuivantPrecedent($offset, AnnuaireGroupeSQL::NB_MAX, $nbUtilisateur, "MailSec/groupe?id_e=$id_e&id_g=$id_g"); ?>
 
 
 

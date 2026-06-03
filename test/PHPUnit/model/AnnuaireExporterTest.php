@@ -10,7 +10,7 @@ class AnnuaireExporterTest extends PastellTestCase
 
     private function getAnnuaireGroupsSQL()
     {
-        return new AnnuaireGroupe($this->getObjectInstancier()->getInstance(SQLQuery::class), 1);
+        return $this->getObjectInstancier()->getInstance(AnnuaireGroupeSQL::class);
     }
 
     private function getCSVContent()

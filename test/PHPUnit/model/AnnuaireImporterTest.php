@@ -1,101 +1,93 @@
 <?php
 
+declare(strict_types=1);
+
 class AnnuaireImporterTest extends PastellTestCase
 {
-    private function getAnnuaireSQL()
+    private function getAnnuaireSQL(): AnnuaireSQL
     {
-        $sqlQuery = $this->getObjectInstancier()->getInstance(SQLQuery::class);
-        return new AnnuaireSQL($sqlQuery);
+        return new AnnuaireSQL($this->getObjectInstancier()->getInstance(SQLQuery::class));
     }
 
-    private function getAnnuaireGroupsSQL()
+    private function getAnnuaireGroupsSQL(): AnnuaireGroupeSQL
     {
-        return new AnnuaireGroupe($this->getObjectInstancier()->getInstance(SQLQuery::class), 1);
+        return $this->getObjectInstancier()->getInstance(AnnuaireGroupeSQL::class);
     }
 
-    private function annuaire_import($data)
+    private function annuaire_import(string $data): int
     {
         $csv = new CSV();
         $annuaireImporter = new AnnuaireImporter($csv, $this->getAnnuaireSQL(), $this->getAnnuaireGroupsSQL());
-        $testStream = org\bovigo\vfs\vfsStream::setup('test');
-        $testStreamUrl = org\bovigo\vfs\vfsStream::url('test');
-        $fileURL = $testStreamUrl . "/annuaire.csv";
+        $testStreamUrl = org\bovigo\vfs\vfsStream::url(org\bovigo\vfs\vfsStream::setup('test')->getName());
+        $fileURL = $testStreamUrl . '/annuaire.csv';
         file_put_contents($fileURL, $data);
         return $annuaireImporter->import(1, $fileURL);
     }
 
-    public function testVide()
+    public function testVide(): void
     {
-        $this->assertEquals(0, $this->annuaire_import(""));
+        static::assertEquals(0, $this->annuaire_import(''));
     }
 
-    public function testOne()
+    public function testOne(): void
     {
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau"));
-        $annuaire = new AnnuaireSQL($this->getObjectInstancier()->getInstance(SQLQuery::class));
-        $mail_list  = $this->getAnnuaireSQL()->getUtilisateur(1);
-        $this->assertEquals("eric@sigmalis.com", $mail_list[0]['email']);
-        $this->assertEquals("Eric Pommateau", $mail_list[0]['description']);
+        static::assertEquals(1, $this->annuaire_import('eric@sigmalis.com,Eric Pommateau'));
+        $mail_list = $this->getAnnuaireSQL()->getUtilisateur(1);
+        static::assertEquals('eric@sigmalis.com', $mail_list[0]['email']);
+        static::assertEquals('Eric Pommateau', $mail_list[0]['description']);
     }
 
-    public function testTwo()
+    public function testTwo(): void
     {
-        $this->assertEquals(2, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau\ntoto@toto.fr,toto,"));
-        $annuaire = new AnnuaireSQL($this->getObjectInstancier()->getInstance(SQLQuery::class));
-        $mail_list  = $this->getAnnuaireSQL()->getUtilisateur(1);
+        static::assertEquals(2, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau\ntoto@toto.fr,toto,"));
+        $mail_list = $this->getAnnuaireSQL()->getUtilisateur(1);
+        static::assertCount(2, $mail_list);
     }
 
-    public function testNotMail()
+    public function testNotMail(): void
     {
-        $this->assertEquals(0, $this->annuaire_import("eric_sigmalis.com,Eric Pommateau"));
+        static::assertEquals(0, $this->annuaire_import('eric_sigmalis.com,Eric Pommateau'));
     }
 
-    public function testDescriptionManquante()
+    public function testDescriptionManquante(): void
     {
-        $this->assertEquals(0, $this->annuaire_import("eric@sigmalis.com"));
+        static::assertEquals(0, $this->annuaire_import('eric@sigmalis.com'));
     }
 
-    public function testCorrectionMail()
+    public function testCorrectionMail(): void
     {
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau"));
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric B. Pommateau"));
-        $mail_list  = $this->getAnnuaireSQL()->getUtilisateur(1);
-        $this->assertCount(1, $mail_list);
-        $this->assertEquals("Eric B. Pommateau", $mail_list[0]['description']);
+        static::assertEquals(1, $this->annuaire_import('eric@sigmalis.com,Eric Pommateau'));
+        static::assertEquals(1, $this->annuaire_import('eric@sigmalis.com,Eric B. Pommateau'));
+        $mail_list = $this->getAnnuaireSQL()->getUtilisateur(1);
+        static::assertCount(1, $mail_list);
+        static::assertEquals('Eric B. Pommateau', $mail_list[0]['description']);
     }
 
-    public function testAddGroupe()
+    public function testAddGroupe(): void
     {
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau,Mon groupe"));
-        $utilisateur = $this->getAnnuaireGroupsSQL()->getAllUtilisateur(1);
-        $this->assertCount(1, $utilisateur);
+        static::assertEquals(1, $this->annuaire_import('eric@sigmalis.com,Eric Pommateau,Mon groupe'));
+        static::assertCount(1, $this->getAnnuaireGroupsSQL()->getAllUtilisateur(1));
     }
 
-    public function testAdd2Groupe()
+    public function testAdd2Groupe(): void
     {
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau,Mon groupe,Elu,"));
-        $utilisateur = $this->getAnnuaireGroupsSQL()->getAllUtilisateur(1);
-        $this->assertCount(1, $utilisateur);
-        $utilisateur = $this->getAnnuaireGroupsSQL()->getAllUtilisateur(2);
-        $this->assertCount(1, $utilisateur);
+        static::assertEquals(1, $this->annuaire_import('eric@sigmalis.com,Eric Pommateau,Mon groupe,Elu,'));
+        static::assertCount(1, $this->getAnnuaireGroupsSQL()->getAllUtilisateur(1));
+        static::assertCount(1, $this->getAnnuaireGroupsSQL()->getAllUtilisateur(2));
     }
 
-    public function testModifyGroupe()
+    public function testModifyGroupe(): void
     {
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau,Mon groupe,Elu,"));
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau,Elu,"));
-        $utilisateur = $this->getAnnuaireGroupsSQL()->getAllUtilisateur(1);
-        $this->assertCount(0, $utilisateur);
-        $utilisateur = $this->getAnnuaireGroupsSQL()->getAllUtilisateur(2);
-        $this->assertCount(1, $utilisateur);
+        static::assertEquals(1, $this->annuaire_import('eric@sigmalis.com,Eric Pommateau,Mon groupe,Elu,'));
+        static::assertEquals(1, $this->annuaire_import('eric@sigmalis.com,Eric Pommateau,Elu,'));
+        static::assertCount(0, $this->getAnnuaireGroupsSQL()->getAllUtilisateur(1));
+        static::assertCount(1, $this->getAnnuaireGroupsSQL()->getAllUtilisateur(2));
     }
 
-    public function add2NonExistentGroupe()
+    public function testAdd2NonExistentGroupe(): void
     {
-        $this->assertEquals(1, $this->annuaire_import("eric@sigmalis.com,Eric Pommateau,Nonexistent,"));
-        $utilisateur = $this->getAnnuaireGroupsSQL()->getAllUtilisateur(1);
-        $this->assertCount(0, $utilisateur);
-        $utilisateur = $this->getAnnuaireGroupsSQL()->getAllUtilisateur(2);
-        $this->assertCount(0, $utilisateur);
+        static::assertEquals(1, $this->annuaire_import('eric@sigmalis.com,Eric Pommateau,Nonexistent,'));
+        static::assertCount(0, $this->getAnnuaireGroupsSQL()->getAllUtilisateur(1));
+        static::assertCount(0, $this->getAnnuaireGroupsSQL()->getAllUtilisateur(2));
     }
 }
