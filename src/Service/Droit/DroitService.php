@@ -10,11 +10,17 @@ class DroitService
     public const DROIT_LECTURE = 'lecture';
     public const DROIT_ECRITURE = 'edition';
     public const DROIT_ACTION = 'action';
+    public const DROIT_CREATION = 'creation';
+    public const DROIT_SUPPRESSION = 'suppression';
 
     public const DROIT_CONNECTEUR = 'connecteur';
     public const DROIT_SYSTEM = 'system';
     public const DROIT_ENTITE = 'entite';
     public const DROIT_UTILISATEUR = 'utilisateur';
+    public const DROIT_DAEMON = 'daemon';
+    public const DROIT_JOURNAL = 'journal';
+    public const DROIT_ROLE = 'role';
+    public const DROIT_ANNUAIRE = 'annuaire';
 
     public function __construct(
         private readonly RoleUtilisateur $roleUtilisateur,

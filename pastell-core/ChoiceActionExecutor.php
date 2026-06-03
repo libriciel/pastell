@@ -111,7 +111,7 @@ abstract class ChoiceActionExecutor extends ActionExecutor
         $this->setViewParameter(
             'droitLectureAnnuaire',
             $this->objectInstancier->getInstance(RoleUtilisateur::class)
-                ->hasDroit($this->id_u, 'annuaire:lecture', $this->id_e)
+                ->hasDroit($this->id_u, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE), $this->id_e)
         );
         $isGlobalConnecteur = $this->isGlobalConnecteur($this->id_ce);
         $this->viewParameter['menu_gauche_template'] = 'EntiteMenuGauche';
