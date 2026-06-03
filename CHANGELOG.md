@@ -1,3 +1,9 @@
+# [5.0.6] - 2026-07-06
+
+## Corrections 
+
+- Correction des dépréciations PHP 8.4 dans LDAPWrapper #2474
+
 # [5.0.5] - 2026-06-01
 
 ## Corrections
