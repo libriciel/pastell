@@ -79,7 +79,7 @@ class DaemonControlerTest extends ControlerTestCase
         $id_job = $jobQueueSQL->getJobIdForConnecteur(13, 'une_action_auto');
 
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(0, $job->is_lock);
+        $this->assertEquals(Job::WAITING, $job->job_status);
 
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
         $this->setGetInfo(['id_verrou' => 'DEFAULT_FREQUENCE','etat_source' => 'une_action_auto','etat_cible' => 'une_action_auto']);
@@ -90,7 +90,7 @@ class DaemonControlerTest extends ControlerTestCase
         }
 
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(1, $job->is_lock);
+        $this->assertEquals(Job::SUSPENDED_BY_USER, $job->job_status);
     }
 
     public function testUnLockAction()
@@ -103,7 +103,7 @@ class DaemonControlerTest extends ControlerTestCase
         $jobQueueSQL->lock($id_job);
 
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(1, $job->is_lock);
+        $this->assertEquals(Job::SUSPENDED_BY_USER, $job->job_status);
 
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
         $this->setGetInfo(['id_verrou' => 'DEFAULT_FREQUENCE','etat_source' => 'une_action_auto','etat_cible' => 'une_action_auto']);
@@ -114,7 +114,7 @@ class DaemonControlerTest extends ControlerTestCase
         }
 
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(0, $job->is_lock);
+        $this->assertEquals(0, $job->job_status);
     }
 
     public function testLockSingleJob()
@@ -123,7 +123,7 @@ class DaemonControlerTest extends ControlerTestCase
         $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
         $id_job = $jobQueueSQL->getJobIdForConnecteur(13, 'une_action_auto');
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(0, $job->is_lock);
+        $this->assertEquals(Job::WAITING, $job->job_status);
 
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
         $this->setGetInfo(['id_job' => $id_job]);
@@ -134,7 +134,7 @@ class DaemonControlerTest extends ControlerTestCase
         }
 
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(1, $job->is_lock);
+        $this->assertEquals(Job::SUSPENDED_BY_USER, $job->job_status);
     }
 
     public function testUnlockSingleJob()
@@ -146,7 +146,7 @@ class DaemonControlerTest extends ControlerTestCase
         $jobQueueSQL->lock($id_job);
 
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(1, $job->is_lock);
+        $this->assertEquals(Job::SUSPENDED_BY_USER, $job->job_status);
 
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
         $this->setGetInfo(['id_job' => $id_job]);
@@ -157,6 +157,6 @@ class DaemonControlerTest extends ControlerTestCase
         }
 
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(0, $job->is_lock);
+        $this->assertEquals(Job::WAITING, $job->job_status);
     }
 }

@@ -169,11 +169,11 @@ class JobManagerTest extends PastellTestCase
         $this->triggerActionOnDocument($id_d, 'never-ending-action');
         $id_job = $this->jobQueueSQL->getJobIdForDocument(1, $id_d);
         $job = $this->jobQueueSQL->getJob($id_job);
-        $this->assertEquals(0, $job->is_lock);
+        $this->assertEquals(Job::WAITING, $job->job_status);
         $this->assertEquals(1, $job->nb_try);
         $this->triggerActionOnDocument($id_d, 'never-ending-action');
         $job = $this->jobQueueSQL->getJob($id_job);
-        $this->assertEquals(1, $job->is_lock);
+        $this->assertEquals(Job::SUSPENDED_TRY_MAX, $job->job_status);
         $this->assertEquals(1, $job->nb_try);
     }
 
@@ -230,7 +230,7 @@ class JobManagerTest extends PastellTestCase
         $this->triggerActionOnDocument($id_d, 'does-not-exist');
         $id_job = $this->jobQueueSQL->getJobIdForDocument(self::ID_E_COL, $id_d);
         $job = $this->jobQueueSQL->getJob($id_job);
-        $this->assertSame(0, $job->is_lock);
+        $this->assertSame(Job::WAITING, $job->job_status);
         $this->assertSame($originalDateNextTry, $job->next_try);
     }
 }

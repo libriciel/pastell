@@ -161,7 +161,7 @@ class DaemonControler extends PastellControler
                 $this->setLastError('Impossible de trouver le travail à suspendre');
             } else {
                 $this->verifDroit($job->id_e, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
-                $this->getJobQueueSQL()->lock($job->id_job);
+                $this->getJobQueueSQL()->lock($job->id_job, Job::SUSPENDED_BY_USER);
                 $this->setLastMessage('Le travail a été suspendu');
             }
         } elseif ($id_verrou || $etat_source || $etat_cible) {
@@ -252,7 +252,7 @@ class DaemonControler extends PastellControler
         }
 
         $this->verifDroit($job->id_e, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
-        $this->getJobQueueSQL()->lock($job->id_job);
+        $this->getJobQueueSQL()->lock($job->id_job, Job::KILLED_BY_USER);
 
         $process = new Process(['kill', '-9', $worker->pid]);
         $process->run();

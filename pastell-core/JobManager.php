@@ -180,7 +180,7 @@ class JobManager
         try {
             $job->next_try = $connecteurFrequence->getNextTry($job->nb_try);
         } catch (Exception $e) {
-            $this->jobQueueSQL->lock($id_job);
+            $this->jobQueueSQL->lock($id_job, Job::SUSPENDED_TRY_MAX);
             return;
         }
         $job->id_verrou = $connecteurFrequence->id_verrou;

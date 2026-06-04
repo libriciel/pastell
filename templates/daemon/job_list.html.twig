@@ -17,7 +17,7 @@
         <tr>
             <th>#ID travail</th>
             <th>Type</th>
-            <th>Suspendu</th>
+            <th>État</th>
             <th>Entité</th>
             <th>#ID gestionnaire de tâche</th>
             <th>Dossier / Connecteur</th>
@@ -39,9 +39,10 @@
                 </td>
                 <td>{{ job.type == constant('Job::TYPE_DOCUMENT') ? 'Dossier' : 'Connecteur' }}</td>
                 <td>
-                    {% if job.is_lock %}
-                        <p class='alert alert-danger'>OUI <br/>Depuis
-                            le {{ gabarit.FancyDate.getDateFr(job.lock_since) }}
+                    {% if job.job_status %}
+                        <p>{{ job.getEtatLabel() }}</p>
+                        <p class='alert alert-danger'>
+                            Suspendu depuis le {{ gabarit.FancyDate.getDateFr(job.lock_since) }}
                             {% if  daemon_edition %}
                                 <a href="{{ path('app.legacy.daemon_unlock', {'id_job': job.id_job, 'return_url': return_url}) }}"
                                    class="btn-warning btn">
@@ -51,7 +52,7 @@
                             {% endif %}
                         </p>
                     {% else %}
-                        <p>NON
+                        <p>{{ job.getEtatLabel() }}<br/>
                             {% if  daemon_edition %}
                                 <a href="{{ path('app.legacy.daemon_lock', {'id_job': job.id_job, 'return_url': return_url}) }}"
                                    class="btn btn-warning">

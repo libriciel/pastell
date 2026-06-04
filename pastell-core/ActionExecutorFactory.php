@@ -187,7 +187,7 @@ class ActionExecutorFactory
             $jobQueue = $this->objectInstancier->getInstance(JobQueueSQL::class);
             $id_job = $jobQueue->getJobIdForDocumentAndAction($id_e, $id_d, $action_name);
             if ($id_job) {
-                $jobQueue->lock($id_job);
+                $jobQueue->lock($id_job, Job::ERROR_ACTION);
             }
             $this->lastMessage = $e->getMessage();
             $result = false;

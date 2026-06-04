@@ -173,7 +173,7 @@ $listConnectorsUrl = \sprintf(
     <table class="table table-striped">
         <tr>
             <th>#ID travail</th>
-            <th>Suspendu</th>
+            <th>État</th>
             <th>#ID gestionnaire de tâche</th>
             <th>Action</th>
             <th>Premier essai</th>
@@ -197,16 +197,16 @@ $listConnectorsUrl = \sprintf(
                     </a>
                 </td>
                 <td>
-                    <?php if ($job->is_lock) : ?>
+                    <?php if ($job->job_status) : ?>
+                        <p><?php echo htmlspecialchars($job->getEtatLabel()); ?></p>
                         <p class='alert alert-danger'>
-                            OUI  <br/>Depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since);?><br/>
+                            Suspendu depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since);?><br/>
                         <?php if ($daemon_edition) : ?>
                             <a href='<?php $this->url("Daemon/unlock?id_job={$job->id_job}&return_url={$return_url}") ?>'
                            class=" btn-warning btn"> <i class="fas fa-unlock"></i>&nbsp;Reprendre</a></p>
                         <?php endif;?>
                     <?php else : ?>
-                        <p>
-                            NON<br/>
+                        <p><?php echo htmlspecialchars($job->getEtatLabel()); ?><br>
                             <?php if ($daemon_edition) : ?>
                                 <?php
                                 $lockJobUrl = sprintf(

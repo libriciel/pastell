@@ -30,9 +30,9 @@
         </tr>
 
         <tr>
-            <th>Suspension</th>
+            <th>État</th>
             <td>
-            <?php if ($job->is_lock) : ?>
+            <?php if ($job->job_status) : ?>
                 <?php
                 $unlockUrl = \sprintf(
                     'Daemon/unlock?id_job=%s&return_url=%s',
@@ -40,12 +40,12 @@
                     $return_url
                 );
                 ?>
-                <p class='alert alert-danger'>OUI  <br/>
-                    Depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since);?>
+                <p><?php echo htmlspecialchars($job->getEtatLabel()); ?></p>
+                <p class='alert alert-danger'>
+                    Suspendu depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since);?>
                 <?php if ($daemon_edition) : ?>
                     <a href='<?php $this->url($unlockUrl); ?>' class=" btn-warning btn">
                         <i class="fas fa-unlock-keyhole"></i>&nbsp;
-
                         Reprendre
                     </a></p>
                 <?php endif; ?>
@@ -58,9 +58,9 @@
                 );
                 ?>
                 <?php if ($daemon_edition) : ?>
-                    <p>NON <a href='<?php $this->url($lockUrl); ?>' class="btn btn-warning">
+                    <p><?php echo htmlspecialchars($job->getEtatLabel()); ?><br>
+                        <a href='<?php $this->url($lockUrl); ?>' class="btn btn-warning">
                             <i class="fas fa-lock"></i>&nbsp;
-
                             Suspendre
                         </a></p>
                 <?php endif;?>

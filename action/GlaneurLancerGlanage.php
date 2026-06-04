@@ -23,7 +23,7 @@ class GlaneurLancerGlanage extends ActionExecutor
 
             $id_job  = $jobQueue->getJobIdForConnecteur($this->id_ce, 'go');
             if ($id_job) {
-                $jobQueue->lock($id_job);
+                $jobQueue->lock($id_job, Job::ERROR_ACTION);
             }
             $message = $e->getMessage();
             $this->setLastMessage($message);

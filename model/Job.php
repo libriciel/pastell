@@ -8,6 +8,29 @@ class Job
 
     public const MAX_LAST_MESSAGE_LENGTH = 1024;
 
+    public const WAITING           = 0; // unlock, en attente, non suspendu
+    public const LAUNCHING         = 1; // lancement worker
+    public const ERROR_DAEMON      = 2; // daemon a détecté un worker mort
+    public const ERROR_ACTION      = 3; // UnrecoverableException d'exécution de l'action
+    public const SUSPENDED_TRY_MAX = 4; // fréquence nb_try max atteint
+    public const SUSPENDED_BY_USER = 5; // suspendu manuellement par un utilisateur
+    public const KILLED_BY_USER    = 6; // processus tué manuellement
+
+    public const ETAT_LABEL = [
+        self::WAITING           => 'En attente',
+        self::LAUNCHING         => 'Lancement du processus',
+        self::ERROR_DAEMON      => 'Erreur de lancement du processus',
+        self::ERROR_ACTION      => 'Erreur d\'exécution de l\'action',
+        self::SUSPENDED_TRY_MAX => 'Maximum d\'essais atteint',
+        self::SUSPENDED_BY_USER => 'Suspendu manuellement',
+        self::KILLED_BY_USER    => 'Processus tué manuellement',
+    ];
+
+    public function getEtatLabel(): string
+    {
+        return self::ETAT_LABEL[(int) $this->job_status] ?? "État inconnu ({$this->job_status})";
+    }
+
     public $type;
     public $id_e;
     public string $entite_denomination;
@@ -22,7 +45,7 @@ class Job
     public $lock;
     public string $lock_since;
     public $id_verrou;
-    public $is_lock;
+    public $job_status;
     public int $id_daemon;
     public ?Daemon $daemon;
 

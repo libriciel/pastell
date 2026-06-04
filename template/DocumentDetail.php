@@ -292,7 +292,7 @@ if ($infoDocumentEmail) :
                 <table class="table table-striped">
                     <tr>
                         <th>#ID travail</th>
-                        <th>Suspendu</th>
+                        <th>État</th>
                         <th>#ID gestionnaire de tâche</th>
                         <th>État source<br/>État cible</th>
                         <th>Premier essai</th>
@@ -321,10 +321,10 @@ if ($infoDocumentEmail) :
                             </td>
                             <td>
                                 <?php $daemonQueryParams = 'id_job=' . $job->id_job . '&return_url=' . $return_url; ?>
-                                <?php if ($job->is_lock) : ?>
+                                <?php if ($job->job_status) : ?>
+                                    <p><?php echo htmlspecialchars($job->getEtatLabel()); ?></p>
                                     <p class='alert alert-danger'>
-                                        OUI <br/>
-                                        Depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since); ?><br/>
+                                        Suspendu depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since); ?><br/>
                                         <?php if ($daemon_edition) : ?>
                                             <a href='<?php $this->url("Daemon/unlock?$daemonQueryParams"); ?>'
                                                class=" btn-warning btn">
@@ -334,8 +334,7 @@ if ($infoDocumentEmail) :
                                         <?php endif; ?>
                                     </p>
                                 <?php else : ?>
-                                    <p>
-                                        NON <br/>
+                                    <p><?php echo htmlspecialchars($job->getEtatLabel()); ?><br>
                                         <?php if ($daemon_edition) : ?>
                                             <a href='<?php $this->url("Daemon/lock?$daemonQueryParams"); ?>'
                                                class="btn btn-warning">

@@ -1600,14 +1600,6 @@
                 "Default": null,
                 "Extra": ""
             },
-            "is_lock": {
-                "Field": "is_lock",
-                "Type": "tinyint(1)",
-                "Null": "NO",
-                "Key": "",
-                "Default": null,
-                "Extra": ""
-            },
             "lock_since": {
                 "Field": "lock_since",
                 "Type": "datetime",
@@ -1710,6 +1702,14 @@
                 "Null": "NO",
                 "Key": "",
                 "Default": null,
+                "Extra": ""
+            },
+            "job_status": {
+                "Field": "job_status",
+                "Type": "tinyint(4)",
+                "Null": "NO",
+                "Key": "",
+                "Default": "0",
                 "Extra": ""
             }
         },
