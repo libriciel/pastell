@@ -14,6 +14,8 @@
  * @var array $listUtilisateur
  */
 
+use Pastell\Service\Droit\DroitService;
+
 ?>
 <a class='btn btn-link' href='Entite/detail?id_e=<?php echo $id_e ?>'
 ><i class="fa fa-arrow-left"></i>&nbsp;Administration de <?php hecho($infoEntite['denomination']); ?></a>
@@ -104,7 +106,7 @@
 
 </div>
 
-<?php if ($this->getRoleUtilisateur()->hasDroit($this->getAuthentification()->getId(), 'annuaire:edition', $id_e)) : ?>
+<?php if ($this->getRoleUtilisateur()->hasDroit($this->getAuthentification()->getId(), DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), $id_e)) : ?>
     <div class="box">
         <h2>Ajouter un contact</h2>
         <form action='MailSec/addContact' method='post'>
