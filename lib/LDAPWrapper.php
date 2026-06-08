@@ -16,12 +16,13 @@ class LDAPWrapper
         return ldap_bind($link_identifier, $bind_rdn, $bind_password);
     }
 
-    /**
-     * @return Connection|false
-     */
-    public function ldap_connect(?string $hostname = null, int $port = 389)
+    public function ldap_connect(?string $hostname = null, int $port = 389): bool|Connection
     {
-        return ldap_connect($hostname, $port);
+        if ($hostname === null) {
+            return ldap_connect();
+        }
+        $uri = preg_match('#^ldaps?://#', $hostname) ? $hostname : "ldap://$hostname:$port";
+        return ldap_connect($uri);
     }
 
     /**
