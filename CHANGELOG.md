@@ -17,6 +17,7 @@
 - Migration de Fork Awesome vers la bibliothèque d'icônes officielle Font Awesome #2462
 - Le bouton `Modifier l'identifiant` des dossiers studio est désormais sur la page `TypeDossier/detail` #2445
 - Le droit `utilisateur:suppression` est maintenant nécessaire pour supprimer des utilisateurs #1821
+- La page `Role/detail` affiche désormais les droits par catégorie. Une barre de recherche est également ajoutée #2483
 
 ## Correction
 

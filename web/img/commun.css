@@ -208,6 +208,21 @@ html body h3 {
     margin: 2px 15px 0 0;
 }
 
+.titre-section-ligne {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--bs-ls-primary-600);
+    font-weight: bold;
+}
+
+.titre-section-ligne::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: var(--bs-ls-grey-200);
+}
+
 #main #main_gauche h3:hover {
     color: var(--bs-ls-primary-500);
     cursor: pointer;
