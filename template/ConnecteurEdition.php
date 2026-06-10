@@ -197,17 +197,18 @@ $listConnectorsUrl = \sprintf(
                     </a>
                 </td>
                 <td>
-                    <?php if ($job->job_status) : ?>
-                        <p><?php echo htmlspecialchars($job->getEtatLabel()); ?></p>
+                    <p><?php echo htmlspecialchars($job->getEtatLabel()); ?></p>
+                    <?php if ($job->job_status !== job::WAITING) : ?>
                         <p class='alert alert-danger'>
                             Suspendu depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since);?><br/>
-                        <?php if ($daemon_edition) : ?>
-                            <a href='<?php $this->url("Daemon/unlock?id_job={$job->id_job}&return_url={$return_url}") ?>'
-                           class=" btn-warning btn"> <i class="fas fa-unlock"></i>&nbsp;Reprendre</a></p>
-                        <?php endif;?>
-                    <?php else : ?>
-                        <p><?php echo htmlspecialchars($job->getEtatLabel()); ?><br>
                             <?php if ($daemon_edition) : ?>
+                                <a href='<?php $this->url("Daemon/unlock?id_job={$job->id_job}&return_url={$return_url}") ?>'
+                                class=" btn-warning btn"> <i class="fas fa-unlock"></i>&nbsp;Reprendre</a>
+                            <?php endif;?>
+                        </p>
+                    <?php else : ?>
+                        <?php if ($daemon_edition) : ?>
+                            <p>
                                 <?php
                                 $lockJobUrl = sprintf(
                                     'Daemon/lock?id_job=%s&return_url=%s',
@@ -216,8 +217,9 @@ $listConnectorsUrl = \sprintf(
                                 );
                                 ?>
                                 <a href='<?php $this->url($lockJobUrl); ?>'
-                                   class="btn btn-warning"><i class="fas fa-lock"></i>&nbsp;Suspendre</a></p>
-                            <?php endif;?>
+                                   class="btn btn-warning"><i class="fas fa-lock"></i>&nbsp;Suspendre</a>
+                            </p>
+                        <?php endif;?>
                     <?php endif;?>
                 </td>
                 <td><?php hecho($job->id_daemon)?></td>

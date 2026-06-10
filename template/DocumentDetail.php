@@ -174,7 +174,7 @@ if ($infoDocumentEmail) :
                     <?php foreach ($reponse_column as $reponse_column_name) : ?>
                         <?php if (isset($infoEmail[$reponse_column_name])) : ?>
                             <td><?php hecho($infoEmail[$reponse_column_name]) ?></td>
-                        <?php elseif ($infoEmail['type_destinataire'] == "to") : ?>
+                        <?php elseif ($infoEmail['type_destinataire'] === 'to') : ?>
                             <td></td>
                         <?php else : ?>
                             <td>--</td>
@@ -321,8 +321,8 @@ if ($infoDocumentEmail) :
                             </td>
                             <td>
                                 <?php $daemonQueryParams = 'id_job=' . $job->id_job . '&return_url=' . $return_url; ?>
-                                <?php if ($job->job_status) : ?>
-                                    <p><?php echo htmlspecialchars($job->getEtatLabel()); ?></p>
+                                <p><?php echo htmlspecialchars($job->getEtatLabel()); ?></p>
+                                <?php if ($job->job_status !== job::WAITING) : ?>
                                     <p class='alert alert-danger'>
                                         Suspendu depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since); ?><br/>
                                         <?php if ($daemon_edition) : ?>
@@ -334,15 +334,13 @@ if ($infoDocumentEmail) :
                                         <?php endif; ?>
                                     </p>
                                 <?php else : ?>
-                                    <p><?php echo htmlspecialchars($job->getEtatLabel()); ?><br>
-                                        <?php if ($daemon_edition) : ?>
-                                            <a href='<?php $this->url("Daemon/lock?$daemonQueryParams"); ?>'
+                                    <?php if ($daemon_edition) : ?>
+                                        <p><a href='<?php $this->url("Daemon/lock?$daemonQueryParams"); ?>'
                                                class="btn btn-warning">
                                                 <i class="fas fa-lock"></i>&nbsp;
                                                 Suspendre
-                                            </a>
-                                        <?php endif; ?>
-                                    </p>
+                                            </a></p>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </td>
                             <td><?php hecho($job->id_daemon)?></td>

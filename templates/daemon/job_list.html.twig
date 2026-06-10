@@ -39,8 +39,8 @@
                 </td>
                 <td>{{ job.type == constant('Job::TYPE_DOCUMENT') ? 'Dossier' : 'Connecteur' }}</td>
                 <td>
-                    {% if job.job_status %}
-                        <p>{{ job.getEtatLabel() }}</p>
+                    <p>{{ job.getEtatLabel() }}</p>
+                    {% if job.job_status !== constant('Job::WAITING') %}
                         <p class='alert alert-danger'>
                             Suspendu depuis le {{ gabarit.FancyDate.getDateFr(job.lock_since) }}
                             {% if  daemon_edition %}
@@ -52,13 +52,14 @@
                             {% endif %}
                         </p>
                     {% else %}
-                        <p>{{ job.getEtatLabel() }}<br/>
-                            {% if  daemon_edition %}
-                                <a href="{{ path('app.legacy.daemon_lock', {'id_job': job.id_job, 'return_url': return_url}) }}"
-                                   class="btn btn-warning">
+                        {% if  daemon_edition %}
+                            <p><a href="{{ path('app.legacy.daemon_lock', {'id_job': job.id_job, 'return_url': return_url}) }}"
+                                  class="btn btn-warning">
                                     <i class="fas fa-lock"></i>&nbsp;
-                                    Suspendre</a></p>
-                            {% endif %}
+                                    Suspendre
+                                </a>
+                            </p>
+                        {% endif %}
                     {% endif %}
                 </td>
                 <td style="word-break: break-all;">

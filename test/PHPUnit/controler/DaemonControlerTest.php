@@ -61,102 +61,102 @@ class DaemonControlerTest extends ControlerTestCase
         $daemonControler->allocateAction();
     }
 
-    public function testVerrouAction()
+    public function testVerrouAction(): void
     {
-        $this->getInternalAPI()->post("/entite/1/connecteur/13/action/une_action_auto");
+        $this->getInternalAPI()->post('/entite/1/connecteur/13/action/une_action_auto');
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
-        $this->expectOutputRegex("#une_action_auto#");
+        $this->expectOutputRegex('#une_action_auto#');
 
         $daemonControler->_beforeAction();
         $daemonControler->verrouAction();
     }
 
-    public function testLockAction()
+    public function testLockAction(): void
     {
-        $this->getInternalAPI()->post("/entite/1/connecteur/13/action/une_action_auto");
+        $this->getInternalAPI()->post('/entite/1/connecteur/13/action/une_action_auto');
 
         $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
         $id_job = $jobQueueSQL->getJobIdForConnecteur(13, 'une_action_auto');
 
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(Job::WAITING, $job->job_status);
+        static::assertSame(Job::WAITING, $job->job_status);
 
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
         $this->setGetInfo(['id_verrou' => 'DEFAULT_FREQUENCE','etat_source' => 'une_action_auto','etat_cible' => 'une_action_auto']);
         try {
             $daemonControler->lockAction();
-        } catch (Exception $e) {
+        } catch (Exception) {
             /* Nothing to do */
         }
 
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(Job::SUSPENDED_BY_USER, $job->job_status);
+        static::assertSame(Job::SUSPENDED_BY_USER, $job->job_status);
     }
 
-    public function testUnLockAction()
+    public function testUnLockAction(): void
     {
-        $this->getInternalAPI()->post("/entite/1/connecteur/13/action/une_action_auto");
+        $this->getInternalAPI()->post('/entite/1/connecteur/13/action/une_action_auto');
 
         $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
         $id_job = $jobQueueSQL->getJobIdForConnecteur(13, 'une_action_auto');
 
-        $jobQueueSQL->lock($id_job);
+        $jobQueueSQL->lock($id_job, Job::SUSPENDED_BY_USER);
 
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(Job::SUSPENDED_BY_USER, $job->job_status);
+        static::assertSame(Job::SUSPENDED_BY_USER, $job->job_status);
 
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
         $this->setGetInfo(['id_verrou' => 'DEFAULT_FREQUENCE','etat_source' => 'une_action_auto','etat_cible' => 'une_action_auto']);
         try {
             $daemonControler->unlockAction();
-        } catch (Exception $e) {
+        } catch (Exception) {
             /* Nothing to do */
         }
 
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(0, $job->job_status);
+        static::assertSame(Job::WAITING, $job->job_status);
     }
 
-    public function testLockSingleJob()
+    public function testLockSingleJob(): void
     {
-        $this->getInternalAPI()->post("/entite/1/connecteur/13/action/une_action_auto");
+        $this->getInternalAPI()->post('/entite/1/connecteur/13/action/une_action_auto');
         $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
         $id_job = $jobQueueSQL->getJobIdForConnecteur(13, 'une_action_auto');
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(Job::WAITING, $job->job_status);
+        static::assertSame(Job::WAITING, $job->job_status);
 
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
         $this->setGetInfo(['id_job' => $id_job]);
         try {
             $daemonControler->lockAction();
-        } catch (Exception $e) {
+        } catch (Exception) {
             /* Nothing to do */
         }
 
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(Job::SUSPENDED_BY_USER, $job->job_status);
+        static::assertSame(Job::SUSPENDED_BY_USER, $job->job_status);
     }
 
-    public function testUnlockSingleJob()
+    public function testUnlockSingleJob(): void
     {
-        $this->getInternalAPI()->post("/entite/1/connecteur/13/action/une_action_auto");
+        $this->getInternalAPI()->post('/entite/1/connecteur/13/action/une_action_auto');
         $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
         $id_job = $jobQueueSQL->getJobIdForConnecteur(13, 'une_action_auto');
 
-        $jobQueueSQL->lock($id_job);
+        $jobQueueSQL->lock($id_job, Job::SUSPENDED_BY_USER);
 
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(Job::SUSPENDED_BY_USER, $job->job_status);
+        static::assertSame(Job::SUSPENDED_BY_USER, $job->job_status);
 
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
         $this->setGetInfo(['id_job' => $id_job]);
         try {
             $daemonControler->unlockAction();
-        } catch (Exception $e) {
+        } catch (Exception) {
             /* Nothing to do */
         }
 
         $job = $jobQueueSQL->getJob($id_job);
-        $this->assertEquals(Job::WAITING, $job->job_status);
+        static::assertSame(Job::WAITING, $job->job_status);
     }
 }

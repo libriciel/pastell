@@ -168,9 +168,13 @@ SQL;
         return $this->mapToJob($info);
     }
 
-    public function lock($id_job, int $state = Job::SUSPENDED_BY_USER)
+    public function lock(int $id_job, int $state): void
     {
-        $sql = "UPDATE job_queue SET job_status=?,lock_since=? WHERE id_job=?";
+        $sql = <<<SQL
+UPDATE job_queue
+SET job_status = ?, lock_since = ?
+WHERE id_job = ?
+SQL;
         $this->query($sql, $state, $this->getNow(), $id_job);
     }
 
