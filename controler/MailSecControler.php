@@ -1,5 +1,9 @@
 <?php
 
+use Pastell\Service\Annuaire\AnnuaireContactService;
+use Pastell\Service\Annuaire\AnnuaireExportService;
+use Pastell\Service\Annuaire\AnnuaireGroupeService;
+use Pastell\Service\Annuaire\AnnuaireImportService;
 use Pastell\Service\Droit\DroitService;
 
 class MailSecControler extends PastellControler
@@ -270,12 +274,7 @@ class MailSecControler extends PastellControler
             $this->redirect("/MailSec/import?id_e=$id_e");
         }
 
-        $annuaireImporter = new AnnuaireImporter(
-            new CSV(),
-            $this->getAnnuaireSQL(),
-            $this->getInstance(AnnuaireGroupeSQL::class)
-        );
-        $nb_import = $annuaireImporter->import($id_e, $file_path);
+        $nb_import = $this->getInstance(AnnuaireImportService::class)->import($id_e, $file_path);
 
         $this->getLastMessage()->setLastMessage("$nb_import emails ont été importés");
         $this->redirect('/MailSec/annuaire?id_e=' . $id_e);
@@ -292,12 +291,10 @@ class MailSecControler extends PastellControler
 
         $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE));
 
-        $annuaireExporter = new AnnuaireExporter(
-            new CSVoutput(),
-            $this->getAnnuaireSQL(),
-            $this->getInstance(AnnuaireGroupeSQL::class)
-        );
-        $annuaireExporter->export($id_e);
+        $csvContent = $this->getInstance(AnnuaireExportService::class)->export($id_e);
+        $csvOutput = new CSVoutput();
+        $csvOutput->displayHTTPHeader("pastell-annuaire-$id_e.csv");
+        echo $csvContent;
     }
 
     /**
@@ -349,10 +346,11 @@ class MailSecControler extends PastellControler
     }
 
     /**
+     * @throws NotFoundException
      * @throws LastMessageException
      * @throws LastErrorException
      */
-    public function doEditAction()
+    public function doEditAction(): void
     {
         $recuperateur = new Recuperateur($_POST);
         $id_a = $recuperateur->getInt('id_a');
@@ -360,21 +358,18 @@ class MailSecControler extends PastellControler
         $email = $recuperateur->get('email');
         $id_g_list = $recuperateur->get('id_g');
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->getLastError()->setLastError("$email ne semble pas être un email valide");
-            $this->redirect("MailSec/edit?id_a=$id_a");
-        }
-
         $info = $this->getAnnuaireSQL()->getInfo($id_a);
+        $this->verifDroit($info['id_e'], DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE));
 
-        $id_a_exist = $this->getAnnuaireSQL()->getFromEmail($info['id_e'], $email);
-        if ($id_a_exist && ($id_a != $id_a_exist)) {
-            $this->getLastError()->setLastError("$email existe déjà dans l'annuaire");
+        try {
+            $this->getInstance(AnnuaireContactService::class)->edit($id_a, $description, $email);
+        } catch (BadRequestException | ConflictException $e) {
+            $this->getLastError()->setLastError($e->getMessage());
             $this->redirect("MailSec/edit?id_a=$id_a");
         }
 
         $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
-        $annuaireGroupe->deleleteFromAllGroupe($id_a);
+        $annuaireGroupe->deleteAllGroupFromContact($id_a);
 
         if ($id_g_list) {
             foreach ($id_g_list as $id_g) {
@@ -382,9 +377,7 @@ class MailSecControler extends PastellControler
             }
         }
 
-        $this->verifDroit($info['id_e'], DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE));
-        $this->getAnnuaireSQL()->edit($id_a, $description, $email);
-        $this->getLastMessage()->setLastMessage("Le contact a été modifié");
+        $this->getLastMessage()->setLastMessage('Le contact a été modifié');
         $this->redirect("MailSec/detail?id_a=$id_a&id_e=" . $info['id_e']);
     }
 
@@ -404,17 +397,15 @@ class MailSecControler extends PastellControler
         }
         $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE));
 
-        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
-
         if (! is_array($id_a_list)) {
             $id_a_list = [$id_a_list];
         }
 
+        $annuaireContactService = $this->getInstance(AnnuaireContactService::class);
         foreach ($id_a_list as $id_a) {
-            $annuaireGroupe->deleteAllGroupFromContact($id_a);
-            $this->getAnnuaireSQL()->delete($id_e, $id_a);
+            $annuaireContactService->delete($id_e, (int)$id_a);
         }
-        $this->getLastMessage()->setLastMessage("Email(s) supprimé(s) de la liste de contacts");
+        $this->getLastMessage()->setLastMessage('Email(s) supprimé(s) de la liste de contacts');
         $this->redirect("MailSec/annuaire?id_e=$id_e");
     }
 
@@ -422,30 +413,23 @@ class MailSecControler extends PastellControler
      * @throws LastMessageException
      * @throws LastErrorException
      */
-    public function addContactAction()
+    public function addContactAction(): void
     {
         $recuperateur = new Recuperateur($_POST);
         $id_e = $recuperateur->getInt('id_e');
-        $description = $recuperateur->get('description', "");
+        $description = $recuperateur->get('description');
         $email = $recuperateur->get('email');
 
         $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
 
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->setLastError("$email ne semble pas être un email valide");
+        try {
+            $this->getInstance(AnnuaireContactService::class)->create($id_e, $description, $email);
+        } catch (BadRequestException | ConflictException $e) {
+            $this->setLastError($e->getMessage());
             $this->redirect("MailSec/annuaire?id_e=$id_e");
         }
-
-        if ($this->getAnnuaireSQL()->getFromEmail($id_e, $email)) {
-            $this->setLastError("$email existe déjà dans l'annuaire");
-            $this->redirect("MailSec/annuaire?id_e=$id_e");
-        }
-
-        $this->getAnnuaireSQL()->add($id_e, $description, $email);
 
         $mail = htmlentities("\"$description\"<$email>", ENT_QUOTES);
-
         $this->setLastMessage("$mail a été ajouté à la liste de contacts");
         $this->redirect("MailSec/annuaire?id_e=$id_e");
     }
@@ -454,13 +438,12 @@ class MailSecControler extends PastellControler
      * @throws LastMessageException
      * @throws LastErrorException
      */
-    public function addContactToGroupeAction()
+    public function addContactToGroupeAction(): void
     {
-
         $recuperateur = new Recuperateur($_POST);
         $id_e = $recuperateur->getInt('id_e');
         $name = $recuperateur->get('name');
-        $id_g = $recuperateur->get('id_g');
+        $id_g = $recuperateur->getInt('id_g');
 
         $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
 
@@ -476,11 +459,14 @@ class MailSecControler extends PastellControler
             $this->redirect("MailSec/groupe?id_e=$id_e&id_g=$id_g");
         }
 
-        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
-        $annuaireGroupe->addToGroupe($id_g, $id_a);
+        try {
+            $this->getInstance(AnnuaireGroupeService::class)->addContactToGroupe($id_g, (int)$id_a);
+        } catch (NotFoundException | ConflictException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect("MailSec/groupe?id_e=$id_e&id_g=$id_g");
+        }
 
         $mail = htmlentities($name, ENT_QUOTES);
-
         $this->setLastMessage("$mail a été ajouté à ce groupe");
         $this->redirect("MailSec/groupe?id_e=$id_e&id_g=$id_g");
     }
@@ -489,21 +475,20 @@ class MailSecControler extends PastellControler
      * @throws LastMessageException
      * @throws LastErrorException
      */
-    public function addGroupeAction()
+    public function addGroupeAction(): void
     {
-
         $recuperateur = new Recuperateur($_POST);
         $id_e = $recuperateur->getInt('id_e');
         $nom = $recuperateur->get('nom');
-        if (! $nom) {
-            $this->redirect("MailSec/groupeList?id_e=$id_e");
-        }
 
         $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
 
-        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
-
-        $annuaireGroupe->add($id_e, $nom);
+        try {
+            $this->getInstance(AnnuaireGroupeService::class)->createGroupe($id_e, $nom);
+        } catch (BadRequestException | ConflictException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect("MailSec/groupeList?id_e=$id_e");
+        }
 
         $this->setLastMessage("Le groupe « $nom » a été créé");
         $this->redirect("MailSec/groupeList?id_e=$id_e");
@@ -547,12 +532,23 @@ class MailSecControler extends PastellControler
     {
         $recuperateur = new Recuperateur($_POST);
         $id_e = $recuperateur->getInt('id_e');
-        $id_g = $recuperateur->get('id_g');
-        $id_a = $recuperateur->get('id_a');
+        $id_g = $recuperateur->getInt('id_g');
+        $id_a_list = $recuperateur->get('id_a', []);
         $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
 
-        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
-        $annuaireGroupe->deleteFromGroupe($id_g, $id_a);
+        if (! is_array($id_a_list)) {
+            $id_a_list = [$id_a_list];
+        }
+
+        $annuaireGroupeService = $this->getInstance(AnnuaireGroupeService::class);
+        foreach ($id_a_list as $id_a) {
+            try {
+                $annuaireGroupeService->removeContactFromGroupe($id_g, (int)$id_a);
+            } catch (NotFoundException $e) {
+                $this->setLastError($e->getMessage());
+                $this->redirect("MailSec/groupe?id_e=$id_e&id_g=$id_g");
+            }
+        }
 
         $this->setLastMessage("Email retiré du groupe");
         $this->redirect("MailSec/groupe?id_e=$id_e&id_g=$id_g");
@@ -566,17 +562,17 @@ class MailSecControler extends PastellControler
     {
         $recuperateur = new Recuperateur($_POST);
         $id_e = $recuperateur->getInt('id_e');
-        $id_g = $recuperateur->get('id_g', []);
+        $id_g_list = $recuperateur->get('id_g', []);
 
         $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
 
+        $annuaireGroupeService = $this->getInstance(AnnuaireGroupeService::class);
+        foreach ($id_g_list as $id_g) {
+            $annuaireGroupeService->deleteGroupe($id_e, (int)$id_g);
+        }
 
-        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
-
-        $annuaireGroupe->delete($id_e, $id_g);
-
-        if ($id_g) {
-            $this->setLastMessage("Les groupes sélectionnés ont été supprimés");
+        if ($id_g_list) {
+            $this->setLastMessage('Les groupes sélectionnés ont été supprimés');
         }
 
         $this->redirect("MailSec/groupeList?id_e=$id_e");

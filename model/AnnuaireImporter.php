@@ -1,16 +1,17 @@
 <?php
 
+/** @deprecated Since 4.1.20, Unused, Use AnnuaireImportService instead */
 class AnnuaireImporter
 {
     private $csv;
     private $annuaireSQL;
-    private $annuaireGroupeSQL;
+    private $annuaireGroupe;
 
-    public function __construct(CSV $csv, AnnuaireSQL $annuaireSQL, AnnuaireGroupeSQL $annuaireGroupeSQL)
+    public function __construct(CSV $csv, AnnuaireSQL $annuaireSQL, AnnuaireGroupe $annuaireGroupe)
     {
         $this->csv = $csv;
         $this->annuaireSQL = $annuaireSQL;
-        $this->annuaireGroupeSQL = $annuaireGroupeSQL;
+        $this->annuaireGroupe = $annuaireGroupe;
     }
 
     public function import($id_e, $file_path)
@@ -33,15 +34,15 @@ class AnnuaireImporter
             }
             $nb_import++;
 
-            $this->annuaireGroupeSQL->deleleteFromAllGroupe($id_a);
+            $this->annuaireGroupe->deleleteFromAllGroupe($id_a);
 
             $mail_info = array_slice($mail_info, 2);
             foreach ($mail_info as $groupe_name) {
-                $id_g = $this->annuaireGroupeSQL->getFromNom($id_e, $groupe_name);
+                $id_g = $this->annuaireGroupe->getFromNom($groupe_name);
                 if (! $id_g) {
                     continue;
                 }
-                $this->annuaireGroupeSQL->addToGroupe($id_g, $id_a);
+                $this->annuaireGroupe->addToGroupe($id_g, $id_a);
             }
         }
         return $nb_import;
