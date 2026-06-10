@@ -6,7 +6,7 @@ class AnnuaireImporter
     private $annuaireSQL;
     private $annuaireGroupeSQL;
 
-    public function __construct(CSV $csv, AnnuaireSQL $annuaireSQL, AnnuaireGroupe $annuaireGroupeSQL)
+    public function __construct(CSV $csv, AnnuaireSQL $annuaireSQL, AnnuaireGroupeSQL $annuaireGroupeSQL)
     {
         $this->csv = $csv;
         $this->annuaireSQL = $annuaireSQL;
@@ -25,14 +25,19 @@ class AnnuaireImporter
             if (!filter_var($mail_info[0], FILTER_VALIDATE_EMAIL)) {
                 continue;
             }
-            $id_a = $this->annuaireSQL->add($id_e, $mail_info[1], $mail_info[0]);
+            $id_a = $this->annuaireSQL->getFromEmail($id_e, $mail_info[0]);
+            if ($id_a) {
+                $this->annuaireSQL->edit($id_a, $mail_info[1], $mail_info[0]);
+            } else {
+                $id_a = $this->annuaireSQL->add($id_e, $mail_info[1], $mail_info[0]);
+            }
             $nb_import++;
 
             $this->annuaireGroupeSQL->deleleteFromAllGroupe($id_a);
 
             $mail_info = array_slice($mail_info, 2);
             foreach ($mail_info as $groupe_name) {
-                $id_g = $this->annuaireGroupeSQL->getFromNom($groupe_name);
+                $id_g = $this->annuaireGroupeSQL->getFromNom($id_e, $groupe_name);
                 if (! $id_g) {
                     continue;
                 }

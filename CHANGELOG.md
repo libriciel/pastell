@@ -1,3 +1,13 @@
+# [4.1.20] -
+
+## Évolutions
+
+- Suppression du paramètre interne `id_e` dans `AnnuaireGroupeSQL`, `id_e` doit être directement passé à l'appel des méthodes #2477
+
+## Dépréciation
+
+- La classe `AnnuaireGroupe` est dépréciée au profit de `AnnuaireGroupeSQL` #2477
+
 # [4.1.19] - 2026-06-01
 
 ## Corrections

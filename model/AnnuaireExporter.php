@@ -6,7 +6,7 @@ class AnnuaireExporter
     private $annuaireSQL;
     private $annuaireGroupeSQL;
 
-    public function __construct(CSVoutput $csvOutput, AnnuaireSQL $annuaireSQL, AnnuaireGroupe $annuaireGroupeSQL)
+    public function __construct(CSVoutput $csvOutput, AnnuaireSQL $annuaireSQL, AnnuaireGroupeSQL $annuaireGroupeSQL)
     {
         $this->csvOutput = $csvOutput;
         $this->annuaireSQL = $annuaireSQL;

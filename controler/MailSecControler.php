@@ -70,7 +70,7 @@ class MailSecControler extends PastellControler
 
         $this->setViewParameter('nb_email', $this->getAnnuaireSQL()->getNbUtilisateur($id_e, $search, $this->getViewParameterOrObject('id_g')));
 
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $id_e);
+        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
 
         foreach ($listUtilisateur as $i => $utilisateur) {
             $listUtilisateur[$i]['groupe'] = $annuaireGroupe->getGroupeFromUtilisateur($utilisateur['id_a']);
@@ -78,7 +78,7 @@ class MailSecControler extends PastellControler
 
         $this->setViewParameter('listUtilisateur', $listUtilisateur);
 
-        $this->setViewParameter('groupe_list', $annuaireGroupe->getGroupe());
+        $this->setViewParameter('groupe_list', $annuaireGroupe->getGroupe($id_e));
 
 
         $this->setInfoEntite($id_e);
@@ -108,9 +108,9 @@ class MailSecControler extends PastellControler
         $id_e = (int)$recuperateur->getInt('id_e');
         $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE));
         $this->setViewParameter('can_edit', $this->hasDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE)));
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $id_e);
+        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
 
-        $listGroupe = $annuaireGroupe->getGroupe();
+        $listGroupe = $annuaireGroupe->getGroupe($id_e);
         foreach ($listGroupe as $key => $groupe) {
             $listGroupe[$key]['contactsInfo'] = $this->getContactsInfo($annuaireGroupe, $groupe);
         }
@@ -136,7 +136,7 @@ class MailSecControler extends PastellControler
         $this->renderDefault();
     }
 
-    private function getContactsInfo(AnnuaireGroupe $annuaireGroupe, array $groupe): array
+    private function getContactsInfo(AnnuaireGroupeSQL $annuaireGroupe, array $groupe): array
     {
         $contactsInfo = [];
 
@@ -178,8 +178,8 @@ class MailSecControler extends PastellControler
         $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE));
         $this->setViewParameter('can_edit', $this->hasDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE)));
 
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $id_e);
-        $this->setViewParameter('infoGroupe', $annuaireGroupe->getInfo($id_g));
+        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
+        $this->setViewParameter('infoGroupe', $annuaireGroupe->getInfo($id_e, $id_g));
         $this->setViewParameter('listUtilisateur', $annuaireGroupe->getUtilisateur($id_g, $offset));
         $this->setViewParameter('nbUtilisateur', $annuaireGroupe->getNbUtilisateur($id_g));
 
@@ -273,7 +273,7 @@ class MailSecControler extends PastellControler
         $annuaireImporter = new AnnuaireImporter(
             new CSV(),
             $this->getAnnuaireSQL(),
-            new AnnuaireGroupe($this->getSQLQuery(), $id_e)
+            $this->getInstance(AnnuaireGroupeSQL::class)
         );
         $nb_import = $annuaireImporter->import($id_e, $file_path);
 
@@ -295,7 +295,7 @@ class MailSecControler extends PastellControler
         $annuaireExporter = new AnnuaireExporter(
             new CSVoutput(),
             $this->getAnnuaireSQL(),
-            new AnnuaireGroupe($this->getSQLQuery(), $id_e)
+            $this->getInstance(AnnuaireGroupeSQL::class)
         );
         $annuaireExporter->export($id_e);
     }
@@ -310,7 +310,7 @@ class MailSecControler extends PastellControler
         $id_a = $recuperateur->getInt('id_a');
         $this->setViewParameter('info', $this->getAnnuaireSQL()->getInfo($id_a));
 
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $this->getViewParameterOrObject('info')['id_e']);
+        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
 
         $this->setViewParameter('groupe_list', $annuaireGroupe->getGroupeFromUtilisateur($id_a));
 
@@ -337,9 +337,10 @@ class MailSecControler extends PastellControler
         $this->verifDroit($this->getViewParameterOrObject('info')['id_e'], DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE));
         $this->setInfoEntite($this->getViewParameterOrObject('info')['id_e']);
 
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $this->getViewParameterOrObject('info')['id_e']);
+        $id_e = (int)$this->getViewParameterOrObject('info')['id_e'];
+        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
 
-        $this->setViewParameter('groupe_list', $annuaireGroupe->getGroupeWithHasUtilisateur($id_a));
+        $this->setViewParameter('groupe_list', $annuaireGroupe->getGroupeWithHasUtilisateur($id_e, $id_a));
 
         $this->setViewParameter('page_title', $this->getViewParameterOrObject('infoEntite')['denomination'] .
             " - Édition de l'adresse « {$this->getViewParameterOrObject('info')['email']} »");
@@ -372,7 +373,7 @@ class MailSecControler extends PastellControler
             $this->redirect("MailSec/edit?id_a=$id_a");
         }
 
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $info['id_e']);
+        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
         $annuaireGroupe->deleleteFromAllGroupe($id_a);
 
         if ($id_g_list) {
@@ -403,7 +404,7 @@ class MailSecControler extends PastellControler
         }
         $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE));
 
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $id_e);
+        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
 
         if (! is_array($id_a_list)) {
             $id_a_list = [$id_a_list];
@@ -475,7 +476,7 @@ class MailSecControler extends PastellControler
             $this->redirect("MailSec/groupe?id_e=$id_e&id_g=$id_g");
         }
 
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $id_e);
+        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
         $annuaireGroupe->addToGroupe($id_g, $id_a);
 
         $mail = htmlentities($name, ENT_QUOTES);
@@ -500,9 +501,9 @@ class MailSecControler extends PastellControler
 
         $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
 
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $id_e);
+        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
 
-        $annuaireGroupe->add($nom);
+        $annuaireGroupe->add($id_e, $nom);
 
         $this->setLastMessage("Le groupe « $nom » a été créé");
         $this->redirect("MailSec/groupeList?id_e=$id_e");
@@ -550,7 +551,7 @@ class MailSecControler extends PastellControler
         $id_a = $recuperateur->get('id_a');
         $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
 
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $id_e);
+        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
         $annuaireGroupe->deleteFromGroupe($id_g, $id_a);
 
         $this->setLastMessage("Email retiré du groupe");
@@ -570,9 +571,9 @@ class MailSecControler extends PastellControler
         $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
 
 
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $id_e);
+        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
 
-        $annuaireGroupe->delete($id_g);
+        $annuaireGroupe->delete($id_e, $id_g);
 
         if ($id_g) {
             $this->setLastMessage("Les groupes sélectionnés ont été supprimés");
@@ -595,7 +596,7 @@ class MailSecControler extends PastellControler
 
         $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE));
 
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $id_e);
+        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
 
         $result = [];
 
@@ -605,7 +606,7 @@ class MailSecControler extends PastellControler
         $role_herited = $this->getAnnuaireRoleSQL()->getGroupeHerite($all_ancetre, $q);
 
         if ($mailOnly == "false") {
-            foreach ($annuaireGroupe->getListGroupe($q) as $item) {
+            foreach ($annuaireGroupe->getListGroupe($id_e, $q) as $item) {
                 $result[] = "groupe: \"" . $item['nom'] . "\"\n";
             }
             foreach ($this->getAnnuaireRoleSQL()->getList($id_e, $q) as $item) {
@@ -670,9 +671,9 @@ class MailSecControler extends PastellControler
         $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
 
 
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $id_e);
+        $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
         $annuaireGroupe->tooglePartage($id_g);
-        $info = $annuaireGroupe->getInfo($id_g);
+        $info = $annuaireGroupe->getInfo($id_e, $id_g);
         if ($info['partage']) {
             $this->setLastMessage("Le groupe est maintenant partagé");
         } else {
