@@ -1,8 +1,6 @@
 <?php
 
-/**
- * @deprecated
- */
+/** @deprecated Since 4.1.20, Unused, Use AnnuaireGroupeSQL instead */
 class AnnuaireGroupeTest extends PastellTestCase
 {
     private function getAnnuaireSQL(): AnnuaireSQL

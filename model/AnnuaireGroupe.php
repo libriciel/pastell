@@ -1,8 +1,6 @@
 <?php
 
-/**
- * @deprecated Utiliser AnnuaireGroupeSQL à la place.
- */
+/** @deprecated Since 4.1.20, Unused, Use AnnuaireGroupeSQL instead */
 class AnnuaireGroupe extends SQL
 {
     public const NB_MAX = 20;
