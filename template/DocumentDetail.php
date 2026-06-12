@@ -24,6 +24,7 @@
  * @var array $all_action
  */
 
+use Pastell\Configuration\JobStatus;
 use Pastell\Helpers\UsernameDisplayer;
 
 $usernameDisplayer = new UsernameDisplayer();
@@ -174,7 +175,7 @@ if ($infoDocumentEmail) :
                     <?php foreach ($reponse_column as $reponse_column_name) : ?>
                         <?php if (isset($infoEmail[$reponse_column_name])) : ?>
                             <td><?php hecho($infoEmail[$reponse_column_name]) ?></td>
-                        <?php elseif ($infoEmail['type_destinataire'] == "to") : ?>
+                        <?php elseif ($infoEmail['type_destinataire'] === 'to') : ?>
                             <td></td>
                         <?php else : ?>
                             <td>--</td>
@@ -292,7 +293,7 @@ if ($infoDocumentEmail) :
                 <table class="table table-striped">
                     <tr>
                         <th>#ID travail</th>
-                        <th>Suspendu</th>
+                        <th>État</th>
                         <th>#ID gestionnaire de tâche</th>
                         <th>État source<br/>État cible</th>
                         <th>Premier essai</th>
@@ -321,10 +322,10 @@ if ($infoDocumentEmail) :
                             </td>
                             <td>
                                 <?php $daemonQueryParams = 'id_job=' . $job->id_job . '&return_url=' . $return_url; ?>
-                                <?php if ($job->is_lock) : ?>
+                                <p><?php echo htmlspecialchars($job->getEtatLabel()); ?></p>
+                                <?php if ($job->job_status !== JobStatus::WAITING) : ?>
                                     <p class='alert alert-danger'>
-                                        OUI <br/>
-                                        Depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since); ?><br/>
+                                        Suspendu depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since); ?><br/>
                                         <?php if ($daemon_edition) : ?>
                                             <a href='<?php $this->url("Daemon/unlock?$daemonQueryParams"); ?>'
                                                class=" btn-warning btn">
@@ -334,16 +335,13 @@ if ($infoDocumentEmail) :
                                         <?php endif; ?>
                                     </p>
                                 <?php else : ?>
-                                    <p>
-                                        NON <br/>
-                                        <?php if ($daemon_edition) : ?>
-                                            <a href='<?php $this->url("Daemon/lock?$daemonQueryParams"); ?>'
+                                    <?php if ($daemon_edition) : ?>
+                                        <p><a href='<?php $this->url("Daemon/lock?$daemonQueryParams"); ?>'
                                                class="btn btn-warning">
                                                 <i class="fas fa-lock"></i>&nbsp;
                                                 Suspendre
-                                            </a>
-                                        <?php endif; ?>
-                                    </p>
+                                            </a></p>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </td>
                             <td><?php hecho($job->id_daemon)?></td>

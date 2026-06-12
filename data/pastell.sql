@@ -92,8 +92,8 @@ CREATE TABLE `daemon` (
 	`id_e` int(11),
 	`state` tinyint(1) NOT NULL,
 	`nb_workers` int(11) NOT NULL DEFAULT '0',
-    `admin_emails` varchar(256) NOT NULL,
-    `late_jobs_threshold` int(11) NOT NULL DEFAULT '1',
+	`admin_emails` varchar(256) NOT NULL,
+	`late_jobs_threshold` int(11) NOT NULL DEFAULT '1',
 	PRIMARY KEY (`id_daemon`)
 )  ENGINE=MyISAM  ;
 CREATE TABLE `document` (
@@ -229,7 +229,6 @@ CREATE TABLE `job_queue` (
 	`id_job` int(11) NOT NULL AUTO_INCREMENT,
 	`type` int(11) NOT NULL,
 	`last_message` mediumtext NOT NULL,
-	`is_lock` tinyint(1) NOT NULL,
 	`lock_since` datetime NOT NULL,
 	`next_try` datetime NOT NULL,
 	`last_try` datetime NOT NULL,
@@ -243,6 +242,7 @@ CREATE TABLE `job_queue` (
 	`first_try` datetime NOT NULL,
 	`id_verrou` varchar(32) NOT NULL,
 	`id_daemon` int(11) NOT NULL,
+	`job_status` tinyint(4) NOT NULL DEFAULT '0',
 	PRIMARY KEY (`id_job`)
 )  ENGINE=MyISAM  ;
 CREATE TABLE `journal` (

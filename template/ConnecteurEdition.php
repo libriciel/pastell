@@ -21,6 +21,8 @@
  * @var bool $canEditConnector
  */
 
+use Pastell\Configuration\JobStatus;
+
 $listConnectorsUrl = \sprintf(
     'Entite/connecteur?global=%s&id_e=%s',
     $connecteur_entite_info['global'],
@@ -173,7 +175,7 @@ $listConnectorsUrl = \sprintf(
     <table class="table table-striped">
         <tr>
             <th>#ID travail</th>
-            <th>Suspendu</th>
+            <th>État</th>
             <th>#ID gestionnaire de tâche</th>
             <th>Action</th>
             <th>Premier essai</th>
@@ -197,17 +199,18 @@ $listConnectorsUrl = \sprintf(
                     </a>
                 </td>
                 <td>
-                    <?php if ($job->is_lock) : ?>
+                    <p><?php echo htmlspecialchars($job->getEtatLabel()); ?></p>
+                    <?php if ($job->job_status !== JobStatus::WAITING) : ?>
                         <p class='alert alert-danger'>
-                            OUI  <br/>Depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since);?><br/>
-                        <?php if ($daemon_edition) : ?>
-                            <a href='<?php $this->url("Daemon/unlock?id_job={$job->id_job}&return_url={$return_url}") ?>'
-                           class=" btn-warning btn"> <i class="fas fa-unlock"></i>&nbsp;Reprendre</a></p>
-                        <?php endif;?>
-                    <?php else : ?>
-                        <p>
-                            NON<br/>
+                            Suspendu depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since);?><br/>
                             <?php if ($daemon_edition) : ?>
+                                <a href='<?php $this->url("Daemon/unlock?id_job={$job->id_job}&return_url={$return_url}") ?>'
+                                class=" btn-warning btn"> <i class="fas fa-unlock"></i>&nbsp;Reprendre</a>
+                            <?php endif;?>
+                        </p>
+                    <?php else : ?>
+                        <?php if ($daemon_edition) : ?>
+                            <p>
                                 <?php
                                 $lockJobUrl = sprintf(
                                     'Daemon/lock?id_job=%s&return_url=%s',
@@ -216,8 +219,9 @@ $listConnectorsUrl = \sprintf(
                                 );
                                 ?>
                                 <a href='<?php $this->url($lockJobUrl); ?>'
-                                   class="btn btn-warning"><i class="fas fa-lock"></i>&nbsp;Suspendre</a></p>
-                            <?php endif;?>
+                                   class="btn btn-warning"><i class="fas fa-lock"></i>&nbsp;Suspendre</a>
+                            </p>
+                        <?php endif;?>
                     <?php endif;?>
                 </td>
                 <td><?php hecho($job->id_daemon)?></td>

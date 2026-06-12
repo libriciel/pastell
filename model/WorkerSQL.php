@@ -97,7 +97,7 @@ class WorkerSQL extends SQL
             LEFT JOIN worker ON jq.id_job=worker.id_job AND worker.termine=0
             WHERE worker.id_worker IS NULL
             AND next_try<=?
-            AND is_lock=0
+            AND job_status=0
             AND id_verrou = ''
             AND jq.id_daemon = ?
             ORDER BY next_try
@@ -130,7 +130,7 @@ class WorkerSQL extends SQL
             LEFT JOIN worker ON jq.id_job=worker.id_job AND worker.termine=0
             WHERE worker.id_worker IS NULL
             AND next_try<?
-            AND is_lock=0
+            AND job_status=0
             AND id_verrou = ?
             AND jq.id_daemon = ?
             ORDER BY next_try
