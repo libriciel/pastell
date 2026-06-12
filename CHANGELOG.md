@@ -12,6 +12,7 @@
 - Nouvel état des tâches automatiques : #283
   - **BREAKING** : Lors de la migration, tous les travaux vont être déverrouillés
   - Modification de la table `job_queue` : suppression de `is_lock` et ajout de `job_status`
+  - La méthode JobQueueSQL::lock() requiert désormais un JobStatus en second paramètre
 - Les sélections d'entité, de type de dossier et de rôle sont désormais présentées sous forme d'arbre navigable avec recherche #767
 - Migration de Fork Awesome vers la bibliothèque d'icônes officielle Font Awesome #2462
 - Le bouton `Modifier l'identifiant` des dossiers studio est désormais sur la page `TypeDossier/detail` #2445
