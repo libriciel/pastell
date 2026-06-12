@@ -58,7 +58,7 @@ services:
       - "${DATABASE_PORT_TEST:-13306}:3306"
 
   glaneur-sftp:
-    image: atmoz/sftp:alpine@sha256:db00e1e6065936ee33d8806b6962b71b715eea7feb758b8d6de927b1607fba55
+    image: atmoz/sftp:alpine@sha256:ce9063bb66314c8ed0c3ade82a52ee7ac6e563c1b554a66241c40ca40a520098
     volumes:
       - ${PASTELL_GLANEUR:-pastell_glaneur}:/home/${SFTP_USER:-sftp}
     ports:
