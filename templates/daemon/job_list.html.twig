@@ -40,7 +40,7 @@
                 <td>{{ job.type == constant('Job::TYPE_DOCUMENT') ? 'Dossier' : 'Connecteur' }}</td>
                 <td>
                     <p>{{ job.getEtatLabel() }}</p>
-                    {% if job.job_status !== constant('Job::WAITING') %}
+                    {% if job.job_status !== constant('Pastell\\Configuration\\JobStatus::WAITING') %}
                         <p class='alert alert-danger'>
                             Suspendu depuis le {{ gabarit.FancyDate.getDateFr(job.lock_since) }}
                             {% if  daemon_edition %}
