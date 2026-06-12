@@ -24,6 +24,7 @@
  * @var array $all_action
  */
 
+use Pastell\Configuration\JobStatus;
 use Pastell\Helpers\UsernameDisplayer;
 
 $usernameDisplayer = new UsernameDisplayer();
@@ -322,7 +323,7 @@ if ($infoDocumentEmail) :
                             <td>
                                 <?php $daemonQueryParams = 'id_job=' . $job->id_job . '&return_url=' . $return_url; ?>
                                 <p><?php echo htmlspecialchars($job->getEtatLabel()); ?></p>
-                                <?php if ($job->job_status !== job::WAITING) : ?>
+                                <?php if ($job->job_status !== JobStatus::WAITING) : ?>
                                     <p class='alert alert-danger'>
                                         Suspendu depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since); ?><br/>
                                         <?php if ($daemon_edition) : ?>

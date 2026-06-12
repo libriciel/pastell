@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Logger;
+use Pastell\Configuration\JobStatus;
 use Symfony\Component\Process\Process;
 
 class PastellDaemon
@@ -55,7 +56,7 @@ class PastellDaemon
                     $this->logger->warning("Worker $worker->id_worker has already finished his job, Skipping...", $worker->toArray());
                     continue;
                 }
-                $this->jobQueueSQL->lock($worker->id_job, Job::ERROR_DAEMON);
+                $this->jobQueueSQL->lock($worker->id_job, JobStatus::ERROR_DAEMON);
                 $this->workerSQL->error(
                     $worker->id_worker,
                     "Message du gestionnaire de tâches : ce travail ne s'est pas terminé correctement"
@@ -93,7 +94,7 @@ class PastellDaemon
 
         //Le master lock le job jusqu'à ce que son worker le délock pour éviter que le master ne sélectionne à nouveau
         // ce job (si le lancement du worker est plus lent que la boucle du master)
-        $this->jobQueueSQL->lock($job->id_job, Job::LAUNCHING);
+        $this->jobQueueSQL->lock($job->id_job, JobStatus::LAUNCHING);
 
         $process = Process::fromShellCommandline(
             \sprintf(

@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Configuration\JobStatus;
+
 class JobQueueSQL extends SQL
 {
     public function __construct(
@@ -23,7 +25,7 @@ class JobQueueSQL extends SQL
         $job->etat_cible = $info['etat_cible'];
         $job->type = $info['type'];
         $job->last_message = $info['last_message'];
-        $job->job_status = $info['job_status'];
+        $job->job_status = JobStatus::from($info['job_status']);
         $job->lock_since = $info['lock_since'];
         $job->id_verrou = $info['id_verrou'];
         $job->nb_try = $info['nb_try'];
@@ -168,20 +170,20 @@ SQL;
         return $this->mapToJob($info);
     }
 
-    public function lock(int $id_job, int $state): void
+    public function lock(int $id_job, JobStatus $state): void
     {
         $sql = <<<SQL
 UPDATE job_queue
 SET job_status = ?, lock_since = ?
 WHERE id_job = ?
 SQL;
-        $this->query($sql, $state, $this->getNow(), $id_job);
+        $this->query($sql, $state->value, $this->getNow(), $id_job);
     }
 
     public function lockByVerrouAndEtat($id_verrou, $etat_source, $etat_cible)
     {
         $sql = "UPDATE job_queue SET job_status=?,lock_since=? WHERE id_verrou=? AND etat_source=? AND etat_cible=?";
-        $this->query($sql, Job::SUSPENDED_BY_USER, $this->getNow(), $id_verrou, $etat_source, $etat_cible);
+        $this->query($sql, JobStatus::SUSPENDED_BY_USER->value, $this->getNow(), $id_verrou, $etat_source, $etat_cible);
     }
 
     public function unlockAll(?int $id_daemon = null): void

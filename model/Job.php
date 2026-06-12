@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Configuration\JobStatus;
+
 class Job
 {
     public const int TYPE_DOCUMENT = 1;
@@ -8,27 +10,9 @@ class Job
 
     public const int MAX_LAST_MESSAGE_LENGTH = 1024;
 
-    public const int WAITING = 0; // unlock, en attente, non suspendu
-    public const int LAUNCHING = 1;
-    public const int ERROR_DAEMON = 2;
-    public const int ERROR_ACTION = 3;
-    public const int SUSPENDED_TRY_MAX = 4;
-    public const int SUSPENDED_BY_USER = 5;
-    public const int KILLED_BY_USER = 6;
-
-    public const array ETAT_LABEL = [
-        self::WAITING => 'En attente',
-        self::LAUNCHING => 'Lancement du processus',
-        self::ERROR_DAEMON => 'Erreur de lancement du processus',
-        self::ERROR_ACTION => 'Erreur d\'exécution de l\'action',
-        self::SUSPENDED_TRY_MAX => 'Maximum d\'essais atteint',
-        self::SUSPENDED_BY_USER => 'Suspendu manuellement',
-        self::KILLED_BY_USER => 'Processus tué manuellement',
-    ];
-
     public function getEtatLabel(): string
     {
-        return self::ETAT_LABEL[$this->job_status] ?? "État inconnu ({$this->job_status})";
+        return $this->job_status->label();
     }
 
     public $type;
@@ -44,7 +28,7 @@ class Job
     public $last_message;
     public string $lock_since;
     public $id_verrou;
-    public int $job_status;
+    public JobStatus $job_status;
     public int $id_daemon;
     public ?Daemon $daemon;
 

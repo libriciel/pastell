@@ -21,6 +21,8 @@
  * @var bool $canEditConnector
  */
 
+use Pastell\Configuration\JobStatus;
+
 $listConnectorsUrl = \sprintf(
     'Entite/connecteur?global=%s&id_e=%s',
     $connecteur_entite_info['global'],
@@ -198,7 +200,7 @@ $listConnectorsUrl = \sprintf(
                 </td>
                 <td>
                     <p><?php echo htmlspecialchars($job->getEtatLabel()); ?></p>
-                    <?php if ($job->job_status !== job::WAITING) : ?>
+                    <?php if ($job->job_status !== JobStatus::WAITING) : ?>
                         <p class='alert alert-danger'>
                             Suspendu depuis le <?php echo $this->getFancyDate()->getDateFr($job->lock_since);?><br/>
                             <?php if ($daemon_edition) : ?>

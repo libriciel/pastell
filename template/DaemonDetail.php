@@ -6,6 +6,9 @@
  * @var string $return_url
  * @var bool $daemon_edition
  */
+
+use Pastell\Configuration\JobStatus;
+
 ?>
 <div class="box">
     <h2>Information sur le travail</h2>
@@ -33,7 +36,7 @@
             <th>État</th>
             <td>
                 <p><?php echo htmlspecialchars($job->getEtatLabel()); ?></p>
-                <?php if ($job->job_status !== 0) : ?>
+                <?php if ($job->job_status !== JobStatus::WAITING) : ?>
                     <?php
                     $unlockUrl = \sprintf(
                         'Daemon/unlock?id_job=%s&return_url=%s',

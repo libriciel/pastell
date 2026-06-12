@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Configuration\JobStatus;
 use Pastell\Mailer\Mailer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
@@ -23,7 +24,7 @@ class GlaneurLancerGlanage extends ActionExecutor
 
             $id_job  = $jobQueue->getJobIdForConnecteur($this->id_ce, 'go');
             if ($id_job) {
-                $jobQueue->lock($id_job, Job::ERROR_ACTION);
+                $jobQueue->lock($id_job, JobStatus::ERROR_ACTION);
             }
             $message = $e->getMessage();
             $this->setLastMessage($message);

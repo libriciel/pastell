@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Logger;
+use Pastell\Configuration\JobStatus;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\LockInterface;
 
@@ -187,7 +188,7 @@ class ActionExecutorFactory
             $jobQueue = $this->objectInstancier->getInstance(JobQueueSQL::class);
             $id_job = $jobQueue->getJobIdForDocumentAndAction($id_e, $id_d, $action_name);
             if ($id_job) {
-                $jobQueue->lock($id_job, Job::ERROR_ACTION);
+                $jobQueue->lock($id_job, JobStatus::ERROR_ACTION);
             }
             $this->lastMessage = $e->getMessage();
             $result = false;

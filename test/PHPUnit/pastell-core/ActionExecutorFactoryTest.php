@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Configuration\JobStatus;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\LockInterface;
 
@@ -109,7 +110,7 @@ class ActionExecutorFactoryTest extends PastellTestCase
         $id_job  = $this->getJobQueueSQL()->getJobIdForDocument(1, $id_d);
         $job = $this->getJobQueueSQL()->getJob($id_job);
 
-        static::assertSame(Job::ERROR_ACTION, $job->job_status);
+        static::assertSame(JobStatus::ERROR_ACTION, $job->job_status);
     }
 
     //Une fuite mémoire existait sur les processeur Monolog

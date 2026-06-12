@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Pastell\Configuration\JobStatus;
+
 class DaemonControlerTest extends ControlerTestCase
 {
     protected function setUp(): void
@@ -79,7 +81,7 @@ class DaemonControlerTest extends ControlerTestCase
         $id_job = $jobQueueSQL->getJobIdForConnecteur(13, 'une_action_auto');
 
         $job = $jobQueueSQL->getJob($id_job);
-        static::assertSame(Job::WAITING, $job->job_status);
+        static::assertSame(JobStatus::WAITING, $job->job_status);
 
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
         $this->setGetInfo(['id_verrou' => 'DEFAULT_FREQUENCE','etat_source' => 'une_action_auto','etat_cible' => 'une_action_auto']);
@@ -90,7 +92,7 @@ class DaemonControlerTest extends ControlerTestCase
         }
 
         $job = $jobQueueSQL->getJob($id_job);
-        static::assertSame(Job::SUSPENDED_BY_USER, $job->job_status);
+        static::assertSame(JobStatus::SUSPENDED_BY_USER, $job->job_status);
     }
 
     public function testUnLockAction(): void
@@ -100,10 +102,10 @@ class DaemonControlerTest extends ControlerTestCase
         $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
         $id_job = $jobQueueSQL->getJobIdForConnecteur(13, 'une_action_auto');
 
-        $jobQueueSQL->lock($id_job, Job::SUSPENDED_BY_USER);
+        $jobQueueSQL->lock($id_job, JobStatus::SUSPENDED_BY_USER);
 
         $job = $jobQueueSQL->getJob($id_job);
-        static::assertSame(Job::SUSPENDED_BY_USER, $job->job_status);
+        static::assertSame(JobStatus::SUSPENDED_BY_USER, $job->job_status);
 
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
         $this->setGetInfo(['id_verrou' => 'DEFAULT_FREQUENCE','etat_source' => 'une_action_auto','etat_cible' => 'une_action_auto']);
@@ -114,7 +116,7 @@ class DaemonControlerTest extends ControlerTestCase
         }
 
         $job = $jobQueueSQL->getJob($id_job);
-        static::assertSame(Job::WAITING, $job->job_status);
+        static::assertSame(JobStatus::WAITING, $job->job_status);
     }
 
     public function testLockSingleJob(): void
@@ -123,7 +125,7 @@ class DaemonControlerTest extends ControlerTestCase
         $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
         $id_job = $jobQueueSQL->getJobIdForConnecteur(13, 'une_action_auto');
         $job = $jobQueueSQL->getJob($id_job);
-        static::assertSame(Job::WAITING, $job->job_status);
+        static::assertSame(JobStatus::WAITING, $job->job_status);
 
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
         $this->setGetInfo(['id_job' => $id_job]);
@@ -134,7 +136,7 @@ class DaemonControlerTest extends ControlerTestCase
         }
 
         $job = $jobQueueSQL->getJob($id_job);
-        static::assertSame(Job::SUSPENDED_BY_USER, $job->job_status);
+        static::assertSame(JobStatus::SUSPENDED_BY_USER, $job->job_status);
     }
 
     public function testUnlockSingleJob(): void
@@ -143,10 +145,10 @@ class DaemonControlerTest extends ControlerTestCase
         $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
         $id_job = $jobQueueSQL->getJobIdForConnecteur(13, 'une_action_auto');
 
-        $jobQueueSQL->lock($id_job, Job::SUSPENDED_BY_USER);
+        $jobQueueSQL->lock($id_job, JobStatus::SUSPENDED_BY_USER);
 
         $job = $jobQueueSQL->getJob($id_job);
-        static::assertSame(Job::SUSPENDED_BY_USER, $job->job_status);
+        static::assertSame(JobStatus::SUSPENDED_BY_USER, $job->job_status);
 
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
         $this->setGetInfo(['id_job' => $id_job]);
@@ -157,6 +159,6 @@ class DaemonControlerTest extends ControlerTestCase
         }
 
         $job = $jobQueueSQL->getJob($id_job);
-        static::assertSame(Job::WAITING, $job->job_status);
+        static::assertSame(JobStatus::WAITING, $job->job_status);
     }
 }

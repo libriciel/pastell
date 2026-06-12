@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Configuration\JobStatus;
+
 class JobManager
 {
     public const DEFAULT_NEXT_TRY_IN_MINUTES = 1;
@@ -180,7 +182,7 @@ class JobManager
         try {
             $job->next_try = $connecteurFrequence->getNextTry($job->nb_try);
         } catch (Exception $e) {
-            $this->jobQueueSQL->lock($id_job, Job::SUSPENDED_TRY_MAX);
+            $this->jobQueueSQL->lock($id_job, JobStatus::SUSPENDED_TRY_MAX);
             return;
         }
         $job->id_verrou = $connecteurFrequence->id_verrou;
