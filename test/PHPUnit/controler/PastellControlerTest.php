@@ -96,4 +96,52 @@ class PastellControlerTest extends ControlerTestCase
             $pastellControler->getViewParameterByKey('navigation')[1]['same_level_entities'][0]['denomination']
         );
     }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function testMagicLinkActiveKeepsSession(): void
+    {
+        $pastellControler = $this->getControlerInstance(PastellControler::class);
+        $_SERVER['REQUEST_URI'] = '/';
+
+        $magicLinkSQL = $this->getObjectInstancier()->getInstance(MagicLinkSQL::class);
+        $magicLinkId = $magicLinkSQL->create(
+            1,
+            'token-actif',
+            'Intervention',
+            1,
+            date('Y-m-d H:i:s', strtotime('+1 day')),
+            'Dupont',
+            'Jean',
+            'jean.dupont@example.org',
+        );
+
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->setMagicLinkId($magicLinkId);
+
+        $pastellControler->_beforeAction();
+
+        static::assertTrue($authentification->isConnected());
+        static::assertSame($magicLinkId, $authentification->getMagicLinkId());
+    }
+
+    public function testMagicLinkInactiveDisconnects(): void
+    {
+        $pastellControler = $this->getControlerInstance(PastellControler::class);
+        $_SERVER['REQUEST_URI'] = '/';
+
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->setMagicLinkId(999999);
+
+        try {
+            $pastellControler->_beforeAction();
+            static::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('accès support a expiré ou a été révoqué', $e->getMessage());
+        }
+
+        static::assertFalse($authentification->isConnected());
+    }
 }

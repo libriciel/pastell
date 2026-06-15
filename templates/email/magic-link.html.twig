@@ -1,0 +1,24 @@
+{% extends "base-email.html.twig" %}
+
+{% block title %}
+    <h1>Accès temporaire</h1>
+{% endblock %}
+
+{% block content %}
+    <div>
+        <p>Bonjour {{ prenom }} {{ nom }},</p>
+        <p>
+            Un accès temporaire à la plateforme Pastell vous a été ouvert
+            pour le motif suivant : <strong>{{ motif }}</strong>.
+        </p>
+        <p>
+            Pour vous connecter, veuillez vous rendre sur la page suivante :
+        </p>
+        <div style="text-align: center;">
+            <a href="{{ link }}" class="btn">Accéder à Pastell</a>
+        </div>
+        <p>
+            Cet accès est valable jusqu'au <strong>{{ expires_at }}</strong>, après quoi le lien expirera.
+        </p>
+    </div>
+{% endblock %}

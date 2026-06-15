@@ -1,0 +1,1 @@
+0 * * * * /app/bin/console app:system:prune-magic-links >> /data/log/prune-magic-links.log 2>&1

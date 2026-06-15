@@ -6,6 +6,7 @@ use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\Service\MagicLink\MagicLinkService;
 use Pastell\Service\Module\ModuleListService;
 
 class PastellControler extends Controler
@@ -23,6 +24,18 @@ class PastellControler extends Controler
             }
             $this->redirect("/Connexion/connexion?request_uri=" . urlencode($request_uri));
         }
+
+        $magicLinkId = $this->getAuthentification()->getMagicLinkId();
+        if ($magicLinkId !== null) {
+            if (! $this->getInstance(MagicLinkService::class)->isActive($magicLinkId)) {
+                $this->getAuthentification()->deconnexion();
+                $request_uri = $_SERVER['REQUEST_URI'];
+                $this->setLastError('Votre accès support a expiré ou a été révoqué.');
+                $this->redirect('/Connexion/connexion?request_uri=' . urlencode($request_uri));
+            }
+            return;
+        }
+
         if (! $this->getUtilisateur()->isEnabled($this->getAuthentification()->getId())) {
             $request_uri = $_SERVER['REQUEST_URI'];
             $this->setLastError('Votre compte a été désactivé');

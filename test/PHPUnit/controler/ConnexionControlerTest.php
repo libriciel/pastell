@@ -1,7 +1,13 @@
 <?php
 
+use Pastell\Service\MagicLink\MagicLinkService;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mime\Email;
+
 class ConnexionControlerTest extends ControlerTestCase
 {
+    use MailerTransportTestingTrait;
+
     /**
      * @var ConnexionControler
      */
@@ -11,6 +17,27 @@ class ConnexionControlerTest extends ControlerTestCase
     {
         parent::setUp();
         $this->connexionControler = $this->getControlerInstance(ConnexionControler::class);
+        $this->setMailerTransportForTesting();
+    }
+
+    /**
+     * @throws Exception
+     * @throws TransportExceptionInterface
+     */
+    private function createMagicLinkAndGetToken(): array
+    {
+        $magicLinkService = $this->getObjectInstancier()->getInstance(MagicLinkService::class);
+        $magicLinkService->create('Intervention', 24, 1, 'Dupont', 'Jean', 'jean.dupont@example.org');
+        $link = $magicLinkService->getActiveLinks()[0];
+
+        $email = $this->getMailerTransport()->getSentMessage()->getOriginalMessage();
+        static::assertInstanceOf(Email::class, $email);
+        static::assertSame(
+            1,
+            preg_match('#/Connexion/magicLink\?token=([^"\s]+)#', (string)$email->getHtmlBody(), $matches),
+        );
+
+        return ['link' => $link, 'token' => $matches[1]];
     }
 
     /**
@@ -115,5 +142,70 @@ class ConnexionControlerTest extends ControlerTestCase
         }
 
         $this->assertArrayNotHasKey(CSRFToken::TOKEN_NAME, $_SESSION);
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     * @throws Exception
+     * @throws TransportExceptionInterface
+     */
+    public function testMagicLinkLogin(): void
+    {
+        ['link' => $link, 'token' => $token] = $this->createMagicLinkAndGetToken();
+
+        $this->setGetInfo(['token' => $token]);
+        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+
+        try {
+            $this->connexionControler->magicLinkAction();
+            static::fail('Une redirection était attendue');
+        } catch (LastMessageException) {
+        }
+
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        static::assertTrue($authentification->isConnected());
+        static::assertSame((int)$link['id_u'], (int)$authentification->getId());
+        static::assertSame((int)$link['id'], $authentification->getMagicLinkId());
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws Exception
+     * @throws TransportExceptionInterface
+     */
+    public function testMagicLinkLoginClosesExistingSession(): void
+    {
+        ['link' => $link, 'token' => $token] = $this->createMagicLinkAndGetToken();
+
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        static::assertSame(1, (int)$authentification->getId());
+
+        $this->setGetInfo(['token' => $token]);
+        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+
+        try {
+            $this->connexionControler->magicLinkAction();
+            static::fail('Une redirection était attendue');
+        } catch (LastMessageException) {
+        }
+
+        static::assertSame((int)$link['id_u'], (int)$authentification->getId());
+        static::assertNotSame(1, (int)$authentification->getId());
+    }
+
+    /**
+     * @throws LastMessageException
+     */
+    public function testMagicLinkLoginInvalidToken(): void
+    {
+        $this->setGetInfo(['token' => 'un-token-invalide']);
+
+        try {
+            $this->connexionControler->magicLinkAction();
+            static::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('invalide, a expiré ou a été révoqué', $e->getMessage());
+        }
     }
 }

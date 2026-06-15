@@ -7,6 +7,7 @@ use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
+use Pastell\Service\MagicLink\MagicLinkService;
 use Pastell\Service\Utilisateur\PasswordResetMailService;
 
 class ConnexionControler extends PastellControler
@@ -425,6 +426,47 @@ class ConnexionControler extends PastellControler
         $request_uri = $this->getPostInfo()->get('request_uri');
 
         $this->redirect(urldecode($request_uri));
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function magicLinkAction(): void
+    {
+        $token = $this->getGetInfo()->get('token');
+        $magicLink = $this->getObjectInstancier()
+            ->getInstance(MagicLinkService::class)
+            ->getValidLinkFromToken($token);
+
+        if ($magicLink === null) {
+            $this->setLastError("Ce lien d'accès support est invalide, a expiré ou a été révoqué.");
+            $this->redirect('/Connexion/connexion');
+        }
+
+        $id_u = (int)$magicLink['id_u'];
+        $infoUtilisateur = $this->getUtilisateur()->getInfo($id_u);
+        if ($infoUtilisateur === false) {
+            $this->setLastError("Ce lien d'accès support est invalide, a expiré ou a été révoqué.");
+            $this->redirect('/Connexion/connexion');
+        }
+
+        $this->getAuthentification()->deconnexion();
+
+        $this->getJournal()->setId($id_u);
+        $this->getJournal()->add(
+            Journal::CONNEXION,
+            $infoUtilisateur['id_e'],
+            0,
+            'Connecté',
+            "Connexion support via magic link (motif : {$magicLink['motif']}) depuis l'adresse "
+                . $_SERVER['REMOTE_ADDR']
+        );
+
+        $this->setSessionInfo($infoUtilisateur['login'], $id_u);
+        $this->getAuthentification()->setMagicLinkId((int)$magicLink['id']);
+
+        $this->redirect('/');
     }
 
     private function getId_uFromTokenOrFailed(string $mail_verif_password)

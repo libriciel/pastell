@@ -10,6 +10,7 @@ use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\FeatureToggle\DisplayFeatureToggleInTestPage;
 use Pastell\Service\FeatureToggleService;
+use Pastell\Service\MagicLink\MagicLinkService;
 use Pastell\Service\Pack\PackService;
 use Pastell\System\HealthCheck;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -583,7 +584,6 @@ class SystemControler extends PastellControler
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', "Modification du seuil d'alerte taux d'occupation du workspace");
         $this->setViewParameter('template_milieu', 'SystemEditWorkspaceAlertThreshold');
-        $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
         $this->setViewParameter('workspace_alert_threshold', $this->getConfigurationSQL()->getWorkspaceAlertThreshold());
         $this->renderDefault();
     }
@@ -605,5 +605,135 @@ class SystemControler extends PastellControler
         }
         $this->setLastMessage("Le seuil d'alerte taux d'occupation du workspace a été modifié");
         $this->redirect(self::SYSTEM_INDEX_PAGE);
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws NotFoundException
+     * @throws LastErrorException
+     */
+    public function magicLinkAction(): void
+    {
+        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitLecture(DroitService::DROIT_SYSTEM));
+
+        $activeMagicLinks = $this->getInstance(MagicLinkService::class)->getActiveLinks();
+
+        $this->setViewParameter('page_title', 'Liste des accès actifs');
+        $this->setViewParameter('active_magic_links', $activeMagicLinks);
+        $this->setViewParameter('template_milieu', 'SystemMagicLink');
+        $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_MAGIC_LINK);
+        $this->renderDefault();
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws NotFoundException
+     * @throws LastErrorException
+     */
+    public function magicLinkEditionAction(): void
+    {
+        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->setViewParameter('page_title', "Création d'un accès temporaire");
+        $this->setViewParameter('template_milieu', 'SystemMagicLinkEdition');
+        $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_MAGIC_LINK);
+        $this->renderDefault();
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     * @throws Exception
+     * @throws TransportExceptionInterface
+     */
+    public function doMagicLinkEditionAction(): void
+    {
+        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+
+        $recuperateur = $this->getPostInfo();
+        $motif = $recuperateur->get('motif');
+        $duration = $recuperateur->getInt('duration');
+        $nom = trim((string)$recuperateur->get('nom'));
+        $prenom = trim((string)$recuperateur->get('prenom'));
+        $mail = trim((string)$recuperateur->get('mail'));
+
+        if (! $motif || $duration < 1 || $nom === '' || $prenom === '' || $mail === '') {
+            $this->setLastError(
+                'Le nom, le prénom, le mail, le motif et une durée valide (en heures) sont obligatoires'
+            );
+            $this->redirect('System/magicLinkEdition');
+        }
+
+        try {
+            $this->getInstance(MagicLinkService::class)
+                ->create($motif, $duration, $this->getId_u(), $nom, $prenom, $mail);
+        } catch (UnrecoverableException | ConflictException | TransportExceptionInterface $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect('System/magicLinkEdition');
+        }
+
+        $this->setLastMessage(
+            "Le lien d'accès a été envoyé à $mail"
+        );
+        $this->redirect('System/magicLink');
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws NotFoundException
+     * @throws LastErrorException
+     */
+    public function magicLinkRevokeAction(): void
+    {
+        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+
+        $magicLinkId = $this->getGetInfo()->getInt('id');
+        $magicLink = $this->getInstance(MagicLinkService::class)->getActiveLink($magicLinkId);
+        if ($magicLink === null) {
+            $this->setLastError("Cet accès support n'existe pas ou n'est plus actif.");
+            $this->redirect('System/magicLink');
+        }
+
+        $this->setViewParameter('page_title', "Révocation d'un accès");
+        $this->setViewParameter('magic_link', $magicLink);
+        $this->setViewParameter('template_milieu', 'SystemMagicLinkRevoke');
+        $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_MAGIC_LINK);
+        $this->renderDefault();
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function doMagicLinkRevokeAction(): void
+    {
+        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+
+        $magicLinkId = $this->getPostInfo()->getInt('id');
+        $this->getInstance(MagicLinkService::class)->revoke($magicLinkId);
+
+        $this->setLastMessage("L'accès support a été révoqué.");
+        $this->redirect('System/magicLink');
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
+    public function magicLinkHistoryAction(): void
+    {
+        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitLecture(DroitService::DROIT_SYSTEM));
+
+        $search = (string)$this->getGetInfo()->get('search');
+
+        $this->setViewParameter('page_title', 'Historique des accès créés');
+        $this->setViewParameter(
+            'magic_link_history',
+            $this->getInstance(MagicLinkService::class)->getHistory($search)
+        );
+        $this->setViewParameter('search', $search);
+        $this->setViewParameter('template_milieu', 'SystemMagicLinkHistory');
+        $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_MAGIC_LINK_HISTORY);
+        $this->renderDefault();
     }
 }
