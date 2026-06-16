@@ -164,7 +164,7 @@ acceptance_test:
 .security_scan_base:
   stage: test
   image:
-    name: hubdocker.libriciel.fr/aquasec/trivy:0.71.0
+    name: hubdocker.libriciel.fr/aquasec/trivy:0.71.1
     entrypoint: [""]
   services:
     - docker:dind
