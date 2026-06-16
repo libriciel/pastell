@@ -1,47 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 class S2lowTest extends PastellTestCase
 {
+    use CurlUtilitiesTestTrait;
+
     private function getS2low($curl_response): S2low
     {
-        $curlWrapper = $this->createMock(CurlWrapper::class);
+        $this->mockCurlWithCallable(function () use ($curl_response) {
+            return $curl_response;
+        });
+        $form = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
+        $form->setData('user_login', 'foo');
 
-        $curlWrapper
-            ->method('get')
-            ->willReturn($curl_response);
-
-        $curlWrapperFactory = $this->createMock(CurlWrapperFactory::class);
-
-        $curlWrapperFactory
-            ->method('getInstance')
-            ->willReturn($curlWrapper);
-
-        $objectInstancier = $this->createMock(ObjectInstancier::class);
-
-        $objectInstancier->method('getInstance')->willReturn($curlWrapperFactory);
-
-        $collectiviteProperties = $this->createMock(DonneesFormulaire::class);
-
-        $collectiviteProperties
-            ->method('get')
-            ->willReturnCallback(function ($a) {
-
-                $result = ['user_login' => 'foo'];
-                if (isset($result[$a])) {
-                    return $result[$a];
-                }
-                return false;
-            });
-
-        $s2low = new S2low($objectInstancier);
-        $s2low->setConnecteurConfig($collectiviteProperties);
+        $s2low = new S2low($this->getObjectInstancier());
+        $s2low->setConnecteurConfig($form);
 
         return $s2low;
-    }
-
-    protected function getDonneesFormulaire(): DonneesFormulaire
-    {
-        return $this->createMock(DonneesFormulaire::class);
     }
 
     /**
@@ -49,8 +25,8 @@ class S2lowTest extends PastellTestCase
      */
     public function testPostHeliosS2lowOK(): void
     {
-        $s2low = $this->getS2low("<import><resultat>OK</resultat><id>123</id></import>");
-        $this->assertEquals('123', $s2low->sendHelios(new Fichier()));
+        $s2low = $this->getS2low('<import><resultat>OK</resultat><id>123</id></import>');
+        static::assertEquals('123', $s2low->sendHelios(new Fichier()));
     }
 
     /**
@@ -58,15 +34,17 @@ class S2lowTest extends PastellTestCase
      */
     public function testPostHeliosS2lowKO(): void
     {
-        $s2low = $this->getS2low("<import><resultat>KO</resultat><message>foo</message></import>");
+        $this->expectException(S2lowException::class);
         $this->expectExceptionMessage("Erreur lors de l'envoi du PES : foo");
+
+        $s2low = $this->getS2low('<import><resultat>KO</resultat><message>foo</message></import>');
         $s2low->sendHelios(new Fichier());
     }
 
     /**
      * @throws S2lowException
      */
-    public function testWhenGettingAccentuatedPesRetour()
+    public function testWhenGettingAccentuatedPesRetour(): void
     {
         $s2low = $this->getS2low(file_get_contents(__DIR__ . '/fixtures/HELIOS_SIMU_RETOUR_1565181244_184723364.xml'));
 
@@ -75,56 +53,57 @@ class S2lowTest extends PastellTestCase
         $donneesFormulaire->setData('objet', 'HELIOS_SIMU_RETOUR_1565181244_184723364');
 
         $s2low->getPESRetourLu($donneesFormulaire);
-        $this->assertSame(
-            file_get_contents(__DIR__ . '/fixtures/HELIOS_SIMU_RETOUR_1565181244_184723364.xml'),
+        static::assertStringEqualsFile(
+            __DIR__ . '/fixtures/HELIOS_SIMU_RETOUR_1565181244_184723364.xml',
             $donneesFormulaire->getFileContent('fichier_pes')
         );
     }
 
-    public function testPesFilenameSentToS2low()
+    public function testPesFilenameSentToS2low(): void
     {
-        $s2low = $this->getS2low("<import><resultat>OK</resultat></import>");
-        $this->assertSame("test-file_name.pdf", $s2low->getHeliosEnveloppeFileName('test-file_name.pdf'));
+        $s2low = $this->getS2low('<import><resultat>OK</resultat></import>');
+        static::assertSame('test-file_name.pdf', $s2low->getHeliosEnveloppeFileName('test-file_name.pdf'));
     }
 
-    public function testPesAcquitIsNotAPesAcquit()
+    public function testPesAcquitIsNotAPesAcquit(): void
     {
-        $s2low = $this->getS2low("I'm not a PES Acquit");
         $this->expectException(RecoverableException::class);
         $this->expectExceptionMessage("Impossible d'analyser le fichier PES Acquit ");
-        $s2low->getFichierRetour("42");
+
+        $s2low = $this->getS2low("I'm not a PES Acquit");
+        $s2low->getFichierRetour('42');
     }
 
     /**
      * @throws S2lowException
      */
-    public function testGetStatusHelios()
+    public function testGetStatusHelios(): void
     {
-        $s2low = $this->getS2low(file_get_contents(__DIR__ . "/fixtures/helios_status_ok.xml"));
-        $this->assertEquals(8, $s2low->getStatusHelios("42"));
-        $this->assertStringEqualsFile(
-            __DIR__ . "/fixtures/helios_status_ok.xml",
+        $s2low = $this->getS2low(file_get_contents(__DIR__ . '/fixtures/helios_status_ok.xml'));
+        static::assertSame('8', $s2low->getStatusHelios('42'));
+        static::assertStringEqualsFile(
+            __DIR__ . '/fixtures/helios_status_ok.xml',
             $s2low->getLastReponseFile()
         );
     }
 
-    public function testGetStatusHeliosWhenNotInXML()
+    public function testGetStatusHeliosWhenNotInXML(): void
     {
-        $s2low = $this->getS2low("I'm not in XML");
         $this->expectException(S2lowException::class);
         $this->expectExceptionMessage(
             "La réponse de S²low n'a pas pu être analysée (problème d'authentification ?)"
         );
-        $s2low->getStatusHelios("42");
+
+        $s2low = $this->getS2low("I'm not in XML");
+        $s2low->getStatusHelios('42');
     }
 
-    public function testGetStatusHeliosWhenResponseIsKO()
+    public function testGetStatusHeliosWhenResponseIsKO(): void
     {
-        $s2low = $this->getS2low(file_get_contents(__DIR__ . "/fixtures/helios_status_ko.xml"));
         $this->expectException(S2lowException::class);
-        $this->expectExceptionMessage(
-            "Marche pas"
-        );
-        $s2low->getStatusHelios("42");
+        $this->expectExceptionMessage('Marche pas');
+
+        $s2low = $this->getS2low(file_get_contents(__DIR__ . '/fixtures/helios_status_ko.xml'));
+        $s2low->getStatusHelios('42');
     }
 }
