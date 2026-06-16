@@ -1,76 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 class DepotPastellTest extends PastellTestCase
 {
+    use CurlUtilitiesTestTrait;
+
+    //phpcs:ignore Generic.Files.LineLength.TooLong
     public const PASTELL_METADATA_DEFAULT = "objet:%objet%\nacte_nature:%acte_nature%\nenvoi_tdt:on\narrete:%arrete%\nautre_document_attache:%autre_document_attache%";
 
-    private function setCurlWrapperMock(callable $function_for_get_method)
-    {
-        $curlWrapper = $this->createMock(CurlWrapper::class);
-
-        $curlWrapper
-            ->method('get')
-            ->willReturnCallback($function_for_get_method);
-
-        $curlWrapper->expects($this->atLeastOnce())
-            ->method('httpAuthentication')
-            ->willReturnCallback(function ($a, $b) {
-                $this->assertEquals("user_technique", $a);
-                $this->assertEquals("mot_de_passe_user_technique", $b);
-            });
-
-        $curlWrapper->expects($this->atLeastOnce())
-            ->method('getLastHttpCode')
-            ->willReturn(200);
-
-        $curlWrapperFactory = $this->createMock(CurlWrapperFactory::class);
-
-        $curlWrapperFactory
-            ->method('getInstance')
-            ->willReturn($curlWrapper);
-
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
-    }
-
     /**
-     * @param string $pastell_metadata
-     * @return Connecteur
      * @throws Exception
      */
-    private function getDepotPastell($pastell_metadata = self::PASTELL_METADATA_DEFAULT)
+    private function getDepotPastell(string $pastell_metadata = self::PASTELL_METADATA_DEFAULT): DepotPastell
     {
-
-        $info = $this->createConnector(DepotPastell::CONNECTEUR_ID, "Dépôt Pastell");
+        $info = $this->createConnector(DepotPastell::CONNECTEUR_ID, 'Dépôt Pastell');
 
         $connecteurConfig = $this->getDonneesFormulaireFactory()->getConnecteurEntiteFormulaire($info['id_ce']);
         $connecteurConfig->setTabData([
-            DepotPastell::PASTELL_URL => "https://pastell2.test.libriciel.fr/",
-            DepotPastell::PASTELL_LOGIN => "user_technique",
-            DepotPastell::PASTELL_PASSWORD => "mot_de_passe_user_technique",
+            DepotPastell::PASTELL_URL => 'https://pastell',
+            DepotPastell::PASTELL_LOGIN => 'user_technique',
+            DepotPastell::PASTELL_PASSWORD => 'mot_de_passe_user_technique',
             DepotPastell::PASTELL_ID_E => 34,
-            DepotPastell::PASTELL_ACTION => "send-tdt",
+            DepotPastell::PASTELL_ACTION => 'send-tdt',
             DepotPastell::PASTELL_METADATA => $pastell_metadata,
-            DepotPastell::PASTELL_TYPE_DOSSIER => "actes-generique",
+            DepotPastell::PASTELL_TYPE_DOSSIER => 'actes-generique',
         ]);
-
+        /** @var DepotPastell */
         return $this->getConnecteurFactory()->getConnecteurById($info['id_ce']);
     }
 
     /**
-     * @throws Exception
      * @throws UnrecoverableException
+     * @throws Exception
      */
-    public function testConnexion()
+    public function testConnexion(): void
     {
-        $this->setCurlWrapperMock(function ($a) {
-            if ($a == 'https://pastell2.test.libriciel.fr/api/v2/version') {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-version.json");
-            }
-        });
-        /** @var DepotPastell $depotPastell */
+        $this->mockCurl([
+            'https://pastell/api/v2/version' => file_get_contents(__DIR__ . '/fixtures/api-response-version.json'),
+        ]);
+
         $depotPastell = $this->getDepotPastell();
         $info = $depotPastell->getVersion();
-        $this->assertEquals("Version 2.0.X - Révision  31810", $info);
+        static::assertSame('Version 2.0.X - Révision  31810', $info);
     }
 
     /**
@@ -79,24 +51,25 @@ class DepotPastellTest extends PastellTestCase
      */
     private function createActeGenerique(): string
     {
-        $connecteur_info = $this->createConnector("fakeTdt", "Bouchon tdt");
+        $connecteur_info = $this->createConnector('fakeTdt', 'Bouchon tdt');
 
         $connecteurDonneesFormulaire = $this->getDonneesFormulaireFactory()
             ->getConnecteurEntiteFormulaire($connecteur_info['id_ce']);
 
         $connecteurDonneesFormulaire->addFileFromCopy(
             'classification_file',
-            "classification.xml",
-            __DIR__ . "/../../module/actes-generique/fixtures/classification.xml"
+            'classification.xml',
+            __DIR__ . '/../../module/actes-generique/fixtures/classification.xml'
         );
-        $this->associateFluxWithConnector($connecteur_info['id_ce'], "actes-generique", "TdT");
+        $this->associateFluxWithConnector($connecteur_info['id_ce'], 'actes-generique', 'TdT');
 
-        $document_info = $this->createDocument("actes-generique");
+        $document_info = $this->createDocument('actes-generique');
         return $document_info['id_d'];
     }
 
     /**
-     * @return DonneesFormulaire
+     * @throws DonneesFormulaireException
+     * @throws NotFoundException
      * @throws Exception
      */
     private function getDonneesFormulaire(): DonneesFormulaire
@@ -109,136 +82,121 @@ class DepotPastellTest extends PastellTestCase
             'envoi_tdt' => false,
             'numero_de_lacte' => '201905161006',
             'date_de_lacte' => '2019-05-01',
-            'classification' => '1.1'
+            'classification' => '1.1',
         ]);
-        $donneesFormulaire->addFileFromData('arrete', 'arrete.pdf', __DIR__ . "/../../fixtures/vide.pdf");
-        $donneesFormulaire->addFileFromData('autre_document_attache', 'autre_document_attache_0.txt', "foo", 0);
-        $donneesFormulaire->addFileFromData('autre_document_attache', 'autre_document_attache_1.txt', "bar", 0);
+        $donneesFormulaire->addFileFromData('arrete', 'arrete.pdf', __DIR__ . '/../../fixtures/vide.pdf');
+        $donneesFormulaire->addFileFromData('autre_document_attache', 'autre_document_attache_0.txt', 'foo', 0);
+        $donneesFormulaire->addFileFromData('autre_document_attache', 'autre_document_attache_1.txt', 'bar', 1);
+
         return $donneesFormulaire;
     }
 
     /**
+     * @throws UnrecoverableException
+     * @throws NotFoundException
+     * @throws DonneesFormulaireException
      * @throws Exception
      */
-    public function testSend()
+    public function testSend(): void
     {
-        $this->setCurlWrapperMock(function ($a) {
-            if ($a == "https://pastell2.test.libriciel.fr/api/v2/entite/34/document?type=actes-generique") {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-create-document.json");
-            }
-            if ($a == "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt") {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-patch-document.json");
-            }
-            if (
-                in_array($a, [
-                "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/file/arrete/0",
-                "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/0",
-                "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/1"
-                ])
-            ) {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-post-file.json");
-            }
-            if ($a == "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/action/send-tdt") {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-action.json");
-            }
+        $this->mockCurl([
+            'https://pastell/api/v2/entite/34/document?type=actes-generique'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-create-document.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-patch-document.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/file/arrete/0'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-post-file.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/0'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-post-file.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/1'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-post-file.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/action/send-tdt'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-action.json'),
+        ]);
 
-            throw new UnrecoverableException("Appel à une URL inatendue $a");
-        });
-        /** @var DepotPastell $depotPastell */
         $depotPastell = $this->getDepotPastell();
         $donneesFormulaire = $this->getDonneesFormulaire();
-        $this->assertSame(
+        static::assertSame(
             ['68hpWOt' => '68hpWOt'],
             $depotPastell->send($donneesFormulaire)
         );
     }
 
     /**
+     * @throws NotFoundException
+     * @throws DonneesFormulaireException
      * @throws Exception
      */
-    public function testSendWhenCantCreateDocument()
+    public function testSendWhenCantCreateDocument(): void
     {
-        $this->setCurlWrapperMock(function ($a) {
-            if ($a == "https://pastell2.test.libriciel.fr/api/v2/entite/34/document?type=actes-generique") {
-                return '{"foo":"bar"}';
-            }
-            throw new UnrecoverableException("Appel à une URL inatendue $a");
-        });
+        $this->mockCurl([
+            'https://pastell/api/v2/entite/34/document?type=actes-generique' => '{"foo":"bar"}',
+        ]);
 
-        /** @var DepotPastell $depotPastell */
         $depotPastell = $this->getDepotPastell();
         $donneesFormulaire = $this->getDonneesFormulaire();
         $this->expectException(UnrecoverableException::class);
-        $this->expectExceptionMessage("Impossible de créer le dossier sur Pastell");
+        $this->expectExceptionMessage('Impossible de créer le dossier sur Pastell');
         $depotPastell->send($donneesFormulaire);
     }
 
     /**
+     * @throws NotFoundException
+     * @throws DonneesFormulaireException
      * @throws Exception
      */
-    public function testSendWhenFormulaireIsNotOk()
+    public function testSendWhenFormulaireIsNotOk(): void
     {
-        $this->setCurlWrapperMock(function ($a) {
-            if ($a == "https://pastell2.test.libriciel.fr/api/v2/entite/34/document?type=actes-generique") {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-create-document.json");
-            }
-            if ($a == "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt") {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-patch-document.json");
-            }
-            if (
-                in_array($a, [
-                "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/file/arrete/0",
-                "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/0",
-                "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/1"
-                ])
-            ) {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-patch-document.json");
-            }
-            throw new UnrecoverableException("Appel à une URL inatendue $a");
-        });
+        $this->mockCurl([
+            'https://pastell/api/v2/entite/34/document?type=actes-generique'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-create-document.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-patch-document.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/file/arrete/0'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-patch-document.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/0'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-patch-document.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/1'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-patch-document.json'),
+        ]);
 
-        /** @var DepotPastell $depotPastell */
         $depotPastell = $this->getDepotPastell();
         $donneesFormulaire = $this->getDonneesFormulaire();
         $this->expectException(UnrecoverableException::class);
         $this->expectExceptionMessage(
+        //phpcs:ignore Generic.Files.LineLength.TooLong
             "Impossible d'appeller l'action sur le document Pastell car le formulaire n'est pas valide : Le formulaire est incomplet : le champ «Acte» est obligatoire."
         );
         $depotPastell->send($donneesFormulaire);
     }
 
     /**
+     * @throws NotFoundException
+     * @throws DonneesFormulaireException
      * @throws Exception
      */
-    public function testSendWhenActionFailed()
+    public function testSendWhenActionFailed(): void
     {
-        $this->setCurlWrapperMock(function ($a) {
-            if ($a == "https://pastell2.test.libriciel.fr/api/v2/entite/34/document?type=actes-generique") {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-create-document.json");
-            }
-            if ($a == "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt") {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-patch-document.json");
-            }
-            if (
-                in_array($a, [
-                "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/file/arrete/0",
-                "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/0",
-                "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/1"
-                ])
-            ) {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-post-file.json");
-            }
-            if ($a == "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/action/send-tdt") {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-action-failed.json");
-            }
-            throw new UnrecoverableException("Appel à une URL inatendue $a");
-        });
+        $this->mockCurl([
+            'https://pastell/api/v2/entite/34/document?type=actes-generique'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-create-document.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-patch-document.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/file/arrete/0'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-post-file.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/0'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-post-file.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/1'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-post-file.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/action/send-tdt'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-action-failed.json'),
+        ]);
 
-        /** @var DepotPastell $depotPastell */
         $depotPastell = $this->getDepotPastell();
         $donneesFormulaire = $this->getDonneesFormulaire();
         $this->expectException(UnrecoverableException::class);
         $this->expectExceptionMessage(
+        //phpcs:ignore Generic.Files.LineLength.TooLong
             "Erreur lors de l'appel à l'action sur le document : L'action « send-tdt »  n'est pas permise : or_1 n'est pas vérifiée"
         );
         $depotPastell->send($donneesFormulaire);
@@ -248,10 +206,9 @@ class DepotPastellTest extends PastellTestCase
      * @throws UnrecoverableException
      * @throws Exception
      */
-    public function testSendWhenErrorInInputMetadata()
+    public function testSendWhenErrorInInputMetadata(): void
     {
-        /** @var DepotPastell $depotPastell */
-        $depotPastell = $this->getDepotPastell("foo:%bar%");
+        $depotPastell = $this->getDepotPastell('foo:%bar%');
 
         $donneesFormulaire = $this->getDonneesFormulaire();
         $this->expectException(UnrecoverableException::class);
@@ -262,98 +219,69 @@ class DepotPastellTest extends PastellTestCase
     }
 
     /**
+     * @throws NotFoundException
+     * @throws DonneesFormulaireException
      * @throws Exception
      */
-    public function testWhenCallApiReturnNonOK()
+    public function testWhenCallApiReturnNonOK(): void
     {
-        $curlWrapper = $this->createMock(CurlWrapper::class);
+        $this->mockCurl(
+            [
+                'https://pastell/api/v2/entite/34/document?type=actes-generique' => '{"foo":"bar"}',
+            ],
+            404
+        );
 
-        $curlWrapper->expects($this->atLeastOnce())
-            ->method('getLastHttpCode')
-            ->willReturn(404);
-
-        $curlWrapperFactory = $this->createMock(CurlWrapperFactory::class);
-
-        $curlWrapperFactory
-            ->method('getInstance')
-            ->willReturn($curlWrapper);
-
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
         $donneesFormulaire = $this->getDonneesFormulaire();
-
-        /** @var DepotPastell $depotPastell */
         $depotPastell = $this->getDepotPastell();
 
         $this->expectException(UnrecoverableException::class);
-        $this->expectExceptionMessage(
-            "Erreur 404 () lors de la réponse de Pastell"
-        );
+        $this->expectExceptionMessage('Erreur 404 () lors de la réponse de Pastell');
         $depotPastell->send($donneesFormulaire);
     }
 
     /**
+     * @throws NotFoundException
+     * @throws DonneesFormulaireException
      * @throws Exception
      */
-    public function testWhenCallApiReturnNotJsonData()
+    public function testWhenCallApiReturnNotJsonData(): void
     {
-        $curlWrapper = $this->createMock(CurlWrapper::class);
+        $this->mockCurl([
+            'https://pastell/api/v2/entite/34/document?type=actes-generique' => 'foo',
+        ]);
 
-        $curlWrapper->expects($this->atLeastOnce())
-            ->method('getLastHttpCode')
-            ->willReturn(200);
-
-        $curlWrapper
-            ->method('get')
-            ->willReturn("foo");
-
-        $curlWrapperFactory = $this->createMock(CurlWrapperFactory::class);
-
-        $curlWrapperFactory
-            ->method('getInstance')
-            ->willReturn($curlWrapper);
-
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
         $donneesFormulaire = $this->getDonneesFormulaire();
-
-        /** @var DepotPastell $depotPastell */
         $depotPastell = $this->getDepotPastell();
 
         $this->expectException(UnrecoverableException::class);
         $this->expectExceptionMessage(
-            "Message de Pastell non compréhensible : foo"
+            'Message de Pastell non compréhensible : foo'
         );
         $depotPastell->send($donneesFormulaire);
     }
 
     /**
      * @throws UnrecoverableException
+     * @throws NotFoundException
+     * @throws DonneesFormulaireException
      * @throws Exception
      */
-    public function testSendDocumentWithoutAction()
+    public function testSendDocumentWithoutAction(): void
     {
-        $this->setCurlWrapperMock(function ($url) {
-            // assert no action is being sent
-            $this->assertFalse(strstr('action', $url));
+        $this->mockCurl([
+            'https://pastell/api/v2/entite/34/document?type=actes-generique'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-create-document.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-patch-document.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/file/arrete/0'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-post-file.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/0'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-post-file.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/1'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-post-file.json'),
+        ]);
 
-            if ($url == "https://pastell2.test.libriciel.fr/api/v2/entite/34/document?type=actes-generique") {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-create-document.json");
-            }
-            if ($url == "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt") {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-patch-document.json");
-            }
-            if (
-                in_array($url, [
-                "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/file/arrete/0",
-                "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/0",
-                "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/file/autre_document_attache/1"
-                ])
-            ) {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-post-file.json");
-            }
-
-            throw new UnrecoverableException("Appel à une URL inatendue $url");
-        });
-        /** @var DepotPastell $depotPastell */
         $depotPastell = $this->getDepotPastell();
         $id_ce = $depotPastell->getConnecteurInfo()['id_ce'];
         $this->configureConnector($id_ce, [
@@ -362,7 +290,7 @@ class DepotPastellTest extends PastellTestCase
         /** @var DepotPastell $depotPastell */
         $depotPastell = $this->getConnecteurFactory()->getConnecteurById($id_ce);
         $donneesFormulaire = $this->getDonneesFormulaire();
-        $this->assertSame(
+        static::assertSame(
             ['68hpWOt' => '68hpWOt'],
             $depotPastell->send($donneesFormulaire)
         );
@@ -375,26 +303,20 @@ class DepotPastellTest extends PastellTestCase
      */
     public function testSendWithoutAnnexe(): void
     {
-        $this->setCurlWrapperMock(function ($a) {
-            if ($a === "https://pastell2.test.libriciel.fr/api/v2/entite/34/document?type=actes-generique") {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-create-document.json");
-            }
-            if ($a === "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt") {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-patch-document.json");
-            }
-            if ($a === "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/file/arrete/0") {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-post-file.json");
-            }
-            if ($a === "https://pastell2.test.libriciel.fr/api/v2//entite/34/document/68hpWOt/action/send-tdt") {
-                return file_get_contents(__DIR__ . "/fixtures/api-response-action.json");
-            }
-            throw new UnrecoverableException("Appel à une URL inattendue $a");
-        });
+        $this->mockCurl([
+            'https://pastell/api/v2/entite/34/document?type=actes-generique'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-create-document.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-patch-document.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/file/arrete/0'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-post-file.json'),
+            'https://pastell/api/v2//entite/34/document/68hpWOt/action/send-tdt'
+            => file_get_contents(__DIR__ . '/fixtures/api-response-action.json'),
+        ]);
 
-        /** @var DepotPastell $depotPastell */
         $depotPastell = $this->getDepotPastell();
         $id_ce = $depotPastell->getConnecteurInfo()['id_ce'];
-        $this->associateFluxWithConnector($id_ce, 'actes-generique', "GED", 1);
+        $this->associateFluxWithConnector($id_ce, 'actes-generique', 'GED', 1);
         $id_d = $this->createActeGenerique();
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
         $donneesFormulaire->setTabData([
@@ -404,18 +326,18 @@ class DepotPastellTest extends PastellTestCase
             'numero_de_lacte' => '201905161006',
             'date_de_lacte' => '2019-05-01',
             'classification' => '1.1',
-            'envoi_ged' => 1
+            'envoi_ged' => 1,
         ]);
-        $donneesFormulaire->addFileFromData('arrete', 'arrete.pdf', __DIR__ . "/../../fixtures/vide.pdf");
+        $donneesFormulaire->addFileFromData('arrete', 'arrete.pdf', __DIR__ . '/../../fixtures/vide.pdf');
         $this->getInternalAPI()->patch("/entite/1/document/$id_d/externalData/type_piece", ['type_pj' => ['22_NE']]);
 
-        set_error_handler(function ($errno, $errstr) {
-            $this->fail("Warning PHP inattendu: $errstr");
+        set_error_handler(static function ($errno, $errstr) {
+            static::fail("Warning PHP inattendu: $errstr");
         }, E_WARNING);
 
         try {
             $info = $this->getInternalAPI()->post("entite/1/document/$id_d/action/send-ged");
-            $this->assertSame('Le dossier Mon objet a été versé sur le dépôt', $info['message']);
+            static::assertSame('Le dossier Mon objet a été versé sur le dépôt', $info['message']);
         } finally {
             restore_error_handler();
         }
