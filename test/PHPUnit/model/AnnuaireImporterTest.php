@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+/** @deprecated Since 4.1.20, Unused, Use AnnuaireImportServiceTest instead */
 class AnnuaireImporterTest extends PastellTestCase
 {
     private function getAnnuaireSQL(): AnnuaireSQL
@@ -9,9 +10,9 @@ class AnnuaireImporterTest extends PastellTestCase
         return new AnnuaireSQL($this->getObjectInstancier()->getInstance(SQLQuery::class));
     }
 
-    private function getAnnuaireGroupsSQL(): AnnuaireGroupeSQL
+    private function getAnnuaireGroupsSQL(): AnnuaireGroupe
     {
-        return $this->getObjectInstancier()->getInstance(AnnuaireGroupeSQL::class);
+        return new AnnuaireGroupe($this->getObjectInstancier()->getInstance(SQLQuery::class), 1);
     }
 
     private function annuaire_import(string $data): int

@@ -28,12 +28,16 @@ SQL;
         return $this->queryOne($sql, $id_e, $nom);
     }
 
+    public function getInfoById(int $id_g): array|false
+    {
+        $sql = <<<SQL
+SELECT * FROM annuaire_groupe WHERE id_g=?
+SQL;
+        return $this->queryOne($sql, $id_g);
+    }
+
     public function add(int $id_e, string $nom): int
     {
-        $id_g = $this->getFromNom($id_e, $nom);
-        if ($id_g) {
-            return $id_g;
-        }
         $sql = <<<SQL
 INSERT INTO annuaire_groupe (id_e,nom) VALUES (?,?)
 SQL;
@@ -72,19 +76,16 @@ SQL;
         return $this->query($sql, $id_g);
     }
 
-    public function delete(int $id_e, array $lesId_g): void
+    public function delete(int $id_e, int $id_g): void
     {
-        foreach ($lesId_g as $id_g) {
-            $sql = <<<SQL
+        $sql = <<<SQL
 DELETE FROM annuaire_groupe_contact WHERE id_g=?
 SQL;
-            $this->query($sql, $id_g);
-
-            $sql = <<<SQL
+        $this->query($sql, $id_g);
+        $sql = <<<SQL
 DELETE FROM annuaire_groupe WHERE id_e=? AND id_g=?
 SQL;
-            $this->query($sql, $id_e, $id_g);
-        }
+        $this->query($sql, $id_e, $id_g);
     }
 
     public function isInGroupe(int $id_g, int $id_a): int
@@ -106,7 +107,7 @@ SQL;
         $this->query($sql, $id_g, $id_a);
     }
 
-    public function deleleteFromAllGroupe(int $id_a): void
+    public function deleteFromAllGroupes(int $id_a): void
     {
         $sql = <<<SQL
 DELETE FROM annuaire_groupe_contact WHERE id_a=?

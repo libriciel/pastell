@@ -1,5 +1,6 @@
 <?php
 
+/** @deprecated Since 4.1.20, Unused, Use AnnuaireExportServiceTest instead */
 class AnnuaireExporterTest extends PastellTestCase
 {
     private function getAnnuaireSQL()
@@ -10,7 +11,7 @@ class AnnuaireExporterTest extends PastellTestCase
 
     private function getAnnuaireGroupsSQL()
     {
-        return $this->getObjectInstancier()->getInstance(AnnuaireGroupeSQL::class);
+        return new AnnuaireGroupe($this->getObjectInstancier()->getInstance(SQLQuery::class), 1);
     }
 
     private function getCSVContent()
