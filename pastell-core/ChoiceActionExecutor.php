@@ -1,6 +1,7 @@
 <?php
 
-use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Menu\MenuGaucheOption;
+use Pastell\Service\Menu\MenuGaucheService;
 use Twig\Environment;
 
 abstract class ChoiceActionExecutor extends ActionExecutor
@@ -60,14 +61,43 @@ abstract class ChoiceActionExecutor extends ActionExecutor
      */
     public function renderPage(string $pageTitle, string $template): void
     {
-        $this->displayMenuGauche();
         $this->setViewParameter('page_title', $pageTitle);
         $this->setViewParameter('template_milieu', $template);
         $pastellController = $this->objectInstancier->getInstance(PastellControler::class);
         $pastellController->setAllViewParameter($this->getViewParameter());
-        $pastellController->setNavigationInfo($this->id_e, '/Entite/connecteur');
+        $this->resolveMenuGauche($pastellController);
         $pastellController->setTwigEnvironment($this->objectInstancier->getInstance(Environment::class));
         $pastellController->renderDefault();
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    private function resolveMenuGauche(PastellControler $pastellController): void
+    {
+        if ($this->id_ce) {
+            $pastellController->setViewParameter('id_e_menu', $this->id_e);
+            $pastellController->setViewParameter('type_e_menu', '');
+
+            $global_connector = $this->isGlobalConnecteur($this->id_ce);
+            $pastellController->setEntiteMenuGauche((int) $this->id_e);
+            $pastellController->setNavigationInfo($this->id_e, "/Entite/connecteur?global=$global_connector");
+            $pastellController->setMenuGaucheSelect(
+                $global_connector ?
+                    MenuGaucheService::ENTITE_CONNECTEUR_GLOBAL :
+                    MenuGaucheService::ENTITE_CONNECTEUR_LOCAL
+            );
+            return;
+        }
+
+        if ($this->id_d) {
+            $documentInfo = $this->objectInstancier->getInstance(DocumentSQL::class)->getInfo($this->id_d);
+            if ($documentInfo) {
+                $pastellController->setNavigationInfo($this->id_e, "Document/list?type=$this->type");
+                $pastellController->setMenuGaucheSelect(MenuGaucheOption::buildUrl(MenuGaucheService::DOCUMENT_LIST, ['type' => $this->type]));
+                $pastellController->setDocumentMenuGauche((int) $this->id_e);
+            }
+        }
     }
 
     /**
@@ -98,30 +128,6 @@ abstract class ChoiceActionExecutor extends ActionExecutor
         );
         header_wrapper("Location: $url");
         exit_wrapper();
-    }
-
-
-    public function displayMenuGauche()
-    {
-        if (! $this->id_ce) {
-            return;
-        }
-        $this->viewParameter['id_e_menu'] = $this->id_e;
-        $this->viewParameter['type_e_menu'] = '';
-        $this->setViewParameter(
-            'droitLectureAnnuaire',
-            $this->objectInstancier->getInstance(RoleUtilisateur::class)
-                ->hasDroit($this->id_u, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE), $this->id_e)
-        );
-        $isGlobalConnecteur = $this->isGlobalConnecteur($this->id_ce);
-        $this->viewParameter['menu_gauche_template'] = 'EntiteMenuGauche';
-        $this->viewParameter['menu_gauche_select'] = "Entite/connecteur?global=$isGlobalConnecteur";
-        $this->viewParameter['droit_lecture_on_connecteur'] = $this->objectInstancier
-            ->getInstance(DroitService::class)
-            ->hasDroitConnecteurLecture($this->id_e, $this->id_u);
-        $this->viewParameter['droitLectureOnUtilisateur'] = $this->objectInstancier
-            ->getInstance(DroitService::class)
-            ->hasDroitUtilisateurLecture($this->id_e, $this->id_u);
     }
 
     public function isEnabled()

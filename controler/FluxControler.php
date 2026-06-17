@@ -1,7 +1,7 @@
 <?php
 
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
-use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Entite\EntityUtilitiesService;
 
 class FluxControler extends PastellControler
@@ -13,15 +13,9 @@ class FluxControler extends PastellControler
 
         $this->hasConnecteurDroitLecture($id_e);
         $this->setNavigationInfo($id_e, "Flux/index?");
-        $this->setViewParameter(
-            'droitLectureAnnuaire',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE), $id_e)
-        );
-        $this->setViewParameter('menu_gauche_template', "EntiteMenuGauche");
-        $this->setViewParameter('menu_gauche_select', "Flux/index");
+        $this->setEntiteMenuGauche($id_e);
+        $this->setMenuGaucheSelect(MenuGaucheService::FLUX_INDEX);
         $this->setDroitLectureOnConnecteur($id_e);
-        $this->setDroitImportExportConfig($id_e);
-        $this->setDroitLectureOnUtilisateur($id_e);
     }
 
     public function hasDroitEdition($id_e): void
@@ -132,9 +126,7 @@ class FluxControler extends PastellControler
             }
             $this->setViewParameter('template_milieu', "FluxGlobalList");
         }
-        $this->setNavigationInfo($id_e, "Flux/index?");
         $this->setViewParameter('droit_edition', $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'connecteur:edition', $id_e));
-        $this->setViewParameter('menu_gauche_select', "Flux/index");
         $this->setViewParameter('entite_denomination', $this->getEntiteSQL()->getDenomination($this->getViewParameterOrObject('id_e')));
         $this->setViewParameter('page_title', "{$this->getViewParameterOrObject('entite_denomination')} : " . ($id_e ? 'Liste des types de dossier' : 'Associations connecteurs globaux'));
 
@@ -161,8 +153,6 @@ class FluxControler extends PastellControler
         $this->setViewParameter('flux_connecteur_list', $this->getConnectorForFlux($id_e, $flux));
         $this->setViewParameter('template_milieu', "FluxDetail");
         $this->setViewParameter('droit_edition', $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'connecteur:edition', $id_e));
-        $this->setNavigationInfo($id_e, "Flux/index?");
-        $this->setViewParameter('menu_gauche_select', "Flux/index");
         $this->setViewParameter('entite_denomination', $this->getEntiteSQL()->getDenomination($id_e));
 
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($flux);

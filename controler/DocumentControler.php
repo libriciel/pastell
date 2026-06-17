@@ -1,9 +1,16 @@
 <?php
 
 use Pastell\File\Chunk\ChunkUploader;
+use Pastell\Service\Menu\MenuGaucheOption;
+use Pastell\Service\Menu\MenuGaucheService;
 
 class DocumentControler extends PastellControler
 {
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
     public function _beforeAction()
     {
         parent::_beforeAction();
@@ -19,6 +26,8 @@ class DocumentControler extends PastellControler
         }
 
         $this->setNavigationInfo($id_e, "Document/list?type=$type");
+        $this->setMenuGaucheSelect(MenuGaucheOption::buildUrl(MenuGaucheService::DOCUMENT_LIST, ['type' => $type]));
+        $this->setDocumentMenuGauche($id_e);
     }
 
     public function renderDefault(): void
@@ -364,8 +373,7 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('url', "id_e=$id_e&search=$search");
 
         $this->setViewParameter('champs_affiches', DocumentType::getDefaultDisplayField());
-
-        $this->setNavigationInfo($id_e, "Document/index?a=a");
+        $this->setNavigationInfo($id_e, 'Document/index?a=a');
         if ($this->getViewParameterOrObject('infoEntite')) {
             $this->setViewParameter('page_title', "Liste des dossiers " . $this->getViewParameterOrObject('infoEntite')['denomination']) ;
         } else {
