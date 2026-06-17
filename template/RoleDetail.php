@@ -52,32 +52,33 @@
         </p>
 
         <?php
-        $afficherDroits = static function (array $droits) use ($role_edition): void {
-            foreach ($droits as $droit => $enabled) { ?>
-                <tr>
-                    <td>
-                        <?php if ($role_edition) : ?>
-                            <input style="width: 15px; height: 15px; vertical-align: middle;" type='checkbox' name='droit[]'
-                                   value='<?= $droit ?>' <?= $enabled ? "checked='checked'" : '' ?>/>&nbsp;
-                        <?php endif;?>
-                        <?= $droit ?>
-                    </td>
-                </tr>
-            <?php }
+        $afficherCategorie = static function (string $libelle, array $droits, bool $role_edition, string $categorieType): void {
+            ?>
+            <div class="js-categorie-droit mb-3 border rounded" data-categorie-type="<?= htmlspecialchars($categorieType) ?>">
+                <div class="d-flex align-items-stretch">
+                    <div class="d-flex align-items-center p-3 bg-light border-end" style="width: 30%; flex-shrink: 0; overflow-wrap: break-word;">
+                        <h3 class="titre-section-ligne m-0 fs-6 fw-semibold"><?php hecho($libelle) ?></h3>
+                    </div>
+                    <div class="flex-grow-1 d-flex flex-column">
+                        <?php $lastDroit = array_key_last($droits); ?>
+                        <?php foreach ($droits as $droit => $enabled) : ?>
+                            <div class="js-droit-ligne px-3 py-1 flex-grow-1<?= $droit !== $lastDroit ? ' border-bottom' : '' ?>" style="display: flex; align-items: center;">
+                                <?php if ($role_edition) : ?>
+                                    <input style="width: 15px; height: 15px; vertical-align: middle;" type='checkbox' name='droit[]'
+                                           value='<?= $droit ?>' <?= $enabled ? "checked='checked'" : '' ?>/>&nbsp;
+                                <?php endif; ?>
+                                <?= $droit ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+            <?php
         };
         ?>
 
         <?php foreach ($droits_administration as $libelle => $droits) : ?>
-            <table class="table table-striped table-hover js-categorie-droit" data-categorie-type="administration">
-                <thead>
-                    <tr>
-                        <th><h3 class="titre-section-ligne"><?php hecho($libelle) ?></h3></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php $afficherDroits($droits); ?>
-                </tbody>
-            </table>
+            <?php $afficherCategorie($libelle, $droits, $role_edition, 'administration'); ?>
         <?php endforeach; ?>
 
         <h2 id="titre-types-dossiers" style="margin-top: 30px; font-size: 150%;">Types de dossiers</h2>
@@ -85,16 +86,7 @@
             <div class="js-groupe-type-dossier">
                 <h3 class="js-titre-type" style="font-size: 135%; margin-top: 20px;"><?php hecho($type_name) ?></h3>
                 <?php foreach ($groupes_type as $groupe) : ?>
-                    <table class="table table-striped table-hover js-categorie-droit" data-categorie-type="dossier">
-                        <thead>
-                            <tr>
-                                <th><h3 class="titre-section-ligne"><?php hecho($groupe['libelle']) ?></h3></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php $afficherDroits($groupe['droits']); ?>
-                        </tbody>
-                    </table>
+                    <?php $afficherCategorie($groupe['libelle'], $groupe['droits'], $role_edition, 'dossier'); ?>
                 <?php endforeach; ?>
             </div>
         <?php endforeach; ?>
@@ -118,14 +110,14 @@
                 return texte.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
             }
 
-            const categories = Array.from(document.querySelectorAll('.js-categorie-droit')).map(function (table) {
-                const groupe = table.closest('.js-groupe-type-dossier');
+            const categories = Array.from(document.querySelectorAll('.js-categorie-droit')).map(function (el) {
+                const groupe = el.closest('.js-groupe-type-dossier');
                 const typeNom = groupe ? normalise(groupe.querySelector('.js-titre-type').textContent) : '';
                 return {
-                    table: table,
-                    titre: normalise(table.querySelector('.titre-section-ligne').textContent),
+                    table: el,
+                    titre: normalise(el.querySelector('.titre-section-ligne').textContent),
                     typeNom: typeNom,
-                    lignes: Array.from(table.querySelectorAll('tbody tr')).map(function (ligne) {
+                    lignes: Array.from(el.querySelectorAll('.js-droit-ligne')).map(function (ligne) {
                         return {ligne: ligne, texte: normalise(ligne.textContent)};
                     })
                 };
@@ -148,7 +140,7 @@
 
                     categorie.lignes.forEach(function (item) {
                         const visible = !recherche || titreMatch || item.texte.includes(recherche);
-                        item.ligne.style.display = visible ? '' : 'none';
+                        item.ligne.style.display = visible ? 'flex' : 'none';
                         if (visible) {
                             nbLigneVisible++;
                         }
