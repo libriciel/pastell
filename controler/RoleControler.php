@@ -24,23 +24,96 @@ class RoleControler extends PastellControler
         $this->renderDefault();
     }
 
-    public function detailAction()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
+    public function detailAction(): void
     {
-        $this->verifDroit(0, "role:lecture");
-        $this->setViewParameter('role', $this->getGetInfo()->get('role'));
-        $this->setViewParameter('role_edition', $this->hasDroit(0, "role:edition"));
-        $this->setViewParameter('role_info', $this->getRoleSQL()->getInfo($this->getViewParameterOrObject('role')));
+        $this->verifDroit(0, DroitService::getDroitLecture(DroitService::DROIT_ROLE));
 
-        /** @var RoleDroit $roleDroit */
+        $role_id = $this->getGetInfo()->get('role');
+        $this->setViewParameter('role', $role_id);
+        $this->setViewParameter('role_edition', $this->hasDroit(0, DroitService::getDroitEdition(DroitService::DROIT_ROLE)));
+        $this->setViewParameter('role_info', $this->getRoleSQL()->getInfo($role_id));
+
         $roleDroit = $this->getInstance(RoleDroit::class);
 
-        $all_droit = $roleDroit->getAllDroit();
-        $all_droit_sql = $this->getRoleSQL()->getDroit($all_droit, $this->getViewParameterOrObject('role'));
-        $this->setViewParameter('all_droit_utilisateur', $this->getObjectInstancier()->getInstance(DroitService::class)->clearRestrictedDroit($all_droit_sql));
+        $all_droit_sql = $this->getRoleSQL()->getDroit($roleDroit->getAllDroit(), $role_id);
+        $all_droit_utilisateur = $this->getObjectInstancier()->getInstance(DroitService::class)->clearRestrictedDroit($all_droit_sql);
+        $this->setViewParameter('droits_administration', $this->getDroitsAdministration($all_droit_utilisateur));
+        $this->setViewParameter('droits_type_dossier', $this->getDroitsTypeDossier($all_droit_utilisateur));
 
-        $this->setViewParameter('page_title', "Gestion du rôle {$this->getViewParameterOrObject('role')} et des droits associés");
-        $this->setViewParameter('template_milieu', "RoleDetail");
+        $this->setViewParameter('page_title', "Gestion du rôle {$role_id} et des droits associés");
+        $this->setViewParameter('template_milieu', 'RoleDetail');
         $this->renderDefault();
+    }
+
+    private const array DROIT_ADMINISTRATION_LIBELLE = [
+        'entite' => 'Entité',
+        'utilisateur' => 'Utilisateur',
+        'role' => 'Rôle',
+        'journal' => 'Journal',
+        'system' => 'Système',
+        'annuaire' => 'Annuaire',
+        'connecteur' => 'Connecteur',
+        'daemon' => 'Gestionnaire de tâches',
+    ];
+
+    private function getDroitsAdministration(array $all_droit_utilisateur): array
+    {
+        $droits_administration = [];
+        foreach ($all_droit_utilisateur as $droit => $enabled) {
+            $id_droit = explode(':', $droit, 2)[0];
+            if (isset(self::DROIT_ADMINISTRATION_LIBELLE[$id_droit])) {
+                $droits_administration[self::DROIT_ADMINISTRATION_LIBELLE[$id_droit]][$droit] = $enabled;
+            }
+        }
+
+        $ordered = [];
+        foreach (self::DROIT_ADMINISTRATION_LIBELLE as $libelle) {
+            if (isset($droits_administration[$libelle])) {
+                $ordered[$libelle] = $droits_administration[$libelle];
+            }
+        }
+        return $ordered;
+    }
+
+    private function getDroitsTypeDossier(array $all_droit_utilisateur): array
+    {
+        $flux_info = [];
+        /** @var DocumentTypeFactory $documentTypeFactory */
+        $documentTypeFactory = $this->getInstance(DocumentTypeFactory::class);
+        foreach ($documentTypeFactory->getAllType() as $type => $fluxList) {
+            foreach ($fluxList as $type_dossier_id => $libelle) {
+                $flux_info[$type_dossier_id]['libelle'] = $libelle;
+                $flux_info[$type_dossier_id]['type'] = $type;
+            }
+        }
+
+        $droits_type_dossier_by_categorie = [];
+        foreach ($all_droit_utilisateur as $droit => $enabled) {
+            $id_droit = explode(':', $droit, 2)[0];
+            if (isset(self::DROIT_ADMINISTRATION_LIBELLE[$id_droit])) {
+                continue;
+            }
+            $info = $flux_info[$id_droit];
+            $droits_type_dossier_by_categorie[$info['type']][$id_droit]['libelle'] ??= $info['libelle'];
+            $droits_type_dossier_by_categorie[$info['type']][$id_droit]['droits'][$droit] = $enabled;
+        }
+
+        foreach ($droits_type_dossier_by_categorie as &$group) {
+            uasort($group, static fn(array $a, array $b): int => strcasecmp($a['libelle'], $b['libelle']));
+        }
+        unset($group);
+
+        $currentLocale = setlocale(LC_COLLATE, '0');
+        setlocale(LC_COLLATE, 'fr_FR.utf8');
+        ksort($droits_type_dossier_by_categorie, SORT_LOCALE_STRING);
+        setlocale(LC_COLLATE, $currentLocale);
+
+        return $droits_type_dossier_by_categorie;
     }
 
     /**
