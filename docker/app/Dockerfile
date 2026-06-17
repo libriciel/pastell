@@ -1,9 +1,9 @@
-FROM hubdocker.libriciel.fr/node:24.16-alpine3.23@sha256:2bdb65ed1dab192432bc31c95f94155ca5ad7fc1392fb7eb7526ab682fa5bf14 AS node_modules
+FROM hubdocker.libriciel.fr/node:24.16-alpine3.24@sha256:21f403ab171f2dc89bad4dd69d7721bfd15f084ccb46cdd225f31f2bc59b5c9a AS node_modules
 WORKDIR /app/
 COPY package*.json ./
 RUN npm install
 
-FROM hubdocker.libriciel.fr/php:8.4.22-fpm-alpine3.23@sha256:32f8a445cf279d8911841f9f818d3383dfa96ffce42ee23bc1fe3fea3f13bb0c AS base
+FROM hubdocker.libriciel.fr/php:8.4.22-fpm-alpine3.24@sha256:d2485b34a0016a5ba31774edd8fbd85a1dabdfe8601def2d4adf3dd0a5b80c59 AS base
 
 ARG UID=10001
 ARG GID=10001

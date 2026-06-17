@@ -6,9 +6,9 @@
   "dependencies": {
     "@flowjs/flow.js": "^2.14.1",
     "@fortawesome/fontawesome-free": "^7.2.0",
-    "@libriciel/ls-auth-native": "^5.1.4",
+    "@libriciel/ls-auth-native": "^7.0.2",
     "@libriciel/ls-bootstrap-5": "^1.0.4",
-    "@libriciel/ls-elements-native": "^5.1.2",
+    "@libriciel/ls-elements-native": "^7.0.2",
     "@libriciel/ls-jquery-password": "1.2.3",
     "bootstrap": "^5.2",
     "jquery": "^3.7.0",
