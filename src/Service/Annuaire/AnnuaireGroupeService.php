@@ -91,6 +91,6 @@ final class AnnuaireGroupeService
 
     public function deleteGroupe(int $id_e, int $id_g): void
     {
-        $this->annuaireGroupeSQL->delete($id_e, [$id_g]);
+        $this->annuaireGroupeSQL->delete($id_e, $id_g);
     }
 }

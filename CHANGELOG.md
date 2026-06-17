@@ -5,7 +5,7 @@
 - Création des services `AnnuaireContactService`, `AnnuaireExportService`, `AnnuaireGroupeService` et `AnnuaireImportService` pour les opérations sur l'annuaire #2478
 - Suppression du paramètre interne `id_e` dans `AnnuaireGroupeSQL`, `id_e` doit être directement passé à l'appel des méthodes #2477
 
-## Dépréciation
+## Dépréciations
 
 - La classe `AnnuaireGroupe` est dépréciée au profit de `AnnuaireGroupeSQL` #2477
 - La classe `AnnuaireExporter` est dépréciée au profit de `AnnuaireExportService` #2478

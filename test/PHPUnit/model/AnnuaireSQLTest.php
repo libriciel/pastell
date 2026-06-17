@@ -68,7 +68,7 @@ class AnnuaireSQLTest extends PastellTestCase
         $id_g = $this->getAnnuaireGroupsSQL()->add(1, 'test');
         $this->getAnnuaireGroupsSQL()->addToGroupe($id_g, $id_a);
         static::assertTrue((bool) $this->getAnnuaireGroupsSQL()->isInGroupe($id_g, $id_a));
-        $this->getAnnuaireGroupsSQL()->delete(1, [$id_g]);
+        $this->getAnnuaireGroupsSQL()->delete(1, $id_g);
         static::assertSame(0, $this->getAnnuaireGroupsSQL()->isInGroupe($id_g, $id_a));
     }
 

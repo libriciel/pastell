@@ -76,19 +76,16 @@ SQL;
         return $this->query($sql, $id_g);
     }
 
-    public function delete(int $id_e, array $lesId_g): void
+    public function delete(int $id_e, int $id_g): void
     {
-        foreach ($lesId_g as $id_g) {
-            $sql = <<<SQL
+        $sql = <<<SQL
 DELETE FROM annuaire_groupe_contact WHERE id_g=?
 SQL;
-            $this->query($sql, $id_g);
-
-            $sql = <<<SQL
+        $this->query($sql, $id_g);
+        $sql = <<<SQL
 DELETE FROM annuaire_groupe WHERE id_e=? AND id_g=?
 SQL;
-            $this->query($sql, $id_e, $id_g);
-        }
+        $this->query($sql, $id_e, $id_g);
     }
 
     public function isInGroupe(int $id_g, int $id_a): int
