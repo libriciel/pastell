@@ -351,7 +351,7 @@ class CPPWrapperTest extends ExtensionCppTestCase
         $this->mockCurl(
             [
                 self::PISTE_TOKEN  => json_encode($returnData, JSON_THROW_ON_ERROR),
-                self::PISTE_TVA_ENDPOINT => 'ok',
+                self::PISTE_TVA_ENDPOINT => '{}',
             ]
         );
 
