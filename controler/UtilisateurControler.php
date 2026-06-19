@@ -285,7 +285,7 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('certificat', new Certificate($infoUtilisateur['certificat']));
         $this->setViewParameter(
             'arbre',
-            $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), 'entite:edition')
+            $this->getRoleUtilisateur()->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
         );
 
         if ($id_u) {
@@ -336,7 +336,7 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('entiteListe', $this->getEntiteListe());
         $this->setViewParameter(
             'tabEntite',
-            $this->getRoleUtilisateur()->getEntite($this->getId_u(), 'entite:edition')
+            $this->getRoleUtilisateur()->getEntite($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
         );
 
         if ((int) $id_u === $this->getId_u()) {
@@ -387,42 +387,16 @@ class UtilisateurControler extends PastellControler
         );
         $this->setViewParameter('info', $info);
         $this->setViewParameter('id_u', $id_u);
-        $this->setViewParameter(
-            'arbre',
-            $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), 'entite:edition')
-        );
+        $arbre = $this->getRoleUtilisateur()->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+        $this->setViewParameter('arbre', $arbre);
 
-        $tree = $this->getRoleUtilisateur()->getEntityTree($this->getId_u(), 'entite:edition');
-
-        $this->replaceArrayKeyRecursive($tree, 'denomination', 'name');
-        $this->replaceArrayKeyRecursive($tree, 'id_e', 'value');
-        array_unshift($tree, [
-            'name' => 'Entité Racine',
-            'value' => '0',
-        ]);
         $this->setViewParameter(
             'tree',
-            \json_encode($tree, \JSON_THROW_ON_ERROR)
+            \json_encode(\Pastell\Helpers\ArrayHelper::buildTreeselectOptions($arbre), \JSON_THROW_ON_ERROR)
         );
 
         $this->setViewParameter('template_milieu', 'UtilisateurDetail');
         $this->renderDefault();
-    }
-
-    private function replaceArrayKeyRecursive(array &$array, string $oldName, string $newName): void
-    {
-        foreach ($array as &$element) {
-            if (\is_array($element)) {
-                $this->replaceArrayKeyRecursive($element, $oldName, $newName);
-            }
-            if (isset($element[$oldName])) {
-                $element[$newName] = $element[$oldName];
-                unset($element[$oldName]);
-            }
-            if (isset($element['children']) && \is_array($element['children'])) {
-                $this->replaceArrayKeyRecursive($element['children'], $oldName, $newName);
-            }
-        }
     }
 
     private function getNotificationList($id_u)
@@ -452,16 +426,12 @@ class UtilisateurControler extends PastellControler
 
         $this->setViewParameter(
             'tabEntite',
-            $this->getRoleUtilisateur()->getEntite($this->getId_u(), 'entite:edition')
+            $this->getRoleUtilisateur()->getEntite($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
         );
 
         $this->setViewParameter('notification_list', $this->getNotificationList($id_u));
 
         $this->setViewParameter('roleInfo', $this->getRoleUtilisateur()->getRole($id_u));
-        $this->setViewParameter(
-            'droit_entite_racine',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'entite:lecture', 0)
-        );
 
         if ($info['id_e']) {
             $infoEntiteDeBase = $this->getEntiteSQL()->getInfo($info['id_e']);
@@ -471,7 +441,7 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('id_u', $id_u);
         $this->setViewParameter(
             'arbre',
-            $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), 'entite:lecture')
+            $this->getRoleUtilisateur()->getArbreFilleWithRacine($this->getId_u(), 'entite:lecture')
         );
 
         $tokens = $this->getObjectInstancier()
@@ -580,7 +550,7 @@ class UtilisateurControler extends PastellControler
         $role = $recuperateur->get('role');
         $id_e = $recuperateur->get('id_e', 0);
 
-        $this->verifDroit($id_e, 'entite:edition');
+        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
         if ($this->getRoleUtilisateur()->hasRole($id_u, $role, $id_e)) {
             $this->setLastError("Ce droit a déjà été attribué à l'utilisateur");
         } elseif ($role) {
@@ -599,7 +569,7 @@ class UtilisateurControler extends PastellControler
         $id_u = $recuperateur->get('id_u');
         $role = $recuperateur->get('role');
         $id_e = $recuperateur->getInt('id_e', 0);
-        $this->verifDroit($id_e, 'entite:edition');
+        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
         $this->getRoleUtilisateur()->removeRole($id_u, $role, $id_e);
         $role_info = $this->getRoleSQL()->getInfo($role);
         $utilisateur_info = $this->getUtilisateur()->getInfo($id_u);

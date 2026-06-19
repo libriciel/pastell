@@ -12,7 +12,6 @@ declare(strict_types=1);
  * @var array $arbre
  * @var array $all_module
  * @var array $tokens
- * @var bool $droit_entite_racine
  */
 
 use Pastell\Utilities\Certificate;
@@ -182,9 +181,6 @@ use Pastell\Utilities\Certificate;
             <input type='hidden' name='source' value='moi'/>
             <input type='hidden' name='id_u' value='<?php echo $id_u ?>'/>
             <select name='id_e' class='select2_entite form-select col-md-1'>
-                <?php if ($droit_entite_racine) : ?>
-                    <option value='0'>Entité racine</option>
-                <?php endif; ?>
                 <?php foreach ($arbre as $entiteInfo) : ?>
                     <option value='<?php echo $entiteInfo['id_e']; ?>'>
                         <?php echo str_repeat("-", $entiteInfo['profondeur']); ?>

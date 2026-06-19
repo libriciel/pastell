@@ -279,29 +279,17 @@ SQL;
         return $this->linearizeTab($result);
     }
 
-    public function getEntityTree(int $userId, string $permission): array
+    public function getArbreFilleWithRacine(int $userId, string $permission): array
     {
-        $data = $this->getArbreFille($userId, $permission);
-        $hierarchy = [];
-
-        foreach ($data as $entry) {
-            $depth = $entry['profondeur'];
-
-            if ($depth === 0) {
-                // Root element
-                $hierarchy[] = $entry;
-            } else {
-                // Find parent and attach as child
-                $parent = &$hierarchy;
-                for ($i = 0; $i < $depth; ++$i) {
-                    $parent = &$parent[\count($parent) - 1]['children'];
-                }
-                $parent[] = $entry;
-                unset($parent);
-            }
+        $arbre = $this->getArbreFille($userId, $permission);
+        if ($this->hasDroit($userId, $permission, EntiteSQL::ID_E_ENTITE_RACINE)) {
+            array_unshift($arbre, [
+                'id_e' => EntiteSQL::ID_E_ENTITE_RACINE,
+                'denomination' => EntiteSQL::ENTITE_RACINE_DENOMINATION,
+                'profondeur' => 0,
+            ]);
         }
-
-        return $hierarchy;
+        return $arbre;
     }
 
     public function getEntiteWithDenomination($id_u, $droit)
