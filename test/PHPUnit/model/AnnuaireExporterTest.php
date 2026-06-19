@@ -1,5 +1,6 @@
 <?php
 
+/** @deprecated Since 4.1.20, Unused, Use AnnuaireExportServiceTest instead */
 class AnnuaireExporterTest extends PastellTestCase
 {
     private function getAnnuaireSQL()

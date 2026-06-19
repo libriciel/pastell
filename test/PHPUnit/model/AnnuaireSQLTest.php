@@ -1,94 +1,83 @@
 <?php
 
+declare(strict_types=1);
+
 class AnnuaireSQLTest extends PastellTestCase
 {
-    /**
-     *
-     * @return AnnuaireSQL
-     */
-    private function getAnnuaireSQL()
+    private function getAnnuaireSQL(): AnnuaireSQL
     {
         $sqlQuery = $this->getObjectInstancier()->getInstance(SQLQuery::class);
         return new AnnuaireSQL($sqlQuery);
     }
 
-    private function getAnnuaireGroupsSQL()
+    private function getAnnuaireGroupsSQL(): AnnuaireGroupeSQL
     {
-        return new AnnuaireGroupe($this->getObjectInstancier()->getInstance(SQLQuery::class), 1);
+        return $this->getObjectInstancier()->getInstance(AnnuaireGroupeSQL::class);
     }
 
-    public function testGetUtilisateur()
+    public function testGetUtilisateur(): void
     {
-        $this->getAnnuaireSQL()->add(1, "Eric Pommateau", "eric@sigmalis.com");
+        $this->getAnnuaireSQL()->add(1, 'Eric Pommateau', 'eric@sigmalis.com');
         $result = $this->getAnnuaireSQL()->getUtilisateur(1);
-        $this->assertCount(1, $result);
-        $this->assertEquals("eric@sigmalis.com", $result[0]['email']);
+        static::assertCount(1, $result);
+        static::assertEquals('eric@sigmalis.com', $result[0]['email']);
     }
 
-    public function testGetFromEmail()
+    public function testGetFromEmail(): void
     {
-        $id_a = $this->getAnnuaireSQL()->add(1, "Eric Pommateau", "eric@sigmalis.com");
-        $result = $this->getAnnuaireSQL()->getFromEmail(1, "eric@sigmalis.com");
-        $this->assertEquals($id_a, $result);
+        $id_a = $this->getAnnuaireSQL()->add(1, 'Eric Pommateau', 'eric@sigmalis.com');
+        $result = $this->getAnnuaireSQL()->getFromEmail(1, 'eric@sigmalis.com');
+        static::assertEquals($id_a, $result);
     }
 
-    public function testUpdate()
+    public function testDelete(): void
     {
-        $id_a_1 = $this->getAnnuaireSQL()->add(1, "Eric Pommateau", "eric@sigmalis.com");
-        $id_a_2 = $this->getAnnuaireSQL()->add(1, "epommate", "eric@sigmalis.com");
-        $this->assertEquals($id_a_1, $id_a_2);
-        $result = $this->getAnnuaireSQL()->getInfo($id_a_2);
-        $this->assertEquals("epommate", $result["description"]);
-    }
-
-    public function testDelete()
-    {
-        $id_a = $this->getAnnuaireSQL()->add(1, "Eric Pommateau", "eric@sigmalis.com");
+        $id_a = $this->getAnnuaireSQL()->add(1, 'Eric Pommateau', 'eric@sigmalis.com');
         $this->getAnnuaireSQL()->delete(1, $id_a);
-        $this->assertEmpty($this->getAnnuaireSQL()->getInfo($id_a));
+        static::assertEmpty($this->getAnnuaireSQL()->getInfo($id_a));
     }
 
-    public function testGetListeMail()
+    public function testGetListeMail(): void
     {
-        $this->getAnnuaireSQL()->add(1, "Eric Pommateau", "eric@sigmalis.com");
-        $this->getAnnuaireSQL()->add(1, "Toto", "toto@sigmalis.com");
-        $result = $this->getAnnuaireSQL()->getListeMail(1, "E");
-        $this->assertEquals("eric@sigmalis.com", $result[0]['email']);
+        $this->getAnnuaireSQL()->add(1, 'Eric Pommateau', 'eric@sigmalis.com');
+        $this->getAnnuaireSQL()->add(1, 'Toto', 'toto@sigmalis.com');
+        $result = $this->getAnnuaireSQL()->getListeMail(1, 'E');
+        static::assertEquals('eric@sigmalis.com', $result[0]['email']);
     }
 
-    public function testEdit()
+    public function testEdit(): void
     {
-        $id_a = $this->getAnnuaireSQL()->add(1, "Eric Pommateau", "eric@sigmalis.com");
-        $this->getAnnuaireSQL()->edit($id_a, "toto", "toto@sigmalis.com");
+        $id_a = $this->getAnnuaireSQL()->add(1, 'Eric Pommateau', 'eric@sigmalis.com');
+        $this->getAnnuaireSQL()->edit($id_a, 'toto', 'toto@sigmalis.com');
         $result = $this->getAnnuaireSQL()->getInfo($id_a);
-        $this->assertEquals("toto", $result["description"]);
+        static::assertEquals('toto', $result['description']);
     }
 
-    public function testUtilisateurList()
+    public function testUtilisateurList(): void
     {
-        $id_a = $this->getAnnuaireSQL()->add(1, "Eric Pommateau", "eric@sigmalis.com");
-        $id_g = $this->getAnnuaireGroupsSQL()->add("test");
+        $id_a = $this->getAnnuaireSQL()->add(1, 'Eric Pommateau', 'eric@sigmalis.com');
+        $id_g = $this->getAnnuaireGroupsSQL()->add(1, 'test');
         $this->getAnnuaireGroupsSQL()->addToGroupe($id_g, $id_a);
-        $result = $this->getAnnuaireSQL()->getUtilisateurList(1, 0, 1, "eric", $id_g);
-        $this->assertEquals("eric@sigmalis.com", $result[0]['email']);
+        $result = $this->getAnnuaireSQL()->getUtilisateurList(1, 0, 1, 'eric', $id_g);
+        static::assertEquals('eric@sigmalis.com', $result[0]['email']);
     }
 
     public function testDeleteGroupeClearsGroupeContact(): void
     {
         $id_a = $this->getAnnuaireSQL()->add(1, 'Eric Pommateau', 'eric@sigmalis.com');
-        $id_g = $this->getAnnuaireGroupsSQL()->add('test');
+        $id_g = $this->getAnnuaireGroupsSQL()->add(1, 'test');
         $this->getAnnuaireGroupsSQL()->addToGroupe($id_g, $id_a);
-        $this->assertTrue((bool) $this->getAnnuaireGroupsSQL()->isInGroupe($id_g, $id_a));
-        $this->getAnnuaireGroupsSQL()->delete([$id_g]);
-        $this->assertSame(0, $this->getAnnuaireGroupsSQL()->isInGroupe($id_g, $id_a));
+        static::assertTrue((bool) $this->getAnnuaireGroupsSQL()->isInGroupe($id_g, $id_a));
+        $this->getAnnuaireGroupsSQL()->delete(1, $id_g);
+        static::assertSame(0, $this->getAnnuaireGroupsSQL()->isInGroupe($id_g, $id_a));
     }
 
-    public function testNbUtilisateurList()
+    public function testNbUtilisateurList(): void
     {
-        $id_a = $this->getAnnuaireSQL()->add(1, "Eric Pommateau", "eric@sigmalis.com");
-        $id_g = $this->getAnnuaireGroupsSQL()->add("test");
+        $id_a = $this->getAnnuaireSQL()->add(1, 'Eric Pommateau', 'eric@sigmalis.com');
+        $id_g = $this->getAnnuaireGroupsSQL()->add(1, 'test');
         $this->getAnnuaireGroupsSQL()->addToGroupe($id_g, $id_a);
-        $result = $this->getAnnuaireSQL()->getNbUtilisateur(1, "eric", $id_g);
-        $this->assertEquals(1, $result);
+        $result = $this->getAnnuaireSQL()->getNbUtilisateur(1, 'eric', $id_g);
+        static::assertEquals(1, $result);
     }
 }

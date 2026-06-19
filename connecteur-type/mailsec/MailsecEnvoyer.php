@@ -132,8 +132,8 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
 
     private function getEmailFromGroupe($groupe_name)
     {
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $this->id_e);
-        $id_g = $annuaireGroupe->getFromNom($groupe_name);
+        $annuaireGroupe = $this->objectInstancier->getInstance(AnnuaireGroupeSQL::class);
+        $id_g = $annuaireGroupe->getFromNom($this->id_e, $groupe_name);
         $utilisateur = $annuaireGroupe->getAllUtilisateur($id_g);
         return $this->getFormattedEmailList($utilisateur);
     }
@@ -147,7 +147,7 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
 
     private function getEmailFromInheritedGroup($mail)
     {
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $this->id_e);
+        $annuaireGroupe = $this->objectInstancier->getInstance(AnnuaireGroupeSQL::class);
         $all_ancetre = $this->getEntiteSQL()->getAncetreId($this->id_e);
         $id_g = $annuaireGroupe->getFromNomDenomination($all_ancetre, $mail);
         $utilisateur = $annuaireGroupe->getAllUtilisateur($id_g);

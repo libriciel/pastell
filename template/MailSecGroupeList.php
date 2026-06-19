@@ -5,7 +5,7 @@
  * @var int $id_e
  * @var array $infoEntite
  * @var array $listGroupe
- * @var AnnuaireGroupe $annuaireGroupe
+ * @var AnnuaireGroupeSQL $annuaireGroupe
  * @var bool $can_edit
  * @var array $groupe_herited
  * @var RoleUtilisateur $roleUtilisateur

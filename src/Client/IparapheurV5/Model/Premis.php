@@ -9,6 +9,7 @@ use DOMException;
 use FileToSign;
 use Libriciel\IparapheurV5\Client\Model\Action;
 use RuntimeException;
+use Pastell\Utilities\TextTruncator;
 
 final class Premis
 {
@@ -19,12 +20,13 @@ final class Premis
     /** @var Agent[] */
     public array $agent;
     public const string CADES_BASELINE_B = 'CAdES_BASELINE_B';
+    private const int MAX_TITLE_LENGTH = 255;
 
     public static function fromFileToSign(FileToSign $fileToSign, bool $multi_doc = false): self
     {
         $intellectual = new PremisObject();
         $intellectual->type = PremisObject::INTELLECTUAL_ENTITY;
-        $intellectual->originalName = (string) $fileToSign->dossierTitre;
+        $intellectual->originalName = TextTruncator::truncate($fileToSign->dossierTitre, self::MAX_TITLE_LENGTH);
 
         $significantProperties = [];
 
