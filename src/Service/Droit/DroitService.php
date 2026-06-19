@@ -20,6 +20,7 @@ class DroitService
     public const string DROIT_DAEMON = 'daemon';
     public const string DROIT_JOURNAL = 'journal';
     public const string DROIT_ROLE = 'role';
+    public const string DROIT_ANNUAIRE = 'annuaire';
 
 
     public function __construct(

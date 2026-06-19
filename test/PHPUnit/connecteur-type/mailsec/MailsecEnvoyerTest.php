@@ -48,12 +48,12 @@ class MailsecEnvoyerTest extends PastellTestCase
 
     private function createAnnuaireGroup(int $id_e, string $group_name, array $group_member): void
     {
-        $annuaireGroupe = new AnnuaireGroupe($this->getSQLQuery(), $id_e);
-        $id_g = $annuaireGroupe->add($group_name);
+        $annuaireGroupe = $this->getObjectInstancier()->getInstance(AnnuaireGroupeSQL::class);
+        $id_g = $annuaireGroupe->add($id_e, $group_name);
         $annuaireGroupe->tooglePartage($id_g);
         $annuaireSQL = $this->getObjectInstancier()->getInstance(AnnuaireSQL::class);
         foreach ($group_member as $member) {
-            $id_a = $annuaireSQL->add(1, "$member", "$member@test.com");
+            $id_a = $annuaireSQL->add(1, (string)$member, "$member@test.com");
             $annuaireGroupe->addToGroupe($id_g, $id_a);
         }
     }

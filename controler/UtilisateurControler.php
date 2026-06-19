@@ -67,7 +67,7 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter(
             'droitLectureAnnuaire',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'annuaire:lecture', $id_e)
+            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE), $id_e)
         );
         $this->setViewParameter('menu_gauche_template', "EntiteMenuGauche");
         $this->setViewParameter('menu_gauche_select', "Entite/utilisateur");
