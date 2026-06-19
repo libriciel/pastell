@@ -11,6 +11,7 @@ class DroitService
     public const string DROIT_ECRITURE = 'edition';
     public const string DROIT_ACTION = 'action';
     public const string DROIT_CREATION = 'creation';
+    public const string DROIT_SUPPRESSION = 'suppression';
 
     public const string DROIT_CONNECTEUR = 'connecteur';
     public const string DROIT_SYSTEM = 'system';
@@ -19,6 +20,7 @@ class DroitService
     public const string DROIT_DAEMON = 'daemon';
     public const string DROIT_JOURNAL = 'journal';
     public const string DROIT_ROLE = 'role';
+    public const string DROIT_ANNUAIRE = 'annuaire';
 
 
     public function __construct(

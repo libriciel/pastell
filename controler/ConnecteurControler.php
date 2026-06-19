@@ -55,7 +55,7 @@ class ConnecteurControler extends PastellControler
         $this->setViewParameter('type_e_menu', '');
         $this->setViewParameter(
             'droitLectureAnnuaire',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'annuaire:lecture', $id_e)
+            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE), $id_e)
         );
         $this->setViewParameter('menu_gauche_template', "EntiteMenuGauche");
         $this->setViewParameter('menu_gauche_select', "Entite/connecteur?global=$global");

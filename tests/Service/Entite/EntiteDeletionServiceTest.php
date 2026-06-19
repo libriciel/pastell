@@ -2,7 +2,7 @@
 
 namespace Pastell\Tests\Service\Entite;
 
-use AnnuaireGroupe;
+use AnnuaireGroupeSQL;
 use AnnuaireRoleSQL;
 use AnnuaireSQL;
 use ConnecteurEntiteSQL;
@@ -160,11 +160,8 @@ class EntiteDeletionServiceTest extends PastellTestCase
 
     public function testCannotDeleteWhenHasDirectoryGroup(): void
     {
-        $annuaireGroupe = new AnnuaireGroupe(
-            $this->getObjectInstancier()->getInstance(SQLQuery::class),
-            $this->entityId
-        );
-        $annuaireGroupe->add('Groupe Test');
+        $annuaireGroupe = $this->getObjectInstancier()->getInstance(AnnuaireGroupeSQL::class);
+        $annuaireGroupe->add($this->entityId, 'Groupe Test');
 
         $isSupprimable = $this->entiteDeletionService->canDelete($this->entityId);
         self::assertFalse($isSupprimable);
