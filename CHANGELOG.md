@@ -1,9 +1,20 @@
 # [5.0.6] - 2026-07-06
 
+## Évolutions
+
+- Création des services `AnnuaireContactService`, `AnnuaireExportService`, `AnnuaireGroupeService` et `AnnuaireImportService` pour les opérations sur l'annuaire #2478
+- Suppression du paramètre interne `id_e` dans `AnnuaireGroupeSQL`, `id_e` doit être directement passé à l'appel des méthodes #2477
+
 ## Corrections 
 
 - Correction des dépréciations PHP 8.4 dans LDAPWrapper #2474
 - Il manquait le truncate du titre du dossier si sa taille dépasse 255 bytes lors de l'envoi à iparapheur REST #2486
+
+## Dépréciations
+
+- La classe `AnnuaireGroupe` est dépréciée au profit de `AnnuaireGroupeSQL` #2477
+- La classe `AnnuaireExporter` est dépréciée au profit de `AnnuaireExportService` #2478
+- La classe `AnnuaireImporter` est dépréciée au profit de `AnnuaireImportService` #2478
 
 # [5.0.5] - 2026-06-01
 
@@ -272,6 +283,19 @@
   Seules les factures importées de Chorus Pro seront traitées. #1856
 - Connecteur iparapheur soap #2268
 - Connecteur `chorus-par-csv` ChorusPro par CSV #2356
+
+# [4.1.20] - 2026-07-06
+
+## Évolutions
+
+- Création des services `AnnuaireContactService`, `AnnuaireExportService`, `AnnuaireGroupeService` et `AnnuaireImportService` pour les opérations sur l'annuaire #2478
+- Suppression du paramètre interne `id_e` dans `AnnuaireGroupeSQL`, `id_e` doit être directement passé à l'appel des méthodes #2477
+
+## Dépréciations
+
+- La classe `AnnuaireGroupe` est dépréciée au profit de `AnnuaireGroupeSQL` #2477
+- La classe `AnnuaireExporter` est dépréciée au profit de `AnnuaireExportService` #2478
+- La classe `AnnuaireImporter` est dépréciée au profit de `AnnuaireImportService` #2478
 
 # [4.1.19] - 2026-06-01
 

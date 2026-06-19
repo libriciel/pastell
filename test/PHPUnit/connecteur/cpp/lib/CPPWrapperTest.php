@@ -1,14 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 use Monolog\Logger;
 
 class CPPWrapperTest extends ExtensionCppTestCase
 {
-    private const MEMORY_KEY = "pastell_token_piste_61cde1ef-41ab-441c-b23f-95991f9d919g";
-    private const TOKEN = "Bearer BHv3LJUSWnGl5JRzxm8948mqhvv8P1UQLtCdjj1HgKdm8vQgmkeWQF";
+    use CurlUtilitiesTestTrait;
 
-    /** @var CPPWrapper */
-    private $cppWrapper;
+    private const CLIENT_ID = 'client_id';
+    private const MEMORY_KEY = 'pastell_token_piste_' . self::CLIENT_ID;
+    private const TOKEN = 'Bearer theToken';
+    private const PISTE_TOKEN = 'https://sandbox-oauth.aife.economie.gouv.fr/api/oauth/token';
+    private const PISTE_API_BASE = 'https://sandbox-api.aife.economie.gouv.fr';
+    private const PISTE_TVA_ENDPOINT = self::PISTE_API_BASE . '/cpro/transverses/v1/recuperer/tauxtva';
 
     protected function setUp(): void
     {
@@ -22,29 +27,24 @@ class CPPWrapperTest extends ExtensionCppTestCase
         $this->getObjectInstancier()->getInstance(MemoryCache::class)->delete(self::MEMORY_KEY);
     }
 
-    /**
-     * @return CPPWrapperConfig
-     */
     private function getDefaultWrapperConfig(): CPPWrapperConfig
     {
         $cppWrapperConfig = new CPPWrapperConfig();
 
-        $cppWrapperConfig->user_login = "TEST";
-        $cppWrapperConfig->user_password = "TEST";
+        $cppWrapperConfig->user_login = 'TEST';
+        $cppWrapperConfig->user_password = 'TEST';
 
-        $cppWrapperConfig->url_piste_get_token = "https://sandbox-oauth.aife.economie.gouv.fr/api/oauth/token";
-        $cppWrapperConfig->client_id = "61cde1ef-41ab-441c-b23f-95991f9d919g";
-        $cppWrapperConfig->client_secret = "bd307b18-298e-45a7-a4ef-9169200fad63";
-        $cppWrapperConfig->url_piste_api = "https://sandbox-api.aife.economie.gouv.fr/";
+        $cppWrapperConfig->url_piste_get_token = self::PISTE_TOKEN;
+        $cppWrapperConfig->client_id = self::CLIENT_ID;
+        $cppWrapperConfig->client_secret = 'secret';
+        $cppWrapperConfig->url_piste_api = self::PISTE_API_BASE;
         $cppWrapperConfig->cpro_account = base64_encode(
-            $cppWrapperConfig->user_login . ":" . $cppWrapperConfig->user_password
+            $cppWrapperConfig->user_login . ':' . $cppWrapperConfig->user_password
         );
         return $cppWrapperConfig;
     }
 
     /**
-     * @param CPPWrapperConfig|null $cppWrapperConfig
-     * @return CPPWrapper
      * @throws CPPException
      */
     private function getCPPWrapper(?CPPWrapperConfig $cppWrapperConfig = null): CPPWrapper
@@ -59,107 +59,40 @@ class CPPWrapperTest extends ExtensionCppTestCase
     }
 
     /**
+     * @throws CPPException
+     * @throws JsonException
      * @throws Exception
      */
-    public function testTestConnexion()
+    public function testTestConnexion(): void
     {
         $returnData = [
             'codeRetour' => 0,
             'libelle' => 'TRA_MSG_00.000',
             'listeTauxTva' => [
                 [
-                    "codeTauxTva" => "TVA1",
-                    "libelleTauxTva" => "Art 293B(FranchiseEnBase)",
-                    "valeurTauxTva" => 0
-                ]
-            ]
+                    'codeTauxTva' => 'TVA1',
+                    'libelleTauxTva' => 'Art 293B(FranchiseEnBase)',
+                    'valeurTauxTva' => 0,
+                ],
+            ],
         ];
-        $curlWrapper = $this->getMockBuilder(CurlWrapper::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapper->expects($this->any())->method('get')->willReturn(json_encode($returnData));
-        $curlWrapper->expects($this->any())->method('getLastHttpCode')->willReturn(200);
 
-        $curlWrapperFactory = $this->getMockBuilder(CurlWrapperFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapperFactory->expects($this->any())->method('getInstance')->willReturn($curlWrapper);
+        $this->mockCurl(
+            [
+                self::PISTE_TVA_ENDPOINT => json_encode($returnData, JSON_THROW_ON_ERROR),
+            ],
+        );
 
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
-        $this->cppWrapper = $this->getCPPWrapper();
-
-        $this->assertTrue($this->cppWrapper->testConnexion());
+        static::assertTrue($this->getCPPWrapper()->testConnexion());
     }
 
     /**
-     * When successfully getting the cpp id of the invoice
-     * @test
+     * @throws CPPException
+     * @throws JsonException
      * @throws Exception
      */
-    public function whenGettingTheInvoiceCppId()
+    public function testWhenGettingTheInvoiceCppId(): void
     {
-        $returnData = [
-            'codeRetour' => 0,
-            'libelle' => 'libelle',
-            'listeFactures' => [
-                [
-                    'idFacture' => 1234
-                ]
-            ]
-        ];
-        $curlWrapper = $this->getMockBuilder(CurlWrapper::class)->disableOriginalConstructor()->getMock();
-        $curlWrapper->expects($this->any())->method('get')->willReturn(json_encode($returnData));
-        $curlWrapper->expects($this->any())->method('getLastHttpCode')->willReturn(200);
-
-        $curlWrapperFactory = $this->getMockBuilder(CurlWrapperFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapperFactory->expects($this->any())->method('getInstance')->willReturn($curlWrapper);
-
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
-        $this->cppWrapper = $this->getCPPWrapper();
-
-        $this->assertEquals(1234, $this->cppWrapper->getCppInvoiceId(1, '1111'));
-    }
-
-    /**
-     * When no invoice is returned by chorus
-     * @test
-     * @throws Exception
-     */
-    public function whenNoInvoiceIsReturned()
-    {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage("Impossible de trouver la facture 1111");
-        $returnData = [
-            'codeRetour' => 0,
-            'libelle' => 'libelle',
-            'listeFactures' => []
-        ];
-        $curlWrapper = $this->getMockBuilder(CurlWrapper::class)->disableOriginalConstructor()->getMock();
-        $curlWrapper->expects($this->any())->method('get')->willReturn(json_encode($returnData));
-        $curlWrapper->expects($this->any())->method('getLastHttpCode')->willReturn(200);
-
-        $curlWrapperFactory = $this->getMockBuilder(CurlWrapperFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapperFactory->expects($this->any())->method('getInstance')->willReturn($curlWrapper);
-
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
-        $this->cppWrapper = $this->getCPPWrapper();
-
-        $this->cppWrapper->getCppInvoiceId(1, '1111');
-    }
-
-    /**
-     * When multiple invoices are returned by chorus (unlikely to happen)
-     * @test
-     * @throws Exception
-     */
-    public function whenMultipleInvoicesAreReturned()
-    {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage("Plusieurs factures ont été trouvé avec le numéro 1111");
         $returnData = [
             'codeRetour' => 0,
             'libelle' => 'libelle',
@@ -167,30 +100,92 @@ class CPPWrapperTest extends ExtensionCppTestCase
                 [
                     'idFacture' => 1234
                 ],
-                [
-                    'idFacture' => 12345
-                ]
-            ]
+            ],
         ];
-        $curlWrapper = $this->getMockBuilder(CurlWrapper::class)->disableOriginalConstructor()->getMock();
-        $curlWrapper->expects($this->any())->method('get')->willReturn(json_encode($returnData));
-        $curlWrapper->expects($this->any())->method('getLastHttpCode')->willReturn(200);
 
-        $curlWrapperFactory = $this->getMockBuilder(CurlWrapperFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapperFactory->expects($this->any())->method('getInstance')->willReturn($curlWrapper);
+        $this->mockCurl(
+            [
+                self::PISTE_TVA_ENDPOINT => '',
+                self::PISTE_API_BASE . '/cpro/factures/v1/rechercher/recipiendaire' => json_encode(
+                    $returnData,
+                    JSON_THROW_ON_ERROR
+                ),
+            ],
+        );
 
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
-        $this->cppWrapper = $this->getCPPWrapper();
-
-        $this->cppWrapper->getCppInvoiceId(1, '1111');
+        static::assertSame(
+            1234,
+            $this->getCPPWrapper()->getCppInvoiceId(1, '1111')
+        );
     }
 
     /**
+     * @throws CPPException
+     * @throws JsonException
+     */
+    public function testWhenNoInvoiceIsReturned(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Impossible de trouver la facture 1111');
+        $returnData = [
+            'codeRetour' => 0,
+            'libelle' => 'libelle',
+            'listeFactures' => []
+        ];
+
+        $this->mockCurl(
+            [
+                self::PISTE_TVA_ENDPOINT => '',
+                self::PISTE_API_BASE . '/cpro/factures/v1/rechercher/recipiendaire' => json_encode(
+                    $returnData,
+                    JSON_THROW_ON_ERROR
+                ),
+            ],
+        );
+
+        $this->getCPPWrapper()->getCppInvoiceId(1, '1111');
+    }
+
+    /**
+     * @throws CPPException
+     * @throws JsonException
+     */
+    public function testWhenMultipleInvoicesAreReturned(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Plusieurs factures ont été trouvé avec le numéro 1111');
+        $returnData = [
+            'codeRetour' => 0,
+            'libelle' => 'libelle',
+            'listeFactures' => [
+                [
+                    'idFacture' => 1234,
+                ],
+                [
+                    'idFacture' => 12345,
+                ],
+            ],
+        ];
+
+        $this->mockCurl(
+            [
+                self::PISTE_TVA_ENDPOINT => '',
+                self::PISTE_API_BASE . '/cpro/factures/v1/rechercher/recipiendaire' => json_encode(
+                    $returnData,
+                    JSON_THROW_ON_ERROR
+                ),
+            ],
+        );
+
+        $this->getCPPWrapper()->getCppInvoiceId(1, '1111');
+    }
+
+    /**
+     * @throws CPPException
+     * @throws JsonException
      * @throws Exception
      */
-    public function testGetIdentifiantStructureCPP()
+    public function testGetIdentifiantStructureCPP(): void
     {
         $returnData = [
             'codeRetour' => 0,
@@ -200,32 +195,31 @@ class CPPWrapperTest extends ExtensionCppTestCase
                     'idStructureCPP' => 25783752,
                     'identifiantStructure' => '00000000012887',
                     'designationStructure' => 'TAA070DESTINATAIRE',
-                    'statut' => 'ACTIVE'
-                ]
-            ]
+                    'statut' => 'ACTIVE',
+                ],
+            ],
         ];
-        $curlWrapper = $this->getMockBuilder(CurlWrapper::class)->disableOriginalConstructor()->getMock();
-        $curlWrapper->expects($this->any())->method('get')->willReturn(json_encode($returnData));
-        $curlWrapper->expects($this->any())->method('getLastHttpCode')->willReturn(200);
 
-        $curlWrapperFactory = $this->getMockBuilder(CurlWrapperFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapperFactory->expects($this->any())->method('getInstance')->willReturn($curlWrapper);
+        $this->mockCurl(
+            [
+                self::PISTE_TVA_ENDPOINT => '',
+                self::PISTE_API_BASE . '/cpro/structures/v1/rechercher' => json_encode(
+                    $returnData,
+                    JSON_THROW_ON_ERROR
+                ),
+            ],
+        );
 
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
-        $this->cppWrapper = $this->getCPPWrapper();
-
-        $this->assertEquals(
+        static::assertSame(
             25783752,
-            $this->cppWrapper->GetIdentifiantStructureCPPByIdentifiantStructure("00000000012887")
+            $this->getCPPWrapper()->getIdentifiantStructureCPPByIdentifiantStructure('00000000012887')
         );
     }
 
     /**
      * @throws CPPException
-     * @throws JsonException
      * @throws CPPWrapperServicesException
+     * @throws JsonException
      */
     public function testGetListeService(): void
     {
@@ -238,45 +232,45 @@ class CPPWrapperTest extends ExtensionCppTestCase
                     'codeService' => 'SERVICE_DESTINATAIRETAA070',
                     'libelleService' => 'SERVICE_DESTINATAIRETAA070',
                     'dateDbtService' => '2016-12-28 08:30',
-                    'estActif' => true
+                    'estActif' => true,
                 ],
                 [
                     'idService' => 10136557,
                     'codeService' => 'FACTURES_PUBLIQUES',
                     'libelleService' => 'Service des factures publiques',
                     'dateDbtService' => '2016-12-28 08:30',
-                    'estActif' => true
-                ]
+                    'estActif' => true,
+                ],
             ],
             'parametresRetour' => [
                 'pageCourante' => 1,
                 'pages' => 1,
                 'nbResultatsParPage' => 20,
                 'total' => 2,
-            ]
+            ],
         ];
 
-        $curlWrapper = $this->getMockBuilder(CurlWrapper::class)->disableOriginalConstructor()->getMock();
-        $curlWrapper->method('get')->willReturn(json_encode($returnData, JSON_THROW_ON_ERROR));
-        $curlWrapper->method('getLastHttpCode')->willReturn(200);
+        $this->mockCurl(
+            [
+                self::PISTE_TVA_ENDPOINT => '',
+                self::PISTE_API_BASE . '/cpro/structures/v1/rechercher/services' => json_encode(
+                    $returnData,
+                    JSON_THROW_ON_ERROR
+                ),
+            ],
+        );
 
-        $curlWrapperFactory = $this->getMockBuilder(CurlWrapperFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapperFactory->method('getInstance')->willReturn($curlWrapper);
-
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
         $cppWrapperConfig = $this->getDefaultWrapperConfig();
         $cppWrapperConfig->identifiant_structure_cpp = 25783752;
-        $this->cppWrapper = $this->getCPPWrapper($cppWrapperConfig);
+        $cppWrapper = $this->getCPPWrapper($cppWrapperConfig);
 
-        $this->assertSame($returnData, $this->cppWrapper->getListeService());
+        static::assertSame($returnData, $cppWrapper->getListeService());
     }
 
     /**
      * @throws CPPException
-     * @throws JsonException
      * @throws CPPWrapperServicesException
+     * @throws JsonException
      */
     public function testGetService(): void
     {
@@ -307,135 +301,126 @@ class CPPWrapperTest extends ExtensionCppTestCase
             ]
         ];
 
-        $curlWrapper = $this->getMockBuilder(CurlWrapper::class)->disableOriginalConstructor()->getMock();
-        $curlWrapper->method('get')->willReturn(json_encode($returnData, JSON_THROW_ON_ERROR));
-        $curlWrapper->method('getLastHttpCode')->willReturn(200);
+        $this->mockCurl(
+            [
+                self::PISTE_TVA_ENDPOINT => '',
+                self::PISTE_API_BASE . '/cpro/structures/v1/consulter/service' => json_encode(
+                    $returnData,
+                    JSON_THROW_ON_ERROR
+                ),
+            ],
+        );
 
-        $curlWrapperFactory = $this->getMockBuilder(CurlWrapperFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapperFactory->method('getInstance')->willReturn($curlWrapper);
-
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
         $cppWrapperConfig = $this->getDefaultWrapperConfig();
         $cppWrapperConfig->identifiant_structure_cpp = 25783752;
-        $this->cppWrapper = $this->getCPPWrapper($cppWrapperConfig);
+        $cppWrapper = $this->getCPPWrapper($cppWrapperConfig);
 
-        $this->assertSame($returnData, $this->cppWrapper->getService(10136557));
+        static::assertSame($returnData, $cppWrapper->getService(10136557));
     }
 
+
     /**
+     * @throws CPPException
      * @throws Exception
      */
-    public function testGetIdentifiantStructureCPPWhenFalse()
+    public function testGetIdentifiantStructureCPPWhenFalse(): void
     {
+        $this->mockCurl(
+            [
+                self::PISTE_TVA_ENDPOINT => '',
+            ]
+        );
 
-        $curlWrapper = $this->getMockBuilder(CurlWrapper::class)->disableOriginalConstructor()->getMock();
-        $curlWrapper->expects($this->any())->method('get')->willReturn(false);
-        $curlWrapper->expects($this->any())->method('getLastHttpCode')->willReturn(200);
-
-        $curlWrapperFactory = $this->getMockBuilder(CurlWrapperFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapperFactory->expects($this->any())->method('getInstance')->willReturn($curlWrapper);
-
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
-        $this->cppWrapper = $this->getCPPWrapper();
-
-        $this->assertFalse($this->cppWrapper->GetIdentifiantStructureCPPByIdentifiantStructure(""));
+        static::assertFalse($this->getCPPWrapper()->getIdentifiantStructureCPPByIdentifiantStructure(''));
     }
 
     /**
+     * @throws CPPException
+     * @throws JsonException
      * @throws Exception
      */
     public function testGetToken(): void
     {
         $this->getObjectInstancier()->getInstance(MemoryCache::class)->delete(self::MEMORY_KEY);
         $returnData = [
-            'access_token' => '5TqQc6hAsUsmxD5UpSxmV0kXTgUJY7vNX6HWUodz3lfiwmWvERTjVp',
+            'access_token' => 'theToken',
             'token_type' => 'Bearer',
             'expires_in' => 3600,
             'scope' => 'openid',
         ];
-        $curlWrapperToken = $this->getMockBuilder(CurlWrapper::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapperToken->expects($this->any())->method('get')->willReturn(json_encode($returnData));
-        $curlWrapperToken->expects($this->any())->method('getLastHttpCode')->willReturn(200);
+        $this->mockCurl(
+            [
+                self::PISTE_TOKEN  => json_encode($returnData, JSON_THROW_ON_ERROR),
+                self::PISTE_TVA_ENDPOINT => 'ok',
+            ]
+        );
 
-        $curlWrapperFactoryToken = $this->getMockBuilder(CurlWrapperFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapperFactoryToken->expects($this->any())->method('getInstance')->willReturn($curlWrapperToken);
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactoryToken);
-
-        $this->cppWrapper = $this->getCPPWrapper();
-        $this->assertEquals(1, $this->cppWrapper->testConnexion());
+        static::assertTrue($this->getCPPWrapper()->testConnexion());
 
         $token = $this->getObjectInstancier()->getInstance(MemoryCache::class)->fetch(self::MEMORY_KEY);
-        $this->assertEquals("Bearer 5TqQc6hAsUsmxD5UpSxmV0kXTgUJY7vNX6HWUodz3lfiwmWvERTjVp", $token);
+        static::assertSame(self::TOKEN, $token);
     }
 
-    public function testGetTokenInvalid()
+    /**
+     * @throws CPPException
+     * @throws JsonException
+     * @throws Exception
+     */
+    public function testGetTokenInvalid(): void
     {
         $this->expectException(CPPWrapperExceptionGetToken::class);
         $this->expectExceptionMessage(
-            'PISTE get token invalid return: {"access_token":"","token_type":"Bearer","expires_in":3600,"scope":"openid"}'
+            'PISTE get token invalid return: {"access_token":"","token_type":"Bearer","expires_in":42,"scope":"openid"}'
         );
 
         $this->getObjectInstancier()->getInstance(MemoryCache::class)->delete(self::MEMORY_KEY);
         $returnData = [
             'access_token' => '',
             'token_type' => 'Bearer',
-            'expires_in' => 3600,
+            'expires_in' => 42,
             'scope' => 'openid',
         ];
-        $curlWrapperToken = $this->getMockBuilder(CurlWrapper::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapperToken->expects($this->any())->method('get')->willReturn(json_encode($returnData));
-        $curlWrapperToken->expects($this->any())->method('getLastHttpCode')->willReturn(200);
 
-        $curlWrapperFactoryToken = $this->getMockBuilder(CurlWrapperFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapperFactoryToken->expects($this->any())->method('getInstance')->willReturn($curlWrapperToken);
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactoryToken);
-
-        $this->cppWrapper = $this->getCPPWrapper();
-        $this->cppWrapper->testConnexion();
+        $this->mockCurl(
+            [
+                self::PISTE_TOKEN => json_encode($returnData, JSON_THROW_ON_ERROR),
+            ]
+        );
+        $this->getCPPWrapper()->testConnexion();
 
         $token = $this->getObjectInstancier()->getInstance(MemoryCache::class)->fetch(self::MEMORY_KEY);
-        $this->assertEquals(self::TOKEN, $token);
+        static::assertSame(self::TOKEN, $token);
     }
 
-    /**
-     * @return array
-     */
-    public function getRechercheFactureTravauxProvider(): array
+    public static function getRechercheFactureTravauxProvider(): \Generator
     {
-        return [
-            'FactureNotEmpty' =>
-                [
-                    "MOA",
-                    ["listeFactures" => [['idFactureTravaux' => 1234]]],
+        yield 'FactureNotEmpty' => [
+            'MOA',
+            [
+                'listeFactures' => [
+                    [
+                        'idFactureTravaux' => 1234,
+                    ],
                 ],
-            'FactureEmpty_NoRole' =>
-                [
-                    "",
-                    ["listeFactures" => []],
-                ],
+            ],
+        ];
+
+        yield 'FactureEmpty_NoRole' =>
+        [
+            '',
+            [
+                'listeFactures' => [],
+            ],
         ];
     }
 
     /**
-     * @param $user_role
-     * @param $result_expected
-     * @throws CPPException
-     * @throws Exception
      * @dataProvider getRechercheFactureTravauxProvider
+     * @throws CPPException
+     * @throws CPPWrapperExceptionRechercheFactureTravaux
+     * @throws JsonException
      */
-    public function testRechercheFactureTravaux($user_role, $result_expected)
+    public function testRechercheFactureTravaux(string $userRole, array $expected): void
     {
         $returnData = [
             'codeRetour' => 0,
@@ -446,28 +431,25 @@ class CPPWrapperTest extends ExtensionCppTestCase
             ],
             'listeFacturesTravaux' => [
                 [
-                    'idFactureTravaux' => 1234
-                ]
-            ]
+                    'idFactureTravaux' => 1234,
+                ],
+            ],
         ];
 
-        $curlWrapper = $this->getMockBuilder(CurlWrapper::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapper->expects($this->any())->method('get')->willReturn(json_encode($returnData));
-        $curlWrapper->expects($this->any())->method('getLastHttpCode')->willReturn(200);
-
-        $curlWrapperFactory = $this->getMockBuilder(CurlWrapperFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $curlWrapperFactory->expects($this->any())->method('getInstance')->willReturn($curlWrapper);
-
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
+        $this->mockCurl(
+            [
+                self::PISTE_TVA_ENDPOINT => '',
+                self::PISTE_API_BASE . '/cpro/facturesTravaux/v1/rechercher' => json_encode(
+                    $returnData,
+                    JSON_THROW_ON_ERROR
+                ),
+            ]
+        );
 
         $cppWrapperConfig = $this->getDefaultWrapperConfig();
-        $cppWrapperConfig->user_role = $user_role;
-        $this->cppWrapper = $this->getCPPWrapper($cppWrapperConfig);
+        $cppWrapperConfig->user_role = $userRole;
+        $cppWrapper = $this->getCPPWrapper($cppWrapperConfig);
 
-        $this->assertEquals($result_expected, $this->cppWrapper->rechercheFactureTravaux());
+        static::assertSame($expected, $cppWrapper->rechercheFactureTravaux());
     }
 }
