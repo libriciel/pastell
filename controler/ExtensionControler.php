@@ -1,13 +1,15 @@
 <?php
 
+use Pastell\Service\Menu\MenuGaucheService;
+
 class ExtensionControler extends PastellControler
 {
     public function _beforeAction()
     {
         parent::_beforeAction();
         $this->verifDroit(0, "system:lecture");
-        $this->setViewParameter('menu_gauche_template', "ConfigurationMenuGauche");
-        $this->setViewParameter('menu_gauche_select', "Extension/index");
+        $this->setViewParameter('menu', $this->getInstance(MenuGaucheService::class)->getConfigurationMenu());
+        $this->setMenuGaucheSelect(MenuGaucheService::EXTENSION_INDEX);
         $this->setViewParameter('dont_display_breacrumbs', true);
     }
 

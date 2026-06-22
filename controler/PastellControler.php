@@ -4,6 +4,7 @@ use Monolog\Logger;
 use Pastell\Security\LibricielFeedbackReader;
 use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Menu\MenuGaucheService;
 
 class PastellControler extends Controler
 {
@@ -54,22 +55,6 @@ class PastellControler extends Controler
                 $entityId,
                 $this->getId_u(),
             )
-        );
-    }
-
-    protected function setDroitLectureOnUtilisateur(int $id_e): void
-    {
-        $this->setViewParameter('droitLectureOnUtilisateur', $this->getDroitService()->hasDroitUtilisateurLecture(
-            $id_e,
-            $this->getId_u()
-        ));
-    }
-
-    protected function setDroitImportExportConfig(int $id_e): void
-    {
-        $this->setViewParameter(
-            'permission_on_import_export',
-            $this->getDroitService()->hasDroit($this->getId_u(), 'system:edition', $id_e)
         );
     }
 
@@ -167,6 +152,11 @@ class PastellControler extends Controler
         return $this->getAuthentification()->getId();
     }
 
+    public function setMenuGaucheSelect(string $menu_gauche_id): void
+    {
+        $this->setViewParameter('menu_gauche_select', $menu_gauche_id);
+    }
+
     public function setNavigationInfo($id_e, $url)
     {
         $listeCollectivite = $this->getRoleUtilisateur()->getEntiteWithSomeDroit($this->getId_u());
@@ -252,21 +242,15 @@ class PastellControler extends Controler
         $this->setViewParameter('manifest_info', $this->getManifestFactory()->getPastellManifest()->getInfo());
 
         $this->setViewParameter('timer', $this->getInstance(PastellTimer::class));
-        if (!$this->isViewParameter('menu_gauche_template')) {
-            $this->setViewParameter('menu_gauche_template', "DocumentMenuGauche");
-            $this->setViewParameter('menu_gauche_select', "");
-            if ($this->getViewParameterByKey('id_e_menu')) {
-                $this->setViewParameter(
-                    'menu_gauche_link',
-                    "Document/list?id_e=" . $this->getViewParameterByKey('id_e_menu')
-                );
-            } elseif (isset($this->getViewParameter()['id_e'])) {
-                $this->setViewParameter(
-                    'menu_gauche_link',
-                    "Document/list?id_e=" . $this->getViewParameterByKey('id_e')
-                );
-            } else {
-                $this->setViewParameter('menu_gauche_link', "Document/list?id_e=0");
+        $this->setViewParameter('menu_gauche_template', 'MenuGauche');
+
+        if (!$this->isViewParameter('menu')) {
+            $this->setViewParameter('pages_without_left_menu', true);
+        }
+        if (!$this->isViewParameter('menu_gauche_select')) {
+            $pageRequest = $this->getGetInfo()->get(FrontController::PAGE_REQUEST);
+            if ($pageRequest) {
+                $this->setMenuGaucheSelect($pageRequest);
             }
         }
         if (!$this->isViewParameter('navigation_url')) {
@@ -294,6 +278,26 @@ class PastellControler extends Controler
         }
         $this->setViewParameter('helpURL', $this->getHelpURL());
         parent::renderDefault();
+    }
+
+    public function setEntiteMenuGauche(int $id_e): void
+    {
+        $this->setViewParameter(
+            'menu',
+            $this->getInstance(MenuGaucheService::class)->getEntiteMenu($id_e, $this->getId_u())
+        );
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    public function setDocumentMenuGauche(int $id_e): void
+    {
+        $all_module = $this->getAllModule();
+        $this->setViewParameter(
+            'menu',
+            $this->getInstance(MenuGaucheService::class)->getDocumentMenu($all_module, $id_e)
+        );
     }
 
     private function getHelpURL(): string

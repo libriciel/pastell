@@ -37,7 +37,9 @@
             <li>
                 <form action='<?php echo $navigation_url ?>' method='get' id="<?php hecho($formId); ?>">
 
-                    <input type='hidden' name='type' value='<?php hecho($type ?? ''); ?>'/>
+                    <?php if (!empty($type)) : ?>
+                    <input type='hidden' name='type' value='<?php hecho($type); ?>'/>
+                    <?php endif; ?>
                     <select name='id_e' class='select2_breadcrumb' id='<?php hecho($idSelect); ?>'>
                         <?php foreach ($nav['same_level_entities'] as $fille) : ?>
                             <option
@@ -87,7 +89,9 @@
             </li>
             <li>
                 <form action='<?php hecho($navigation_url); ?>' method='get' id="bc_form">
-                    <input type='hidden' name='type' value='<?php hecho($type ?? ''); ?>'/>
+                    <?php if (!empty($type)) : ?>
+                    <input type='hidden' name='type' value='<?php hecho($type); ?>'/>
+                    <?php endif; ?>
                     <select name='id_e' class='select2_breadcrumb' id='select2_id_e_bc'>
                         <option></option>
                         <?php foreach ($nav['children'] as $fille) : ?>

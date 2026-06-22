@@ -3,6 +3,7 @@
 use Pastell\Mailer\Mailer;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\FeatureToggle\CertificateAuthentication;
+use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\PasswordEntropy;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UserTokenService;
@@ -37,6 +38,10 @@ class UtilisateurControler extends PastellControler
         return $this->getInstance(Notification::class);
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function _beforeAction()
     {
         parent::_beforeAction();
@@ -46,32 +51,22 @@ class UtilisateurControler extends PastellControler
             $info = $this->getUtilisateur()->getInfo($id_u);
             if (! $info) {
                 $this->setLastError("L'utilisateur n'existe pas");
-                $this->redirect("/");
+                $this->redirect('/');
             }
             $id_e = $info['id_e'];
-            $this->setViewParameter('id_e_menu', $id_e);
-            $this->setViewParameter('type_e_menu', "");
             if ($this->getGetInfo()->get('source') !== 'moi') {
                 $this->hasUtilisateurDroitLecture($id_e);
             }
-            $this->setNavigationInfo($id_e, "Entite/utilisateur?");
         } elseif ($this->getGetInfo()->get('id_e')) {
-            $this->setViewParameter('type_e_menu', "");
             $id_e = $this->getGetInfo()->get('id_e');
-            $this->setViewParameter('id_e_menu', $id_e);
-            $this->setNavigationInfo($id_e, 'Entite/utilisateur?');
-        } else {
-            $this->setNavigationInfo($id_e, "Entite/utilisateur?");
         }
+        $this->setViewParameter('type_e_menu', '');
+        $this->setViewParameter('id_e_menu', $id_e);
         $this->setViewParameter('id_e', $id_e);
-        $this->setViewParameter(
-            'droitLectureAnnuaire',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE), $id_e)
-        );
-        $this->setViewParameter('menu_gauche_template', "EntiteMenuGauche");
-        $this->setViewParameter('menu_gauche_select', "Entite/utilisateur");
+        $this->setEntiteMenuGauche((int) $id_e);
+        $this->setNavigationInfo($id_e, 'Entite/utilisateur');
+        $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_UTILISATEUR);
         $this->setDroitLectureOnConnecteur($this->getViewParameterOrObject('id_e'));
-        $this->setDroitLectureOnUtilisateur($this->getViewParameterByKey('id_e'));
     }
 
     /**
