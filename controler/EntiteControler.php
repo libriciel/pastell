@@ -22,6 +22,7 @@ class EntiteControler extends PastellControler
         if ($id_e != 0) {
             $this->hasEntiteDroitLecture($id_e);
         }
+        $this->setNavigationInfo($id_e, 'Entite/detail');
         $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_DETAIL);
         $this->setEntiteMenuGauche($id_e);
         $this->setDroitLectureOnConnecteur($id_e);
