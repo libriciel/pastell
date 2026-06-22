@@ -522,7 +522,7 @@ class TypeDossierControler extends PastellControler
         $id_t = $this->getPostOrGetInfo()->getInt('id_t');
         $id_type_dossier =  $this->getTypeDossierSQL()->getByIdT($id_t);
         $this->verifyTypeDossierHasNoActiveFolder($id_type_dossier);
-        $this->setViewParameter('template_milieu', 'TypeDossierNewÉtape');
+        $this->setViewParameter('template_milieu', 'TypeDossierNewEtape');
         $this->setViewParameter('etapeInfo', $this->getTypeDossierService()->getEtapeInfo($this->getViewParameterOrObject('id_t'), "new"));
         $this->renderDefault();
     }
