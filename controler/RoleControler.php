@@ -1,15 +1,15 @@
 <?php
 
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Menu\MenuGaucheService;
 
 class RoleControler extends PastellControler
 {
     public function _beforeAction()
     {
         parent::_beforeAction();
-        $this->setViewParameter('menu_gauche_template', "ConfigurationMenuGauche");
-        $this->setViewParameter('menu_gauche_select', "Role/index");
-        $this->setViewParameter('dont_display_breacrumbs', true);
+        $this->setMenuGaucheSelect(MenuGaucheService::ROLE_INDEX);
+        $this->setViewParameter('menu', $this->getInstance(MenuGaucheService::class)->getConfigurationMenu());
     }
 
     public function indexAction()

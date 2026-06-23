@@ -6,6 +6,7 @@ use Pastell\Configuration\DocumentTypeValidation;
 use Pastell\Mailer\Mailer;
 use Pastell\Service\Connecteur\MissingConnecteurService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\FeatureToggle\DisplayFeatureToggleInTestPage;
 use Pastell\Service\FeatureToggleService;
 use Pastell\Service\Pack\PackService;
@@ -21,9 +22,10 @@ class SystemControler extends PastellControler
     public function _beforeAction()
     {
         parent::_beforeAction();
-        $this->setViewParameter('menu_gauche_template', "ConfigurationMenuGauche");
+        $this->setViewParameter('menu', $this->getInstance(MenuGaucheService::class)->getConfigurationMenu());
         $this->verifDroit(0, DroitService::getDroitLecture(DroitService::DROIT_SYSTEM));
         $this->setViewParameter('dont_display_breacrumbs', true);
+        $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_INDEX);
     }
 
     private function needDroitEdition()
@@ -125,7 +127,7 @@ class SystemControler extends PastellControler
 
         $this->setViewParameter('template_milieu', "SystemFlux");
         $this->setViewParameter('page_title', "Types de dossier disponibles sur la plateforme");
-        $this->setViewParameter('menu_gauche_select', "System/flux");
+        $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_FLUX);
         $this->renderDefault();
     }
 
@@ -199,7 +201,7 @@ class SystemControler extends PastellControler
 
         $this->setViewParameter('page_title', "Détail du type de dossier « $name » ($id)");
         $this->setViewParameter('template_milieu', 'SystemFluxDetail');
-        $this->setViewParameter('menu_gauche_select', 'System/flux');
+        $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_FLUX);
 
         $this->renderDefault();
     }
@@ -212,7 +214,7 @@ class SystemControler extends PastellControler
         $this->setViewParameter('flux_definition', $this->getDocumentTypeValidation()->getModuleDefinition());
         $this->setViewParameter('page_title', 'Définition des types de dossier');
         $this->setViewParameter('template_milieu', 'SystemFluxDef');
-        $this->setViewParameter('menu_gauche_select', 'System/definition');
+        $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_DEFINITION);
         $this->renderDefault();
     }
 
@@ -268,7 +270,7 @@ class SystemControler extends PastellControler
 
         $this->setViewParameter('page_title', "Connecteurs disponibles");
         $this->setViewParameter('template_milieu', "SystemConnecteurList");
-        $this->setViewParameter('menu_gauche_select', "System/connecteur");
+        $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_CONNECTEUR);
         $this->renderDefault();
     }
 
@@ -380,7 +382,7 @@ class SystemControler extends PastellControler
             'page_title',
             "Détail du connecteur " . ($scope === 'global' ? 'global' : "d'entité") . " « $name » ($id_connecteur)"
         );
-        $this->setViewParameter('menu_gauche_select', "System/connecteur");
+        $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_CONNECTEUR);
         $this->setViewParameter('template_milieu', "SystemConnecteurDetail");
         $this->renderDefault();
     }
@@ -409,7 +411,7 @@ class SystemControler extends PastellControler
     {
         $this->setViewParameter('login_page_configuration', $this->getLoginPageConfiguration());
         $this->setViewParameter('page_title', '');
-        $this->setViewParameter('menu_gauche_select', 'System/loginPageConfiguration');
+        $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_LOGIN_PAGE_CONFIGURATION);
         $this->setViewParameter('template_milieu', 'LoginPageConfiguration');
         $this->renderDefault();
     }
@@ -443,7 +445,6 @@ class SystemControler extends PastellControler
     {
         $this->setViewParameter('page_title', 'Connecteurs manquants');
         $this->setViewParameter('template_milieu', 'SystemMissingConnecteur');
-        $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
 
         $detail_manquant_list = [];
         $connecteur_manquant_list = $this->getConnecteurFactory()->getManquant();

@@ -11,6 +11,7 @@ use Pastell\Service\Connecteur\ConnecteurCreationService;
 use Pastell\Service\Connecteur\ConnecteurActionService;
 use Pastell\Service\Connecteur\ConnecteurModificationService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Menu\MenuGaucheService;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 
 class ConnecteurControler extends PastellControler
@@ -51,19 +52,13 @@ class ConnecteurControler extends PastellControler
         }
         $this->setViewParameter('id_e', $id_e);
         $this->setNavigationInfo($id_e, "Entite/connecteur?global=$global");
+        $this->setMenuGaucheSelect($global ? MenuGaucheService::ENTITE_CONNECTEUR_GLOBAL : MenuGaucheService::ENTITE_CONNECTEUR_LOCAL);
         $this->setViewParameter('id_e_menu', $id_e);
         $this->setViewParameter('type_e_menu', '');
-        $this->setViewParameter(
-            'droitLectureAnnuaire',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE), $id_e)
-        );
-        $this->setViewParameter('menu_gauche_template', "EntiteMenuGauche");
-        $this->setViewParameter('menu_gauche_select', "Entite/connecteur?global=$global");
+        $this->setEntiteMenuGauche($id_e);
         $this->setDroitLectureOnConnecteur($id_e);
         $this->setCanActOnConnector($id_e);
         $this->setCanEditConnector($id_e);
-        $this->setDroitImportExportConfig($id_e);
-        $this->setDroitLectureOnUtilisateur($id_e);
         $this->setDroitsDaemon($id_e);
     }
 
@@ -334,7 +329,6 @@ class ConnecteurControler extends PastellControler
         $this->setViewParameter('connecteur_entite_info', $connecteur_entite_info);
         $this->setViewParameter('id_ce', $id_ce);
         $this->setViewParameter('id_e', $id_e);
-        $this->setViewParameter('menu_gauche_select', "Entite/connecteur?global=$global");
     }
 
     /**
@@ -753,8 +747,6 @@ class ConnecteurControler extends PastellControler
 
         $connecteur_info = $this->getConnecteurEntiteSQL()->getInfo($id_ce);
         $id_e = $connecteur_info['id_e'];
-        $this->setDroitLectureOnUtilisateur($id_e);
-        $this->setDroitsDaemon($id_e);
         $this->verifDroitOnConnecteur($id_ce);
 
         $documentType = ($connecteur_info['global']) ?
