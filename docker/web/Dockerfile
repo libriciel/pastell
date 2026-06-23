@@ -3,7 +3,7 @@ WORKDIR /app/
 COPY package*.json ./
 RUN npm install
 
-FROM hubdocker.libriciel.fr/httpd:2.4.68-alpine3.24@sha256:f259fa15eefa1b7de28930d4ae12f90f1f15a6c0af307ce590511d747d826439
+FROM hubdocker.libriciel.fr/httpd:2.4.68-alpine3.24@sha256:1b766f17b84026429b7cb243317b142921b24432336e798bc881c43f45ed9567
 
 RUN apk update && apk upgrade --no-cache && \
     apk add --no-cache \
