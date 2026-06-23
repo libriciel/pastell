@@ -1,0 +1,155 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Pastell\Service\Menu;
+
+use EntiteSQL;
+use Pastell\Service\Droit\DroitService;
+
+class MenuGaucheService
+{
+    public const SYSTEM_INDEX = 'System/index';
+    public const SYSTEM_LOGIN_PAGE_CONFIGURATION = 'System/loginPageConfiguration';
+    public const SYSTEM_FLUX = 'System/flux';
+    public const SYSTEM_DEFINITION = 'System/definition';
+    public const SYSTEM_CONNECTEUR = 'System/connecteur';
+
+    public const ROLE_INDEX = 'Role/index';
+
+    public const EXTENSION_INDEX = 'Extension/index';
+
+    public const TYPE_DOSSIER_LIST = 'TypeDossier/list';
+
+    public const DAEMON_INDEX = 'Daemon/index';
+    public const DAEMON_VERROU = 'Daemon/verrou';
+    public const DAEMON_JOB = 'Daemon/job';
+    public const DAEMON_JOB_ACTIF = 'Daemon/job?filtre=actif';
+    public const DAEMON_JOB_LOCK = 'Daemon/job?filtre=lock';
+    public const DAEMON_JOB_WAIT = 'Daemon/job?filtre=wait';
+    public const DAEMON_FREQUENCE_CONFIGURATION = 'Daemon/frequenceConfiguration';
+
+    public const ENTITE_DETAIL = 'Entite/detail';
+    public const ENTITE_UTILISATEUR = 'Entite/utilisateur';
+    public const ENTITE_CONNECTEUR_LOCAL = 'Entite/connecteur?global=0';
+    public const ENTITE_CONNECTEUR_GLOBAL = 'Entite/connecteur?global=1';
+    public const ENTITE_EXPORT_CONFIG = 'Entite/exportConfig';
+    public const ENTITE_IMPORT_CONFIG = 'Entite/importConfig';
+    public const ENTITE_AGENTS = 'Entite/agents';
+
+    public const FLUX_INDEX = 'Flux/index';
+
+    public const DOCUMENT_LIST = 'Document/list';
+
+    public const MAILSEC_ANNUAIRE = 'MailSec/annuaire';
+
+    public const JOURNAL_INDEX = 'Journal/index';
+
+    public function __construct(
+        private readonly DroitService $droitService,
+    ) {
+    }
+
+    public function getConfigurationMenu(): array
+    {
+        return [
+            'Auto-test du système' => [
+                MenuGaucheOption::fromLien('Test du système', self::SYSTEM_INDEX),
+            ],
+            'Configuration' => [
+                MenuGaucheOption::fromLien('Configuration de la page de connexion', self::SYSTEM_LOGIN_PAGE_CONFIGURATION),
+                MenuGaucheOption::fromLien('Rôles', self::ROLE_INDEX),
+                MenuGaucheOption::fromLien('Extensions', self::EXTENSION_INDEX),
+            ],
+            'Types de dossier' => [
+                MenuGaucheOption::fromLien('Types de dossier disponibles', self::SYSTEM_FLUX),
+                MenuGaucheOption::fromLien('Types de dossier personnalisés (studio)', self::TYPE_DOSSIER_LIST),
+                MenuGaucheOption::fromLien('Définition des types de dossier', self::SYSTEM_DEFINITION),
+            ],
+            'Connecteurs' => [
+                MenuGaucheOption::fromLien('Connecteurs disponibles', self::SYSTEM_CONNECTEUR),
+            ],
+        ];
+    }
+
+    public function getDaemonMenu(int $id_u): array
+    {
+        $daemon_edition = $this->droitService->hasDroit($id_u, DroitService::getDroitEdition(DroitService::DROIT_DAEMON), EntiteSQL::ID_E_ENTITE_RACINE);
+        $configuration_options = [];
+        if ($daemon_edition) {
+            $configuration_options = [
+                MenuGaucheOption::fromLien('Fréquence des connecteurs', self::DAEMON_FREQUENCE_CONFIGURATION),
+            ];
+        }
+        return [
+            'Tâches automatiques' => [
+                MenuGaucheOption::fromLien('Gestionnaire de tâches', self::DAEMON_INDEX),
+                MenuGaucheOption::fromLien("Files d'attente", self::DAEMON_VERROU),
+                MenuGaucheOption::fromLien('Tous les travaux', self::DAEMON_JOB),
+                MenuGaucheOption::fromLien('Travaux actifs', self::DAEMON_JOB_ACTIF),
+                MenuGaucheOption::fromLien('Travaux suspendus', self::DAEMON_JOB_LOCK),
+                MenuGaucheOption::fromLien('Travaux en attente', self::DAEMON_JOB_WAIT),
+            ],
+            'Configuration' => $configuration_options,
+        ];
+    }
+
+    public function getDocumentMenu(array $all_module, int $id_e): array
+    {
+        $menu = [];
+        foreach ($all_module as $type_flux => $les_flux) {
+            $menu[$type_flux] = [];
+            foreach ($les_flux as $flux_id => $nom) {
+                $menu[$type_flux][] = MenuGaucheOption::withParameters($nom, "Document/list?type=$flux_id", ['id_e' => $id_e]);
+            }
+        }
+        return $menu;
+    }
+
+    public function getEntiteMenu(int $id_e, int $id_u): array
+    {
+        $utilisateur_lecture = $this->droitService->hasDroit($id_u, DroitService::getDroitLecture(DroitService::DROIT_UTILISATEUR), $id_e);
+        $connecteur_lecture = $this->droitService->hasDroit($id_u, DroitService::getDroitLecture(DroitService::DROIT_CONNECTEUR), $id_e);
+        $system_edition = $this->droitService->hasDroit($id_u, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM), $id_e);
+        $annuaire_lecture = $this->droitService->hasDroit($id_u, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE), $id_e);
+
+        $administration_options = [
+            MenuGaucheOption::withParameters('Informations (entités)', self::ENTITE_DETAIL, ['id_e' => $id_e]),
+        ];
+        if ($utilisateur_lecture) {
+            $administration_options[] = MenuGaucheOption::withParameters('Utilisateurs', self::ENTITE_UTILISATEUR, ['id_e' => $id_e]);
+        }
+        if ($connecteur_lecture) {
+            $entite_racine = $id_e === EntiteSQL::ID_E_ENTITE_RACINE;
+            $administration_options[] = MenuGaucheOption::withParameters(
+                $entite_racine ? "Connecteurs d'entités" : 'Connecteurs',
+                self::ENTITE_CONNECTEUR_LOCAL,
+                ['id_e' => $id_e]
+            );
+            if ($entite_racine) {
+                $administration_options[] = MenuGaucheOption::withParameters('Connecteurs globaux', self::ENTITE_CONNECTEUR_GLOBAL, ['id_e' => $id_e]);
+            }
+            $administration_options[] = MenuGaucheOption::withParameters(
+                $id_e ? 'Types de dossier (association)' : 'Associations connecteurs globaux',
+                self::FLUX_INDEX,
+                ['id_e' => $id_e],
+            );
+        }
+
+        if ($system_edition) {
+            $administration_options[] = MenuGaucheOption::withParameters('Export de la configuration', self::ENTITE_EXPORT_CONFIG, ['id_e' => $id_e]);
+            $administration_options[] = MenuGaucheOption::withParameters('Import de la configuration', self::ENTITE_IMPORT_CONFIG, ['id_e' => $id_e]);
+        }
+
+        $donnees_options = [];
+        if ($annuaire_lecture) {
+            $donnees_options[] = MenuGaucheOption::withParameters('Annuaire (mail sécurisé)', self::MAILSEC_ANNUAIRE, ['id_e' => $id_e]);
+        }
+        $donnees_options[] = MenuGaucheOption::withParameters('Agents (Actes)', self::ENTITE_AGENTS, ['id_e' => $id_e]);
+
+        return [
+            'Administration' => $administration_options,
+            'Données pour les types de dossier' => $donnees_options,
+        ];
+    }
+}
