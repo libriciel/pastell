@@ -26,7 +26,7 @@ class JournalControler extends PastellControler
 
 
         $this->setNavigationInfo($id_e, "Journal/index?type=$type");
-        $this->setMenuGaucheSelect(MenuGaucheOption::buildUrl(MenuGaucheService::JOURNAL_INDEX, ['type' => $type]));
+        $this->setMenuGaucheSelect(MenuGaucheOption::buildUrl(MenuGaucheService::DOCUMENT_LIST, ['type' => $type]));
 
         if ($id_d || $type) {
             $this->setDocumentMenuGauche($id_e);

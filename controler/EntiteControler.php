@@ -497,9 +497,6 @@ class EntiteControler extends PastellControler
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
         $global = $recuperateur->getInt('global', 0);
-        if ($id_e === EntiteSQL::ID_E_ENTITE_RACINE && !$this->getInstance(DisplayConnecteurEntiteRacine::class)->isEnabled()) {
-            $global = 1;
-        }
         $this->hasConnecteurDroitLecture($id_e);
         $this->hasEntiteDroitLecture($id_e);
         $this->setViewParameter(

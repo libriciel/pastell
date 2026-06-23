@@ -6,7 +6,6 @@ namespace Pastell\Service\Menu;
 
 use EntiteSQL;
 use Pastell\Service\Droit\DroitService;
-use Pastell\Service\FeatureToggle\DisplayConnecteurEntiteRacine;
 
 class MenuGaucheService
 {
@@ -28,7 +27,7 @@ class MenuGaucheService
     public const DAEMON_JOB_ACTIF = 'Daemon/job?filtre=actif';
     public const DAEMON_JOB_LOCK = 'Daemon/job?filtre=lock';
     public const DAEMON_JOB_WAIT = 'Daemon/job?filtre=wait';
-    public const DAEMON_CONFIG = 'Daemon/config';
+    public const DAEMON_FREQUENCE_CONFIGURATION = 'Daemon/frequenceConfiguration';
 
     public const ENTITE_DETAIL = 'Entite/detail';
     public const ENTITE_UTILISATEUR = 'Entite/utilisateur';
@@ -48,7 +47,6 @@ class MenuGaucheService
 
     public function __construct(
         private readonly DroitService $droitService,
-        private readonly DisplayConnecteurEntiteRacine $displayConnecteurEntiteRacine,
     ) {
     }
 
@@ -74,8 +72,15 @@ class MenuGaucheService
         ];
     }
 
-    public function getDaemonMenu(): array
+    public function getDaemonMenu(int $id_u): array
     {
+        $daemon_edition = $this->droitService->hasDroit($id_u, DroitService::getDroitEdition(DroitService::DROIT_DAEMON), EntiteSQL::ID_E_ENTITE_RACINE);
+        $configuration_options = [];
+        if ($daemon_edition) {
+            $configuration_options = [
+                MenuGaucheOption::fromLien('Fréquence des connecteurs', self::DAEMON_FREQUENCE_CONFIGURATION),
+            ];
+        }
         return [
             'Tâches automatiques' => [
                 MenuGaucheOption::fromLien('Gestionnaire de tâches', self::DAEMON_INDEX),
@@ -85,9 +90,7 @@ class MenuGaucheService
                 MenuGaucheOption::fromLien('Travaux suspendus', self::DAEMON_JOB_LOCK),
                 MenuGaucheOption::fromLien('Travaux en attente', self::DAEMON_JOB_WAIT),
             ],
-            'Configuration' => [
-                MenuGaucheOption::fromLien('Fréquence des connecteurs', self::DAEMON_CONFIG),
-            ],
+            'Configuration' => $configuration_options,
         ];
     }
 
@@ -109,7 +112,6 @@ class MenuGaucheService
         $connecteur_lecture = $this->droitService->hasDroit($id_u, DroitService::getDroitLecture(DroitService::DROIT_CONNECTEUR), $id_e);
         $system_edition = $this->droitService->hasDroit($id_u, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM), $id_e);
         $annuaire_lecture = $this->droitService->hasDroit($id_u, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE), $id_e);
-        $isEnableConnecteurEntiteRacine = $this->displayConnecteurEntiteRacine->isEnabled();
 
         $administration_options = [
             MenuGaucheOption::withParameters('Informations (entités)', self::ENTITE_DETAIL, ['id_e' => $id_e]),
@@ -118,13 +120,14 @@ class MenuGaucheService
             $administration_options[] = MenuGaucheOption::withParameters('Utilisateurs', self::ENTITE_UTILISATEUR, ['id_e' => $id_e]);
         }
         if ($connecteur_lecture) {
-            if ($id_e === EntiteSQL::ID_E_ENTITE_RACINE) {
-                if ($isEnableConnecteurEntiteRacine) {
-                    $administration_options[] = MenuGaucheOption::withParameters("Connecteurs d'entités", self::ENTITE_CONNECTEUR_LOCAL, ['id_e' => $id_e]);
-                }
+            $entite_racine = $id_e === EntiteSQL::ID_E_ENTITE_RACINE;
+            $administration_options[] = MenuGaucheOption::withParameters(
+                $entite_racine ? "Connecteurs d'entités" : 'Connecteurs',
+                self::ENTITE_CONNECTEUR_LOCAL,
+                ['id_e' => $id_e]
+            );
+            if ($entite_racine) {
                 $administration_options[] = MenuGaucheOption::withParameters('Connecteurs globaux', self::ENTITE_CONNECTEUR_GLOBAL, ['id_e' => $id_e]);
-            } else {
-                $administration_options[] = MenuGaucheOption::withParameters('Connecteurs', self::ENTITE_CONNECTEUR_LOCAL, ['id_e' => $id_e]);
             }
             $administration_options[] = MenuGaucheOption::withParameters(
                 $id_e ? 'Types de dossier (association)' : 'Associations connecteurs globaux',

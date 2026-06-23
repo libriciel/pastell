@@ -747,6 +747,7 @@ class ConnecteurControler extends PastellControler
 
         $connecteur_info = $this->getConnecteurEntiteSQL()->getInfo($id_ce);
         $id_e = $connecteur_info['id_e'];
+        $this->setDroitsDaemon($id_e);
         $this->verifDroitOnConnecteur($id_ce);
 
         $documentType = ($connecteur_info['global']) ?

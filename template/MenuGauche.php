@@ -16,6 +16,9 @@ use Pastell\Service\Menu\MenuGaucheOption;
     <?php
     $i = 0;
     foreach ($menu as $title => $options) :
+        if (empty($options)) {
+            continue;
+        }
         $selected_section = false;
         foreach ($options as $option) {
             if ($option->id === $menu_gauche_select) {

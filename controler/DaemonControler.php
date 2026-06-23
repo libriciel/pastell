@@ -14,7 +14,7 @@ class DaemonControler extends PastellControler
     public function _beforeAction()
     {
         parent::_beforeAction();
-        $this->setViewParameter('menu', $this->getInstance(MenuGaucheService::class)->getDaemonMenu());
+        $this->setDaemonMenuGauche();
         $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_INDEX);
         $this->setViewParameter('dont_display_breacrumbs', true);
         $this->setDroitsDaemon(EntiteSQL::ID_E_ENTITE_RACINE);
@@ -375,7 +375,7 @@ class DaemonControler extends PastellControler
 
         $this->setViewParameter('page_title', 'Configuration de la fréquence des connecteurs');
         $this->setViewParameter('template_milieu', 'DaemonFrequenceConfiguration');
-        $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_CONFIG);
+        $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_FREQUENCE_CONFIGURATION);
         $this->setViewParameter('nouveau_bouton_url', ['Ajouter' => 'Daemon/editFrequence']);
         $this->setViewParameter('connecteur_frequence_list', $this->getConnecteurFrequenceSQL()->getAll());
         $this->renderDefault();
@@ -402,7 +402,7 @@ class DaemonControler extends PastellControler
         $verbe = $connecteurFrequence->id_cf ? 'Modification' : 'Ajout';
         $this->setViewParameter('page_title', "$verbe d'une fréquence de connecteur");
         $this->setViewParameter('template_milieu', 'DaemonEditFrequence');
-        $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_CONFIG);
+        $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_FREQUENCE_CONFIGURATION);
         $this->renderDefault();
     }
 
@@ -488,7 +488,7 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('connecteurFrequence', $connecteurFrequence);
         $this->setViewParameter('page_title', "Détail sur la fréquence d'un connecteur");
         $this->setViewParameter('template_milieu', 'DaemonFrequenceDetail');
-        $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_CONFIG);
+        $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_FREQUENCE_CONFIGURATION);
         $this->renderDefault();
     }
 

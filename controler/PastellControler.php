@@ -299,6 +299,13 @@ class PastellControler extends Controler
         parent::renderDefault();
     }
 
+    public function setDaemonMenuGauche(): void
+    {
+        $this->setViewParameter(
+            'menu',
+            $this->getInstance(MenuGaucheService::class)->getDaemonMenu($this->getId_u())
+        );
+    }
     public function setEntiteMenuGauche(int $id_e): void
     {
         $this->setViewParameter(
