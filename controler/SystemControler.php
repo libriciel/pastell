@@ -82,7 +82,6 @@ class SystemControler extends PastellControler
             $this->getConfigurationSQL()->getLibellePlateformeMail()
         );
         $this->setViewParameter('page_title', 'Test du système');
-        $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
         $this->setViewParameter('twigTemplate', 'system/index.html.twig');
         $this->renderDefault();
     }
@@ -521,7 +520,6 @@ class SystemControler extends PastellControler
         $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
         $this->setViewParameter('page_title', 'Modification de la configuration ADMIN_EMAIL');
         $this->setViewParameter('template_milieu', 'SystemEditAdminEmail');
-        $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
         $this->setViewParameter('admin_email', implode(', ', $this->getConfigurationSQL()->getAdminEmails()));
         $this->renderDefault();
     }
@@ -555,7 +553,6 @@ class SystemControler extends PastellControler
         $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
         $this->setViewParameter('page_title', 'Modification de la configuration LIBELLE_PLATEFORME_MAIL');
         $this->setViewParameter('template_milieu', 'SystemEditLibellePlateformeEmail');
-        $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
         $this->setViewParameter('libelle_plateforme_mail', $this->getConfigurationSQL()->getLibellePlateformeMail());
         $this->renderDefault();
     }

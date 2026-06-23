@@ -4,49 +4,57 @@ declare(strict_types=1);
 
 namespace Pastell\Service\Menu;
 
+use DaemonSQL;
 use EntiteSQL;
 use Pastell\Service\Droit\DroitService;
 
 class MenuGaucheService
 {
-    public const SYSTEM_INDEX = 'System/index';
-    public const SYSTEM_LOGIN_PAGE_CONFIGURATION = 'System/loginPageConfiguration';
-    public const SYSTEM_FLUX = 'System/flux';
-    public const SYSTEM_DEFINITION = 'System/definition';
-    public const SYSTEM_CONNECTEUR = 'System/connecteur';
+    public const string SYSTEM_INDEX = 'System/index';
+    public const string SYSTEM_LOGIN_PAGE_CONFIGURATION = 'System/loginPageConfiguration';
+    public const string SYSTEM_FLUX = 'System/flux';
+    public const string SYSTEM_DEFINITION = 'System/definition';
+    public const string SYSTEM_CONNECTEUR = 'System/connecteur';
 
-    public const ROLE_INDEX = 'Role/index';
+    public const string ROLE_INDEX = 'Role/index';
 
-    public const EXTENSION_INDEX = 'Extension/index';
+    public const string EXTENSION_INDEX = 'Extension/index';
 
-    public const TYPE_DOSSIER_LIST = 'TypeDossier/list';
+    public const string TYPE_DOSSIER_LIST = 'TypeDossier/list';
 
-    public const DAEMON_INDEX = 'Daemon/index';
-    public const DAEMON_VERROU = 'Daemon/verrou';
-    public const DAEMON_JOB = 'Daemon/job';
-    public const DAEMON_JOB_ACTIF = 'Daemon/job?filtre=actif';
-    public const DAEMON_JOB_LOCK = 'Daemon/job?filtre=lock';
-    public const DAEMON_JOB_WAIT = 'Daemon/job?filtre=wait';
-    public const DAEMON_FREQUENCE_CONFIGURATION = 'Daemon/frequenceConfiguration';
+    public const string DAEMON_INDEX = 'Daemon/index';
+    public const string DAEMON_VERROU = 'Daemon/verrou';
+    public const string DAEMON_JOB = 'Daemon/job';
+    public const string DAEMON_JOB_ACTIF = 'Daemon/job?filtre=actif';
+    public const string DAEMON_JOB_LOCK = 'Daemon/job?filtre=lock';
+    public const string DAEMON_JOB_WAIT = 'Daemon/job?filtre=wait';
+    public const string DAEMON_FREQUENCE_CONFIGURATION = 'Daemon/frequenceConfiguration';
+    public const string DAEMON_CONFIGURATION = 'Daemon/configuration';
 
-    public const ENTITE_DETAIL = 'Entite/detail';
-    public const ENTITE_UTILISATEUR = 'Entite/utilisateur';
-    public const ENTITE_CONNECTEUR_LOCAL = 'Entite/connecteur?global=0';
-    public const ENTITE_CONNECTEUR_GLOBAL = 'Entite/connecteur?global=1';
-    public const ENTITE_EXPORT_CONFIG = 'Entite/exportConfig';
-    public const ENTITE_IMPORT_CONFIG = 'Entite/importConfig';
-    public const ENTITE_AGENTS = 'Entite/agents';
+    public const string ENTITE_DETAIL = 'Entite/detail';
+    public const string ENTITE_UTILISATEUR = 'Entite/utilisateur';
+    public const string ENTITE_CONNECTEUR_LOCAL = 'Entite/connecteur?global=0';
+    public const string ENTITE_CONNECTEUR_GLOBAL = 'Entite/connecteur?global=1';
+    public const string ENTITE_EXPORT_CONFIG = 'Entite/exportConfig';
+    public const string ENTITE_IMPORT_CONFIG = 'Entite/importConfig';
+    public const string ENTITE_AGENTS = 'Entite/agents';
+    public const string ENTITE_DAEMON = 'Entite/daemon';
+    public const string ENTITE_JOB = 'Entite/job';
+    public const string ENTITE_JOB_ACTIF = 'Entite/job?filtre=actif';
+    public const string ENTITE_JOB_LOCK = 'Entite/job?filtre=lock';
+    public const string ENTITE_JOB_WAIT = 'Entite/job?filtre=wait';
+    public const string ENTITE_DAEMON_ADMIN = 'Entite/daemonAdmin';
 
-    public const FLUX_INDEX = 'Flux/index';
+    public const string FLUX_INDEX = 'Flux/index';
 
-    public const DOCUMENT_LIST = 'Document/list';
+    public const string DOCUMENT_LIST = 'Document/list';
 
-    public const MAILSEC_ANNUAIRE = 'MailSec/annuaire';
+    public const string MAILSEC_ANNUAIRE = 'MailSec/annuaire';
 
-    public const JOURNAL_INDEX = 'Journal/index';
 
     public function __construct(
         private readonly DroitService $droitService,
+        private readonly DaemonSQL $daemonSQL,
     ) {
     }
 
@@ -79,6 +87,7 @@ class MenuGaucheService
         if ($daemon_edition) {
             $configuration_options = [
                 MenuGaucheOption::fromLien('Fréquence des connecteurs', self::DAEMON_FREQUENCE_CONFIGURATION),
+                MenuGaucheOption::fromLien('Configuration des gestionnaires de tâches', self::DAEMON_CONFIGURATION),
             ];
         }
         return [
@@ -112,6 +121,9 @@ class MenuGaucheService
         $connecteur_lecture = $this->droitService->hasDroit($id_u, DroitService::getDroitLecture(DroitService::DROIT_CONNECTEUR), $id_e);
         $system_edition = $this->droitService->hasDroit($id_u, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM), $id_e);
         $annuaire_lecture = $this->droitService->hasDroit($id_u, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE), $id_e);
+        $daemon_lecture = $this->droitService->hasDroit($id_u, DroitService::getDroitLecture(DroitService::DROIT_DAEMON), $id_e);
+        $daemon_edition = $this->droitService->hasDroit($id_u, DroitService::getDroitEdition(DroitService::DROIT_DAEMON), $id_e);
+        $daemon_exists = $this->daemonSQL->getDaemonByEntity($id_e);
 
         $administration_options = [
             MenuGaucheOption::withParameters('Informations (entités)', self::ENTITE_DETAIL, ['id_e' => $id_e]),
@@ -141,6 +153,21 @@ class MenuGaucheService
             $administration_options[] = MenuGaucheOption::withParameters('Import de la configuration', self::ENTITE_IMPORT_CONFIG, ['id_e' => $id_e]);
         }
 
+        $daemon_options = [];
+        if (($daemon_exists || $id_e === EntiteSQL::ID_E_ENTITE_RACINE) && $daemon_lecture) {
+            $daemon_options = [
+                MenuGaucheOption::withParameters('Gestionnaire de tâches', self::ENTITE_DAEMON, ['id_e' => $id_e]),
+                MenuGaucheOption::withParameters('Tous les travaux', self::ENTITE_JOB, ['id_e' => $id_e]),
+                MenuGaucheOption::withParameters('Travaux actifs', self::ENTITE_JOB_ACTIF, ['id_e' => $id_e]),
+                MenuGaucheOption::withParameters('Travaux suspendus', self::ENTITE_JOB_LOCK, ['id_e' => $id_e]),
+                MenuGaucheOption::withParameters('Travaux en attente', self::ENTITE_JOB_WAIT, ['id_e' => $id_e]),
+            ];
+
+            if ($daemon_edition) {
+                $daemon_options[] = MenuGaucheOption::withParameters('Administration du gestionnaire de tâches', self::ENTITE_DAEMON_ADMIN, ['id_e' => $id_e]);
+            }
+        }
+
         $donnees_options = [];
         if ($annuaire_lecture) {
             $donnees_options[] = MenuGaucheOption::withParameters('Annuaire (mail sécurisé)', self::MAILSEC_ANNUAIRE, ['id_e' => $id_e]);
@@ -149,6 +176,7 @@ class MenuGaucheService
 
         return [
             'Administration' => $administration_options,
+            'Tâches automatiques' => $daemon_options,
             'Données pour les types de dossier' => $donnees_options,
         ];
     }

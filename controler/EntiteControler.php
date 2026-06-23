@@ -838,10 +838,14 @@ class EntiteControler extends PastellControler
      */
     public function daemonAction(): void
     {
+        $recuperateur = $this->getPostInfo();
+        $id_e = $recuperateur->getInt('id_e', 0);
+
         $this->daemonData();
         $this->setViewParameter('page_url', 'index');
         $this->setViewParameter('twigTemplate', 'daemon/entity/index.html.twig');
         $this->setViewParameter('page_title', 'Gestionnaire de tâches local');
+        $this->setNavigationInfo($id_e, 'Entite/daemon');
         $this->renderDefault();
     }
 
@@ -875,7 +879,7 @@ class EntiteControler extends PastellControler
         $this->setDroitsDaemon($id_e);
 
         $daemon = $this->resolveDaemonForEntity($id_e);
-        $this->setViewParameter('menu_gauche_select', 'Entite/daemon');
+        $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_DAEMON);
         $this->setViewParameter('nb_worker_actif', $this->getWorkerSQL()->getNbActifForDaemon($daemon->id_daemon));
         $this->setViewParameter('job_stat_info', $this->getJobQueueSQL()->getStatInfoForDaemon($daemon->id_daemon));
         $this->setViewParameter('sub_title', 'Liste de tous les travaux');
@@ -919,24 +923,38 @@ class EntiteControler extends PastellControler
         );
         $daemon = $this->resolveDaemonForEntity($id_e);
         $this->setViewParameter('id_e', $id_e);
-        $this->setViewParameter('menu_gauche_select', 'Entite/job');
         $this->setViewParameter('twigTemplate', 'daemon/entity/job.html.twig');
         $this->setViewParameter('page_title', 'Gestionnaire de tâches local');
         $filtre = $recuperateur->get('filtre', '');
+
+        $sub_title = '';
         if ($filtre) {
             $this->setViewParameter('page_url', "job?filtre=$filtre");
-            $this->setViewParameter('menu_gauche_select', "Entite/job?filtre=$filtre");
+            $this->setNavigationInfo($id_e, 'Entite/job');
+            switch ($filtre) {
+                case 'actif':
+                    $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB_ACTIF);
+                    $sub_title = 'Liste des travaux actifs';
+                    break;
+                case 'lock':
+                    $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB_LOCK);
+                    $sub_title = 'Liste des travaux suspendus';
+                    break;
+                case 'wait':
+                    $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB_WAIT);
+                    $sub_title = 'Liste des travaux en retard';
+                    break;
+                default:
+                    $this->setNavigationInfo($id_e, 'Entite/job');
+                    $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB);
+            }
         } else {
+            $sub_title = 'Liste de tous les travaux';
             $this->setViewParameter('page_url', 'job');
+            $this->setNavigationInfo($id_e, 'Entite/job');
+            $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB);
         }
-
-        $sub_title_array = [
-            'actif' => 'Liste des travaux actifs',
-            'lock' => 'Liste des travaux suspendus',
-            'wait' => 'Liste des travaux en retard',
-        ];
-
-        $this->setViewParameter('sub_title', $sub_title_array[$filtre] ?? 'Liste de tous les travaux');
+        $this->setViewParameter('sub_title', $sub_title);
         $this->setViewParameter('unlock_all_action', 'app.legacy.entite_daemonUnlockAll');
 
         $this->setViewParameter('offset', $recuperateur->getInt('offset', 0));
@@ -980,10 +998,11 @@ class EntiteControler extends PastellControler
         $daemon = $this->resolveDaemonForEntity($id_e);
 
         $daemon_admin_email = $this->getDaemonManager()->getAdminEmails($daemon->id_daemon);
+        $this->setNavigationInfo($id_e, 'Entite/daemonAdmin');
         $this->setViewParameter('page_title', 'Administration du gestionnaire de tâches');
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('daemon_admin_email', implode(',', $daemon_admin_email));
-        $this->setViewParameter('menu_gauche_select', 'Entite/daemonAdmin');
+        $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_DAEMON_ADMIN);
         $this->setViewParameter('template_milieu', 'EntiteDaemonAdmin');
         $this->setViewParameter('daemon_late_jobs_threshold', $daemon->late_jobs_threshold);
         $this->renderDefault();
