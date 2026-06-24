@@ -1,9 +1,15 @@
 # [4.1.20] - 2026-07-06
 
+## Ajout
+
+- Container `libriciel-stack-update` permettant la mise à jour automatique de l'application  #2494
+
 ## Évolutions
 
-- Création des services `AnnuaireContactService`, `AnnuaireExportService`, `AnnuaireGroupeService` et `AnnuaireImportService` pour les opérations sur l'annuaire #2478
-- Suppression du paramètre interne `id_e` dans `AnnuaireGroupeSQL`, `id_e` doit être directement passé à l'appel des méthodes #2477
+- Création des services `AnnuaireContactService`, `AnnuaireExportService`, `AnnuaireGroupeService` et
+  `AnnuaireImportService` pour les opérations sur l'annuaire #2478
+- Suppression du paramètre interne `id_e` dans `AnnuaireGroupeSQL`, `id_e` doit être directement passé à l'appel des
+  méthodes #2477
 
 ## Dépréciations
 
