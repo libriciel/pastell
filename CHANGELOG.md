@@ -1,5 +1,9 @@
 # [4.1.20] - 2026-07-06
 
+## Corrections
+
+- Correction du libellé 'Mail sécurisé avec réponse (réponse) - déprécié' de `mailsec-bidir-reponse` #2489
+
 ## Ajout
 
 - Container `libriciel-stack-update` permettant la mise à jour automatique de l'application  #2494
