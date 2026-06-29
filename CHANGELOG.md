@@ -1,9 +1,13 @@
-# [4.1.21] - 2026-03-08
+# [4.1.21] - 2026-08-03
 
 ## Évolutions
 
 - Centralisation des vérifications de droits dans `DroitService` : ajout de l'énumération `DroitType` et des
   méthodes `DroitService::getDroitFor()` et `DroitService::hasDroitFor()` #2491
+
+## Corrections
+
+- Prise en compte des droits sur le type de dossier pour consulter la réponse d'un mail sécurisé via l'api #2488
 
 ## Dépréciations
 
