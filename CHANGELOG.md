@@ -1,12 +1,8 @@
 # [4.1.20] - 2026-07-06
 
-## Corrections
+## Ajouts
 
-- Correction du libellé 'Mail sécurisé avec réponse (réponse) - déprécié' de `mailsec-bidir-reponse` #2489
-
-## Ajout
-
-- Container `libriciel-stack-update` permettant la mise à jour automatique de l'application  #2494
+- Container `libriciel-stack-update` permettant la mise à jour automatique de l'application #2494
 
 ## Évolutions
 
@@ -15,11 +11,20 @@
 - Suppression du paramètre interne `id_e` dans `AnnuaireGroupeSQL`, `id_e` doit être directement passé à l'appel des
   méthodes #2477
 
+## Corrections
+
+- Correction du libellé 'Mail sécurisé avec réponse (réponse) - déprécié' de `mailsec-bidir-reponse` #2489
+
 ## Dépréciations
 
 - La classe `AnnuaireGroupe` est dépréciée au profit de `AnnuaireGroupeSQL` #2477
 - La classe `AnnuaireExporter` est dépréciée au profit de `AnnuaireExportService` #2478
 - La classe `AnnuaireImporter` est dépréciée au profit de `AnnuaireImportService` #2478
+
+## Sécurité
+
+- Faille de contrôle d'accès sur la gestion des utilisateurs
+  (CVSS 8.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N) #2497
 
 # [4.1.19] - 2026-06-01
 

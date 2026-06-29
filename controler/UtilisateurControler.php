@@ -515,6 +515,11 @@ class UtilisateurControler extends PastellControler
         $is_api = $recuperateur->get('api_user');
         $certficate = $this->getInstance(FileUploader::class)->getFileContent('certificat') ?: null;
 
+        if ($id_u) {
+            $info = $this->getInstance(UtilisateurSQL::class)->getInfo($id_u);
+            $this->verifDroit($info['id_e'], DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR));
+        }
+        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR));
         try {
             if ($id_u) {
                 $is_api = $this->getInstance(UtilisateurSQL::class)->getInfo($id_u)['is_api'];
