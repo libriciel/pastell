@@ -193,4 +193,30 @@ class ConnecteurAssociationServiceTest extends PastellTestCase
         $this->expectExceptionMessage("Le type de dossier est manquant.");
         $this->getConnecteurAssociationService()->addConnecteurAssociation(1, 1);
     }
+
+    /**
+     *
+     * @throws UnrecoverableException
+     */
+    public function testAddConnectorFromAnotherEntityIsForbidden(): void
+    {
+        $connectorId = $this->createConnector('fakeIparapheur', 'Connecteur entité 2', 2)['id_ce'];
+
+        $this->expectException(UnrecoverableException::class);
+        $this->expectExceptionMessage("Le connecteur $connectorId n'est pas candidat à l'association pour l'entité 1");
+        $this->getConnecteurAssociationService()
+            ->addConnecteurAssociation(1, $connectorId, 'signature', 0, 'actes-generique');
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function testAddNonExistingConnectorIsForbidden(): void
+    {
+        $connectorId = 9999999;
+        $this->expectException(UnrecoverableException::class);
+        $this->expectExceptionMessage("Le connecteur $connectorId n'existe pas");
+        $this->getConnecteurAssociationService()
+            ->addConnecteurAssociation(1, $connectorId, 'signature', 0, 'actes-generique');
+    }
 }
