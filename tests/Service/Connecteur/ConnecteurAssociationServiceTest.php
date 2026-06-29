@@ -4,6 +4,7 @@ namespace Pastell\Tests\Service\Connecteur;
 
 use Exception;
 use FluxEntiteSQL;
+use SQLQuery;
 use Pastell\Service\Connecteur\ConnecteurActionService;
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\FeatureToggle\DisplayConnecteurEntiteRacine;
@@ -218,5 +219,28 @@ class ConnecteurAssociationServiceTest extends PastellTestCase
         $this->expectExceptionMessage("Le connecteur $connectorId n'existe pas");
         $this->getConnecteurAssociationService()
             ->addConnecteurAssociation(1, $connectorId, 'signature', 0, 'actes-generique');
+    }
+
+    /**
+     * A global connector (owned by the root entity 0) must be associable to the
+     * root entity itself — this is the bootstrap path (installHorodateur).
+     * Regression test: a real install has no entite_ancetre row for entity 0.
+     *
+     * @throws UnrecoverableException
+     */
+    public function testAddGlobalConnecteurToRootEntityIsAllowed(): void
+    {
+        $id_ce = $this->createConnector('horodateur-interne', 'Horodateur global', 0, 1)['id_ce'];
+
+        // Reproduce a real install where the root entity 0 has no entite_ancetre row
+        // (done after creating the connector, which goes through the droit-checked API).
+        $this->getObjectInstancier()
+            ->getInstance(SQLQuery::class)
+            ->query('DELETE FROM entite_ancetre WHERE id_e = 0');
+
+        $id_fe = $this->getConnecteurAssociationService()
+            ->addConnecteurAssociation(0, $id_ce);
+
+        static::assertGreaterThan(0, $id_fe);
     }
 }

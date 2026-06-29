@@ -140,6 +140,8 @@ class ConnecteurEntiteSQLTest extends PastellTestCase
         // A global/root connector (id_ce 10 belongs to entity 0) is in scope for any entity
         static::assertTrue($connecteurEntiteSQL->isConnectorInEntityScope(10, 1));
         static::assertTrue($connecteurEntiteSQL->isConnectorInEntityScope(10, 2));
+        // ... including the root entity 0 itself (global connector association)
+        static::assertTrue($connecteurEntiteSQL->isConnectorInEntityScope(10, 0));
 
         // A connector owned by a descendant must NOT be in the ancestor's scope (IDOR property)
         $childConnectorId = $this->createConnector('fakeIparapheur', 'Connecteur entité 2', 2)['id_ce'];
@@ -149,5 +151,14 @@ class ConnecteurEntiteSQLTest extends PastellTestCase
 
         // A non-existing connector is never in scope
         static::assertFalse($connecteurEntiteSQL->isConnectorInEntityScope(99999, 1));
+
+        // Reproduce a real install: the root entity 0 has no entite_ancetre row
+        // (it is never seeded automatically). A global/root connector must still be
+        // in scope for entity 0, while a non-root connector must not.
+        $this->getObjectInstancier()
+            ->getInstance(SQLQuery::class)
+            ->query('DELETE FROM entite_ancetre WHERE id_e = 0');
+        static::assertTrue($connecteurEntiteSQL->isConnectorInEntityScope(10, 0));
+        static::assertFalse($connecteurEntiteSQL->isConnectorInEntityScope(1, 0));
     }
 }
