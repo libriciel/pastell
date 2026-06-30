@@ -279,6 +279,7 @@ SQL;
         return $this->linearizeTab($result);
     }
 
+    /** @deprecated Since 4.1.20, Unused, Use \Pastell\Helpers\ArrayHelper::buildTreeselectOptions($arbre) instead */
     public function getEntityTree(int $userId, string $permission): array
     {
         $data = $this->getArbreFille($userId, $permission);
@@ -302,6 +303,19 @@ SQL;
         }
 
         return $hierarchy;
+    }
+
+    public function getArbreFilleWithRacine(int $userId, string $permission): array
+    {
+        $arbre = $this->getArbreFille($userId, $permission);
+        if ($this->hasDroit($userId, $permission, EntiteSQL::ID_E_ENTITE_RACINE)) {
+            array_unshift($arbre, [
+                'id_e' => EntiteSQL::ID_E_ENTITE_RACINE,
+                'denomination' => EntiteSQL::ENTITE_RACINE_DENOMINATION,
+                'profondeur' => 0,
+            ]);
+        }
+        return $arbre;
     }
 
     public function getEntiteWithDenomination($id_u, $droit)

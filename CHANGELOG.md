@@ -14,6 +14,7 @@
 ## Corrections
 
 - Correction du libellé 'Mail sécurisé avec réponse (réponse) - déprécié' de `mailsec-bidir-reponse` #2489
+- La liste des entités pouvait présenter l'entité racine sans les droits utilisateur #2480
 
 ## Dépréciations
 
