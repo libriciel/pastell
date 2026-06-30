@@ -25,6 +25,8 @@
 
 - Faille de contrôle d'accès sur la gestion des utilisateurs
   (CVSS 8.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N) #2497
+- Faille de contrôle d'accès
+  (CVSS 7.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:H/A:N) #2498
 
 # [4.1.19] - 2026-06-01
 
