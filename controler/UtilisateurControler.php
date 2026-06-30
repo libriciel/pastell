@@ -285,7 +285,8 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('certificat', new Certificate($infoUtilisateur['certificat']));
         $this->setViewParameter(
             'arbre',
-            $this->getRoleUtilisateur()->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
+            $this->getRoleUtilisateur()
+                ->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
         );
 
         if ($id_u) {
@@ -336,7 +337,8 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('entiteListe', $this->getEntiteListe());
         $this->setViewParameter(
             'tabEntite',
-            $this->getRoleUtilisateur()->getEntite($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
+            $this->getRoleUtilisateur()
+                ->getEntite($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
         );
 
         if ((int) $id_u === $this->getId_u()) {
@@ -387,7 +389,8 @@ class UtilisateurControler extends PastellControler
         );
         $this->setViewParameter('info', $info);
         $this->setViewParameter('id_u', $id_u);
-        $arbre = $this->getRoleUtilisateur()->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+        $arbre = $this->getRoleUtilisateur()
+            ->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
         $this->setViewParameter('arbre', $arbre);
 
         $this->setViewParameter(
@@ -441,7 +444,8 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('id_u', $id_u);
         $this->setViewParameter(
             'arbre',
-            $this->getRoleUtilisateur()->getArbreFilleWithRacine($this->getId_u(), 'entite:lecture')
+            $this->getRoleUtilisateur()
+                ->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitLecture(DroitService::DROIT_ENTITE))
         );
 
         $tokens = $this->getObjectInstancier()

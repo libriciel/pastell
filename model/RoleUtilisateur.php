@@ -279,6 +279,32 @@ SQL;
         return $this->linearizeTab($result);
     }
 
+    /** @deprecated Since 4.1.20, Unused, Use \Pastell\Helpers\ArrayHelper::buildTreeselectOptions($arbre) instead */
+    public function getEntityTree(int $userId, string $permission): array
+    {
+        $data = $this->getArbreFille($userId, $permission);
+        $hierarchy = [];
+
+        foreach ($data as $entry) {
+            $depth = $entry['profondeur'];
+
+            if ($depth === 0) {
+                // Root element
+                $hierarchy[] = $entry;
+            } else {
+                // Find parent and attach as child
+                $parent = &$hierarchy;
+                for ($i = 0; $i < $depth; ++$i) {
+                    $parent = &$parent[\count($parent) - 1]['children'];
+                }
+                $parent[] = $entry;
+                unset($parent);
+            }
+        }
+
+        return $hierarchy;
+    }
+
     public function getArbreFilleWithRacine(int $userId, string $permission): array
     {
         $arbre = $this->getArbreFille($userId, $permission);
