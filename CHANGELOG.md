@@ -15,6 +15,8 @@
 
 - Correction du libellé 'Mail sécurisé avec réponse (réponse) - déprécié' de `mailsec-bidir-reponse` #2489
 - La liste des entités pouvait présenter l'entité racine sans les droits utilisateur #2480
+- Prise en compte du "Nombre de jour avant relance du mail securisé" suivant la dernière date de renvoi
+  pour les relances des mails sécurisés #2484
 
 ## Dépréciations
 
