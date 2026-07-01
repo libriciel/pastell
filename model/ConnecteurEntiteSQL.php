@@ -193,6 +193,20 @@ class ConnecteurEntiteSQL extends SQL
         }
     }
 
+    public function isConnectorInEntityScope(int $connectorId, int $entityId): bool
+    {
+        $sql = <<<SQL
+SELECT id_ce
+FROM connecteur_entite
+WHERE id_ce = ?
+  AND (
+    id_e = 0
+    OR id_e IN (SELECT ea.id_e_ancetre FROM entite_ancetre ea WHERE ea.id_e = ?)
+  );
+SQL;
+        return (bool)$this->queryOne($sql, $connectorId, $entityId);
+    }
+
     public function getAllByConnecteurId($id_connecteur, $global = false)
     {
         if ($global) {

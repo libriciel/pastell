@@ -4,32 +4,21 @@ namespace Pastell\Service\Connecteur;
 
 use ConnecteurEntiteSQL;
 use EntiteSQL;
+use Exception;
 use FluxDefinitionFiles;
 use FluxEntiteSQL;
-use Exception;
 use Pastell\Service\Droit\DroitService;
 use UnrecoverableException;
 
 class ConnecteurAssociationService
 {
-    private $connecteurEntiteSQL;
-    private $fluxEntiteSQL;
-    private $droitService;
-    private $fluxDefinitionFiles;
-    private $connecteurActionService;
-
     public function __construct(
-        ConnecteurEntiteSQL $connecteurEntiteSQL,
-        FluxEntiteSQL $fluxEntiteSQL,
-        DroitService $droitService,
-        FluxDefinitionFiles $fluxDefinitionFiles,
-        ConnecteurActionService $connecteurActionService
+        private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
+        private readonly FluxEntiteSQL $fluxEntiteSQL,
+        private readonly DroitService $droitService,
+        private readonly FluxDefinitionFiles $fluxDefinitionFiles,
+        private readonly ConnecteurActionService $connecteurActionService,
     ) {
-        $this->connecteurEntiteSQL = $connecteurEntiteSQL;
-        $this->fluxEntiteSQL = $fluxEntiteSQL;
-        $this->droitService = $droitService;
-        $this->fluxDefinitionFiles = $fluxDefinitionFiles;
-        $this->connecteurActionService = $connecteurActionService;
     }
 
     /**
@@ -44,8 +33,10 @@ class ConnecteurAssociationService
         string $type_dossier = '',
         int $num_same_type = 0
     ): int {
-
         $info = $this->connecteurEntiteSQL->getInfo($id_ce);
+        if (!$info) {
+            throw new UnrecoverableException("Le connecteur $id_ce n'existe pas");
+        }
         if ($type_connecteur === null) {
             $type_connecteur = $info['type'];
         }
@@ -57,6 +48,20 @@ class ConnecteurAssociationService
         if (! $this->droitService->hasDroitConnecteurEdition($id_e, $id_u)) {
             throw new UnrecoverableException("Vous n'avez pas le droit d'édition pour les connecteurs");
         }
+
+        if (!$this->connecteurEntiteSQL->isConnectorInEntityScope($id_ce, $id_e)) {
+            throw new UnrecoverableException(
+                "Le connecteur $id_ce n'est pas candidat à l'association pour l'entité $id_e",
+            );
+        }
+
+        $ownerEntityId = (int)$info['id_e'];
+        if (!$this->droitService->hasDroitConnecteurEdition($ownerEntityId, $id_u)) {
+            throw new UnrecoverableException(
+                "Vous n'avez pas le droit d'édition sur l'entité propriétaire du connecteur $id_ce"
+            );
+        }
+
         if ($type_dossier === '') {
             if ($id_e !== EntiteSQL::ID_E_ENTITE_RACINE) {
                 throw new UnrecoverableException("Le type de dossier est manquant.");
