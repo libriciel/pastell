@@ -9,6 +9,8 @@
 
 - Correction des dépréciations PHP 8.4 dans LDAPWrapper #2474
 - Il manquait le truncate du titre du dossier si sa taille dépasse 255 bytes lors de l'envoi à iparapheur REST #2486
+- Prise en compte du "Nombre de jour avant relance du mail securisé" suivant la dernière date de renvoi
+  pour les relances des mails sécurisés #2495
 
 ## Dépréciations
 

@@ -80,6 +80,7 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
             $this->triggerActionOnDocument($id_d, "mailsec-relance")
         );
         $last_message = $this->getObjectInstancier()->getInstance(ActionExecutorFactory::class)->getLastMessage();
+        $this->assertMatchesRegularExpression("#Relance programmée le#", $last_message);
         $this->assertMatchesRegularExpression("#Mail défini comme non-reçu le#", $last_message);
 
         $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
