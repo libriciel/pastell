@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Helpers\ArrayHelper;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Utilisateur\UserCreationService;
 
@@ -251,7 +252,7 @@ class RoleUtilisateurSQLTest extends PastellTestCase
             $arbre_fille
         );
 
-        $tree = $this->roleUtilisateurSQL->getEntityTree($id_u, 'entite:lecture');
+        $tree = ArrayHelper::buildNestedTree($arbre_fille);
         self::assertSame(
             [
                 [
@@ -372,7 +373,7 @@ class RoleUtilisateurSQLTest extends PastellTestCase
             $arbre_fille
         );
 
-        $tree = $this->roleUtilisateurSQL->getEntityTree($id_u, 'entite:lecture');
+        $tree = ArrayHelper::buildNestedTree($arbre_fille);
         self::assertSame(
             [
                 [

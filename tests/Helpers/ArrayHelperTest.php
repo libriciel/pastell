@@ -59,6 +59,188 @@ final class ArrayHelperTest extends PastellTestCase
             [],
         ];
     }
+    public static function buildNestedTreeProvider(): Generator
+    {
+        yield 'empty list' => [
+            [],
+            [],
+        ];
+        yield 'single root node' => [
+            [
+                ['id_e' => 1, 'denomination' => 'Racine', 'profondeur' => 0],
+            ],
+            [
+                ['id_e' => 1, 'denomination' => 'Racine', 'profondeur' => 0],
+            ],
+        ];
+        yield 'two root nodes' => [
+            [
+                ['id_e' => 1, 'denomination' => 'A', 'profondeur' => 0],
+                ['id_e' => 2, 'denomination' => 'B', 'profondeur' => 0],
+            ],
+            [
+                ['id_e' => 1, 'denomination' => 'A', 'profondeur' => 0],
+                ['id_e' => 2, 'denomination' => 'B', 'profondeur' => 0],
+            ],
+        ];
+        yield 'one child under root' => [
+            [
+                ['id_e' => 1, 'denomination' => 'Parent', 'profondeur' => 0],
+                ['id_e' => 2, 'denomination' => 'Enfant', 'profondeur' => 1],
+            ],
+            [
+                [
+                    'id_e' => 1,
+                    'denomination' => 'Parent',
+                    'profondeur' => 0,
+                    'children' => [
+                        ['id_e' => 2, 'denomination' => 'Enfant', 'profondeur' => 1],
+                    ],
+                ],
+            ],
+        ];
+        yield 'two children under same root' => [
+            [
+                ['id_e' => 1, 'denomination' => 'Parent', 'profondeur' => 0],
+                ['id_e' => 2, 'denomination' => 'Enfant 1', 'profondeur' => 1],
+                ['id_e' => 3, 'denomination' => 'Enfant 2', 'profondeur' => 1],
+            ],
+            [
+                [
+                    'id_e' => 1,
+                    'denomination' => 'Parent',
+                    'profondeur' => 0,
+                    'children' => [
+                        ['id_e' => 2, 'denomination' => 'Enfant 1', 'profondeur' => 1],
+                        ['id_e' => 3, 'denomination' => 'Enfant 2', 'profondeur' => 1],
+                    ],
+                ],
+            ],
+        ];
+        yield 'two levels of nesting' => [
+            [
+                ['id_e' => 1, 'denomination' => 'Racine', 'profondeur' => 0],
+                ['id_e' => 2, 'denomination' => 'Niveau 1', 'profondeur' => 1],
+                ['id_e' => 3, 'denomination' => 'Niveau 2', 'profondeur' => 2],
+            ],
+            [
+                [
+                    'id_e' => 1,
+                    'denomination' => 'Racine',
+                    'profondeur' => 0,
+                    'children' => [
+                        [
+                            'id_e' => 2,
+                            'denomination' => 'Niveau 1',
+                            'profondeur' => 1,
+                            'children' => [
+                                ['id_e' => 3, 'denomination' => 'Niveau 2', 'profondeur' => 2],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        yield 'two roots with children' => [
+            [
+                ['id_e' => 1, 'denomination' => 'A', 'profondeur' => 0],
+                ['id_e' => 2, 'denomination' => 'A1', 'profondeur' => 1],
+                ['id_e' => 3, 'denomination' => 'B', 'profondeur' => 0],
+                ['id_e' => 4, 'denomination' => 'B1', 'profondeur' => 1],
+            ],
+            [
+                [
+                    'id_e' => 1,
+                    'denomination' => 'A',
+                    'profondeur' => 0,
+                    'children' => [
+                        ['id_e' => 2, 'denomination' => 'A1', 'profondeur' => 1],
+                    ],
+                ],
+                [
+                    'id_e' => 3,
+                    'denomination' => 'B',
+                    'profondeur' => 0,
+                    'children' => [
+                        ['id_e' => 4, 'denomination' => 'B1', 'profondeur' => 1],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider buildNestedTreeProvider
+     */
+    public function testBuildNestedTree(array $flatList, array $expected): void
+    {
+        self::assertSame($expected, ArrayHelper::buildNestedTree($flatList));
+    }
+
+    public static function buildTreeselectOptionsProvider(): Generator
+    {
+        yield 'empty list' => [
+            [],
+            [],
+        ];
+        yield 'single root node' => [
+            [
+                ['id_e' => 1, 'denomination' => 'Racine', 'profondeur' => 0],
+            ],
+            [
+                ['value' => 1, 'name' => 'Racine', 'profondeur' => 0],
+            ],
+        ];
+        yield 'root with one child' => [
+            [
+                ['id_e' => 1, 'denomination' => 'Parent', 'profondeur' => 0],
+                ['id_e' => 2, 'denomination' => 'Enfant', 'profondeur' => 1],
+            ],
+            [
+                [
+                    'value' => 1,
+                    'name' => 'Parent',
+                    'profondeur' => 0,
+                    'children' => [
+                        ['value' => 2, 'name' => 'Enfant', 'profondeur' => 1],
+                    ],
+                ],
+            ],
+        ];
+        yield 'two levels of nesting with key renaming' => [
+            [
+                ['id_e' => 10, 'denomination' => 'Racine', 'profondeur' => 0],
+                ['id_e' => 20, 'denomination' => 'Niveau 1', 'profondeur' => 1],
+                ['id_e' => 30, 'denomination' => 'Niveau 2', 'profondeur' => 2],
+            ],
+            [
+                [
+                    'value' => 10,
+                    'name' => 'Racine',
+                    'profondeur' => 0,
+                    'children' => [
+                        [
+                            'value' => 20,
+                            'name' => 'Niveau 1',
+                            'profondeur' => 1,
+                            'children' => [
+                                ['value' => 30, 'name' => 'Niveau 2', 'profondeur' => 2],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider buildTreeselectOptionsProvider
+     */
+    public function testBuildTreeselectOptions(array $flatList, array $expected): void
+    {
+        self::assertSame($expected, ArrayHelper::buildTreeselectOptions($flatList));
+    }
+
     /**
      * @dataProvider getExpectedArrayByDepthProvider
      */
