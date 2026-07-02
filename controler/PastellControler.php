@@ -249,9 +249,7 @@ class PastellControler extends Controler
         }
         if (!$this->isViewParameter('menu_gauche_select')) {
             $pageRequest = $this->getGetInfo()->get(FrontController::PAGE_REQUEST);
-            if ($pageRequest) {
-                $this->setMenuGaucheSelect($pageRequest);
-            }
+            $this->setMenuGaucheSelect($pageRequest ?: '');
         }
         if (!$this->isViewParameter('navigation_url')) {
             $this->setViewParameter('navigation_url', "Document/index");

@@ -31,8 +31,15 @@ class DocumentControler extends PastellControler
         $this->setDocumentMenuGauche($id_e);
     }
 
+    /**
+     * @throws UnrecoverableException
+     * @throws NotFoundException
+     */
     public function renderDefault(): void
     {
+        if ($this->isViewParameter('id_e')) {
+            $this->setDocumentMenuGauche((int)$this->getViewParameterByKey('id_e'));
+        }
         $this->setViewParameter(
             'show_choice_entity_message',
             !(bool)$this->getPostOrGetInfo()->getInt('id_e')
