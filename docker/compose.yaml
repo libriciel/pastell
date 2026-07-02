@@ -247,6 +247,22 @@ services:
       ALLO_TOKEN: ${ALLO_TOKEN:-}
       VERSION: canary
 
+  libriciel-stack-update:
+    image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-stack-update:1.1.1'
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /opt/pastell:/opt/pastell:rw
+      - ${LIBRICIEL_FEEDBACK_VOLUME:-libriciel-feedback}:/var/run/feedback/:ro
+      - ${LIBRICIEL_STACK_UPDATE_VOLUME:-/data/pastell/libriciel-stack-update}/config:/var/run/stack-update/:ro
+      - ${LIBRICIEL_STACK_UPDATE_VOLUME:-/data/pastell/libriciel-stack-update}/result:/var/run/stack-update-result/:rw
+      - ${LIBRICIEL_STACK_UPDATE_VOLUME:-/data/pastell/libriciel-stack-update}/log:/var/log/libriciel-stack-update/:rw
+    environment:
+      CURRENT_VERSION: "PA canary"
+      TZ: ${TZ:-Europe/Paris}
+    networks:
+      - stack-update-network
+
 volumes:
   web_logs_datadir:
   web_certificates_datadir:
@@ -260,3 +276,7 @@ volumes:
   cacerts:
   local_cacerts:
   libriciel-feedback:
+
+networks:
+  stack-update-network:
+    driver: bridge
