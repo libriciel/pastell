@@ -21,12 +21,6 @@
     <?php $this->displayCSRFInput(); ?>
 
     <select name='entity_id' class='select2_entite form-select col-md-1'>
-        <option
-                value='0'
-            <?php echo $selectedEntity == EntiteSQL::ID_E_ENTITE_RACINE ? 'selected' : '' ?>
-        >
-            <?php hecho(EntiteSQL::ENTITE_RACINE_DENOMINATION); ?>
-        </option>
         <?php foreach ($entityList as $entiteInfo) : ?>
             <option
                     value='<?php echo $entiteInfo['id_e'] ?>'

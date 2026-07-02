@@ -288,16 +288,39 @@
 
 # [4.1.20] - 2026-07-06
 
+## Ajouts
+
+- Container `libriciel-stack-update` permettant la mise à jour automatique de l'application #2494
+
 ## Évolutions
 
-- Création des services `AnnuaireContactService`, `AnnuaireExportService`, `AnnuaireGroupeService` et `AnnuaireImportService` pour les opérations sur l'annuaire #2478
-- Suppression du paramètre interne `id_e` dans `AnnuaireGroupeSQL`, `id_e` doit être directement passé à l'appel des méthodes #2477
+- Création des services `AnnuaireContactService`, `AnnuaireExportService`, `AnnuaireGroupeService` et
+  `AnnuaireImportService` pour les opérations sur l'annuaire #2478
+- Suppression du paramètre interne `id_e` dans `AnnuaireGroupeSQL`, `id_e` doit être directement passé à l'appel des
+  méthodes #2477
+
+## Corrections
+
+- Correction du libellé 'Mail sécurisé avec réponse (réponse) - déprécié' de `mailsec-bidir-reponse` #2489
+- La liste des entités pouvait présenter l'entité racine sans les droits utilisateur #2480
+- Prise en compte du "Nombre de jour avant relance du mail securisé" suivant la dernière date de renvoi
+  pour les relances des mails sécurisés #2484
 
 ## Dépréciations
 
 - La classe `AnnuaireGroupe` est dépréciée au profit de `AnnuaireGroupeSQL` #2477
 - La classe `AnnuaireExporter` est dépréciée au profit de `AnnuaireExportService` #2478
 - La classe `AnnuaireImporter` est dépréciée au profit de `AnnuaireImportService` #2478
+
+## Sécurité
+
+- Faille de contrôle d'accès sur la gestion des utilisateurs
+  (CVSS 8.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N) #2497
+- Faille de contrôle d'accès
+  (CVSS 7.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:H/A:N) #2498
+- Faille d'injection SQL
+  (CVSS 8.8 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H) #2496
+- Faille IDOR (CVSS 7.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:L/A:N) #2499
 
 # [4.1.19] - 2026-06-01
 
