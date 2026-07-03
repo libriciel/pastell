@@ -37,6 +37,8 @@
 - Faille d'injection SQL
   (CVSS 8.8 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H) #2496
 - Faille IDOR (CVSS 7.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:L/A:N) #2499
+- Faille de lecture de fichier arbitraire
+  (CVSS 7.7 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:N/A:N) #2502
 
 # [5.0.5] - 2026-06-01
 
