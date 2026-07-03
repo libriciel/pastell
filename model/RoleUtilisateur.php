@@ -425,6 +425,12 @@ SQL;
         return $this->roleSQL->getRoleLibelle($role_list);
     }
 
+    public function canDelegateRole(int $userId, string $role, int $entityId): bool
+    {
+        $droit_delegant = $this->getAllDroitEntite($userId, $entityId);
+        return in_array($role, $this->roleSQL->getAuthorizedRoleToDelegate($droit_delegant), true);
+    }
+
     public function getChildrenWithPermission(int $id_e_parent, int $id_u): array
     {
         $sql = "SELECT DISTINCT entite.* FROM entite " .
