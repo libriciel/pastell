@@ -122,7 +122,7 @@ services:
         restart: unless-stopped
 
     pes-viewer:
-        image: 'registry.libriciel.fr/public/signature/pes-viewer:3.2.0'
+        image: 'registry.libriciel.fr/public/signature/pes-viewer:3.2.2'
         restart: unless-stopped
         deploy:
             resources:
@@ -138,7 +138,7 @@ services:
             - ${LOCAL_CACERTS_PATH:-local_cacerts}:/usr/local/share/ca-certificates
 
     libriciel-feedback:
-        image: 'registry.libriciel.fr:443/public/libriciel/deploiement/libriciel-feedback:2.0.2'
+        image: 'registry.libriciel.fr:443/public/libriciel/deploiement/libriciel-feedback:2.0.3'
         restart: unless-stopped
         user: "10001:10001"
         read_only: true
