@@ -494,15 +494,20 @@ class UtilisateurControler extends PastellControler
      * @throws LastErrorException
      * @throws LastMessageException
      */
-    public function ajoutRoleAction()
+    public function ajoutRoleAction(): void
     {
-        $recuperateur = new Recuperateur($_POST);
+        $recuperateur = $this->getPostInfo();
         $id_u = $recuperateur->get('id_u');
         $role = $recuperateur->get('role');
         $id_e = $recuperateur->get('id_e', 0);
 
         $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
-        if ($this->getRoleUtilisateur()->hasRole($id_u, $role, $id_e)) {
+
+        if (!$this->getRoleUtilisateur()->canDelegateRole($this->getId_u(), $role, $id_e)) {
+            $this->setLastError(
+                'Vous ne pouvez pas attribuer un rôle contenant des droits que vous ne possédez pas sur cette entité.'
+            );
+        } elseif ($this->getRoleUtilisateur()->hasRole($id_u, $role, $id_e)) {
             $this->setLastError("Ce droit a déjà été attribué à l'utilisateur");
         } elseif ($role) {
             $this->getRoleUtilisateur()->addRole($id_u, $role, $id_e);

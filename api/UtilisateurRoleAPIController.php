@@ -108,6 +108,12 @@ class UtilisateurRoleAPIController extends BaseAPIController
         $this->verifExists($id_u);
         $this->verifRoleExists($role);
 
+        if (
+            !$this->getRoleUtilisateur()->canDelegateRole($this->getUtilisateurId(), $role, $id_e)
+        ) {
+            throw new ForbiddenException("Rôle non délégable par l'utilisateur courant : {role=$role}");
+        }
+
         if (!$this->getRoleUtilisateur()->hasRole($id_u, $role, $id_e)) {
             $this->getRoleUtilisateur()->addRole($id_u, $role, $id_e);
         }
