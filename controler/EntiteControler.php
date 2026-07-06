@@ -928,9 +928,9 @@ class EntiteControler extends PastellControler
         $filtre = $recuperateur->get('filtre', '');
 
         $sub_title = '';
+        $this->setNavigationInfo($id_e, 'Entite/job');
         if ($filtre) {
             $this->setViewParameter('page_url', "job?filtre=$filtre");
-            $this->setNavigationInfo($id_e, 'Entite/job');
             switch ($filtre) {
                 case 'actif':
                     $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB_ACTIF);
@@ -945,13 +945,11 @@ class EntiteControler extends PastellControler
                     $sub_title = 'Liste des travaux en retard';
                     break;
                 default:
-                    $this->setNavigationInfo($id_e, 'Entite/job');
                     $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB);
             }
         } else {
             $sub_title = 'Liste de tous les travaux';
             $this->setViewParameter('page_url', 'job');
-            $this->setNavigationInfo($id_e, 'Entite/job');
             $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB);
         }
         $this->setViewParameter('sub_title', $sub_title);
