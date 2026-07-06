@@ -4,9 +4,9 @@ include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
   - template: Security/Container-Scanning.gitlab-ci.yml
-  - component: $LIBRICIEL_CATALOG_PATH/renovate-runner/runner@1.5.0
-  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.0.0
-  - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@1.3.0
+  - component: $LIBRICIEL_CATALOG_PATH/renovate-runner/runner@1.6.0
+  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.1.0
+  - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@1.3.1
     inputs:
       compose_file: "docker/compose.yaml"
       version_placeholder: "canary"
@@ -164,7 +164,7 @@ acceptance_test:
 .security_scan_base:
   stage: test
   image:
-    name: hubdocker.libriciel.fr/aquasec/trivy:0.70.0
+    name: hubdocker.libriciel.fr/aquasec/trivy:0.72.0
     entrypoint: [""]
   services:
     - docker:dind
