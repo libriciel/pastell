@@ -4,13 +4,10 @@ set -e -x
 
 export DEBIAN_FRONTEND=noninteractive
 
-curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
-
 apt-get update
 
 apt-get install -y --no-install-recommends \
     bash-completion \
-    nodejs \
     php-pcov \
     php-xdebug
 
