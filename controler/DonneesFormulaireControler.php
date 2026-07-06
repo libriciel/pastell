@@ -18,25 +18,24 @@ class DonneesFormulaireControler extends PastellControler
             // Si l'id_d est un document_email_reponse alors on vérifie les droits sur le document_email, issue #1703
             $mail_info = $this->getDocumentEmailService()->getDocumentEmailFromIdReponse($id_d);
             $info = (!empty($mail_info)) ? $mail_info : $this->getDocumentSQL()->getInfo($id_d);
-            if (
-                !$this->getDroitService()->hasDroit(
-                    $this->getId_u(),
-                    $this->getDroitService()->getDroitEdition($info['type']),
-                    $id_e
-                )
-            ) {
-                if (!$this->isDocumentEmailChunkUpload()) {
-                    echo "KO";
-                    exit_wrapper();
-                }
+
+            $isAllowed = $this->getDroitService()->hasDroit(
+                $this->getId_u(),
+                $this->getDroitService()::getDroitEdition($info['type']),
+                $id_e,
+            ) && $this->getDocumentEntite()->getRole($id_e, $info['id_d']);
+
+            if (!$isAllowed && !$this->isDocumentEmailChunkUpload()) {
+                echo 'KO';
+                exit_wrapper();
             }
         } elseif ($id_ce) {
             if (!$this->getDroitService()->hasDroitConnecteurEdition($id_e, $this->getId_u())) {
-                echo "KO";
+                echo 'KO';
                 exit_wrapper();
             }
         } else {
-            throw new Exception("id_d ou id_ce est obligatoire");
+            throw new Exception('id_d ou id_ce est obligatoire');
         }
     }
 
@@ -52,25 +51,24 @@ class DonneesFormulaireControler extends PastellControler
             // Si l'id_d est un document_email_reponse alors on vérifie les droits sur le document_email, issue #1703
             $mail_info = $this->getDocumentEmailService()->getDocumentEmailFromIdReponse($id_d);
             $info = (!empty($mail_info)) ? $mail_info : $this->getDocumentSQL()->getInfo($id_d);
-            if (
-                !$this->getDroitService()->hasDroit(
-                    $this->getId_u(),
-                    $this->getDroitService()->getDroitLecture($info['type']),
-                    $id_e
-                )
-            ) {
-                if (!$this->isDocumentEmailChunkUpload()) {
-                    echo "KO";
-                    exit_wrapper();
-                }
+
+            $isAllowed = $this->getDroitService()->hasDroit(
+                $this->getId_u(),
+                $this->getDroitService()::getDroitLecture($info['type']),
+                $id_e,
+            ) && $this->getDocumentEntite()->getRole($id_e, $info['id_d']);
+
+            if (!$isAllowed && !$this->isDocumentEmailChunkUpload()) {
+                echo 'KO';
+                exit_wrapper();
             }
         } elseif ($id_ce) {
             if (!$this->getDroitService()->hasDroitConnecteurLecture($id_e, $this->getId_u())) {
-                echo "KO";
+                echo 'KO';
                 exit_wrapper();
             }
         } else {
-            throw new Exception("id_d ou id_ce est obligatoire");
+            throw new Exception('id_d ou id_ce est obligatoire');
         }
     }
 
@@ -262,7 +260,7 @@ class DonneesFormulaireControler extends PastellControler
                 $visionneuseFactory->displayConnecteur($id_ce, $field, $num);
             }
         } catch (Exception $e) {
-            echo "Une erreur est survenue : " . $e->getMessage();
+            echo 'Une erreur est survenue : ' . $e->getMessage();
         }
     }
 }

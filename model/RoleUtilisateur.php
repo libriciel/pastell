@@ -424,4 +424,21 @@ SQL;
         $role_list = $this->roleSQL->getAuthorizedRoleToDelegate($droit_list);
         return $this->roleSQL->getRoleLibelle($role_list);
     }
+
+    public function canDelegateRole(int $userId, string $role, int $entityId): bool
+    {
+        $droit_delegant = $this->getAllDroitEntite($userId, $entityId);
+        return in_array($role, $this->roleSQL->getAuthorizedRoleToDelegate($droit_delegant), true);
+    }
+
+    public function getChildrenWithPermission(int $id_e_parent, int $id_u): array
+    {
+        $sql = "SELECT DISTINCT entite.* FROM entite " .
+            " JOIN entite_ancetre ON entite.id_e=entite_ancetre.id_e " .
+            " JOIN utilisateur_role ON entite_ancetre.id_e_ancetre=utilisateur_role.id_e " .
+            " JOIN utilisateur ON utilisateur_role.id_u = utilisateur.id_u " .
+            " WHERE entite.entite_mere=? AND utilisateur.id_u=? AND utilisateur_role.role NOT LIKE 'aucun droit'" .
+            " ORDER BY denomination";
+        return $this->query($sql, $id_e_parent, $id_u);
+    }
 }

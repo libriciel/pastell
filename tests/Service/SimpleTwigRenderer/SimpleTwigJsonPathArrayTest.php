@@ -77,8 +77,11 @@ Number: 0123-4567-8910
 
         $expression = "{{ $this->method('json', '$.toto') }}";
 
-        $this->expectException(Error::class);
-        $this->expectExceptionMessage('Object of class Flow\JSONPath\JSONPath could not be converted to string');
+        $this->expectException(UnrecoverableException::class);
+        $this->expectExceptionMessage(
+            //phpcs:ignore Generic.Files.LineLength.MaxExceeded
+            'Erreur sur le template {{ jsonpath_array(\'json\', \'$.toto\') }} : An exception has been thrown during the rendering of a template ("Object of class Flow\JSONPath\JSONPath could not be converted to string")'
+        );
         $this->twigRenderer()->render($expression, $form);
     }
 }
