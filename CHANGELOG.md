@@ -21,6 +21,7 @@
 - Il manquait le truncate du titre du dossier si sa taille dépasse 255 bytes lors de l'envoi à iparapheur REST #2486
 - Prise en compte du "Nombre de jour avant relance du mail securisé" suivant la dernière date de renvoi
   pour les relances des mails sécurisés #2495
+- Les uploads envoyés en `Transfer-Encoding: chunked` (ex. Spring WebClient) arrivaient vides #2507
 
 ## Dépréciations
 
