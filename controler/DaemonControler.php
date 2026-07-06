@@ -599,7 +599,7 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('global_daemon_status', $this->getDaemonManager()->status());
         $this->setViewParameter('page_title', 'Configuration des gestionnaires de tâches');
         $this->setViewParameter('template_milieu', 'DaemonConfiguration');
-        $this->setViewParameter('menu_gauche_select', 'Daemon/configuration');
+        $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_CONFIGURATION);
         $this->renderDefault();
     }
 
@@ -617,7 +617,7 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('nb_workers', $this->getDaemonSQL()->getNbWorkers());
         $this->setViewParameter('page_title', 'Configuration des gestionnaires de tâches');
         $this->setViewParameter('template_milieu', 'DaemonEditConfiguration');
-        $this->setViewParameter('menu_gauche_select', 'Daemon/configuration');
+        $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_CONFIGURATION);
         $this->renderDefault();
     }
 
@@ -706,7 +706,7 @@ class DaemonControler extends PastellControler
         }
         $this->setViewParameter('page_title', 'Suppression du gestionnaire de tâches');
         $this->setViewParameter('template_milieu', 'DaemonDelete');
-        $this->setViewParameter('menu_gauche_select', 'Daemon/editConfiguration');
+        $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_CONFIGURATION);
         $this->setViewParameter('daemon', $daemon);
         $this->setViewParameter('entite', $this->getEntiteSQL()->getInfo($daemon->id_e));
         $this->renderDefault();
@@ -813,6 +813,8 @@ class DaemonControler extends PastellControler
             'tree',
             \json_encode($tree, \JSON_THROW_ON_ERROR)
         );
+
+        $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_CONFIGURATION);
         $this->setViewParameter('nb_free_workers', $this->getDaemonSQL()->getNbSharedWorkers() - 1);
         $this->setViewParameter('template_milieu', 'DaemonCreate');
         $this->setViewParameter('page_title', 'Création d\'un gestionnaire de tâches');
