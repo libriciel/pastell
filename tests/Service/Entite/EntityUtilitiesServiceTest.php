@@ -88,39 +88,6 @@ class EntityUtilitiesServiceTest extends PastellTestCase
         static::assertSame($expected, $this->service->buildEntityTree($flatList));
     }
 
-    public function testBuildEntityTreeWithRoot(): void
-    {
-        $flatList = [
-            ['id_e' => 1, 'denomination' => 'Entité A', 'profondeur' => 0],
-        ];
-
-        $result = $this->service->buildEntityTreeWithRoot($flatList);
-
-        static::assertCount(1, $result);
-        static::assertSame(EntiteSQL::ID_E_ENTITE_RACINE, $result[0]['id_e']);
-        static::assertSame(EntiteSQL::ENTITE_RACINE_DENOMINATION, $result[0]['denomination']);
-        static::assertSame(
-            $this->service->buildEntityTree($flatList),
-            $result[0]['children']
-        );
-    }
-
-    public function testBuildEntityTreeWithRootEmptyList(): void
-    {
-        $result = $this->service->buildEntityTreeWithRoot([]);
-
-        static::assertSame(
-            [
-                [
-                    'id_e' => EntiteSQL::ID_E_ENTITE_RACINE,
-                    'denomination' => EntiteSQL::ENTITE_RACINE_DENOMINATION,
-                    'children' => [],
-                ],
-            ],
-            $result
-        );
-    }
-
     public function testAddDenominationForEntiteRacine(): void
     {
         $connecteurInfo = $this->getObjectInstancier()->getInstance(FluxEntiteSQL::class)

@@ -31,17 +31,6 @@ final class EntityUtilitiesService
         return $hierarchy;
     }
 
-    public function buildEntityTreeWithRoot(array $flatList): array
-    {
-        return [
-            [
-                'id_e' => EntiteSQL::ID_E_ENTITE_RACINE,
-                'denomination' => EntiteSQL::ENTITE_RACINE_DENOMINATION,
-                'children' => $this->buildEntityTree($flatList),
-            ],
-        ];
-    }
-
     public function toTreeselectOptions(array $tree): array
     {
         return array_map(function (array $node): array {

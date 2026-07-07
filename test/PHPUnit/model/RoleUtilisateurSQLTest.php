@@ -5,6 +5,7 @@ use Pastell\Helpers\ArrayHelper;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Utilisateur\UserCreationService;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class RoleUtilisateurSQLTest extends PastellTestCase
 {
@@ -12,6 +13,7 @@ class RoleUtilisateurSQLTest extends PastellTestCase
 
     protected function setUp(): void
     {
+        new StaticWrapper()->flushAll();
         parent::setUp();
         $this->roleUtilisateurSQL = new RoleUtilisateur(
             $this->getSQLQuery(),
@@ -458,6 +460,58 @@ class RoleUtilisateurSQLTest extends PastellTestCase
                 ],
             ],
             $arbreFille
+        );
+    }
+
+    /**
+     * @throws ConflictException
+     * @throws UnrecoverableException
+     * @throws TransportExceptionInterface
+     */
+    public function testGetArbreFilleWithRacineWhenUserHasDroitOnRacine(): void
+    {
+        $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
+        $id_u = $userCreationService->create('test_arbre_racine', 'racine@test.fr', 'user', 'user');
+
+        $this->roleUtilisateurSQL->addRole($id_u, 'admin', EntiteSQL::ID_E_ENTITE_RACINE);
+
+        $arbre = $this->roleUtilisateurSQL->getArbreFilleWithRacine($id_u, 'entite:lecture');
+
+        static::assertSame(
+            [
+                'id_e' => EntiteSQL::ID_E_ENTITE_RACINE,
+                'denomination' => EntiteSQL::ENTITE_RACINE_DENOMINATION,
+                'profondeur' => 0,
+            ],
+            $arbre[0]
+        );
+        static::assertSame(
+            $this->roleUtilisateurSQL->getArbreFille($id_u, 'entite:lecture'),
+            array_slice($arbre, 1)
+        );
+    }
+
+    /**
+     * @throws ConflictException
+     * @throws UnrecoverableException
+     * @throws TransportExceptionInterface
+     */
+    public function testGetArbreFilleWithRacineWhenUserHasNoDroitOnRacine(): void
+    {
+        $entityCreationService = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
+        $id_e = $entityCreationService->create('Entité sans racine', '000000000');
+
+        $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
+        $id_u = $userCreationService->create('test_arbre_sans_racine', 'sans-racine@test.fr', 'user', 'user');
+
+        $this->roleUtilisateurSQL->addRole($id_u, 'admin', $id_e);
+
+        $arbre = $this->roleUtilisateurSQL->getArbreFilleWithRacine($id_u, 'entite:lecture');
+
+        static::assertNotContains(EntiteSQL::ID_E_ENTITE_RACINE, array_column($arbre, 'id_e'));
+        static::assertSame(
+            $this->roleUtilisateurSQL->getArbreFille($id_u, 'entite:lecture'),
+            $arbre
         );
     }
 }
