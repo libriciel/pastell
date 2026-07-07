@@ -2,9 +2,16 @@
 
 use Pastell\File\Chunk\ChunkUploader;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Menu\MenuGaucheOption;
+use Pastell\Service\Menu\MenuGaucheService;
 
 class DocumentControler extends PastellControler
 {
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
     public function _beforeAction()
     {
         parent::_beforeAction();
@@ -20,10 +27,19 @@ class DocumentControler extends PastellControler
         }
 
         $this->setNavigationInfo($id_e, "Document/list?type=$type");
+        $this->setMenuGaucheSelect(MenuGaucheOption::buildUrl(MenuGaucheService::DOCUMENT_LIST, ['type' => $type]));
+        $this->setDocumentMenuGauche($id_e);
     }
 
+    /**
+     * @throws UnrecoverableException
+     * @throws NotFoundException
+     */
     public function renderDefault(): void
     {
+        if ($this->isViewParameter('id_e')) {
+            $this->setDocumentMenuGauche((int)$this->getViewParameterByKey('id_e'));
+        }
         $this->setViewParameter(
             'show_choice_entity_message',
             !(bool)$this->getPostOrGetInfo()->getInt('id_e')
@@ -370,8 +386,7 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('url', "id_e=$id_e&search=$search");
 
         $this->setViewParameter('champs_affiches', DocumentType::getDefaultDisplayField());
-
-        $this->setNavigationInfo($id_e, "Document/index?a=a");
+        $this->setNavigationInfo($id_e, 'Document/index?a=a');
         if ($this->getViewParameterOrObject('infoEntite')) {
             $this->setViewParameter('page_title', "Liste des dossiers " . $this->getViewParameterOrObject('infoEntite')['denomination']) ;
         } else {
@@ -901,10 +916,9 @@ class DocumentControler extends PastellControler
     /**
      * @throws Exception
      */
-    public function retourTeletransmissionAction()
+    public function retourTeletransmissionAction(): void
     {
-
-        $recuperateur = new Recuperateur($_GET);
+        $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->get('id_e', 0);
         $id_u = $recuperateur->get('id_u');
         $type = $recuperateur->get('type');
@@ -912,31 +926,47 @@ class DocumentControler extends PastellControler
         $action = $recuperateur->get('action', 'return-teletransmission-tdt');
 
         $url_retour = "Document/list?id_e={$id_e}&type={$type}";
-        $message = "";
+        $message = '';
 
         /* FIXME FIXME : Il y a une référence vers un connecteur !!! */
         /** @var TdtConnecteur $tdt */
         $tdt = $this->getConnecteurFactory()->getConnecteurByType($id_e, $type, 'TdT');
 
-        $stringMapper = $this->getDocumentTypeFactory()->getFluxDocumentType($type)->getAction()->getConnecteurMapper($action);
+        $stringMapper = $this->getDocumentTypeFactory()
+            ->getFluxDocumentType($type)
+            ->getAction()
+            ->getConnecteurMapper($action)
+        ;
 
+        $this->verifDroit($id_e, DroitService::getDroitEdition($type));
 
         foreach ($all_id_d as $id_d) {
             $infoDocument  = $this->getDocumentActionEntite()->getInfo($id_d, $id_e);
-            $listDocument[] = $infoDocument;
 
-            $tedetis_transaction_id = $this->getDonneesFormulaireFactory()->get($id_d)->get($stringMapper->get('tedetis_transaction_id'));
-            $status =  $tdt->getStatus($tedetis_transaction_id);
+            $tedetis_transaction_id = $this->getDonneesFormulaireFactory()
+                ->get($id_d)
+                ->get($stringMapper->get('tedetis_transaction_id'));
+            $status = $tdt->getStatus($tedetis_transaction_id);
 
-            if (in_array($status, [TdtConnecteur::STATUS_ACTES_EN_ATTENTE_DE_POSTER])) {
-                $message .= "La transaction pour le document « {$infoDocument['titre']} » n'a pas le bon status : " . TdtConnecteur::getStatusString($status) . " trouvé<br/>";
+            if ($status == TdtConnecteur::STATUS_ACTES_EN_ATTENTE_DE_POSTER) {
+                $message .= sprintf(
+                    "La transaction pour le document « %s » n'a pas le bon status : %s trouvé<br/>",
+                    $infoDocument['titre'],
+                    TdtConnecteur::getStatusString($status)
+                );
             } else {
-                $this->getActionChange()->addAction($id_d, $id_e, $id_u, $stringMapper->get("send-tdt"), "Le document a été télétransmis à la préfecture");
+                $this->getActionChange()->addAction(
+                    $id_d,
+                    $id_e,
+                    $id_u,
+                    $stringMapper->get('send-tdt'),
+                    'Le document a été télétransmis à la préfecture',
+                );
                 $message .= "Le document « {$infoDocument['titre']} » a été télétransmis<br/>";
             }
-            /** @var JobManager $jobManager */
+
             $jobManager = $this->getInstance(JobManager::class);
-            $jobManager->setJobForDocument($id_e, $id_d, "suite traitement par lot");
+            $jobManager->setJobForDocument($id_e, $id_d, 'suite traitement par lot');
         }
 
         $this->setLastMessage($message);

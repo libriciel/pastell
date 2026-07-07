@@ -3,6 +3,7 @@
 use Pastell\Mailer\Mailer;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityUtilitiesService;
+use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\PasswordEntropy;
 use Pastell\Service\Module\ModuleListService;
 use Pastell\Service\Utilisateur\UserCreationService;
@@ -38,6 +39,10 @@ class UtilisateurControler extends PastellControler
         return $this->getInstance(Notification::class);
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function _beforeAction()
     {
         parent::_beforeAction();
@@ -47,32 +52,22 @@ class UtilisateurControler extends PastellControler
             $info = $this->getUtilisateur()->getInfo($id_u);
             if (! $info) {
                 $this->setLastError("L'utilisateur n'existe pas");
-                $this->redirect("/");
+                $this->redirect('/');
             }
             $id_e = $info['id_e'];
-            $this->setViewParameter('id_e_menu', $id_e);
-            $this->setViewParameter('type_e_menu', "");
             if ($this->getGetInfo()->get('source') !== 'moi') {
                 $this->hasUtilisateurDroitLecture($id_e);
             }
-            $this->setNavigationInfo($id_e, "Entite/utilisateur?");
         } elseif ($this->getGetInfo()->get('id_e')) {
-            $this->setViewParameter('type_e_menu', "");
             $id_e = $this->getGetInfo()->get('id_e');
-            $this->setViewParameter('id_e_menu', $id_e);
-            $this->setNavigationInfo($id_e, 'Entite/utilisateur?');
-        } else {
-            $this->setNavigationInfo($id_e, "Entite/utilisateur?");
         }
+        $this->setViewParameter('type_e_menu', '');
+        $this->setViewParameter('id_e_menu', $id_e);
         $this->setViewParameter('id_e', $id_e);
-        $this->setViewParameter(
-            'droitLectureAnnuaire',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE), $id_e)
-        );
-        $this->setViewParameter('menu_gauche_template', "EntiteMenuGauche");
-        $this->setViewParameter('menu_gauche_select', "Entite/utilisateur");
+        $this->setEntiteMenuGauche((int) $id_e);
+        $this->setNavigationInfo($id_e, 'Entite/utilisateur');
+        $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_UTILISATEUR);
         $this->setDroitLectureOnConnecteur($this->getViewParameterOrObject('id_e'));
-        $this->setDroitLectureOnUtilisateur($this->getViewParameterByKey('id_e'));
         $this->setDroitsDaemon($id_e);
     }
 
@@ -254,7 +249,8 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('infoEntite', $this->getEntiteSQL()->getInfo($infoUtilisateur['id_e']));
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
         $entity_tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTreeWithRoot(
-            $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
+            $this->getRoleUtilisateur()
+                ->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
         ));
 
         $this->setViewParameter('entity_treeselect_data', \json_encode($entity_tree, \JSON_THROW_ON_ERROR));
@@ -302,7 +298,8 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('entiteListe', $this->getEntiteListe());
         $this->setViewParameter(
             'tabEntite',
-            $this->getRoleUtilisateur()->getEntite($this->getId_u(), 'entite:edition')
+            $this->getRoleUtilisateur()
+                ->getEntite($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
         );
 
         if ((int) $id_u === $this->getId_u()) {
@@ -357,7 +354,7 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('id_u', $id_u);
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
         $entity_tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTreeWithRoot(
-            $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
+            $this->getRoleUtilisateur()->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
         ));
         $this->setViewParameter('entity_treeselect_data', \json_encode($entity_tree, \JSON_THROW_ON_ERROR));
 
@@ -398,7 +395,7 @@ class UtilisateurControler extends PastellControler
 
         $this->setViewParameter(
             'tabEntite',
-            $this->getRoleUtilisateur()->getEntite($this->getId_u(), 'entite:edition')
+            $this->getRoleUtilisateur()->getEntite($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
         );
 
         $this->setViewParameter('notification_list', $this->getNotificationList($id_u));
@@ -464,6 +461,11 @@ class UtilisateurControler extends PastellControler
         $lastname = $recuperateur->get('nom');
         $is_api = $recuperateur->get('api_user');
 
+        if ($id_u) {
+            $info = $this->getInstance(UtilisateurSQL::class)->getInfo($id_u);
+            $this->verifDroit($info['id_e'], DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR));
+        }
+        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR));
         try {
             if ($id_u) {
                 $is_api = $this->getInstance(UtilisateurSQL::class)->getInfo($id_u)['is_api'];
@@ -514,15 +516,20 @@ class UtilisateurControler extends PastellControler
      * @throws LastErrorException
      * @throws LastMessageException
      */
-    public function ajoutRoleAction()
+    public function ajoutRoleAction(): void
     {
-        $recuperateur = new Recuperateur($_POST);
+        $recuperateur = $this->getPostInfo();
         $id_u = $recuperateur->get('id_u');
         $role = $recuperateur->get('role');
         $id_e = $recuperateur->get('id_e', 0);
 
-        $this->verifDroit($id_e, 'entite:edition');
-        if ($this->getRoleUtilisateur()->hasRole($id_u, $role, $id_e)) {
+        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+
+        if (!$this->getRoleUtilisateur()->canDelegateRole($this->getId_u(), $role, $id_e)) {
+            $this->setLastError(
+                'Vous ne pouvez pas attribuer un rôle contenant des droits que vous ne possédez pas sur cette entité.'
+            );
+        } elseif ($this->getRoleUtilisateur()->hasRole($id_u, $role, $id_e)) {
             $this->setLastError("Ce droit a déjà été attribué à l'utilisateur");
         } elseif ($role) {
             $this->getRoleUtilisateur()->addRole($id_u, $role, $id_e);
@@ -540,7 +547,7 @@ class UtilisateurControler extends PastellControler
         $id_u = $recuperateur->get('id_u');
         $role = $recuperateur->get('role');
         $id_e = $recuperateur->getInt('id_e', 0);
-        $this->verifDroit($id_e, 'entite:edition');
+        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
         $this->getRoleUtilisateur()->removeRole($id_u, $role, $id_e);
         $role_info = $this->getRoleSQL()->getInfo($role);
         $utilisateur_info = $this->getUtilisateur()->getInfo($id_u);

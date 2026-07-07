@@ -6,6 +6,7 @@ use Pastell\Service\Annuaire\AnnuaireGroupeService;
 use Pastell\Service\Annuaire\AnnuaireImportService;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityUtilitiesService;
+use Pastell\Service\Menu\MenuGaucheService;
 
 class MailSecControler extends PastellControler
 {
@@ -18,15 +19,9 @@ class MailSecControler extends PastellControler
         $this->setViewParameter('id_e', $id_e);
         $this->hasEntiteDroitLecture($id_e);
         $this->setNavigationInfo($id_e, "MailSec/annuaire?");
-        $this->setViewParameter('menu_gauche_select', 'MailSec/annuaire');
-        $this->setViewParameter(
-            'droitLectureAnnuaire',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE), $id_e)
-        );
-        $this->setViewParameter('menu_gauche_template', "EntiteMenuGauche");
+        $this->setMenuGaucheSelect(MenuGaucheService::MAILSEC_ANNUAIRE);
+        $this->setEntiteMenuGauche($id_e);
         $this->setDroitLectureOnConnecteur($id_e);
-        $this->setDroitImportExportConfig($id_e);
-        $this->setDroitLectureOnUtilisateur($id_e);
         $this->setDroitsDaemon($id_e);
     }
 

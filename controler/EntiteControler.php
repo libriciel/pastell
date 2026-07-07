@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Crypto;
+use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Entite\EntityCreationService;
@@ -20,22 +21,16 @@ class EntiteControler extends PastellControler
         if ($id_e != 0) {
             $this->hasEntiteDroitLecture($id_e);
         }
-        $this->setNavigationInfo($id_e, "Entite/detail?");
-        $this->setViewParameter(
-            'droitLectureAnnuaire',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE), $id_e)
-        );
-        $this->setViewParameter('menu_gauche_template', "EntiteMenuGauche");
-        $this->setViewParameter('menu_gauche_select', "Entite/detail");
+        $this->setNavigationInfo($id_e, 'Entite/detail');
+        $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_DETAIL);
+        $this->setEntiteMenuGauche($id_e);
         $this->setDroitLectureOnConnecteur($id_e);
-        $this->setDroitImportExportConfig($id_e);
         $this->setViewParameter(
             'cdg_feature',
             $this->getObjectInstancier()
                 ->getInstance(FeatureToggleService::class)
                 ->isEnabled(CDGFeature::class)
         );
-        $this->setDroitLectureOnUtilisateur($id_e);
         $this->setDroitsDaemon($id_e);
     }
 
@@ -122,7 +117,8 @@ class EntiteControler extends PastellControler
 
         $this->setViewParameter('id_u_courant', $this->getId_u());
         $this->setViewParameter('template_milieu', 'UtilisateurList');
-        $this->setViewParameter('menu_gauche_select', 'Entite/utilisateur');
+        $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_UTILISATEUR);
+        $this->setNavigationInfo($id_e, 'Entite/utilisateur');
         $this->setPageTitle('Liste des utilisateurs');
         $this->renderDefault();
     }
@@ -200,11 +196,8 @@ class EntiteControler extends PastellControler
 
         $this->setPageTitle("Informations");
 
-        $this->setViewParameter('menu_gauche_select', "Entite/detail");
-
         $this->setViewParameter('template_milieu', "EntiteDetail");
         $this->setViewParameter('id_e', $id_e);
-
         $this->renderDefault();
     }
 
@@ -251,8 +244,6 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('offset', $offset);
 
         $this->setPageTitle("Entité Racine");
-        $this->setViewParameter('menu_gauche_select', "Entite/detail");
-
         $this->setViewParameter('template_milieu', "EntiteList");
         $this->renderDefault();
     }
@@ -368,7 +359,6 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('template_milieu', "EntiteEdition");
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('entite_mere', $entite_mere);
-
         $this->renderDefault();
     }
 
@@ -504,7 +494,8 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('search', $search);
         $this->setPageTitle("Agents");
-        $this->setViewParameter('menu_gauche_select', "Entite/agents");
+        $this->setNavigationInfo($id_e, 'Entite/agents');
+        $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_AGENTS);
         $this->setViewParameter('template_milieu', "AgentList");
 
         $this->renderDefault();
@@ -512,9 +503,9 @@ class EntiteControler extends PastellControler
 
     public function connecteurAction()
     {
-        $recuperateur = new Recuperateur($_GET);
+        $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
-        $global = $this->getGetInfo()->getInt('global', 0);
+        $global = $recuperateur->getInt('global', 0);
         $this->hasConnecteurDroitLecture($id_e);
         $this->hasEntiteDroitLecture($id_e);
         $this->setViewParameter(
@@ -539,9 +530,9 @@ class EntiteControler extends PastellControler
             );
         }
         $this->setViewParameter('template_milieu', 'ConnecteurList');
-        $this->setViewParameter('menu_gauche_select', "Entite/connecteur?global=$global");
         $this->setPageTitle('Liste des connecteurs' . ($global ? ' globaux' : ''));
         $this->setNavigationInfo($id_e, "Entite/connecteur?global=$global");
+        $this->setMenuGaucheSelect($global ? MenuGaucheService::ENTITE_CONNECTEUR_GLOBAL : MenuGaucheService::ENTITE_CONNECTEUR_LOCAL);
         $this->renderDefault();
     }
 
@@ -726,7 +717,8 @@ class EntiteControler extends PastellControler
 
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('template_milieu', 'EntiteExportConfig');
-        $this->setViewParameter('menu_gauche_select', 'Entite/exportConfig');
+        $this->setNavigationInfo($id_e, 'Entite/exportConfig');
+        $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_EXPORT_CONFIG);
         $this->setPageTitle('Export de la configuration');
         $this->renderDefault();
     }
@@ -745,7 +737,8 @@ class EntiteControler extends PastellControler
 
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('template_milieu', 'EntiteImportConfig');
-        $this->setViewParameter('menu_gauche_select', 'Entite/importConfig');
+        $this->setNavigationInfo($id_e, 'Entite/importConfig');
+        $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_IMPORT_CONFIG);
         $this->setPageTitle('Import de la configuration');
         $this->renderDefault();
     }
@@ -779,7 +772,8 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('password', $password);
         $this->setViewParameter('exportInfo', $exportInfo);
         $this->setViewParameter('template_milieu', 'EntiteExportConfigVerif');
-        $this->setViewParameter('menu_gauche_select', 'Entite/exportConfig');
+        $this->setNavigationInfo($id_e, 'Entite/exportConfig');
+        $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_EXPORT_CONFIG);
         $this->setViewParameter('options', $options);
         $this->setPageTitle("Vérification de l'export de la configuration");
         $this->renderDefault();
@@ -853,10 +847,14 @@ class EntiteControler extends PastellControler
      */
     public function daemonAction(): void
     {
+        $recuperateur = $this->getPostInfo();
+        $id_e = $recuperateur->getInt('id_e', 0);
+
         $this->daemonData();
         $this->setViewParameter('page_url', 'index');
         $this->setViewParameter('twigTemplate', 'daemon/entity/index.html.twig');
         $this->setViewParameter('page_title', 'Gestionnaire de tâches local');
+        $this->setNavigationInfo($id_e, 'Entite/daemon');
         $this->renderDefault();
     }
 
@@ -890,7 +888,7 @@ class EntiteControler extends PastellControler
         $this->setDroitsDaemon($id_e);
 
         $daemon = $this->resolveDaemonForEntity($id_e);
-        $this->setViewParameter('menu_gauche_select', 'Entite/daemon');
+        $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_DAEMON);
         $this->setViewParameter('nb_worker_actif', $this->getWorkerSQL()->getNbActifForDaemon($daemon->id_daemon));
         $this->setViewParameter('job_stat_info', $this->getJobQueueSQL()->getStatInfoForDaemon($daemon->id_daemon));
         $this->setViewParameter('sub_title', 'Liste de tous les travaux');
@@ -934,24 +932,36 @@ class EntiteControler extends PastellControler
         );
         $daemon = $this->resolveDaemonForEntity($id_e);
         $this->setViewParameter('id_e', $id_e);
-        $this->setViewParameter('menu_gauche_select', 'Entite/job');
         $this->setViewParameter('twigTemplate', 'daemon/entity/job.html.twig');
         $this->setViewParameter('page_title', 'Gestionnaire de tâches local');
         $filtre = $recuperateur->get('filtre', '');
+
+        $sub_title = '';
+        $this->setNavigationInfo($id_e, 'Entite/job');
         if ($filtre) {
             $this->setViewParameter('page_url', "job?filtre=$filtre");
-            $this->setViewParameter('menu_gauche_select', "Entite/job?filtre=$filtre");
+            switch ($filtre) {
+                case 'actif':
+                    $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB_ACTIF);
+                    $sub_title = 'Liste des travaux actifs';
+                    break;
+                case 'lock':
+                    $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB_LOCK);
+                    $sub_title = 'Liste des travaux suspendus';
+                    break;
+                case 'wait':
+                    $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB_WAIT);
+                    $sub_title = 'Liste des travaux en retard';
+                    break;
+                default:
+                    $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB);
+            }
         } else {
+            $sub_title = 'Liste de tous les travaux';
             $this->setViewParameter('page_url', 'job');
+            $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB);
         }
-
-        $sub_title_array = [
-            'actif' => 'Liste des travaux actifs',
-            'lock' => 'Liste des travaux suspendus',
-            'wait' => 'Liste des travaux en retard',
-        ];
-
-        $this->setViewParameter('sub_title', $sub_title_array[$filtre] ?? 'Liste de tous les travaux');
+        $this->setViewParameter('sub_title', $sub_title);
         $this->setViewParameter('unlock_all_action', 'app.legacy.entite_daemonUnlockAll');
 
         $this->setViewParameter('offset', $recuperateur->getInt('offset', 0));
@@ -995,10 +1005,11 @@ class EntiteControler extends PastellControler
         $daemon = $this->resolveDaemonForEntity($id_e);
 
         $daemon_admin_email = $this->getDaemonManager()->getAdminEmails($daemon->id_daemon);
+        $this->setNavigationInfo($id_e, 'Entite/daemonAdmin');
         $this->setViewParameter('page_title', 'Administration du gestionnaire de tâches');
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('daemon_admin_email', implode(',', $daemon_admin_email));
-        $this->setViewParameter('menu_gauche_select', 'Entite/daemonAdmin');
+        $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_DAEMON_ADMIN);
         $this->setViewParameter('template_milieu', 'EntiteDaemonAdmin');
         $this->setViewParameter('daemon_late_jobs_threshold', $daemon->late_jobs_threshold);
         $this->renderDefault();

@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Droit\DroitService;
+use Pastell\Helpers\ArrayHelper;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Utilisateur\UserCreationService;

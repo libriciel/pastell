@@ -8,14 +8,15 @@ use Pastell\Service\TypeDossier\TypeDossierImportService;
 use Pastell\Service\TypeDossier\TypeDossierUtilService;
 use Pastell\Service\TypeDossier\TypeDossierManager;
 use Pastell\Service\TypeDossier\TypeDossierActionService;
+use Pastell\Service\Menu\MenuGaucheService;
 
 class TypeDossierControler extends PastellControler
 {
     public function _beforeAction()
     {
         parent::_beforeAction();
-        $this->setViewParameter('menu_gauche_template', "ConfigurationMenuGauche");
-        $this->setViewParameter('menu_gauche_select', "TypeDossier/list");
+        $this->setViewParameter('menu', $this->getInstance(MenuGaucheService::class)->getConfigurationMenu());
+        $this->setMenuGaucheSelect(MenuGaucheService::TYPE_DOSSIER_LIST);
         $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitLecture(DroitService::DROIT_SYSTEM));
         $this->setViewParameter('dont_display_breacrumbs', true);
     }
@@ -99,7 +100,6 @@ class TypeDossierControler extends PastellControler
         $this->setViewParameter('type_dossier_list', $this->getTypeDossierSQL()->getAll());
         $this->setViewParameter('droit_edition', $this->hasDroit(0, "system:edition"));
         $this->setViewParameter('page_title', "Types de dossier personnalisés");
-        $this->setViewParameter('menu_gauche_select', "TypeDossier/list");
         $this->setViewParameter('template_milieu', "TypeDossierList");
         $this->renderDefault();
     }
@@ -124,7 +124,6 @@ class TypeDossierControler extends PastellControler
                 "Modifier l'identifiant du type de dossier {$info['id_type_dossier']}" :
                 'Créer un type de dossier personnalisé'
         );
-        $this->setViewParameter('menu_gauche_select', 'TypeDossier/list');
         $this->setViewParameter('template_milieu', 'TypeDossierEdition');
         $this->renderDefault();
     }
@@ -595,7 +594,6 @@ class TypeDossierControler extends PastellControler
     {
         $this->verifDroit(0, "system:edition");
         $this->setViewParameter('page_title', "Import d'un type de dossier personnalisé");
-        $this->setViewParameter('menu_gauche_select', "TypeDossier/list");
         $this->setViewParameter('template_milieu', "TypeDossierImport");
         $this->renderDefault();
     }
