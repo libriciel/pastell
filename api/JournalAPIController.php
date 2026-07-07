@@ -22,8 +22,8 @@ class JournalAPIController extends BaseAPIController
             return $this->detail();
         }
 
-        $offset = $this->getFromRequest('offset', 0);
-        $limit = $this->getFromRequest('limit', 100);
+        $offset = (int)$this->getFromRequest('offset', 0);
+        $limit = (int)$this->getFromRequest('limit', 100);
         $id_e = $this->getFromRequest('id_e', 0);
         $type = $this->getFromRequest('type');
         $id_d = $this->getFromRequest('id_d');

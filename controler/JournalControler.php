@@ -1,9 +1,15 @@
 <?php
 
-use Pastell\Helpers\UsernameDisplayer;
+use Pastell\Service\Menu\MenuGaucheOption;
+use Pastell\Service\Menu\MenuGaucheService;
 
 class JournalControler extends PastellControler
 {
+    /**
+     * @throws LastMessageException
+     * @throws NotFoundException
+     * @throws LastErrorException
+     */
     public function _beforeAction()
     {
         parent::_beforeAction();
@@ -20,10 +26,10 @@ class JournalControler extends PastellControler
 
 
         $this->setNavigationInfo($id_e, "Journal/index?type=$type");
-        $this->setViewParameter('menu_gauche_link', "Journal/index?id_e={$id_e}");
+        $this->setMenuGaucheSelect(MenuGaucheOption::buildUrl(MenuGaucheService::DOCUMENT_LIST, ['type' => $type]));
 
-        if (! $id_d && ! $type) {
-            $this->setViewParameter('pages_without_left_menu', true);
+        if ($id_d || $type) {
+            $this->setDocumentMenuGauche($id_e);
         }
     }
 

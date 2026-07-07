@@ -16,14 +16,8 @@ class AccessibiliteControler extends PastellControler
      */
     public function indexAction(): void
     {
-        $data_dir = $this->getObjectInstancier()->getInstance('data_dir');
-        $schema_pluriannuel_path = $data_dir . '/_shared/LIBRICIEL-SCOP_schema_pluriannuel_accessibilité_06-25.pdf';
-        $declaration_path = $data_dir . '/_shared/declaration-accessibilite-pastell.pdf';
-
         $this->setViewParameter('page_title', 'Accessibilité');
         $this->setViewParameter('twigTemplate', 'accessibilite/index.html.twig');
-        $this->setViewParameter('schema_pluriannuel_path', $schema_pluriannuel_path);
-        $this->setViewParameter('declaration_path', $declaration_path);
         $this->renderDefault();
     }
 
@@ -32,10 +26,19 @@ class AccessibiliteControler extends PastellControler
      */
     public function getFileAction(): void
     {
-        $filePath = $this->getPostInfo()->get('file_path');
+        $data_dir = $this->getObjectInstancier()->getInstance('data_dir');
+
+        // Only a fixed set of shared files can be downloaded; the user provides a logical key, never a path.
+        $filePath = match ($this->getPostOrGetInfo()->get('file')) {
+            'schema_pluriannuel' => $data_dir . '/_shared/LIBRICIEL-SCOP_schema_pluriannuel_accessibilité_06-25.pdf',
+            'declaration' => $data_dir . '/_shared/declaration-accessibilite-pastell.pdf',
+            default => throw new NotFoundException('Fichier inconnu'),
+        };
+
         if (! file_exists($filePath) || ! is_readable($filePath)) {
-            throw new NotFoundException("Le fichier $filePath n'existe pas ou n'est pas accessible en lecture");
+            throw new NotFoundException("Le fichier n'existe pas ou n'est pas accessible en lecture");
         }
+
         $sendFileToBrowser = $this->getObjectInstancier()->getInstance(SendFileToBrowser::class);
         $sendFileToBrowser->send($filePath);
 
