@@ -71,7 +71,7 @@ class PastellControler extends Controler
      */
     public function hasConnecteurDroitEdition(int $id_e): void
     {
-        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_CONNECTEUR, DroitType::EDITION));
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
     }
 
     /**
@@ -80,7 +80,7 @@ class PastellControler extends Controler
      */
     public function hasConnecteurDroitLecture(int $id_e): void
     {
-        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_CONNECTEUR, DroitType::LECTURE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
     }
 
     /**
@@ -89,12 +89,7 @@ class PastellControler extends Controler
      */
     public function hasConnectorActionPermission(int $entityId): void
     {
-        $this->verifDroit(
-            $entityId,
-            $this->getObjectInstancier()
-                ->getInstance(DroitService::class)
-                ->getActionPermission(DroitService::DROIT_CONNECTEUR),
-        );
+        $this->checkDroitFor($entityId, DroitService::DROIT_CONNECTEUR, DroitType::ACTION);
     }
 
     /**
@@ -103,7 +98,7 @@ class PastellControler extends Controler
      */
     public function hasUtilisateurDroitLecture(int $id_e): void
     {
-        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::LECTURE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
     }
 
     /**
@@ -112,7 +107,7 @@ class PastellControler extends Controler
      */
     public function hasEntiteDroitLecture(int $id_e): void
     {
-        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
     }
 
     /**
@@ -121,12 +116,13 @@ class PastellControler extends Controler
      */
     public function hasDroitEdition($id_e)
     {
-        $this->verifDroit($id_e, "entite:edition");
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
     }
 
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @deprecated 4.1.21 Use checkDroitFor() instead
      */
     public function verifDroit($id_e, $droit, $redirect_to = ""): bool
     {
@@ -146,12 +142,41 @@ class PastellControler extends Controler
         return true;
     }
 
+    /**
+     * @deprecated 4.1.21 Use hasDroitFor() instead
+     */
     public function hasDroit($id_e, $droit): bool
     {
         if (! $this->getId_u()) {
             return true;
         }
         return $this->getRoleUtilisateur()->hasDroit($this->getId_u(), $droit, $id_e);
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function checkDroitFor(int $id_e, string $droit_id, DroitType $droit_type, string $redirect_to = ''): void
+    {
+        try {
+            if (!$this->getDroitService()->hasDroitFor((int) $this->getId_u(), $id_e, $droit_id, $droit_type)) {
+                $droit = DroitService::getDroitFor($droit_id, $droit_type);
+                $this->setLastError("Vous n'avez pas les droits nécessaires ($id_e:$droit) pour accéder à cette page");
+                $this->redirect($redirect_to);
+            }
+        } catch (NotFoundException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect('/index.php');
+        }
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    public function hasDroitFor(int $id_e, string $droit_id, DroitType $droit_type): bool
+    {
+        return $this->getDroitService()->hasDroitFor((int) $this->getId_u(), $id_e, $droit_id, $droit_type);
     }
 
     public function getId_u()

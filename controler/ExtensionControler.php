@@ -1,22 +1,29 @@
 <?php
 
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 
 class ExtensionControler extends PastellControler
 {
     public function _beforeAction()
     {
         parent::_beforeAction();
-        $this->verifDroit(0, "system:lecture");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
         $this->setViewParameter('menu', $this->getInstance(MenuGaucheService::class)->getConfigurationMenu());
         $this->setMenuGaucheSelect(MenuGaucheService::EXTENSION_INDEX);
         $this->setViewParameter('dont_display_breacrumbs', true);
     }
 
+    /**
+     * @throws NotFoundException
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function indexAction()
     {
-        $this->verifDroit(0, "system:lecture");
-        $this->setViewParameter('droitEdition', $this->hasDroit(0, "system:edition"));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+        $this->setViewParameter('droitEdition', $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION));
         $this->setViewParameter('all_extensions', $this->extensionList());
 
         $this->setViewParameter('pastell_manifest', $this->getManifestFactory()->getPastellManifest()->getInfo());
@@ -26,7 +33,7 @@ class ExtensionControler extends PastellControler
 
         $this->setViewParameter('template_milieu', "ExtensionIndex");
         $this->setViewParameter('page_title', "Extensions");
-        if ($this->hasDroit(0, "system:edition")) {
+        if ($this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION)) {
             $this->setViewParameter('nouveau_bouton_url', ["Ajouter" => "Extension/edition"]);
         }
         $this->renderDefault();
@@ -71,9 +78,14 @@ class ExtensionControler extends PastellControler
         $this->renderDefault();
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
     public function editionAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_e = $this->getGetInfo()->get("id_extension", 0);
         $extension_info = $this->getExtensionSQL()->getInfo($id_e);
         if (!$extension_info) {

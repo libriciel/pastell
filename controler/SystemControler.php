@@ -23,14 +23,18 @@ class SystemControler extends PastellControler
     {
         parent::_beforeAction();
         $this->setViewParameter('menu', $this->getInstance(MenuGaucheService::class)->getConfigurationMenu());
-        $this->verifDroit(0, DroitService::getDroitFor(DroitService::DROIT_SYSTEM, DroitType::LECTURE));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
         $this->setViewParameter('dont_display_breacrumbs', true);
         $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_INDEX);
     }
 
-    private function needDroitEdition()
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    private function needDroitEdition(): void
     {
-        $this->verifDroit(0, DroitService::getDroitFor(DroitService::DROIT_SYSTEM, DroitType::EDITION));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
     }
 
     /**
@@ -41,7 +45,7 @@ class SystemControler extends PastellControler
     {
         $this->setViewParameter(
             'droitEdition',
-            $this->hasDroit(0, DroitService::getDroitFor(DroitService::DROIT_SYSTEM, DroitType::EDITION))
+            $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION)
         );
 
         /** @var HealthCheck $healthCheck */
@@ -299,7 +303,7 @@ class SystemControler extends PastellControler
      */
     public function mailTestAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitFor(DroitService::DROIT_SYSTEM, DroitType::LECTURE));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
 
         $emails = $this->getPostInfo()->get('email');
         if (! $emails) {

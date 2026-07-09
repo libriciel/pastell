@@ -291,7 +291,7 @@ class UtilisateurControler extends PastellControler
         );
 
         if ($id_u) {
-            $this->verifDroit($infoUtilisateur['id_e'], 'utilisateur:edition');
+            $this->checkDroitFor($infoUtilisateur['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
             $this->setViewParameter(
                 'page_title',
                 'Modification de ' . $infoUtilisateur['prenom'] . ' ' . $infoUtilisateur['nom']
@@ -299,7 +299,7 @@ class UtilisateurControler extends PastellControler
             $this->setViewParameter('new_user', false);
             $this->setViewParameter('is_api', $infoUtilisateur['is_api']);
         } else {
-            $this->verifDroit($infoUtilisateur['id_e'], 'utilisateur:creation');
+            $this->checkDroitFor($infoUtilisateur['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::CREATION);
             $this->setViewParameter('page_title', 'Nouvel utilisateur ');
             $this->setViewParameter('new_user', true);
             $this->setViewParameter('is_api', false);
@@ -346,7 +346,7 @@ class UtilisateurControler extends PastellControler
             $this->setViewParameter('notification_list', $this->getNotificationList($id_u));
         }
 
-        if ($this->hasDroit($info['id_e'], 'role:lecture')) {
+        if ($this->hasDroitFor($info['id_e'], DroitService::DROIT_ROLE, DroitType::LECTURE)) {
             $this->setViewParameter('role_authorized', $this->apiGet('role'));
         } else {
             $this->setViewParameter('role_authorized', []);
@@ -492,9 +492,9 @@ class UtilisateurControler extends PastellControler
 
         if ($id_u) {
             $info = $this->getInstance(UtilisateurSQL::class)->getInfo($id_u);
-            $this->verifDroit($info['id_e'], DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION));
+            $this->checkDroitFor($info['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
         }
-        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION));
+        $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
         try {
             if ($id_u) {
                 $is_api = $this->getInstance(UtilisateurSQL::class)->getInfo($id_u)['is_api'];
@@ -555,7 +555,7 @@ class UtilisateurControler extends PastellControler
         $role = $recuperateur->get('role');
         $id_e = $recuperateur->get('id_e', 0);
 
-        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
         if (!$this->getRoleUtilisateur()->canDelegateRole($this->getId_u(), $role, $id_e)) {
             $this->setLastError(
@@ -579,7 +579,7 @@ class UtilisateurControler extends PastellControler
         $id_u = $recuperateur->get('id_u');
         $role = $recuperateur->get('role');
         $id_e = $recuperateur->getInt('id_e', 0);
-        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
         $this->getRoleUtilisateur()->removeRole($id_u, $role, $id_e);
         $role_info = $this->getRoleSQL()->getInfo($role);
         $utilisateur_info = $this->getUtilisateur()->getInfo($id_u);
@@ -598,6 +598,7 @@ class UtilisateurControler extends PastellControler
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @throws NotFoundException
      */
     private function verifEditMesNotifications(int $id_u, int $id_e, ?string $type, string $source): void
     {
@@ -612,7 +613,7 @@ class UtilisateurControler extends PastellControler
             $this->redirectToPageUtilisateur($source, $id_u, $type);
         }
 
-        if ($this->hasDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION))) {
+        if ($this->hasDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION)) {
             return;
         }
 
@@ -903,7 +904,7 @@ class UtilisateurControler extends PastellControler
 
         $info = $this->getUtilisateur()->getInfo($id_u);
 
-        $this->verifDroit($info['id_e'], 'utilisateur:edition');
+        $this->checkDroitFor($info['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
 
         $this->getUtilisateur()->removeCertificat($id_u);
 
@@ -920,7 +921,7 @@ class UtilisateurControler extends PastellControler
         $id_u = $this->getPostOrGetInfo()->getInt('id_u');
         $this->checkSelfSuppression($id_u);
         $userInfo = $this->getUtilisateur()->getInfo($id_u);
-        $this->verifDroit($userInfo['id_e'], 'utilisateur:edition');
+        $this->checkDroitFor($userInfo['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
         $this->setViewParameter('id_u', $id_u);
         $this->setViewParameter('info', $userInfo);
         $this->setViewParameter(
@@ -940,7 +941,7 @@ class UtilisateurControler extends PastellControler
         $id_u = $this->getPostInfo()->getInt('id_u');
         $this->checkSelfSuppression($id_u);
         $userInfo = $this->getUtilisateur()->getInfo($id_u);
-        $this->verifDroit($userInfo['id_e'], 'utilisateur:edition');
+        $this->checkDroitFor($userInfo['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
         $this->getObjectInstancier()->getInstance(UtilisateurDeletionService::class)->delete($id_u);
         $this->setLastMessage("L'utilisateur $id_u a été supprimé");
         $this->redirect("/Entite/utilisateur?id_e={$userInfo['id_e']}");
@@ -967,7 +968,7 @@ class UtilisateurControler extends PastellControler
     {
         $id_u = $this->getPostInfo()->get('id_u');
         $userInfo = $this->getUtilisateur()->getInfo($id_u);
-        $this->verifDroit($userInfo['id_e'], 'utilisateur:edition');
+        $this->checkDroitFor($userInfo['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
         $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->enable($id_u);
         $message = "L'utilisateur {$userInfo['login']} a été activé";
         $this->getJournal()->add(
@@ -989,7 +990,7 @@ class UtilisateurControler extends PastellControler
     {
         $id_u = $this->getPostInfo()->get('id_u');
         $userInfo = $this->getUtilisateur()->getInfo($id_u);
-        $this->verifDroit($userInfo['id_e'], 'utilisateur:edition');
+        $this->checkDroitFor($userInfo['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
         $this->checkSelfDisable($id_u);
         $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->disable($id_u);
         $message = "L'utilisateur {$userInfo['login']} a été désactivé";

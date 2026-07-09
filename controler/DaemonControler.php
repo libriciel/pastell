@@ -1,6 +1,8 @@
 <?php
 
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 use Symfony\Component\Process\Process;
 
 class DaemonControler extends PastellControler
@@ -61,7 +63,7 @@ class DaemonControler extends PastellControler
 
     public function verrouAction()
     {
-        $this->verifDroit(0, "system:lecture");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
         $this->setViewParameter('job_queue_info_list', $this->getJobQueueSQL()->getCountJobByVerrouAndEtat());
         $this->setViewParameter('template_milieu', "DaemonVerrou");
         $this->setViewParameter('page_title', "Gestionnaire de tâches : Files d'attente");
@@ -90,7 +92,7 @@ class DaemonControler extends PastellControler
      */
     private function indexData(): void
     {
-        $this->verifDroit(0, 'system:lecture');
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
         $this->setViewParameter('nb_worker_actif', $this->getWorkerSQL()->getNbActif());
         $this->setViewParameter('job_stat_info', $this->getJobQueueSQL()->getStatInfo());
         $this->setViewParameter('daemon_pid', $this->getDaemonManager()->getDaemonPID());
@@ -100,9 +102,13 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('daemonManager', $this->getObjectInstancier()->getInstance(DaemonManager::class));
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function daemonStartAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         try {
             $this->getDaemonManager()->start();
             $this->getLogger()->info('Daemon start manually');
@@ -123,9 +129,13 @@ class DaemonControler extends PastellControler
         $this->redirect("Daemon/index");
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function daemonStopAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->getDaemonManager()->stop();
         if ($this->getDaemonManager()->status() == DaemonManager::IS_STOPPED) {
             $this->setLastMessage("Le gestionnaire de tâches a été arrêté");
@@ -135,9 +145,13 @@ class DaemonControler extends PastellControler
         $this->redirect("Daemon/index");
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function lockAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $id_job = $this->getGetInfo()->getInt('id_job');
         $id_verrou = $this->getGetInfo()->get('id_verrou');
@@ -155,9 +169,13 @@ class DaemonControler extends PastellControler
         $this->redirect("$return_url");
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function unlockAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $id_job = $this->getGetInfo()->getInt('id_job');
         $id_verrou = $this->getGetInfo()->get('id_verrou');
@@ -175,17 +193,25 @@ class DaemonControler extends PastellControler
         $this->redirect($return_url);
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function unlockAllAction()
     {
         $this->getWorkerSQL()->menageAll();
         $this->getJobQueueSQL()->unlockAll();
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->redirect('Daemon/index');
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function killAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $recuperateur = new Recuperateur($_GET);
         $id_worker = $recuperateur->getInt('id_worker');
         $return_url = $recuperateur->get('return_url', 'Daemon/index');
@@ -219,7 +245,7 @@ class DaemonControler extends PastellControler
     {
         $recuperateur = $this->getGetInfo();
 
-        $this->verifDroit(0, 'system:edition');
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('twigTemplate', 'daemon/job.html.twig');
         $this->setViewParameter('page_title', 'Gestionnaire de tâches');
         $filtre = $recuperateur->get('filtre', '');
@@ -274,7 +300,7 @@ class DaemonControler extends PastellControler
 
     public function detailAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_job = $this->getGetInfo()->get("id_job");
 
         $this->setViewParameter('page_title', "Détail du travail #{$id_job}");
@@ -286,9 +312,14 @@ class DaemonControler extends PastellControler
         $this->renderDefault();
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
     public function configAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $this->setViewParameter('page_title', "Configuration de la fréquence des connecteurs");
         $this->setViewParameter('template_milieu', "DaemonConfig");
@@ -298,9 +329,14 @@ class DaemonControler extends PastellControler
         $this->renderDefault();
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
     public function editFrequenceAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_cf = $this->getGetInfo()->getInt('id_cf');
         $connecteurFrequence = $this->getConnecteurFrequenceSQL()->getConnecteurFrequence($id_cf) ?: new ConnecteurFrequence();
 
@@ -368,17 +404,26 @@ class DaemonControler extends PastellControler
         echo json_encode(array_keys($result['action']));
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function doEditFrequenceAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $connecteurFrequence = new ConnecteurFrequence($this->getPostInfo()->getAll());
         $id_cf = $this->getConnecteurFrequenceSQL()->edit($connecteurFrequence);
         $this->redirect("Daemon/connecteurFrequenceDetail?id_cf=$id_cf");
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws NotFoundException
+     * @throws LastErrorException
+     */
     public function connecteurFrequenceDetailAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_cf = $this->getGetInfo()->getInt('id_cf');
         $connecteurFrequence = $this->verifConnecteur($id_cf);
         $this->setViewParameter('connecteurFrequence', $connecteurFrequence);
@@ -387,9 +432,14 @@ class DaemonControler extends PastellControler
         $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_CONFIG);
         $this->renderDefault();
     }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     private function verifConnecteur($id_cf)
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $connecteurFrequence = $this->getConnecteurFrequenceSQL()->getConnecteurFrequence($id_cf);
 
         if (! $connecteurFrequence) {
@@ -399,27 +449,39 @@ class DaemonControler extends PastellControler
         return $connecteurFrequence;
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function deleteFrequenceAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_cf = $this->getGetInfo()->get('id_cf');
         $this->getConnecteurFrequenceSQL()->delete($id_cf);
         $this->setLastMessage("La fréquence a été supprimée");
         $this->redirect("Daemon/config");
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function deleteJobAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_job = $this->getGetInfo()->get('id_job');
         $id_connecteur = $this->getGetInfo()->get('id_ce');
         $this->getJobQueueSQL()->deleteJob($id_job);
         $this->redirect("Connecteur/edition?id_ce=$id_connecteur");
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function deleteJobDocumentAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_job = $this->getGetInfo()->get('id_job');
         $id_document = $this->getGetInfo()->get('id_d');
         $id_entite = $this->getGetInfo()->get('id_e');

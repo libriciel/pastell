@@ -35,16 +35,22 @@ class JournalControler extends PastellControler
         }
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
     public function exportAction()
     {
 
         $recuperateur = new Recuperateur($_REQUEST);
-        $this->setViewParameter('id_e', $recuperateur->getInt('id_e', 0));
+        $id_e = $recuperateur->getInt('id_e', EntiteSQL::ID_E_ENTITE_RACINE);
+        $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('type', $recuperateur->get('type'));
         $this->setViewParameter('id_d', $recuperateur->get('id_d'));
         $this->setViewParameter('id_u', $recuperateur->get('id_u'));
 
-        $this->verifDroit($this->getViewParameterOrObject('id_e'), 'journal:lecture');
+        $this->checkDroitFor($id_e, DroitService::DROIT_JOURNAL, DroitType::LECTURE);
 
         $this->setViewParameter('entite_info', $this->getEntiteSQL()->getInfo($this->getViewParameterOrObject('id_e')));
         $this->setViewParameter('utilisateur_info', $this->getUtilisateur()->getInfo($this->getViewParameterOrObject('id_u')));
@@ -86,7 +92,7 @@ class JournalControler extends PastellControler
             $this->redirect("Journal/index?id_e={$id_e}&type={$type}&id_d={$id_d}&offset={$offset}");
         }
         $this->setViewParameter('info', $info);
-        $this->verifDroit($info['id_e'], "journal:lecture");
+        $this->checkDroitFor($info['id_e'], DroitService::DROIT_JOURNAL, DroitType::LECTURE);
 
         /** @var OpensslTSWrapper $opensslTSWrapper */
         $opensslTSWrapper = $this->getInstance(OpensslTSWrapper::class);
@@ -124,6 +130,12 @@ class JournalControler extends PastellControler
         $this->renderDefault();
     }
 
+    /**
+     * @throws UnrecoverableException
+     * @throws NotFoundException
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function indexAction()
     {
         $recuperateur = new Recuperateur($_GET);
@@ -149,7 +161,7 @@ class JournalControler extends PastellControler
         if (! $id_e && (count($liste_collectivite) == 1)) {
             $id_e = $liste_collectivite[0];
         }
-        $this->verifDroit($id_e, "journal:lecture");
+        $this->checkDroitFor($id_e, DroitService::DROIT_JOURNAL, DroitType::LECTURE);
         $this->setViewParameter('id_e', $id_e);
 
         $infoEntite = $this->getEntiteSQL()->getInfo($this->getViewParameterOrObject('id_e'));
@@ -210,6 +222,10 @@ class JournalControler extends PastellControler
         $this->renderDefault();
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function doExportAction()
     {
         $recuperateur = new Recuperateur($_REQUEST);
@@ -222,7 +238,7 @@ class JournalControler extends PastellControler
         $date_fin = $recuperateur->get('date_fin');
         $en_tete_colonne = $recuperateur->get('en_tete_colonne');
 
-        $this->verifDroit($id_e, "journal:lecture");
+        $this->checkDroitFor($id_e, DroitService::DROIT_JOURNAL, DroitType::LECTURE);
 
         $date_debut = date_fr_to_iso($date_debut);
         $date_fin = date_fr_to_iso($date_fin);
@@ -253,6 +269,10 @@ class JournalControler extends PastellControler
         $CSVoutput->end();
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function messageAction()
     {
         $recuperateur = new Recuperateur($_GET);
@@ -261,7 +281,7 @@ class JournalControler extends PastellControler
 
         $info  = $this->getJournal()->getInfo($id_j);
 
-        $this->verifDroit($info['id_e'], "journal:lecture");
+        $this->checkDroitFor($info['id_e'], DroitService::DROIT_JOURNAL, DroitType::LECTURE);
 
 
         header("Content-Type: text/plain; charset=utf-8");
@@ -272,6 +292,10 @@ class JournalControler extends PastellControler
         echo $info['message_horodate'];
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function preuveAction()
     {
 
@@ -281,7 +305,7 @@ class JournalControler extends PastellControler
 
         $info  = $this->getJournal()->getInfo($id_j);
 
-        $this->verifDroit($info['id_e'], "journal:lecture");
+        $this->checkDroitFor($info['id_e'], DroitService::DROIT_JOURNAL, DroitType::LECTURE);
 
         header("Content-Type: application/timestamp-reply");
         header("Content-Transfer-Encoding: base64");
