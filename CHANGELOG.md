@@ -20,6 +20,11 @@
   `DroitService::hasDroitUtilisateurLecture()` sont dépréciées au profit de `DroitService::hasDroitFor()` #2491
 - Les méthodes `PastellControler::verifDroit()` et `PastellControler::hasDroit()` sont dépréciées au profit de
   `PastellControler::checkDroitFor()` et `PastellControler::hasDroitFor()` #2510
+- Les méthodes intermédiaires de vérification de droit des contrôleurs `PastellControler::hasDroitEdition()`,
+  `PastellControler::hasEntiteDroitLecture()`, `PastellControler::hasUtilisateurDroitLecture()`,
+  `PastellControler::hasConnecteurDroitLecture()`, `PastellControler::hasConnecteurDroitEdition()` et
+  `PastellControler::hasConnectorActionPermission()` sont dépréciées au profit de
+  `PastellControler::checkDroitFor()` #2515
 
 # [4.1.20] - 2026-07-06
 

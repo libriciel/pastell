@@ -56,7 +56,7 @@ class UtilisateurControler extends PastellControler
             }
             $id_e = $info['id_e'];
             if ($this->getGetInfo()->get('source') !== 'moi') {
-                $this->hasUtilisateurDroitLecture($id_e);
+                $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
             }
         } elseif ($this->getGetInfo()->get('id_e')) {
             $id_e = $this->getGetInfo()->get('id_e');
