@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UserUpdateService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
@@ -253,7 +254,7 @@ class UtilisateurAPIController extends BaseAPIController
 
         $this->checkDroit(
             $infoUtilisateur['id_e'],
-            DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR)
+            DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION)
         );
 
         $this->utilisateurDeletionService->delete($infoUtilisateur['id_u']);
@@ -323,7 +324,7 @@ class UtilisateurAPIController extends BaseAPIController
             $infoUtilisateur = $this->utilisateur->getInfo($id_u);
             $this->checkDroit(
                 $infoUtilisateur['id_e'],
-                DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR)
+                DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION)
             );
         } else {
             $tokenId = $this->getFromQueryArgs(1);
@@ -347,7 +348,7 @@ class UtilisateurAPIController extends BaseAPIController
             $infoUtilisateur = $this->utilisateur->getInfo($id_u);
             $this->checkDroit(
                 $infoUtilisateur['id_e'],
-                DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR)
+                DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION)
             );
             $tokenId = $this->getFromQueryArgs(2);
         } else {

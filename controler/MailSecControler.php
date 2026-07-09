@@ -5,6 +5,7 @@ use Pastell\Service\Annuaire\AnnuaireExportService;
 use Pastell\Service\Annuaire\AnnuaireGroupeService;
 use Pastell\Service\Annuaire\AnnuaireImportService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Menu\MenuGaucheService;
 
 class MailSecControler extends PastellControler
@@ -54,9 +55,9 @@ class MailSecControler extends PastellControler
         $this->setViewParameter('offset', $recuperateur->getInt('offset'));
         $this->setViewParameter('limit', self::NB_MAIL_AFFICHE);
 
-        $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE));
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::LECTURE));
 
-        $this->setViewParameter('can_edit', $this->hasDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE)));
+        $this->setViewParameter('can_edit', $this->hasDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION)));
 
 
         $listUtilisateur = $this->getAnnuaireSQL()->getUtilisateurList(
@@ -105,8 +106,8 @@ class MailSecControler extends PastellControler
     {
         $recuperateur = new Recuperateur($_GET);
         $id_e = (int)$recuperateur->getInt('id_e');
-        $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE));
-        $this->setViewParameter('can_edit', $this->hasDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE)));
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::LECTURE));
+        $this->setViewParameter('can_edit', $this->hasDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION)));
         $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
 
         $listGroupe = $annuaireGroupe->getGroupe($id_e);
@@ -174,8 +175,8 @@ class MailSecControler extends PastellControler
         $id_e = $recuperateur->getInt('id_e');
         $id_g = $recuperateur->getInt('id_g');
         $offset = $recuperateur->getInt('offset');
-        $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE));
-        $this->setViewParameter('can_edit', $this->hasDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE)));
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::LECTURE));
+        $this->setViewParameter('can_edit', $this->hasDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION)));
 
         $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
         $this->setViewParameter('infoGroupe', $annuaireGroupe->getInfo($id_e, $id_g));
@@ -203,8 +204,8 @@ class MailSecControler extends PastellControler
     {
         $recuperateur = new Recuperateur($_GET);
         $id_e = $recuperateur->getInt('id_e');
-        $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE));
-        $this->setViewParameter('can_edit', $this->hasDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE)));
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::LECTURE));
+        $this->setViewParameter('can_edit', $this->hasDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION)));
 
         $this->setViewParameter('arbre', $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), "entite:edition"));
 
@@ -235,7 +236,7 @@ class MailSecControler extends PastellControler
     {
         $recuperateur = $this->getGetInfo();
         $this->setViewParameter('id_e', $recuperateur->getInt('id_e'));
-        $this->verifDroit($this->getViewParameterOrObject('id_e'), DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE));
+        $this->verifDroit($this->getViewParameterOrObject('id_e'), DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION));
 
         $this->setInfoEntite($this->getViewParameterOrObject('id_e'));
 
@@ -253,7 +254,7 @@ class MailSecControler extends PastellControler
         $recuperateur = $this->getPostInfo();
 
         $id_e = $recuperateur->getInt('id_e', 0);
-        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE));
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION));
 
         $fileUploader = new FileUploader();
         $file_path = $fileUploader->getFilePath('csv');
@@ -284,7 +285,7 @@ class MailSecControler extends PastellControler
         $recuperateur = new Recuperateur($_GET);
         $id_e = $recuperateur->getInt('id_e');
 
-        $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE));
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::LECTURE));
 
         $csvContent = $this->getInstance(AnnuaireExportService::class)->export($id_e);
         $csvOutput = new CSVoutput();
@@ -306,9 +307,9 @@ class MailSecControler extends PastellControler
 
         $this->setViewParameter('groupe_list', $annuaireGroupe->getGroupeFromUtilisateur($id_a));
 
-        $this->verifDroit($this->getViewParameterOrObject('info')['id_e'], DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE));
+        $this->verifDroit($this->getViewParameterOrObject('info')['id_e'], DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::LECTURE));
         $this->setInfoEntite($this->getViewParameterOrObject('info')['id_e']);
-        $this->setViewParameter('can_edit', $this->hasDroit($this->getViewParameterOrObject('info')['id_e'], DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE)));
+        $this->setViewParameter('can_edit', $this->hasDroit($this->getViewParameterOrObject('info')['id_e'], DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION)));
 
 
         $this->setViewParameter('page_title', $this->getViewParameterOrObject('infoEntite')['denomination'] .
@@ -326,7 +327,7 @@ class MailSecControler extends PastellControler
         $recuperateur = new Recuperateur($_GET);
         $id_a = $recuperateur->getInt('id_a');
         $this->setViewParameter('info', $this->getAnnuaireSQL()->getInfo($id_a));
-        $this->verifDroit($this->getViewParameterOrObject('info')['id_e'], DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE));
+        $this->verifDroit($this->getViewParameterOrObject('info')['id_e'], DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION));
         $this->setInfoEntite($this->getViewParameterOrObject('info')['id_e']);
 
         $id_e = (int)$this->getViewParameterOrObject('info')['id_e'];
@@ -354,7 +355,7 @@ class MailSecControler extends PastellControler
         $id_g_list = $recuperateur->get('id_g');
 
         $info = $this->getAnnuaireSQL()->getInfo($id_a);
-        $this->verifDroit($info['id_e'], DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE));
+        $this->verifDroit($info['id_e'], DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION));
 
         try {
             $this->getInstance(AnnuaireContactService::class)->edit($id_a, $description, $email);
@@ -390,7 +391,7 @@ class MailSecControler extends PastellControler
             $this->getLastError()->setLastError("Vous devez sélectionner au moins un email à supprimer");
             $this->redirect("MailSec/annuaire?id_e=$id_e");
         }
-        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE));
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION));
 
         if (! is_array($id_a_list)) {
             $id_a_list = [$id_a_list];
@@ -415,7 +416,7 @@ class MailSecControler extends PastellControler
         $description = $recuperateur->get('description');
         $email = $recuperateur->get('email');
 
-        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION), "MailSec/annuaire?id_e=$id_e");
 
         try {
             $this->getInstance(AnnuaireContactService::class)->create($id_e, $description, $email);
@@ -440,7 +441,7 @@ class MailSecControler extends PastellControler
         $name = $recuperateur->get('name');
         $id_g = $recuperateur->getInt('id_g');
 
-        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION), "MailSec/annuaire?id_e=$id_e");
 
         $id_a = false;
         $email = "";
@@ -476,7 +477,7 @@ class MailSecControler extends PastellControler
         $id_e = $recuperateur->getInt('id_e');
         $nom = $recuperateur->get('nom');
 
-        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION), "MailSec/annuaire?id_e=$id_e");
 
         try {
             $this->getInstance(AnnuaireGroupeService::class)->createGroupe($id_e, $nom);
@@ -501,8 +502,8 @@ class MailSecControler extends PastellControler
         $id_e_owner = $recuperateur->getInt('id_e_owner');
         $role = $recuperateur->get('role');
 
-        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
-        $this->verifDroit($id_e_owner, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION), "MailSec/annuaire?id_e=$id_e");
+        $this->verifDroit($id_e_owner, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION), "MailSec/annuaire?id_e=$id_e");
 
 
         $infoEntite = $this->getEntiteSQL()->getInfo($id_e);
@@ -529,7 +530,7 @@ class MailSecControler extends PastellControler
         $id_e = $recuperateur->getInt('id_e');
         $id_g = $recuperateur->getInt('id_g');
         $id_a_list = $recuperateur->get('id_a', []);
-        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION), "MailSec/annuaire?id_e=$id_e");
 
         if (! is_array($id_a_list)) {
             $id_a_list = [$id_a_list];
@@ -559,7 +560,7 @@ class MailSecControler extends PastellControler
         $id_e = $recuperateur->getInt('id_e');
         $id_g_list = $recuperateur->get('id_g', []);
 
-        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION), "MailSec/annuaire?id_e=$id_e");
 
         $annuaireGroupeService = $this->getInstance(AnnuaireGroupeService::class);
         foreach ($id_g_list as $id_g) {
@@ -585,7 +586,7 @@ class MailSecControler extends PastellControler
         $q = $recuperateur->get('term');
         $mailOnly = $recuperateur->get('mail-only');
 
-        $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE));
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::LECTURE));
 
         $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
 
@@ -633,7 +634,7 @@ class MailSecControler extends PastellControler
         foreach ($all_id_r as $id_r) {
             $info = $this->getAnnuaireRoleSQL()->getInfo($id_r);
 
-            if ($this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), $info['id_e_owner'])) {
+            if ($this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION), $info['id_e_owner'])) {
                 if ($submit == "Supprimer") {
                     $this->getAnnuaireRoleSQL()->delete($id_r);
                     $this->setLastMessage("Les groupes sélectionnés ont été supprimés");
@@ -659,7 +660,7 @@ class MailSecControler extends PastellControler
         $id_e = $recuperateur->getInt('id_e');
         $id_g = $recuperateur->get('id_g');
 
-        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), "MailSec/annuaire?id_e=$id_e");
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION), "MailSec/annuaire?id_e=$id_e");
 
 
         $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);

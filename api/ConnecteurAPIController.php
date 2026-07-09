@@ -6,6 +6,7 @@ use Pastell\Service\Connecteur\ConnecteurCreationService;
 use Pastell\Service\Connecteur\ConnecteurDeletionService;
 use Pastell\Service\Connecteur\ConnecteurModificationService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 
 class ConnecteurAPIController extends BaseAPIController
 {
@@ -255,7 +256,7 @@ class ConnecteurAPIController extends BaseAPIController
      */
     private function checkConnecteurLecture(int $id_e): void
     {
-        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_CONNECTEUR));
+        $this->checkDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_CONNECTEUR, DroitType::LECTURE));
     }
 
     /**
@@ -263,7 +264,7 @@ class ConnecteurAPIController extends BaseAPIController
      */
     private function checkConnecteurEdition(int $id_e): void
     {
-        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_CONNECTEUR));
+        $this->checkDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_CONNECTEUR, DroitType::EDITION));
     }
 
     /**

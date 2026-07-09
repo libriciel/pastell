@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 
 class DocumentModificationService
 {
@@ -178,8 +179,8 @@ class DocumentModificationService
             throw new NotFoundException("Le document $id_d n'a pas été trouvé");
         }
 
-        $droit = $this->droitService->getDroitEdition($document_info['type']);
-        if (! $this->droitService->hasDroit($id_u, $droit, $id_e)) {
+        $droit = DroitService::getDroitFor($document_info['type'], DroitType::EDITION);
+        if (! $this->droitService->hasDroitFor($id_u, $id_e, $document_info['type'], DroitType::EDITION)) {
             throw new ForbiddenException("Acces interdit id_e=$id_e, droit=$droit,id_u=$id_u");
         }
 

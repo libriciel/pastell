@@ -2,6 +2,7 @@
 
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 
 class EntiteFluxAPIController extends BaseAPIController
 {
@@ -35,7 +36,7 @@ class EntiteFluxAPIController extends BaseAPIController
      */
     private function checkConnecteurLecture(int $id_e): void
     {
-        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_CONNECTEUR));
+        $this->checkDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_CONNECTEUR, DroitType::LECTURE));
     }
 
     /**
@@ -44,7 +45,7 @@ class EntiteFluxAPIController extends BaseAPIController
      */
     private function checkConnecteurEdition(int $id_e): void
     {
-        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_CONNECTEUR));
+        $this->checkDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_CONNECTEUR, DroitType::EDITION));
     }
 
     /**

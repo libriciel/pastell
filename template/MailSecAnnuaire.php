@@ -15,6 +15,7 @@
  */
 
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 
 ?>
 <a class='btn btn-link' href='Entite/detail?id_e=<?php echo $id_e ?>'
@@ -106,7 +107,7 @@ use Pastell\Service\Droit\DroitService;
 
 </div>
 
-<?php if ($this->getRoleUtilisateur()->hasDroit($this->getAuthentification()->getId(), DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), $id_e)) : ?>
+<?php if ($this->getRoleUtilisateur()->hasDroit($this->getAuthentification()->getId(), DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION), $id_e)) : ?>
     <div class="box">
         <h2>Ajouter un contact</h2>
         <form action='MailSec/addContact' method='post'>

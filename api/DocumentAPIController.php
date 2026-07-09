@@ -3,6 +3,7 @@
 use Pastell\File\Chunk\ChunkRequest;
 use Pastell\File\Chunk\ChunkUploader;
 use Pastell\Service\Document\DocumentDeletionService;
+use Pastell\Service\Droit\DroitType;
 
 class DocumentAPIController extends BaseAPIController
 {
@@ -181,7 +182,7 @@ class DocumentAPIController extends BaseAPIController
     private function internalDetail($id_e, $id_d): array
     {
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitLecture($info['type']));
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::LECTURE));
         $result['info'] = $info;
         $donneesFormulaire = $this->donneesFormulaireFactory->get($id_d, $info['type']);
 
@@ -302,7 +303,7 @@ class DocumentAPIController extends BaseAPIController
         $field = $this->getFromQueryArgs(4);
 
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitLecture($info['type']));
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::LECTURE));
         $documentType = $this->documentTypeFactory->getFluxDocumentType($info['type']);
         $formulaire = $documentType->getFormulaire();
         $theField = $formulaire->getField($field);
@@ -331,7 +332,7 @@ class DocumentAPIController extends BaseAPIController
         $field = $this->getFromQueryArgs(4);
         $action_name = $this->getActionNameFromField($id_d, $field);
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitEdition($info['type']));
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::EDITION));
         $this->actionExecutorFactory->goChoice(
             $id_e,
             $this->getUtilisateurId(),
@@ -372,7 +373,7 @@ class DocumentAPIController extends BaseAPIController
         $num = $this->getFromQueryArgs(5) ?: 0;
 
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitLecture($info['type']));
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::LECTURE));
         $mode_receive = $this->getFromRequest('receive');
         if ($mode_receive) {
             return $this->receiveFileAction($id_e, $id_d, $field, $num);
@@ -425,7 +426,7 @@ class DocumentAPIController extends BaseAPIController
             return $this->actionAction($id_e, $id_d);
         }
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitEdition($info['type']));
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::EDITION));
         if (!$this->actionPossible->isActionPossible($id_e, $this->getUtilisateurId(), $id_d, 'modification')) {
             throw new Exception("L'action « modification »  n'est pas permise");
         }
@@ -481,7 +482,7 @@ class DocumentAPIController extends BaseAPIController
     public function receiveFileAction($id_e, $id_d, $field_name, $file_number)
     {
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitLecture($info['type']));
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::LECTURE));
         $donneesFormulaire = $this->donneesFormulaireFactory->get($id_d);
 
         $result['file_name'] = $donneesFormulaire->getFileName($field_name, $file_number);
@@ -502,7 +503,7 @@ class DocumentAPIController extends BaseAPIController
         array $actionParams = []
     ): array {
         $info = $this->getDocumentInfo($entityId, $documentId);
-        $this->checkDroit($entityId, $this->getDroitService()->getDroitEdition($info['type']));
+        $this->checkDroit($entityId, $this->getDroitService()->getDroitFor($info['type'], DroitType::EDITION));
         if (!$this->actionPossible->isActionPossible($entityId, $this->getUtilisateurId(), $documentId, $action)) {
             throw new Exception("L'action « $action »  n'est pas permise : " . $this->actionPossible->getLastBadRule());
         }
@@ -544,7 +545,7 @@ class DocumentAPIController extends BaseAPIController
         $id_e = $this->checkedEntite();
         $id_d = $this->getFromQueryArgs(2);
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitEdition($info['type']));
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::EDITION));
 
         if ($this->getFromQueryArgs(3) === 'file') {
             return $this->deleteFile($id_d, (int)$id_e);
@@ -578,7 +579,7 @@ class DocumentAPIController extends BaseAPIController
     public function postChunk(string $id_e, string $id_d): array
     {
         $info = $this->getDocumentInfo((int)$id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitEdition($info['type']));
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::EDITION));
 
         $field_name = $this->getFromQueryArgs(4);
         $file_number = $this->getFromQueryArgs(5);

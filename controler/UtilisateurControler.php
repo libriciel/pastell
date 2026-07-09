@@ -2,6 +2,7 @@
 
 use Pastell\Mailer\Mailer;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\FeatureToggle\CertificateAuthentication;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\PasswordEntropy;
@@ -286,7 +287,7 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter(
             'arbre',
             $this->getRoleUtilisateur()
-                ->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
+                ->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION))
         );
 
         if ($id_u) {
@@ -338,7 +339,7 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter(
             'tabEntite',
             $this->getRoleUtilisateur()
-                ->getEntite($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
+                ->getEntite($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION))
         );
 
         if ((int) $id_u === $this->getId_u()) {
@@ -390,7 +391,7 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('info', $info);
         $this->setViewParameter('id_u', $id_u);
         $arbre = $this->getRoleUtilisateur()
-            ->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+            ->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
         $this->setViewParameter('arbre', $arbre);
 
         $this->setViewParameter(
@@ -429,7 +430,7 @@ class UtilisateurControler extends PastellControler
 
         $this->setViewParameter(
             'tabEntite',
-            $this->getRoleUtilisateur()->getEntite($this->getId_u(), DroitService::getDroitEdition(DroitService::DROIT_ENTITE))
+            $this->getRoleUtilisateur()->getEntite($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION))
         );
 
         $this->setViewParameter('notification_list', $this->getNotificationList($id_u));
@@ -445,7 +446,7 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter(
             'arbre',
             $this->getRoleUtilisateur()
-                ->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitLecture(DroitService::DROIT_ENTITE))
+                ->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE))
         );
 
         $tokens = $this->getObjectInstancier()
@@ -491,9 +492,9 @@ class UtilisateurControler extends PastellControler
 
         if ($id_u) {
             $info = $this->getInstance(UtilisateurSQL::class)->getInfo($id_u);
-            $this->verifDroit($info['id_e'], DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR));
+            $this->verifDroit($info['id_e'], DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION));
         }
-        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_UTILISATEUR));
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION));
         try {
             if ($id_u) {
                 $is_api = $this->getInstance(UtilisateurSQL::class)->getInfo($id_u)['is_api'];
@@ -554,7 +555,7 @@ class UtilisateurControler extends PastellControler
         $role = $recuperateur->get('role');
         $id_e = $recuperateur->get('id_e', 0);
 
-        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
 
         if (!$this->getRoleUtilisateur()->canDelegateRole($this->getId_u(), $role, $id_e)) {
             $this->setLastError(
@@ -578,7 +579,7 @@ class UtilisateurControler extends PastellControler
         $id_u = $recuperateur->get('id_u');
         $role = $recuperateur->get('role');
         $id_e = $recuperateur->getInt('id_e', 0);
-        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
         $this->getRoleUtilisateur()->removeRole($id_u, $role, $id_e);
         $role_info = $this->getRoleSQL()->getInfo($role);
         $utilisateur_info = $this->getUtilisateur()->getInfo($id_u);
@@ -611,21 +612,22 @@ class UtilisateurControler extends PastellControler
             $this->redirectToPageUtilisateur($source, $id_u, $type);
         }
 
-        if ($this->hasDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE))) {
+        if ($this->hasDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION))) {
             return;
         }
 
         if (
             $this->getRoleUtilisateur()->hasDroit(
                 $id_u,
-                DroitService::getDroitLecture(DroitService::DROIT_ENTITE),
+                DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
                 $id_e
             )
             &&
-            $this->getDroitService()->hasDroit(
+            $this->getDroitService()->hasDroitFor(
                 $id_u,
-                DroitService::getDroitLecture($type),
-                $id_e
+                $id_e,
+                $type,
+                DroitType::LECTURE
             )
         ) {
             return;

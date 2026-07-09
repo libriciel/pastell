@@ -5,6 +5,7 @@ use Pastell\Configuration\DocumentTypeValidation;
 use Pastell\Mailer\Mailer;
 use Pastell\Service\Connecteur\MissingConnecteurService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\FeatureToggle\DisplayFeatureToggleInTestPage;
 use Pastell\Service\FeatureToggleService;
@@ -22,14 +23,14 @@ class SystemControler extends PastellControler
     {
         parent::_beforeAction();
         $this->setViewParameter('menu', $this->getInstance(MenuGaucheService::class)->getConfigurationMenu());
-        $this->verifDroit(0, DroitService::getDroitLecture(DroitService::DROIT_SYSTEM));
+        $this->verifDroit(0, DroitService::getDroitFor(DroitService::DROIT_SYSTEM, DroitType::LECTURE));
         $this->setViewParameter('dont_display_breacrumbs', true);
         $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_INDEX);
     }
 
     private function needDroitEdition()
     {
-        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->verifDroit(0, DroitService::getDroitFor(DroitService::DROIT_SYSTEM, DroitType::EDITION));
     }
 
     /**
@@ -40,7 +41,7 @@ class SystemControler extends PastellControler
     {
         $this->setViewParameter(
             'droitEdition',
-            $this->hasDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM))
+            $this->hasDroit(0, DroitService::getDroitFor(DroitService::DROIT_SYSTEM, DroitType::EDITION))
         );
 
         /** @var HealthCheck $healthCheck */
@@ -298,7 +299,7 @@ class SystemControler extends PastellControler
      */
     public function mailTestAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitLecture(DroitService::DROIT_SYSTEM));
+        $this->verifDroit(0, DroitService::getDroitFor(DroitService::DROIT_SYSTEM, DroitType::LECTURE));
 
         $emails = $this->getPostInfo()->get('email');
         if (! $emails) {

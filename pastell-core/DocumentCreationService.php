@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 
 class DocumentCreationService
 {
@@ -26,14 +27,15 @@ class DocumentCreationService
      * @return string
      * @throws UnrecoverableException
      * @throws ForbiddenException
+     * @throws NotFoundException
      */
     public function createDocument(int $id_e, int $id_u, string $type): string
     {
         if (!$this->entiteSQL->isActive($id_e)) {
             throw new ForbiddenException("L'entité $id_e est désactivée");
         }
-        $droit = $this->droitService->getDroitEdition($type);
-        if (! $this->droitService->hasDroit($id_u, $droit, $id_e)) {
+        $droit = DroitService::getDroitFor($type, DroitType::EDITION);
+        if (! $this->droitService->hasDroitFor($id_u, $id_e, $type, DroitType::EDITION)) {
             throw new ForbiddenException("Acces interdit id_e=$id_e, droit=$droit,id_u=$id_u");
         }
         return $this->_createDocument($id_e, $id_u, $type);

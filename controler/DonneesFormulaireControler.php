@@ -2,6 +2,8 @@
 
 use Flow\Request;
 use Pastell\File\Chunk\ChunkUploader;
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Viewer\ViewerFactory;
 
 class DonneesFormulaireControler extends PastellControler
@@ -19,10 +21,11 @@ class DonneesFormulaireControler extends PastellControler
             $mail_info = $this->getDocumentEmailService()->getDocumentEmailFromIdReponse($id_d);
             $info = (!empty($mail_info)) ? $mail_info : $this->getDocumentSQL()->getInfo($id_d);
 
-            $isAllowed = $this->getDroitService()->hasDroit(
+            $isAllowed = $this->getDroitService()->hasDroitFor(
                 $this->getId_u(),
-                $this->getDroitService()::getDroitEdition($info['type']),
                 $id_e,
+                $info['type'],
+                DroitType::EDITION,
             ) && $this->getDocumentEntite()->getRole($id_e, $info['id_d']);
 
             if (!$isAllowed && !$this->isDocumentEmailChunkUpload()) {
@@ -30,7 +33,7 @@ class DonneesFormulaireControler extends PastellControler
                 exit_wrapper();
             }
         } elseif ($id_ce) {
-            if (!$this->getDroitService()->hasDroitConnecteurEdition($id_e, $this->getId_u())) {
+            if (!$this->getDroitService()->hasDroitFor($this->getId_u(), $id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION)) {
                 echo 'KO';
                 exit_wrapper();
             }
@@ -52,10 +55,11 @@ class DonneesFormulaireControler extends PastellControler
             $mail_info = $this->getDocumentEmailService()->getDocumentEmailFromIdReponse($id_d);
             $info = (!empty($mail_info)) ? $mail_info : $this->getDocumentSQL()->getInfo($id_d);
 
-            $isAllowed = $this->getDroitService()->hasDroit(
+            $isAllowed = $this->getDroitService()->hasDroitFor(
                 $this->getId_u(),
-                $this->getDroitService()::getDroitLecture($info['type']),
                 $id_e,
+                $info['type'],
+                DroitType::LECTURE,
             ) && $this->getDocumentEntite()->getRole($id_e, $info['id_d']);
 
             if (!$isAllowed && !$this->isDocumentEmailChunkUpload()) {
@@ -63,7 +67,7 @@ class DonneesFormulaireControler extends PastellControler
                 exit_wrapper();
             }
         } elseif ($id_ce) {
-            if (!$this->getDroitService()->hasDroitConnecteurLecture($id_e, $this->getId_u())) {
+            if (!$this->getDroitService()->hasDroitFor($this->getId_u(), $id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE)) {
                 echo 'KO';
                 exit_wrapper();
             }
