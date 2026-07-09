@@ -1,6 +1,8 @@
 <?php
 
-//WTF ???
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
+
 class RechercheAvanceFormulaireHTML extends PastellControler
 {
     private $documentTypeFactory;
@@ -295,7 +297,7 @@ class RechercheAvanceFormulaireHTML extends PastellControler
 
     private function displayEntite()
     {
-        $arbre = $this->getInstance(RoleUtilisateur::class)->getArbreFille($this->getId_u(), "entite:lecture");
+        $arbre = $this->getInstance(RoleUtilisateur::class)->getArbreFille($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $id_e = $this->getParameter('id_e');
 
         ?>

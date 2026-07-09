@@ -1,7 +1,7 @@
 <?php
 
-use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 
 class GetEntityList extends ConnecteurTypeChoiceActionExecutor
 {

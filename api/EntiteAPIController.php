@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Entite\EntityUpdateService;
@@ -27,7 +29,7 @@ final class EntiteAPIController extends BaseAPIController
 
         $users = $this->getRoleUtilisateur()->getAllEntiteWithFille(
             $this->getUtilisateurId(),
-            'entite:lecture',
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
             $data['is_active']
         );
 

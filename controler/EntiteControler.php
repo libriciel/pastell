@@ -3,8 +3,8 @@
 use Pastell\Service\Crypto;
 use Pastell\Service\FeatureToggle\DisplayConnecteurEntiteRacine;
 use Pastell\Service\Menu\MenuGaucheService;
-use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Entite\EntityUpdateService;
@@ -197,7 +197,7 @@ class EntiteControler extends PastellControler
     {
         $liste_collectivite = $this->getRoleUtilisateur()->getEntiteWithDenomination(
             $this->getId_u(),
-            'entite:lecture'
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
         );
         $nbCollectivite = count($liste_collectivite);
         if ($nbCollectivite == 1) {
@@ -219,7 +219,7 @@ class EntiteControler extends PastellControler
 
         $liste_collectivite = $this->getRoleUtilisateur()->getEntiteWithDenomination(
             $this->getId_u(),
-            'entite:lecture'
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
         );
         $nbCollectivite = count($liste_collectivite);
 

@@ -4,8 +4,8 @@ use Pastell\Service\Annuaire\AnnuaireContactService;
 use Pastell\Service\Annuaire\AnnuaireExportService;
 use Pastell\Service\Annuaire\AnnuaireGroupeService;
 use Pastell\Service\Annuaire\AnnuaireImportService;
-use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheService;
 
 class MailSecControler extends PastellControler
@@ -207,7 +207,10 @@ class MailSecControler extends PastellControler
         $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::LECTURE));
         $this->setViewParameter('can_edit', $this->hasDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION)));
 
-        $this->setViewParameter('arbre', $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), "entite:edition"));
+        $this->setViewParameter('arbre', $this->getRoleUtilisateur()->getArbreFille(
+            $this->getId_u(),
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION)
+        ));
 
         $this->setViewParameter('listGroupe', $this->getAnnuaireRoleSQL()->getAll($id_e));
 
