@@ -17,7 +17,7 @@ class FluxControler extends PastellControler
         $this->setNavigationInfo($id_e, 'Flux/index');
         $this->setEntiteMenuGauche($id_e);
         $this->setMenuGaucheSelect(MenuGaucheService::FLUX_INDEX);
-        $this->setDroitLectureOnConnecteur($id_e);
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
     }
 
     /**
@@ -110,7 +110,6 @@ class FluxControler extends PastellControler
 
             $this->setViewParameter('flux_list', $fluxList);
             $this->setViewParameter('possible_pack_list', $possiblePackList);
-            $this->setViewParameter('droitConnecteurEdition', $this->hasDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION));
             $this->setViewParameter('template_milieu', "FluxList");
         } else {
             $all_connecteur_type = $this->getConnecteurDefinitionFiles()->getAllGlobalType();
@@ -133,7 +132,7 @@ class FluxControler extends PastellControler
             }
             $this->setViewParameter('template_milieu', "FluxGlobalList");
         }
-        $this->setViewParameter('droit_edition', $this->hasDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION));
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $this->setViewParameter('entite_denomination', $this->getEntiteSQL()->getDenomination($this->getViewParameterOrObject('id_e')));
         $this->setViewParameter('page_title', "{$this->getViewParameterOrObject('entite_denomination')} : " . ($id_e ? 'Liste des types de dossier' : 'Associations connecteurs globaux'));
 
@@ -159,7 +158,7 @@ class FluxControler extends PastellControler
         $this->setViewParameter('all_herited', $fluxEntiteHeritageSQL->hasInheritanceAllFlux($id_e));
         $this->setViewParameter('flux_connecteur_list', $this->getConnectorForFlux($id_e, $flux));
         $this->setViewParameter('template_milieu', "FluxDetail");
-        $this->setViewParameter('droit_edition', $this->hasDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION));
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $this->setViewParameter('entite_denomination', $this->getEntiteSQL()->getDenomination($id_e));
 
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($flux);

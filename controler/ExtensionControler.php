@@ -23,7 +23,7 @@ class ExtensionControler extends PastellControler
     public function indexAction()
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
-        $this->setViewParameter('droitEdition', $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION));
+        $this->setDroitViewParameter(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('all_extensions', $this->extensionList());
 
         $this->setViewParameter('pastell_manifest', $this->getManifestFactory()->getPastellManifest()->getInfo());

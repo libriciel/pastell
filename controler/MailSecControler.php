@@ -21,7 +21,7 @@ class MailSecControler extends PastellControler
         $this->setNavigationInfo($id_e, "MailSec/annuaire?");
         $this->setMenuGaucheSelect(MenuGaucheService::MAILSEC_ANNUAIRE);
         $this->setEntiteMenuGauche($id_e);
-        $this->setDroitLectureOnConnecteur($id_e);
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
     }
 
 
@@ -58,7 +58,7 @@ class MailSecControler extends PastellControler
 
         $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::LECTURE);
 
-        $this->setViewParameter('can_edit', $this->hasDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION));
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION);
 
 
         $listUtilisateur = $this->getAnnuaireSQL()->getUtilisateurList(
@@ -109,7 +109,7 @@ class MailSecControler extends PastellControler
         $recuperateur = new Recuperateur($_GET);
         $id_e = (int)$recuperateur->getInt('id_e');
         $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::LECTURE);
-        $this->setViewParameter('can_edit', $this->hasDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION));
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION);
         $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
 
         $listGroupe = $annuaireGroupe->getGroupe($id_e);
@@ -213,7 +213,7 @@ class MailSecControler extends PastellControler
         $recuperateur = new Recuperateur($_GET);
         $id_e = $recuperateur->getInt('id_e');
         $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::LECTURE);
-        $this->setViewParameter('can_edit', $this->hasDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION));
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION);
 
         $this->setViewParameter('arbre', $this->getRoleUtilisateur()->getArbreFille(
             $this->getId_u(),
@@ -324,7 +324,7 @@ class MailSecControler extends PastellControler
         $id_e = $this->getViewParameterByKey('info')['id_e'];
         $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::LECTURE);
         $this->setInfoEntite($this->getViewParameterOrObject('info')['id_e']);
-        $this->setViewParameter('can_edit', $this->hasDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION));
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION);
 
 
         $this->setViewParameter('page_title', $this->getViewParameterOrObject('infoEntite')['denomination'] .

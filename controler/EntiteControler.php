@@ -26,7 +26,7 @@ class EntiteControler extends PastellControler
         $this->setNavigationInfo($id_e, 'Entite/detail');
         $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_DETAIL);
         $this->setEntiteMenuGauche($id_e);
-        $this->setDroitLectureOnConnecteur($id_e);
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
         $this->setViewParameter(
             'cdg_feature',
             $this->getObjectInstancier()
@@ -84,10 +84,7 @@ class EntiteControler extends PastellControler
         $all_role[] = ['role' => RoleUtilisateur::AUCUN_DROIT, 'libelle' => RoleUtilisateur::AUCUN_DROIT];
 
         $this->setViewParameter('all_role', $all_role);
-        $this->setViewParameter(
-            'droitCreation',
-            $this->hasDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::CREATION)
-        );
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_UTILISATEUR, DroitType::CREATION);
 
         $this->setViewParameter(
             'nb_utilisateur',
@@ -170,12 +167,9 @@ class EntiteControler extends PastellControler
             $this->redirect("/Entite/detail");
         }
 
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
         $this->setViewParameter(
-            'droit_edition',
-            $this->hasDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION)
-        );
-        $this->setViewParameter(
-            'droit_lecture_cdg',
+            'entite_lecture_cdg',
             isset($info['cdg']['id_e']) && $this->hasDroitFor(
                 $info['cdg']['id_e'],
                 DroitService::DROIT_ENTITE,
@@ -235,6 +229,7 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('search', $search);
         $this->setViewParameter('offset', $offset);
 
+        $this->setDroitViewParameter(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ENTITE, DroitType::EDITION);
         $this->setPageTitle("Entité Racine");
         $this->setViewParameter('template_milieu', "EntiteList");
         $this->renderDefault();
@@ -479,10 +474,7 @@ class EntiteControler extends PastellControler
         }
         $this->setViewParameter('offset', $offset);
         $this->setViewParameter('page', $page);
-        $this->setViewParameter(
-            'droit_edition',
-            $this->hasDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION)
-        );
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('search', $search);
         $this->setPageTitle("Agents");
@@ -493,6 +485,11 @@ class EntiteControler extends PastellControler
         $this->renderDefault();
     }
 
+    /**
+     * @throws NotFoundException
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function connecteurAction()
     {
         $recuperateur = $this->getGetInfo();
@@ -503,10 +500,7 @@ class EntiteControler extends PastellControler
         }
         $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
         $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
-        $this->setViewParameter(
-            'droit_edition',
-            $this->hasDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION)
-        );
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('global', $global);
         if ($global) {

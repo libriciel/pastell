@@ -216,6 +216,7 @@ class JournalControler extends PastellControler
 
         $this->setNavigationInfo($id_e, "Journal/index?a=a");
 
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_JOURNAL, DroitType::LECTURE);
         $this->setViewParameter('infoEntite', $infoEntite);
         $this->setViewParameter('page_title', $page_title);
         $this->setViewParameter('template_milieu', "JournalIndex");

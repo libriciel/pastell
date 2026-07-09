@@ -6,7 +6,7 @@
  * @var $subtitle
  * @var $all_herited
  * @var $id_e_mere
- * @var bool $droit_edition
+ * @var bool $connecteur_edition
  */
 ?>
 <a class='btn btn-link' href='Flux/index?id_e=<?php echo $id_e?>'>
@@ -55,7 +55,7 @@
                     &nbsp;
                 </td>
                 <td>
-                    <?php if (! $connecteur_info['inherited_flux'] && ! $all_herited && $droit_edition) :?>
+                    <?php if (! $connecteur_info['inherited_flux'] && ! $all_herited && $connecteur_edition) :?>
                         <?php
                         $fluxEditionUrl = sprintf(
                             'Flux/edition?id_e=%s&flux=%s&type=%s&num_same_type=%s',
@@ -80,14 +80,14 @@
             <input type='hidden' name='id_e' value='<?php echo $id_e ?>' />
             <input type='hidden' name='flux' value='<?php hecho($flux_connecteur_list[0]['id_flux']) ?>' />
             <?php if ($flux_connecteur_list[0]['inherited_flux']) :?>
-                <?php if ($droit_edition) : ?>
+                <?php if ($connecteur_edition) : ?>
                     <button type='submit' class='btn btn-primary'>
                         <i class='fa fa-minus-circle'></i>&nbsp;Supprimer l'héritage
                     </button>
                 <?php endif;?>
                 <br/>
                 <em>(type de dossier hérité de la mère)</em>
-            <?php elseif ($droit_edition) :?>
+            <?php elseif ($connecteur_edition) :?>
                 <button type='submit' class='btn btn-primary'>
                     <i class='fa fa-plus-circle'></i>&nbsp;Faire hériter
                 </button>

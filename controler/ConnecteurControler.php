@@ -35,6 +35,11 @@ class ConnecteurControler extends PastellControler
     }
 
 
+    /**
+     * @throws NotFoundException
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function _beforeAction(): void
     {
         parent::_beforeAction();
@@ -57,9 +62,9 @@ class ConnecteurControler extends PastellControler
         $this->setViewParameter('id_e_menu', $id_e);
         $this->setViewParameter('type_e_menu', '');
         $this->setEntiteMenuGauche($id_e);
-        $this->setDroitLectureOnConnecteur($id_e);
-        $this->setCanActOnConnector($id_e);
-        $this->setCanEditConnector($id_e);
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::ACTION);
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
     }
 
     /**
