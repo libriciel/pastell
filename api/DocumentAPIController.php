@@ -92,13 +92,13 @@ class DocumentAPIController extends BaseAPIController
         if (!$id_e) {
             throw new Exception('id_e est obligatoire');
         }
-        $this->checkDroit($id_e, 'entite:lecture');
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
 
         $allDroitEntite = $this->getDroitService()->getAllDocumentLecture($this->getUtilisateurId(), $id_e);
 
         $indexedFieldValue = [];
         if ($type) {
-            $this->checkDroit($id_e, "$type:lecture");
+            $this->checkDroitFor($id_e, $type, DroitType::LECTURE);
             $documentType = $this->documentTypeFactory->getFluxDocumentType($type);
             $indexedFieldsList = $documentType->getFormulaire()->getIndexedFields();
 
@@ -137,6 +137,10 @@ class DocumentAPIController extends BaseAPIController
         return $documents;
     }
 
+    /**
+     * @throws NotFoundException
+     * @throws ForbiddenException
+     */
     private function countByEntityFormat()
     {
         $id_e = $this->getFromRequest('id_e');
@@ -146,9 +150,8 @@ class DocumentAPIController extends BaseAPIController
             throw new Exception('Les paramètres id_e et type sont obligatoires.');
         }
 
-        // verifier les droits
-        $this->checkDroit($id_e, 'entite:lecture');
-        $this->checkDroit($id_e, $type . ':lecture');
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
+        $this->checkDroitFor($id_e, $type, DroitType::LECTURE);
 
         $req = $this->getRequest();
         unset($req['id_e']);
@@ -314,7 +317,7 @@ class DocumentAPIController extends BaseAPIController
         $field = $this->getFromQueryArgs(4);
 
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::LECTURE));
+        $this->checkDroitFor($id_e, $info['type'], DroitType::LECTURE);
         $documentType = $this->documentTypeFactory->getFluxDocumentType($info['type']);
         $formulaire = $documentType->getFormulaire();
         $theField = $formulaire->getField($field);
@@ -343,7 +346,7 @@ class DocumentAPIController extends BaseAPIController
         $field = $this->getFromQueryArgs(4);
         $action_name = $this->getActionNameFromField($id_d, $field);
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::EDITION));
+        $this->checkDroitFor($id_e, $info['type'], DroitType::EDITION);
         $this->actionExecutorFactory->goChoice(
             $id_e,
             $this->getUtilisateurId(),
