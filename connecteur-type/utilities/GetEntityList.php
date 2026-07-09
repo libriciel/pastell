@@ -32,11 +32,11 @@ class GetEntityList extends ConnecteurTypeChoiceActionExecutor
     public function display()
     {
         $entityUtilitiesService = $this->objectInstancier->getInstance(EntityUtilitiesService::class);
-        $arbreFille = $this->objectInstancier->getInstance(RoleUtilisateur::class)->getArbreFille(
+        $arbreFille = $this->objectInstancier->getInstance(RoleUtilisateur::class)->getArbreFilleWithRacine(
             $this->id_u,
             DroitService::getDroitEdition(DroitService::DROIT_ENTITE)
         );
-        $tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTreeWithRoot($arbreFille));
+        $tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree($arbreFille));
         $this->setViewParameter('entity_treeselect_data', json_encode($tree, JSON_THROW_ON_ERROR));
 
         $this->setViewParameter(
