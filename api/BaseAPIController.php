@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 
 abstract class BaseAPIController
 {
@@ -114,6 +115,9 @@ abstract class BaseAPIController
         return $this->request;
     }
 
+    /**
+     * @deprecated 4.1.21 Use checkDroitFor() instead
+     */
     protected function checkDroit($id_e, $droit)
     {
         if ($this->hasAllDroit) {
@@ -125,6 +129,25 @@ abstract class BaseAPIController
         return true;
     }
 
+    /**
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
+    protected function checkDroitFor($id_e, string $droit_id, DroitType $droit_type): bool
+    {
+        if ($this->hasAllDroit) {
+            return true;
+        }
+        if (! $this->getDroitService()->hasDroitFor($this->id_u, (int) $id_e, $droit_id, $droit_type)) {
+            $droit = DroitService::getDroitFor($droit_id, $droit_type);
+            throw new ForbiddenException("Acces interdit id_e=$id_e, droit=$droit,id_u={$this->id_u}");
+        }
+        return true;
+    }
+
+    /**
+     * @deprecated 4.1.21 Use checkOneDroitFor() instead
+     */
     protected function checkOneDroit($droit)
     {
         if (!$this->hasOneDroit($droit)) {
@@ -133,11 +156,34 @@ abstract class BaseAPIController
         return true;
     }
 
+    /**
+     * @deprecated 4.1.21 Use hasOneDroitFor() instead
+     */
     public function hasOneDroit($droit)
     {
         if ($this->hasAllDroit) {
             return true;
         }
         return $this->getDroitService()->hasOneDroit($this->getUtilisateurId(), $droit);
+    }
+
+    /**
+     * @throws ForbiddenException
+     */
+    protected function checkOneDroitFor(string $droit_id, DroitType $droit_type): bool
+    {
+        if (!$this->hasOneDroitFor($droit_id, $droit_type)) {
+            $droit = DroitService::getDroitFor($droit_id, $droit_type);
+            throw new ForbiddenException("Vous devez avoir le droit $droit pour accéder à la ressource.");
+        }
+        return true;
+    }
+
+    public function hasOneDroitFor(string $droit_id, DroitType $droit_type): bool
+    {
+        if ($this->hasAllDroit) {
+            return true;
+        }
+        return $this->getDroitService()->hasOneDroitFor($this->getUtilisateurId(), $droit_id, $droit_type);
     }
 }

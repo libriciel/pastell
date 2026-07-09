@@ -25,6 +25,11 @@
   `PastellControler::hasConnecteurDroitLecture()`, `PastellControler::hasConnecteurDroitEdition()` et
   `PastellControler::hasConnectorActionPermission()` sont dépréciées au profit de
   `PastellControler::checkDroitFor()` #2515
+- Dépréciation des méthodes de vérification de droit de l'API au profit de leur équivalent `…For()` #2518 :
+  `BaseAPIController::checkDroit()` -> `BaseAPIController::checkDroitFor()`
+  `BaseAPIController::checkOneDroit()` -> `BaseAPIController::checkOneDroitFor()`
+  `BaseAPIController::hasOneDroit()` -> `BaseAPIController::hasOneDroitFor()`
+  `DroitService::hasOneDroit()` -> `DroitService::hasOneDroitFor()`
 
 # [4.1.20] - 2026-07-06
 

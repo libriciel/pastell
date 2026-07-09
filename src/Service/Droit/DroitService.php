@@ -99,8 +99,20 @@ class DroitService
         return $this->roleUtilisateur->hasDroit($id_u, $droit, $id_e);
     }
 
+    /**
+     * @deprecated 4.1.21 Use hasOneDroitFor() instead
+     */
     public function hasOneDroit(int $id_u, string $droit): bool
     {
+        if ($this->isRestrictedDroit($droit)) {
+            return false;
+        }
+        return $this->roleUtilisateur->hasOneDroit($id_u, $droit);
+    }
+
+    public function hasOneDroitFor(int $id_u, string $droit_id, DroitType $droit_type): bool
+    {
+        $droit = self::getDroitFor($droit_id, $droit_type);
         if ($this->isRestrictedDroit($droit)) {
             return false;
         }

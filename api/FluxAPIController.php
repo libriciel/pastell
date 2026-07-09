@@ -1,7 +1,6 @@
 <?php
 
 use Pastell\Service\Droit\DroitType;
-use Pastell\Service\Droit\DroitService;
 
 class FluxAPIController extends BaseAPIController
 {
@@ -24,7 +23,7 @@ class FluxAPIController extends BaseAPIController
         if (! $this->documentTypeFactory->isTypePresent($id_flux)) {
             throw new NotFoundException("Le flux $id_flux n'existe pas sur cette plateforme");
         }
-        $this->checkOneDroit(DroitService::getDroitFor($id_flux, DroitType::LECTURE));
+        $this->checkOneDroitFor($id_flux, DroitType::LECTURE);
 
         if ($action == "action") {
             return $this->listAction($id_flux);
@@ -39,7 +38,7 @@ class FluxAPIController extends BaseAPIController
         $allType = [];
         foreach ($allDocType as $type_flux => $les_flux) {
             foreach ($les_flux as $nom => $affichage) {
-                if ($this->hasOneDroit(DroitService::getDroitFor($nom, DroitType::LECTURE))) {
+                if ($this->hasOneDroitFor($nom, DroitType::LECTURE)) {
                     $allType[$nom]  = ['type' => $type_flux,'nom' => $affichage];
                 }
             }
