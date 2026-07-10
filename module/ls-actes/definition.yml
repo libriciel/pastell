@@ -265,6 +265,7 @@ formulaire:
             commentaire: 'Accusé de réception (XML) envoyé par la préfecture'
             read-only: true
         acte_unique_id:
+            name: 'Acte unique id Tdt'
             no-show: true
             index: true
             read-only: true
@@ -358,6 +359,7 @@ champs-affiches:
     - titre
     - dernier_etat
     - date_dernier_etat
+    - numero_de_lacte
 champs-recherche-avancee:
     - type
     - id_e
@@ -367,6 +369,8 @@ champs-recherche-avancee:
     - state_begin
     - notEtatTransit
     - search
+    - numero_de_lacte
+    - acte_unique_id
 page-condition:
     Transformation:
         has_transformation: true
