@@ -104,10 +104,10 @@ class RoleUtilisateur extends SQL
         //TODO c'est incomplet, on a pas id_e/id_u
     }
 
-    public function hasDroit($id_u, $droit, $id_e)
+    public function hasDroit($id_u, $droit, $id_e): bool
     {
         $allDroit = $this->getAllDroitEntite($id_u, $id_e);
-        return in_array($droit, $allDroit);
+        return in_array($droit, $allDroit, true);
     }
 
 
@@ -182,14 +182,11 @@ class RoleUtilisateur extends SQL
 
     /**
      * Vérifie qu'un utilisateur dispose d'au moins du droit unitaire sur une entité quelconque
-     * @param $id_u
-     * @param $droit
-     * @return bool
      */
-    public function hasOneDroit($id_u, $droit)
+    public function hasOneDroit(int $id_u, string $droit): bool
     {
         $allDroit = $this->getAllDroit($id_u);
-        return in_array($droit, $allDroit);
+        return in_array($droit, $allDroit, true);
     }
 
     private function linearizeTab($all)

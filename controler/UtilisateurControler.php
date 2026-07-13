@@ -352,7 +352,7 @@ class UtilisateurControler extends PastellControler
             $this->setViewParameter('role_authorized', []);
         }
 
-        if (!$this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'utilisateur:lecture', $info['id_e'])) {
+        if (!$this->hasDroitFor($info['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::LECTURE)) {
             $this->setLastError(
                 \sprintf(
                     "Vous n'avez pas les droits nécessaires (%s:utilisateur:lecture) pour accéder à cette page",
@@ -363,12 +363,12 @@ class UtilisateurControler extends PastellControler
         }
         $this->setViewParameter(
             'utilisateur_edition',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'utilisateur:edition', $info['id_e'])
+            $this->hasDroitFor($info['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION)
         );
 
         if (
             (int) $id_u === $this->getId_u()
-            || ($this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'utilisateur:edition', $info['id_e'])
+            || ($this->hasDroitFor($info['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION)
                 && $info['is_api'])
         ) {
             $tokens = $this->getObjectInstancier()
@@ -619,11 +619,7 @@ class UtilisateurControler extends PastellControler
         }
 
         if (
-            $this->getRoleUtilisateur()->hasDroit(
-                $id_u,
-                DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
-                $id_e
-            )
+            $this->getDroitService()->hasDroitFor($id_u, $id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE)
             &&
             $this->getDroitService()->hasDroitFor(
                 $id_u,
@@ -1110,6 +1106,7 @@ EOT;
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @throws NotFoundException
      */
     private function verifDroitApi(int $id_u): void
     {
@@ -1119,7 +1116,7 @@ EOT;
         if (
             $id_u !== $this->getId_u() &&
             !($is_api &&
-                $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'utilisateur:edition', $id_e))
+                $this->hasDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::EDITION))
         ) {
             if (!$is_api && $id_u !== $this->getId_u()) {
                 $message = 'Action impossible';

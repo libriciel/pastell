@@ -12,8 +12,6 @@
 
 ## Dépréciations
 
-- Les méthodes `PastellControler::verifDroit()` et `PastellControler::hasDroit()` sont dépréciées au profit de
-  `PastellControler::mustHaveDroitFor()` et `PastellControler::hasDroitFor()` #2510
 - Les méthodes de construction de chaîne de droit sont dépréciées au profit de `DroitService::getDroitFor()` :
   `DroitService::getDroitLecture()`, `DroitService::getDroitEdition()`, `DroitService::getActionPermission()`,
   `RoleUtilisateur::getDroit()`, `RoleUtilisateur::getDroitLecture()`, `RoleUtilisateur::getDroitEdition()` #2491

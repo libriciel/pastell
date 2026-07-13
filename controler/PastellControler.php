@@ -120,7 +120,7 @@ class PastellControler extends Controler
         if (! $this->getId_u()) {
             return true;
         }
-        return $this->getRoleUtilisateur()->hasDroit($this->getId_u(), $droit, $id_e);
+        return $this->getDroitService()->hasDroit($this->getId_u(), $droit, $id_e);
     }
 
     /**
@@ -272,11 +272,7 @@ class PastellControler extends Controler
         $daemonManager = $this->getInstance(DaemonManager::class);
 
         if (
-            $this->getRoleUtilisateur()->hasDroit(
-                $this->getId_u(),
-                DroitService::getDroitFor(DroitService::DROIT_SYSTEM, DroitType::LECTURE),
-                EntiteSQL::ID_E_ENTITE_RACINE
-            )
+            $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE)
         ) {
             $this->setViewParameter(
                 'nb_job_lock',
