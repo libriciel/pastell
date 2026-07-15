@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Pastell\Service\Menu;
 
 use EntiteSQL;
+use NotFoundException;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\FeatureToggle\DisplayConnecteurEntiteRacine;
 
 class MenuGaucheService
@@ -103,12 +105,15 @@ class MenuGaucheService
         return $menu;
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function getEntiteMenu(int $id_e, int $id_u): array
     {
-        $utilisateur_lecture = $this->droitService->hasDroit($id_u, DroitService::getDroitLecture(DroitService::DROIT_UTILISATEUR), $id_e);
-        $connecteur_lecture = $this->droitService->hasDroit($id_u, DroitService::getDroitLecture(DroitService::DROIT_CONNECTEUR), $id_e);
-        $system_edition = $this->droitService->hasDroit($id_u, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM), $id_e);
-        $annuaire_lecture = $this->droitService->hasDroit($id_u, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE), $id_e);
+        $utilisateur_lecture = $this->droitService->hasDroitFor($id_u, $id_e, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
+        $connecteur_lecture = $this->droitService->hasDroitFor($id_u, $id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
+        $system_edition = $this->droitService->hasDroitFor($id_u, $id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $annuaire_lecture = $this->droitService->hasDroitFor($id_u, $id_e, DroitService::DROIT_ANNUAIRE, DroitType::LECTURE);
         $isEnableConnecteurEntiteRacine = $this->displayConnecteurEntiteRacine->isEnabled();
 
         $administration_options = [

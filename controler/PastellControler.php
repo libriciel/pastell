@@ -4,6 +4,7 @@ use Monolog\Logger;
 use Pastell\Security\LibricielFeedbackReader;
 use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Menu\MenuGaucheService;
 
 class PastellControler extends Controler
@@ -30,9 +31,11 @@ class PastellControler extends Controler
 
     protected function setDroitLectureOnConnecteur(int $id_e): void
     {
-        $this->setViewParameter('droit_lecture_on_connecteur', $this->getDroitService()->hasDroitConnecteurLecture(
+        $this->setViewParameter('droit_lecture_on_connecteur', $this->getDroitService()->hasDroitFor(
+            $this->getId_u(),
             $id_e,
-            $this->getId_u()
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::LECTURE
         ));
     }
 
@@ -40,9 +43,11 @@ class PastellControler extends Controler
     {
         $this->setViewParameter(
             'canActOnConnector',
-            $this->getDroitService()->hasConnectorActionPermission(
-                $entityId,
+            $this->getDroitService()->hasDroitFor(
                 $this->getId_u(),
+                $entityId,
+                DroitService::DROIT_CONNECTEUR,
+                DroitType::ACTION,
             )
         );
     }
@@ -51,9 +56,11 @@ class PastellControler extends Controler
     {
         $this->setViewParameter(
             'canEditConnector',
-            $this->getDroitService()->hasDroitConnecteurEdition(
-                $entityId,
+            $this->getDroitService()->hasDroitFor(
                 $this->getId_u(),
+                $entityId,
+                DroitService::DROIT_CONNECTEUR,
+                DroitType::EDITION,
             )
         );
     }
@@ -64,7 +71,7 @@ class PastellControler extends Controler
      */
     public function hasConnecteurDroitEdition(int $id_e): void
     {
-        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_CONNECTEUR));
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_CONNECTEUR, DroitType::EDITION));
     }
 
     /**
@@ -73,7 +80,7 @@ class PastellControler extends Controler
      */
     public function hasConnecteurDroitLecture(int $id_e): void
     {
-        $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_CONNECTEUR));
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_CONNECTEUR, DroitType::LECTURE));
     }
 
     /**
@@ -96,7 +103,7 @@ class PastellControler extends Controler
      */
     public function hasUtilisateurDroitLecture(int $id_e): void
     {
-        $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_UTILISATEUR));
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::LECTURE));
     }
 
     /**
@@ -105,7 +112,7 @@ class PastellControler extends Controler
      */
     public function hasEntiteDroitLecture(int $id_e): void
     {
-        $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ENTITE));
+        $this->verifDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
     }
 
     /**

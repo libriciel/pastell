@@ -4,6 +4,7 @@ use Pastell\Service\Crypto;
 use Pastell\Service\FeatureToggle\DisplayConnecteurEntiteRacine;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Entite\EntityUpdateService;
@@ -297,7 +298,7 @@ class EntiteControler extends PastellControler
         }
 
         $onglet_content["collectivités"] = "EntiteImportCollectivite";
-        if ($this->hasDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_ENTITE))) {
+        if ($this->hasDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION))) {
             $onglet_content["agents"] = "EntiteImportAgent";
             $onglet_content["grades"] = "EntiteImportGrade";
         }
@@ -577,7 +578,7 @@ class EntiteControler extends PastellControler
 
         $delete_all = $recuperateur->get('delete_all');
 
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
 
         $fileUploader = new FileUploader();
         $file_path = $fileUploader->getFilePath('csv_agent');
@@ -662,7 +663,7 @@ class EntiteControler extends PastellControler
      */
     public function importGradeAction(): void
     {
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
 
         $fileUploader = new FileUploader();
         $file_path = $fileUploader->getFilePath('csv_grade');

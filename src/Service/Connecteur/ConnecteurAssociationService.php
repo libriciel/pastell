@@ -8,6 +8,7 @@ use Exception;
 use FluxDefinitionFiles;
 use FluxEntiteSQL;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use UnrecoverableException;
 
 class ConnecteurAssociationService
@@ -45,7 +46,7 @@ class ConnecteurAssociationService
                 "Le connecteur n'est pas du bon type :  {$info['type']} présenté, $type_connecteur requis"
             );
         }
-        if (! $this->droitService->hasDroitConnecteurEdition($id_e, $id_u)) {
+        if (! $this->droitService->hasDroitFor($id_u, $id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION)) {
             throw new UnrecoverableException("Vous n'avez pas le droit d'édition pour les connecteurs");
         }
 
@@ -56,7 +57,7 @@ class ConnecteurAssociationService
         }
 
         $ownerEntityId = (int)$info['id_e'];
-        if (!$this->droitService->hasDroitConnecteurEdition($ownerEntityId, $id_u)) {
+        if (!$this->droitService->hasDroitFor($id_u, $ownerEntityId, DroitService::DROIT_CONNECTEUR, DroitType::EDITION)) {
             throw new UnrecoverableException(
                 "Vous n'avez pas le droit d'édition sur l'entité propriétaire du connecteur $id_ce"
             );

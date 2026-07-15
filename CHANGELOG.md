@@ -1,3 +1,19 @@
+# [4.1.21] - 2026-03-08
+
+## Évolutions
+
+- Centralisation des vérifications de droits dans `DroitService` : ajout de l'énumération `DroitType` et des
+  méthodes `DroitService::getDroitFor()` et `DroitService::hasDroitFor()` #2491
+
+## Dépréciations
+
+- Les méthodes de construction de chaîne de droit sont dépréciées au profit de `DroitService::getDroitFor()` :
+  `DroitService::getDroitLecture()`, `DroitService::getDroitEdition()`, `DroitService::getActionPermission()`,
+  `RoleUtilisateur::getDroit()`, `RoleUtilisateur::getDroitLecture()`, `RoleUtilisateur::getDroitEdition()` #2491
+- Les méthodes de vérification de droit `DroitService::hasDroit()`, `DroitService::hasDroitConnecteurLecture()`,
+  `DroitService::hasDroitConnecteurEdition()`, `DroitService::hasConnectorActionPermission()` et
+  `DroitService::hasDroitUtilisateurLecture()` sont dépréciées au profit de `DroitService::hasDroitFor()` #2491
+
 # [4.1.20] - 2026-07-06
 
 ## Ajouts

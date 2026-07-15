@@ -26,16 +26,25 @@ class RoleUtilisateur extends SQL
         $this->cache_ttl_in_seconds = $cache_ttl_in_seconds;
     }
 
+    /**
+     * @deprecated 4.1.21 Use DroitService::getDroitFor() instead
+     */
     public function getDroit($type_objet, $type_acces)
     {
         return sprintf("%s:%s", $type_objet, $type_acces);
     }
 
+    /**
+     * @deprecated 4.1.21 Use DroitService::getDroitFor() instead
+     */
     public function getDroitLecture($type_objet)
     {
         return $this->getDroit($type_objet, self::DROIT_LECTURE);
     }
 
+    /**
+     * @deprecated 4.1.21 Use DroitService::getDroitFor() instead
+     */
     public function getDroitEdition($type_objet)
     {
         return $this->getDroit($type_objet, self::DROIT_EDITION);
