@@ -78,7 +78,7 @@ class DroitService
         if ($this->connectorActionPermission) {
             return self::getDroitFor($part, DroitType::ACTION);
         }
-        return self::getDroitEdition($part);
+        return self::getDroitFor($part, DroitType::EDITION);
     }
 
     /**
