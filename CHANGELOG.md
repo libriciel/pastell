@@ -6,6 +6,20 @@
 - Alerte du taux d'occupation du workspace : alerte quotidienne par mail à l'administrateur lorsque le seuil
   est dépassé (configurable, 90% par défaut) #1935
 - Possibilité de supprimer des utilisateurs en lot #1821
+- Nouvelles routes API pour la gestion de l'annuaire mail sécurisé #2469
+  - `GET /api/v2/annuaire` : lister et consulter les contacts
+  - `GET /api/v2/annuaire/:id_a` : consulter un contact
+  - `POST /api/v2/annuaire` : créer un contact
+  - `PATCH /api/v2/annuaire/:id_a` : modifier un contact
+  - `DELETE /api/v2/annuaire/:id_a` : supprimer un contact
+  - `POST /api/v2/annuaire/import` : importer des contacts depuis un fichier CSV
+  - `GET /api/v2/annuaire/export` : exporter les contacts au format CSV
+  - `GET /api/v2/annuaire/groupe` : lister et consulter les groupes
+  - `GET /api/v2/annuaire/groupe/:id_g` : consulter un groupe
+  - `POST /api/v2/annuaire/groupe` : créer un groupe
+  - `POST /api/v2/annuaire/groupe/:id_g` : ajouter un contact à un groupe
+  - `DELETE /api/v2/annuaire/groupe/:id_g` : supprimer un groupe
+  - `DELETE /api/v2/annuaire/groupe/:id_g/:id_a` : retirer un contact d'un groupe
 
 ## Évolutions
 
