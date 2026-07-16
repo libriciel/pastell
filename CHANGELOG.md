@@ -1,9 +1,14 @@
-# [4.1.21] - 2026-03-08
+# [4.1.21] - 2026-08-03
 
 ## Évolutions
 
 - Centralisation des vérifications de droits dans `DroitService` : ajout de l'énumération `DroitType` et des
   méthodes `DroitService::getDroitFor()` et `DroitService::hasDroitFor()` #2491
+
+## Corrections
+
+- Consultation de la réponse d'un mail sécurisé via l'API : droits de lecture vérifiés sur le type de dossier d'origine 
+  et non plus sur celui de la réponse (ex. `mailsec-bidir:lecture` au lieu de `mailsec-bidir-reponse:lecture`) #2488
 
 ## Dépréciations
 

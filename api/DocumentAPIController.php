@@ -4,6 +4,7 @@ use Pastell\File\Chunk\ChunkRequest;
 use Pastell\File\Chunk\ChunkUploader;
 use Pastell\Service\Document\DocumentDeletionService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Document\DocumentEmailService;
 
 class DocumentAPIController extends BaseAPIController
 {
@@ -24,6 +25,7 @@ class DocumentAPIController extends BaseAPIController
         private DocumentDeletionService $documentDeletionService,
         private DocumentEmail $documentEmail,
         private DocumentEmailReponseSQL $documentEmailReponseSQL,
+        private DocumentEmailService $documentEmailService,
         private readonly ChunkUploader $chunkUploader,
     ) {
     }
@@ -182,7 +184,7 @@ class DocumentAPIController extends BaseAPIController
     private function internalDetail($id_e, $id_d): array
     {
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::LECTURE));
+        $this->checkDroitLecture($id_e, $id_d, $info['type']);
         $result['info'] = $info;
         $donneesFormulaire = $this->donneesFormulaireFactory->get($id_d, $info['type']);
 
@@ -373,7 +375,7 @@ class DocumentAPIController extends BaseAPIController
         $num = $this->getFromQueryArgs(5) ?: 0;
 
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::LECTURE));
+        $this->checkDroitLecture($id_e, $id_d, $info['type']);
         $mode_receive = $this->getFromRequest('receive');
         if ($mode_receive) {
             return $this->receiveFileAction($id_e, $id_d, $field, $num);
@@ -650,5 +652,19 @@ class DocumentAPIController extends BaseAPIController
         }
 
         return $info;
+    }
+
+    /**
+     * @throws ForbiddenException
+     */
+    private function checkDroitLecture(int $id_e, string $id_d, string $type): void
+    {
+        // Si l'id_d est un document_email_reponse alors on vérifie les droits sur le document_email, issue #2488
+        $mail_info = $this->documentEmailService->getDocumentEmailFromIdReponse($id_d);
+        if (!empty($mail_info)) {
+            $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($mail_info['type'], DroitType::LECTURE));
+        } else {
+            $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($type, DroitType::LECTURE));
+        }
     }
 }
