@@ -7,7 +7,7 @@
 
 ## Corrections
 
-- Prise en compte des droits sur le type de dossier pour consulter la réponse d'un mail sécurisé via l'api #2488
+- Consultation de la réponse d'un mail sécurisé via l'API : droits de lecture vérifiés sur le type de dossier d'origine et non plus sur celui de la réponse (ex. `mailsec-bidir:lecture` au lieu de `mailsec-bidir-reponse:lecture`) #2488
 
 ## Dépréciations
 
