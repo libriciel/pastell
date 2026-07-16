@@ -12,7 +12,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'app:system:prune-magic-links',
-    description: 'Supprime les utilisateurs temporaires des accès support révoqués ou expirés',
+    description: 'Supprime les utilisateurs temporaires des accès révoqués ou expirés, '
+        . 'et purge l\'historique des accès clôturés au-delà de la durée de conservation',
 )]
 final class PruneMagicLinksCommand extends Command
 {
@@ -25,7 +26,11 @@ final class PruneMagicLinksCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $count = $this->magicLinkService->pruneExpired();
-        $output->writeln("$count accès support nettoyé(s)");
+        $output->writeln("$count accès temporaire nettoyé(s)");
+
+        $historyCount = $this->magicLinkService->pruneHistory();
+        $output->writeln("$historyCount accès supprimé(s) de l'historique");
+
         return Command::SUCCESS;
     }
 }

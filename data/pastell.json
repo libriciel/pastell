@@ -2050,11 +2050,11 @@
         "Column": {
             "id": {
                 "Field": "id",
-                "Type": "int(11)",
+                "Type": "char(36)",
                 "Null": "NO",
                 "Key": "PRI",
                 "Default": null,
-                "Extra": "auto_increment"
+                "Extra": ""
             },
             "id_u": {
                 "Field": "id_u",
@@ -2070,6 +2070,22 @@
                 "Null": "NO",
                 "Key": "UNI",
                 "Default": null,
+                "Extra": ""
+            },
+            "code": {
+                "Field": "code",
+                "Type": "varchar(6)",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "code_attempts": {
+                "Field": "code_attempts",
+                "Type": "int(11)",
+                "Null": "NO",
+                "Key": "",
+                "Default": "0",
                 "Extra": ""
             },
             "motif": {

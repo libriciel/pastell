@@ -200,7 +200,7 @@ class SystemControlerTest extends ControlerTestCase
     {
         $link = $this->createMagicLink('Accès à révoquer');
 
-        $this->setGetInfo(['id' => (int)$link['id']]);
+        $this->setGetInfo(['id' => $link['id']]);
         $this->expectOutputRegex('#sur le point de révoquer#');
         $this->systemControler->magicLinkRevokeAction();
     }
@@ -231,7 +231,7 @@ class SystemControlerTest extends ControlerTestCase
         $link = $this->createMagicLink('Accès à révoquer');
         $id_u = (int)$link['id_u'];
 
-        $this->setPostInfo(['id' => (int)$link['id']]);
+        $this->setPostInfo(['id' => $link['id']]);
 
         try {
             $this->systemControler->doMagicLinkRevokeAction();
@@ -240,7 +240,7 @@ class SystemControlerTest extends ControlerTestCase
             static::assertStringContainsString('révoqué', $e->getMessage());
         }
 
-        static::assertNull($this->getMagicLinkService()->getActiveLink((int)$link['id']));
+        static::assertNull($this->getMagicLinkService()->getActiveLink($link['id']));
         static::assertFalse(
             $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->getInfo($id_u)
         );
@@ -256,9 +256,9 @@ class SystemControlerTest extends ControlerTestCase
     public function testMagicLinkHistory(): void
     {
         $link = $this->createMagicLink('Accès clôturé', 'Bernard');
-        $this->getMagicLinkService()->revoke((int)$link['id']);
+        $this->getMagicLinkService()->revoke($link['id']);
 
-        $this->expectOutputRegex('#Historique des accès créés.*Bernard#s');
+        $this->expectOutputRegex('#Historique des accès créés.*Be\*{5}#s');
         $this->systemControler->magicLinkHistoryAction();
     }
 }

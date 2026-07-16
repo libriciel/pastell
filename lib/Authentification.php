@@ -40,12 +40,12 @@ class Authentification
         }
     }
 
-    public function setMagicLinkId(int $magicLinkId): void
+    public function setMagicLinkId(string $magicLinkId): void
     {
         $_SESSION['connexion']['magic_link_id'] = $magicLinkId;
     }
 
-    public function getMagicLinkId(): ?int
+    public function getMagicLinkId(): ?string
     {
         if (! $this->isConnected()) {
             return null;

@@ -291,9 +291,11 @@ CREATE TABLE `journal_historique` (
 	KEY `type` (`type`)
 )  ENGINE=MyISAM  ;
 CREATE TABLE `magic_link` (
-	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`id` char(36) NOT NULL,
 	`id_u` int(11) NOT NULL,
 	`token` varchar(64) NOT NULL,
+	`code` varchar(6) NOT NULL,
+	`code_attempts` int(11) NOT NULL DEFAULT '0',
 	`motif` varchar(128) NOT NULL,
 	`created_by` int(11) NOT NULL,
 	`created_at` datetime NOT NULL,

@@ -41,6 +41,7 @@ declare(strict_types=1);
                 <th>Créé le</th>
                 <th>Expiration</th>
                 <th>Statut</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -58,6 +59,12 @@ declare(strict_types=1);
                         <?php else : ?>
                             <p class='badge bg-secondary'>Expiré</p>
                         <?php endif; ?>
+                    </td>
+                    <td>
+                        <a class="btn btn-primary btn-sm"
+                           href='Journal/index?id_u=<?= (int)$link['id_u'] ?>'>
+                            <i class="fas fa-history"></i>&nbsp;Dernières actions
+                        </a>
                     </td>
                 </tr>
             <?php endforeach; ?>

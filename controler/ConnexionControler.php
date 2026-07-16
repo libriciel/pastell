@@ -7,6 +7,7 @@ use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
+use Pastell\Service\MagicLink\MagicLinkCodeStatus;
 use Pastell\Service\MagicLink\MagicLinkService;
 use Pastell\Service\Utilisateur\PasswordResetMailService;
 
@@ -431,6 +432,9 @@ class ConnexionControler extends PastellControler
     /**
      * @throws LastErrorException
      * @throws LastMessageException
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function magicLinkAction(): void
     {
@@ -440,14 +444,62 @@ class ConnexionControler extends PastellControler
             ->getValidLinkFromToken($token);
 
         if ($magicLink === null) {
-            $this->setLastError("Ce lien d'accès support est invalide, a expiré ou a été révoqué.");
+            $this->setLastError("Ce lien d'accès temporaire est invalide, a expiré ou a été révoqué.");
             $this->redirect('/Connexion/connexion');
         }
 
+        $this->renderMagicLinkCodePage($token);
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function doMagicLinkCodeAction(): void
+    {
+        $recuperateur = $this->getPostInfo();
+        $token = (string)$recuperateur->get('token');
+        $code = (string)$recuperateur->get('code');
+
+        $result = $this->getObjectInstancier()
+            ->getInstance(MagicLinkService::class)
+            ->checkCode($token, $code);
+
+        if ($result->status === MagicLinkCodeStatus::Valid) {
+            $this->loginWithMagicLink($result->link);
+            return;
+        }
+
+        if ($result->status === MagicLinkCodeStatus::WrongCode) {
+            $this->setLastError(\sprintf(
+                'Code incorrect. Il vous reste %d essai%s.',
+                $result->remainingAttempts,
+                $result->remainingAttempts > 1 ? 's' : '',
+            ));
+            $this->redirect('/Connexion/magicLink?token=' . urlencode($token));
+        }
+
+        if ($result->status === MagicLinkCodeStatus::Revoked) {
+            $this->setLastError(
+                'Nombre maximal de tentatives atteint : cet accès temporaire a été révoqué.'
+            );
+            $this->redirect('/Connexion/connexion');
+        }
+
+        $this->setLastError("Ce lien d'accès temporaire est invalide, a expiré ou a été révoqué.");
+        $this->redirect('/Connexion/connexion');
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    private function loginWithMagicLink(array $magicLink): void
+    {
         $id_u = (int)$magicLink['id_u'];
         $infoUtilisateur = $this->getUtilisateur()->getInfo($id_u);
         if ($infoUtilisateur === false) {
-            $this->setLastError("Ce lien d'accès support est invalide, a expiré ou a été révoqué.");
+            $this->setLastError("Ce lien d'accès temporaire est invalide, a expiré ou a été révoqué.");
             $this->redirect('/Connexion/connexion');
         }
 
@@ -464,9 +516,23 @@ class ConnexionControler extends PastellControler
         );
 
         $this->setSessionInfo($infoUtilisateur['login'], $id_u);
-        $this->getAuthentification()->setMagicLinkId((int)$magicLink['id']);
+        $this->getAuthentification()->setMagicLinkId((string)$magicLink['id']);
 
         $this->redirect('/');
+    }
+
+    /**
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    private function renderMagicLinkCodePage(string $token): void
+    {
+        $this->setViewParameter('login_page_configuration', $this->getLoginPageConfiguration());
+        $this->setViewParameter('page', 'connexion');
+        $this->setViewParameter('page_title', 'Accès temporaire');
+        $this->setViewParameter('token', $token);
+        $this->render('connexion/magic_link_code.html.twig');
     }
 
     private function getId_uFromTokenOrFailed(string $mail_verif_password)

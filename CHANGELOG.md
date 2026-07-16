@@ -6,8 +6,9 @@
   multi-fichiers pour « Annexe de l'acte » #2520
 - Nouveau champ « Autre document(s) à signer », transmis au Tdt en plus des annexes dans les flux
   `ls-actes`, `document-autorisation-urbanisme` et `rh-document-individuel` #2520
-- Accès support temporaires : génération d'un lien d'accès à durée limitée envoyé par mail à l'intervenant,
-  révocable à tout moment, avec historique des accès et suppression automatique des comptes expirés ou révoqués #2421
+- Accès temporaires : génération d'un lien d'accès à durée limitée envoyé par mail à l'intervenant, révocable à tout moment, avec historique des accès.
+La connexion est protégée par un code à 6 chiffres (visible dans la liste des accès actifs et transmis à
+l'intervenant par l'administrateur) : après 3 saisies erronées, l'accès est automatiquement révoqué #2421
 - Ajout du paramètre `descendance` sur la route `GET /api/v2/utilisateur` pour inclure les utilisateurs des entités filles #2463
 - Alerte du taux d'occupation du workspace : alerte quotidienne par mail à l'administrateur lorsque le seuil
   est dépassé (configurable, 90% par défaut) #1935
@@ -110,8 +111,6 @@
 - Consultation de la réponse d'un mail sécurisé via l'API : droits de lecture vérifiés sur le type de dossier d'origine
   et non plus sur celui de la réponse (ex. `mailsec-bidir:lecture` au lieu de `mailsec-bidir-reponse:lecture`) #2488
 - Il manquait le numéro de l'acte pour la recherche avancée de ls-actes #2479
-- Studio, étape « Envoi à la préfecture (via un Tdt) » : la typologie des annexes n'était pas appliquée car
-  l'action `autre_document_attache-change` ne recevait pas le mapping de l'élément portant les annexes #2520
 
 ## Dépréciations
 

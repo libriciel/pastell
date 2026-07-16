@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Pastell\Mailer\Mailer;
+use Pastell\Service\MagicLink\MagicLinkCodeStatus;
 use Pastell\Service\MagicLink\MagicLinkService;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
@@ -32,7 +33,8 @@ class MagicLinkServiceTest extends PastellTestCase
 
     private function extractTokenFromLastEmail(): string
     {
-        $email = $this->getMailerTransport()->getSentMessage()->getOriginalMessage();
+        $sentMessages = $this->getMailerTransport()->getAllSentMessages();
+        $email = end($sentMessages)->getOriginalMessage();
         static::assertInstanceOf(Email::class, $email);
         static::assertSame(
             1,
@@ -68,7 +70,7 @@ class MagicLinkServiceTest extends PastellTestCase
 
         $userInfo = $this->getUtilisateurSQL()->getInfo((int)$link['id_u']);
         static::assertSame('jean.dupont@example.org', $userInfo['email']);
-        static::assertSame('0', (string)$userInfo['is_enabled']);
+        static::assertSame('1', (string)$userInfo['is_enabled']);
 
         $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
         static::assertSame(1, (int)$roleUtilisateur->hasRole((int)$link['id_u'], 'admin', 0));
@@ -129,6 +131,36 @@ class MagicLinkServiceTest extends PastellTestCase
      * @throws ConflictException
      * @throws Exception
      */
+    public function testResend(): void
+    {
+        $service = $this->getMagicLinkService();
+        $service->create('Intervention', 24, 1, 'Dupont', 'Jean', 'jean.dupont@example.org');
+        $firstToken = $this->extractTokenFromLastEmail();
+        $link = $service->getActiveLinks()[0];
+
+        $service->resend($link['id']);
+        $secondToken = $this->extractTokenFromLastEmail();
+
+        static::assertNotSame($firstToken, $secondToken);
+        static::assertNull($service->getValidLinkFromToken($firstToken));
+        static::assertNotNull($service->getValidLinkFromToken($secondToken));
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    public function testResendUnknownLink(): void
+    {
+        $this->expectException(UnrecoverableException::class);
+        $this->getMagicLinkService()->resend('99999999-9999-4999-8999-999999999999');
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     * @throws Exception
+     */
     public function testExpiredToken(): void
     {
         $service = $this->getMagicLinkService();
@@ -139,7 +171,7 @@ class MagicLinkServiceTest extends PastellTestCase
         static::getSQLQuery()->query(
             'UPDATE magic_link SET expires_at = ? WHERE id = ?',
             '2000-01-01 00:00:00',
-            (int)$link['id'],
+            $link['id'],
         );
 
         static::assertNull($service->getValidLinkFromToken($token));
@@ -158,7 +190,7 @@ class MagicLinkServiceTest extends PastellTestCase
         $token = $this->extractTokenFromLastEmail();
         $link = $service->getActiveLinks()[0];
 
-        $service->revoke((int)$link['id']);
+        $service->revoke($link['id']);
 
         static::assertNull($service->getValidLinkFromToken($token));
     }
@@ -191,11 +223,11 @@ class MagicLinkServiceTest extends PastellTestCase
         $link = $service->getActiveLinks()[0];
         $id_u = (int)$link['id_u'];
 
-        $service->revoke((int)$link['id']);
+        $service->revoke($link['id']);
 
         static::assertFalse($this->getUtilisateurSQL()->getInfo($id_u));
         static::assertSame([], $service->getActiveLinks());
-        static::assertNull($service->getActiveLink((int)$link['id']));
+        static::assertNull($service->getActiveLink($link['id']));
     }
 
     /**
@@ -215,15 +247,16 @@ class MagicLinkServiceTest extends PastellTestCase
             static fn(array $link): bool => $link['motif'] === 'Accès clôturé',
         ))[0];
 
-        $service->revoke((int)$revokedLink['id']);
+        $service->revoke($revokedLink['id']);
 
         $history = $service->getHistory();
         static::assertCount(1, $history);
         static::assertSame('Accès clôturé', $history[0]['motif']);
-        static::assertSame('Bernard', $history[0]['titulaire_nom']);
-        static::assertSame('Alice', $history[0]['titulaire_prenom']);
-        static::assertSame('alice.bernard@example.org', $history[0]['titulaire_email']);
+        static::assertSame('Be*****', $history[0]['titulaire_nom']);
+        static::assertSame('Al***', $history[0]['titulaire_prenom']);
+        static::assertSame('al***********@example.org', $history[0]['titulaire_email']);
         static::assertNotNull($history[0]['revoked_at']);
+        static::assertSame((int)$revokedLink['id_u'], (int)$history[0]['id_u']);
     }
 
     /**
@@ -247,6 +280,8 @@ class MagicLinkServiceTest extends PastellTestCase
         $this->getObjectInstancier()->getInstance(Mailer::class)
             ->setMailer(new \Symfony\Component\Mailer\Mailer($failingTransport));
 
+        $userCountBefore = static::getSQLQuery()->queryOne('SELECT COUNT(*) FROM utilisateur');
+
         try {
             $this->getMagicLinkService()->create('Motif', 24, 1, 'Nom', 'Prenom', 'echec@example.org');
             static::fail('Une TransportExceptionInterface était attendue');
@@ -255,9 +290,9 @@ class MagicLinkServiceTest extends PastellTestCase
 
         static::assertSame([], $this->getMagicLinkService()->getActiveLinks());
         static::assertSame([], $this->getMagicLinkService()->getHistory());
-        static::assertCount(
-            0,
-            static::getSQLQuery()->query("SELECT id_u FROM utilisateur WHERE login LIKE 'support-%'"),
+        static::assertSame(
+            $userCountBefore,
+            static::getSQLQuery()->queryOne('SELECT COUNT(*) FROM utilisateur'),
         );
     }
 
@@ -273,13 +308,61 @@ class MagicLinkServiceTest extends PastellTestCase
         $service->create('Maintenance', 24, 1, 'Bernard', 'Alice', 'alice.bernard@example.org');
         $service->create('Maintenance', 24, 1, 'Durand', 'Lea', 'lea.durand@example.org');
         foreach ($service->getActiveLinks() as $link) {
-            $service->revoke((int)$link['id']);
+            $service->revoke($link['id']);
         }
 
-        $result = $service->getHistory('Bernard');
+        $result = $service->getHistory('Be');
 
         static::assertCount(1, $result);
-        static::assertSame('Bernard', $result[0]['titulaire_nom']);
+        static::assertSame('Be*****', $result[0]['titulaire_nom']);
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     * @throws Exception
+     */
+    public function testRevokeAnonymisesTitulaire(): void
+    {
+        $service = $this->getMagicLinkService();
+        $service->create('À révoquer', 24, 1, 'Dupont', 'Jean', 'jean.dupont@example.org');
+        $link = $service->getActiveLinks()[0];
+
+        $service->revoke($link['id']);
+
+        $history = $service->getHistory();
+        static::assertCount(1, $history);
+        static::assertSame('Du****', $history[0]['titulaire_nom']);
+        static::assertSame('Je**', $history[0]['titulaire_prenom']);
+        static::assertSame('je*********@example.org', $history[0]['titulaire_email']);
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     * @throws Exception
+     */
+    public function testPruneExpiredAnonymisesTitulaire(): void
+    {
+        $service = $this->getMagicLinkService();
+        $service->create('Expirée', 24, 1, 'Durand', 'Lea', 'lea.durand@example.org');
+        $link = $service->getActiveLinks()[0];
+
+        static::getSQLQuery()->query(
+            'UPDATE magic_link SET expires_at = ? WHERE id = ?',
+            '2000-01-01 00:00:00',
+            $link['id'],
+        );
+
+        static::assertSame(1, $service->pruneExpired());
+
+        $history = $service->getHistory();
+        static::assertCount(1, $history);
+        static::assertSame('Du****', $history[0]['titulaire_nom']);
+        static::assertSame('Le*', $history[0]['titulaire_prenom']);
+        static::assertSame('le********@example.org', $history[0]['titulaire_email']);
     }
 
     /**
@@ -298,11 +381,164 @@ class MagicLinkServiceTest extends PastellTestCase
         static::getSQLQuery()->query(
             'UPDATE magic_link SET expires_at = ? WHERE id = ?',
             '2000-01-01 00:00:00',
-            (int)$link['id'],
+            $link['id'],
         );
 
         static::assertSame(1, $service->pruneExpired());
         static::assertFalse($this->getUtilisateurSQL()->getInfo($id_u));
         static::assertSame(0, $service->pruneExpired());
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     * @throws Exception
+     */
+    public function testPruneHistoryDeletesRevokedBeyondRetention(): void
+    {
+        $service = $this->getMagicLinkService();
+        $service->create('Ancienne', 24, 1, 'Durand', 'Lea', 'lea.durand@example.org');
+        $link = $service->getActiveLinks()[0];
+        $service->revoke($link['id']);
+
+        static::getSQLQuery()->query(
+            'UPDATE magic_link SET revoked_at = ? WHERE id = ?',
+            date(Date::DATE_ISO, strtotime('-2 month')),
+            $link['id'],
+        );
+
+        static::assertCount(1, $service->getHistory());
+        static::assertSame(1, $service->pruneHistory());
+        static::assertCount(0, $service->getHistory());
+        static::assertSame(0, $service->pruneHistory());
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     * @throws Exception
+     */
+    public function testPruneHistoryDeletesExpiredBeyondRetention(): void
+    {
+        $service = $this->getMagicLinkService();
+        $service->create('Expirée', 24, 1, 'Durand', 'Lea', 'lea.durand@example.org');
+        $link = $service->getActiveLinks()[0];
+
+        static::getSQLQuery()->query(
+            'UPDATE magic_link SET expires_at = ? WHERE id = ?',
+            date(Date::DATE_ISO, strtotime('-2 month')),
+            $link['id'],
+        );
+
+        static::assertCount(1, $service->getHistory());
+        static::assertSame(1, $service->pruneHistory());
+        static::assertCount(0, $service->getHistory());
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     * @throws Exception
+     */
+    public function testPruneHistoryKeepsRecentlyClosed(): void
+    {
+        $service = $this->getMagicLinkService();
+        $service->create('Récente', 24, 1, 'Durand', 'Lea', 'lea.durand@example.org');
+        $link = $service->getActiveLinks()[0];
+        $service->revoke($link['id']);
+
+        static::assertSame(0, $service->pruneHistory());
+        static::assertCount(1, $service->getHistory());
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     * @throws Exception
+     */
+    public function testCreateGeneratesSixDigitCode(): void
+    {
+        $service = $this->getMagicLinkService();
+        $service->create('Intervention', 24, 1, 'Dupont', 'Jean', 'jean.dupont@example.org');
+
+        $code = $service->getActiveLinks()[0]['code'];
+        static::assertMatchesRegularExpression('/^\d{6}$/', (string)$code);
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     * @throws Exception
+     */
+    public function testCheckValidCode(): void
+    {
+        $service = $this->getMagicLinkService();
+        $service->create('Intervention', 24, 1, 'Dupont', 'Jean', 'jean.dupont@example.org');
+        $token = $this->extractTokenFromLastEmail();
+        $code = (string)$service->getActiveLinks()[0]['code'];
+
+        $result = $service->checkCode($token, $code);
+
+        static::assertSame(MagicLinkCodeStatus::Valid, $result->status);
+        static::assertNotNull($result->link);
+        static::assertSame((int)$service->getActiveLinks()[0]['id_u'], (int)$result->link['id_u']);
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     * @throws Exception
+     */
+    public function testCheckWrongCodeDecrementsRemainingAttempts(): void
+    {
+        $service = $this->getMagicLinkService();
+        $service->create('Intervention', 24, 1, 'Dupont', 'Jean', 'jean.dupont@example.org');
+        $token = $this->extractTokenFromLastEmail();
+
+        $result = $service->checkCode($token, '000000');
+
+        static::assertSame(MagicLinkCodeStatus::WrongCode, $result->status);
+        static::assertSame(2, $result->remainingAttempts);
+        static::assertCount(1, $service->getActiveLinks());
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     * @throws Exception
+     */
+    public function testCheckCodeRevokesAfterMaxAttempts(): void
+    {
+        $service = $this->getMagicLinkService();
+        $service->create('Intervention', 24, 1, 'Dupont', 'Jean', 'jean.dupont@example.org');
+        $token = $this->extractTokenFromLastEmail();
+        $id_u = (int)$service->getActiveLinks()[0]['id_u'];
+
+        $wrongCode = ((string)$service->getActiveLinks()[0]['code'] === '000000') ? '111111' : '000000';
+
+        static::assertSame(MagicLinkCodeStatus::WrongCode, $service->checkCode($token, $wrongCode)->status);
+        static::assertSame(MagicLinkCodeStatus::WrongCode, $service->checkCode($token, $wrongCode)->status);
+        static::assertSame(MagicLinkCodeStatus::Revoked, $service->checkCode($token, $wrongCode)->status);
+
+        static::assertSame([], $service->getActiveLinks());
+        static::assertCount(1, $service->getHistory());
+        static::assertFalse($this->getUtilisateurSQL()->getInfo($id_u));
+        static::assertSame(MagicLinkCodeStatus::InvalidLink, $service->checkCode($token, $wrongCode)->status);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCheckCodeInvalidLink(): void
+    {
+        $result = $this->getMagicLinkService()->checkCode('token-inexistant', '123456');
+        static::assertSame(MagicLinkCodeStatus::InvalidLink, $result->status);
     }
 }

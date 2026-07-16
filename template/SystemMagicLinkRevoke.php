@@ -11,7 +11,7 @@ declare(strict_types=1);
 <div class="box">
 
     <div class="alert-danger alert">
-        Attention ! Vous êtes sur le point de révoquer définitivement l'accès support
+        Attention ! Vous êtes sur le point de révoquer définitivement l'accès temporaire
         « <b><?php hecho($magic_link['motif']) ?></b> » (expiration prévue le
         <?= get_hecho($magic_link['expires_at']) ?>).<br />
         L'intervenant perdra immédiatement son accès à la plateforme.
@@ -19,7 +19,7 @@ declare(strict_types=1);
 
     <form action='<?php $this->url('System/doMagicLinkRevoke'); ?>' method='post'>
         <?php $this->displayCSRFInput() ?>
-        <input type='hidden' name='id' value='<?= (int)$magic_link['id'] ?>'/>
+        <input type='hidden' name='id' value='<?= get_hecho((string)$magic_link['id']) ?>'/>
 
         <a class='btn btn-outline-primary' href='<?php $this->url('System/magicLink') ?>'>
             <i class="fas fa-circle-xmark"></i>&nbsp;Annuler

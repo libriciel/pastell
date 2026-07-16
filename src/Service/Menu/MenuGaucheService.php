@@ -83,7 +83,7 @@ class MenuGaucheService
             'Connecteurs' => [
                 MenuGaucheOption::fromLien('Connecteurs disponibles', self::SYSTEM_CONNECTEUR),
             ],
-            'Accès supports' => [
+            'Accès temporaires' => [
                 MenuGaucheOption::fromLien('Accès actifs', self::SYSTEM_MAGIC_LINK),
                 MenuGaucheOption::fromLien('Historique des accès', self::SYSTEM_MAGIC_LINK_HISTORY),
             ],

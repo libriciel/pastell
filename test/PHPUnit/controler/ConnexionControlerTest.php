@@ -37,7 +37,12 @@ class ConnexionControlerTest extends ControlerTestCase
             preg_match('#/Connexion/magicLink\?token=([^"\s]+)#', (string)$email->getHtmlBody(), $matches),
         );
 
-        return ['link' => $link, 'token' => $matches[1]];
+        return ['link' => $link, 'token' => $matches[1], 'code' => (string)$link['code']];
+    }
+
+    private function differentCode(string $code): string
+    {
+        return $code === '000000' ? '111111' : '000000';
     }
 
     /**
@@ -150,15 +155,31 @@ class ConnexionControlerTest extends ControlerTestCase
      * @throws Exception
      * @throws TransportExceptionInterface
      */
-    public function testMagicLinkLogin(): void
+    public function testMagicLinkShowsCodePage(): void
     {
-        ['link' => $link, 'token' => $token] = $this->createMagicLinkAndGetToken();
+        ['token' => $token] = $this->createMagicLinkAndGetToken();
 
         $this->setGetInfo(['token' => $token]);
+        $this->expectOutputRegex('#saisir le code à 6 chiffres#');
+
+        $this->connexionControler->magicLinkAction();
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     * @throws Exception
+     * @throws TransportExceptionInterface
+     */
+    public function testMagicLinkLoginWithValidCode(): void
+    {
+        ['link' => $link, 'token' => $token, 'code' => $code] = $this->createMagicLinkAndGetToken();
+
+        $this->setPostInfo(['token' => $token, 'code' => $code]);
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
         try {
-            $this->connexionControler->magicLinkAction();
+            $this->connexionControler->doMagicLinkCodeAction();
             static::fail('Une redirection était attendue');
         } catch (LastMessageException) {
         }
@@ -166,7 +187,7 @@ class ConnexionControlerTest extends ControlerTestCase
         $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
         static::assertTrue($authentification->isConnected());
         static::assertSame((int)$link['id_u'], (int)$authentification->getId());
-        static::assertSame((int)$link['id'], $authentification->getMagicLinkId());
+        static::assertSame($link['id'], $authentification->getMagicLinkId());
     }
 
     /**
@@ -176,22 +197,72 @@ class ConnexionControlerTest extends ControlerTestCase
      */
     public function testMagicLinkLoginClosesExistingSession(): void
     {
-        ['link' => $link, 'token' => $token] = $this->createMagicLinkAndGetToken();
+        ['link' => $link, 'token' => $token, 'code' => $code] = $this->createMagicLinkAndGetToken();
 
         $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
         static::assertSame(1, (int)$authentification->getId());
 
-        $this->setGetInfo(['token' => $token]);
+        $this->setPostInfo(['token' => $token, 'code' => $code]);
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
         try {
-            $this->connexionControler->magicLinkAction();
+            $this->connexionControler->doMagicLinkCodeAction();
             static::fail('Une redirection était attendue');
         } catch (LastMessageException) {
         }
 
         static::assertSame((int)$link['id_u'], (int)$authentification->getId());
         static::assertNotSame(1, (int)$authentification->getId());
+    }
+
+    /**
+     * @throws Exception
+     * @throws TransportExceptionInterface
+     */
+    public function testMagicLinkWrongCodeKeepsAccessActive(): void
+    {
+        ['token' => $token, 'code' => $code] = $this->createMagicLinkAndGetToken();
+
+        $this->setPostInfo(['token' => $token, 'code' => $this->differentCode($code)]);
+
+        try {
+            $this->connexionControler->doMagicLinkCodeAction();
+            static::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('Code incorrect', $e->getMessage());
+        }
+
+        $magicLinkService = $this->getObjectInstancier()->getInstance(MagicLinkService::class);
+        static::assertCount(1, $magicLinkService->getActiveLinks());
+    }
+
+    /**
+     * @throws Exception
+     * @throws TransportExceptionInterface
+     */
+    public function testMagicLinkRevokedAfterThreeWrongCodes(): void
+    {
+        ['token' => $token, 'code' => $code] = $this->createMagicLinkAndGetToken();
+
+        $this->setPostInfo(['token' => $token, 'code' => $this->differentCode($code)]);
+        $magicLinkService = $this->getObjectInstancier()->getInstance(MagicLinkService::class);
+
+        for ($attempt = 1; $attempt <= 2; $attempt++) {
+            try {
+                $this->connexionControler->doMagicLinkCodeAction();
+            } catch (LastErrorException) {
+            }
+        }
+
+        try {
+            $this->connexionControler->doMagicLinkCodeAction();
+            static::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('révoqué', $e->getMessage());
+        }
+
+        static::assertSame([], $magicLinkService->getActiveLinks());
+        static::assertCount(1, $magicLinkService->getHistory());
     }
 
     /**

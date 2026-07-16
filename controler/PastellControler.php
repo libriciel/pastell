@@ -30,7 +30,7 @@ class PastellControler extends Controler
             if (! $this->getInstance(MagicLinkService::class)->isActive($magicLinkId)) {
                 $this->getAuthentification()->deconnexion();
                 $request_uri = $_SERVER['REQUEST_URI'];
-                $this->setLastError('Votre accès support a expiré ou a été révoqué.');
+                $this->setLastError('Votre accès temporaire a expiré ou a été révoqué.');
                 $this->redirect('/Connexion/connexion?request_uri=' . urlencode($request_uri));
             }
             return;

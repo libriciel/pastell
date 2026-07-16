@@ -108,8 +108,10 @@ class PastellControlerTest extends ControlerTestCase
 
         $magicLinkSQL = $this->getObjectInstancier()->getInstance(MagicLinkSQL::class);
         $magicLinkId = $magicLinkSQL->create(
+            '11111111-1111-4111-8111-111111111111',
             1,
             'token-actif',
+            '123456',
             'Intervention',
             1,
             date('Y-m-d H:i:s', strtotime('+1 day')),
@@ -133,13 +135,13 @@ class PastellControlerTest extends ControlerTestCase
         $_SERVER['REQUEST_URI'] = '/';
 
         $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
-        $authentification->setMagicLinkId(999999);
+        $authentification->setMagicLinkId('99999999-9999-4999-8999-999999999999');
 
         try {
             $pastellControler->_beforeAction();
             static::fail('Une LastErrorException était attendue');
         } catch (LastErrorException $e) {
-            static::assertStringContainsString('accès support a expiré ou a été révoqué', $e->getMessage());
+            static::assertStringContainsString('accès temporaire a expiré ou a été révoqué', $e->getMessage());
         }
 
         static::assertFalse($authentification->isConnected());

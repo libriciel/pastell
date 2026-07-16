@@ -663,6 +663,16 @@ class SystemControler extends PastellControler
             $this->redirect('System/magicLinkEdition');
         }
 
+        if ($duration > MagicLinkService::MAX_DURATION_IN_HOURS) {
+            $this->setLastError(
+                \sprintf(
+                    'La durée de vie d\'un accès temporaire ne peut pas dépasser %d heures',
+                    MagicLinkService::MAX_DURATION_IN_HOURS
+                )
+            );
+            $this->redirect('System/magicLinkEdition');
+        }
+
         try {
             $this->getInstance(MagicLinkService::class)
                 ->create($motif, $duration, $this->getId_u(), $nom, $prenom, $mail);
@@ -672,7 +682,8 @@ class SystemControler extends PastellControler
         }
 
         $this->setLastMessage(
-            "Le lien d'accès a été envoyé à $mail"
+            "Le lien d'accès a été envoyé à $mail. "
+            . "Pensez à communiquer le code à 6 chiffres à l'intervenant."
         );
         $this->redirect('System/magicLink');
     }
@@ -686,10 +697,10 @@ class SystemControler extends PastellControler
     {
         $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
 
-        $magicLinkId = $this->getGetInfo()->getInt('id');
+        $magicLinkId = (string)$this->getGetInfo()->get('id');
         $magicLink = $this->getInstance(MagicLinkService::class)->getActiveLink($magicLinkId);
         if ($magicLink === null) {
-            $this->setLastError("Cet accès support n'existe pas ou n'est plus actif.");
+            $this->setLastError("Cet accès temporaire n'existe pas ou n'est plus actif.");
             $this->redirect('System/magicLink');
         }
 
@@ -708,10 +719,30 @@ class SystemControler extends PastellControler
     {
         $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
 
-        $magicLinkId = $this->getPostInfo()->getInt('id');
+        $magicLinkId = (string)$this->getPostInfo()->get('id');
         $this->getInstance(MagicLinkService::class)->revoke($magicLinkId);
 
-        $this->setLastMessage("L'accès support a été révoqué.");
+        $this->setLastMessage("L'accès temporaire a été révoqué.");
+        $this->redirect('System/magicLink');
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function doMagicLinkResendAction(): void
+    {
+        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+
+        $magicLinkId = (string)$this->getPostInfo()->get('id');
+        try {
+            $this->getInstance(MagicLinkService::class)->resend($magicLinkId);
+        } catch (UnrecoverableException | TransportExceptionInterface $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect('System/magicLink');
+        }
+
+        $this->setLastMessage("Le lien d'accès a été renvoyé par mail.");
         $this->redirect('System/magicLink');
     }
 
