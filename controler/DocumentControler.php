@@ -1,8 +1,8 @@
 <?php
 
 use Pastell\File\Chunk\ChunkUploader;
-use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheOption;
 use Pastell\Service\Menu\MenuGaucheService;
 
@@ -424,7 +424,11 @@ class DocumentControler extends PastellControler
 
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($type);
 
-        $liste_collectivite = $this->getRoleUtilisateur()->getEntite($this->getId_u(), $type . ":lecture");
+
+        $liste_collectivite = $this->getRoleUtilisateur()->getEntite(
+            $this->getId_u(),
+            DroitService::getDroitFor($type, DroitType::LECTURE)
+        );
 
         if (! $liste_collectivite) {
             $this->redirect("/Document/index");

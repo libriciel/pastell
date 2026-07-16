@@ -3,8 +3,8 @@
 use Monolog\Logger;
 use Pastell\Security\LibricielFeedbackReader;
 use Pastell\Service\Document\DocumentEmailService;
-use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheService;
 
 class PastellControler extends Controler
@@ -266,7 +266,11 @@ class PastellControler extends Controler
         $daemonManager = $this->getInstance(DaemonManager::class);
 
         if (
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'system:lecture', 0)
+            $this->getRoleUtilisateur()->hasDroit(
+                $this->getId_u(),
+                DroitService::getDroitFor(DroitService::DROIT_SYSTEM, DroitType::LECTURE),
+                EntiteSQL::ID_E_ENTITE_RACINE
+            )
         ) {
             $this->setViewParameter(
                 'nb_job_lock',
@@ -328,7 +332,10 @@ class PastellControler extends Controler
             ));
         }
 
-        $listeCollectivite = $this->getRoleUtilisateur()->getEntite($this->getId_u(), "entite:lecture");
+        $listeCollectivite = $this->getRoleUtilisateur()->getEntite(
+            $this->getId_u(),
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
+        );
 
         $this->setViewParameter('display_entite_racine', $this->getViewParameterOrObject('id_e_menu') != 0
         && (count($listeCollectivite) > 1 || (isset($listeCollectivite[0]) && $listeCollectivite[0] == 0)));

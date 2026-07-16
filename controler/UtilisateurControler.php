@@ -1,8 +1,8 @@
 <?php
 
 use Pastell\Mailer\Mailer;
-use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 use Pastell\Service\FeatureToggle\CertificateAuthentication;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\PasswordEntropy;

@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheService;
 
@@ -82,8 +83,8 @@ class RoleControler extends PastellControler
 
         $this->getRoleSQL()->edit($role, $libelle);
         if ($this->getPostInfo()->get('nouveau')) {
-            $this->getRoleSQL()->addDroit($role, 'journal:lecture');
-            $this->getRoleSQL()->addDroit($role, 'entite:lecture');
+            $this->getRoleSQL()->addDroit($role, DroitService::getDroitFor(DroitService::DROIT_JOURNAL, DroitType::LECTURE));
+            $this->getRoleSQL()->addDroit($role, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         }
         $this->redirect("/Role/detail?role=$role");
     }
