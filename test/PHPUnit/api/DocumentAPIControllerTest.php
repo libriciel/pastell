@@ -485,6 +485,7 @@ class DocumentAPIControllerTest extends PastellTestCase
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
 
+        //userAvecDroit mailsec-bidir:lecture
         $roleSql->edit('lecteur_mail', 'lecteur_mail');
         $roleSql->addDroit('lecteur_mail', 'entite:lecture');
         $roleSql->addDroit('lecteur_mail', 'mailsec-bidir:lecture');
@@ -494,6 +495,17 @@ class DocumentAPIControllerTest extends PastellTestCase
         $infoReponse = $this->getInternalAPIAsUser($userAvecDroit)->get("/entite/1/document/$id_d_reponse");
         static::assertSame('mailsec-bidir-reponse', $infoReponse['info']['type']);
         static::assertSame($id_d_reponse, $infoReponse['info']['id_d']);
+
+        //userSansDroit mailsec-bidir:lecture (avec mailsec-bidir-reponse:lecture)
+        $roleSql->edit('lecteur_reponse', 'lecteur_reponse');
+        $roleSql->addDroit('lecteur_reponse', 'entite:lecture');
+        $roleSql->addDroit('lecteur_reponse', 'mailsec-bidir-reponse:lecture');
+        $userSansDroit = $userCreationService->create('lecteur_reponse', 'lecteur_reponse@example.org', 'user', 'user');
+        $roleUtilisateur->addRole($userSansDroit, 'lecteur_reponse', self::ID_E_COL);
+
+        $this->expectException(ForbiddenException::class);
+        $this->expectExceptionMessage("Acces interdit id_e=1, droit=mailsec-bidir:lecture,id_u=$userSansDroit");
+        $this->getInternalAPIAsUser($userSansDroit)->get("/entite/1/document/$id_d_reponse");
     }
 
     public function testDeleteDocument(): void
