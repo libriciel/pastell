@@ -13,6 +13,8 @@ configuration_etape_formulaire:
     fichier_annexe:
         name: "Annexe de l'acte"
         type: multi_file
+        multiple: true
+        commentaire: 'Plusieurs éléments peuvent être sélectionnés'
     droit_specifique:
         name: 'La télétransmission nécessite un droit spécifique (méthode "ordonner la télétransmission")'
         type: checkbox

@@ -15,6 +15,7 @@ class TypeDossierTranslatorTest extends PastellTestCase
         yield 'sae-only' => ['sae-only'];
         yield 'studio-sae-for-template-gps' => ['studio-sae-for-template-gps'];
         yield 'tdt-actes-only' => ['tdt-actes-only'];
+        yield 'tdt-actes-multi-annexes' => ['tdt-actes-multi-annexes'];
         yield 'tdt-helios-only' => ['tdt-helios-only'];
         yield 'parapheur-only' => ['parapheur-only'];
         yield 'double-parapheur' => ['double-parapheur'];

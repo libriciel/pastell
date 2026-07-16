@@ -8,6 +8,7 @@ use ConnecteurTypeActionExecutor;
 use Exception;
 use JsonException;
 use NotFoundException;
+use Pastell\Step\AnnexeList;
 use Pastell\Step\Tdt\Acte\TypePJ\TypePJProvider;
 use Pastell\Step\Tdt\Acte\TypePJ\TypePJDTO;
 use TdtConnecteur;
@@ -146,23 +147,26 @@ class TypologieOnChangeAction extends ConnecteurTypeActionExecutor
     }
 
     /**
-     * @return array|string
+     * Pièce principale puis annexes, dans l'ordre d'envoi au TdT
+     * @return string[]
      * @throws UnrecoverableException|NotFoundException
      */
-    private function getAllPieces(): array|string
+    private function getAllPieces(): array
     {
 
         $arrete_element = $this->getMappingValue('arrete');
-        $autre_document_attache = $this->getMappingValue('autre_document_attache');
 
         $pieces_list = $this->getDonneesFormulaire()->get($arrete_element);
         if (! $pieces_list) {
             throw new UnrecoverableException("La pièce principale n'est pas présente");
         }
-        if ($this->getDonneesFormulaire()->get($autre_document_attache)) {
-            $pieces_list = array_merge($pieces_list, $this->getDonneesFormulaire()->get($autre_document_attache));
-        }
-        return $pieces_list;
+        return array_merge(
+            $pieces_list,
+            AnnexeList::getFilenames(
+                $this->getMappingValueList(AnnexeList::MAPPING_KEY),
+                $this->getDonneesFormulaire()
+            )
+        );
     }
 
     public function updateJobQueueAfterExecution(): bool

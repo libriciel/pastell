@@ -290,11 +290,32 @@ class DocumentTypeConfiguration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder(ActionElement::CONNECTEUR_TYPE_MAPPING->value);
         $treeBuilder->getRootNode()
             ->info("Permet de spécifier le mapping entre les noms des éléments du document\n"
-                    . "et les noms des éléments attendu par l'action du connecteur type")
+                    . "et les noms des éléments attendu par l'action du connecteur type\n"
+                    . 'La valeur peut être un élément ou une liste d\'éléments')
             ->normalizeKeys(false)
-            ->scalarPrototype()
+            ->variablePrototype()
+                ->validate()
+                    ->ifTrue(static fn($value): bool => !self::isValidConnecteurTypeMappingValue($value))
+                    ->thenInvalid('La valeur doit être un élément ou une liste non vide d\'éléments')
+                ->end()
             ->end();
         return $treeBuilder->getRootNode();
+    }
+
+    private static function isValidConnecteurTypeMappingValue(mixed $value): bool
+    {
+        if ($value === null || \is_scalar($value)) {
+            return true;
+        }
+        if (!\is_array($value) || $value === [] || !\array_is_list($value)) {
+            return false;
+        }
+        foreach ($value as $element) {
+            if (!\is_scalar($element)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private function addTransformationsNode(): NodeDefinition

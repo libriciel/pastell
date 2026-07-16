@@ -19,6 +19,10 @@ formulaire:
                 3: Transmis
                 4: 'Acquittement reçu'
                 6: Refusé
+        annexes_envoyees:
+            name: 'Annexes envoyées par transaction (interne au bouchon)'
+            type: text
+            no-show: true
 action:
     nomemclature-liste:
         name: 'Liste des fichiers de nomemclature'

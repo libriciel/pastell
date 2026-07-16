@@ -437,6 +437,8 @@ action:
         action-class: StandardAction
         connecteur-type: TdT
         connecteur-type-action: TdtAnnexeTypologieAnnexeChange
+        connecteur-type-mapping:
+            autre_document_attache: annexe
     typologie-change:
         no-workflow: true
         rule:

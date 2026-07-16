@@ -1,7 +1,7 @@
 {
   "id_type_dossier": "draft-document-autorisation-urbanisme",
   "pastell-version": "%VERSION%",
-  "timestamp": 1633501552,
+  "timestamp": 1784724519,
   "raw_data": {
     "id_type_dossier": "draft-document-autorisation-urbanisme",
     "nom": "Document d'autorisation d'urbanisme (Draft)",
@@ -41,6 +41,19 @@
         "type": "file",
         "commentaire": "",
         "requis": "on",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": false,
+        "select_value": "",
+        "preg_match": "",
+        "preg_match_error": ""
+      },
+      {
+        "element_id": "autre_document_a_signer",
+        "name": "Autre document(s) \u00e0 signer",
+        "type": "multi_file",
+        "commentaire": "",
+        "requis": "",
         "champs_affiches": "",
         "champs_recherche_avancee": "",
         "titre": false,
@@ -115,7 +128,10 @@
         "specific_type_info": {
           "objet_acte": "titre",
           "fichier_acte": "document",
-          "fichier_annexe": "annexe",
+          "fichier_annexe": [
+            "autre_document_a_signer",
+            "annexe"
+          ],
           "droit_specifique": ""
         },
         "num_etape_same_type": 0,

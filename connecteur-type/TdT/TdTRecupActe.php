@@ -1,8 +1,10 @@
 <?php
 
+use Pastell\Step\AnnexeList;
+
 class TdTRecupActe extends ConnecteurTypeActionExecutor
 {
-    public const BORDEREAU_TDT_SUFFIX = '-bordereau-tdt.pdf';
+    public const string BORDEREAU_TDT_SUFFIX = '-bordereau-tdt.pdf';
 
     /**
      * @return bool
@@ -23,7 +25,6 @@ class TdTRecupActe extends ConnecteurTypeActionExecutor
         $acteUniqueIdElement = $this->getMappingValue('acte_unique_id');
         $arrete_element = $this->getMappingValue('arrete');
         $acte_tamponne_element = $this->getMappingValue('acte_tamponne');
-        $autre_document_attache_element = $this->getMappingValue('autre_document_attache');
         $annexes_tamponnees_element = $this->getMappingValue('annexes_tamponnees');
         $date_ar_element = $this->getMappingValue('date_ar');
 
@@ -112,13 +113,29 @@ class TdTRecupActe extends ConnecteurTypeActionExecutor
             );
         }
         if ($annexes_tamponnees_list) {
+            $annexes_envoyees = AnnexeList::getAll(
+                $this->getMappingValueList(AnnexeList::MAPPING_KEY),
+                $this->getDonneesFormulaire()
+            );
             $file_number = 0;
             foreach ($annexes_tamponnees_list as $i => $annexe_tamponnee) {
                 if (empty($annexe_tamponnee)) {
                     continue;
                 }
+                if (!isset($annexes_envoyees[$i])) {
+                    $message = 'Une erreur est survenue lors de la récupération des annexes tamponnées de ' .
+                        $tdT->getLogicielName() . " L'annexe tamponée " . $annexe_tamponnee['filename'] .
+                        " ne correspond à aucune des " . count($annexes_envoyees) . ' annexe(s) envoyée(s)';
+
+                    $this->changeOrUpdateAction($tdt_error, $message);
+                    $this->notify($tdt_error, $this->type, $message);
+                    return false;
+                }
                 $annexe_filename_send = $tdT->getFilenameTransformation(
-                    $this->getDonneesFormulaire()->getFileName($autre_document_attache_element, $i)
+                    $this->getDonneesFormulaire()->getFileName(
+                        $annexes_envoyees[$i]['element'],
+                        $annexes_envoyees[$i]['num']
+                    )
                 );
                 if (strcmp($annexe_filename_send, $annexe_tamponnee['filename']) !== 0) {
                     $message = 'Une erreur est survenue lors de la récupération des annexes tamponnées de ' .
@@ -129,7 +146,10 @@ class TdTRecupActe extends ConnecteurTypeActionExecutor
                     $this->notify($tdt_error, $this->type, $message);
                     return false;
                 }
-                $annexe_filename = $donneesFormulaire->getFileNameWithoutExtension($autre_document_attache_element, $i);
+                $annexe_filename = $donneesFormulaire->getFileNameWithoutExtension(
+                    $annexes_envoyees[$i]['element'],
+                    $annexes_envoyees[$i]['num']
+                );
                 $donneesFormulaire->addFileFromData(
                     $annexes_tamponnees_element,
                     $annexe_filename . '-tampon.pdf',

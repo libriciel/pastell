@@ -19,6 +19,11 @@ abstract class ConnecteurTypeActionExecutor extends ActionExecutor
         return $this->mapping[$key];
     }
 
+    public function getMappingValueList($key): array
+    {
+        return array_values(array_filter((array)$this->getMappingValue($key)));
+    }
+
     public function setTransformations(array $transformations): void
     {
         $this->transformations = $transformations;

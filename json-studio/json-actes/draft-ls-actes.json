@@ -1,7 +1,7 @@
 {
   "id_type_dossier": "draft-ls-actes",
   "pastell-version": "%VERSION%",
-  "timestamp": 1716365199,
+  "timestamp": 1784722617,
   "raw_data": {
     "id_type_dossier": "draft-ls-actes",
     "nom": "Actes (Draft)",
@@ -40,6 +40,21 @@
         "default_value": "",
         "preg_match_error": "",
         "content_type": "application\/pdf, application\/xml"
+      },
+      {
+        "element_id": "autre_document_a_signer",
+        "name": "Autre document(s) \u00e0 signer",
+        "type": "multi_file",
+        "commentaire": "Attention ! La taille totale des documents acte + annexes ne peut pas d\u00e9passer 150 Mo",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
       },
       {
         "element_id": "autre_document_attache",
@@ -126,7 +141,10 @@
         "specific_type_info": {
           "objet_acte": "objet",
           "fichier_acte": "arrete",
-          "fichier_annexe": "autre_document_attache",
+          "fichier_annexe": [
+            "autre_document_a_signer",
+            "autre_document_attache"
+          ],
           "droit_specifique": ""
         },
         "num_etape_same_type": 0,

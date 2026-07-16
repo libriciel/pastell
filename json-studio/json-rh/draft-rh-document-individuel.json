@@ -1,7 +1,7 @@
 {
   "id_type_dossier": "draft-rh-document-individuel",
   "pastell-version": "%VERSION%",
-  "timestamp": 1664779870,
+  "timestamp": 1784724696,
   "raw_data": {
     "id_type_dossier": "draft-rh-document-individuel",
     "nom": "Document individuel (Draft)",
@@ -249,6 +249,20 @@
         "content_type": "application\/pdf"
       },
       {
+        "element_id": "autre_document_a_signer",
+        "name": "Autre document(s) \u00e0 signer",
+        "type": "multi_file",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
         "element_id": "annexes",
         "name": "Annexe(s)",
         "type": "multi_file",
@@ -317,7 +331,10 @@
         "specific_type_info": {
           "objet_acte": "titre_document",
           "fichier_acte": "document",
-          "fichier_annexe": "annexes",
+          "fichier_annexe": [
+            "autre_document_a_signer",
+            "annexes"
+          ],
           "droit_specifique": ""
         },
         "num_etape_same_type": 0,
