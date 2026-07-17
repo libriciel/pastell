@@ -20,8 +20,9 @@ class ConnecteurValidator implements ValidatorInterface
     {
         $this->errors = [];
         $allConnecteur = $typeDefinition[ModuleElement::CONNECTEUR->value];
+        $types = $this->connecteurDefinitionFiles->getAllType();
         foreach ($allConnecteur as $connecteur) {
-            if (!in_array($connecteur, $this->connecteurDefinitionFiles->getAllType())) {
+            if (!\in_array($connecteur, $types, true)) {
                 $this->errors[] = "connecteur:<b>$connecteur</b> n'est défini dans aucun connecteur du système";
             }
         }
