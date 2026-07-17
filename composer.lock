@@ -133,16 +133,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.388.5",
+            "version": "3.388.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "6104783c60d9134e7ceaeef03997767a547462b8"
+                "reference": "ff7499bfa2b987c8fbae495fe0e851cfdde6172f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/6104783c60d9134e7ceaeef03997767a547462b8",
-                "reference": "6104783c60d9134e7ceaeef03997767a547462b8",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ff7499bfa2b987c8fbae495fe0e851cfdde6172f",
+                "reference": "ff7499bfa2b987c8fbae495fe0e851cfdde6172f",
                 "shasum": ""
             },
             "require": {
@@ -224,9 +224,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.388.5"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.388.8"
             },
-            "time": "2026-07-13T18:09:02+00:00"
+            "time": "2026-07-16T18:07:15+00:00"
         },
         {
             "name": "clue/stream-filter",
