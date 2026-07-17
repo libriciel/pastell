@@ -298,7 +298,7 @@ class EntiteControler extends PastellControler
         }
 
         $onglet_content["collectivités"] = "EntiteImportCollectivite";
-        if ($this->hasDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION))) {
+        if ($this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ENTITE, DroitType::EDITION)) {
             $onglet_content["agents"] = "EntiteImportAgent";
             $onglet_content["grades"] = "EntiteImportGrade";
         }
@@ -578,7 +578,7 @@ class EntiteControler extends PastellControler
 
         $delete_all = $recuperateur->get('delete_all');
 
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
         $fileUploader = new FileUploader();
         $file_path = $fileUploader->getFilePath('csv_agent');
@@ -624,7 +624,7 @@ class EntiteControler extends PastellControler
 
         $id_e = $recuperateur->getInt('id_e', 0);
         $centre_de_gestion = $recuperateur->getInt('centre_de_gestion');
-        $this->verifDroit($id_e, 'entite:edition');
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
         $fileUploader = new FileUploader();
         $file_path = $fileUploader->getFilePath('csv_col');
@@ -663,7 +663,7 @@ class EntiteControler extends PastellControler
      */
     public function importGradeAction(): void
     {
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
         $fileUploader = new FileUploader();
         $file_path = $fileUploader->getFilePath('csv_grade');
@@ -701,7 +701,7 @@ class EntiteControler extends PastellControler
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
 
-        $this->verifDroit($id_e, 'system:edition');
+        $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('template_milieu', 'EntiteExportConfig');
@@ -721,7 +721,7 @@ class EntiteControler extends PastellControler
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
 
-        $this->verifDroit($id_e, 'system:edition');
+        $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('template_milieu', 'EntiteImportConfig');
@@ -740,7 +740,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = $this->getPostInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
-        $this->verifDroit($id_e, 'system:edition');
+        $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $options = [];
         foreach (ExportConfigService::getOptions() as $id => $label) {
             $options[$id] = $recuperateur->get($id);
@@ -776,7 +776,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = $this->getPostInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
-        $this->verifDroit($id_e, 'system:edition');
+        $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $options = [];
         $link = '/Entite/exportConfigVerif?';
@@ -813,7 +813,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = $this->getPostInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
-        $this->verifDroit($id_e, 'system:edition');
+        $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $fileUploader = new FileUploader();
         $file_content = $fileUploader->getFileContent('pser');
         $password = $this->getPostInfo()->get('password');

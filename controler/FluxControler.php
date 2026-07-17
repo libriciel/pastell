@@ -3,6 +3,8 @@
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Entite\EntityUtilitiesService;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 
 class FluxControler extends PastellControler
 {
@@ -103,7 +105,7 @@ class FluxControler extends PastellControler
 
             $this->setViewParameter('flux_list', $fluxList);
             $this->setViewParameter('possible_pack_list', $possiblePackList);
-            $this->setViewParameter('droitConnecteurEdition', $this->hasDroit($id_e, 'connecteur:edition'));
+            $this->setViewParameter('droitConnecteurEdition', $this->hasDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION));
             $this->setViewParameter('template_milieu', "FluxList");
         } else {
             $all_connecteur_type = $this->getConnecteurDefinitionFiles()->getAllGlobalType();

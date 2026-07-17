@@ -106,6 +106,12 @@ class DocumentControler extends PastellControler
         $this->renderDefault();
     }
 
+    /**
+     * @throws UnrecoverableException
+     * @throws NotFoundException
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function detailAction()
     {
         $recuperateur = $this->getGetInfo();
@@ -167,7 +173,7 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('document_email_reponse_list', $document_email_reponse_list);
 
         $this->setViewParameter('recuperation_fichier_url', "Document/recuperationFichier?id_d=$id_d&id_e=$id_e");
-        if ($this->hasDroit($this->getViewParameterOrObject('id_e'), "system:lecture")) {
+        if ($this->hasDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::LECTURE)) {
             $this->setViewParameter('job_list', $this->getWorkerSQL()->getJobListWithWorkerForDocument($this->getViewParameterOrObject('id_e'), $this->getViewParameterOrObject('id_d')));
         } else {
             $this->setViewParameter('job_list', false);
@@ -241,7 +247,8 @@ class DocumentControler extends PastellControler
     }
 
     /**
-     * @throws ForbiddenException
+     * @throws LastErrorException
+     * @throws LastMessageException
      * @throws NotFoundException
      * @throws UnrecoverableException
      */
@@ -266,7 +273,7 @@ class DocumentControler extends PastellControler
             $action = 'modification';
         }
 
-        $this->verifDroit($id_e, $type . ":edition", "/Document/list");
+        $this->checkDroitFor($id_e, $type, DroitType::EDITION, '/Document/list');
 
         $actionPossible = $this->getActionPossible();
 
@@ -402,6 +409,12 @@ class DocumentControler extends PastellControler
         return array_keys($type);
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws UnrecoverableException
+     * @throws NotFoundException
+     */
     public function listAction()
     {
         $recuperateur = $this->getGetInfo();
@@ -441,7 +454,7 @@ class DocumentControler extends PastellControler
         }
 
 
-        $this->verifDroit($id_e, "$type:lecture");
+        $this->checkDroitFor($id_e, $type, DroitType::LECTURE);
         $this->setViewParameter('infoEntite', $this->getEntiteSQL()->getInfo($id_e));
 
         $page_title = "Liste des dossiers " . $documentType->getName();
@@ -526,10 +539,16 @@ class DocumentControler extends PastellControler
         $this->renderDefault();
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws UnrecoverableException
+     */
     public function searchDocument()
     {
         $recuperateur = new Recuperateur($_REQUEST);
-        $this->setViewParameter('id_e', $recuperateur->getInt('id_e', 0));
+        $id_e = $recuperateur->getInt('id_e', EntiteSQL::ID_E_ENTITE_RACINE);
+        $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('type', $recuperateur->get('type'));
         $this->setViewParameter('lastEtat', $recuperateur->get('lastetat'));
         $this->setViewParameter('last_state_begin', $recuperateur->get('last_state_begin'));
@@ -548,7 +567,7 @@ class DocumentControler extends PastellControler
             $this->setLastError($error_message);
             $this->redirect("");
         }
-        $this->verifDroit($this->getViewParameterOrObject('id_e'), "entite:lecture");
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
 
         $this->setViewParameter('allDroitEntite', $this->getDroitService()->getAllDocumentLecture($this->getId_u(), $this->getViewParameterOrObject('id_e')));
 
@@ -757,13 +776,19 @@ class DocumentControler extends PastellControler
     }
 
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     private function validTraitementParLot($input)
     {
         $recuperateur = new Recuperateur($input);
-        $this->setViewParameter('id_e', $recuperateur->get('id_e', 0));
+        $id_e = $recuperateur->getInt('id_e', EntiteSQL::ID_E_ENTITE_RACINE);
+        $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('offset', $recuperateur->getInt('offset', 0));
         $this->setViewParameter('search', $recuperateur->get('search'));
-        $this->setViewParameter('type', $recuperateur->get('type'));
+        $type = $recuperateur->get('type');
+        $this->setViewParameter('type', $type);
         $this->setViewParameter('filtre', $recuperateur->get('filtre'));
         $this->setViewParameter('limit', 20);
 
@@ -775,7 +800,7 @@ class DocumentControler extends PastellControler
         }
 
         $this->setViewParameter('id_e_menu', $this->getViewParameterOrObject('id_e'));
-        $this->verifDroit($this->getViewParameterOrObject('id_e'), "{$this->getViewParameterOrObject('type')}:lecture");
+        $this->checkDroitFor($id_e, $type, DroitType::LECTURE);
         $this->setViewParameter('infoEntite', $this->getEntiteSQL()->getInfo($this->getViewParameterOrObject('id_e')));
 
         $this->setViewParameter('id_e_menu', $this->getViewParameterOrObject('id_e'));
@@ -938,7 +963,7 @@ class DocumentControler extends PastellControler
             ->getConnecteurMapper($action)
         ;
 
-        $this->verifDroit($id_e, DroitService::getDroitFor($type, DroitType::EDITION));
+        $this->checkDroitFor($id_e, $type, DroitType::EDITION);
 
         foreach ($all_id_d as $id_d) {
             $infoDocument  = $this->getDocumentActionEntite()->getInfo($id_d, $id_e);
@@ -1093,6 +1118,10 @@ class DocumentControler extends PastellControler
         return count($result);
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function actionAction()
     {
         $recuperateur = $this->getPostInfo();
@@ -1112,7 +1141,7 @@ class DocumentControler extends PastellControler
 
         $actionPossible = $this->getActionPossible();
 
-        $this->verifDroit($id_e, "$type:edition", "/Document/detail?id_d=$id_d&id_e=$id_e&page=$page");
+        $this->checkDroitFor($id_e, $type, DroitType::EDITION, "/Document/detail?id_d=$id_d&id_e=$id_e&page=$page");
 
         if (! $actionPossible->isActionPossible($id_e, $this->getId_u(), $id_d, $action)) {
             $this->setLastError("L'action « $action »  n'est pas permise (elle a peut-être déjà été effectuée) : " . $actionPossible->getLastBadRule());

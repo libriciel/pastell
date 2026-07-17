@@ -18,6 +18,8 @@
 - Les méthodes de vérification de droit `DroitService::hasDroit()`, `DroitService::hasDroitConnecteurLecture()`,
   `DroitService::hasDroitConnecteurEdition()`, `DroitService::hasConnectorActionPermission()` et
   `DroitService::hasDroitUtilisateurLecture()` sont dépréciées au profit de `DroitService::hasDroitFor()` #2491
+- Les méthodes `PastellControler::verifDroit()` et `PastellControler::hasDroit()` sont dépréciées au profit de
+  `PastellControler::checkDroitFor()` et `PastellControler::hasDroitFor()` #2510
 
 # [4.1.20] - 2026-07-06
 

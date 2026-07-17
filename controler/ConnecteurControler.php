@@ -11,6 +11,8 @@ use Pastell\Service\Connecteur\ConnecteurCreationService;
 use Pastell\Service\Connecteur\ConnecteurActionService;
 use Pastell\Service\Connecteur\ConnecteurModificationService;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 
 class ConnecteurControler extends PastellControler
@@ -490,6 +492,8 @@ class ConnecteurControler extends PastellControler
     }
 
     /**
+     * @throws LastErrorException
+     * @throws LastMessageException
      * @throws NotFoundException
      */
     public function newAction()
@@ -497,7 +501,7 @@ class ConnecteurControler extends PastellControler
         $id_e = $this->getGetInfo()->getInt('id_e');
         $global = $this->getGetInfo()->getInt('global', 0);
 
-        $this->verifDroit($id_e, "connecteur:edition");
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
 
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('global', $global);
