@@ -29,15 +29,6 @@ class SystemControler extends PastellControler
     }
 
     /**
-     * @throws LastMessageException
-     * @throws LastErrorException
-     */
-    private function needDroitEdition(): void
-    {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
-    }
-
-    /**
      * @throws NotFoundException
      * @throws UnrecoverableException
      */
@@ -340,9 +331,13 @@ class SystemControler extends PastellControler
         $this->redirect(self::SYSTEM_INDEX_PAGE);
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function phpinfoAction(): void
     {
-        $this->needDroitEdition();
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         phpinfo();
     }
 
@@ -417,7 +412,7 @@ class SystemControler extends PastellControler
      */
     public function doLoginPageConfigurationAction()
     {
-        $this->needDroitEdition();
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $result = file_put_contents(
             LOGIN_PAGE_CONFIGURATION_LOCATION,
@@ -459,7 +454,7 @@ class SystemControler extends PastellControler
      */
     public function exportAllMissingConnecteurAction()
     {
-        $this->needDroitEdition();
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $tmpFoder  = new TmpFolder();
         $tmp_folder = $tmpFoder->create();
@@ -480,7 +475,7 @@ class SystemControler extends PastellControler
      */
     public function emptyCacheAction(): void
     {
-        $this->needDroitEdition();
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $redisWrapper = $this->getObjectInstancier()->getInstance(RedisWrapper::class);
         $redisWrapper->flushAll();

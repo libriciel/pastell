@@ -21,7 +21,7 @@ class EntiteControler extends PastellControler
         parent::_beforeAction();
         $id_e = $this->getPostOrGetInfo()->getInt('id_e', 0);
         if ($id_e != 0) {
-            $this->hasEntiteDroitLecture($id_e);
+            $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
         }
         $this->setNavigationInfo($id_e, 'Entite/detail');
         $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_DETAIL);
@@ -78,7 +78,7 @@ class EntiteControler extends PastellControler
         $role = $recuperateur->get('role');
         $search = $recuperateur->get('search');
         $offset = $recuperateur->getInt('offset');
-        $this->hasUtilisateurDroitLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
 
         $all_role = $this->getRoleSQL()->getAllRole();
         $all_role[] = ['role' => RoleUtilisateur::AUCUN_DROIT, 'libelle' => RoleUtilisateur::AUCUN_DROIT];
@@ -86,7 +86,7 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('all_role', $all_role);
         $this->setViewParameter(
             'droitCreation',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'utilisateur:creation', $id_e)
+            $this->hasDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::CREATION)
         );
 
         $this->setViewParameter(
@@ -123,7 +123,7 @@ class EntiteControler extends PastellControler
         $the_role = $recuperateur->get('role_selected');
         $search = $recuperateur->get('search');
 
-        $this->hasUtilisateurDroitLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
 
         $result = [];
         $result[] = ["id_u", "login", "prénom", "nom", "email", "collectivité de base", "id_e", "rôles"];
@@ -163,7 +163,7 @@ class EntiteControler extends PastellControler
         if (!$id_e) {
             throw new Exception("L'entité 0 n'existe pas");
         }
-        $this->hasEntiteDroitLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
         $info = $this->getEntiteSQL()->getInfo($id_e);
         if (!$info) {
             $this->setLastError("Cette entité n'existe pas ou n'existe plus.");
@@ -172,14 +172,14 @@ class EntiteControler extends PastellControler
 
         $this->setViewParameter(
             'droit_edition',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), "entite:edition", $id_e)
+            $this->hasDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION)
         );
         $this->setViewParameter(
             'droit_lecture_cdg',
-            isset($info['cdg']['id_e']) && $this->getRoleUtilisateur()->hasDroit(
-                $this->getId_u(),
-                "entite:lecture",
-                $info['cdg']['id_e']
+            isset($info['cdg']['id_e']) && $this->hasDroitFor(
+                $info['cdg']['id_e'],
+                DroitService::DROIT_ENTITE,
+                DroitType::LECTURE
             )
         );
         $this->setViewParameter('entiteExtendedInfo', $this->getEntiteSQL()->getExtendedInfo($id_e));
@@ -243,7 +243,7 @@ class EntiteControler extends PastellControler
     public function exportAction()
     {
         $id_e = $this->getGetInfo()->getInt('id_e', 0);
-        $this->hasEntiteDroitLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
 
         $entite_list = $this->getEntiteListe()->getAllFille($id_e);
         $result = [
@@ -287,7 +287,7 @@ class EntiteControler extends PastellControler
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e');
         $onglet = $recuperateur->get('onglet');
-        $this->hasDroitEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
         $this->setViewParameter('entite_info', $this->getEntiteSQL()->getInfo($id_e));
         $this->setViewParameter('template_milieu', "EntiteImport");
         $this->setViewParameter('page_title', "Importer (fichier CSV)");
@@ -320,13 +320,13 @@ class EntiteControler extends PastellControler
         $entite_mere = (int)$recuperateur->getInt('entite_mere', 0);
         $id_e = (int)$recuperateur->getInt('id_e', 0);
         if ($entite_mere) {
-            $this->hasDroitEdition($entite_mere);
+            $this->checkDroitFor($entite_mere, DroitService::DROIT_ENTITE, DroitType::EDITION);
         }
         if ($id_e) {
-            $this->hasDroitEdition($id_e);
+            $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
         }
         if ($entite_mere === 0 && $id_e === 0) {
-            $this->hasDroitEdition(0);
+            $this->checkDroitFor(0, DroitService::DROIT_ENTITE, DroitType::EDITION);
         }
 
         if ($id_e) {
@@ -425,9 +425,9 @@ class EntiteControler extends PastellControler
         try {
             // Ajout du controle des droits qui ne se fait plus sur la function "edition" commune aux APIs et à la console Pastell
             if ($id_e) {
-                $this->hasDroitEdition($id_e);
+                $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
             }
-            $this->hasDroitEdition($entite_mere);
+            $this->checkDroitFor($entite_mere, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
             if ($id_e) {
                 $this->getInstance(EntityUpdateService::class)->update(
@@ -464,7 +464,7 @@ class EntiteControler extends PastellControler
         $page = $recuperateur->getInt('page', 0);
         $search = $recuperateur->get('search');
 
-        $this->hasEntiteDroitLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
 
         /** @var AgentSQL $agentSQL */
         $agentSQL = $this->getInstance(AgentSQL::class);
@@ -481,7 +481,7 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('page', $page);
         $this->setViewParameter(
             'droit_edition',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), "entite:edition", $id_e)
+            $this->hasDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION)
         );
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('search', $search);
@@ -501,11 +501,11 @@ class EntiteControler extends PastellControler
         if ($id_e === EntiteSQL::ID_E_ENTITE_RACINE && !$this->getInstance(DisplayConnecteurEntiteRacine::class)->isEnabled()) {
             $global = 1;
         }
-        $this->hasConnecteurDroitLecture($id_e);
-        $this->hasEntiteDroitLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
         $this->setViewParameter(
             'droit_edition',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'connecteur:edition', $id_e)
+            $this->hasDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION)
         );
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('global', $global);
@@ -533,7 +533,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = new Recuperateur($_GET);
         $id_e = $recuperateur->getInt('id_e', 0);
-        $this->hasDroitEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
         $entiteDeletionService = $this->getInstance(EntiteDeletionService::class);
 
         $canDelete = $entiteDeletionService->canDelete($id_e);
@@ -554,7 +554,7 @@ class EntiteControler extends PastellControler
         $recuperateur = new Recuperateur($_GET);
         $id_e = $recuperateur->getInt('id_e', 0);
         $active = $recuperateur->getInt('active', 0);
-        $this->hasDroitEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
         $this->getEntiteSQL()->setActive($id_e, $active);
         $info = $this->getEntiteSQL()->getInfo($id_e);

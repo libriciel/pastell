@@ -17,7 +17,7 @@ class MailSecControler extends PastellControler
         parent::_beforeAction();
         $id_e = $this->getPostOrGetInfo()->getInt('id_e');
         $this->setViewParameter('id_e', $id_e);
-        $this->hasEntiteDroitLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
         $this->setNavigationInfo($id_e, "MailSec/annuaire?");
         $this->setMenuGaucheSelect(MenuGaucheService::MAILSEC_ANNUAIRE);
         $this->setEntiteMenuGauche($id_e);

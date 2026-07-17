@@ -68,6 +68,7 @@ class PastellControler extends Controler
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @deprecated 4.1.21 Use checkDroitFor() instead
      */
     public function hasConnecteurDroitEdition(int $id_e): void
     {
@@ -77,6 +78,7 @@ class PastellControler extends Controler
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @deprecated 4.1.21 Use checkDroitFor() instead
      */
     public function hasConnecteurDroitLecture(int $id_e): void
     {
@@ -86,6 +88,7 @@ class PastellControler extends Controler
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @deprecated 4.1.21 Use checkDroitFor() instead
      */
     public function hasConnectorActionPermission(int $entityId): void
     {
@@ -95,6 +98,7 @@ class PastellControler extends Controler
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @deprecated 4.1.21 Use checkDroitFor() instead
      */
     public function hasUtilisateurDroitLecture(int $id_e): void
     {
@@ -104,6 +108,7 @@ class PastellControler extends Controler
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @deprecated 4.1.21 Use checkDroitFor() instead
      */
     public function hasEntiteDroitLecture(int $id_e): void
     {
@@ -113,6 +118,7 @@ class PastellControler extends Controler
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @deprecated 4.1.21 Use checkDroitFor() instead
      */
     public function hasDroitEdition($id_e)
     {

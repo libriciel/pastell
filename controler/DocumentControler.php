@@ -1063,10 +1063,11 @@ class DocumentControler extends PastellControler
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @throws NotFoundException
      */
     public function changeEtatAction()
     {
-        if (!$this->getRoleUtilisateur()->hasDroit($this->getId_u(), "system:edition", 0)) {
+        if (!$this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION)) {
             $this->redirect("");
         }
 
