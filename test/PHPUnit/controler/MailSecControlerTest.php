@@ -23,7 +23,7 @@ class MailSecControlerTest extends ControlerTestCase
         /** @var MailSecControler $mailsecController */
         $mailsecController = $this->getControlerInstance(MailSecControler::class);
         \ob_start();
-        $mailsecController->importAction();
+        $mailsecController->contactImportAction();
         \ob_end_clean();
         $view_parameter = $mailsecController->getViewParameter();
 

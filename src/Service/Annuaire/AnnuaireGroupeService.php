@@ -48,7 +48,7 @@ final class AnnuaireGroupeService
             throw new ConflictException("Un groupe \"$nom\" existe déjà");
         }
         $id_g = $this->annuaireGroupeSQL->add($id_e, $nom);
-        return $this->annuaireGroupeSQL->getInfo($id_e, $id_g);
+        return $this->annuaireGroupeSQL->getInfoById($id_g);
     }
 
     /**

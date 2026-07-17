@@ -58,7 +58,7 @@ final class LegacyController extends AbstractController
             '/Document/recuperationFichier',
             '/DonneesFormulaire/downloadAll',
             '/Connecteur/recupFile',
-            '/MailSec/export',
+            '/MailSec/contactExport',
         ];
 
         return in_array($requestPath, $downloadRequestPath);
