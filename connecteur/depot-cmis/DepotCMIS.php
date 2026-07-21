@@ -32,12 +32,14 @@ class DepotCMIS extends DepotConnecteur
 
     public function listDirectory()
     {
-        $result = [];
-        foreach ($this->getFolder()->getChildren() as $children) {
-            $result[] = $children->getName();
-        }
+        return $this->withoutDeprecationWarnings(function () {
+            $result = [];
+            foreach ($this->getFolder()->getChildren() as $children) {
+                $result[] = $children->getName();
+            }
 
-        return $result;
+            return $result;
+        });
     }
 
     public function makeDirectory(string $directory_name)
@@ -48,7 +50,7 @@ class DepotCMIS extends DepotConnecteur
 
         ];
 
-        $this->getFolder()->createFolder($properties);
+        $this->withoutDeprecationWarnings(fn () => $this->getFolder()->createFolder($properties));
 
         return $directory_name;
     }
@@ -67,22 +69,29 @@ class DepotCMIS extends DepotConnecteur
 
         $versionningState = new VersioningState(VersioningState::MAJOR);
 
-        $folder = $this->getFolder();
-        if ($directory_name) {
-            $folder = $this->session->getObjectByPath(
-                $this->connecteurConfig->get(self::DEPOT_CMIS_DIRECTORY) . "/" . $directory_name
-            );
-        }
-
-        $document = $folder->createDocument(
+        $document = $this->withoutDeprecationWarnings(function () use (
+            $directory_name,
             $properties,
-            Utils::streamFor(Utils::tryFopen($filepath, 'rb')),
-            $versionningState,
-            [],
-            [],
-            [],
-            new OperationContext()
-        );
+            $filepath,
+            $versionningState
+        ) {
+            $folder = $this->getFolder();
+            if ($directory_name) {
+                $folder = $this->session->getObjectByPath(
+                    $this->connecteurConfig->get(self::DEPOT_CMIS_DIRECTORY) . "/" . $directory_name
+                );
+            }
+
+            return $folder->createDocument(
+                $properties,
+                Utils::streamFor(Utils::tryFopen($filepath, 'rb')),
+                $versionningState,
+                [],
+                [],
+                [],
+                new OperationContext()
+            );
+        });
 
         $this->addGedDocumentId($filename, $document->getId());
 
@@ -190,12 +199,30 @@ class DepotCMIS extends DepotConnecteur
         ];
         $sessionFactory = new SessionFactory();
 
-        $repositories = $sessionFactory->getRepositories($parameters);
-        $parameters[SessionParameter::REPOSITORY_ID] = $repositories[0]->getId();
-        $this->session = $sessionFactory->createSession($parameters);
-        /** @var FolderInterface $folder */
-        $folder = $this->session->getObjectByPath($this->connecteurConfig->get(self::DEPOT_CMIS_DIRECTORY));
-        $this->folder = $folder;
-        return $this->folder;
+        return $this->withoutDeprecationWarnings(function () use ($sessionFactory, $parameters) {
+            $repositories = $sessionFactory->getRepositories($parameters);
+            $parameters[SessionParameter::REPOSITORY_ID] = $repositories[0]->getId();
+            $this->session = $sessionFactory->createSession($parameters);
+            /** @var FolderInterface $folder */
+            $folder = $this->session->getObjectByPath($this->connecteurConfig->get(self::DEPOT_CMIS_DIRECTORY));
+            $this->folder = $folder;
+            return $this->folder;
+        });
+    }
+
+    /**
+     * Exécute le callback en masquant uniquement les dépréciations (par ex. celles émises
+     * par libriciel/php-cmis via League\Uri\Modifier, qui les déclenche avec
+     * E_USER_DEPRECATED), puis restaure la configuration d'origine, y compris en cas
+     * d'exception.
+     */
+    private function withoutDeprecationWarnings(callable $callback)
+    {
+        $previous = error_reporting(error_reporting() & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+        try {
+            return $callback();
+        } finally {
+            error_reporting($previous);
+        }
     }
 }
