@@ -37,6 +37,12 @@
 
 - Standardisation du footer selon la charte Libriciel SCOP #2440
 
+# [5.0.7] - 2026-07-22
+
+## Correction
+
+- Encadrement des appels depot-cmis pour ne plus être pollué par les deprecated #2521
+
 # [5.0.6] - 2026-07-06
 
 ## Ajouts
