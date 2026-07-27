@@ -138,7 +138,7 @@ acceptance_test:
     services:
         - name: hubdocker.libriciel.fr/mariadb:11.4.12-noble@sha256:a794d9eb009e20de605858a11f32f63b4075cbd197c650436f0e3b457e4caed7
           alias: mariadb
-        - name: hubdocker.libriciel.fr/redis:8.8.0-alpine3.23@sha256:9d317178eceac8454a2284a9e6df2466b93c745529947f0cd42a0fa9609d7005
+        - name: hubdocker.libriciel.fr/redis:8.8.1-alpine3.23@sha256:8096655e437712b07503796fb64d81359256cfcff0ab29d95a7da72863786efb
           alias: redis
         - name: ${CONTAINER_IMAGE_APP}
           alias: app
