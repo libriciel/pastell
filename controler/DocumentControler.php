@@ -152,8 +152,8 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('documentActionEntite', $this->getDocumentActionEntite());
 
         $this->setViewParameter('next_action_automatique', $action->getActionAutomatique($true_last_action));
-        $this->setDroitViewParameter(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
-        if ($this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION)) {
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        if ($this->hasDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION)) {
             $this->setViewParameter('all_action', $documentType->getAction()->getWorkflowAction());
         }
         $this->setDroitsDaemon($id_e);
@@ -172,7 +172,7 @@ class DocumentControler extends PastellControler
 
         $this->setViewParameter('recuperation_fichier_url', "Document/recuperationFichier?id_d=$id_d&id_e=$id_e");
         if ($this->hasDroitFor($id_e, DroitService::DROIT_DAEMON, DroitType::LECTURE)) {
-            $this->setViewParameter('job_list', $this->getWorkerSQL()->getJobListWithWorkerForDocument($this->getViewParameterOrObject('id_e'), $this->getViewParameterOrObject('id_d')));
+            $this->setViewParameter('job_list', $this->getJobQueueSQL()->getJobsForDocument($id_d));
         } else {
             $this->setViewParameter('job_list', false);
         }
@@ -1062,7 +1062,6 @@ class DocumentControler extends PastellControler
      */
     public function changeEtatAction()
     {
-
         $recuperateur = $this->getPostInfo();
         $id_d = $recuperateur->get('id_d');
         $id_e = $recuperateur->getInt('id_e');
@@ -1204,10 +1203,7 @@ class DocumentControler extends PastellControler
         $id_e = $recuperateur->get('id_e');
         $page = $recuperateur->getInt('page', 0);
 
-        $this->verifDroit(
-            $id_e,
-            DroitService::getDroitEdition(DroitService::DROIT_SYSTEM)
-        );
+        $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $result = $this->getActionExecutorFactory()->executeOnDocument(
             $id_e,

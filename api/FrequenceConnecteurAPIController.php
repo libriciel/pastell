@@ -15,7 +15,7 @@ class FrequenceConnecteurAPIController extends BaseAPIController
      */
     public function get(): array
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::LECTURE);
 
         $id_cf = $this->getFromQueryArgs(0);
         if ($id_cf) {

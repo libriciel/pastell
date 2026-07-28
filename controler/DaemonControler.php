@@ -121,7 +121,7 @@ class DaemonControler extends PastellControler
      */
     public function globalDaemonStopAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $this->getDaemonManager()->stop();
         if ($this->getDaemonManager()->status() === DaemonManager::IS_STOPPED) {
             $this->setLastMessage('Les gestionnaires de tâches ont été arrêtés');
@@ -182,7 +182,6 @@ class DaemonControler extends PastellControler
             if ($job === null) {
                 $this->setLastError('Impossible de trouver le travail à réactiver');
             } else {
-                $this->verifDroit($job->id_e, DroitService::getDroitEdition(DroitService::DROIT_DAEMON));
                 $this->checkDroitFor($job->id_e, DroitService::DROIT_DAEMON, DroitType::EDITION);
                 $this->getJobQueueSQL()->unlock($job->id_job);
                 $this->setLastMessage('Le travail a été réactivé');
@@ -204,9 +203,9 @@ class DaemonControler extends PastellControler
      */
     public function unlockAllAction(): void
     {
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $this->getWorkerSQL()->menageAll();
         $this->getJobQueueSQL()->unlockAll();
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $this->redirect('Daemon/index');
     }
 
@@ -232,7 +231,6 @@ class DaemonControler extends PastellControler
         }
 
         $this->checkDroitFor($job->id_e, DroitService::DROIT_DAEMON, DroitType::EDITION);
-
         $this->getJobQueueSQL()->lock($job->id_job);
 
         $process = new Process(['kill', '-9', $worker->pid]);
@@ -257,7 +255,7 @@ class DaemonControler extends PastellControler
     {
         $recuperateur = $this->getGetInfo();
 
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::LECTURE);
         $this->setViewParameter('twigTemplate', 'daemon/job.html.twig');
         $this->setViewParameter('page_title', 'Gestionnaire de tâches');
         $filtre = $recuperateur->get('filtre', '');

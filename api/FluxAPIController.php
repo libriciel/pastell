@@ -2,7 +2,6 @@
 
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Module\ModuleListService;
-
 use Pastell\Service\Droit\DroitType;
 
 class FluxAPIController extends BaseAPIController

@@ -6,6 +6,7 @@ namespace Pastell\Service\Module;
 
 use DocumentTypeFactory;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 
 final readonly class ModuleListService
 {
@@ -21,7 +22,7 @@ final readonly class ModuleListService
         $allDocType = $this->documentTypeFactory->getAllType();
         foreach ($allDocType as $typeFlux => $listFlux) {
             foreach ($listFlux as $idFlux => $libelleFlux) {
-                if ($hasAllDroit || $this->droitService->hasOneDroit($id_u, DroitService::getDroitLecture($idFlux))) {
+                if ($hasAllDroit || $this->droitService->hasOneDroitFor($id_u, $idFlux, DroitType::LECTURE)) {
                     $moduleList[$idFlux]  = ['type' => $typeFlux,'nom' => $libelleFlux];
                 }
             }

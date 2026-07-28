@@ -50,7 +50,6 @@ class DroitService
         private readonly DocumentTypeFactory $documentTypeFactory,
         private readonly EntiteSQL $entiteSQL,
         private readonly UtilisateurSQL $utilisateurSQL,
-        private readonly bool $connectorActionPermission,
     ) {
     }
 
@@ -60,7 +59,7 @@ class DroitService
      */
     public static function getDroitLecture(string $part): string
     {
-        return self::getPermission($part, self::DROIT_LECTURE);
+        return self::getDroitFor($part, DroitType::LECTURE);
     }
 
     /**
@@ -184,10 +183,9 @@ class DroitService
      */
     public function hasConnectorActionPermission(int $entityId, int $userId): bool
     {
-        return $this->hasDroit($userId, $this->getActionPermission(self::DROIT_CONNECTEUR), $entityId);
         return $this->hasDroit(
             $userId,
-            self::getDroitAction(self::DROIT_CONNECTEUR),
+            self::getDroitFor(self::DROIT_CONNECTEUR, DroitType::ACTION),
             $entityId,
         );
     }
@@ -249,11 +247,6 @@ class DroitService
      */
     public function hasDroitFor($id_u, int $id_e, string $droit_id, DroitType $droit_type): bool
     {
-        //DroitType::ACTION feature flag, delete in 5.0
-        if ($droit_type === DroitType::ACTION && !$this->connectorActionPermission) {
-            $droit_type = DroitType::EDITION;
-        }
-
         $droit = self::getDroitFor($droit_id, $droit_type);
 
         if ($id_e !== EntiteSQL::ID_E_ENTITE_RACINE && !$this->entiteSQL->getInfo($id_e)) {

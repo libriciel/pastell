@@ -84,7 +84,7 @@ class MenuGaucheService
 
     public function getDaemonMenu(int $id_u): array
     {
-        $daemon_edition = $this->droitService->hasDroit($id_u, DroitService::getDroitEdition(DroitService::DROIT_DAEMON), EntiteSQL::ID_E_ENTITE_RACINE);
+        $daemon_edition = $this->droitService->hasDroitFor($id_u, EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $configuration_options = [];
         if ($daemon_edition) {
             $configuration_options = [

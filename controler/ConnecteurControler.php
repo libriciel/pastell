@@ -447,31 +447,7 @@ class ConnecteurControler extends PastellControler
         $id_ce = $this->getGetInfo()->getInt('id_ce');
         $connecteur_entite_info = $this->getConnecteurEntiteSQL()->getInfo($id_ce);
         $id_e = $connecteur_entite_info['id_e'];
-
-        $this->setViewParameter(
-            'daemon_edition',
-            $this->getRoleUtilisateur()->hasDroit(
-                $this->getId_u(),
-                DroitService::getDroitEdition(DroitService::DROIT_DAEMON),
-                $id_e
-            )
-        );
-        $this->setViewParameter(
-            'daemon_global_lecture',
-            $this->getRoleUtilisateur()->hasDroit(
-                $this->getId_u(),
-                DroitService::getDroitLecture(DroitService::DROIT_DAEMON),
-                0
-            )
-        );
-        $this->setViewParameter(
-            'daemon_lecture',
-            $this->getRoleUtilisateur()->hasDroit(
-                $this->getId_u(),
-                DroitService::getDroitLecture(DroitService::DROIT_DAEMON),
-                $id_e
-            )
-        );
+        $this->setDroitsDaemon($id_e);
 
         $this->renderDefault();
     }

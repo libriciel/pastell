@@ -30,58 +30,24 @@ class PastellControler extends Controler
         }
     }
 
-    protected function setDroitLectureOnConnecteur(int $id_e): void
-    {
-        $this->setViewParameter('droit_lecture_on_connecteur', $this->getDroitService()->hasDroitConnecteurLecture(
-            $id_e,
-            $this->getId_u()
-        ));
-    }
-
-    protected function setCanActOnConnector(int $entityId): void
-    {
-        $this->setViewParameter(
-            'canActOnConnector',
-            $this->getDroitService()->hasConnectorActionPermission(
-                $entityId,
-                $this->getId_u(),
-            )
-        );
-    }
-
-    protected function setCanEditConnector(int $entityId): void
-    {
-        $this->setViewParameter(
-            'canEditConnector',
-            $this->getDroitService()->hasDroitConnecteurEdition(
-                $entityId,
-                $this->getId_u(),
-            )
-        );
-    }
-
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @throws NotFoundException
      */
     protected function setDroitsDaemon(int $id_e): void
     {
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_DAEMON, DroitType::LECTURE);
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_DAEMON, DroitType::EDITION);
+        $this->setViewParameter('daemon_exists', $this->getDaemonSQL()->getDaemonByEntity($id_e));
         $this->setViewParameter(
             'daemon_global_lecture',
-            $this->hasDroit(
+            $this->hasDroitFor(
                 EntiteSQL::ID_E_ENTITE_RACINE,
-                DroitService::getDroitLecture(DroitService::DROIT_DAEMON)
+                DroitService::DROIT_DAEMON,
+                DroitType::LECTURE
             )
         );
-        $this->setViewParameter(
-            'daemon_lecture',
-            $this->hasDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_DAEMON))
-        );
-        $this->setViewParameter(
-            'daemon_edition',
-            $this->hasDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_DAEMON))
-        );
-        $this->setViewParameter('daemon_exists', $this->getDaemonSQL()->getDaemonByEntity($id_e));
     }
 
     /**
