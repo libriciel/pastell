@@ -7,14 +7,12 @@
  * @var string $search
  * @var array $groupe_list
  * @var int $id_g
- * @var bool $can_edit
+ * @var bool $annuaire_edition
  * @var int $offset
  * @var int $limit
  * @var int $nb_email
  * @var array $listUtilisateur
  */
-
-use Pastell\Service\Droit\DroitService;
 
 ?>
 <a class='btn btn-link' href='Entite/detail?id_e=<?php echo $id_e ?>'
@@ -46,7 +44,7 @@ use Pastell\Service\Droit\DroitService;
             <?php endforeach; ?>
         </select>
         <button type='submit' class='btn btn-primary'><i class='fa fa-search'></i>&nbsp;Rechercher</button>
-        <?php if ($can_edit) : ?>
+        <?php if ($annuaire_edition) : ?>
             <a href="MailSec/import?id_e=<?php echo $id_e ?>" class='btn btn-primary ms-2'
             ><i class="fa fa-upload"></i>&nbsp;Importer</a>
         <?php endif; ?>
@@ -68,7 +66,7 @@ use Pastell\Service\Droit\DroitService;
             <?php foreach ($listUtilisateur as $utilisateur) : ?>
                 <tr>
                     <td>
-                        <?php if ($can_edit) : ?>
+                        <?php if ($annuaire_edition) : ?>
                             <input type='checkbox' name='id_a[]' value='<?php hecho($utilisateur['id_a']) ?>'/>
                         <?php endif; ?>
                         <a href='MailSec/detail?id_a=<?php echo $utilisateur['id_a'] ?>&id_e=<?php echo $id_e ?>'
@@ -97,7 +95,7 @@ use Pastell\Service\Droit\DroitService;
 
         <?php $this->suivantPrecedent($offset, $limit, $nb_email, "MailSec/annuaire?id_e=$id_e&search=$search"); ?>
 
-        <?php if ($can_edit) : ?>
+        <?php if ($annuaire_edition) : ?>
             <button type="submit" class="btn btn-danger">
                 <i class="fa fa-trash"></i>&nbsp;Supprimer
             </button>
@@ -106,7 +104,7 @@ use Pastell\Service\Droit\DroitService;
 
 </div>
 
-<?php if ($this->getRoleUtilisateur()->hasDroit($this->getAuthentification()->getId(), DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE), $id_e)) : ?>
+<?php if ($annuaire_edition) : ?>
     <div class="box">
         <h2>Ajouter un contact</h2>
         <form action='MailSec/addContact' method='post'>

@@ -2,6 +2,7 @@
 
 use Pastell\File\Chunk\ChunkRequest;
 use Pastell\Service\Utilisateur\UserCreationService;
+use Mailsec\MailsecManager;
 
 class DocumentAPIControllerTest extends PastellTestCase
 {
@@ -392,9 +393,17 @@ class DocumentAPIControllerTest extends PastellTestCase
         $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
         $key = $documentEmail->add($id_d, "foo@bar.com", "to");
         $id_de = $documentEmail->getInfoFromKey($key)['id_de'];
-        $id_d_reponse = $this->createTestDocument();
+
+        $mailSecInfo = new MailSecInfo();
+        $mailSecInfo->id_de = $id_de;
+        $mailSecInfo->id_e = self::ID_E_COL;
+        $mailSecInfo->flux_reponse = 'mailsec-bidir-reponse';
+        $mailSecInfo = $this->getObjectInstancier()
+            ->getInstance(MailsecManager::class)
+            ->createDocumentResponse($mailSecInfo);
+        $id_d_reponse = $mailSecInfo->id_d_reponse;
+
         $documentEmailResponse = $this->getObjectInstancier()->getInstance(DocumentEmailReponseSQL::class);
-        $documentEmailResponse->addDocumentReponseId($id_de, $id_d_reponse);
         $documentEmailResponse->validateReponse($id_de);
 
 
@@ -471,6 +480,32 @@ class DocumentAPIControllerTest extends PastellTestCase
              ],
             $info
         );
+
+        $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
+        $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
+        $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+
+        //userAvecDroit mailsec-bidir:lecture
+        $roleSql->edit('lecteur_mail', 'lecteur_mail');
+        $roleSql->addDroit('lecteur_mail', 'entite:lecture');
+        $roleSql->addDroit('lecteur_mail', 'mailsec-bidir:lecture');
+        $userAvecDroit = $userCreationService->create('lecteur_mail', 'lecteur_mail@example.org', 'user', 'user');
+        $roleUtilisateur->addRole($userAvecDroit, 'lecteur_mail', self::ID_E_COL);
+
+        $infoReponse = $this->getInternalAPIAsUser($userAvecDroit)->get("/entite/1/document/$id_d_reponse");
+        static::assertSame('mailsec-bidir-reponse', $infoReponse['info']['type']);
+        static::assertSame($id_d_reponse, $infoReponse['info']['id_d']);
+
+        //userSansDroit mailsec-bidir:lecture (avec mailsec-bidir-reponse:lecture)
+        $roleSql->edit('lecteur_reponse', 'lecteur_reponse');
+        $roleSql->addDroit('lecteur_reponse', 'entite:lecture');
+        $roleSql->addDroit('lecteur_reponse', 'mailsec-bidir-reponse:lecture');
+        $userSansDroit = $userCreationService->create('lecteur_reponse', 'lecteur_reponse@example.org', 'user', 'user');
+        $roleUtilisateur->addRole($userSansDroit, 'lecteur_reponse', self::ID_E_COL);
+
+        $this->expectException(ForbiddenException::class);
+        $this->expectExceptionMessage("Acces interdit id_e=1, droit=mailsec-bidir:lecture,id_u=$userSansDroit");
+        $this->getInternalAPIAsUser($userSansDroit)->get("/entite/1/document/$id_d_reponse");
     }
 
     public function testDeleteDocument(): void

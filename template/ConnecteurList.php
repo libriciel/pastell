@@ -2,15 +2,15 @@
 
 /**
  * @var Gabarit $this
- * @var bool $droit_edition
- * @var bool $droit_lecture_on_connecteur
+ * @var bool $connecteur_edition
+ * @var bool $connecteur_lecture
  * @var array $all_connecteur
  * @var int $id_e
  * @var int $global
  */
 ?>
 <div class="box">
-    <?php if ($droit_edition) : ?>
+    <?php if ($connecteur_edition) : ?>
 <a href="<?php $this->url("Connecteur/new?global=$global&id_e=$id_e") ?>" class='btn btn-primary grow'>
     <i class="fa fa-plus-circle"></i>&nbsp; Ajouter
 </a>
@@ -31,13 +31,13 @@
         <td><?php echo $all_connecteur_definition[$connecteur['id_connecteur']]['nom'] ?? ""?> (<?php  echo $connecteur['id_connecteur'];  ?>)</td>
         <td><?php hecho($connecteur['libelle']);?></td>
         <td>
-            <?php if ($droit_edition) : ?>
+            <?php if ($connecteur_edition) : ?>
                 <a class='btn btn-primary'
                    href='<?php $this->url("Connecteur/edition?id_ce={$connecteur['id_ce']}") ?>'
                 >
                     <i class="fa fa-pencil"></i> Modifier
                 </a>
-            <?php elseif ($droit_lecture_on_connecteur) : ?>
+            <?php elseif ($connecteur_lecture) : ?>
                 <a class='btn btn-primary'
                    href='<?php $this->url("Connecteur/edition?id_ce={$connecteur['id_ce']}") ?>'
                 >

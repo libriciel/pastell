@@ -2,6 +2,7 @@
 
 use Pastell\Service\Crypto;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Entite\EntityCreationService;
@@ -19,12 +20,12 @@ class EntiteControler extends PastellControler
         parent::_beforeAction();
         $id_e = $this->getPostOrGetInfo()->getInt('id_e', 0);
         if ($id_e != 0) {
-            $this->hasEntiteDroitLecture($id_e);
+            $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
         }
         $this->setNavigationInfo($id_e, 'Entite/detail');
         $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_DETAIL);
         $this->setEntiteMenuGauche($id_e);
-        $this->setDroitLectureOnConnecteur($id_e);
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
         $this->setViewParameter(
             'cdg_feature',
             $this->getObjectInstancier()
@@ -77,16 +78,13 @@ class EntiteControler extends PastellControler
         $role = $recuperateur->get('role');
         $search = $recuperateur->get('search');
         $offset = $recuperateur->getInt('offset');
-        $this->hasUtilisateurDroitLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
 
         $all_role = $this->getRoleSQL()->getAllRole();
         $all_role[] = ['role' => RoleUtilisateur::AUCUN_DROIT, 'libelle' => RoleUtilisateur::AUCUN_DROIT];
 
         $this->setViewParameter('all_role', $all_role);
-        $this->setViewParameter(
-            'droitCreation',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'utilisateur:creation', $id_e)
-        );
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_UTILISATEUR, DroitType::CREATION);
 
         $this->setViewParameter(
             'nb_utilisateur',
@@ -122,7 +120,7 @@ class EntiteControler extends PastellControler
         $the_role = $recuperateur->get('role_selected');
         $search = $recuperateur->get('search');
 
-        $this->hasUtilisateurDroitLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
 
         $result = [];
         $result[] = ["id_u", "login", "prénom", "nom", "email", "collectivité de base", "id_e", "rôles"];
@@ -162,23 +160,20 @@ class EntiteControler extends PastellControler
         if (!$id_e) {
             throw new Exception("L'entité 0 n'existe pas");
         }
-        $this->hasEntiteDroitLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
         $info = $this->getEntiteSQL()->getInfo($id_e);
         if (!$info) {
             $this->setLastError("Cette entité n'existe pas ou n'existe plus.");
             $this->redirect("/Entite/detail");
         }
 
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
         $this->setViewParameter(
-            'droit_edition',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), "entite:edition", $id_e)
-        );
-        $this->setViewParameter(
-            'droit_lecture_cdg',
-            isset($info['cdg']['id_e']) && $this->getRoleUtilisateur()->hasDroit(
-                $this->getId_u(),
-                "entite:lecture",
-                $info['cdg']['id_e']
+            'entite_lecture_cdg',
+            isset($info['cdg']['id_e']) && $this->hasDroitFor(
+                $info['cdg']['id_e'],
+                DroitService::DROIT_ENTITE,
+                DroitType::LECTURE
             )
         );
         $this->setViewParameter('entiteExtendedInfo', $this->getEntiteSQL()->getExtendedInfo($id_e));
@@ -196,7 +191,7 @@ class EntiteControler extends PastellControler
     {
         $liste_collectivite = $this->getRoleUtilisateur()->getEntiteWithDenomination(
             $this->getId_u(),
-            'entite:lecture'
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
         );
         $nbCollectivite = count($liste_collectivite);
         if ($nbCollectivite == 1) {
@@ -218,7 +213,7 @@ class EntiteControler extends PastellControler
 
         $liste_collectivite = $this->getRoleUtilisateur()->getEntiteWithDenomination(
             $this->getId_u(),
-            'entite:lecture'
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
         );
         $nbCollectivite = count($liste_collectivite);
 
@@ -234,6 +229,7 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('search', $search);
         $this->setViewParameter('offset', $offset);
 
+        $this->setDroitViewParameter(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ENTITE, DroitType::EDITION);
         $this->setPageTitle("Entité Racine");
         $this->setViewParameter('template_milieu', "EntiteList");
         $this->renderDefault();
@@ -242,7 +238,7 @@ class EntiteControler extends PastellControler
     public function exportAction()
     {
         $id_e = $this->getGetInfo()->getInt('id_e', 0);
-        $this->hasEntiteDroitLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
 
         $entite_list = $this->getEntiteListe()->getAllFille($id_e);
         $result = [
@@ -286,7 +282,7 @@ class EntiteControler extends PastellControler
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e');
         $onglet = $recuperateur->get('onglet');
-        $this->hasDroitEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
         $this->setViewParameter('entite_info', $this->getEntiteSQL()->getInfo($id_e));
         $this->setViewParameter('template_milieu', "EntiteImport");
         $this->setViewParameter('page_title', "Importer (fichier CSV)");
@@ -297,7 +293,7 @@ class EntiteControler extends PastellControler
         }
 
         $onglet_content["collectivités"] = "EntiteImportCollectivite";
-        if ($this->hasDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_ENTITE))) {
+        if ($this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ENTITE, DroitType::EDITION)) {
             $onglet_content["agents"] = "EntiteImportAgent";
             $onglet_content["grades"] = "EntiteImportGrade";
         }
@@ -319,13 +315,13 @@ class EntiteControler extends PastellControler
         $entite_mere = (int)$recuperateur->getInt('entite_mere', 0);
         $id_e = (int)$recuperateur->getInt('id_e', 0);
         if ($entite_mere) {
-            $this->hasDroitEdition($entite_mere);
+            $this->checkDroitFor($entite_mere, DroitService::DROIT_ENTITE, DroitType::EDITION);
         }
         if ($id_e) {
-            $this->hasDroitEdition($id_e);
+            $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
         }
         if ($entite_mere === 0 && $id_e === 0) {
-            $this->hasDroitEdition(0);
+            $this->checkDroitFor(0, DroitService::DROIT_ENTITE, DroitType::EDITION);
         }
 
         if ($id_e) {
@@ -424,9 +420,9 @@ class EntiteControler extends PastellControler
         try {
             // Ajout du controle des droits qui ne se fait plus sur la function "edition" commune aux APIs et à la console Pastell
             if ($id_e) {
-                $this->hasDroitEdition($id_e);
+                $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
             }
-            $this->hasDroitEdition($entite_mere);
+            $this->checkDroitFor($entite_mere, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
             if ($id_e) {
                 $this->getInstance(EntityUpdateService::class)->update(
@@ -463,7 +459,7 @@ class EntiteControler extends PastellControler
         $page = $recuperateur->getInt('page', 0);
         $search = $recuperateur->get('search');
 
-        $this->hasEntiteDroitLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
 
         /** @var AgentSQL $agentSQL */
         $agentSQL = $this->getInstance(AgentSQL::class);
@@ -478,10 +474,7 @@ class EntiteControler extends PastellControler
         }
         $this->setViewParameter('offset', $offset);
         $this->setViewParameter('page', $page);
-        $this->setViewParameter(
-            'droit_edition',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), "entite:edition", $id_e)
-        );
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('search', $search);
         $this->setPageTitle("Agents");
@@ -492,17 +485,19 @@ class EntiteControler extends PastellControler
         $this->renderDefault();
     }
 
+    /**
+     * @throws NotFoundException
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function connecteurAction()
     {
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
         $global = $recuperateur->getInt('global', 0);
-        $this->hasConnecteurDroitLecture($id_e);
-        $this->hasEntiteDroitLecture($id_e);
-        $this->setViewParameter(
-            'droit_edition',
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), 'connecteur:edition', $id_e)
-        );
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('global', $global);
         if ($global) {
@@ -531,7 +526,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = new Recuperateur($_GET);
         $id_e = $recuperateur->getInt('id_e', 0);
-        $this->hasDroitEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
         $entiteDeletionService = $this->getInstance(EntiteDeletionService::class);
 
         $canDelete = $entiteDeletionService->canDelete($id_e);
@@ -557,7 +552,7 @@ class EntiteControler extends PastellControler
         $recuperateur = new Recuperateur($_GET);
         $id_e = $recuperateur->getInt('id_e', 0);
         $active = $recuperateur->getInt('active', 0);
-        $this->hasDroitEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
         $this->getEntiteSQL()->setActive($id_e, $active);
         $info = $this->getEntiteSQL()->getInfo($id_e);
@@ -581,7 +576,7 @@ class EntiteControler extends PastellControler
 
         $delete_all = $recuperateur->get('delete_all');
 
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
         $fileUploader = new FileUploader();
         $file_path = $fileUploader->getFilePath('csv_agent');
@@ -627,7 +622,7 @@ class EntiteControler extends PastellControler
 
         $id_e = $recuperateur->getInt('id_e', 0);
         $centre_de_gestion = $recuperateur->getInt('centre_de_gestion');
-        $this->verifDroit($id_e, 'entite:edition');
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
         $fileUploader = new FileUploader();
         $file_path = $fileUploader->getFilePath('csv_col');
@@ -666,7 +661,7 @@ class EntiteControler extends PastellControler
      */
     public function importGradeAction(): void
     {
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
         $fileUploader = new FileUploader();
         $file_path = $fileUploader->getFilePath('csv_grade');
@@ -704,7 +699,7 @@ class EntiteControler extends PastellControler
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
 
-        $this->verifDroit($id_e, 'system:edition');
+        $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('template_milieu', 'EntiteExportConfig');
@@ -724,7 +719,7 @@ class EntiteControler extends PastellControler
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
 
-        $this->verifDroit($id_e, 'system:edition');
+        $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('template_milieu', 'EntiteImportConfig');
@@ -743,7 +738,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = $this->getPostInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
-        $this->verifDroit($id_e, 'system:edition');
+        $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $options = [];
         foreach (ExportConfigService::getOptions() as $id => $label) {
             $options[$id] = $recuperateur->get($id);
@@ -779,7 +774,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = $this->getPostInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
-        $this->verifDroit($id_e, 'system:edition');
+        $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $options = [];
         $link = '/Entite/exportConfigVerif?';
@@ -816,7 +811,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = $this->getPostInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
-        $this->verifDroit($id_e, 'system:edition');
+        $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $fileUploader = new FileUploader();
         $file_content = $fileUploader->getFileContent('pser');
         $password = $this->getPostInfo()->get('password');
@@ -871,10 +866,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e');
-        $this->verifDroit(
-            $id_e,
-            DroitService::getDroitLecture(DroitService::DROIT_DAEMON)
-        );
+        $this->checkDroitFor($id_e, DroitService::DROIT_DAEMON, DroitType::LECTURE);
         $this->setViewParameter('id_e', $id_e);
         $this->setDroitsDaemon($id_e);
 
@@ -897,10 +889,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e');
-        $this->verifDroit(
-            $id_e,
-            DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
-        );
+        $this->checkDroitFor($id_e, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $daemon = $this->resolveDaemonForEntity($id_e);
         $this->getWorkerSQL()->menageAll();
         $this->getJobQueueSQL()->unlockAll($daemon->id_daemon);
@@ -917,10 +906,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e');
-        $this->verifDroit(
-            $id_e,
-            DroitService::getDroitLecture(DroitService::DROIT_DAEMON)
-        );
+        $this->checkDroitFor($id_e, DroitService::DROIT_DAEMON, DroitType::LECTURE);
         $daemon = $this->resolveDaemonForEntity($id_e);
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('twigTemplate', 'daemon/entity/job.html.twig');
@@ -989,10 +975,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e');
-        $this->verifDroit(
-            $id_e,
-            DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
-        );
+        $this->checkDroitFor($id_e, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $daemon = $this->resolveDaemonForEntity($id_e);
 
         $daemon_admin_email = $this->getDaemonManager()->getAdminEmails($daemon->id_daemon);
@@ -1015,10 +998,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e');
-        $this->verifDroit(
-            $id_e,
-            DroitService::getDroitEdition(DroitService::DROIT_DAEMON)
-        );
+        $this->checkDroitFor($id_e, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $daemon = $this->resolveDaemonForEntity($id_e);
         $this->setViewParameter('id_e', $id_e);
 

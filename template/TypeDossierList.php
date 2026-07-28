@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @var string $droit_edition
+ * @var string $system_edition
  */
 ?>
 <div class="box" style="min-height: 500px;">
-    <?php if ($droit_edition) : ?>
+    <?php if ($system_edition) : ?>
         <a href="TypeDossier/edition" class='btn btn-primary grow'><i class="fa fa-plus"></i>&nbsp;Créer</a>
         <a href="TypeDossier/import" class='btn btn-outline-primary grow'><i class="fa fa-upload"></i>&nbsp;Importer</a>
     <?php endif;?>

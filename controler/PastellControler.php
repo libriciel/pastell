@@ -3,6 +3,7 @@
 use Monolog\Logger;
 use Pastell\Security\LibricielFeedbackReader;
 use Pastell\Service\Document\DocumentEmailService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Module\ModuleListService;
@@ -86,63 +87,67 @@ class PastellControler extends Controler
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @deprecated 4.1.21 Use checkDroitFor() instead
      */
     public function hasConnecteurDroitEdition(int $id_e): void
     {
-        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_CONNECTEUR));
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
     }
 
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @deprecated 4.1.21 Use checkDroitFor() instead
      */
     public function hasConnecteurDroitLecture(int $id_e): void
     {
-        $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_CONNECTEUR));
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
     }
 
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @deprecated 4.1.21 Use checkDroitFor() instead
      */
     public function hasConnectorActionPermission(int $entityId): void
     {
-        $this->verifDroit(
-            $entityId,
-            DroitService::getDroitAction(DroitService::DROIT_CONNECTEUR),
-        );
+        $this->checkDroitFor($entityId, DroitService::DROIT_CONNECTEUR, DroitType::ACTION);
     }
 
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @deprecated 4.1.21 Use checkDroitFor() instead
      */
     public function hasUtilisateurDroitLecture(int $id_e): void
     {
-        $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_UTILISATEUR));
+        $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
     }
 
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @deprecated 4.1.21 Use checkDroitFor() instead
      */
     public function hasEntiteDroitLecture(int $id_e): void
     {
-        $this->verifDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ENTITE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
     }
 
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @deprecated 4.1.21 Use checkDroitFor() instead
      */
     public function hasDroitEdition($id_e)
     {
-        $this->verifDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
     }
 
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @deprecated 4.1.21 Use checkDroitFor() instead
      */
     public function verifDroit($id_e, $droit, $redirect_to = ""): bool
     {
@@ -162,12 +167,52 @@ class PastellControler extends Controler
         return true;
     }
 
+    /**
+     * @deprecated 4.1.21 Use hasDroitFor() instead
+     */
     public function hasDroit($id_e, $droit): bool
     {
         if (! $this->getId_u()) {
             return true;
         }
-        return $this->getRoleUtilisateur()->hasDroit($this->getId_u(), $droit, $id_e);
+        return $this->getDroitService()->hasDroit($this->getId_u(), $droit, $id_e);
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function checkDroitFor(int $id_e, string $droit_id, DroitType $droit_type, string $redirect_to = ''): void
+    {
+        try {
+            if (!$this->getDroitService()->hasDroitFor((int) $this->getId_u(), $id_e, $droit_id, $droit_type)) {
+                $droit = DroitService::getDroitFor($droit_id, $droit_type);
+                $this->setLastError("Vous n'avez pas les droits nécessaires ($id_e:$droit) pour accéder à cette page");
+                $this->redirect($redirect_to);
+            }
+        } catch (NotFoundException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect('/index.php');
+        }
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    public function hasDroitFor(int $id_e, string $droit_id, DroitType $droit_type): bool
+    {
+        return $this->getDroitService()->hasDroitFor((int) $this->getId_u(), $id_e, $droit_id, $droit_type);
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    public function setDroitViewParameter(int $id_e, string $droit_id, DroitType $droit_type): void
+    {
+        $this->setViewParameter(
+            $droit_id . '_' . $droit_type->value,
+            $this->hasDroitFor($id_e, $droit_id, $droit_type)
+        );
     }
 
     public function getId_u()
@@ -282,7 +327,7 @@ class PastellControler extends Controler
         $daemonManager = $this->getInstance(DaemonManager::class);
 
         if (
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitLecture(DroitService::DROIT_DAEMON), 0)
+            $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::LECTURE)
         ) {
             $this->setViewParameter(
                 'nb_job_lock',
@@ -347,7 +392,10 @@ class PastellControler extends Controler
             ));
         }
 
-        $listeCollectivite = $this->getRoleUtilisateur()->getEntite($this->getId_u(), "entite:lecture");
+        $listeCollectivite = $this->getRoleUtilisateur()->getEntite(
+            $this->getId_u(),
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
+        );
 
         $this->setViewParameter('display_entite_racine', $this->getViewParameterOrObject('id_e_menu') != 0
         && (count($listeCollectivite) > 1 || (isset($listeCollectivite[0]) && $listeCollectivite[0] == 0)));

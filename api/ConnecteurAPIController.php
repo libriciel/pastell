@@ -6,6 +6,7 @@ use Pastell\Service\Connecteur\ConnecteurCreationService;
 use Pastell\Service\Connecteur\ConnecteurDeletionService;
 use Pastell\Service\Connecteur\ConnecteurModificationService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 
 class ConnecteurAPIController extends BaseAPIController
 {
@@ -45,7 +46,7 @@ class ConnecteurAPIController extends BaseAPIController
         if ($id_e && !$this->entiteSQL->getInfo($id_e)) {
             throw new NotFoundException("L'entité $id_e n'existe pas");
         }
-        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ENTITE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
         return $id_e;
     }
 
@@ -251,26 +252,29 @@ class ConnecteurAPIController extends BaseAPIController
 
     /**
      * @throws ForbiddenException
+     * @throws NotFoundException
      */
     private function checkConnecteurLecture(int $id_e): void
     {
-        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_CONNECTEUR));
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
     }
 
     /**
      * @throws ForbiddenException
+     * @throws NotFoundException
      */
     private function checkConnecteurEdition(int $id_e): void
     {
-        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_CONNECTEUR));
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
     }
 
     /**
      * @throws ForbiddenException
+     * @throws NotFoundException
      */
     private function checkConnecteurAction(int $id_e): void
     {
-        $this->checkDroit($id_e, DroitService::getDroitAction(DroitService::DROIT_CONNECTEUR));
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::ACTION);
     }
 
     /**

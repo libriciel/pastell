@@ -4,6 +4,8 @@ use Pastell\File\Chunk\ChunkRequest;
 use Pastell\File\Chunk\ChunkUploader;
 use Pastell\Service\Document\DocumentDeletionService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Document\DocumentEmailService;
 
 class DocumentAPIController extends BaseAPIController
 {
@@ -24,6 +26,7 @@ class DocumentAPIController extends BaseAPIController
         private DocumentDeletionService $documentDeletionService,
         private DocumentEmail $documentEmail,
         private DocumentEmailReponseSQL $documentEmailReponseSQL,
+        private DocumentEmailService $documentEmailService,
         private readonly ChunkUploader $chunkUploader,
     ) {
     }
@@ -38,7 +41,7 @@ class DocumentAPIController extends BaseAPIController
         if ($id_e && !$this->entiteSQL->getInfo($id_e)) {
             throw new NotFoundException("L'entité $id_e n'existe pas");
         }
-        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ENTITE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
         return $id_e;
     }
 
@@ -89,13 +92,13 @@ class DocumentAPIController extends BaseAPIController
         if (!$id_e) {
             throw new Exception('id_e est obligatoire');
         }
-        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ENTITE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
 
         $allDroitEntite = $this->getDroitService()->getAllDocumentLecture($this->getUtilisateurId(), $id_e);
 
         $indexedFieldValue = [];
         if ($type) {
-            $this->checkDroit($id_e, DroitService::getDroitLecture($type));
+            $this->checkDroitFor($id_e, $type, DroitType::LECTURE);
             $documentType = $this->documentTypeFactory->getFluxDocumentType($type);
             $indexedFieldsList = $documentType->getFormulaire()->getIndexedFields();
 
@@ -135,6 +138,7 @@ class DocumentAPIController extends BaseAPIController
     }
 
     /**
+     * @throws NotFoundException
      * @throws ForbiddenException
      */
     private function countByEntityFormat()
@@ -146,9 +150,8 @@ class DocumentAPIController extends BaseAPIController
             throw new Exception('Les paramètres id_e et type sont obligatoires.');
         }
 
-        // verifier les droits
-        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ENTITE));
-        $this->checkDroit($id_e, DroitService::getDroitLecture($type));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
+        $this->checkDroitFor($id_e, $type, DroitType::LECTURE);
 
         $req = $this->getRequest();
         unset($req['id_e']);
@@ -193,7 +196,7 @@ class DocumentAPIController extends BaseAPIController
     private function internalDetail($id_e, $id_d): array
     {
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitLecture($info['type']));
+        $this->checkDroitLecture($id_e, $id_d, $info['type']);
         $result['info'] = $info;
         $donneesFormulaire = $this->donneesFormulaireFactory->get($id_d, $info['type']);
 
@@ -314,7 +317,7 @@ class DocumentAPIController extends BaseAPIController
         $field = $this->getFromQueryArgs(4);
 
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitLecture($info['type']));
+        $this->checkDroitFor($id_e, $info['type'], DroitType::LECTURE);
         $documentType = $this->documentTypeFactory->getFluxDocumentType($info['type']);
         $formulaire = $documentType->getFormulaire();
         $theField = $formulaire->getField($field);
@@ -343,7 +346,7 @@ class DocumentAPIController extends BaseAPIController
         $field = $this->getFromQueryArgs(4);
         $action_name = $this->getActionNameFromField($id_d, $field);
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitEdition($info['type']));
+        $this->checkDroitFor($id_e, $info['type'], DroitType::EDITION);
         $this->actionExecutorFactory->goChoice(
             $id_e,
             $this->getUtilisateurId(),
@@ -384,7 +387,7 @@ class DocumentAPIController extends BaseAPIController
         $num = $this->getFromQueryArgs(5) ?: 0;
 
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitLecture($info['type']));
+        $this->checkDroitLecture($id_e, $id_d, $info['type']);
         $mode_receive = $this->getFromRequest('receive');
         if ($mode_receive) {
             return $this->receiveFileAction($id_e, $id_d, $field, $num);
@@ -437,7 +440,7 @@ class DocumentAPIController extends BaseAPIController
             return $this->actionAction($id_e, $id_d);
         }
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitEdition($info['type']));
+        $this->checkDroitFor($id_e, $info['type'], DroitType::EDITION);
         if (!$this->actionPossible->isActionPossible($id_e, $this->getUtilisateurId(), $id_d, 'modification')) {
             throw new Exception("L'action « modification »  n'est pas permise");
         }
@@ -493,7 +496,7 @@ class DocumentAPIController extends BaseAPIController
     public function receiveFileAction($id_e, $id_d, $field_name, $file_number)
     {
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitLecture($info['type']));
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::LECTURE));
         $donneesFormulaire = $this->donneesFormulaireFactory->get($id_d);
 
         $result['file_name'] = $donneesFormulaire->getFileName($field_name, $file_number);
@@ -514,7 +517,7 @@ class DocumentAPIController extends BaseAPIController
         array $actionParams = []
     ): array {
         $info = $this->getDocumentInfo($entityId, $documentId);
-        $this->checkDroit($entityId, $this->getDroitService()->getDroitEdition($info['type']));
+        $this->checkDroit($entityId, $this->getDroitService()->getDroitFor($info['type'], DroitType::EDITION));
         if (!$this->actionPossible->isActionPossible($entityId, $this->getUtilisateurId(), $documentId, $action)) {
             throw new Exception("L'action « $action »  n'est pas permise : " . $this->actionPossible->getLastBadRule());
         }
@@ -556,7 +559,7 @@ class DocumentAPIController extends BaseAPIController
         $id_e = $this->checkedEntite();
         $id_d = $this->getFromQueryArgs(2);
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitEdition($info['type']));
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::EDITION));
 
         if ($this->getFromQueryArgs(3) === 'file') {
             return $this->deleteFile($id_d, (int)$id_e);
@@ -590,7 +593,7 @@ class DocumentAPIController extends BaseAPIController
     public function postChunk(string $id_e, string $id_d): array
     {
         $info = $this->getDocumentInfo((int)$id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitEdition($info['type']));
+        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::EDITION));
 
         $field_name = $this->getFromQueryArgs(4);
         $file_number = $this->getFromQueryArgs(5);
@@ -661,5 +664,20 @@ class DocumentAPIController extends BaseAPIController
         }
 
         return $info;
+    }
+
+    /**
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
+    private function checkDroitLecture(int $id_e, string $id_d, string $type): void
+    {
+        // Si l'id_d est un document_email_reponse alors on vérifie les droits sur le document_email, issue #2488
+        $mail_info = $this->documentEmailService->getDocumentEmailFromIdReponse($id_d);
+        if (!empty($mail_info)) {
+            $this->checkDroitFor($id_e, $mail_info['type'], DroitType::LECTURE);
+        } else {
+            $this->checkDroitFor($id_e, $type, DroitType::LECTURE);
+        }
     }
 }
