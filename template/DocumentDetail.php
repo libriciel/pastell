@@ -15,7 +15,7 @@
  * @var int $page
  * @var Action $theAction
  * @var array $document_email_reponse_list
- * @var bool $is_super_admin
+ * @var bool $system_edition
  * @var array|bool $job_list
  * @var string $return_url
  * @var bool $droit_erreur_fatale
@@ -281,7 +281,7 @@ if ($infoDocumentEmail) :
 </div>
 
 
-<?php if ($is_super_admin) : ?>
+<?php if ($system_edition) : ?>
     <div class="box">
         <a class="collapse-link" data-bs-toggle="collapse" data-bs-target="#collapseExample">
             <h2><i class="fa fa-plus-square"></i>&nbsp;Administration avancée</h2>

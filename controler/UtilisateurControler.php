@@ -67,7 +67,7 @@ class UtilisateurControler extends PastellControler
         $this->setEntiteMenuGauche((int) $id_e);
         $this->setNavigationInfo($id_e, 'Entite/utilisateur');
         $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_UTILISATEUR);
-        $this->setDroitLectureOnConnecteur($this->getViewParameterOrObject('id_e'));
+        $this->setDroitViewParameter((int) $this->getViewParameterOrObject('id_e'), DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
     }
 
     /**
@@ -399,6 +399,7 @@ class UtilisateurControler extends PastellControler
             \json_encode(\Pastell\Helpers\ArrayHelper::buildTreeselectOptions($arbre), \JSON_THROW_ON_ERROR)
         );
 
+        $this->setDroitViewParameter((int) $info['id_e'], DroitService::DROIT_JOURNAL, DroitType::LECTURE);
         $this->setViewParameter('template_milieu', 'UtilisateurDetail');
         $this->renderDefault();
     }

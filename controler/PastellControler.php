@@ -29,42 +29,6 @@ class PastellControler extends Controler
         }
     }
 
-    protected function setDroitLectureOnConnecteur(int $id_e): void
-    {
-        $this->setViewParameter('droit_lecture_on_connecteur', $this->getDroitService()->hasDroitFor(
-            $this->getId_u(),
-            $id_e,
-            DroitService::DROIT_CONNECTEUR,
-            DroitType::LECTURE
-        ));
-    }
-
-    protected function setCanActOnConnector(int $entityId): void
-    {
-        $this->setViewParameter(
-            'canActOnConnector',
-            $this->getDroitService()->hasDroitFor(
-                $this->getId_u(),
-                $entityId,
-                DroitService::DROIT_CONNECTEUR,
-                DroitType::ACTION,
-            )
-        );
-    }
-
-    protected function setCanEditConnector(int $entityId): void
-    {
-        $this->setViewParameter(
-            'canEditConnector',
-            $this->getDroitService()->hasDroitFor(
-                $this->getId_u(),
-                $entityId,
-                DroitService::DROIT_CONNECTEUR,
-                DroitType::EDITION,
-            )
-        );
-    }
-
     /**
      * @throws LastMessageException
      * @throws LastErrorException
@@ -183,6 +147,17 @@ class PastellControler extends Controler
     public function hasDroitFor(int $id_e, string $droit_id, DroitType $droit_type): bool
     {
         return $this->getDroitService()->hasDroitFor((int) $this->getId_u(), $id_e, $droit_id, $droit_type);
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    public function setDroitViewParameter(int $id_e, string $droit_id, DroitType $droit_type): void
+    {
+        $this->setViewParameter(
+            $droit_id . '_' . $droit_type->value,
+            $this->hasDroitFor($id_e, $droit_id, $droit_type)
+        );
     }
 
     public function getId_u()

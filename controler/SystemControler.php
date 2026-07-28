@@ -34,10 +34,7 @@ class SystemControler extends PastellControler
      */
     public function indexAction(): void
     {
-        $this->setViewParameter(
-            'droitEdition',
-            $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION)
-        );
+        $this->setDroitViewParameter(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         /** @var HealthCheck $healthCheck */
         $healthCheck = $this->getInstance(HealthCheck::class);

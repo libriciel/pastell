@@ -7,6 +7,7 @@
  * @var string $denominationEntiteDeBase
  * @var Certificate $certificat
  * @var bool $utilisateur_edition
+ * @var bool $journal_lecture
  * @var array $arbre
  * @var array $notification_list
  * @var array $all_module
@@ -96,9 +97,7 @@ use Pastell\Utilities\Certificate;
         <?php endif; ?>
 
         <?php
-        if (
-            $this->getRoleUtilisateur()->hasDroit($authentification->getId(), 'journal:lecture', $info['id_e'])
-        ) : ?>
+        if ($journal_lecture) : ?>
             <tr>
                 <th>Dernières actions</th>
                 <td>
