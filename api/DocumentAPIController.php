@@ -674,6 +674,7 @@ class DocumentAPIController extends BaseAPIController
         if (!empty($mail_info)) {
             $this->checkDroitFor($id_e, $mail_info['type'], DroitType::LECTURE);
         } else {
-            $this->checkDroitFor($id_e, $type, DroitType::LECTURE);        }
+            $this->checkDroitFor($id_e, $type, DroitType::LECTURE);
+        }
     }
 }
