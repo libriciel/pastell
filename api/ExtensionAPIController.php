@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
+
 class ExtensionAPIController extends BaseAPIController
 {
     public function __construct(
@@ -14,7 +17,7 @@ class ExtensionAPIController extends BaseAPIController
      */
     public function get(): array
     {
-        $this->checkDroit(0, 'system:lecture');
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
         $id_extension = $this->getFromQueryArgs(0);
         if ($id_extension) {
             if (! $this->extensionSQL->getInfo($id_extension)) {
@@ -37,7 +40,7 @@ class ExtensionAPIController extends BaseAPIController
      */
     public function post(): array
     {
-        $this->checkDroit(0, 'system:edition');
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $path = $this->getFromRequest('path');
         if (! file_exists($path)) {
             throw new Exception("Le chemin « $path » n'existe pas sur le système de fichier");
@@ -62,7 +65,7 @@ class ExtensionAPIController extends BaseAPIController
      */
     public function patch()
     {
-        $this->checkDroit(0, 'system:edition');
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_extension = $this->getFromQueryArgs(0);
         if (! $id_extension || ! $this->extensionSQL->getInfo($id_extension)) {
             throw new NotFoundException("Extension #$id_extension non trouvée");
@@ -92,7 +95,7 @@ class ExtensionAPIController extends BaseAPIController
      */
     public function delete()
     {
-        $this->checkDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_extension = $this->getFromQueryArgs(0);
         if (! $id_extension || ! $this->extensionSQL->getInfo($id_extension)) {
             throw new NotFoundException("Extension #$id_extension non trouvée");
@@ -110,7 +113,7 @@ class ExtensionAPIController extends BaseAPIController
      */
     public function compatV1Edition()
     {
-        $this->checkDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $id_extension = $this->getFromRequest('id_extension');
         $path = $this->getFromRequest('path');

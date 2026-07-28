@@ -49,7 +49,7 @@ class UtilisateurAPIController extends BaseAPIController
 
         $id_e = $this->getFromRequest('id_e', 0);
 
-        $this->checkDroit($id_e, "utilisateur:lecture");
+        $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
 
         $listUtilisateur = $this->utilisateurListe->getAllUtilisateurSimple($id_e);
         $result = [];
@@ -90,7 +90,7 @@ class UtilisateurAPIController extends BaseAPIController
     private function getDetailInfoForAPI($id_u)
     {
         $infoUtilisateur = $this->verifExists($id_u);
-        $this->checkDroit($infoUtilisateur['id_e'], "utilisateur:lecture");
+        $this->checkDroitFor($infoUtilisateur['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
 
         $result = [];
         $result['id_u'] = (string)$infoUtilisateur['id_u'];
@@ -124,7 +124,7 @@ class UtilisateurAPIController extends BaseAPIController
         if (
             $id_u !== false
             && $this->verifExists($id_u)
-            && $this->checkDroit($this->utilisateur->getInfo($id_u)['id_e'], 'utilisateur:edition')
+            && $this->checkDroitFor($this->utilisateur->getInfo($id_u)['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION)
         ) {
             $action = $this->getFromQueryArgs(1);
             if ($action === 'activate') {
@@ -146,7 +146,7 @@ class UtilisateurAPIController extends BaseAPIController
             return $this->detail();
         }
 
-        $this->checkDroit($id_e, 'utilisateur:creation');
+        $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::CREATION);
 
         if ($this->getFromRequest('is_api')) {
             $id_u = $this->userCreationService->createAPI(
@@ -189,8 +189,7 @@ class UtilisateurAPIController extends BaseAPIController
 
         $id_e = $this->getFromRequest('id_e', $infoUtilisateurExistant['id_e']);
 
-        // Vérification des droits.
-        $this->checkDroit($id_e, 'utilisateur:edition');
+        $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
 
         // Modification de l'utilisateur chargé avec les infos passées par l'API
         foreach ($data as $key => $newValeur) {
@@ -252,10 +251,7 @@ class UtilisateurAPIController extends BaseAPIController
 
         $infoUtilisateur = $this->utilisateur->getUserFromData($data);
 
-        $this->checkDroit(
-            $infoUtilisateur['id_e'],
-            DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION)
-        );
+        $this->checkDroitFor($infoUtilisateur['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
 
         $this->utilisateurDeletionService->delete($infoUtilisateur['id_u']);
 
@@ -316,16 +312,14 @@ class UtilisateurAPIController extends BaseAPIController
 
     /**
      * @throws ForbiddenException
+     * @throws NotFoundException
      */
     private function deleteUserToken(?int $id_u = null): array
     {
         if ($id_u !== null) {
             $tokenId = $this->getFromQueryArgs(2);
             $infoUtilisateur = $this->utilisateur->getInfo($id_u);
-            $this->checkDroit(
-                $infoUtilisateur['id_e'],
-                DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION)
-            );
+            $this->checkDroitFor($infoUtilisateur['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
         } else {
             $tokenId = $this->getFromQueryArgs(1);
             $id_u = $this->getUtilisateurId();
@@ -341,15 +335,13 @@ class UtilisateurAPIController extends BaseAPIController
 
     /**
      * @throws ForbiddenException
+     * @throws NotFoundException
      */
     private function renewUserToken(?int $id_u = null): array
     {
         if ($id_u !== null) {
             $infoUtilisateur = $this->utilisateur->getInfo($id_u);
-            $this->checkDroit(
-                $infoUtilisateur['id_e'],
-                DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION)
-            );
+            $this->checkDroitFor($infoUtilisateur['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
             $tokenId = $this->getFromQueryArgs(2);
         } else {
             $tokenId = $this->getFromQueryArgs(1);

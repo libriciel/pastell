@@ -7,7 +7,7 @@ class RoleAPIController extends BaseAPIController
 {
     public function get()
     {
-        $this->checkOneDroit(DroitService::getDroitFor(DroitService::DROIT_ROLE, DroitType::LECTURE));
+        $this->checkOneDroitFor(DroitService::DROIT_ROLE, DroitType::LECTURE);
         return $this->getRoleUtilisateur()->getAuthorizedRoleToDelegate($this->getUtilisateurId());
     }
 }

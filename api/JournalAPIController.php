@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
+
 class JournalAPIController extends BaseAPIController
 {
     public function __construct(
@@ -9,6 +12,10 @@ class JournalAPIController extends BaseAPIController
     ) {
     }
 
+    /**
+     * @throws NotFoundException
+     * @throws ForbiddenException
+     */
     public function get()
     {
         $id_j = $this->getFromQueryArgs(0);
@@ -28,7 +35,7 @@ class JournalAPIController extends BaseAPIController
         $format = $this->getFromRequest('format');
         $csv_entete_colonne = $this->getFromRequest('csv_entete_colonne', 0);
 
-        $this->checkDroit($id_e, 'journal:lecture');
+        $this->checkDroitFor($id_e, DroitService::DROIT_JOURNAL, DroitType::LECTURE);
 
         if ($format != 'csv') {
             $result = $this->journal->getAll(
@@ -149,13 +156,17 @@ class JournalAPIController extends BaseAPIController
         exit_wrapper(0);
     }
 
+    /**
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
     private function getInfo($id_j)
     {
         $info = $this->journal->getAllInfo($id_j);
         if (! $info) {
             throw new NotFoundException("L'événement $id_j n'a pas été trouvé");
         }
-        $this->checkDroit($info['id_e'], "journal:lecture");
+        $this->checkDroitFor($info['id_e'], DroitService::DROIT_JOURNAL, DroitType::LECTURE);
         return $info;
     }
 }

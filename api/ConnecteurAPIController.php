@@ -22,7 +22,6 @@ class ConnecteurAPIController extends BaseAPIController
         private readonly ConnecteurDeletionService $connecteurDeletionService,
         private readonly ConnecteurModificationService $connecteurModificationService,
         private readonly ChunkUploader $chunkUploader,
-        private readonly DroitService $droitService,
     ) {
     }
 
@@ -47,7 +46,7 @@ class ConnecteurAPIController extends BaseAPIController
         if ($id_e && !$this->entiteSQL->getInfo($id_e)) {
             throw new NotFoundException("L'entité $id_e n'existe pas");
         }
-        $this->checkDroit($id_e, "entite:lecture");
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
         return $id_e;
     }
 
@@ -253,26 +252,29 @@ class ConnecteurAPIController extends BaseAPIController
 
     /**
      * @throws ForbiddenException
+     * @throws NotFoundException
      */
     private function checkConnecteurLecture(int $id_e): void
     {
-        $this->checkDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_CONNECTEUR, DroitType::LECTURE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
     }
 
     /**
      * @throws ForbiddenException
+     * @throws NotFoundException
      */
     private function checkConnecteurEdition(int $id_e): void
     {
-        $this->checkDroit($id_e, DroitService::getDroitFor(DroitService::DROIT_CONNECTEUR, DroitType::EDITION));
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
     }
 
     /**
      * @throws ForbiddenException
+     * @throws NotFoundException
      */
     private function checkConnecteurAction(int $id_e): void
     {
-        $this->checkDroit($id_e, $this->droitService->getActionPermission(DroitService::DROIT_CONNECTEUR));
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::ACTION);
     }
 
     /**
