@@ -642,6 +642,11 @@ class MailSecControler extends PastellControler
         echo json_encode($result);
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
     public function operationGroupeRoleAction()
     {
         $recuperateur = new Recuperateur($_POST);
@@ -652,7 +657,7 @@ class MailSecControler extends PastellControler
         foreach ($all_id_r as $id_r) {
             $info = $this->getAnnuaireRoleSQL()->getInfo($id_r);
 
-            if ($this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ANNUAIRE, DroitType::EDITION), $info['id_e_owner'])) {
+            if ($this->hasDroitFor($info['id_e_owner'], DroitService::DROIT_ANNUAIRE, DroitType::EDITION)) {
                 if ($submit == "Supprimer") {
                     $this->getAnnuaireRoleSQL()->delete($id_r);
                     $this->setLastMessage("Les groupes sélectionnés ont été supprimés");
