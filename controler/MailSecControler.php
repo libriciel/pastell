@@ -179,7 +179,7 @@ class MailSecControler extends PastellControler
         $id_g = $recuperateur->getInt('id_g');
         $offset = $recuperateur->getInt('offset');
         $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::LECTURE);
-        $this->setViewParameter('can_edit', $this->hasDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION));
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION);
 
         $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
         $this->setViewParameter('infoGroupe', $annuaireGroupe->getInfo($id_e, $id_g));
