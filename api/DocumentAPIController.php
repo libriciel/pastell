@@ -196,7 +196,7 @@ class DocumentAPIController extends BaseAPIController
     private function internalDetail($id_e, $id_d): array
     {
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroitLecture($id_e, $id_d, $info['type']);
+        $this->checkDroitFor($id_e, $this->resolveTypeDossier($id_d, $info['type']), DroitType::LECTURE);
         $result['info'] = $info;
         $donneesFormulaire = $this->donneesFormulaireFactory->get($id_d, $info['type']);
 
@@ -387,7 +387,7 @@ class DocumentAPIController extends BaseAPIController
         $num = $this->getFromQueryArgs(5) ?: 0;
 
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroitLecture($id_e, $id_d, $info['type']);
+        $this->checkDroitFor($id_e, $this->resolveTypeDossier($id_d, $info['type']), DroitType::LECTURE);
         $mode_receive = $this->getFromRequest('receive');
         if ($mode_receive) {
             return $this->receiveFileAction($id_e, $id_d, $field, $num);
@@ -666,18 +666,10 @@ class DocumentAPIController extends BaseAPIController
         return $info;
     }
 
-    /**
-     * @throws ForbiddenException
-     * @throws NotFoundException
-     */
-    private function checkDroitLecture(int $id_e, string $id_d, string $type): void
+    private function resolveTypeDossier(string $id_d, string $type): string
     {
         // Si l'id_d est un document_email_reponse alors on vérifie les droits sur le document_email, issue #2488
         $mail_info = $this->documentEmailService->getDocumentEmailFromIdReponse($id_d);
-        if (!empty($mail_info)) {
-            $this->checkDroitFor($id_e, $mail_info['type'], DroitType::LECTURE);
-        } else {
-            $this->checkDroitFor($id_e, $type, DroitType::LECTURE);
-        }
+        return $mail_info['type'] ?? $type;
     }
 }
