@@ -496,7 +496,7 @@ class DocumentAPIController extends BaseAPIController
     public function receiveFileAction($id_e, $id_d, $field_name, $file_number)
     {
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::LECTURE));
+        $this->checkDroitFor($id_e, $info['type'], DroitType::LECTURE);
         $donneesFormulaire = $this->donneesFormulaireFactory->get($id_d);
 
         $result['file_name'] = $donneesFormulaire->getFileName($field_name, $file_number);
@@ -517,7 +517,7 @@ class DocumentAPIController extends BaseAPIController
         array $actionParams = []
     ): array {
         $info = $this->getDocumentInfo($entityId, $documentId);
-        $this->checkDroit($entityId, $this->getDroitService()->getDroitFor($info['type'], DroitType::EDITION));
+        $this->checkDroitFor($entityId, $info['type'], DroitType::EDITION);
         if (!$this->actionPossible->isActionPossible($entityId, $this->getUtilisateurId(), $documentId, $action)) {
             throw new Exception("L'action « $action »  n'est pas permise : " . $this->actionPossible->getLastBadRule());
         }
@@ -559,7 +559,7 @@ class DocumentAPIController extends BaseAPIController
         $id_e = $this->checkedEntite();
         $id_d = $this->getFromQueryArgs(2);
         $info = $this->getDocumentInfo($id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::EDITION));
+        $this->checkDroitFor($id_e, $info['type'], DroitType::EDITION);
 
         if ($this->getFromQueryArgs(3) === 'file') {
             return $this->deleteFile($id_d, (int)$id_e);
@@ -593,7 +593,7 @@ class DocumentAPIController extends BaseAPIController
     public function postChunk(string $id_e, string $id_d): array
     {
         $info = $this->getDocumentInfo((int)$id_e, $id_d);
-        $this->checkDroit($id_e, $this->getDroitService()->getDroitFor($info['type'], DroitType::EDITION));
+        $this->checkDroitFor($id_e, $info['type'], DroitType::EDITION);
 
         $field_name = $this->getFromQueryArgs(4);
         $file_number = $this->getFromQueryArgs(5);

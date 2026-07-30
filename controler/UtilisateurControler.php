@@ -318,10 +318,7 @@ class UtilisateurControler extends PastellControler
             );
             $this->redirect();
         }
-        $this->setViewParameter(
-            'utilisateur_edition',
-            $this->hasDroitFor($info['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION)
-        );
+        $this->setDroitViewParameter((int) $info['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
 
         if (
             (int) $id_u === $this->getId_u()
