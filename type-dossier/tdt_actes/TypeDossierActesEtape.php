@@ -96,17 +96,18 @@ class TypeDossierActesEtape implements TypeDossierEtapeSetSpecificInformation
             $go = true;
 
             if (
-                in_array(
-                    $action_id,
-                    $result[DocumentType::ACTION][TypeDossierTranslator::ORIENTATION][Action::ACTION_RULE]
-                    [Action::ACTION_RULE_LAST_ACTION]
-                )
+                in_array($action_id, $result[DocumentType::ACTION][TypeDossierTranslator::ORIENTATION][Action::ACTION_RULE]
+                [Action::ACTION_RULE_LAST_ACTION], true)
             ) {
                 $this->makeEditable($action_id, $result, $stringMapper);
             }
         }
-
         $this->makeEditable('termine', $result, $stringMapper);
+
+        $result['champs-affiches'][] = $stringMapper->get('numero_de_lacte');
+        $result['champs-recherche-avancee'][] = $stringMapper->get('numero_de_lacte');
+        $result['champs-recherche-avancee'][] = $stringMapper->get('acte_unique_id');
+
         return $result;
     }
 
