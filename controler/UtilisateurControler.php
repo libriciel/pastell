@@ -355,10 +355,9 @@ class UtilisateurControler extends PastellControler
         if (!$this->hasDroitFor($info['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::LECTURE)) {
             $this->setLastError(
                 \sprintf(
-                    "Vous n'avez pas les droits nécessaires (%s:%s:%s) pour accéder à cette page",
+                    "Vous n'avez pas les droits nécessaires (%s:%s) pour accéder à cette page",
                     $info['id_e'],
-                    DroitService::DROIT_UTILISATEUR,
-                    DroitType::LECTURE->value
+                    DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::LECTURE)
                 )
             );
             $this->redirect();
