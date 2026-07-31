@@ -2,6 +2,8 @@
 
 use Pastell\Service\TypeDossier\TypeDossierImportService;
 use Pastell\Service\TypeDossier\TypeDossierUtilService;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 
 class TypeDossierLoader
 {
@@ -67,8 +69,8 @@ class TypeDossierLoader
 
         $this->extensionLoader->loadExtension([$this->tmp_folder]);
 
-        $this->roleSQL->addDroit('admin', "{$type_dossier}:lecture");
-        $this->roleSQL->addDroit('admin', "{$type_dossier}:edition");
+        $this->roleSQL->addDroit('admin', DroitService::getDroitFor($type_dossier, DroitType::LECTURE));
+        $this->roleSQL->addDroit('admin', DroitService::getDroitFor($type_dossier, DroitType::EDITION));
         $this->memoryCache->flushAll();
     }
 

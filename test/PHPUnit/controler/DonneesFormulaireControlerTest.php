@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
+
 class DonneesFormulaireControlerTest extends ControlerTestCase
 {
     /**
@@ -40,11 +43,11 @@ class DonneesFormulaireControlerTest extends ControlerTestCase
     public function visionneuseProvider(): iterable
     {
         yield 'visionneuseWithDroitLecture' => [
-            ["helios-generique:lecture"],
+            [DroitService::getDroitFor('helios-generique', DroitType::LECTURE)],
             "#Rapport acquittement#"
         ];
         yield 'visionneuseWithoutDroitLecture' => [
-            ["helios-generique:edition"],
+            [DroitService::getDroitFor('helios-generique', DroitType::EDITION)],
             "#KO#"
         ];
     }

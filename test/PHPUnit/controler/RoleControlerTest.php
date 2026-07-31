@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
+
 class RoleControlerTest extends ControlerTestCase
 {
     /** @var  RoleControler */
@@ -64,7 +67,7 @@ class RoleControlerTest extends ControlerTestCase
     public function testDoDetailAction()
     {
         $this->expectException("LastMessageException");
-        $this->setPostInfo(['role' => 'test','droit' => ['system:lecture' => 'selected']]);
+        $this->setPostInfo(['role' => 'test','droit' => [DroitService::getDroitFor(DroitService::DROIT_SYSTEM, DroitType::LECTURE) => 'selected']]);
         $this->roleControler->doDetailAction();
     }
 
@@ -84,7 +87,13 @@ class RoleControlerTest extends ControlerTestCase
             /** Nothing to do */
         }
 
-        $this->assertEquals(['entite:lecture' => 1, 'journal:lecture' => 1], $this->roleControler->getRoleSQL()->getDroit([], 'test'));
+        $this->assertEquals(
+            [
+                DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE) => 1,
+                DroitService::getDroitFor(DroitService::DROIT_JOURNAL, DroitType::LECTURE) => 1,
+            ],
+            $this->roleControler->getRoleSQL()->getDroit([], 'test')
+        );
     }
 
     public function testEditionActionNoInput(): void

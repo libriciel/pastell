@@ -116,7 +116,7 @@ class RoleUtilisateur extends SQL
         $liste_type = [];
         $allDroit = $this->getAllDroitEntite($id_u, $id_e);
         foreach ($allDroit as $droit) {
-            if (preg_match('/^(.*):lecture$/', $droit, $result)) {
+            if (preg_match('/^(.*):' . self::DROIT_LECTURE . '$/', $droit, $result)) {
                 $liste_type[] = $result[1];
             }
         }

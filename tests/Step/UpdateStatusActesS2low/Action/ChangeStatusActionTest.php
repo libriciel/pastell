@@ -6,6 +6,8 @@ namespace Pastell\Tests\Step\UpdateStatusActesS2low\Action;
 
 use NotFoundException;
 use Pastell\Client\S2low\S2lowClientFactory;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 use PastellTestCase;
 use Psr\Http\Client\ClientInterface;
 use GuzzleHttp\Psr7\Request;
@@ -65,8 +67,8 @@ final class ChangeStatusActionTest extends PastellTestCase
 
         /** @var RoleSQL $roleSQL */
         $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
-        $roleSQL->addDroit('admin', self::FLUX_RECUP_ACTES_S2LOW . ":lecture");
-        $roleSQL->addDroit('admin', self::FLUX_RECUP_ACTES_S2LOW . ":edition");
+        $roleSQL->addDroit('admin', DroitService::getDroitFor(self::FLUX_RECUP_ACTES_S2LOW, DroitType::LECTURE));
+        $roleSQL->addDroit('admin', DroitService::getDroitFor(self::FLUX_RECUP_ACTES_S2LOW, DroitType::EDITION));
 
         $documentId = $this->createDocument(self::FLUX_RECUP_ACTES_S2LOW)['id_d'];
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($documentId);

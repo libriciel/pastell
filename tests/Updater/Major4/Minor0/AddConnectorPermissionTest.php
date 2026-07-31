@@ -3,6 +3,8 @@
 namespace Pastell\Tests\Updater\Major4\Minor0;
 
 use Exception;
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Updater\Major4\Minor0\AddConnectorPermission;
 use PastellTestCase;
 use RoleDroit;
@@ -18,21 +20,24 @@ class AddConnectorPermissionTest extends PastellTestCase
         $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
         $roleDroit = $this->getObjectInstancier()->getInstance(RoleDroit::class);
 
-        $droit = $roleSQL->getDroit($roleDroit->getAllDroit(), 'admin');
-        $this->assertTrue($droit['connecteur:lecture']);
-        $this->assertTrue($droit['connecteur:edition']);
+        $connecteur_lecture = DroitService::getDroitFor(DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
+        $connecteur_edition = DroitService::getDroitFor(DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
 
-        unset($droit['connecteur:lecture']);
-        unset($droit['connecteur:edition']);
+        $droit = $roleSQL->getDroit($roleDroit->getAllDroit(), 'admin');
+        static::assertTrue($droit[$connecteur_lecture]);
+        static::assertTrue($droit[$connecteur_edition]);
+
+        unset($droit[$connecteur_lecture]);
+        unset($droit[$connecteur_edition]);
         $roleSQL->updateDroit('admin', array_keys($droit, true));
 
         $droit = $roleSQL->getDroit($roleDroit->getAllDroit(), 'admin');
-        $this->assertFalse($droit['connecteur:lecture']);
-        $this->assertFalse($droit['connecteur:edition']);
+        static::assertFalse($droit[$connecteur_lecture]);
+        static::assertFalse($droit[$connecteur_edition]);
 
         $this->getObjectInstancier()->getInstance(AddConnectorPermission::class)->update();
         $droit = $roleSQL->getDroit($roleDroit->getAllDroit(), 'admin');
-        $this->assertTrue($droit['connecteur:lecture']);
-        $this->assertTrue($droit['connecteur:edition']);
+        static::assertTrue($droit[$connecteur_lecture]);
+        static::assertTrue($droit[$connecteur_edition]);
     }
 }
