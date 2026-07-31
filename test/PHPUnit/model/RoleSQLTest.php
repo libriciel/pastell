@@ -20,7 +20,10 @@ class RoleSQLTest extends PastellTestCase
             DroitService::getDroitFor('test', DroitType::LECTURE),
             DroitService::getDroitFor('test', DroitType::EDITION),
         ]);
-        $this->createRole('role2', 'Rôle 2', [DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)]);
+        $this->createRole('role2', 'Rôle 2', [
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION),
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
+        ]);
     }
 
     private function createRole($id, $libelle, array $droit_list)
