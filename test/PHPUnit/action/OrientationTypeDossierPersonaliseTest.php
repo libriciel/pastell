@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
+
 class OrientationTypeDossierPersonaliseTest extends PastellTestCase
 {
     /** @var TypeDossierLoader */
@@ -61,8 +64,8 @@ class OrientationTypeDossierPersonaliseTest extends PastellTestCase
 
         $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
 
-        $roleSQL->addDroit('admin', "test-simple:lecture");
-        $roleSQL->addDroit('admin', "test-simple:edition");
+        $roleSQL->addDroit('admin', DroitService::getDroitFor('test-simple', DroitType::LECTURE));
+        $roleSQL->addDroit('admin', DroitService::getDroitFor('test-simple', DroitType::EDITION));
 
         $id_d = $this->createDocument("test-simple")['id_d'];
 
@@ -78,8 +81,8 @@ class OrientationTypeDossierPersonaliseTest extends PastellTestCase
 
         $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
 
-        $roleSQL->addDroit('admin', "test-failed:lecture");
-        $roleSQL->addDroit('admin', "test-failed:edition");
+        $roleSQL->addDroit('admin', DroitService::getDroitFor('test-failed', DroitType::LECTURE));
+        $roleSQL->addDroit('admin', DroitService::getDroitFor('test-failed', DroitType::EDITION));
 
         $id_d = $this->createDocument("test-failed")['id_d'];
 

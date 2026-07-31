@@ -3,6 +3,8 @@
 use Pastell\File\Chunk\ChunkRequest;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Mailsec\MailsecManager;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 
 class DocumentAPIControllerTest extends PastellTestCase
 {
@@ -367,8 +369,8 @@ class DocumentAPIControllerTest extends PastellTestCase
         $this->expectExceptionMessage('Acces interdit id_e=1, droit=test:edition,id_u=3');
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
         $roleSql->edit('readonly', 'readonly');
-        $roleSql->addDroit('readonly', 'entite:lecture');
-        $roleSql->addDroit('readonly', 'test:lecture');
+        $roleSql->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+        $roleSql->addDroit('readonly', DroitService::getDroitFor('test', DroitType::LECTURE));
         $userId = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create(
                 'readonly',
@@ -487,8 +489,8 @@ class DocumentAPIControllerTest extends PastellTestCase
 
         //userAvecDroit mailsec-bidir:lecture
         $roleSql->edit('lecteur_mail', 'lecteur_mail');
-        $roleSql->addDroit('lecteur_mail', 'entite:lecture');
-        $roleSql->addDroit('lecteur_mail', 'mailsec-bidir:lecture');
+        $roleSql->addDroit('lecteur_mail', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+        $roleSql->addDroit('lecteur_mail', DroitService::getDroitFor('mailsec-bidir', DroitType::LECTURE));
         $userAvecDroit = $userCreationService->create('lecteur_mail', 'lecteur_mail@example.org', 'user', 'user');
         $roleUtilisateur->addRole($userAvecDroit, 'lecteur_mail', self::ID_E_COL);
 
@@ -498,8 +500,8 @@ class DocumentAPIControllerTest extends PastellTestCase
 
         //userSansDroit mailsec-bidir:lecture (avec mailsec-bidir-reponse:lecture)
         $roleSql->edit('lecteur_reponse', 'lecteur_reponse');
-        $roleSql->addDroit('lecteur_reponse', 'entite:lecture');
-        $roleSql->addDroit('lecteur_reponse', 'mailsec-bidir-reponse:lecture');
+        $roleSql->addDroit('lecteur_reponse', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+        $roleSql->addDroit('lecteur_reponse', DroitService::getDroitFor('mailsec-bidir-reponse', DroitType::LECTURE));
         $userSansDroit = $userCreationService->create('lecteur_reponse', 'lecteur_reponse@example.org', 'user', 'user');
         $roleUtilisateur->addRole($userSansDroit, 'lecteur_reponse', self::ID_E_COL);
 
@@ -674,8 +676,8 @@ class DocumentAPIControllerTest extends PastellTestCase
     {
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
         $roleSql->edit('readonly', 'readonly');
-        $roleSql->addDroit('readonly', 'entite:lecture');
-        $roleSql->addDroit('readonly', 'test:lecture');
+        $roleSql->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+        $roleSql->addDroit('readonly', DroitService::getDroitFor('test', DroitType::LECTURE));
         $userId = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create(
                 'readonly',

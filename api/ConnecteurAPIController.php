@@ -61,7 +61,7 @@ class ConnecteurAPIController extends BaseAPIController
             return $this->listAllConnecteur();
         }
         $id_e = $this->checkedEntite();
-        $this->checkConnecteurLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
 
         $id_ce = $this->getFromQueryArgs(2);
         if ($id_ce) {
@@ -82,10 +82,11 @@ class ConnecteurAPIController extends BaseAPIController
     /**
      * @return array
      * @throws ForbiddenException
+     * @throws NotFoundException
      */
     public function listAllConnecteur(): array
     {
-        $this->checkConnecteurLecture(0);
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
         $id_connecteur = $this->getFromQueryArgs(1);
         if (!$id_connecteur) {
             $connectors = $this->connecteurEntiteSQL->getAllForPlateform();
@@ -110,7 +111,7 @@ class ConnecteurAPIController extends BaseAPIController
      */
     public function detail($id_e, $id_ce)
     {
-        $this->checkConnecteurLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
         $this->checkedConnecteur($id_e, $id_ce);
         if ('file' == $this->getFromQueryArgs(3)) {
             return $this->readFichier($id_ce);
@@ -251,33 +252,6 @@ class ConnecteurAPIController extends BaseAPIController
     }
 
     /**
-     * @throws ForbiddenException
-     * @throws NotFoundException
-     */
-    private function checkConnecteurLecture(int $id_e): void
-    {
-        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
-    }
-
-    /**
-     * @throws ForbiddenException
-     * @throws NotFoundException
-     */
-    private function checkConnecteurEdition(int $id_e): void
-    {
-        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
-    }
-
-    /**
-     * @throws ForbiddenException
-     * @throws NotFoundException
-     */
-    private function checkConnecteurAction(int $id_e): void
-    {
-        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::ACTION);
-    }
-
-    /**
      * @return array|bool|mixed
      * @throws ForbiddenException
      * @throws NotFoundException
@@ -305,7 +279,7 @@ class ConnecteurAPIController extends BaseAPIController
             return $this->postFile($id_e, $id_ce);
         }
 
-        $this->checkConnecteurEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $libelle = $this->getFromRequest('libelle');
 
         if (!$libelle) {
@@ -356,7 +330,7 @@ class ConnecteurAPIController extends BaseAPIController
         $id_ce = $this->getFromQueryArgs(2);
 
         $this->checkedConnecteur($id_e, $id_ce);
-        $this->checkConnecteurEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         if ($this->getFromQueryArgs(3) === 'file') {
             $field_name = $this->getFromQueryArgs(4);
             $file_num = $this->getFromQueryArgs(5) ?: 0;
@@ -390,7 +364,7 @@ class ConnecteurAPIController extends BaseAPIController
         $id_ce = $this->getFromQueryArgs(2);
 
         $this->checkedConnecteur($id_e, $id_ce);
-        $this->checkConnecteurEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
 
         $content = $this->getFromQueryArgs(3);
         if ($content == 'content') {
@@ -455,7 +429,7 @@ class ConnecteurAPIController extends BaseAPIController
             return $this->postAction($id_e, $id_ce);
         }
 
-        $this->checkConnecteurEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $field_name = $this->getFromQueryArgs(4);
         $file_number = $this->getFromQueryArgs(5) ?: 0;
 
@@ -489,7 +463,7 @@ class ConnecteurAPIController extends BaseAPIController
      */
     public function postAction($id_e, $id_ce): array
     {
-        $this->checkConnecteurAction($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::ACTION);
 
         $action_name = $this->getFromQueryArgs(4);
         $action_params = $this->getFromRequest('action_params', []);
@@ -538,7 +512,7 @@ class ConnecteurAPIController extends BaseAPIController
      */
     public function postChunk(string $id_e, string $id_ce): array
     {
-        $this->checkConnecteurEdition((int)$id_e);
+        $this->checkDroitFor((int)$id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
 
         $field_name = $this->getFromQueryArgs(4);
         $file_number = $this->getFromQueryArgs(5);

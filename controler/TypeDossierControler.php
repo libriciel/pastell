@@ -626,8 +626,8 @@ class TypeDossierControler extends PastellControler
         $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
 
         $role_list = array_unique(array_merge(
-            $roleSQL->getRoleByDroit("$id_type_dossier:lecture"),
-            $roleSQL->getRoleByDroit("$id_type_dossier:edition")
+            $roleSQL->getRoleByDroit(DroitService::getDroitFor($id_type_dossier, DroitType::LECTURE)),
+            $roleSQL->getRoleByDroit(DroitService::getDroitFor($id_type_dossier, DroitType::EDITION))
         ));
 
         if ($role_list) {

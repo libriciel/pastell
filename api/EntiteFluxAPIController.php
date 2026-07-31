@@ -30,26 +30,6 @@ class EntiteFluxAPIController extends BaseAPIController
     }
 
     /**
-     * @param int $id_e
-     * @throws ForbiddenException
-     * @throws NotFoundException
-     */
-    private function checkConnecteurLecture(int $id_e): void
-    {
-        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
-    }
-
-    /**
-     * @param int $id_e
-     * @throws ForbiddenException
-     * @throws NotFoundException
-     */
-    private function checkConnecteurEdition(int $id_e): void
-    {
-        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
-    }
-
-    /**
      * @throws ForbiddenException
      * @throws NotFoundException
      * @api {get}  /Connecteur/recherche /Connecteur/recherche
@@ -66,7 +46,7 @@ class EntiteFluxAPIController extends BaseAPIController
     public function get()
     {
         $id_e = $this->checkedEntite();
-        $this->checkConnecteurLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
         $flux = $this->getFromRequest('flux', null);
         $type = $this->getFromRequest('type', null);
 
@@ -106,7 +86,7 @@ class EntiteFluxAPIController extends BaseAPIController
     public function postConnecteur(): array
     {
         $id_e = (int)$this->checkedEntite();
-        $this->checkConnecteurEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $flux = $this->getFromQueryArgs(2);
         $id_ce = (int)$this->getFromQueryArgs(4);
         $type = $this->getFromRequest('type');
@@ -187,7 +167,7 @@ class EntiteFluxAPIController extends BaseAPIController
     {
         $id_e = $this->checkedEntite();
         $id_fe = $this->getFromRequest('id_fe');
-        $this->checkConnecteurEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
         $this->connecteurAssociationService->deleteConnecteurAssociationById_fe(

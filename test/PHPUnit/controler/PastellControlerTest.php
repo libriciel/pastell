@@ -1,6 +1,8 @@
 <?php
 
 use Pastell\Service\Entite\EntityCreationService;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 
 class PastellControlerTest extends ControlerTestCase
 {
@@ -45,7 +47,7 @@ class PastellControlerTest extends ControlerTestCase
         $entityCreationService = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
         $entityCreationService->create('Nouvelle entité', '000000000');
 
-        $this->authenticateNewUserWithPermission(['helios-generique:edition'], 1);
+        $this->authenticateNewUserWithPermission([DroitService::getDroitFor('helios-generique', DroitType::EDITION)], 1);
 
         $pastellControler = $this->getObjectInstancier()->getInstance(PastellControler::class);
 
@@ -61,7 +63,7 @@ class PastellControlerTest extends ControlerTestCase
         $entityCreationService = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
         $entityCreationService->create('Nouvelle entité', '000000000');
 
-        $this->authenticateNewUserWithPermission(['helios-generique:edition'], 1);
+        $this->authenticateNewUserWithPermission([DroitService::getDroitFor('helios-generique', DroitType::EDITION)], 1);
 
         $pastellControler = $this->getObjectInstancier()->getInstance(PastellControler::class);
 
@@ -84,7 +86,7 @@ class PastellControlerTest extends ControlerTestCase
             2
         );
 
-        $this->authenticateNewUserWithPermission(['helios-generique:edition'], $id_e_fille);
+        $this->authenticateNewUserWithPermission([DroitService::getDroitFor('helios-generique', DroitType::EDITION)], $id_e_fille);
 
         $pastellControler = $this->getObjectInstancier()->getInstance(PastellControler::class);
         $pastellControler->setNavigationInfo($id_e_fille, 'test');
