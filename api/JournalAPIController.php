@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 
 class JournalAPIController extends BaseAPIController
 {
@@ -34,7 +35,7 @@ class JournalAPIController extends BaseAPIController
         $format = $this->getFromRequest('format');
         $csv_entete_colonne = $this->getFromRequest('csv_entete_colonne', 0);
 
-        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_JOURNAL));
+        $this->checkDroitFor($id_e, DroitService::DROIT_JOURNAL, DroitType::LECTURE);
 
         if ($format != 'csv') {
             $result = $this->journal->getAll(
@@ -165,7 +166,7 @@ class JournalAPIController extends BaseAPIController
         if (! $info) {
             throw new NotFoundException("L'événement $id_j n'a pas été trouvé");
         }
-        $this->checkDroit($info['id_e'], DroitService::getDroitLecture(DroitService::DROIT_JOURNAL));
+        $this->checkDroitFor($info['id_e'], DroitService::DROIT_JOURNAL, DroitType::LECTURE);
         return $info;
     }
 }

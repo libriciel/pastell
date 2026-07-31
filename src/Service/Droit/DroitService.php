@@ -3,15 +3,37 @@
 namespace Pastell\Service\Droit;
 
 use DocumentTypeFactory;
+use EntiteSQL;
+use NotFoundException;
 use RoleUtilisateur;
+use UtilisateurSQL;
 
 class DroitService
 {
-    public const string DROIT_LECTURE = 'lecture';
-    public const string DROIT_ECRITURE = 'edition';
-    public const string DROIT_ACTION = 'action';
-    public const string DROIT_CREATION = 'creation';
-    public const string DROIT_SUPPRESSION = 'suppression';
+    /**
+     * @deprecated 4.1.21 Use DroitType::LECTURE instead
+     */
+    public const DROIT_LECTURE = 'lecture';
+
+    /**
+     * @deprecated 4.1.21 Use DroitType::EDITION instead
+     */
+    public const DROIT_ECRITURE = 'edition';
+
+    /**
+     * @deprecated 4.1.21 Use DroitType::ACTION instead
+     */
+    public const DROIT_ACTION = 'action';
+
+    /**
+     * @deprecated 4.1.21 Use DroitType::CREATION instead
+     */
+    public const DROIT_CREATION = 'creation';
+
+    /**
+     * @deprecated 4.1.21 Use DroitType::SUPPRESSION instead
+     */
+    public const DROIT_SUPPRESSION = 'suppression';
 
     public const string DROIT_CONNECTEUR = 'connecteur';
     public const string DROIT_SYSTEM = 'system';
@@ -26,32 +48,42 @@ class DroitService
     public function __construct(
         private readonly RoleUtilisateur $roleUtilisateur,
         private readonly DocumentTypeFactory $documentTypeFactory,
+        private readonly EntiteSQL $entiteSQL,
+        private readonly UtilisateurSQL $utilisateurSQL,
     ) {
     }
 
-    private static function getPermission(string $part, string $action): string
-    {
-        return \sprintf('%s:%s', $part, $action);
-    }
 
+    /**
+     * @deprecated 4.1.21 Use DroitService::getDroitFor() instead
+     */
     public static function getDroitLecture(string $part): string
     {
-        return self::getPermission($part, self::DROIT_LECTURE);
+        return self::getDroitFor($part, DroitType::LECTURE);
     }
 
+    /**
+     * @deprecated 4.1.21 Use DroitService::getDroitFor() instead
+     */
     public static function getDroitEdition(string $part): string
     {
-        return self::getPermission($part, self::DROIT_ECRITURE);
+        return self::getDroitFor($part, DroitType::EDITION);
     }
 
+    /**
+     * @deprecated 5.0.8 Use DroitService::getDroitFor() instead
+     */
     public static function getDroitAction(string $part): string
     {
-        return self::getPermission($part, self::DROIT_ACTION);
+        return self::getDroitFor($part, DroitType::ACTION);
     }
 
+    /**
+     * @deprecated 5.0.8 Use DroitService::getDroitFor() instead
+     */
     public static function getDroitCreation(string $part): string
     {
-        return self::getPermission($part, self::DROIT_CREATION);
+        return self::getDroitFor($part, DroitType::CREATION);
     }
 
     /**
@@ -59,6 +91,7 @@ class DroitService
      * @param string $droit
      * @param $id_e (pas possible de typer int. Peut être '' EntiteControler::doEditionAction)
      * @return bool
+     * @deprecated 4.1.21 Use hasDroitFor() instead
      */
     public function hasDroit($id_u, string $droit, $id_e): bool
     {
@@ -71,8 +104,20 @@ class DroitService
         return $this->roleUtilisateur->hasDroit($id_u, $droit, $id_e);
     }
 
+    /**
+     * @deprecated 4.1.21 Use hasOneDroitFor() instead
+     */
     public function hasOneDroit(int $id_u, string $droit): bool
     {
+        if ($this->isRestrictedDroit($droit)) {
+            return false;
+        }
+        return $this->roleUtilisateur->hasOneDroit($id_u, $droit);
+    }
+
+    public function hasOneDroitFor(int $id_u, string $droit_id, DroitType $droit_type): bool
+    {
+        $droit = self::getDroitFor($droit_id, $droit_type);
         if ($this->isRestrictedDroit($droit)) {
             return false;
         }
@@ -117,28 +162,40 @@ class DroitService
         return array_values($data);
     }
 
+    /**
+     * @deprecated 4.1.21 Use DroitService::hasDroitFor() instead
+     */
     public function hasDroitConnecteurLecture(int $id_e, int $id_u): bool
     {
-        return $this->hasDroit($id_u, self::getDroitLecture(self::DROIT_CONNECTEUR), $id_e);
+        return $this->hasDroit($id_u, self::getDroitFor(self::DROIT_CONNECTEUR, DroitType::LECTURE), $id_e);
     }
 
+    /**
+     * @deprecated 4.1.21 Use DroitService::hasDroitFor() instead
+     */
     public function hasDroitConnecteurEdition(int $id_e, int $id_u): bool
     {
-        return $this->hasDroit($id_u, self::getDroitEdition(self::DROIT_CONNECTEUR), $id_e);
+        return $this->hasDroit($id_u, self::getDroitFor(self::DROIT_CONNECTEUR, DroitType::EDITION), $id_e);
     }
 
+    /**
+     * @deprecated 4.1.21 Use DroitService::hasDroitFor() instead
+     */
     public function hasConnectorActionPermission(int $entityId, int $userId): bool
     {
         return $this->hasDroit(
             $userId,
-            self::getDroitAction(self::DROIT_CONNECTEUR),
+            self::getDroitFor(self::DROIT_CONNECTEUR, DroitType::ACTION),
             $entityId,
         );
     }
 
+    /**
+     * @deprecated 4.1.21 Use DroitService::hasDroitFor() instead
+     */
     public function hasDroitUtilisateurLecture(int $id_e, int $id_u): bool
     {
-        return $this->hasDroit($id_u, self::getDroitLecture(self::DROIT_UTILISATEUR), $id_e);
+        return $this->hasDroit($id_u, self::getDroitFor(self::DROIT_UTILISATEUR, DroitType::LECTURE), $id_e);
     }
 
     public function clearRestrictedDroit(array $all_droit): array
@@ -178,5 +235,36 @@ class DroitService
     public function isRestrictedConnecteur(string $id_connecteur, bool $global = false): bool
     {
         return $this->documentTypeFactory->isRestrictedConnecteur($id_connecteur, $global);
+    }
+
+    public static function getDroitFor(string $droit_id, DroitType $droit_type): string
+    {
+        return \sprintf('%s:%s', $droit_id, $droit_type->value);
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    public function hasDroitFor($id_u, int $id_e, string $droit_id, DroitType $droit_type): bool
+    {
+        $droit = self::getDroitFor($droit_id, $droit_type);
+
+        if ($id_e !== EntiteSQL::ID_E_ENTITE_RACINE && !$this->entiteSQL->getInfo($id_e)) {
+            throw new NotFoundException("L'entité $id_e n'existe pas");
+        }
+
+        if ($id_u === 0) {
+            return true;
+        }
+
+        if (!$this->utilisateurSQL->getInfo($id_u)) {
+            return false;
+        }
+
+        if ($this->isRestrictedDroit($droit)) {
+            return false;
+        }
+
+        return $this->roleUtilisateur->hasDroit($id_u, $droit, $id_e);
     }
 }

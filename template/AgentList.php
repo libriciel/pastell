@@ -5,7 +5,7 @@
  * @var int $id_e
  * @var int $page
  * @var string $search
- * @var bool $droit_edition
+ * @var bool $entite_edition
  * @var int $offset
  * @var int $nbAgent
  * @var array $listAgent
@@ -22,7 +22,7 @@
         <input type='text' name='search' value='<?php hecho($search); ?>' class="form-control col-md-2 me-2"/>
         <button type='submit' class='btn btn-primary'><i class='fa fa-search'></i>&nbsp;Rechercher</button>
 
-        <?php if ($droit_edition) : ?>
+        <?php if ($entite_edition) : ?>
             <a href="Entite/import?id_e=<?php echo $id_e; ?>&onglet=agents&page_retour=2"
                class='btn btn-primary ms-2'><i class="fa fa-upload"></i>&nbsp;Importer</a>
         <?php endif; ?>

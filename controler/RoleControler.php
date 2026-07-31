@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheService;
 
@@ -12,11 +13,16 @@ class RoleControler extends PastellControler
         $this->setViewParameter('menu', $this->getInstance(MenuGaucheService::class)->getConfigurationMenu());
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
     public function indexAction()
     {
-        $this->verifDroit(0, "role:lecture");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::LECTURE);
         $this->setViewParameter('allRole', $this->getRoleSQL()->getAllRole());
-        if ($this->hasDroit(0, "role:edition")) {
+        if ($this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION)) {
             $this->setViewParameter('nouveau_bouton_url', ["Ajouter" => "Role/edition"]);
         }
         $this->setViewParameter('page_title', "Rôles");
@@ -24,11 +30,16 @@ class RoleControler extends PastellControler
         $this->renderDefault();
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
     public function detailAction()
     {
-        $this->verifDroit(0, "role:lecture");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::LECTURE);
         $this->setViewParameter('role', $this->getGetInfo()->get('role'));
-        $this->setViewParameter('role_edition', $this->hasDroit(0, "role:edition"));
+        $this->setDroitViewParameter(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION);
         $this->setViewParameter('role_info', $this->getRoleSQL()->getInfo($this->getViewParameterOrObject('role')));
 
         /** @var RoleDroit $roleDroit */
@@ -50,7 +61,7 @@ class RoleControler extends PastellControler
      */
     public function editionAction(): void
     {
-        $this->verifDroit(0, 'role:edition');
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION);
         $role = $this->getGetInfo()->get('role');
 
         if ($role) {
@@ -78,7 +89,7 @@ class RoleControler extends PastellControler
      */
     public function doEditionAction(): void
     {
-        $this->verifDroit(0, 'role:edition');
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION);
         $role = $this->getPostInfo()->get('role');
         $role = preg_replace('/\s+/', '_', $role);
         $libelle = $this->getPostInfo()->get('libelle');
@@ -95,8 +106,8 @@ class RoleControler extends PastellControler
 
         $this->getRoleSQL()->edit($role, $libelle);
         if ($this->getPostInfo()->get('nouveau')) {
-            $this->getRoleSQL()->addDroit($role, 'journal:lecture');
-            $this->getRoleSQL()->addDroit($role, 'entite:lecture');
+            $this->getRoleSQL()->addDroit($role, DroitService::getDroitFor(DroitService::DROIT_JOURNAL, DroitType::LECTURE));
+            $this->getRoleSQL()->addDroit($role, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         }
         $this->redirect("/Role/detail?role=$role");
     }
@@ -107,7 +118,7 @@ class RoleControler extends PastellControler
      */
     public function doDeleteAction()
     {
-        $this->verifDroit(0, "role:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION);
         $role = $this->getPostInfo()->get('role');
 
         if ($this->getRoleUtilisateur()->anybodyHasRole($role)) {
@@ -125,9 +136,13 @@ class RoleControler extends PastellControler
         $this->redirect("/Role/index");
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function doDetailAction()
     {
-        $this->verifDroit(0, "role:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION);
         $role = $this->getPostInfo()->get('role');
         $droit = $this->getPostInfo()->get('droit', []);
 

@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Module\ModuleListService;
+use Pastell\Service\Droit\DroitType;
 
 class FluxAPIController extends BaseAPIController
 {
@@ -26,7 +27,7 @@ class FluxAPIController extends BaseAPIController
         if (! $this->documentTypeFactory->isTypePresent($idFlux)) {
             throw new NotFoundException("Le flux $idFlux n'existe pas sur cette plateforme");
         }
-        $this->checkOneDroit(DroitService::getDroitLecture($idFlux));
+        $this->checkOneDroitFor($idFlux, DroitType::LECTURE);
 
         if ($action === 'action') {
             return $this->listAction($idFlux);

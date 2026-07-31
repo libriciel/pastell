@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
+
 class ExtensionCppTestCase extends PastellTestCase
 {
     public const TMP_EXTRACTED = __DIR__ . "/fixtures/fixtures_chorus/tmp_extracted";
@@ -42,8 +45,8 @@ class ExtensionCppTestCase extends PastellTestCase
         ];
 
         foreach ($flux_id_list as $id_flux) {
-            $roleSQL->addDroit('admin', "$id_flux:lecture");
-            $roleSQL->addDroit('admin', "$id_flux:edition");
+            $roleSQL->addDroit('admin', DroitService::getDroitFor($id_flux, DroitType::LECTURE));
+            $roleSQL->addDroit('admin', DroitService::getDroitFor($id_flux, DroitType::EDITION));
         }
     }
 

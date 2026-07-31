@@ -26,16 +26,25 @@ class RoleUtilisateur extends SQL
         $this->cache_ttl_in_seconds = $cache_ttl_in_seconds;
     }
 
+    /**
+     * @deprecated 4.1.21 Use DroitService::getDroitFor() instead
+     */
     public function getDroit($type_objet, $type_acces)
     {
         return sprintf("%s:%s", $type_objet, $type_acces);
     }
 
+    /**
+     * @deprecated 4.1.21 Use DroitService::getDroitFor() instead
+     */
     public function getDroitLecture($type_objet)
     {
         return $this->getDroit($type_objet, self::DROIT_LECTURE);
     }
 
+    /**
+     * @deprecated 4.1.21 Use DroitService::getDroitFor() instead
+     */
     public function getDroitEdition($type_objet)
     {
         return $this->getDroit($type_objet, self::DROIT_EDITION);
@@ -95,10 +104,10 @@ class RoleUtilisateur extends SQL
         //TODO c'est incomplet, on a pas id_e/id_u
     }
 
-    public function hasDroit($id_u, $droit, $id_e)
+    public function hasDroit($id_u, $droit, $id_e): bool
     {
         $allDroit = $this->getAllDroitEntite($id_u, $id_e);
-        return in_array($droit, $allDroit);
+        return in_array($droit, $allDroit, true);
     }
 
 
@@ -107,7 +116,7 @@ class RoleUtilisateur extends SQL
         $liste_type = [];
         $allDroit = $this->getAllDroitEntite($id_u, $id_e);
         foreach ($allDroit as $droit) {
-            if (preg_match('/^(.*):lecture$/', $droit, $result)) {
+            if (preg_match('/^(.*):' . self::DROIT_LECTURE . '$/', $droit, $result)) {
                 $liste_type[] = $result[1];
             }
         }
@@ -173,14 +182,11 @@ class RoleUtilisateur extends SQL
 
     /**
      * Vérifie qu'un utilisateur dispose d'au moins du droit unitaire sur une entité quelconque
-     * @param $id_u
-     * @param $droit
-     * @return bool
      */
-    public function hasOneDroit($id_u, $droit)
+    public function hasOneDroit(int $id_u, string $droit): bool
     {
         $allDroit = $this->getAllDroit($id_u);
-        return in_array($droit, $allDroit);
+        return in_array($droit, $allDroit, true);
     }
 
     private function linearizeTab($all)
