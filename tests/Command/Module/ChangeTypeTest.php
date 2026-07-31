@@ -7,6 +7,8 @@ namespace Pastell\Tests\Command\Module;
 use DocumentSQL;
 use FluxEntiteSQL;
 use Pastell\Command\Module\ChangeType;
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use PastellTestCase;
 use RoleDroit;
 use RoleSQL;
@@ -51,8 +53,8 @@ final class ChangeTypeTest extends PastellTestCase
 
         $roleDroit = $this->getObjectInstancier()->getInstance(RoleDroit::class);
         $droit = $this->roleSQL->getDroit($roleDroit->getAllDroit(), 'admin');
-        self::assertTrue($droit['test-new:lecture']);
-        self::assertTrue($droit['test-new:edition']);
+        self::assertTrue($droit[DroitService::getDroitFor('test-new', DroitType::LECTURE)]);
+        self::assertTrue($droit[DroitService::getDroitFor('test-new', DroitType::EDITION)]);
         self::assertCount(1, $this->fluxEntiteSQL->getAssociations('test-new'));
         self::assertCount(0, $this->fluxEntiteSQL->getAssociations('test'));
     }
