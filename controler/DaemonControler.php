@@ -737,17 +737,12 @@ class DaemonControler extends PastellControler
     public function createAction(): void
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
-        $tree = $this->getRoleUtilisateur()->getEntityTree($this->getId_u(), 'entite:edition');
+        $tree = $this->getRoleUtilisateur()
+            ->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
 
-        $this->replaceArrayKeyRecursive($tree, 'denomination', 'name');
-        $this->replaceArrayKeyRecursive($tree, 'id_e', 'value');
-        array_unshift($tree, [
-            'name' => 'Entité Racine',
-            'value' => '0',
-        ]);
         $this->setViewParameter(
             'tree',
-            \json_encode($tree, \JSON_THROW_ON_ERROR)
+            \json_encode(\Pastell\Helpers\ArrayHelper::buildTreeselectOptions($tree), \JSON_THROW_ON_ERROR)
         );
 
         $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_CONFIGURATION);
@@ -755,22 +750,6 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('template_milieu', 'DaemonCreate');
         $this->setViewParameter('page_title', 'Création d\'un gestionnaire de tâches');
         $this->renderDefault();
-    }
-
-    private function replaceArrayKeyRecursive(array &$array, string $oldName, string $newName): void
-    {
-        foreach ($array as &$element) {
-            if (\is_array($element)) {
-                $this->replaceArrayKeyRecursive($element, $oldName, $newName);
-            }
-            if (isset($element[$oldName])) {
-                $element[$newName] = $element[$oldName];
-                unset($element[$oldName]);
-            }
-            if (isset($element['children']) && \is_array($element['children'])) {
-                $this->replaceArrayKeyRecursive($element['children'], $oldName, $newName);
-            }
-        }
     }
 
     /**
