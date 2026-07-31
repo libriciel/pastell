@@ -3,6 +3,8 @@
 use Pastell\Service\TypeDossier\TypeDossierActionService;
 use Pastell\Service\TypeDossier\TypeDossierEditionService;
 use Pastell\Service\TypeDossier\TypeDossierExportService;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 
 class TypeDossierControlerTest extends ControlerTestCase
 {
@@ -74,8 +76,8 @@ class TypeDossierControlerTest extends ControlerTestCase
 
         $id_t = $this->copyTypeDossierTest();
 
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "cas-nominal:lecture");
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "cas-nominal:edition");
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('cas-nominal', DroitType::LECTURE));
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('cas-nominal', DroitType::EDITION));
         $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->deleteCache(1, 1);
 
         $this->createDocument('cas-nominal');
@@ -227,8 +229,8 @@ class TypeDossierControlerTest extends ControlerTestCase
         $id_t = $this->createTypeDossier('test-42');
         $this->assertTrue($typeDossierSQL->exists($id_t));
 
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "test-42:lecture");
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "test-42:edition");
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('test-42', DroitType::LECTURE));
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('test-42', DroitType::EDITION));
 
         $this->setGetInfo(['id_t' => $id_t]);
         try {
@@ -268,8 +270,8 @@ class TypeDossierControlerTest extends ControlerTestCase
     public function testSetAllFatalError(): void
     {
         $this->createTypeDossier('fluxstudio');
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', 'fluxstudio:lecture');
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', 'fluxstudio:edition');
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('fluxstudio', DroitType::LECTURE));
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('fluxstudio', DroitType::EDITION));
         $this->createDocument('fluxstudio');
         $docInfo = $this->getObjectInstancier()->getInstance(DocumentSQL::class)->getAllIdByType('fluxstudio');
         $lastActionDoc = $this->getObjectInstancier()->getInstance(DocumentActionEntite::class)->getLastAction($docInfo[0]['id_e'], $docInfo[0]['id_d']);

@@ -5,6 +5,8 @@ use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Utilities\Identifier\IdentifierGeneratorInterface;
 use Pastell\Utilities\Identifier\UuidGenerator;
 use Symfony\Component\HttpFoundation\Request;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 
 class DocumentControlerTest extends ControlerTestCase
 {
@@ -262,7 +264,7 @@ class DocumentControlerTest extends ControlerTestCase
         $id_u = $userCreationService->create('badguy', 'test@bar.baz', 'foo', 'foo');
 
         $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
-        $roleSQL->addDroit('utilisateur', 'actes-generique:lecture');
+        $roleSQL->addDroit('utilisateur', DroitService::getDroitFor('actes-generique', DroitType::LECTURE));
 
         $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
         $roleUtilisateur->addRole($id_u, 'admin', 2);
@@ -373,8 +375,8 @@ bar', $output);
     {
         $this->loadTypeDossier(__DIR__ . '/../pastell-core/type-dossier/fixtures/test-default-value.json');
         $typeDossier = 'testdefaultvalue';
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "$typeDossier:lecture");
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "$typeDossier:edition");
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor($typeDossier, DroitType::LECTURE));
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor($typeDossier, DroitType::EDITION));
         $documentID = $this->createDocument($typeDossier)['id_d'];
         $data = $this->getDonneesFormulaireFactory()->get($documentID, $typeDossier)->getRawDataWithoutPassword();
         $this->assertSame('Ma valeur par défaut !', $data['nomtest']);

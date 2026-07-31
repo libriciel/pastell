@@ -1,6 +1,8 @@
 <?php
 
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 
 class EntiteAPIControllerTest extends PastellTestCase
 {
@@ -197,9 +199,9 @@ class EntiteAPIControllerTest extends PastellTestCase
         $user = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create('tester', 'tester@example.org', 'tester', 'tester');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->edit('entite:lecture', 'entiteLectureEdition');
+            ->edit(DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE), 'entiteLectureEdition');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->edit('entite:edition', 'entiteLectureEdition');
+            ->edit(DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION), 'entiteLectureEdition');
         $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)
             ->addRole('3', 'entiteLectureEdition', '1');
         $this->expectException(ForbiddenException::class);

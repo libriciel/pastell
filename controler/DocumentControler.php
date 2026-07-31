@@ -343,7 +343,7 @@ class DocumentControler extends PastellControler
         $allDroit = $this->getDroitService()->getAllDroit($this->getId_u());
 
         foreach ($allDroit as $droit) {
-            if (preg_match('/^(.*):lecture$/u', $droit, $result)) {
+            if (preg_match('/^(.*):' . DroitType::LECTURE->value . '$/u', $droit, $result)) {
                 $liste_type[] = $result[1];
             }
         }
@@ -1271,7 +1271,7 @@ class DocumentControler extends PastellControler
         $info = $document->getInfo($id_d);
         $type = $info['type'];
         if (! $this->getDroitService()->hasDroitFor($this->getId_u(), $id_e, $type, DroitType::EDITION)) {
-            $this->setLastError("Vous n'avez pas le droit de faire cette action ($type:edition)");
+            $this->setLastError("Vous n'avez pas le droit de faire cette action (" . DroitService::getDroitFor($type, DroitType::EDITION) . ")");
             $this->redirect("/Document/edition?id_d=$id_d&id_e=$id_e");
         }
 
@@ -1306,7 +1306,7 @@ class DocumentControler extends PastellControler
         $type = $info['type'];
 
         if (! $this->getDroitService()->hasDroitFor($this->getId_u(), $id_e, $type, DroitType::EDITION)) {
-            $this->setLastError("Vous n'avez pas le droit de faire cette action ($type:edition)");
+            $this->setLastError("Vous n'avez pas le droit de faire cette action (" . DroitService::getDroitFor($type, DroitType::EDITION) . ")");
             $this->redirect("/Document/edition?id_d=$id_d&id_e=$id_e");
         }
 

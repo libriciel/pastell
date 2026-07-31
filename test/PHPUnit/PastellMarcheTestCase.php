@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
+
 class PastellMarcheTestCase extends PastellTestCase
 {
     public function reinitDatabase()
@@ -17,8 +20,8 @@ class PastellMarcheTestCase extends PastellTestCase
         ];
 
         foreach ($flux_id_list as $id_flux) {
-            $roleSQL->addDroit('admin', "$id_flux:lecture");
-            $roleSQL->addDroit('admin', "$id_flux:edition");
+            $roleSQL->addDroit('admin', DroitService::getDroitFor($id_flux, DroitType::LECTURE));
+            $roleSQL->addDroit('admin', DroitService::getDroitFor($id_flux, DroitType::EDITION));
         }
     }
 }

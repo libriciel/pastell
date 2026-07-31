@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Droit\DroitType;
+
 class DocumentCount
 {
     private $roleUtilisateur;
@@ -44,7 +46,7 @@ class DocumentCount
         $result = [];
 
         foreach ($all_droit as $info) {
-            if (! preg_match("#(.*):lecture#", $info['droit'], $matches)) {
+            if (! preg_match('#(.*):' . DroitType::LECTURE->value . '#', $info['droit'], $matches)) {
                 continue;
             }
             $type_match = $matches[1];
