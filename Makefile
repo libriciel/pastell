@@ -1,6 +1,6 @@
 DOCKER=docker
 PASTELL_PATH=/var/www/pastell
-EXEC_NODE=$(DOCKER) run --rm --volume ${PWD}:$(PASTELL_PATH) -it hubdocker.libriciel.fr/node:26.4-alpine3.24
+EXEC_NODE=$(DOCKER) run --rm --volume ${PWD}:$(PASTELL_PATH) -it hubdocker.libriciel.fr/node:26.5-alpine3.24
 EXEC_COMPOSER=$(DOCKER) run --rm --volume ${PWD}:/app --volume ${HOME}/.composer:/tmp -it composer:2
 MAKE_MODULE=$(DOCKER_COMPOSE_EXEC) php ./bin/console app:studio:make-module
 DOCKER_COMPOSE=docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml
