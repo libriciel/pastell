@@ -1,9 +1,9 @@
-FROM hubdocker.libriciel.fr/node:24.18-alpine3.24@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd AS node_modules
+FROM hubdocker.libriciel.fr/node:24.18-alpine3.24@sha256:f70403e87646dc51b45295f4b8b70cdad0b63d2297c4c9899119b03f7af7a6b3 AS node_modules
 WORKDIR /app/
 COPY package*.json ./
 RUN npm install
 
-FROM hubdocker.libriciel.fr/php:8.4.23-fpm-alpine3.24@sha256:913ddd6934a805429618a16aa36da47cd8a8aec8b2f111c294936ba4003fded6 AS base
+FROM hubdocker.libriciel.fr/php:8.4.24-fpm-alpine3.24@sha256:5992f8b7433fe7fa96dfbf67746c86d6c41bc91e686eac38fe531c72a02e40e4 AS base
 
 ARG UID=10001
 ARG GID=10001
@@ -99,7 +99,7 @@ RUN bash -c "mkdir -p /data/{config,html_purifier,log,run,session,upload_chunk,w
  && chown "$UID":"$GID" -R /data/
 
 COPY --from=node_modules /app/node_modules/ /app/node_modules/
-COPY --from=hubdocker.libriciel.fr/composer:2.10.1@sha256:7725eb4545c438629ae8bde3ef0bb9a5038ef566126ad878442a69007242d267 /usr/bin/composer /usr/local/bin/composer
+COPY --from=hubdocker.libriciel.fr/composer:2.10.2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 /usr/bin/composer /usr/local/bin/composer
 COPY ./composer.* /app/
 RUN --mount=type=secret,id=composer_auth,dst=/app/auth.json \
     /bin/bash -c 'mkdir -p /app/{web,web-mailsec}' && \
@@ -128,7 +128,7 @@ FROM base AS dev
 
 USER "root"
 
-COPY --from=hubdocker.libriciel.fr/composer:2.10.1@sha256:7725eb4545c438629ae8bde3ef0bb9a5038ef566126ad878442a69007242d267 /usr/bin/composer /usr/local/bin/composer
+COPY --from=hubdocker.libriciel.fr/composer:2.10.2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 /usr/bin/composer /usr/local/bin/composer
 
 RUN apk add --no-cache nodejs npm
 
