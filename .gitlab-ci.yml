@@ -167,7 +167,7 @@ acceptance_test:
     name: hubdocker.libriciel.fr/aquasec/trivy:0.72.0@sha256:cffe3f5161a47a6823fbd23d985795b3ed72a4c806da4c4df16266c02accdd6f
     entrypoint: [""]
   services:
-    - docker:dind@sha256:084e385b0c9b7ab35d5a46dfedd033721448c000dbec71adcf13da8a9e71baa8
+    - docker:dind@sha256:cebc379a615d8dec408ac36f8854bb5002dc83e64fc8bc6f35312130f898d0e0
   script:
     - apk add --no-cache curl docker-cli
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
