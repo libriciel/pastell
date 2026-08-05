@@ -235,7 +235,7 @@ $(document).ready(function() {
                 text: "Toutes les instances de connecteurs"
             }));
 
-            $.each($.parseJSON(data),function(index,value){
+            $.each(JSON.parse(data),function(index,value){
                 if (value.id_e !== "0" && getGlobalType() === "1"){
                     return;
                 }
@@ -346,7 +346,7 @@ $(document).ready(function() {
                 text: default_option
             }));
 
-            $.each($.parseJSON(data),function(index,value){
+            $.each(JSON.parse(data),function(index,value){
                 $(select_jquery_selector).append($("<option>",{
                     value: value,
                     text: value

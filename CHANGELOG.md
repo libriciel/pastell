@@ -20,6 +20,7 @@
   - `POST /api/v2/annuaire/groupe/:id_g` : ajouter un contact à un groupe
   - `DELETE /api/v2/annuaire/groupe/:id_g` : supprimer un groupe
   - `DELETE /api/v2/annuaire/groupe/:id_g/:id_a` : retirer un contact d'un groupe
+- Mise à jour de jQuery en version 4 et de select2 en version 4.1.0 #2461
 
 ## Évolutions
 

@@ -11,9 +11,9 @@
     "@libriciel/ls-elements-native": "^7.0.2",
     "@libriciel/ls-jquery-password": "1.2.3",
     "bootstrap": "^5.2",
-    "jquery": "^3.7.0",
+    "jquery": "^4.0.0",
     "jquery-ui": "^1.14.2",
-    "select2": "^4.0.13",
+    "select2": "^4.1.0",
     "treeselectjs": "^0.14.0"
   }
 }
