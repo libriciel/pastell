@@ -91,8 +91,8 @@ class UtilisateurControlerTest extends ControlerTestCase
         $this->setPostInfo(['id_u_list' => [2]]);
         try {
             $this->getUtilisateurControler()->doSuppressionAction();
-        } catch (Exception $e) {
-            echo $e->getMessage();
+        } catch (LastMessageException $e) {
+            self::assertStringContainsString("L'utilisateur a été supprimé", $e->getMessage());
         }
         self::assertFalse($utilisateurSQL->exists(2));
         $logMessages = array_column($this->getLogRecords(), 'message');
@@ -116,8 +116,8 @@ class UtilisateurControlerTest extends ControlerTestCase
         $this->setPostInfo(['id_u_list' => [2, $id_u3]]);
         try {
             $this->getUtilisateurControler()->doSuppressionAction();
-        } catch (Exception $e) {
-            echo $e->getMessage();
+        } catch (LastMessageException $e) {
+            self::assertStringContainsString('2 utilisateurs ont été supprimés', $e->getMessage());
         }
 
         self::assertFalse($utilisateurSQL->exists(2));
