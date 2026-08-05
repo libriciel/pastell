@@ -121,17 +121,6 @@ abstract class BaseAPIController
     }
 
     /**
-     * @deprecated 4.1.21 Use checkDroitFor() instead
-     * @throws ForbiddenException
-     */
-    protected function checkDroit($id_e, string $droit): void
-    {
-        if (!(($this->hasAllDroit) || $this->getDroitService()->hasDroit($this->id_u, $droit, $id_e))) {
-            throw new ForbiddenException("Acces interdit id_e=$id_e, droit=$droit,id_u={$this->id_u}");
-        }
-    }
-
-    /**
      * @throws ForbiddenException
      * @throws NotFoundException
      */
@@ -145,17 +134,6 @@ abstract class BaseAPIController
             throw new ForbiddenException("Acces interdit id_e=$id_e, droit=$droit,id_u={$this->id_u}");
         }
         return true;
-    }
-
-    /**
-     * @deprecated 4.1.21 Use checkOneDroitFor() instead
-     * @throws ForbiddenException
-     */
-    protected function checkOneDroit(string $droit): void
-    {
-        if (!(($this->hasAllDroit) || $this->getDroitService()->hasOneDroit($this->id_u, $droit))) {
-            throw new ForbiddenException("Vous devez avoir le droit $droit pour accéder à la ressource.");
-        }
     }
 
     /**

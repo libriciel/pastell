@@ -580,7 +580,7 @@ class SystemControler extends PastellControler
      */
     public function editWorkspaceAlertThresholdAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', "Modification du seuil d'alerte taux d'occupation du workspace");
         $this->setViewParameter('template_milieu', 'SystemEditWorkspaceAlertThreshold');
         $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
@@ -594,7 +594,7 @@ class SystemControler extends PastellControler
      */
     public function doEditWorkspaceAlertThresholdAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         try {
             $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->setWorkspaceAlertThreshold(
                 (int) $this->getPostInfo()->get('workspace_alert_threshold')

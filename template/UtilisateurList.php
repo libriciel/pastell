@@ -2,8 +2,7 @@
 
 /**
  * @var Gabarit $this
- * @var bool $droitCreation
- * @var bool $droitSuppression
+ * @var bool $utilisateur_suppression
  * @var bool $utilisateur_creation
  * @var string $descendance
  * @var array $all_role
@@ -75,7 +74,7 @@ $exportUserUrl = sprintf(
    href='<?php hecho($exportUserUrl); ?>'
 ><i class='fas fa-download'></i>&nbsp;Exporter</a>
 
-<?php if ($droitSuppression) : ?>
+<?php if ($utilisateur_suppression) : ?>
     <button type='submit' form='form-suppression-lot' class='btn btn-danger' id='btn-suppression-lot-top' disabled>
         <i class='fa fa-trash'></i>&nbsp;Supprimer la sélection
     </button>
@@ -89,7 +88,7 @@ $exportUserUrl = sprintf(
         "Entite/utilisateur?id_e=$id_e&page=1&search=$search&descendance=$descendance&role_selected=$role_selected"
     ); ?>
 
-<?php if ($droitSuppression) : ?>
+<?php if ($utilisateur_suppression) : ?>
 <form action='Utilisateur/suppression' method='post' id='form-suppression-lot'>
     <?php $this->displayCSRFInput() ?>
     <input type='hidden' name='id_e' value='<?= $id_e ?>'/>
@@ -102,7 +101,7 @@ $exportUserUrl = sprintf(
 <table class='table table-striped'>
 <thead>
 <tr>
-    <?php if ($droitSuppression) : ?>
+    <?php if ($utilisateur_suppression) : ?>
         <th><input type='checkbox' id='select-all-users' title='Tout sélectionner'/></th>
     <?php endif; ?>
     <th class='w200'>Prénom Nom</th>
@@ -118,7 +117,7 @@ $exportUserUrl = sprintf(
 
 <?php foreach ($liste_utilisateur as $user) : ?>
     <tr>
-        <?php if ($droitSuppression) : ?>
+        <?php if ($utilisateur_suppression) : ?>
             <td>
                 <?php if ($user['id_u'] !== $id_u_courant) : ?>
                     <input type='checkbox' name='id_u_list[]' value='<?= $user['id_u'] ?>' class='user-checkbox'/>
@@ -196,7 +195,7 @@ $exportUserUrl = sprintf(
        href='<?php hecho($exportUserUrl); ?>'
     ><i class='fas fa-download'></i>&nbsp;Exporter</a>
 
-<?php if ($droitSuppression) : ?>
+<?php if ($utilisateur_suppression) : ?>
     <button type='submit' form='form-suppression-lot' class='btn btn-danger' id='btn-suppression-lot' disabled>
         <i class='fa fa-trash'></i>&nbsp;Supprimer la sélection
     </button>

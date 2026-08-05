@@ -6,6 +6,7 @@ use Pastell\Service\Annuaire\AnnuaireContactService;
 use Pastell\Service\Annuaire\AnnuaireExportService;
 use Pastell\Service\Annuaire\AnnuaireImportService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 
 final class AnnuaireAPIController extends BaseAPIController
 {
@@ -32,7 +33,7 @@ final class AnnuaireAPIController extends BaseAPIController
         }
 
         $id_e = (int)$this->getFromRequest('id_e', 0);
-        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::LECTURE);
 
         $search = $this->getFromRequest('search', '');
         $offset = (int)$this->getFromRequest('offset', 0);
@@ -55,7 +56,7 @@ final class AnnuaireAPIController extends BaseAPIController
     private function export(): array
     {
         $id_e = (int)$this->getFromRequest('id_e', 0);
-        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::LECTURE);
 
         $content = $this->annuaireExportService->export($id_e);
 
@@ -86,7 +87,7 @@ final class AnnuaireAPIController extends BaseAPIController
         $description = (string)$this->getFromRequest('description', '');
         $email = (string)$this->getFromRequest('email', '');
 
-        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION);
 
         $id_a = $this->annuaireContactService->create($id_e, $description, $email);
         return $this->getContactInfo($id_a);
@@ -99,7 +100,7 @@ final class AnnuaireAPIController extends BaseAPIController
     private function import(): array
     {
         $id_e = (int)$this->getFromRequest('id_e', 0);
-        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION);
 
         $file_content = $this->getFileUploader()->getFileContent('csv');
         if ($file_content === false) {
@@ -129,7 +130,7 @@ final class AnnuaireAPIController extends BaseAPIController
         $id_a = (int)$this->getFromQueryArgs(0);
         $info = $this->verifExists($id_a);
 
-        $this->checkDroit((int)$info['id_e'], DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE));
+        $this->checkDroitFor((int)$info['id_e'], DroitService::DROIT_ANNUAIRE, DroitType::EDITION);
 
         $description = (string)$this->getFromRequest('description', $info['description']);
         $email = (string)$this->getFromRequest('email', $info['email']);
@@ -151,7 +152,7 @@ final class AnnuaireAPIController extends BaseAPIController
         $info = $this->verifExists($id_a);
 
         $id_e = (int)$info['id_e'];
-        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ANNUAIRE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION);
 
         $this->annuaireContactService->delete($id_e, $id_a);
 
@@ -177,7 +178,7 @@ final class AnnuaireAPIController extends BaseAPIController
     private function getContactInfo(int $id_a): array
     {
         $info = $this->verifExists($id_a);
-        $this->checkDroit((int)$info['id_e'], DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE));
+        $this->checkDroitFor((int)$info['id_e'], DroitService::DROIT_ANNUAIRE, DroitType::LECTURE);
         return $this->formatContact($info);
     }
 

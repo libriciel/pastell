@@ -53,100 +53,6 @@ class PastellControler extends Controler
     /**
      * @throws LastMessageException
      * @throws LastErrorException
-     * @deprecated 4.1.21 Use checkDroitFor() instead
-     */
-    public function hasConnecteurDroitEdition(int $id_e): void
-    {
-        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
-    }
-
-    /**
-     * @throws LastMessageException
-     * @throws LastErrorException
-     * @deprecated 4.1.21 Use checkDroitFor() instead
-     */
-    public function hasConnecteurDroitLecture(int $id_e): void
-    {
-        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
-    }
-
-    /**
-     * @throws LastMessageException
-     * @throws LastErrorException
-     * @deprecated 4.1.21 Use checkDroitFor() instead
-     */
-    public function hasConnectorActionPermission(int $entityId): void
-    {
-        $this->checkDroitFor($entityId, DroitService::DROIT_CONNECTEUR, DroitType::ACTION);
-    }
-
-    /**
-     * @throws LastMessageException
-     * @throws LastErrorException
-     * @deprecated 4.1.21 Use checkDroitFor() instead
-     */
-    public function hasUtilisateurDroitLecture(int $id_e): void
-    {
-        $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
-    }
-
-    /**
-     * @throws LastMessageException
-     * @throws LastErrorException
-     * @deprecated 4.1.21 Use checkDroitFor() instead
-     */
-    public function hasEntiteDroitLecture(int $id_e): void
-    {
-        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
-    }
-
-    /**
-     * @throws LastMessageException
-     * @throws LastErrorException
-     * @deprecated 4.1.21 Use checkDroitFor() instead
-     */
-    public function hasDroitEdition($id_e)
-    {
-        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
-    }
-
-    /**
-     * @throws LastMessageException
-     * @throws LastErrorException
-     * @deprecated 4.1.21 Use checkDroitFor() instead
-     */
-    public function verifDroit($id_e, $droit, $redirect_to = ""): bool
-    {
-        if ($id_e && ! $this->getEntiteSQL()->getInfo($id_e)) {
-            if ($this->hasDroit(0, $droit)) {
-                return true;
-            }
-            $this->setLastError("L'entité $id_e n'existe pas");
-            $this->redirect("/index.php");
-        }
-
-        if (! $this->hasDroit($id_e, $droit)) {
-            $this->setLastError("Vous n'avez pas les droits nécessaires ($id_e:$droit) pour accéder à cette page");
-            $this->redirect($redirect_to);
-        }
-
-        return true;
-    }
-
-    /**
-     * @deprecated 4.1.21 Use hasDroitFor() instead
-     */
-    public function hasDroit($id_e, $droit): bool
-    {
-        if (! $this->getId_u()) {
-            return true;
-        }
-        return $this->getDroitService()->hasDroit($this->getId_u(), $droit, $id_e);
-    }
-
-    /**
-     * @throws LastMessageException
-     * @throws LastErrorException
      */
     public function checkDroitFor(int $id_e, string $droit_id, DroitType $droit_type, string $redirect_to = ''): void
     {
@@ -306,7 +212,7 @@ class PastellControler extends Controler
         }
 
         if (
-            $this->getRoleUtilisateur()->hasDroit($this->getId_u(), DroitService::getDroitLecture(DroitService::DROIT_SYSTEM), 0)
+            $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE)
         ) {
             $threshold = $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->getWorkspaceAlertThreshold();
             $workspaceAlertWarning = $this->getObjectInstancier()->getInstance(FreeSpace::class)->getUsagePercent(

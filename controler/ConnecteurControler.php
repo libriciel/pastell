@@ -71,16 +71,6 @@ class ConnecteurControler extends PastellControler
     /**
      * @throws LastMessageException
      * @throws LastErrorException
-     * @deprecated 4.1.21 Use checkDroitFor() instead
-     */
-    public function hasDroitEdition($id_e): void
-    {
-        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
-    }
-
-    /**
-     * @throws LastMessageException
-     * @throws LastErrorException
      */
     private function getConnectorEntityDetails(int $entityId): array
     {
@@ -99,18 +89,6 @@ class ConnecteurControler extends PastellControler
     private function getConnecteurIdE(int $id_ce): int
     {
         return (int)$this->getConnectorEntityDetails($id_ce)['id_e'];
-    }
-
-    /**
-     * @deprecated Utiliser checkDroitFor(getConnecteurIdE($id_ce), ...) directement
-     * @throws LastErrorException
-     * @throws LastMessageException
-     */
-    public function verifDroitOnConnecteur($id_ce)
-    {
-        $connecteur_entite_info = $this->getConnectorEntityDetails($id_ce);
-        $this->checkDroitFor($connecteur_entite_info['id_e'], DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
-        return $connecteur_entite_info;
     }
 
     /**

@@ -405,7 +405,7 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('id_u', $id_u);
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
         $entity_tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree(
-            $this->getRoleUtilisateur()->getArbreFilleWithRacine($id_u, DroitService::getDroitLecture(DroitService::DROIT_ENTITE))
+            $this->getRoleUtilisateur()->getArbreFilleWithRacine($id_u, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE))
         ));
         $this->setViewParameter('entity_treeselect_data', \json_encode($entity_tree, \JSON_THROW_ON_ERROR));
 

@@ -70,6 +70,11 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('page_title', $texte);
     }
 
+    /**
+     * @throws NotFoundException
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function utilisateurAction()
     {
         $recuperateur = $this->getGetInfo();
@@ -104,14 +109,7 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('offset', $offset);
         $this->setViewParameter('search', $search);
         $this->setViewParameter('descendance', $descendance);
-        $this->setViewParameter(
-            'droitSuppression',
-            $this->getRoleUtilisateur()->hasDroit(
-                $this->getId_u(),
-                DroitService::getDroitSuppression(DroitService::DROIT_UTILISATEUR),
-                $id_e
-            )
-        );
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_UTILISATEUR, DroitType::SUPPRESSION);
 
         $this->setViewParameter('id_u_courant', $this->getId_u());
         $this->setViewParameter('template_milieu', 'UtilisateurList');

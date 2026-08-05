@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Pastell\Updater\Major6\Minor0;
 
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Updater\Version;
 use PastellLogger;
 use RoleDroit;
@@ -42,8 +44,8 @@ final class AddDroitUtilisateurSuppression implements Version
 
         if (!$existing_utilisateur_suppression_role) {
             foreach ($roles as $role) {
-                if ($roles_droits[$role['role']]['utilisateur:edition']) {
-                    $this->roleSQL->addDroit($role['role'], 'utilisateur:suppression');
+                if ($roles_droits[$role['role']][DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION)]) {
+                    $this->roleSQL->addDroit($role['role'], DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::SUPPRESSION));
                     $this->logger?->info(
                         \sprintf(
                             'Added utilisateur:suppression permission to role: `%s`',

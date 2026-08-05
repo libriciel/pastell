@@ -1,6 +1,5 @@
 <?php
 
-use Pastell\Service\Droit\DroitService;
 use Pastell\Service\TypeDossier\TypeDossierDeletionService;
 use Pastell\Service\TypeDossier\TypeDossierEditionService;
 use Pastell\Service\TypeDossier\TypeDossierExportService;

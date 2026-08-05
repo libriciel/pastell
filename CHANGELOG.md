@@ -37,6 +37,26 @@
 
 - Standardisation du footer selon la charte Libriciel SCOP #2440
 
+## Suppressions d'éléments dépréciés
+
+- Suppression des méthodes de construction de chaîne de droit au profit de `DroitService::getDroitFor()` :
+  `DroitService::getDroitLecture()`, `DroitService::getDroitEdition()`, `DroitService::getActionPermission()`,
+  `RoleUtilisateur::getDroit()`, `RoleUtilisateur::getDroitLecture()`, `RoleUtilisateur::getDroitEdition()` #2491
+- Suppression des méthodes de vérification de droit `DroitService::hasDroit()`, `DroitService::hasDroitConnecteurLecture()`,
+  `DroitService::hasDroitConnecteurEdition()`, `DroitService::hasConnectorActionPermission()` et
+  `DroitService::hasDroitUtilisateurLecture()` au profit de `DroitService::hasDroitFor()` #2491
+- Suppression des méthodes `PastellControler::verifDroit()` et `PastellControler::hasDroit()` au profit de
+  `PastellControler::checkDroitFor()` et `PastellControler::hasDroitFor()` #2510
+- Suppression des méthodes intermédiaires de vérification de droit des contrôleurs `PastellControler::hasDroitEdition()`,
+  `PastellControler::hasEntiteDroitLecture()`, `PastellControler::hasUtilisateurDroitLecture()`,
+  `PastellControler::hasConnecteurDroitLecture()`, `PastellControler::hasConnecteurDroitEdition()` et
+  `PastellControler::hasConnectorActionPermission()` au profit de `PastellControler::checkDroitFor()` #2515
+- Suppression des méthodes de vérification de droit de l'API au profit de leur équivalent `…For()` #2518 :
+  `BaseAPIController::checkDroit()` -> `BaseAPIController::checkDroitFor()`
+  `BaseAPIController::checkOneDroit()` -> `BaseAPIController::checkOneDroitFor()`
+  `BaseAPIController::hasOneDroit()` -> `BaseAPIController::hasOneDroitFor()`
+  `DroitService::hasOneDroit()` -> `DroitService::hasOneDroitFor()`
+
 # [5.0.8] - 2026-08-03
 
 ## Évolutions

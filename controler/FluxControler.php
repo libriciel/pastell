@@ -22,16 +22,6 @@ class FluxControler extends PastellControler
         $this->setDroitsDaemon($id_e);
     }
 
-    /**
-     * @throws LastMessageException
-     * @throws LastErrorException
-     * @deprecated 4.1.21 Use checkDroitFor() instead
-     */
-    public function hasDroitEdition($id_e): void
-    {
-        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
-    }
-
     private function getConnecteurAssociationService(): ConnecteurAssociationService
     {
         return $this->getObjectInstancier()->getInstance(ConnecteurAssociationService::class);
