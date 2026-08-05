@@ -4,6 +4,7 @@
  * @var Gabarit $this
  * @var bool $droitCreation
  * @var bool $droitSuppression
+ * @var bool $utilisateur_creation
  * @var string $descendance
  * @var array $all_role
  * @var string $role_selected
@@ -24,7 +25,7 @@ $exportUserUrl = sprintf(
 );
 ?>
 <div class="box">
-    <?php if ($droitCreation) : ?>
+    <?php if ($utilisateur_creation) : ?>
         <a href="Utilisateur/edition?id_e=<?php echo $id_e?>"
            class='btn btn-primary grow'
         ><i class="fas fa-plus-circle"></i>&nbsp;Ajouter</a>

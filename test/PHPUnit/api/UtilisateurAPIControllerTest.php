@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class UtilisateurAPIControllerTest extends PastellTestCase
@@ -297,7 +299,7 @@ class UtilisateurAPIControllerTest extends PastellTestCase
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
             ->edit('utilisateurLectureEdition', 'Droit utilisateur');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->addDroit('utilisateurLectureEdition', 'utilisateur:edition');
+            ->addDroit('utilisateurLectureEdition', DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION));
         $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)
             ->addRole('3', 'utilisateurLectureEdition', '1');
 

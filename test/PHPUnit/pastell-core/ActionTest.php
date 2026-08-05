@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
+
 class ActionTest extends PHPUnit\Framework\TestCase
 {
     /** @var  Action */
@@ -62,6 +65,6 @@ class ActionTest extends PHPUnit\Framework\TestCase
     public function testGetActionRule()
     {
         $result = $this->action->getActionRule('modification');
-        $this->assertEquals('test:lecture', $result['droit_id_u']);
+        static::assertEquals(DroitService::getDroitFor('test', DroitType::LECTURE), $result['droit_id_u']);
     }
 }

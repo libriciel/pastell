@@ -15,11 +15,7 @@ use DocumentTypeFactory;
 use DonneesFormulaireFactory;
 use EntiteSQL;
 use Journal;
-use Libriciel\OfficeClients\Conversion\Client\Configuration\CloudoooServiceConfiguration;
-use Libriciel\OfficeClients\Conversion\Client\Strategy\CloudoooStrategy;
 use Libriciel\OfficeClients\Exception\ConnectionException;
-use Libriciel\OfficeClients\Fusion\Client\Configuration\RestServiceConfiguration;
-use Libriciel\OfficeClients\Fusion\Client\Strategy\RestStrategy;
 use Libriciel\OfficeClients\Fusion\Exception\InvalidTemplateException;
 use Libriciel\OfficeClients\Fusion\Type\ContentType;
 use Libriciel\OfficeClients\Fusion\Type\FieldType;
@@ -143,12 +139,16 @@ final class MailsecManager
 
         try {
             $odtFile = $this->generateReceipt($mailSecInfo);
-            $config = new CloudoooServiceConfiguration();
-            $pdfFile = (new CloudoooStrategy($config))->conversion($odtFile);
+            $pdfFile = $this->getOfficeClient()->convertToPdf($odtFile);
             $mailSecInfo->donneesFormulaire->addFileFromData('accuse_notification', 'accuse_notification.pdf', $pdfFile);
         } catch (ConnectionException) {
         }
         return $mailSecInfo;
+    }
+
+    private function getOfficeClient(): OfficeClient
+    {
+        return $this->objectInstancier->getInstance(OfficeClient::class);
     }
 
     private function getRecipientFlux(string $flux): string
@@ -441,8 +441,7 @@ final class MailsecManager
                 file_get_contents($template_path)
             )
         );
-        $config = new RestServiceConfiguration('http://flow:8080');
-        return (new RestStrategy($config))->fusion($template_path, $main);
+        return $this->getOfficeClient()->fusion($template_path, $main);
     }
 
     /**
@@ -489,8 +488,7 @@ final class MailsecManager
 
         try {
             $odtFile = $this->generateReceipt($mailSecInfo);
-            $config = new CloudoooServiceConfiguration();
-            $pdfFile = (new CloudoooStrategy($config))->conversion($odtFile);
+            $pdfFile = $this->getOfficeClient()->convertToPdf($odtFile);
             $mailSecInfo->donneesFormulaire->addFileFromData('accuse_notification', 'accuse_notification.pdf', $pdfFile);
             $mailSecInfo->donneesFormulaire->setData('generated_receipt', true);
         } catch (ConnectionException) {

@@ -5,8 +5,7 @@
  * @var string $id_d
  * @var int $id_e
  * @var array $infoEntite
- * @var RoleUtilisateur $roleUtilisateur
- * @var Authentification $authentification
+ * @var bool $journal_lecture
  * @var int $offset
  * @var int $limit
  * @var int $count
@@ -37,7 +36,7 @@ $exportUrl = sprintf(
     </a>
 <?php endif;?>
 
-<?php if ($roleUtilisateur->hasDroit($authentification->getId(), "journal:lecture", $id_e)) :
+<?php if ($journal_lecture) :
     $this->SuivantPrecedent(
         $offset,
         $limit,

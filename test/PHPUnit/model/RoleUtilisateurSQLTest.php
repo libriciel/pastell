@@ -5,6 +5,7 @@ use Pastell\Helpers\ArrayHelper;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Droit\DroitType;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class RoleUtilisateurSQLTest extends PastellTestCase
@@ -201,7 +202,7 @@ class RoleUtilisateurSQLTest extends PastellTestCase
         $this->roleUtilisateurSQL->addRole($id_u, 'admin', $entity31);
         $this->roleUtilisateurSQL->addRole($id_u, 'admin', $entity321);
 
-        $arbre_fille = $this->roleUtilisateurSQL->getArbreFille($id_u, 'entite:lecture');
+        $arbre_fille = $this->roleUtilisateurSQL->getArbreFille($id_u, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
 
         static::assertSame(
             [
@@ -342,7 +343,7 @@ class RoleUtilisateurSQLTest extends PastellTestCase
 
         $this->roleUtilisateurSQL->addRole($id_u, 'admin', 0);
 
-        $arbre_fille = $this->roleUtilisateurSQL->getArbreFille($id_u, 'entite:lecture');
+        $arbre_fille = $this->roleUtilisateurSQL->getArbreFille($id_u, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
 
         static::assertSame(
             [
@@ -445,7 +446,7 @@ class RoleUtilisateurSQLTest extends PastellTestCase
 
         $this->roleUtilisateurSQL->addRole($id_u, 'admin', $id_e_3_1);
 
-        $arbreFille = $this->roleUtilisateurSQL->getArbreFille($id_u, 'entite:lecture');
+        $arbreFille = $this->roleUtilisateurSQL->getArbreFille($id_u, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         static::assertSame(
             [
                 0 => [

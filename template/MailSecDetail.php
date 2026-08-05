@@ -26,7 +26,7 @@
     </tr>   
 </table>
 
-<?php if ($can_edit) : ?>
+<?php if ($annuaire_edition) : ?>
 <table>
 <tr>
     <td>

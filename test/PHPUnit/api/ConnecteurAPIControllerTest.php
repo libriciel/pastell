@@ -2,6 +2,8 @@
 
 use Pastell\Service\Connecteur\ConnecteurActionService;
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 
 class ConnecteurAPIControllerTest extends PastellTestCase
 {
@@ -566,7 +568,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
     {
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
         $roleSql->edit('readonly', 'readonly');
-        $roleSql->addDroit('readonly', 'entite:lecture');
+        $roleSql->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $userId = $userCreationService->create('readonly', 'readonly@example.org', 'user', 'user');
         $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole($userId, 'readonly', self::ID_E_COL);
@@ -588,7 +590,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
     {
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
         $roleSql->edit('readonly', 'readonly');
-        $roleSql->addDroit('readonly', 'entite:lecture');
+        $roleSql->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $userId = $userCreationService->create('readonly', 'readonly@example.org', 'user', 'user');
         $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole($userId, 'readonly', self::ID_E_COL);
@@ -657,7 +659,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
 
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
         $roleSql->edit('readonly', 'readonly');
-        $roleSql->addDroit('readonly', 'entite:lecture');
+        $roleSql->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $userId = $userCreationService->create('readonly', 'readonly@example.org', 'user', 'user');
         $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole($userId, 'readonly', self::ID_E_COL);

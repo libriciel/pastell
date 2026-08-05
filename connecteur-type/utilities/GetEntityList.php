@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityUtilitiesService;
 
@@ -34,7 +35,7 @@ class GetEntityList extends ConnecteurTypeChoiceActionExecutor
         $entityUtilitiesService = $this->objectInstancier->getInstance(EntityUtilitiesService::class);
         $arbreFille = $this->objectInstancier->getInstance(RoleUtilisateur::class)->getArbreFilleWithRacine(
             $this->id_u,
-            DroitService::getDroitEdition(DroitService::DROIT_ENTITE)
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION)
         );
         $tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree($arbreFille));
         $this->setViewParameter('entity_treeselect_data', json_encode($tree, JSON_THROW_ON_ERROR));

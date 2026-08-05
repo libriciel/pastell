@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
+
 class ActionPossible
 {
     public const FATAL_ERROR_ACTION = 'fatal-error';
@@ -190,7 +193,7 @@ class ActionPossible
         $type_document = $this->getTypeDocument($id_d);
 
         if ($action_name == self::FATAL_ERROR_ACTION) {
-            return $this->verifDroitUtilisateur($id_u, "$type_document:edition");
+            return $this->verifDroitUtilisateur($id_u, DroitService::getDroitFor($type_document, DroitType::EDITION));
         }
         return $this->internIsActionPossible($id_u, $action_name);
     }

@@ -3,8 +3,8 @@
 /**
  * @var Gabarit $this
  * @var array $entiteExtendedInfo
- * @var bool $droit_lecture_cdg
- * @var bool $droit_edition
+ * @var bool $entite_lecture_cdg
+ * @var bool $entite_edition
  * @var bool $is_supprimable
  * @var bool $cdg_feature
  */
@@ -58,7 +58,7 @@ $id_e = $entiteExtendedInfo['id_e'];
         <tr>
             <th>Centre de gestion</th>
             <td>
-                <?php if ($droit_lecture_cdg) : ?>
+                <?php if ($entite_lecture_cdg) : ?>
                     <a href='Entite/detail?id_e=<?php echo $infoCDG['id_e']?>'>
                         <?php hecho($infoCDG['denomination']); ?>
                     </a>
@@ -72,7 +72,7 @@ $id_e = $entiteExtendedInfo['id_e'];
 
 </table>
 
-    <?php if ($droit_edition) : ?>
+    <?php if ($entite_edition) : ?>
         <a class='btn btn-primary' href="Entite/edition?id_e=<?php echo $id_e?>">
             <i class="fas fa-pen"></i>&nbsp;
             Modifier
@@ -106,7 +106,7 @@ $id_e = $entiteExtendedInfo['id_e'];
     <h2>Entités filles</h2>
 
     <?php if (count($entiteExtendedInfo['filles']) > 5) : ?>
-        <?php if ($droit_edition) : ?>
+        <?php if ($entite_edition) : ?>
             <a class='btn btn-primary <?php echo !$entiteExtendedInfo['is_active'] ? 'disabled' : ''; ?>'
                href="Entite/edition?entite_mere=<?php echo $id_e?>"
             >
@@ -159,7 +159,7 @@ $id_e = $entiteExtendedInfo['id_e'];
     </table>
     <?php endif; ?>
 
-    <?php if ($droit_edition) : ?>
+    <?php if ($entite_edition) : ?>
         <a class='btn btn-primary <?php echo !$entiteExtendedInfo['is_active'] ? 'disabled' : ''; ?>'
            href="Entite/edition?entite_mere=<?php echo $id_e?>"
         >

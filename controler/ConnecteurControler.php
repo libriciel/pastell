@@ -10,8 +10,9 @@ use Pastell\Service\Crypto;
 use Pastell\Service\Connecteur\ConnecteurCreationService;
 use Pastell\Service\Connecteur\ConnecteurActionService;
 use Pastell\Service\Connecteur\ConnecteurModificationService;
-use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 
 class ConnecteurControler extends PastellControler
@@ -34,6 +35,11 @@ class ConnecteurControler extends PastellControler
     }
 
 
+    /**
+     * @throws NotFoundException
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function _beforeAction(): void
     {
         parent::_beforeAction();
@@ -56,15 +62,20 @@ class ConnecteurControler extends PastellControler
         $this->setViewParameter('id_e_menu', $id_e);
         $this->setViewParameter('type_e_menu', '');
         $this->setEntiteMenuGauche($id_e);
-        $this->setDroitLectureOnConnecteur($id_e);
-        $this->setCanActOnConnector($id_e);
-        $this->setCanEditConnector($id_e);
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::ACTION);
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $this->setDroitsDaemon($id_e);
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @deprecated 4.1.21 Use checkDroitFor() instead
+     */
     public function hasDroitEdition($id_e): void
     {
-        $this->hasConnecteurDroitEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
     }
 
     /**
@@ -85,33 +96,22 @@ class ConnecteurControler extends PastellControler
      * @throws LastErrorException
      * @throws LastMessageException
      */
+    private function getConnecteurIdE(int $id_ce): int
+    {
+        return (int)$this->getConnectorEntityDetails($id_ce)['id_e'];
+    }
+
+    /**
+     * @deprecated Utiliser checkDroitFor(getConnecteurIdE($id_ce), ...) directement
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
     public function verifDroitOnConnecteur($id_ce)
     {
         $connecteur_entite_info = $this->getConnectorEntityDetails($id_ce);
-        $this->hasDroitEdition($connecteur_entite_info['id_e']);
+        $this->checkDroitFor($connecteur_entite_info['id_e'], DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         return $connecteur_entite_info;
     }
-
-    /**
-     * @throws LastMessageException
-     * @throws LastErrorException
-     */
-    private function checkCanReadConnector(int $connectorId): void
-    {
-        $connecteur_entite_info = $this->getConnectorEntityDetails($connectorId);
-        $this->hasConnecteurDroitLecture($connecteur_entite_info['id_e']);
-    }
-
-    /**
-     * @throws LastMessageException
-     * @throws LastErrorException
-     */
-    private function checkActionPermissionOnConnector(int $connectorId): void
-    {
-        $connectorDetails = $this->getConnectorEntityDetails($connectorId);
-        $this->hasConnectorActionPermission($connectorDetails['id_e']);
-    }
-
 
     /**
      * @throws LastErrorException
@@ -165,7 +165,11 @@ class ConnecteurControler extends PastellControler
     {
         $recuperateur = $this->getPostInfo();
         $id_ce = $recuperateur->getInt('id_ce');
-        $this->verifDroitOnConnecteur($id_ce);
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($id_ce),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::EDITION
+        );
 
         $result = $this->getConnecteurModificationService()->editConnecteurFormulaire(
             $id_ce,
@@ -211,7 +215,11 @@ class ConnecteurControler extends PastellControler
         $field = $this->getGetInfo()->get('field');
         $num = $this->getGetInfo()->getInt('num');
 
-        $this->verifDroitOnConnecteur($id_ce);
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($id_ce),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::EDITION
+        );
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->getConnecteurEntiteFormulaire($id_ce);
         $filePath = $donneesFormulaire->getFilePath($field, $num);
@@ -226,7 +234,6 @@ class ConnecteurControler extends PastellControler
         header("Expires: 0");
         header("Cache-Control: must-revalidate, post-check=0,pre-check=0");
         header("Pragma: public");
-
         readfile($filePath);
     }
 
@@ -244,7 +251,11 @@ class ConnecteurControler extends PastellControler
         $field = $this->getGetInfo()->get('field');
         $num = $this->getGetInfo()->getInt('num');
 
-        $this->verifDroitOnConnecteur($id_ce);
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($id_ce),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::EDITION
+        );
 
         $this->getConnecteurModificationService()->removeFile(
             $id_ce,
@@ -266,7 +277,11 @@ class ConnecteurControler extends PastellControler
     public function deleteAction()
     {
         $id_ce = $this->getGetInfo()->getInt('id_ce');
-        $this->verifDroitOnConnecteur($id_ce);
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($id_ce),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::EDITION
+        );
 
         $this->setViewParameter('connecteur_entite_info', $this->getConnecteurEntiteSQL()->getInfo($id_ce));
 
@@ -340,7 +355,11 @@ class ConnecteurControler extends PastellControler
     public function editionModifAction()
     {
         $this->setConnecteurInfo();
-        $this->verifDroitOnConnecteur($this->getViewParameterByKey('id_ce'));
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($this->getViewParameterByKey('id_ce')),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::EDITION
+        );
         $this->setViewParameter(
             'page_title',
             sprintf(
@@ -374,7 +393,11 @@ class ConnecteurControler extends PastellControler
      */
     public function editionAction()
     {
-        $this->checkCanReadConnector($this->getGetInfo()->getInt('id_ce'));
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($this->getGetInfo()->getInt('id_ce')),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::LECTURE
+        );
         $this->setConnecteurInfo();
         $this->setViewParameter(
             'page_title',
@@ -424,31 +447,7 @@ class ConnecteurControler extends PastellControler
         $id_ce = $this->getGetInfo()->getInt('id_ce');
         $connecteur_entite_info = $this->getConnecteurEntiteSQL()->getInfo($id_ce);
         $id_e = $connecteur_entite_info['id_e'];
-
-        $this->setViewParameter(
-            'daemon_edition',
-            $this->getRoleUtilisateur()->hasDroit(
-                $this->getId_u(),
-                DroitService::getDroitEdition(DroitService::DROIT_DAEMON),
-                $id_e
-            )
-        );
-        $this->setViewParameter(
-            'daemon_global_lecture',
-            $this->getRoleUtilisateur()->hasDroit(
-                $this->getId_u(),
-                DroitService::getDroitLecture(DroitService::DROIT_DAEMON),
-                0
-            )
-        );
-        $this->setViewParameter(
-            'daemon_lecture',
-            $this->getRoleUtilisateur()->hasDroit(
-                $this->getId_u(),
-                DroitService::getDroitLecture(DroitService::DROIT_DAEMON),
-                $id_e
-            )
-        );
+        $this->setDroitsDaemon($id_e);
 
         $this->renderDefault();
     }
@@ -461,7 +460,11 @@ class ConnecteurControler extends PastellControler
     public function etatAction()
     {
         $this->setViewParameter('id_ce', $this->getGetInfo()->getInt('id_ce'));
-        $this->verifDroitOnConnecteur($this->getViewParameterOrObject('id_ce'));
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($this->getViewParameterOrObject('id_ce')),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::EDITION
+        );
         $connecteur_entite_info = $this->getConnecteurEntiteSQL()->getInfo($this->getViewParameterOrObject('id_ce'));
         $id_e = $connecteur_entite_info['id_e'];
         $entite_info = $this->getEntiteSQL()->getInfo($id_e) ?: [];
@@ -490,7 +493,7 @@ class ConnecteurControler extends PastellControler
         $id_e = $this->getGetInfo()->getInt('id_e');
         $global = $this->getGetInfo()->getInt('global', 0);
 
-        $this->verifDroit($id_e, "connecteur:edition");
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
 
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('global', $global);
@@ -520,7 +523,7 @@ class ConnecteurControler extends PastellControler
 
         try {
             if ($id_e) {
-                $this->hasDroitEdition($id_e);
+                $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
             }
             $connecteur_info = $this->getConnecteurDefinitionFile()->getInfo($id_connecteur, $global);
             if (!$connecteur_info) {
@@ -562,7 +565,11 @@ class ConnecteurControler extends PastellControler
     public function editionLibelleAction()
     {
         $id_ce = $this->getGetInfo()->getInt('id_ce');
-        $this->verifDroitOnConnecteur($id_ce);
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($id_ce),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::EDITION
+        );
 
         $this->setViewParameter('connecteur_entite_info', $this->getConnecteurEntiteSQL()->getInfo($id_ce));
 
@@ -580,7 +587,11 @@ class ConnecteurControler extends PastellControler
     public function exportAction(): void
     {
         $id_ce = $this->getGetInfo()->getInt('id_ce');
-        $this->verifDroitOnConnecteur($id_ce);
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($id_ce),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::EDITION
+        );
 
         $generator = new UriSafeTokenGenerator();
         $password = $generator->generateToken();
@@ -610,7 +621,11 @@ class ConnecteurControler extends PastellControler
     public function doExportAction(): void
     {
         $id_ce = $this->getPostInfo()->getInt('id_ce');
-        $this->verifDroitOnConnecteur($id_ce);
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($id_ce),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::EDITION
+        );
         $password = $this->getObjectInstancier()
             ->getInstance(MemoryCache::class)
             ->fetch("export_connector_password_$id_ce");
@@ -647,7 +662,11 @@ class ConnecteurControler extends PastellControler
     {
         $id_ce = $this->getGetInfo()->getInt('id_ce');
 
-        $this->verifDroitOnConnecteur($id_ce);
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($id_ce),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::EDITION
+        );
 
         $this->setViewParameter('connecteur_entite_info', $this->getConnecteurEntiteSQL()->getInfo($id_ce));
 
@@ -666,7 +685,11 @@ class ConnecteurControler extends PastellControler
         $id_ce = $this->getPostInfo()->getInt('id_ce');
         $password = $this->getPostInfo()->get('password');
 
-        $this->verifDroitOnConnecteur($id_ce);
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($id_ce),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::EDITION
+        );
         $fileUploader = new FileUploader();
         $file_content = $fileUploader->getFileContent('pser');
 
@@ -713,7 +736,11 @@ class ConnecteurControler extends PastellControler
         $action = $recuperateur->get('action');
         $id_ce = $recuperateur->getInt('id_ce', 0);
 
-        $this->checkActionPermissionOnConnector($id_ce);
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($id_ce),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::ACTION
+        );
 
         $actionPossible = $this->getActionPossible();
 
@@ -748,7 +775,11 @@ class ConnecteurControler extends PastellControler
         $connecteur_info = $this->getConnecteurEntiteSQL()->getInfo($id_ce);
         $id_e = $connecteur_info['id_e'];
         $this->setDroitsDaemon($id_e);
-        $this->verifDroitOnConnecteur($id_ce);
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($id_ce),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::EDITION
+        );
 
         $documentType = ($connecteur_info['global']) ?
             $this->getDocumentTypeFactory()->getGlobalDocumentType($connecteur_info['id_connecteur'])
@@ -775,7 +806,11 @@ class ConnecteurControler extends PastellControler
 
     private function addExternalData(int $id_ce, string $field, bool $from_api = false): bool
     {
-        $this->verifDroitOnConnecteur($id_ce);
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($id_ce),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::EDITION
+        );
 
         return $this->getConnecteurModificationService()->addExternalData(
             $id_ce,

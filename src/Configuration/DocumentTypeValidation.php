@@ -9,8 +9,8 @@ use Exception;
 use ObjectInstancier;
 use Pastell\Configuration\Validators\ValidatorInterface;
 use Pastell\Helpers\ClassHelper;
+use Symfony\Component\Config\Definition\NodeInterface;
 use Symfony\Component\Config\Definition\Processor;
-use Symfony\Component\Yaml\Yaml;
 use UnrecoverableException;
 use YMLLoader;
 
@@ -18,6 +18,7 @@ class DocumentTypeValidation
 {
     private array $errorList = [];
     private array $allFormulaireElements;
+    private ?NodeInterface $configTree = null;
     public const MODULE_DEFINITION = 'module-definition.yml';
 
     public function __construct(
@@ -61,12 +62,20 @@ class DocumentTypeValidation
      */
     private function getConfiguration(string $filePath): void
     {
-        $ymlData = Yaml::parseFile($filePath);
-        $dataProcessed = (new Processor())->processConfiguration(
-            $this->documentTypeConfiguration,
-            [$ymlData]
-        );
+        $ymlData = $this->ymlLoader->getArray($filePath);
+        if ($ymlData === false) {
+            throw new UnrecoverableException("Impossible de lire $filePath");
+        }
+        $dataProcessed = (new Processor())->process($this->getConfigTree(), [$ymlData]);
         $this->validate($dataProcessed);
+    }
+
+    private function getConfigTree(): NodeInterface
+    {
+        if ($this->configTree === null) {
+            $this->configTree = $this->documentTypeConfiguration->getConfigTreeBuilder()->buildTree();
+        }
+        return $this->configTree;
     }
 
     public function getErrorList(string $filePath): array

@@ -1,10 +1,10 @@
 <?php
 
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Module\ModuleListService;
 
-//WTF ???
 class RechercheAvanceFormulaireHTML extends PastellControler
 {
     private $documentTypeFactory;
@@ -321,7 +321,7 @@ class RechercheAvanceFormulaireHTML extends PastellControler
             $entityUtilitiesService->buildEntityTree(
                 $this->getInstance(RoleUtilisateur::class)->getArbreFille(
                     $this->getId_u(),
-                    DroitService::getDroitLecture(DroitService::DROIT_ENTITE)
+                    DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
                 ),
             )
         );

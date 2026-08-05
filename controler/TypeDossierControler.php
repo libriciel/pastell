@@ -9,6 +9,8 @@ use Pastell\Service\TypeDossier\TypeDossierUtilService;
 use Pastell\Service\TypeDossier\TypeDossierManager;
 use Pastell\Service\TypeDossier\TypeDossierActionService;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 
 class TypeDossierControler extends PastellControler
 {
@@ -17,7 +19,7 @@ class TypeDossierControler extends PastellControler
         parent::_beforeAction();
         $this->setViewParameter('menu', $this->getInstance(MenuGaucheService::class)->getConfigurationMenu());
         $this->setMenuGaucheSelect(MenuGaucheService::TYPE_DOSSIER_LIST);
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitLecture(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
         $this->setViewParameter('dont_display_breacrumbs', true);
     }
 
@@ -27,7 +29,7 @@ class TypeDossierControler extends PastellControler
      */
     private function commonEdition(): void
     {
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('id_t', $this->getPostOrGetInfo()->getInt('id_t'));
         $this->setViewParameter('type_de_dossier_info', $this->getTypeDossierSQL()->getInfo($this->getViewParameterOrObject('id_t')));
         $this->setViewParameter('type_dossier_hash', $this->getTypeDossierActionService()->getLastHash($this->getViewParameterOrObject('id_t')));
@@ -98,7 +100,7 @@ class TypeDossierControler extends PastellControler
     public function listAction()
     {
         $this->setViewParameter('type_dossier_list', $this->getTypeDossierSQL()->getAll());
-        $this->setViewParameter('droit_edition', $this->hasDroit(0, "system:edition"));
+        $this->setDroitViewParameter(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', "Types de dossier personnalisés");
         $this->setViewParameter('template_milieu', "TypeDossierList");
         $this->renderDefault();
@@ -112,7 +114,7 @@ class TypeDossierControler extends PastellControler
      */
     public function editionAction(): void
     {
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $info = $this->getTypeDossierSQL()->getInfo($this->getPostOrGetInfo()->getInt('id_t'));
         if ($info) {
             $this->verifyTypeDossierHasNoFolder($info['id_type_dossier']);
@@ -133,7 +135,8 @@ class TypeDossierControler extends PastellControler
      */
     public function doEditionAction(): void
     {
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+
         $target_type_dossier_id = $this->getPostOrGetInfo()->get('id_type_dossier');
         $id_t = $this->getPostOrGetInfo()->getInt('id_t');
         $is_new = ! $id_t;
@@ -273,12 +276,14 @@ class TypeDossierControler extends PastellControler
     }
 
     /**
+     * @throws LastErrorException
+     * @throws LastMessageException
      * @throws NotFoundException
      * @throws UnrecoverableException
      */
     public function etatAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('id_t', $this->getPostOrGetInfo()->getInt('id_t'));
         $this->setViewParameter(
             'page_title',
@@ -588,11 +593,13 @@ class TypeDossierControler extends PastellControler
     }
 
     /**
+     * @throws LastErrorException
+     * @throws LastMessageException
      * @throws NotFoundException
      */
     public function importAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', "Import d'un type de dossier personnalisé");
         $this->setViewParameter('template_milieu', "TypeDossierImport");
         $this->renderDefault();
@@ -604,7 +611,7 @@ class TypeDossierControler extends PastellControler
      */
     public function doImportAction()
     {
-        $this->verifDroit(0, "system:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $fileUploader  = $this->getObjectInstancier()->getInstance(FileUploader::class);
         $file_content = $fileUploader->getFileContent("json_type_dossier");
 
@@ -648,8 +655,8 @@ class TypeDossierControler extends PastellControler
         $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
 
         $role_list = array_unique(array_merge(
-            $roleSQL->getRoleByDroit("$id_type_dossier:lecture"),
-            $roleSQL->getRoleByDroit("$id_type_dossier:edition")
+            $roleSQL->getRoleByDroit(DroitService::getDroitFor($id_type_dossier, DroitType::LECTURE)),
+            $roleSQL->getRoleByDroit(DroitService::getDroitFor($id_type_dossier, DroitType::EDITION))
         ));
 
         if ($role_list) {
@@ -749,7 +756,7 @@ class TypeDossierControler extends PastellControler
     public function doPutInFatalErrorAction()
     {
         $id_type_dossier = $this->getPostInfo()->get('id_type_dossier');
-        $this->verifDroit(0, "$id_type_dossier:edition");
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, $id_type_dossier, DroitType::EDITION);
 
         $dossierFetched = $this->getObjectInstancier()->getInstance(TypeDossierSQL::class)
             ->getNotFinished($id_type_dossier);

@@ -8,6 +8,8 @@ use Pastell\Updater\Version;
 use PastellLogger;
 use RoleDroit;
 use RoleSQL;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 
 final class AddDroitDaemon implements Version
 {
@@ -23,12 +25,17 @@ final class AddDroitDaemon implements Version
     {
         $this->logger?->info('Start');
 
+        $droit_daemon_lecture = DroitService::getDroitFor(DroitService::DROIT_DAEMON, DroitType::LECTURE);
+        $droit_daemon_edition = DroitService::getDroitFor(DroitService::DROIT_DAEMON, DroitType::EDITION);
+        $droit_system_lecture = DroitService::getDroitFor(DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+        $droit_system_edition = DroitService::getDroitFor(DroitService::DROIT_SYSTEM, DroitType::EDITION);
+
         $roles = $this->roleSQL->getAllRole();
         $existing_daemon_role = false;
         $roles_droits = [];
         foreach ($roles as $role) {
             $droit = $this->roleSQL->getDroit($this->roleDroit->getAllDroit(), $role['role']);
-            if ($droit['daemon:lecture'] || $droit['daemon:edition']) {
+            if ($droit[$droit_daemon_lecture] || $droit[$droit_daemon_edition]) {
                 $existing_daemon_role = true;
             }
             $roles_droits[$role['role']] = $droit;
@@ -36,20 +43,22 @@ final class AddDroitDaemon implements Version
 
         if (!$existing_daemon_role) {
             foreach ($roles as $role) {
-                if ($roles_droits[$role['role']]['system:lecture']) {
-                    $this->roleSQL->addDroit($role['role'], 'daemon:lecture');
+                if ($roles_droits[$role['role']][$droit_system_lecture]) {
+                    $this->roleSQL->addDroit($role['role'], $droit_daemon_lecture);
                     $this->logger?->info(
                         sprintf(
-                            'Added daemon:lecture permission to role: `%s`',
+                            'Added %s permission to role: `%s`',
+                            $droit_daemon_lecture,
                             $role['role']
                         )
                     );
                 }
-                if ($roles_droits[$role['role']]['system:edition']) {
-                    $this->roleSQL->addDroit($role['role'], 'daemon:edition');
+                if ($roles_droits[$role['role']][$droit_system_edition]) {
+                    $this->roleSQL->addDroit($role['role'], $droit_daemon_edition);
                     $this->logger?->info(
                         sprintf(
-                            'Added daemon:edition permission to role: `%s`',
+                            'Added %s permission to role: `%s`',
+                            $droit_daemon_edition,
                             $role['role']
                         )
                     );
