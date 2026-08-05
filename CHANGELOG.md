@@ -1,3 +1,9 @@
+# [4.1.22] - 2026-09-07
+
+## Corrections
+
+- Mise à jour du lien "Tester les expressions XPath" dans la documentation des expressions Twig #2532
+
 # [4.1.21] - 2026-08-03
 
 ## Évolutions
