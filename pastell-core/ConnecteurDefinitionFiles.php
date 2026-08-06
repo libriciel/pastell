@@ -62,6 +62,9 @@ class ConnecteurDefinitionFiles
         return $result;
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.UnusedPrivateMethod")
+     */
     private function sortConnecteur(array $a, array $b): int
     {
         return strcasecmp($a[ConnectorConfiguration::NOM], $b[ConnectorConfiguration::NOM]);

@@ -100,7 +100,6 @@ class IparapheurSousType extends ChoiceActionExecutor
     public function displayChoiceForSearch()
     {
         try {
-            $config = $this->getConnecteurConfigByType('signature');
             /** @var SignatureConnecteur $signature */
             $signature = $this->getConnecteur('signature');
             $result = [];

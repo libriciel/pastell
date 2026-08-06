@@ -923,7 +923,6 @@ class DocumentControler extends PastellControler
                 $error .= "Il y a déjà une action programmée pour le document « {$infoDocument['titre']} »<br/>";
             }
 
-            $listDocument[] = $infoDocument;
             $document_titre = $infoDocument['titre'] ?: $id_d;
             $message .= "L'action « $action_libelle » est programmée pour le document « {$document_titre} »<br/>";
         }
@@ -1495,7 +1494,6 @@ class DocumentControler extends PastellControler
     {
         $id_e = $this->getPostOrGetInfo()->getInt('id_e');
         $id_d = $this->getPostOrGetInfo()->get('id_d');
-        $page = $this->getPostOrGetInfo()->getInt('page');
         $field = $this->getPostOrGetInfo()->get('field');
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
 
