@@ -17,8 +17,8 @@
  * @var bool $daemon_lecture
  * @var int $id_ce
  * @var Action $action
- * @var bool $canActOnConnector
- * @var bool $canEditConnector
+ * @var bool $connecteur_action
+ * @var bool $connecteur_edition
  */
 
 use Pastell\Configuration\JobStatus;
@@ -53,13 +53,13 @@ $listConnectorsUrl = \sprintf(
         <?php
     }
     ?>
-    <?php if ($canEditConnector && $fieldDataList) : ?>
+    <?php if ($connecteur_edition && $fieldDataList) : ?>
     &nbsp;<a class='btn btn-primary' href="<?php $this->url("Connecteur/editionModif?id_ce=$id_ce") ?>">
         <i class="fas fa-pen"></i>&nbsp;Modifier
     </a>
     <?php endif ?>
 
-    <?php if ($canActOnConnector) : ?>
+    <?php if ($connecteur_action) : ?>
         <?php foreach ($action_possible as $action_name) : ?>
             <form action='Connecteur/action' method='post' style='margin-top:10px; '>
                 <?php $this->displayCSRFInput(); ?>

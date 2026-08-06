@@ -5,7 +5,7 @@ include:
   - template: Security/Dependency-Scanning.gitlab-ci.yml
   - template: Security/Container-Scanning.gitlab-ci.yml
   - component: $LIBRICIEL_CATALOG_PATH/renovate-runner/runner@1.6.0
-  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.1.0
+  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.2.0
   - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@1.4.0
     inputs:
       compose_file: "docker/compose.yaml"
@@ -138,7 +138,7 @@ acceptance_test:
     services:
         - name: hubdocker.libriciel.fr/mariadb:11.4.12-noble@sha256:67873d30a17f6a9c331f06363b2fa15f38abca415529966d67c84f87f82439fe
           alias: mariadb
-        - name: hubdocker.libriciel.fr/redis:8.8.1-alpine3.23@sha256:8096655e437712b07503796fb64d81359256cfcff0ab29d95a7da72863786efb
+        - name: hubdocker.libriciel.fr/redis:8.10.0-alpine3.23
           alias: redis
         - name: ${CONTAINER_IMAGE_APP}
           alias: app
@@ -164,7 +164,7 @@ acceptance_test:
 .security_scan_base:
   stage: test
   image:
-    name: hubdocker.libriciel.fr/aquasec/trivy:0.72.0@sha256:cffe3f5161a47a6823fbd23d985795b3ed72a4c806da4c4df16266c02accdd6f
+    name: hubdocker.libriciel.fr/aquasec/trivy:0.73.0
     entrypoint: [""]
   services:
     - docker:dind@sha256:cebc379a615d8dec408ac36f8854bb5002dc83e64fc8bc6f35312130f898d0e0

@@ -1,5 +1,6 @@
 <?php
 
+use Mailsec\OfficeClient;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use org\bovigo\vfs\vfsStream;
@@ -61,8 +62,14 @@ abstract class PastellTestCase extends TestCase
         $this->objectInstancier->setInstance('email_template_path', __DIR__ . '/../../templates/email');
         $this->objectInstancier->setInstance('plateforme_mail', 'test@libriciel.invalid');
 
-        $this->objectInstancier->setInstance(MemoryCache::class, new StaticWrapper());
+        $this->objectInstancier->setInstance(MemoryCache::class, new StaticWrapperKeepingSourceYmlFiles());
         $this->objectInstancier->setInstance(RedisWrapper::class, $this->createMock(RedisWrapper::class));
+
+        // Avoid real HTTP calls to the flow and cloudooo services on every mailsec test
+        $officeClient = $this->createMock(OfficeClient::class);
+        $officeClient->method('fusion')->willReturn('fake-odt-content');
+        $officeClient->method('convertToPdf')->willReturn('%PDF-fake');
+        $this->objectInstancier->setInstance(OfficeClient::class, $officeClient);
         $this->objectInstancier->setInstance('redis_server', '');
         $this->objectInstancier->setInstance('redis_port', 0);
         $this->objectInstancier->setInstance('disable_journal_horodatage', false);

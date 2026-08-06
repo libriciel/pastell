@@ -1,15 +1,13 @@
 <?php
 
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Entite\EntityUtilitiesService;
 
 class ConnecteurDisponible
 {
-    public const DROIT_NEDEED = 'connecteur:edition';
-
     public function __construct(
         private readonly EntiteSQL $entiteSQL,
-        private readonly RoleUtilisateur $roleUtilisateur,
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
         private readonly DroitService $droitService,
         private readonly EntityUtilitiesService $entityUtilitiesService,
@@ -18,6 +16,7 @@ class ConnecteurDisponible
 
     /**
      * Liste des connecteurs disponibles de type globaux ou d'entité pour id_e avec les droits de id_u
+     * @throws NotFoundException
      */
     public function getListByType(int $id_u, int $id_e, string $type, bool $global = false): array
     {
@@ -30,7 +29,7 @@ class ConnecteurDisponible
         $result = [];
 
         foreach ($ancetre as $entite_id_e) {
-            if ($this->roleUtilisateur->hasDroit($id_u, self::DROIT_NEDEED, $entite_id_e)) {
+            if ($this->droitService->hasDroitFor($id_u, $entite_id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION)) {
                 $listDisponible = $this->entityUtilitiesService->addDenominationForEntiteRacine(
                     $this->connecteurEntiteSQL->getDisponible($entite_id_e, $type, $global)
                 );

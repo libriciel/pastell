@@ -4,6 +4,8 @@ use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Entite\EntityCreationService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 
 class UtilisateurControlerTest extends ControlerTestCase
 {
@@ -418,7 +420,7 @@ class UtilisateurControlerTest extends ControlerTestCase
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
             ->edit('entiteLectureEdition', 'Droit utilisateur');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->addDroit('entiteLectureEdition', 'utilisateur:edition');
+            ->addDroit('entiteLectureEdition', DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION));
         $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)
             ->addRole('3', 'entiteLectureEdition', '1');
 
@@ -486,7 +488,11 @@ class UtilisateurControlerTest extends ControlerTestCase
     {
         $utilisateurControler = $this->getUtilisateurControler();
         $id_u = $this->authenticateNewUserWithPermission(
-            ['entite:lecture', 'actes-generique:edition', 'actes-generique:lecture'],
+            [
+                DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
+                DroitService::getDroitFor('actes-generique', DroitType::EDITION),
+                DroitService::getDroitFor('actes-generique', DroitType::LECTURE),
+            ],
             1
         );
 

@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
+
 class DocumentTypeTest extends PHPUnit\Framework\TestCase
 {
     private function getDocumentTypeByFilename($defintion_filename)
@@ -114,7 +117,13 @@ class DocumentTypeTest extends PHPUnit\Framework\TestCase
     public function testGetDroitEmpty()
     {
         $droit_list = $this->getEmptyDocumentType()->getListDroit();
-        $this->assertEquals(["test:lecture","test:edition"], $droit_list);
+        $this->assertEquals(
+            [
+                DroitService::getDroitFor('test', DroitType::LECTURE),
+                DroitService::getDroitFor('test', DroitType::EDITION),
+            ],
+            $droit_list
+        );
     }
 
     public function testGetDroit()

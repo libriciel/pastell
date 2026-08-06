@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
+
 /**
  * Gère le contenu d'un fichier definition.yml d'un flux
  */
@@ -206,7 +209,10 @@ class DocumentType
 
     public function getListDroit()
     {
-        $all_droit = [$this->module_id . ":lecture",$this->module_id . ":edition"];
+        $all_droit = [
+            DroitService::getDroitFor($this->module_id, DroitType::LECTURE),
+            DroitService::getDroitFor($this->module_id, DroitType::EDITION),
+        ];
         $all_droit = array_merge($all_droit, $this->getAction()->getAllDroit());
         return array_values(array_unique($all_droit));
     }

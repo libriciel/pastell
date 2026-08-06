@@ -2,6 +2,8 @@
 
 namespace Pastell\Tests\Service\Droit;
 
+use NotFoundException;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use PastellTestCase;
 
@@ -9,52 +11,65 @@ class DroitServiceTest extends PastellTestCase
 {
     protected function tearDown(): void
     {
-        $this->setListPack(["suppl_test" => true]);
+        $this->setListPack(['suppl_test' => true]);
     }
 
-    public function testHasDroitConnecteur()
+    /**
+     * @throws NotFoundException
+     */
+    public function testHasDroitConnecteur(): void
     {
         $droitService = $this->getObjectInstancier()->getInstance(DroitService::class);
-        $this->assertTrue($droitService->hasDroitConnecteurEdition(1, 1));
-        $this->assertTrue($droitService->hasDroitConnecteurLecture(1, 1));
+        static::assertTrue($droitService->hasDroitFor(1, 1, DroitService::DROIT_CONNECTEUR, DroitType::EDITION));
+        static::assertTrue($droitService->hasDroitFor(1, 1, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE));
     }
 
-    public function testHasDroitUtilisateur()
+    /**
+     * @throws NotFoundException
+     */
+    public function testHasDroitUtilisateur(): void
     {
         $droitService = $this->getObjectInstancier()->getInstance(DroitService::class);
-        $this->assertTrue($droitService->hasDroitUtilisateurLecture(1, 1));
+        static::assertTrue($droitService->hasDroitFor(1, 1, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE));
     }
 
-    public function testHasDroitNoUser()
+    /**
+     * @throws NotFoundException
+     */
+    public function testHasDroitNoUser(): void
     {
         $droitService = $this->getObjectInstancier()->getInstance(DroitService::class);
-        $this->assertTrue($droitService->hasDroitConnecteurEdition(1, 0));
-        $this->assertTrue($droitService->hasDroitUtilisateurLecture(1, 0));
+        static::assertTrue($droitService->hasDroitFor(0, 1, DroitService::DROIT_CONNECTEUR, DroitType::EDITION));
+        static::assertTrue($droitService->hasDroitFor(0, 1, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE));
     }
 
-    public function testPackEnableDroit()
+    /**
+     * @throws NotFoundException
+     */
+    public function testPackEnableDroit(): void
     {
         $droitService = $this->getObjectInstancier()->getInstance(DroitService::class);
-        $droit_test_lecture = $droitService->getDroitLecture("test");
+        $droit_id = 'test';
+        $droit_test_lecture = DroitService::getDroitFor($droit_id, DroitType::LECTURE);
 
-        $this->setListPack(["suppl_test" => false]);
-        $this->assertTrue($droitService->isRestrictedDroit($droit_test_lecture));
-        $this->assertTrue($droitService->isRestrictedConnecteur("test", true));
-        $this->assertTrue($droitService->isRestrictedConnecteur("test"));
-        $this->assertFalse($droitService->hasDroit(1, $droit_test_lecture, 1));
-        $this->assertFalse($droitService->hasOneDroit(1, $droit_test_lecture));
-        $this->assertFalse(in_array("test", $droitService->getAllDocumentLecture(1, 1)));
-        $this->assertFalse(in_array($droit_test_lecture, $droitService->getAllDroitEntite(1, 1)));
-        $this->assertFalse(in_array($droit_test_lecture, $droitService->getAllDroit(1)));
+        $this->setListPack(['suppl_test' => false]);
+        static::assertTrue($droitService->isRestrictedDroit($droit_test_lecture));
+        static::assertTrue($droitService->isRestrictedConnecteur('test', true));
+        static::assertTrue($droitService->isRestrictedConnecteur('test'));
+        static::assertFalse($droitService->hasDroitFor(1, 1, $droit_id, DroitType::LECTURE));
+        static::assertFalse($droitService->hasOneDroitFor(1, $droit_id, DroitType::LECTURE));
+        static::assertNotContains('test', $droitService->getAllDocumentLecture(1, 1));
+        static::assertNotContains($droit_test_lecture, $droitService->getAllDroitEntite(1, 1));
+        static::assertNotContains($droit_test_lecture, $droitService->getAllDroit(1));
 
-        $this->setListPack(["suppl_test" => true]);
-        $this->assertFalse($droitService->isRestrictedDroit($droit_test_lecture));
-        $this->assertFalse($droitService->isRestrictedConnecteur("test", true));
-        $this->assertFalse($droitService->isRestrictedConnecteur("test"));
-        $this->assertTrue($droitService->hasDroit(1, $droit_test_lecture, 1));
-        $this->assertTrue($droitService->hasOneDroit(1, $droit_test_lecture));
-        $this->assertTrue(in_array("test", $droitService->getAllDocumentLecture(1, 1)));
-        $this->assertTrue(in_array($droit_test_lecture, $droitService->getAllDroitEntite(1, 1)));
-        $this->assertTrue(in_array($droit_test_lecture, $droitService->getAllDroit(1)));
+        $this->setListPack(['suppl_test' => true]);
+        static::assertFalse($droitService->isRestrictedDroit($droit_test_lecture));
+        static::assertFalse($droitService->isRestrictedConnecteur('test', true));
+        static::assertFalse($droitService->isRestrictedConnecteur('test'));
+        static::assertTrue($droitService->hasDroitFor(1, 1, $droit_id, DroitType::LECTURE));
+        static::assertTrue($droitService->hasOneDroitFor(1, $droit_id, DroitType::LECTURE));
+        static::assertContains('test', $droitService->getAllDocumentLecture(1, 1));
+        static::assertContains($droit_test_lecture, $droitService->getAllDroitEntite(1, 1));
+        static::assertContains($droit_test_lecture, $droitService->getAllDroit(1));
     }
 }

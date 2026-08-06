@@ -3,6 +3,8 @@
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Entite\EntityUtilitiesService;
+use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Module\ModuleListService;
 
 class FluxControler extends PastellControler
@@ -12,17 +14,12 @@ class FluxControler extends PastellControler
         parent::_beforeAction();
         $id_e = $this->getPostOrGetInfo()->getInt('id_e');
 
-        $this->hasConnecteurDroitLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
         $this->setNavigationInfo($id_e, 'Flux/index');
         $this->setEntiteMenuGauche($id_e);
         $this->setMenuGaucheSelect(MenuGaucheService::FLUX_INDEX);
-        $this->setDroitLectureOnConnecteur($id_e);
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
         $this->setDroitsDaemon($id_e);
-    }
-
-    public function hasDroitEdition($id_e): void
-    {
-        $this->hasConnecteurDroitEdition($id_e);
     }
 
     private function getConnecteurAssociationService(): ConnecteurAssociationService
@@ -41,7 +38,7 @@ class FluxControler extends PastellControler
     public function indexAction()
     {
         $id_e = $this->getGetInfo()->getInt('id_e', 0);
-        $this->hasConnecteurDroitLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
         $this->setViewParameter('id_e', $id_e);
 
         if ($id_e) {
@@ -119,7 +116,6 @@ class FluxControler extends PastellControler
             }
             $this->setViewParameter('flux_list', $fluxList);
             $this->setViewParameter('possibleFluxList', $moduleListByType);
-            $this->setCanEditConnector($id_e);
             $this->setViewParameter('template_milieu', "FluxList");
         } else {
             $all_connecteur_type = $this->getConnecteurDefinitionFiles()->getAllGlobalType();
@@ -142,7 +138,7 @@ class FluxControler extends PastellControler
             }
             $this->setViewParameter('template_milieu', 'FluxGlobalList');
         }
-        $this->setViewParameter('droit_edition', $this->getDroitService()->hasDroitConnecteurEdition($id_e, $this->getId_u()));
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $this->setViewParameter('entite_denomination', $this->getEntiteSQL()->getDenomination($this->getViewParameterOrObject('id_e')));
         $this->setViewParameter('page_title', "{$this->getViewParameterOrObject('entite_denomination')} : " . ($id_e ? 'Liste des types de dossier' : 'Associations connecteurs globaux'));
 
@@ -155,7 +151,7 @@ class FluxControler extends PastellControler
         if ($id_e === 0) {
             $this->redirect("/Flux/index?id_e=0");
         }
-        $this->hasConnecteurDroitLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
         $this->setViewParameter('id_e', $id_e);
 
         $flux = $this->getGetInfo()->get('flux', '');
@@ -168,7 +164,7 @@ class FluxControler extends PastellControler
         $this->setViewParameter('all_herited', $fluxEntiteHeritageSQL->hasInheritanceAllFlux($id_e));
         $this->setViewParameter('flux_connecteur_list', $this->getConnectorForFlux($id_e, $flux));
         $this->setViewParameter('template_milieu', "FluxDetail");
-        $this->setViewParameter('droit_edition', $this->getDroitService()->hasDroitConnecteurEdition($id_e, $this->getId_u()));
+        $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $this->setViewParameter('entite_denomination', $this->getEntiteSQL()->getDenomination($id_e));
 
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($flux);
@@ -202,7 +198,7 @@ class FluxControler extends PastellControler
         $this->setViewParameter('type_connecteur', $type_connecteur);
         $this->setViewParameter('num_same_type', $num_same_type);
 
-        $this->hasDroitEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $entite_denomination = $this->getEntiteSQL()->getDenomination($id_e);
         $this->setViewParameter('entite_denomination', $entite_denomination);
         $this->setViewParameter('connecteur_disponible', $this->getConnecteurDispo($id_e, $type_connecteur));
@@ -272,7 +268,7 @@ class FluxControler extends PastellControler
         $id_ce = $this->getPostInfo()->getInt('id_ce');
         $num_same_type = $this->getPostInfo()->getInt('num_same_type');
 
-        $this->hasDroitEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         try {
             if ($id_ce) {
                 $this->getConnecteurAssociationService()->addConnecteurAssociation(
@@ -345,7 +341,7 @@ class FluxControler extends PastellControler
 
         $id_e = $this->getPostInfo()->getInt('id_e');
         $flux = $this->getPostInfo()->get('flux');
-        $this->hasDroitEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $fluxEntiteHeritageSQL->toogleInheritance($id_e, $flux);
         $this->setLastMessage("L'héritage a été modifié");
         if ($flux === FluxEntiteHeritageSQL::ALL_FLUX) {

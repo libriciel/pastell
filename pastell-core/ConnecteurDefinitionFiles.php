@@ -12,6 +12,8 @@ class ConnecteurDefinitionFiles
     public const ENTITE_PROPERTIES_FILENAME = 'entite-properties.yml';
     public const GLOBAL_PROPERTIES_FILENAME = 'global-properties.yml';
 
+    private ?array $allTypes = null;
+
     public function __construct(
         private readonly Extensions $extensions,
         private readonly YMLLoader $yml_loader,
@@ -86,7 +88,10 @@ class ConnecteurDefinitionFiles
 
     public function getAllType(): array
     {
-        return $this->getAllTypeByDef($this->getAllConnecteursEntite());
+        if ($this->allTypes === null) {
+            $this->allTypes = $this->getAllTypeByDef($this->getAllConnecteursEntite());
+        }
+        return $this->allTypes;
     }
 
     public function getAllGlobalType(): array

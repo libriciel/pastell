@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Pastell\Tests\Service\Module;
 
 use ConflictException;
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Module\ModuleListService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use PastellTestCase;
@@ -30,10 +32,10 @@ final class ModuleListServiceTest extends PastellTestCase
 
         $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
         $roleSQL->edit('utilisateurRole', 'Droit utilisateur');
-        $roleSQL->addDroit('utilisateurRole', 'gfc-dossier:lecture');
-        $roleSQL->addDroit('utilisateurRole', 'pes-marche:lecture');
-        $roleSQL->addDroit('utilisateurRole', 'ls-actes:lecture');
-        $roleSQL->addDroit('utilisateurRole', 'actes-preversement-seda:lecture');
+        $roleSQL->addDroit('utilisateurRole', DroitService::getDroitFor('gfc-dossier', DroitType::LECTURE));
+        $roleSQL->addDroit('utilisateurRole', DroitService::getDroitFor('pes-marche', DroitType::LECTURE));
+        $roleSQL->addDroit('utilisateurRole', DroitService::getDroitFor('ls-actes', DroitType::LECTURE));
+        $roleSQL->addDroit('utilisateurRole', DroitService::getDroitFor('actes-preversement-seda', DroitType::LECTURE));
         $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)
             ->addRole($id_u, 'utilisateurRole', 1);
 

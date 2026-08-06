@@ -2,6 +2,7 @@
 
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 
 class EntiteFluxAPIController extends BaseAPIController
 {
@@ -24,26 +25,8 @@ class EntiteFluxAPIController extends BaseAPIController
         if ($id_e && ! $this->entiteSQL->getInfo($id_e)) {
             throw new NotFoundException("L'entité $id_e n'existe pas");
         }
-        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ENTITE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
         return $id_e;
-    }
-
-    /**
-     * @param int $id_e
-     * @throws ForbiddenException
-     */
-    private function checkConnecteurLecture(int $id_e): void
-    {
-        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_CONNECTEUR));
-    }
-
-    /**
-     * @param int $id_e
-     * @throws ForbiddenException
-     */
-    private function checkConnecteurEdition(int $id_e): void
-    {
-        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_CONNECTEUR));
     }
 
     /**
@@ -63,11 +46,11 @@ class EntiteFluxAPIController extends BaseAPIController
     public function get()
     {
         $id_e = $this->checkedEntite();
-        $this->checkConnecteurLecture($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
         $flux = $this->getFromRequest('flux', null);
         $type = $this->getFromRequest('type', null);
 
-        $this->checkDroit($id_e, DroitService::getDroitLecture(DroitService::DROIT_ENTITE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
 
         $associations = $this->fluxEntiteSQL->getAllFluxEntite($id_e, $flux, $type);
 
@@ -103,13 +86,13 @@ class EntiteFluxAPIController extends BaseAPIController
     public function postConnecteur(): array
     {
         $id_e = (int)$this->checkedEntite();
-        $this->checkConnecteurEdition($id_e);
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $flux = $this->getFromQueryArgs(2);
         $id_ce = (int)$this->getFromQueryArgs(4);
         $type = $this->getFromRequest('type');
         $num_same_type = (int)$this->getFromRequest('num_same_type', 0);
 
-        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
         $id_fe = $this->connecteurAssociationService->addConnecteurAssociation(
             $id_e,
             $id_ce,
@@ -132,7 +115,7 @@ class EntiteFluxAPIController extends BaseAPIController
     public function postAction(): array
     {
         $id_e = $this->checkedEntite();
-        $this->checkDroit($id_e, DroitService::getDroitAction(DroitService::DROIT_CONNECTEUR));
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::ACTION);
         $flux = $this->getFromQueryArgs(2);
 
         $type_connecteur = $this->getFromRequest('type');
@@ -184,8 +167,8 @@ class EntiteFluxAPIController extends BaseAPIController
     {
         $id_e = $this->checkedEntite();
         $id_fe = $this->getFromRequest('id_fe');
-        $this->checkConnecteurEdition($id_e);
-        $this->checkDroit($id_e, DroitService::getDroitEdition(DroitService::DROIT_ENTITE));
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
         $this->connecteurAssociationService->deleteConnecteurAssociationById_fe(
             $id_fe,

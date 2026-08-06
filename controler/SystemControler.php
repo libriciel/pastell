@@ -6,6 +6,7 @@ use Pastell\Configuration\DocumentTypeValidation;
 use Pastell\Mailer\Mailer;
 use Pastell\Service\Connecteur\MissingConnecteurService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\FeatureToggle\DisplayFeatureToggleInTestPage;
 use Pastell\Service\FeatureToggleService;
@@ -23,14 +24,9 @@ class SystemControler extends PastellControler
     {
         parent::_beforeAction();
         $this->setViewParameter('menu', $this->getInstance(MenuGaucheService::class)->getConfigurationMenu());
-        $this->verifDroit(0, DroitService::getDroitLecture(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
         $this->setViewParameter('dont_display_breacrumbs', true);
         $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_INDEX);
-    }
-
-    private function needDroitEdition()
-    {
-        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
     }
 
     /**
@@ -39,10 +35,7 @@ class SystemControler extends PastellControler
      */
     public function indexAction(): void
     {
-        $this->setViewParameter(
-            'droitEdition',
-            $this->hasDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM))
-        );
+        $this->setDroitViewParameter(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         /** @var HealthCheck $healthCheck */
         $healthCheck = $this->getInstance(HealthCheck::class);
@@ -306,7 +299,8 @@ class SystemControler extends PastellControler
      */
     public function mailTestAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitLecture(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+
         $emails = $this->getPostInfo()->get('email');
         if (! $emails) {
             $this->setLastError('Merci de spécifier un email');
@@ -344,9 +338,13 @@ class SystemControler extends PastellControler
         $this->redirect(self::SYSTEM_INDEX_PAGE);
     }
 
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     public function phpinfoAction(): void
     {
-        $this->needDroitEdition();
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         phpinfo();
     }
 
@@ -422,7 +420,7 @@ class SystemControler extends PastellControler
      */
     public function doLoginPageConfigurationAction()
     {
-        $this->needDroitEdition();
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $result = file_put_contents(
             LOGIN_PAGE_CONFIGURATION_LOCATION,
@@ -464,7 +462,7 @@ class SystemControler extends PastellControler
      */
     public function exportAllMissingConnecteurAction()
     {
-        $this->needDroitEdition();
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $tmpFoder  = new TmpFolder();
         $tmp_folder = $tmpFoder->create();
@@ -485,7 +483,7 @@ class SystemControler extends PastellControler
      */
     public function emptyCacheAction(): void
     {
-        $this->needDroitEdition();
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $redisWrapper = $this->getObjectInstancier()->getInstance(RedisWrapper::class);
         $redisWrapper->flushAll();
@@ -518,7 +516,7 @@ class SystemControler extends PastellControler
      */
     public function editAdminEmailAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', 'Modification de la configuration ADMIN_EMAIL');
         $this->setViewParameter('template_milieu', 'SystemEditAdminEmail');
         $this->setViewParameter('admin_email', implode(', ', $this->getConfigurationSQL()->getAdminEmails()));
@@ -532,7 +530,7 @@ class SystemControler extends PastellControler
      */
     public function doEditAdminEmailAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $admin_email = array_map('trim', explode(',', $this->getPostInfo()->get('admin_email')));
         try {
             $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->setAdminEmails($admin_email);
@@ -551,7 +549,7 @@ class SystemControler extends PastellControler
      */
     public function editLibellePlateformeMailAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', 'Modification de la configuration LIBELLE_PLATEFORME_MAIL');
         $this->setViewParameter('template_milieu', 'SystemEditLibellePlateformeEmail');
         $this->setViewParameter('libelle_plateforme_mail', $this->getConfigurationSQL()->getLibellePlateformeMail());
@@ -564,7 +562,7 @@ class SystemControler extends PastellControler
      */
     public function doEditLibellePlateformeMailAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $libelle_plateforme_mail = $this->getPostInfo()->get('libelle_plateforme_mail');
         $this->getConfigurationSQL()->setConfiguration(
             ConfigurationSQL::LIBELLE_PLATEFORME_MAIL,
@@ -582,7 +580,7 @@ class SystemControler extends PastellControler
      */
     public function editWorkspaceAlertThresholdAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', "Modification du seuil d'alerte taux d'occupation du workspace");
         $this->setViewParameter('template_milieu', 'SystemEditWorkspaceAlertThreshold');
         $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
@@ -596,7 +594,7 @@ class SystemControler extends PastellControler
      */
     public function doEditWorkspaceAlertThresholdAction(): void
     {
-        $this->verifDroit(0, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         try {
             $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->setWorkspaceAlertThreshold(
                 (int) $this->getPostInfo()->get('workspace_alert_threshold')

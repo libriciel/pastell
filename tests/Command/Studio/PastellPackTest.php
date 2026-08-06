@@ -31,7 +31,7 @@ class PastellPackTest extends PastellTestCase
         'draft-ls-recup-actes-s2low' => [
             'suppl_recup_actes_s2low',
             'ls-recup-actes-s2low',
-            'Récupération arriéré actes s2low',
+            'Récupération arriéré Actes s2low',
         ],
         'draft-ls-actes-tdt-versant-sae' => [
             'suppl_actes_tdt_versant_sae',

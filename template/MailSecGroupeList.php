@@ -6,10 +6,8 @@
  * @var array $infoEntite
  * @var array $listGroupe
  * @var AnnuaireGroupeSQL $annuaireGroupe
- * @var bool $can_edit
+ * @var bool $annuaire_edition
  * @var array $groupe_herited
- * @var RoleUtilisateur $roleUtilisateur
- * @var Authentification $authentification
  */
 
 ?>
@@ -57,7 +55,7 @@
             <?php endforeach; ?>
 
         </table>
-        <?php if ($can_edit) : ?>
+        <?php if ($annuaire_edition) : ?>
             <button type="submit" class="btn btn-danger">
                 <i class="fas fa-trash"></i>&nbsp;Supprimer</button>
         <?php endif; ?>
@@ -65,7 +63,7 @@
     </form>
 </div>
 
-<?php if ($roleUtilisateur->hasDroit($authentification->getId(), 'annuaire:edition', $id_e)) : ?>
+<?php if ($annuaire_edition) : ?>
     <div class="box">
         <h2>Créer un groupe</h2>
         <form action='MailSec/addGroupe' method='post'>

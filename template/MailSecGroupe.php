@@ -6,7 +6,7 @@
  * @var int $nbUtilisateur
  * @var int $id_g
  * @var array $listUtilisateur
- * @var bool $can_edit
+ * @var bool $annuaire_edition
  * @var array $infoEntite
  */
 ?>
@@ -45,14 +45,14 @@
 <?php endforeach;?>
 
 </table>
-<?php if ($can_edit) : ?>
+<?php if ($annuaire_edition) : ?>
     <button type='submit' class='btn btn-danger'>Enlever du groupe</button>
 <?php endif; ?>
 
 </form>
 </div>
 
-<?php if ($roleUtilisateur->hasDroit($authentification->getId(), "annuaire:edition", $id_e)) : ?>
+<?php if ($annuaire_edition) : ?>
 <div class="box">
 <h2>Ajouter un contact à «<?php hecho($infoGroupe['nom']); ?>» </h2>
 <form action='MailSec/addContactToGroupe' method='post' >

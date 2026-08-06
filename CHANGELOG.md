@@ -37,6 +37,60 @@
 
 - Standardisation du footer selon la charte Libriciel SCOP #2440
 
+## Suppressions d'éléments dépréciés
+
+- Suppression des méthodes de construction de chaîne de droit au profit de `DroitService::getDroitFor()` :
+  `DroitService::getDroitLecture()`, `DroitService::getDroitEdition()`, `DroitService::getActionPermission()`,
+  `RoleUtilisateur::getDroit()`, `RoleUtilisateur::getDroitLecture()`, `RoleUtilisateur::getDroitEdition()` #2491
+- Suppression des méthodes de vérification de droit `DroitService::hasDroit()`, `DroitService::hasDroitConnecteurLecture()`,
+  `DroitService::hasDroitConnecteurEdition()`, `DroitService::hasConnectorActionPermission()` et
+  `DroitService::hasDroitUtilisateurLecture()` au profit de `DroitService::hasDroitFor()` #2491
+- Suppression des méthodes `PastellControler::verifDroit()` et `PastellControler::hasDroit()` au profit de
+  `PastellControler::checkDroitFor()` et `PastellControler::hasDroitFor()` #2510
+- Suppression des méthodes intermédiaires de vérification de droit des contrôleurs `PastellControler::hasDroitEdition()`,
+  `PastellControler::hasEntiteDroitLecture()`, `PastellControler::hasUtilisateurDroitLecture()`,
+  `PastellControler::hasConnecteurDroitLecture()`, `PastellControler::hasConnecteurDroitEdition()` et
+  `PastellControler::hasConnectorActionPermission()` au profit de `PastellControler::checkDroitFor()` #2515
+- Suppression des méthodes de vérification de droit de l'API au profit de leur équivalent `…For()` #2518 :
+  `BaseAPIController::checkDroit()` -> `BaseAPIController::checkDroitFor()`
+  `BaseAPIController::checkOneDroit()` -> `BaseAPIController::checkOneDroitFor()`
+  `BaseAPIController::hasOneDroit()` -> `BaseAPIController::hasOneDroitFor()`
+  `DroitService::hasOneDroit()` -> `DroitService::hasOneDroitFor()`
+
+# [5.0.8] - 2026-08-03
+
+## Évolutions
+
+- Centralisation des vérifications de droits dans `DroitService` : ajout de l'énumération `DroitType` et des
+  méthodes `DroitService::getDroitFor()` et `DroitService::hasDroitFor()` #2491
+
+## Corrections
+
+- Consultation de la réponse d'un mail sécurisé via l'API : droits de lecture vérifiés sur le type de dossier d'origine
+  et non plus sur celui de la réponse (ex. `mailsec-bidir:lecture` au lieu de `mailsec-bidir-reponse:lecture`) #2488
+- Il manquait le numéro de l'acte pour la recherche avancée de ls-actes #2479
+
+## Dépréciations
+
+- Les méthodes de construction de chaîne de droit sont dépréciées au profit de `DroitService::getDroitFor()` :
+  `DroitService::getDroitLecture()`, `DroitService::getDroitEdition()`, `DroitService::getActionPermission()`,
+  `RoleUtilisateur::getDroit()`, `RoleUtilisateur::getDroitLecture()`, `RoleUtilisateur::getDroitEdition()` #2491
+- Les méthodes de vérification de droit `DroitService::hasDroit()`, `DroitService::hasDroitConnecteurLecture()`,
+  `DroitService::hasDroitConnecteurEdition()`, `DroitService::hasConnectorActionPermission()` et
+  `DroitService::hasDroitUtilisateurLecture()` sont dépréciées au profit de `DroitService::hasDroitFor()` #2491
+- Les méthodes `PastellControler::verifDroit()` et `PastellControler::hasDroit()` sont dépréciées au profit de
+  `PastellControler::checkDroitFor()` et `PastellControler::hasDroitFor()` #2510
+- Les méthodes intermédiaires de vérification de droit des contrôleurs `PastellControler::hasDroitEdition()`,
+  `PastellControler::hasEntiteDroitLecture()`, `PastellControler::hasUtilisateurDroitLecture()`,
+  `PastellControler::hasConnecteurDroitLecture()`, `PastellControler::hasConnecteurDroitEdition()` et
+  `PastellControler::hasConnectorActionPermission()` sont dépréciées au profit de
+  `PastellControler::checkDroitFor()` #2515
+- Dépréciation des méthodes de vérification de droit de l'API au profit de leur équivalent `…For()` #2518 :
+  `BaseAPIController::checkDroit()` -> `BaseAPIController::checkDroitFor()`
+  `BaseAPIController::checkOneDroit()` -> `BaseAPIController::checkOneDroitFor()`
+  `BaseAPIController::hasOneDroit()` -> `BaseAPIController::hasOneDroitFor()`
+  `DroitService::hasOneDroit()` -> `DroitService::hasOneDroitFor()`
+
 # [5.0.7] - 2026-07-22
 
 ## Correction
@@ -356,6 +410,40 @@
   Seules les factures importées de Chorus Pro seront traitées. #1856
 - Connecteur iparapheur soap #2268
 - Connecteur `chorus-par-csv` ChorusPro par CSV #2356
+
+# [4.1.21] - 2026-08-03
+
+## Évolutions
+
+- Centralisation des vérifications de droits dans `DroitService` : ajout de l'énumération `DroitType` et des
+  méthodes `DroitService::getDroitFor()` et `DroitService::hasDroitFor()` #2491
+
+## Corrections
+
+- Consultation de la réponse d'un mail sécurisé via l'API : droits de lecture vérifiés sur le type de dossier d'origine 
+  et non plus sur celui de la réponse (ex. `mailsec-bidir:lecture` au lieu de `mailsec-bidir-reponse:lecture`) #2488
+- Il manquait le numéro de l'acte pour la recherche avancée de ls-actes #2479
+
+## Dépréciations
+
+- Les méthodes de construction de chaîne de droit sont dépréciées au profit de `DroitService::getDroitFor()` :
+  `DroitService::getDroitLecture()`, `DroitService::getDroitEdition()`, `DroitService::getActionPermission()`,
+  `RoleUtilisateur::getDroit()`, `RoleUtilisateur::getDroitLecture()`, `RoleUtilisateur::getDroitEdition()` #2491
+- Les méthodes de vérification de droit `DroitService::hasDroit()`, `DroitService::hasDroitConnecteurLecture()`,
+  `DroitService::hasDroitConnecteurEdition()`, `DroitService::hasConnectorActionPermission()` et
+  `DroitService::hasDroitUtilisateurLecture()` sont dépréciées au profit de `DroitService::hasDroitFor()` #2491
+- Les méthodes `PastellControler::verifDroit()` et `PastellControler::hasDroit()` sont dépréciées au profit de
+  `PastellControler::checkDroitFor()` et `PastellControler::hasDroitFor()` #2510
+- Les méthodes intermédiaires de vérification de droit des contrôleurs `PastellControler::hasDroitEdition()`,
+  `PastellControler::hasEntiteDroitLecture()`, `PastellControler::hasUtilisateurDroitLecture()`,
+  `PastellControler::hasConnecteurDroitLecture()`, `PastellControler::hasConnecteurDroitEdition()` et
+  `PastellControler::hasConnectorActionPermission()` sont dépréciées au profit de
+  `PastellControler::checkDroitFor()` #2515
+- Dépréciation des méthodes de vérification de droit de l'API au profit de leur équivalent `…For()` #2518 :
+  `BaseAPIController::checkDroit()` -> `BaseAPIController::checkDroitFor()`
+  `BaseAPIController::checkOneDroit()` -> `BaseAPIController::checkOneDroitFor()`
+  `BaseAPIController::hasOneDroit()` -> `BaseAPIController::hasOneDroitFor()`
+  `DroitService::hasOneDroit()` -> `DroitService::hasOneDroitFor()`
 
 # [4.1.20] - 2026-07-06
 

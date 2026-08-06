@@ -6,7 +6,9 @@ namespace Pastell\Service\Menu;
 
 use DaemonSQL;
 use EntiteSQL;
+use NotFoundException;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 
 class MenuGaucheService
 {
@@ -82,7 +84,7 @@ class MenuGaucheService
 
     public function getDaemonMenu(int $id_u): array
     {
-        $daemon_edition = $this->droitService->hasDroit($id_u, DroitService::getDroitEdition(DroitService::DROIT_DAEMON), EntiteSQL::ID_E_ENTITE_RACINE);
+        $daemon_edition = $this->droitService->hasDroitFor($id_u, EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $configuration_options = [];
         if ($daemon_edition) {
             $configuration_options = [
@@ -115,14 +117,17 @@ class MenuGaucheService
         return $menu;
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function getEntiteMenu(int $id_e, int $id_u): array
     {
-        $utilisateur_lecture = $this->droitService->hasDroit($id_u, DroitService::getDroitLecture(DroitService::DROIT_UTILISATEUR), $id_e);
-        $connecteur_lecture = $this->droitService->hasDroit($id_u, DroitService::getDroitLecture(DroitService::DROIT_CONNECTEUR), $id_e);
-        $system_edition = $this->droitService->hasDroit($id_u, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM), $id_e);
-        $annuaire_lecture = $this->droitService->hasDroit($id_u, DroitService::getDroitLecture(DroitService::DROIT_ANNUAIRE), $id_e);
-        $daemon_lecture = $this->droitService->hasDroit($id_u, DroitService::getDroitLecture(DroitService::DROIT_DAEMON), $id_e);
-        $daemon_edition = $this->droitService->hasDroit($id_u, DroitService::getDroitEdition(DroitService::DROIT_DAEMON), $id_e);
+        $utilisateur_lecture = $this->droitService->hasDroitFor($id_u, $id_e, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
+        $connecteur_lecture = $this->droitService->hasDroitFor($id_u, $id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
+        $system_edition = $this->droitService->hasDroitFor($id_u, $id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $annuaire_lecture = $this->droitService->hasDroitFor($id_u, $id_e, DroitService::DROIT_ANNUAIRE, DroitType::LECTURE);
+        $daemon_lecture = $this->droitService->hasDroitFor($id_u, $id_e, DroitService::DROIT_DAEMON, DroitType::LECTURE);
+        $daemon_edition = $this->droitService->hasDroitFor($id_u, $id_e, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $daemon_exists = $this->daemonSQL->getDaemonByEntity($id_e);
 
         $administration_options = [
