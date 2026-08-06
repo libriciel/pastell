@@ -39,4 +39,9 @@ class RoleDroit
     {
         return count(array_intersect($rolesDroits, $this->getAllDroit())) === count($rolesDroits);
     }
+
+    public function filterExistingRolesDroits(array $rolesDroits): array
+    {
+        return array_intersect($rolesDroits, $this->getAllDroit());
+    }
 }
