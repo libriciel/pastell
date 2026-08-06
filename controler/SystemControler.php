@@ -614,7 +614,7 @@ class SystemControler extends PastellControler
      */
     public function magicLinkAction(): void
     {
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitLecture(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
 
         $activeMagicLinks = $this->getInstance(MagicLinkService::class)->getActiveLinks();
 
@@ -632,7 +632,7 @@ class SystemControler extends PastellControler
      */
     public function magicLinkEditionAction(): void
     {
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', "Création d'un accès temporaire");
         $this->setViewParameter('template_milieu', 'SystemMagicLinkEdition');
         $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_MAGIC_LINK);
@@ -647,7 +647,7 @@ class SystemControler extends PastellControler
      */
     public function doMagicLinkEditionAction(): void
     {
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $recuperateur = $this->getPostInfo();
         $motif = $recuperateur->get('motif');
@@ -695,7 +695,7 @@ class SystemControler extends PastellControler
      */
     public function magicLinkRevokeAction(): void
     {
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $magicLinkId = (string)$this->getGetInfo()->get('id');
         $magicLink = $this->getInstance(MagicLinkService::class)->getActiveLink($magicLinkId);
@@ -717,7 +717,7 @@ class SystemControler extends PastellControler
      */
     public function doMagicLinkRevokeAction(): void
     {
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $magicLinkId = (string)$this->getPostInfo()->get('id');
         $this->getInstance(MagicLinkService::class)->revoke($magicLinkId);
@@ -732,7 +732,7 @@ class SystemControler extends PastellControler
      */
     public function doMagicLinkResendAction(): void
     {
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitEdition(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $magicLinkId = (string)$this->getPostInfo()->get('id');
         try {
@@ -753,7 +753,7 @@ class SystemControler extends PastellControler
      */
     public function magicLinkHistoryAction(): void
     {
-        $this->verifDroit(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::getDroitLecture(DroitService::DROIT_SYSTEM));
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
 
         $search = (string)$this->getGetInfo()->get('search');
 
