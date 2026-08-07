@@ -1,5 +1,10 @@
 # [4.1.22] - 2026-09-07
 
+## Ajouts
+
+- Commande `app:database:foreign-key-check` : détecte les lignes dont la clé étrangère ne référence plus
+  aucune ligne existante et propose de les supprimer #2540
+
 ## Corrections
 
 - Message d'erreur explicite en cas de zip malformé lors de la génération d'un bordereau SEDA #2539
