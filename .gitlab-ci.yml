@@ -138,7 +138,7 @@ acceptance_test:
     services:
         - name: hubdocker.libriciel.fr/mariadb:11.4.12-noble@sha256:67873d30a17f6a9c331f06363b2fa15f38abca415529966d67c84f87f82439fe
           alias: mariadb
-        - name: hubdocker.libriciel.fr/redis:8.10.0-alpine3.23
+        - name: hubdocker.libriciel.fr/redis:8.10.0-alpine3.23@sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241
           alias: redis
         - name: ${CONTAINER_IMAGE_APP}
           alias: app
@@ -164,7 +164,7 @@ acceptance_test:
 .security_scan_base:
   stage: test
   image:
-    name: hubdocker.libriciel.fr/aquasec/trivy:0.73.0
+    name: hubdocker.libriciel.fr/aquasec/trivy:0.73.0@sha256:7cced7cae583819fc7806d4cbc0dbbc7cad18b99f7d3e235192e6da8c091045c
     entrypoint: [""]
   services:
     - docker:dind@sha256:cebc379a615d8dec408ac36f8854bb5002dc83e64fc8bc6f35312130f898d0e0
