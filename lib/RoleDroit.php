@@ -32,7 +32,11 @@ class RoleDroit
             'daemon:edition',
         ];
         sort($droit);
-        return array_merge($droit, $this->documentTypeFactory->getAllDroit());
+        $documentDroit = array_filter(
+            $this->documentTypeFactory->getAllDroit(),
+            static fn (string $droit): bool => !str_contains($droit, '-destinataire:') && !str_contains($droit, '-reponse:')
+        );
+        return array_merge($droit, $documentDroit);
     }
 
     /**
