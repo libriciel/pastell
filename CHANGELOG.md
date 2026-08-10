@@ -3,6 +3,7 @@
 ## Corrections
 
 - Mise à jour du lien "Tester les expressions XPath" dans la documentation des expressions Twig #2532
+- Édition des droits d'un rôle : les droits inconnus ne bloquent plus la mise à jour #2532
 
 # [4.1.21] - 2026-08-03
 
