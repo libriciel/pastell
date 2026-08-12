@@ -40,16 +40,16 @@ class RoleControler extends PastellControler
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::LECTURE);
         $this->setViewParameter('role', $this->getGetInfo()->get('role'));
         $this->setDroitViewParameter(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION);
-        $this->setViewParameter('role_info', $this->getRoleSQL()->getInfo($this->getViewParameterOrObject('role')));
+        $this->setViewParameter('role_info', $this->getRoleSQL()->getInfo($this->getViewParameterByKey('role')));
 
         /** @var RoleDroit $roleDroit */
         $roleDroit = $this->getInstance(RoleDroit::class);
 
         $all_droit = $roleDroit->getAllDroit();
-        $all_droit_sql = $this->getRoleSQL()->getDroit($all_droit, $this->getViewParameterOrObject('role'));
+        $all_droit_sql = $this->getRoleSQL()->getDroit($all_droit, $this->getViewParameterByKey('role'));
         $this->setViewParameter('all_droit_utilisateur', $this->getObjectInstancier()->getInstance(DroitService::class)->clearRestrictedDroit($all_droit_sql));
 
-        $this->setViewParameter('page_title', "Gestion du rôle {$this->getViewParameterOrObject('role')} et des droits associés");
+        $this->setViewParameter('page_title', "Gestion du rôle {$this->getViewParameterByKey('role')} et des droits associés");
         $this->setViewParameter('template_milieu', "RoleDetail");
         $this->renderDefault();
     }

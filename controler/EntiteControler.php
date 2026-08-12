@@ -49,9 +49,9 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('id_e', $recuperateur->getInt('id_e', 0));
 
         $this->setViewParameter('has_many_collectivite', $this->hasManyCollectivite());
-        $this->setViewParameter('info', $this->getEntiteSQL()->getInfo($this->getViewParameterOrObject('id_e')));
+        $this->setViewParameter('info', $this->getEntiteSQL()->getInfo($this->getViewParameterByKey('id_e')));
 
-        if ($this->getViewParameterOrObject('id_e')) {
+        if ($this->getViewParameterByKey('id_e')) {
             $this->detailEntite();
         } else {
             $this->listEntite();
@@ -61,7 +61,7 @@ class EntiteControler extends PastellControler
     private function setPageTitle($texte)
     {
         if ($this->isViewParameter('id_e')) {
-            $info = $this->getEntiteSQL()->getInfo($this->getViewParameterOrObject('id_e'));
+            $info = $this->getEntiteSQL()->getInfo($this->getViewParameterByKey('id_e'));
 
             if ($info) {
                 $texte = $info['denomination'] . " - $texte ";
@@ -334,7 +334,7 @@ class EntiteControler extends PastellControler
                 $this->setViewParameter('infoMere', $this->getEntiteSQL()->getInfo($entite_mere));
                 $this->setViewParameter(
                     'page_title',
-                    "Ajout d'une entité fille pour " . $this->getViewParameterOrObject('infoMere')['denomination']
+                    "Ajout d'une entité fille pour " . $this->getViewParameterByKey('infoMere')['denomination']
                 );
             } else {
                 $this->setViewParameter('page_title', "Ajout d'une entité");
