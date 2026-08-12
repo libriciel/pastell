@@ -2,6 +2,7 @@
 
 ## Corrections
 
+- Message d'erreur explicite en cas de zip malformé lors de la génération d'un bordereau SEDA #2539
 - Mise à jour du lien "Tester les expressions XPath" dans la documentation des expressions Twig #2532
 - Édition des droits d'un rôle : les droits inconnus ne bloquent plus la mise à jour #2532
 
