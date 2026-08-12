@@ -52,9 +52,9 @@ class JournalControler extends PastellControler
 
         $this->checkDroitFor($id_e, DroitService::DROIT_JOURNAL, DroitType::LECTURE);
 
-        $this->setViewParameter('entite_info', $this->getEntiteSQL()->getInfo($this->getViewParameterOrObject('id_e')));
-        $this->setViewParameter('utilisateur_info', $this->getUtilisateur()->getInfo($this->getViewParameterOrObject('id_u')));
-        $this->setViewParameter('document_info', $this->getDocumentSQL()->getInfo($this->getViewParameterOrObject('id_d')));
+        $this->setViewParameter('entite_info', $this->getEntiteSQL()->getInfo($this->getViewParameterByKey('id_e')));
+        $this->setViewParameter('utilisateur_info', $this->getUtilisateur()->getInfo($this->getViewParameterByKey('id_u')));
+        $this->setViewParameter('document_info', $this->getDocumentSQL()->getInfo($this->getViewParameterByKey('id_d')));
 
 
         $this->setViewParameter('recherche', $recuperateur->get('recherche'));
@@ -97,23 +97,23 @@ class JournalControler extends PastellControler
         /** @var OpensslTSWrapper $opensslTSWrapper */
         $opensslTSWrapper = $this->getInstance(OpensslTSWrapper::class);
 
-        $this->setViewParameter('preuve_txt', $opensslTSWrapper->getTimestampReplyString($this->getViewParameterOrObject('info')['preuve']));
+        $this->setViewParameter('preuve_txt', $opensslTSWrapper->getTimestampReplyString($this->getViewParameterByKey('info')['preuve']));
 
         $horodateur = $this->getConnecteurFactory()->getGlobalConnecteur('horodateur');
         if ($horodateur) {
             /** @var HorodateurPastell $horodateur */
             try {
-                    $horodateur->verify($this->getViewParameterOrObject('info')['message_horodate'], $this->getViewParameterOrObject('info')['preuve']);
+                    $horodateur->verify($this->getViewParameterByKey('info')['message_horodate'], $this->getViewParameterByKey('info')['preuve']);
                     $this->setViewParameter('preuve_is_ok', true);
             } catch (Exception $e) {
                 $this->setViewParameter('preuve_is_ok', false);
                 $this->setViewParameter('preuve_error', $e->getMessage());
             }
-            if ($this->getViewParameterOrObject('preuve_is_ok') == false) {
+            if ($this->getViewParameterByKey('preuve_is_ok') == false) {
                 try {
                     //OK, c'est pas terrible, mais ca permet d'éviter la gestiond d'une constante supplémentaire
                     //pour noter la position du journal au moment de la bascule iso-8859-1 => utf-8
-                    $horodateur->verify(utf8_decode($this->getViewParameterOrObject('info')['message_horodate']), $this->getViewParameterOrObject('info')['preuve']);
+                    $horodateur->verify(utf8_decode($this->getViewParameterByKey('info')['message_horodate']), $this->getViewParameterByKey('info')['preuve']);
                     $this->setViewParameter('preuve_is_ok', true);
                 } catch (Exception $e) {
                     $this->setViewParameter('preuve_is_ok', false);
@@ -125,7 +125,7 @@ class JournalControler extends PastellControler
             $this->setViewParameter('preuve_error', "Aucun horodateur n'est configuré");
         }
 
-        $this->setViewParameter('page_title', "Événement numéro {$this->getViewParameterOrObject('id_j')}");
+        $this->setViewParameter('page_title', "Événement numéro {$this->getViewParameterByKey('id_j')}");
         $this->setViewParameter('template_milieu', "JournalDetail");
         $this->renderDefault();
     }
@@ -164,28 +164,28 @@ class JournalControler extends PastellControler
         $this->checkDroitFor($id_e, DroitService::DROIT_JOURNAL, DroitType::LECTURE);
         $this->setViewParameter('id_e', $id_e);
 
-        $infoEntite = $this->getEntiteSQL()->getInfo($this->getViewParameterOrObject('id_e'));
+        $infoEntite = $this->getEntiteSQL()->getInfo($this->getViewParameterByKey('id_e'));
 
 
         $this->setViewParameter('count', $this->getJournal()->countAll(
-            $this->getViewParameterOrObject('id_e'),
-            $this->getViewParameterOrObject('type'),
-            $this->getViewParameterOrObject('id_d'),
-            $this->getViewParameterOrObject('id_u'),
-            $this->getViewParameterOrObject('recherche'),
-            $this->getViewParameterOrObject('date_debut'),
-            $this->getViewParameterOrObject('date_fin')
+            $this->getViewParameterByKey('id_e'),
+            $this->getViewParameterByKey('type'),
+            $this->getViewParameterByKey('id_d'),
+            $this->getViewParameterByKey('id_u'),
+            $this->getViewParameterByKey('recherche'),
+            $this->getViewParameterByKey('date_debut'),
+            $this->getViewParameterByKey('date_fin')
         ));
 
         $page_title = "Journal des événements";
-        if ($this->getViewParameterOrObject('id_e')) {
+        if ($this->getViewParameterByKey('id_e')) {
             $page_title .= " - " . $infoEntite['denomination'];
         }
-        if ($this->getViewParameterOrObject('type')) {
-            $page_title .= " - " . $this->getViewParameterOrObject('type');
+        if ($this->getViewParameterByKey('type')) {
+            $page_title .= " - " . $this->getViewParameterByKey('type');
         }
-        if ($this->getViewParameterOrObject('id_d')) {
-            $documentInfo = $this->getDocumentSQL()->getInfo($this->getViewParameterOrObject('id_d'));
+        if ($this->getViewParameterByKey('id_d')) {
+            $documentInfo = $this->getDocumentSQL()->getInfo($this->getViewParameterByKey('id_d'));
             $page_title .= " - " . $documentInfo['titre'];
         }
 
@@ -199,15 +199,15 @@ class JournalControler extends PastellControler
         $this->setViewParameter(
             'all',
             $this->getJournal()->getAll(
-                $this->getViewParameterOrObject('id_e'),
-                $this->getViewParameterOrObject('type'),
-                $this->getViewParameterOrObject('id_d'),
-                $this->getViewParameterOrObject('id_u'),
-                $this->getViewParameterOrObject('offset'),
-                $this->getViewParameterOrObject('limit'),
-                $this->getViewParameterOrObject('recherche'),
-                $this->getViewParameterOrObject('date_debut'),
-                $this->getViewParameterOrObject('date_fin'),
+                $this->getViewParameterByKey('id_e'),
+                $this->getViewParameterByKey('type'),
+                $this->getViewParameterByKey('id_d'),
+                $this->getViewParameterByKey('id_u'),
+                $this->getViewParameterByKey('offset'),
+                $this->getViewParameterByKey('limit'),
+                $this->getViewParameterByKey('recherche'),
+                $this->getViewParameterByKey('date_debut'),
+                $this->getViewParameterByKey('date_fin'),
                 false,
                 false,
             )
