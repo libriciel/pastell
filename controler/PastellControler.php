@@ -353,7 +353,7 @@ class PastellControler extends Controler
             $this->setViewParameter('type_e_menu', get_hecho(
                 $recuperateur->get(
                     'type',
-                    $this->isViewParameter('type_e_menu') ? $this->getViewParameterOrObject('type_e_menu') : ''
+                    $this->isViewParameter('type_e_menu') ? $this->getViewParameterByKey('type_e_menu') : ''
                 )
             ));
         }
@@ -363,7 +363,7 @@ class PastellControler extends Controler
             DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
         );
 
-        $this->setViewParameter('display_entite_racine', $this->getViewParameterOrObject('id_e_menu') != 0
+        $this->setViewParameter('display_entite_racine', $this->getViewParameterByKey('id_e_menu') != 0
         && (count($listeCollectivite) > 1 || (isset($listeCollectivite[0]) && $listeCollectivite[0] == 0)));
     }
 

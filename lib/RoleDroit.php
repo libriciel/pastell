@@ -34,8 +34,16 @@ class RoleDroit
         return array_merge($droit, $this->documentTypeFactory->getAllDroit());
     }
 
+    /**
+     * @deprecated 4.1.22 no longer used, to be deleted in 6.0.0
+     */
     public function areExistingRolesDroits(array $rolesDroits): bool
     {
         return count(array_intersect($rolesDroits, $this->getAllDroit())) === count($rolesDroits);
+    }
+
+    public function filterExistingRolesDroits(array $rolesDroits): array
+    {
+        return array_intersect($rolesDroits, $this->getAllDroit());
     }
 }

@@ -81,6 +81,6 @@ $simpleTwigRendererExemple = new SimpleTwigRendererExemple();
         <a href="http://jsonpath.com/" target="_blank">Tester les expressions JSONPath</a>
     </li>
     <li>
-        <a href="https://www.freeformatter.com/xpath-tester.html" target="_blank">Tester les expressions XPath</a>
+        <a href="https://xpather.com/" target="_blank">Tester les expressions XPath</a>
     </li>
 </ul>

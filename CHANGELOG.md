@@ -352,6 +352,14 @@
 - Connecteur iparapheur soap #2268
 - Connecteur `chorus-par-csv` ChorusPro par CSV #2356
 
+# [4.1.22] - 2026-09-07
+
+## Corrections
+
+- Message d'erreur explicite en cas de zip malformé lors de la génération d'un bordereau SEDA #2539
+- Mise à jour du lien "Tester les expressions XPath" dans la documentation des expressions Twig #2532
+- Édition des droits d'un rôle : les droits inconnus ne bloquent plus la mise à jour #2532
+
 # [4.1.21] - 2026-08-03
 
 ## Évolutions

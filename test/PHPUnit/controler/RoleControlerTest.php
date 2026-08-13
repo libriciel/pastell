@@ -71,6 +71,29 @@ class RoleControlerTest extends ControlerTestCase
         $this->roleControler->doDetailAction();
     }
 
+    /**
+     * @throws LastErrorException
+     */
+    public function testDoDetailActionFiltersUnknownDroits(): void
+    {
+        $validDroit = DroitService::getDroitFor(DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+        $this->setPostInfo([
+            'role' => 'test',
+            'droit' => [$validDroit, 'droit:inconnu'],
+        ]);
+
+        try {
+            $this->roleControler->doDetailAction();
+        } catch (LastMessageException) {
+            /** Nothing to do */
+        }
+
+        static::assertEquals(
+            [$validDroit => true],
+            $this->roleControler->getRoleSQL()->getDroit([$validDroit], 'test')
+        );
+    }
+
     public function testDoEditionActionNewRole(): void
     {
         $this->setPostInfo(
