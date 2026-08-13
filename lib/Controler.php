@@ -124,7 +124,7 @@ class Controler
     /**
      * @param $key
      * @return mixed|object|ObjectInstancier|null
-     * @deprecated Use getInstance() or getViewParameterByKey() instead
+     * @deprecated Use getInstance() or getViewParameterByKey() instead, to be deleted in 6.0.0
      */
     public function getViewParameterOrObject($key)
     {

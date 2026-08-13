@@ -10,10 +10,10 @@ class PastellControlerTest extends ControlerTestCase
     {
         $pastellControler = $this->getControlerInstance(PastellControler::class);
         $pastellControler->setNavigationInfo(0, 'test');
-        $this->assertCount(1, $pastellControler->getViewParameterOrObject('navigation'));
+        $this->assertCount(1, $pastellControler->getViewParameterByKey('navigation'));
         $this->assertEquals(
             "Bourg-en-Bresse",
-            $pastellControler->getViewParameterOrObject('navigation')[0]['children'][0]['denomination']
+            $pastellControler->getViewParameterByKey('navigation')[0]['children'][0]['denomination']
         );
     }
 
@@ -21,10 +21,10 @@ class PastellControlerTest extends ControlerTestCase
     {
         $pastellControler = $this->getControlerInstance(PastellControler::class);
         $pastellControler->setNavigationInfo(1, 'test');
-        $this->assertCount(2, $pastellControler->getViewParameterOrObject('navigation'));
+        $this->assertCount(2, $pastellControler->getViewParameterByKey('navigation'));
         $this->assertEquals(
             "Bourg-en-Bresse",
-            $pastellControler->getViewParameterOrObject('navigation')[1]['name']
+            $pastellControler->getViewParameterByKey('navigation')[1]['name']
         );
     }
 
@@ -32,10 +32,10 @@ class PastellControlerTest extends ControlerTestCase
     {
         $pastellControler = $this->getControlerInstance(PastellControler::class);
         $pastellControler->setNavigationInfo(2, 'test');
-        $this->assertCount(3, $pastellControler->getViewParameterOrObject('navigation'));
+        $this->assertCount(3, $pastellControler->getViewParameterByKey('navigation'));
         $this->assertEquals(
             "CCAS",
-            $pastellControler->getViewParameterOrObject('navigation')[2]['name']
+            $pastellControler->getViewParameterByKey('navigation')[2]['name']
         );
     }
 
