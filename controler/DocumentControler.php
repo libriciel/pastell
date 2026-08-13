@@ -335,6 +335,7 @@ class DocumentControler extends PastellControler
     {
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
+        $type = $recuperateur->get('type');
         $offset = $recuperateur->getInt('offset', 0);
         $search = $recuperateur->get('search');
         $limit = 20;
@@ -357,6 +358,11 @@ class DocumentControler extends PastellControler
                 $id_e = $liste_collectivite[0];
             }
         }
+
+        if ($id_e && $type) {
+            $this->redirect("/Document/list?id_e=$id_e&type=$type");
+        }
+
         if ($id_e) {
             foreach ($liste_type as $i => $the_type) {
                 if (! $this->getDroitService()->hasDroitFor($this->getId_u(), $id_e, $the_type, DroitType::LECTURE)) {
@@ -369,6 +375,7 @@ class DocumentControler extends PastellControler
             }
         }
 
+        $this->setViewParameter('type', $type);
         $this->setViewParameter('tri', $recuperateur->get('tri', 'date_dernier_etat'));
         $this->setViewParameter('sens_tri', $recuperateur->get('sens_tri', 'DESC'));
 
