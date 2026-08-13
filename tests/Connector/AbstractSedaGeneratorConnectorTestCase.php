@@ -7,13 +7,16 @@ namespace Pastell\Tests\Connector;
 use CurlUtilitiesTestTrait;
 use CurlWrapperFactory;
 use DonneesFormulaireException;
+use Exception;
 use FluxDataTestSedaGenerique;
+use JsonException;
 use NotFoundException;
 use Pastell\Connector\AbstractSedaGeneratorConnector;
 use Pastell\Seda\Message\SedaMessageBuilder;
 use Pastell\Service\Document\DocumentPastellMetadataService;
 use Pastell\Step\SAE\Enum\SAEActionsEnum;
 use PastellTestCase;
+use SimpleXMLWrapperException;
 use TmpFolder;
 use TypeDossierLoader;
 use UnrecoverableException;
@@ -32,7 +35,7 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
     abstract public function getExpectedCallDirectory(): string;
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct($name = null, array $data = [], $dataName = '')
     {
@@ -92,7 +95,7 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
     /**
      * @throws NotFoundException
      * @throws DonneesFormulaireException
-     * @throws \Exception
+     * @throws Exception
      */
     private function createDossier(): string
     {
@@ -157,7 +160,7 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
      * @throws DonneesFormulaireException
      * @throws NotFoundException
      * @throws UnrecoverableException
-     * @throws \Exception
+     * @throws Exception
      * @dataProvider caseProvider
      */
     public function testAllCase(string $folder, string $testName): void
@@ -200,11 +203,45 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
     }
 
     /**
+     * @throws NotFoundException
+     * @throws SimpleXMLWrapperException
      * @throws DonneesFormulaireException
-     * @throws \JsonException
+     * @throws JsonException
+     * @throws Exception
+     */
+    public function testGenerateArchiveCorruptedZip(): void
+    {
+        $id_ce = $this->createSedaGeneriqueConnector();
+        $connecteurConfig = $this->getConnecteurFactory()->getConnecteurConfig($id_ce);
+        $connecteurConfig->addFileFromCopy(
+            'files',
+            'file.xml',
+            __DIR__ . '/fixtures/seda-test-cases/zip/files.xml'
+        );
+        $connecteurConfig->addFileFromCopy(
+            'data',
+            'data.json',
+            __DIR__ . '/fixtures/seda-test-cases/zip/data.json'
+        );
+
+        /** @var AbstractSedaGeneratorConnector $sedaGeneriqueConnector */
+        $sedaGeneriqueConnector = $this->getConnecteurFactory()->getConnecteurById($id_ce);
+        $id_d = $this->createDossier();
+        $docDonneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
+        $docDonneesFormulaire->addFileFromData('file_zip', '7756W3_9.zip', "ceci n'est pas une archive zip valide");
+        $sedaGeneriqueConnector->setDocDonneesFormulaire($docDonneesFormulaire);
+
+        $this->expectException(UnrecoverableException::class);
+        $this->expectExceptionMessage("Impossible d'ouvrir le fichier zip");
+        $sedaGeneriqueConnector->getBordereau(new FluxDataTestSedaGenerique());
+    }
+
+    /**
+     * @throws DonneesFormulaireException
+     * @throws JsonException
      * @throws NotFoundException
      * @throws UnrecoverableException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testWhenAKeywordIsAssociatedWithAFile(): void
     {
@@ -251,7 +288,7 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
      * @throws DonneesFormulaireException
      * @throws NotFoundException
      * @throws UnrecoverableException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testWhenGeneratorReturnANon200HttpCode(): void
     {
@@ -274,7 +311,7 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
 
     /**
      * @throws UnrecoverableException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testWhenConnectionIsOk(): void
     {
@@ -287,7 +324,7 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
 
     /**
      * @throws UnrecoverableException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testWhenConnectionIsNotOk(): void
     {
@@ -302,7 +339,7 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
 
     /**
      * @throws UnrecoverableException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testWhithURLinGlobalConnector(): void
     {
@@ -328,7 +365,7 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
 
     /**
      * @throws UnrecoverableException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testWithoutURL(): void
     {
@@ -349,7 +386,7 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
      * @throws \TypeDossierException
      * @throws NotFoundException
      * @throws DonneesFormulaireException
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function testGenerateArchiveWithTemplateAndAdvancedData(): void
     {
