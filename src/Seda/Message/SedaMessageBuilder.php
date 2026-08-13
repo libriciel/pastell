@@ -537,8 +537,8 @@ class SedaMessageBuilder
 
         $zip = new ZipArchive();
         $handle = $zip->open($zipFilePath);
-        if (!$handle) {
-            throw new UnrecoverableException("Impossible d'ouvrir le fichier zip");
+        if ($handle !== true) {
+            throw new UnrecoverableException("Impossible d'ouvrir le fichier zip (code erreur : $handle)");
         }
         $zip->extractTo($this->zipDirectory);
         $zip->close();

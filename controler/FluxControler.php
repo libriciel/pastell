@@ -131,16 +131,16 @@ class FluxControler extends PastellControler
 
             $this->setViewParameter('all_connecteur_type', $all_type);
             $this->setViewParameter('all_flux_entite', $this->getFluxEntiteSQL()->getAllWithSameType($id_e));
-            if (isset($this->getViewParameterOrObject('all_flux_entite')['global'])) {
-                $this->setViewParameter('all_flux_global', $this->getViewParameterOrObject('all_flux_entite')['global']);
+            if (isset($this->getViewParameterByKey('all_flux_entite')['global'])) {
+                $this->setViewParameter('all_flux_global', $this->getViewParameterByKey('all_flux_entite')['global']);
             } else {
                 $this->setViewParameter('all_flux_global', []);
             }
             $this->setViewParameter('template_milieu', 'FluxGlobalList');
         }
         $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
-        $this->setViewParameter('entite_denomination', $this->getEntiteSQL()->getDenomination($this->getViewParameterOrObject('id_e')));
-        $this->setViewParameter('page_title', "{$this->getViewParameterOrObject('entite_denomination')} : " . ($id_e ? 'Liste des types de dossier' : 'Associations connecteurs globaux'));
+        $this->setViewParameter('entite_denomination', $this->getEntiteSQL()->getDenomination($this->getViewParameterByKey('id_e')));
+        $this->setViewParameter('page_title', "{$this->getViewParameterByKey('entite_denomination')} : " . ($id_e ? 'Liste des types de dossier' : 'Associations connecteurs globaux'));
 
         $this->renderDefault();
     }

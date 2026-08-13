@@ -68,7 +68,7 @@ class UtilisateurControler extends PastellControler
         $this->setEntiteMenuGauche((int) $id_e);
         $this->setNavigationInfo($id_e, 'Entite/utilisateur');
         $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_UTILISATEUR);
-        $this->setDroitViewParameter((int) $this->getViewParameterOrObject('id_e'), DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
+        $this->setDroitViewParameter((int) $this->getViewParameterByKey('id_e'), DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
         $this->setDroitsDaemon($id_e);
     }
 
@@ -81,7 +81,7 @@ class UtilisateurControler extends PastellControler
     {
         $authentificationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur('authentification');
         if ($authentificationConnecteur) {
-            $this->getViewParameterOrObject('LastError')->setLastError(
+            $this->setLastError(
                 'Vous ne pouvez pas modifier votre mot de passe en dehors du CAS'
             );
             $this->redirect('/Utilisateur/moi');
@@ -103,8 +103,8 @@ class UtilisateurControler extends PastellControler
     public function modifEmailAction()
     {
         $this->setViewParameter('utilisateur_info', $this->getUtilisateur()->getInfo($this->getId_u()));
-        if ($this->getViewParameterOrObject('utilisateur_info')['id_e'] == 0) {
-            $this->getViewParameterOrObject('LastError')->setLastError(
+        if ($this->getViewParameterByKey('utilisateur_info')['id_e'] == 0) {
+            $this->setLastError(
                 "Les utilisateurs de l'entité racine ne peuvent pas utiliser cette procédure"
             );
             $this->redirect('/Utilisateur/moi');
@@ -124,12 +124,12 @@ class UtilisateurControler extends PastellControler
         $recuperateur = new Recuperateur($_POST);
         $password = $recuperateur->get('password');
         if (!$this->getUtilisateur()->verifPassword($this->getId_u(), $password)) {
-            $this->getViewParameterOrObject('LastError')->setLastError('Le mot de passe est incorrect.');
+            $this->setLastError('Le mot de passe est incorrect.');
             $this->redirect('/Utilisateur/modifEmail');
         }
         $email = $recuperateur->get('email');
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->getViewParameterOrObject('LastError')->setLastError(
+            $this->setLastError(
                 "L'email que vous avez saisi ne semble pas être valide"
             );
             $this->redirect('/Utilisateur/modifEmail');
@@ -341,7 +341,7 @@ class UtilisateurControler extends PastellControler
             $this->setViewParameter('infoEntiteDeBase', $this->getEntiteSQL()->getInfo($info['id_e']));
             $this->setViewParameter(
                 'denominationEntiteDeBase',
-                $this->getViewParameterOrObject('infoEntiteDeBase')['denomination']
+                $this->getViewParameterByKey('infoEntiteDeBase')['denomination']
             );
         }
         $this->setViewParameter('info', $info);

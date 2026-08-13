@@ -4,9 +4,24 @@ namespace Pastell\Tests\Client\IparapheurV5;
 
 use Pastell\Client\IparapheurV5\ZipContent;
 use TmpFolder;
+use UnrecoverableException;
 
 class ZipContentTest extends \PastellTestCase
 {
+    public function testExtractCorruptedZip(): void
+    {
+        $tmpFolder = new TmpFolder();
+        $tmp_folder = $tmpFolder->create();
+        $corruptedZipPath = $tmp_folder . '/corrupted.zip';
+        \file_put_contents($corruptedZipPath, "ceci n'est pas une archive zip valide");
+
+        $zipContent = new ZipContent();
+
+        $this->expectException(UnrecoverableException::class);
+        $this->expectExceptionMessage("Impossible d'ouvrir le fichier zip");
+        $zipContent->extract($corruptedZipPath, $tmp_folder);
+    }
+
     public function testExtract()
     {
         $tmpFolder = new TmpFolder();
