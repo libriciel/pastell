@@ -33,7 +33,7 @@ final class MagicLinkService
 
     private const int CODE_LENGTH = 6;
 
-    private const string TEMP_USER_ROLE = 'admin';
+    public const string DEFAULT_TEMP_USER_ROLE = 'admin';
 
     public function __construct(
         private readonly MagicLinkSQL $magicLink,
@@ -43,6 +43,7 @@ final class MagicLinkService
         private readonly UserCreationService $userCreationService,
         private readonly RoleUtilisateur $roleUtilisateur,
         private readonly UtilisateurDeletionService $utilisateurDeletionService,
+        private readonly MagicLinkRevokeService $revokeService,
         private readonly Mailer $mailer,
         private readonly ConfigurationSQL $configurationSQL,
         private readonly string $site_base,
@@ -63,6 +64,8 @@ final class MagicLinkService
         string $nom,
         string $prenom,
         string $email,
+        string $role = self::DEFAULT_TEMP_USER_ROLE,
+        int $entityId = EntiteSQL::ID_E_ENTITE_RACINE,
     ): void {
         if ($durationInHours < 1 || $durationInHours > self::MAX_DURATION_IN_HOURS) {
             throw new UnrecoverableException(
@@ -73,8 +76,15 @@ final class MagicLinkService
             );
         }
 
+        if (!$this->roleUtilisateur->canDelegateRole($createdBy, $role, $entityId)) {
+            throw new UnrecoverableException(
+                'Vous ne pouvez pas créer un accès temporaire avec un rôle contenant des droits '
+                . 'que vous ne possédez pas sur cette entité.'
+            );
+        }
+
         $magicLinkId = $this->uuidGenerator->generate();
-        $id_u = $this->createTemporaryUser($magicLinkId, $email);
+        $id_u = $this->createTemporaryUser($magicLinkId, $email, $role, $entityId);
 
         $token = $this->tokenGenerator->generate();
         $code = $this->generateCode();
@@ -176,18 +186,18 @@ final class MagicLinkService
      * @throws ConflictException
      * @throws Exception
      */
-    private function createTemporaryUser(string $magicLinkId, string $email): int
+    private function createTemporaryUser(string $magicLinkId, string $email, string $role, int $entityId): int
     {
         $id_u = $this->userCreationService->create(
             $magicLinkId,
             $email,
             $magicLinkId,
             $magicLinkId,
-            EntiteSQL::ID_E_ENTITE_RACINE,
+            $entityId,
             $this->tokenGenerator->generate(),
         );
 
-        $this->roleUtilisateur->addRole($id_u, self::TEMP_USER_ROLE, 0);
+        $this->roleUtilisateur->addRole($id_u, $role, $entityId);
 
         return $id_u;
     }
@@ -273,6 +283,7 @@ final class MagicLinkService
     {
         $count = 0;
         foreach ($this->magicLink->getToCleanUp() as $link) {
+            $this->magicLink->revoke((string)$link['id']);
             $this->deleteTemporaryUser($link);
             $count++;
         }
@@ -298,31 +309,7 @@ final class MagicLinkService
 
     private function deleteTemporaryUser(array $link): void
     {
-        $magicLinkId = (string)$link['id'];
         $this->utilisateurDeletionService->delete((int)$link['id_u']);
-        $this->magicLink->markUserDeleted($magicLinkId);
-        $this->magicLink->anonymiseTitulaire(
-            $magicLinkId,
-            $this->pseudonymise((string)$link['titulaire_nom']),
-            $this->pseudonymise((string)$link['titulaire_prenom']),
-            $this->pseudonymiseEmail((string)$link['titulaire_email']),
-        );
-    }
-
-    private function pseudonymise(string $value): string
-    {
-        $maskedLength = max(0, mb_strlen($value) - 2);
-        return mb_substr($value, 0, 2) . str_repeat('*', $maskedLength);
-    }
-
-    private function pseudonymiseEmail(string $email): string
-    {
-        $atPosition = mb_strpos($email, '@');
-        if ($atPosition === false) {
-            return $this->pseudonymise($email);
-        }
-        $localPart = mb_substr($email, 0, $atPosition);
-        $domain = mb_substr($email, $atPosition);
-        return $this->pseudonymise($localPart) . $domain;
+        $this->revokeService->anonymise($link);
     }
 }

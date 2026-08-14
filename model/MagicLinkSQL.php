@@ -98,6 +98,18 @@ SQL;
         return $this->query($query, $this->getNow());
     }
 
+    public function getActiveByUserId(int $id_u): ?array
+    {
+        $query = <<<SQL
+SELECT id, id_u, titulaire_nom, titulaire_prenom, titulaire_email
+FROM magic_link
+WHERE id_u = ? AND revoked_at IS NULL AND user_deleted_at IS NULL;
+SQL;
+
+        $result = $this->queryOne($query, $id_u);
+        return $result === false ? null : $result;
+    }
+
     public function anonymiseTitulaire(string $id, string $nom, string $prenom, string $email): void
     {
         $query = <<<SQL

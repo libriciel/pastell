@@ -146,6 +146,8 @@ class SystemControlerTest extends ControlerTestCase
             'nom' => 'Martin',
             'prenom' => 'Paul',
             'mail' => 'paul.martin@example.org',
+            'role' => 'admin',
+            'id_e' => 0,
         ]);
 
         try {

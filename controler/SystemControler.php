@@ -7,6 +7,7 @@ use Pastell\Mailer\Mailer;
 use Pastell\Service\Connecteur\MissingConnecteurService;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\FeatureToggle\DisplayFeatureToggleInTestPage;
 use Pastell\Service\FeatureToggleService;
@@ -629,11 +630,26 @@ class SystemControler extends PastellControler
      * @throws LastMessageException
      * @throws NotFoundException
      * @throws LastErrorException
+     * @throws JsonException
      */
     public function magicLinkEditionAction(): void
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', "Création d'un accès temporaire");
+
+        $roleAuthorized = $this->getRoleUtilisateur()->getAuthorizedRoleToDelegate($this->getId_u());
+        $roleTree = array_map(static fn($r) => ['name' => $r['libelle'], 'value' => $r['role']], $roleAuthorized);
+        $this->setViewParameter('role_treeselect_data', \json_encode($roleTree, \JSON_THROW_ON_ERROR));
+
+        $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
+        $entity_tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree(
+            $this->getRoleUtilisateur()->getArbreFilleWithRacine(
+                $this->getId_u(),
+                DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION)
+            )
+        ));
+        $this->setViewParameter('entity_treeselect_data', \json_encode($entity_tree, \JSON_THROW_ON_ERROR));
+
         $this->setViewParameter('template_milieu', 'SystemMagicLinkEdition');
         $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_MAGIC_LINK);
         $this->renderDefault();
@@ -655,10 +671,13 @@ class SystemControler extends PastellControler
         $nom = trim((string)$recuperateur->get('nom'));
         $prenom = trim((string)$recuperateur->get('prenom'));
         $mail = trim((string)$recuperateur->get('mail'));
+        $role = (string)$recuperateur->get('role');
+        $entityId = $recuperateur->getInt('id_e');
 
-        if (! $motif || $duration < 1 || $nom === '' || $prenom === '' || $mail === '') {
+        if (! $motif || $duration < 1 || $nom === '' || $prenom === '' || $mail === '' || $role === '') {
             $this->setLastError(
-                'Le nom, le prénom, le mail, le motif et une durée valide (en heures) sont obligatoires'
+                'Le nom, le prénom, le mail, le motif, le rôle de base, l\'entité de base '
+                . 'et une durée valide (en heures) sont obligatoires'
             );
             $this->redirect('System/magicLinkEdition');
         }
@@ -675,7 +694,7 @@ class SystemControler extends PastellControler
 
         try {
             $this->getInstance(MagicLinkService::class)
-                ->create($motif, $duration, $this->getId_u(), $nom, $prenom, $mail);
+                ->create($motif, $duration, $this->getId_u(), $nom, $prenom, $mail, $role, $entityId);
         } catch (UnrecoverableException | ConflictException | TransportExceptionInterface $e) {
             $this->setLastError($e->getMessage());
             $this->redirect('System/magicLinkEdition');

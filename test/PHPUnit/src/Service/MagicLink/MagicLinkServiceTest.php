@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Pastell\Mailer\Mailer;
 use Pastell\Service\MagicLink\MagicLinkCodeStatus;
 use Pastell\Service\MagicLink\MagicLinkService;
+use Pastell\Service\Utilisateur\UtilisateurDeletionService;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\SentMessage;
@@ -29,6 +30,11 @@ class MagicLinkServiceTest extends PastellTestCase
     private function getUtilisateurSQL(): UtilisateurSQL
     {
         return $this->getObjectInstancier()->getInstance(UtilisateurSQL::class);
+    }
+
+    private function getUtilisateurDeletionService(): UtilisateurDeletionService
+    {
+        return $this->getObjectInstancier()->getInstance(UtilisateurDeletionService::class);
     }
 
     private function extractTokenFromLastEmail(): string
@@ -228,6 +234,32 @@ class MagicLinkServiceTest extends PastellTestCase
         static::assertFalse($this->getUtilisateurSQL()->getInfo($id_u));
         static::assertSame([], $service->getActiveLinks());
         static::assertNull($service->getActiveLink($link['id']));
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     * @throws Exception
+     */
+    public function testDeleteUserRevokesLink(): void
+    {
+        $service = $this->getMagicLinkService();
+        $service->create('Compte supprimé à la main', 24, 1, 'Durand', 'Léa', 'lea.durand@example.org');
+        $link = $service->getActiveLinks()[0];
+        $id_u = (int)$link['id_u'];
+
+        $this->getUtilisateurDeletionService()->delete($id_u);
+
+        static::assertSame([], $service->getActiveLinks());
+        static::assertNull($service->getActiveLink($link['id']));
+
+        $history = $service->getHistory();
+        static::assertCount(1, $history);
+        static::assertNotNull($history[0]['revoked_at']);
+        static::assertSame('Du****', $history[0]['titulaire_nom']);
+
+        $service->revoke($link['id']);
     }
 
     /**
