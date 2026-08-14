@@ -112,52 +112,11 @@ class ConnecteurControler extends PastellControler
         return $connecteur_entite_info;
     }
 
-
     /**
      * @throws LastErrorException
      * @throws LastMessageException
      */
-    public function doNewAction(): void
-    {
-        $recuperateur = $this->getPostInfo();
-        $id_e = $recuperateur->getInt('id_e');
-        $global = $recuperateur->getInt('global', 0);
-        $id_connecteur = $recuperateur->get('id_connecteur');
-        $libelle = $recuperateur->get('libelle');
-
-        try {
-            if ($id_e) {
-                $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
-            }
-            $connecteur_info = $this->getConnecteurDefinitionFile()->getInfo($id_connecteur, $global);
-            if (!$connecteur_info) {
-                throw new RuntimeException("Aucun connecteur du type « $id_connecteur »");
-            }
-            $this->getConnecteurCreationService()->createConnecteur(
-                $id_connecteur,
-                $connecteur_info['type'],
-                $global,
-                $id_e,
-                $this->getId_u(),
-                $libelle,
-                [],
-                "Le connecteur $id_connecteur « $libelle » a été créé"
-            );
-
-            $this->setLastMessage('Connecteur ajouté avec succès');
-            $this->redirect("/Entite/connecteur?global=$global&id_e=$id_e");
-        } catch (Exception $ex) {
-            $this->setLastError($ex->getMessage());
-            $this->redirect("/Connecteur/new?global=$global&id_e=$id_e");
-        }
-    }
-
-
-    /**
-     * @throws LastErrorException
-     * @throws LastMessageException
-     */
-    public function doDeleteAction(): void
+    public function doDeleteAction()
     {
         $recuperateur = $this->getPostInfo();
         $id_ce = $recuperateur->getInt('id_ce');
@@ -439,7 +398,11 @@ class ConnecteurControler extends PastellControler
     public function editionAction(): void
     {
         $id_ce = $this->getGetInfo()->getInt('id_ce');
-        $this->checkDroitFor($this->getConnecteurIdE($id_ce), DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
+        $this->checkDroitFor(
+            $this->getConnecteurIdE($id_ce),
+            DroitService::DROIT_CONNECTEUR,
+            DroitType::LECTURE
+        );
         $this->setConnecteurInfo();
         $this->setViewParameter(
             'page_title',
@@ -455,7 +418,10 @@ class ConnecteurControler extends PastellControler
         $this->setViewParameter('job_list', $this->getWorkerSQL()->getJobListWithWorkerForConnecteur($id_ce));
         $this->setViewParameter('return_url', urlencode("Connecteur/edition?id_ce=$id_ce"));
         $this->setViewParameter('connecteurFrequence', $this->getJobManager()->getNearestConnecteurFrequence($id_ce));
-        $this->setViewParameter('connecteurFrequenceByFlux', $this->getJobManager()->getNearestConnecteurForDocument($id_ce));
+        $this->setViewParameter(
+            'connecteurFrequenceByFlux',
+            $this->getJobManager()->getNearestConnecteurForDocument($id_ce)
+        );
         $this->setViewParameter('connecteur_hash', $this->getConnecteurActionService()->getLastHash($id_ce));
         $this->setViewParameter('usage_flux_list', $this->getFluxEntiteSQL()->getFluxAndEntityByConnectorId($id_ce));
         if ($this->getViewParameterByKey('has_definition')) {
@@ -523,6 +489,45 @@ class ConnecteurControler extends PastellControler
         $this->setViewParameter('page_title', "Ajout d'un connecteur");
         $this->setViewParameter('template_milieu', 'ConnecteurNew');
         $this->renderDefault();
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function doNewAction(): void
+    {
+        $recuperateur = $this->getPostInfo();
+        $id_e = $recuperateur->getInt('id_e');
+        $global = $recuperateur->getInt('global', 0);
+        $id_connecteur = $recuperateur->get('id_connecteur');
+        $libelle = $recuperateur->get('libelle');
+
+        try {
+            if ($id_e) {
+                $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
+            }
+            $connecteur_info = $this->getConnecteurDefinitionFile()->getInfo($id_connecteur, $global);
+            if (!$connecteur_info) {
+                throw new RuntimeException("Aucun connecteur du type « $id_connecteur »");
+            }
+            $this->getConnecteurCreationService()->createConnecteur(
+                $id_connecteur,
+                $connecteur_info['type'],
+                $global,
+                $id_e,
+                $this->getId_u(),
+                $libelle,
+                [],
+                "Le connecteur $id_connecteur « $libelle » a été créé"
+            );
+
+            $this->setLastMessage('Connecteur ajouté avec succès');
+            $this->redirect("/Entite/connecteur?global=$global&id_e=$id_e");
+        } catch (Exception $ex) {
+            $this->setLastError($ex->getMessage());
+            $this->redirect("/Connecteur/new?global=$global&id_e=$id_e");
+        }
     }
 
     /**
