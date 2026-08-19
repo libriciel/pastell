@@ -68,11 +68,10 @@ class ChorusParCsv extends PortailFactureConnecteur
      */
     public function getDeposeDepuisNbJours(DonneesFormulaire $donneesFormulaire)
     {
-        $depose_depuis_nb_jours = $donneesFormulaire->get('depose_depuis_nb_jours');
-        if (($depose_depuis_nb_jours) && (is_numeric($depose_depuis_nb_jours))) {
+        $depose_depuis_nb_jours = $donneesFormulaire->getWithDefault('depose_depuis_nb_jours');
+        if (is_numeric($depose_depuis_nb_jours)) {
             return $depose_depuis_nb_jours;
         }
-        $donneesFormulaire->setData('depose_depuis_nb_jours', self::DEPOSE_DEPUIS_NB_JOURS);
         return self::DEPOSE_DEPUIS_NB_JOURS;
     }
 

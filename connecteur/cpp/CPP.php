@@ -81,24 +81,26 @@ class CPP extends PortailFactureConnecteur
 
     public function setDeposeNbJours(DonneesFormulaire $donneesFormulaire): void
     {
-        $depose_depuis_nb_jours = $donneesFormulaire->get('depose_depuis_nb_jours');
-        if (($depose_depuis_nb_jours) && (is_numeric($depose_depuis_nb_jours))) {
-            $this->depose_depuis_nb_jours = $depose_depuis_nb_jours;
-        } else {
-            $donneesFormulaire->setData('depose_depuis_nb_jours', self::DEPOSE_DEPUIS_NB_JOURS);
-            $this->depose_depuis_nb_jours = self::DEPOSE_DEPUIS_NB_JOURS;
-        }
+        $this->depose_depuis_nb_jours = $this->getNbJours(
+            $donneesFormulaire,
+            'depose_depuis_nb_jours',
+            self::DEPOSE_DEPUIS_NB_JOURS
+        );
+        $this->depose_avant_nb_jours = $this->getNbJours(
+            $donneesFormulaire,
+            'depose_avant_nb_jours',
+            self::DEPOSE_AVANT_NB_JOURS
+        );
 
-        $depose_avant_nb_jours = $donneesFormulaire->get('depose_avant_nb_jours');
-        if (
-            ($depose_avant_nb_jours) && (is_numeric($depose_avant_nb_jours))
-            && ($this->depose_depuis_nb_jours >= $depose_avant_nb_jours)
-        ) {
-            $this->depose_avant_nb_jours = $depose_avant_nb_jours;
-        } else {
-            $donneesFormulaire->setData('depose_avant_nb_jours', self::DEPOSE_AVANT_NB_JOURS);
+        if ($this->depose_avant_nb_jours > $this->depose_depuis_nb_jours) {
             $this->depose_avant_nb_jours = self::DEPOSE_AVANT_NB_JOURS;
         }
+    }
+
+    private function getNbJours(DonneesFormulaire $donneesFormulaire, string $field_name, int $default)
+    {
+        $nb_jours = $donneesFormulaire->getWithDefault($field_name);
+        return is_numeric($nb_jours) ? $nb_jours : $default;
     }
 
     /**
