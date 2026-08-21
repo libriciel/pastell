@@ -99,7 +99,7 @@ unit_test:
       GIT_STRATEGY: none
       COMPOSER_PROCESS_TIMEOUT: 1200
     services:
-        - name: hubdocker.libriciel.fr/mariadb:11.4.12-noble@sha256:67873d30a17f6a9c331f06363b2fa15f38abca415529966d67c84f87f82439fe
+        - name: hubdocker.libriciel.fr/mariadb:11.4.12-noble@sha256:4f1d8d202fcf7bcb3902f63af09f9c1a050c2922a89652f22abaec0d4f015e83
           alias: mariadb
     script:
         - cd /app
@@ -136,7 +136,7 @@ acceptance_test:
         FF_NETWORK_PER_BUILD: "true"
         DONT_INIT_DATABASE: "true"
     services:
-        - name: hubdocker.libriciel.fr/mariadb:11.4.12-noble@sha256:67873d30a17f6a9c331f06363b2fa15f38abca415529966d67c84f87f82439fe
+        - name: hubdocker.libriciel.fr/mariadb:11.4.12-noble@sha256:4f1d8d202fcf7bcb3902f63af09f9c1a050c2922a89652f22abaec0d4f015e83
           alias: mariadb
         - name: hubdocker.libriciel.fr/redis:8.10.0-alpine3.23@sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241
           alias: redis
