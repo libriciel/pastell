@@ -66,7 +66,7 @@ services:
     command: ${SFTP_USER:-sftp}:${SFTP_PASSWORD:-sftp}:${UID:-10001}
 
   mailpit:
-    image: axllent/mailpit@sha256:d5ecbb067db3705fa953d79e1b7f81ef84038df67aba6c52825d8c02a1ea748a
+    image: axllent/mailpit@sha256:c96991d9bef73594c246d89ca81411d4e916f03e76a7d2d72fa2ab5dd3c9ce24
     ports:
       - "${MAILPIT_PORT:-8025}:8025"
 
