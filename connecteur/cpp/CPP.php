@@ -15,8 +15,8 @@ class CPP extends PortailFactureConnecteur
     private $no_change_statut_chorus;
     private $no_recup_facture;
 
-    private $depose_depuis_nb_jours;
-    private $depose_avant_nb_jours;
+    private int $depose_depuis_nb_jours = self::DEPOSE_DEPUIS_NB_JOURS;
+    private int $depose_avant_nb_jours = self::DEPOSE_AVANT_NB_JOURS;
 
     /** @var DonneesFormulaire|false $globalConfig */
     private $globalConfig;
@@ -81,41 +81,29 @@ class CPP extends PortailFactureConnecteur
 
     public function setDeposeNbJours(DonneesFormulaire $donneesFormulaire): void
     {
-        $this->depose_depuis_nb_jours = $this->getNbJours(
-            $donneesFormulaire,
-            'depose_depuis_nb_jours',
-            self::DEPOSE_DEPUIS_NB_JOURS
-        );
-        $this->depose_avant_nb_jours = $this->getNbJours(
-            $donneesFormulaire,
-            'depose_avant_nb_jours',
-            self::DEPOSE_AVANT_NB_JOURS
-        );
+        $this->depose_depuis_nb_jours = $this->getNbJours($donneesFormulaire, 'depose_depuis_nb_jours')
+            ?? self::DEPOSE_DEPUIS_NB_JOURS;
+        $this->depose_avant_nb_jours = $this->getNbJours($donneesFormulaire, 'depose_avant_nb_jours')
+            ?? self::DEPOSE_AVANT_NB_JOURS;
 
         if ($this->depose_avant_nb_jours > $this->depose_depuis_nb_jours) {
             $this->depose_avant_nb_jours = self::DEPOSE_AVANT_NB_JOURS;
         }
     }
 
-    private function getNbJours(DonneesFormulaire $donneesFormulaire, string $field_name, int $default)
+    private function getNbJours(DonneesFormulaire $donneesFormulaire, string $field_name): ?int
     {
         $nb_jours = $donneesFormulaire->getWithDefault($field_name);
-        return is_numeric($nb_jours) ? $nb_jours : $default;
+        return is_numeric($nb_jours) ? (int)$nb_jours : null;
     }
 
-    /**
-     * @return false|string
-     */
-    public function getDateDepuisLe()
+    public function getDateDepuisLe(): string
     {
-        $time_debut = floor(time() - ($this->depose_depuis_nb_jours * 86400));
-        return date('Y-m-d', (int)$time_debut);
+        $time_debut = time() - ($this->depose_depuis_nb_jours * 86400);
+        return date('Y-m-d', $time_debut);
     }
 
-    /**
-     * @return false|string
-     */
-    public function getDateJusquAu()
+    public function getDateJusquAu(): string
     {
         $time_au = time() - ($this->depose_avant_nb_jours * 86400);
         return date('Y-m-d', $time_au); //date('Y-m-d 23:59:59')
