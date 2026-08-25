@@ -1,10 +1,12 @@
 <?php
 
+use PHPUnit\Framework\MockObject\MockObject;
+
 trait CurlUtilitiesTestTrait
 {
-    protected function mockCurl(array $url_to_content, $error_code = 200)
+    protected function mockCurl(array $url_to_content, $error_code = 200): CurlWrapper&MockObject
     {
-        $this->mockCurlWithCallable(
+        return $this->mockCurlWithCallable(
             function ($url) use ($url_to_content) {
                 if (! isset($url_to_content[$url])) {
                     throw new UnrecoverableException("Appel à une URL inatendue $url");
@@ -15,7 +17,7 @@ trait CurlUtilitiesTestTrait
         );
     }
 
-    protected function mockCurlWithCallable(callable $get_function, $error_code = 200)
+    protected function mockCurlWithCallable(callable $get_function, $error_code = 200): CurlWrapper&MockObject
     {
         $curlWrapper = $this->createMock(CurlWrapper::class);
 
@@ -33,7 +35,7 @@ trait CurlUtilitiesTestTrait
 
         $curlWrapper->expects($this->any())
             ->method('getFullMessage')
-            ->willReturn(sprintf("Code HTTP: %s.", $error_code));
+            ->willReturn(sprintf('Code HTTP: %s.', $error_code));
 
         $curlWrapperFactory = $this->createMock(CurlWrapperFactory::class);
 
@@ -42,5 +44,7 @@ trait CurlUtilitiesTestTrait
             ->willReturn($curlWrapper);
 
         $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
+
+        return $curlWrapper;
     }
 }

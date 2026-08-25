@@ -1,48 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 class S2lowActesTest extends PastellTestCase
 {
+    use CurlUtilitiesTestTrait;
+
     /**
      * @throws DonneesFormulaireException
      * @throws S2lowException
      */
     public function testPostActesOK(): void
     {
-        $curlWrapper = $this->createMock(CurlWrapper::class);
-
-        $curlWrapper
-            ->method('get')
-            ->willReturnCallback(function ($url) {
-                if ($url === '/modules/actes/actes_classification_fetch.php?api=1') {
-                    return file_get_contents(__DIR__ . '/fixtures/classification-exemple.xml');
-                }
-                if ($url === '/admin/users/api-list-login.php') {
-                    return true;
-                }
-                if ($url === '/modules/actes/actes_transac_create.php') {
-                    return "OK\n666";
-                }
-                throw new \RuntimeException("$url inatendu");
-            });
+        $curlWrapper = $this->mockCurl([
+            '/modules/actes/actes_classification_fetch.php?api=1' =>
+                file_get_contents(__DIR__ . '/fixtures/classification-exemple.xml'),
+            '/admin/users/api-list-login.php' => true,
+            '/modules/actes/actes_transac_create.php' => "OK\n666",
+        ]);
 
         $addPostDataCall = [];
-
         $curlWrapper
             ->method('addPostData')
-            ->willReturnCallback(
-                (static function ($key, $value) use (&$addPostDataCall) {
-                    $addPostDataCall[$key] = $value;
-                    return true;
-                })
-            );
-
-        $curlWrapperFactory = $this->createMock(CurlWrapperFactory::class);
-
-        $curlWrapperFactory
-            ->method('getInstance')
-            ->willReturn($curlWrapper);
-
-        $this->getObjectInstancier()->setInstance(CurlWrapperFactory::class, $curlWrapperFactory);
+            ->willReturnCallback(static function ($key, $value) use (&$addPostDataCall) {
+                $addPostDataCall[$key] = $value;
+                return true;
+            });
 
         $form = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
         $form->addFileFromCopy(
@@ -70,9 +53,9 @@ class S2lowActesTest extends PastellTestCase
 
         $acte->autre_document_attache = [$annexe];
 
-        $this->assertSame('666', $s2low->sendActes($acte));
+        static::assertSame('666', $s2low->sendActes($acte));
 
-        $this->assertEquals(
+        static::assertSame(
             [
                 'api' => 1,
                 'nature_code' => '3',
