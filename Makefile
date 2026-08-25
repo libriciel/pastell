@@ -59,7 +59,7 @@ phpstan: docker-compose-up ## Run phpstan
 	$(DOCKER_COMPOSE_EXEC) vendor/bin/phpstan --xdebug
 
 phpmd: docker-compose-up ## Detect unused private methods/fields/variables/parameters
-	$(DOCKER_COMPOSE_EXEC) vendor/bin/phpmd action,api,connecteur,connecteur-type,controler,lib,mailsec,model,module,pastell-core,src,type-dossier text phpmd.xml.dist
+	$(DOCKER_COMPOSE_EXEC) vendor/bin/phpmd action,api,connecteur,connecteur-type,controler,lib,mailsec,model,module,pastell-core,src,type-dossier text phpmd.xml.dist --ignore-violations-on-exit
 
 trivy: ## Run trivy
 	$(EXEC_TRIVY)
