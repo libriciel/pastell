@@ -2,8 +2,7 @@
 
 ## Ajouts
 
-- Commande `app:database:foreign-key-check` : détecte les lignes dont la clé étrangère ne référence plus
-  aucune ligne existante et propose de les supprimer #2540
+- Commande `app:database:foreign-key-check` : détecte et nettoie les clés étrangères orphelines dans la base de données #2540
 
 ## Corrections
 
