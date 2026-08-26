@@ -121,6 +121,7 @@
     "phpcs": "phpcs",
     "phpcbf": "phpcbf",
     "phpstan": "phpstan",
+    "phpmd": "phpmd action,api,connecteur,connecteur-type,controler,lib,mailsec,model,module,pastell-core,src,type-dossier text phpmd.xml.dist",
     "auto-scripts": {
       "cache:clear": "symfony-cmd",
       "assets:install %PUBLIC_DIR%": "symfony-cmd"
