@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<ruleset name="Pastell"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd">
+    <description>Détection de code mort</description>
+
+    <rule ref="rulesets/unusedcode.xml">
+        <!-- Trop de faux positifs : paramètres imposés par une interface/classe abstraite -->
+        <exclude name="UnusedFormalParameter" />
+        <exclude name="UnusedLocalVariable" />
+    </rule>
+
+    <!-- Ignore les clés/valeurs de foreach non utilisées -->
+    <rule ref="rulesets/unusedcode.xml/UnusedLocalVariable">
+        <properties>
+            <property name="allow-unused-foreach-variables" value="true" />
+        </properties>
+    </rule>
+</ruleset>
