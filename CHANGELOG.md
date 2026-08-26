@@ -37,6 +37,8 @@
 - Le bouton `Modifier l'identifiant` des dossiers studio est désormais sur la page `TypeDossier/detail` #2445
 - Le droit `utilisateur:suppression` est maintenant nécessaire pour supprimer des utilisateurs #1821
 - La page `Role/detail` affiche désormais les droits par catégorie. Une barre de recherche est également ajoutée #2483
+- Centralisation de l'envoi des notifications d'échec aux administrateurs de la plateforme via le service `AdminMailer`
+  et la nouvelle exception `NotificationException` #2546
 
 ## Correction
 

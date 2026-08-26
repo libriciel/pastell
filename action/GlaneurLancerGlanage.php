@@ -1,9 +1,6 @@
 <?php
 
-use Pastell\Configuration\JobStatus;
-use Pastell\Mailer\Mailer;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Component\Mime\Address;
+use Pastell\Exception\NotificationException;
 
 class GlaneurLancerGlanage extends ActionExecutor
 {
@@ -18,32 +15,19 @@ class GlaneurLancerGlanage extends ActionExecutor
 
         try {
             $result = $connecteur->glaner();
-            $this->setLastMessage(implode("<br/>", $connecteur->getLastMessage()));
+            $this->setLastMessage(implode('<br/>', $connecteur->getLastMessage()));
         } catch (UnrecoverableException $e) {
-            $jobQueue = $this->objectInstancier->getInstance(JobQueueSQL::class);
-
-            $id_job  = $jobQueue->getJobIdForConnecteur($this->id_ce, 'go');
-            if ($id_job) {
-                $jobQueue->lock($id_job, JobStatus::ERROR_ACTION);
-            }
             $message = $e->getMessage();
-            $this->setLastMessage($message);
 
             $url = sprintf('%s/Connecteur/edition?id_ce=%d', $this->getSiteBase(), $this->id_ce);
 
-            #TODO revoir la gestion des erreurs des connecteurs afin de ne pas envoyer de mail à ce moment-là
-            $configurationSql = $this->objectInstancier->getInstance(ConfigurationSQL::class);
-            $admin_email = $configurationSql->getAdminEmails();
-            $plateforme_mail = $this->objectInstancier->getInstance('plateforme_mail');
-            $libelle_plateforme_mail = $configurationSql->getLibellePlateformeMail();
-            $templatedEmail = new TemplatedEmail()
-                ->from(new Address($plateforme_mail, $libelle_plateforme_mail))
-                ->to(...$admin_email)
-                ->subject("[Pastell] Le traitement d'un glaneur est passé à 'NON'")
-                ->htmlTemplate('glaneur_lancer_glanage.html.twig')
-                ->context(['url' => $url, 'message' => $message]);
-            $this->objectInstancier->getInstance(Mailer::class)->send($templatedEmail);
-            return false;
+            throw new NotificationException(
+                $message,
+                "[Pastell] Le traitement d'un glaneur est en erreur et suspendu",
+                'glaneur_lancer_glanage.html.twig',
+                ['url' => $url, 'message' => $message],
+                $e,
+            );
         } catch (Exception $e) {
             $this->setLastMessage("Erreur lors de l'importation : " . $e->getMessage() . "<br />\n");
             return false;
