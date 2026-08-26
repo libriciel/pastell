@@ -26,7 +26,6 @@
     <h2>Rechercher un contact</h2>
     <form action="MailSec/annuaire" method='get' class="table-end">
         <input type='hidden' name='id_e' value='<?= $id_e?>'/>
-        <input type='hidden' name='page' value='1'/>
         <table class='table table-striped'>
             <tr>
                 <td>Groupe</td>
@@ -68,7 +67,7 @@
             <i class='fa fa-trash'></i>&nbsp;Supprimer la sélection
         </button>
     <?php endif; ?>
-    <?php $this->suivantPrecedent($offset, $limit, $nb_email, "MailSec/annuaire?id_e=$id_e&search=$search"); ?>
+    <?php $this->suivantPrecedent($offset, $limit, $nb_email, "MailSec/annuaire?id_e=$id_e&id_g=$id_g&search=" . urlencode($search)); ?>
 
     <form action='MailSec/contactSuppression' method='post' id='form-suppression-lot'>
         <?php $this->displayCSRFInput() ?>
@@ -118,7 +117,7 @@
 
         </table>
 
-        <?php $this->suivantPrecedent($offset, $limit, $nb_email, "MailSec/annuaire?id_e=$id_e&search=$search"); ?>
+        <?php $this->suivantPrecedent($offset, $limit, $nb_email, "MailSec/annuaire?id_e=$id_e&id_g=$id_g&search=" . urlencode($search)); ?>
         <a class='btn btn-outline-primary' href='MailSec/contactExport?id_e=<?php echo $id_e ?>'
         ><i class='fas fa-download'></i>&nbsp;Exporter</a>
         <?php if ($annuaire_edition) : ?>

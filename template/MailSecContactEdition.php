@@ -36,7 +36,7 @@
                             <li>
                                 <input type='checkbox' name='id_g_list[]'
                                         <?= in_array(
-                                            $groupe['id_g'],
+                                            (int)$groupe['id_g'],
                                             $info_contact['id_g_list'],
                                             true
                                         ) ? 'checked' : '' ?>
@@ -50,7 +50,8 @@
                 </td>
             </tr>
         </table>
-        <a class='btn btn-outline-primary' href='MailSec/contactDetail?id_a=<?= $id_a ?>&id_e=<?= $id_e ?>'><i
+        <a class='btn btn-outline-primary'
+           href='<?= $id_a ? "MailSec/contactDetail?id_a=$id_a&id_e=$id_e" : "MailSec/annuaire?id_e=$id_e" ?>'><i
                     class="fas fa-circle-xmark"></i>&nbsp;Annuler</a>
 
         <button type="submit" class="btn btn-primary">
