@@ -1,22 +1,20 @@
-nom: actes-avant-après
-type: 'Types de dossier personnalisés'
+nom: tdt-actes-multi-annexes
+type: 'Flux Généraux'
 description: ''
 connecteur:
-    - transformation
     - TdT
-    - GED
 affiche_one: false
 formulaire:
     onglet1:
-        titre:
-            name: Titre
+        objet:
+            name: Objet
             type: text
-            requis: false
+            requis: true
             multiple: false
             commentaire: ''
             title: true
-        document:
-            name: document
+        actes:
+            name: Actes
             type: file
             requis: true
             multiple: false
@@ -28,35 +26,20 @@ formulaire:
             multiple: true
             commentaire: ''
             onchange: autre_document_attache-change
+        autre_annexe:
+            name: 'Autre(s) annexe(s)'
+            type: file
+            requis: false
+            multiple: true
+            commentaire: ''
+            onchange: autre_document_attache-change
     Cheminement:
-        envoi_transformation:
-            name: Transformation
-            type: checkbox
-            onchange: cheminement-change
-            default: checked
-            read-only: true
         envoi_tdt_actes:
             name: 'Envoi à la préfecture (via un Tdt)'
             type: checkbox
             onchange: cheminement-change
             default: checked
             read-only: true
-        envoi_depot:
-            name: 'Dépôt (GED, FTP, ...)'
-            type: checkbox
-            onchange: cheminement-change
-            default: checked
-            read-only: true
-    Transformation:
-        has_transformation:
-            no-show: true
-            read-only: true
-        transformation_file:
-            name: Transformations
-            type: file
-            visionneuse: Pastell\Viewer\JsonViewer
-            read-only: true
-            visionneuse-no-link: true
     Acte:
         acte_nature:
             name: "Nature de l'acte"
@@ -175,17 +158,6 @@ formulaire:
             visionneuse: Pastell\Viewer\ReponsePrefectureLinkViewer
             read-only: true
             visionneuse-no-link: true
-    'Retour GED':
-        has_ged_document_id:
-            no-show: true
-            read-only: true
-        ged_document_id_file:
-            name: 'Identifiants des documents sur la GED'
-            type: file
-            visionneuse: Pastell\Viewer\GedIdDocumentsViewer
-            read-only: true
-            requis: true
-            visionneuse-no-link: true
 champs-affiches:
     - titre
     - dernier_etat
@@ -203,8 +175,6 @@ champs-recherche-avancee:
     - numero_de_lacte
     - acte_unique_id
 page-condition:
-    Transformation:
-        has_transformation: true
     Acte:
         envoi_tdt_actes: true
     'Retour Tdt':
@@ -213,8 +183,6 @@ page-condition:
         has_annulation: true
     'Réponses de la préfecture':
         has_reponse_prefecture: true
-    'Retour GED':
-        has_ged_document_id: true
 action:
     creation:
         name-action: Créer
@@ -229,12 +197,8 @@ action:
                 - creation
                 - modification
                 - importation
-                - transformation
-                - transformation-error
-                - acquiter-tdt
                 - send-tdt-erreur
                 - acquiter-tdt
-                - send-ged
                 - termine
     supression:
         name-action: Supprimer
@@ -246,10 +210,8 @@ action:
                 - importation
                 - termine
                 - fatal-error
-                - transformation-error
                 - send-tdt-erreur
                 - annuler-tdt
-                - error-ged
         action-class: Supprimer
         warning: 'Êtes-vous sûr ?'
     importation:
@@ -265,10 +227,7 @@ action:
                 - creation
                 - modification
                 - importation
-                - transformation
-                - transformation-error
                 - acquiter-tdt
-                - send-ged
             document_is_valide: true
         action-class: OrientationTypeDossierPersonnalise
     termine:
@@ -289,56 +248,6 @@ action:
         rule:
             role_id_e: 'no-role,'
         action-class: CheminementChangeTypeDossierPersonnalise
-    preparation-transformation:
-        name: 'Préparation à la transformation'
-        rule:
-            role_id_e: no-role
-        action-automatique: transformation
-    transformation:
-        name-action: 'Transformer le dossier'
-        name: 'Transformation du dossier'
-        rule:
-            last-action:
-                - preparation-transformation
-                - transformation-error
-        action-class: StandardAction
-        action-automatique: orientation
-        connecteur-type: transformation
-        connecteur-type-action: TransformationTransform
-        connecteur-type-mapping:
-            transformation_file: transformation_file
-            has_transformation: has_transformation
-            transformation-error: transformation-error
-        editable-content:
-            - envoi_tdt_actes
-            - envoi_depot
-            - acte_nature
-            - numero_de_lacte
-            - date_de_lacte
-            - document_papier
-            - classification
-            - type_piece
-            - type_acte
-            - type_pj
-            - acte_publication_date
-        modification-no-change-etat: true
-    transformation-error:
-        name: 'Erreur lors de la transformation du dossier'
-        rule:
-            role_id_e: no-role
-        editable-content:
-            - envoi_tdt_actes
-            - envoi_depot
-            - acte_nature
-            - numero_de_lacte
-            - date_de_lacte
-            - document_papier
-            - classification
-            - type_piece
-            - type_acte
-            - type_pj
-            - acte_publication_date
-        modification-no-change-etat: true
     pre-send-tdt:
         name: "Préparation de l'envoi au Tdt"
         rule:
@@ -365,9 +274,11 @@ action:
             send-tdt-erreur: send-tdt-erreur
             document-transmis-tdt: document-transmis-tdt
             tedetis_transaction_id: tedetis_transaction_id
-            arrete: document
-            autre_document_attache: annexe
-            objet: titre
+            arrete: actes
+            autre_document_attache:
+                - annexe
+                - autre_annexe
+            objet: objet
         action-automatique: verif-tdt
     send-tdt-erreur:
         name: "Erreur lors de l'envoi des données au TdT"
@@ -431,9 +342,11 @@ action:
             acte_tamponne: acte_tamponne
             annexes_tamponnees: annexes_tamponnees
             date_ar: date_ar
-            arrete: document
-            autre_document_attache: annexe
-            objet: titre
+            arrete: actes
+            autre_document_attache:
+                - annexe
+                - autre_annexe
+            objet: objet
     erreur-verif-tdt:
         name: "Erreur lors de la vérification du statut de l'acte"
         rule:
@@ -448,7 +361,6 @@ action:
             role_id_e: no-role
         action-automatique: orientation
         editable-content:
-            - envoi_depot
             - acte_publication_date
         modification-no-change-etat: true
     annulation-tdt:
@@ -487,9 +399,11 @@ action:
             annexes_tamponnees: annexes_tamponnees
             date_ar: date_ar
             acte_publication_date: acte_publication_date
-            arrete: document
-            autre_document_attache: annexe
-            objet: titre
+            arrete: actes
+            autre_document_attache:
+                - annexe
+                - autre_annexe
+            objet: objet
     verif-annulation-tdt:
         name-action: "Vérifier le statut de la transaction d'annulation"
         name: 'Statut vérifié par le TdT'
@@ -519,8 +433,10 @@ action:
         connecteur-type-mapping:
             acte_nature: acte_nature
             classification: classification
-            arrete: document
-            autre_document_attache: annexe
+            arrete: actes
+            autre_document_attache:
+                - annexe
+                - autre_annexe
     classification:
         name: 'Classification ACTES'
         no-workflow: true
@@ -537,7 +453,9 @@ action:
         connecteur-type: TdT
         connecteur-type-action: TdtAnnexeTypologieAnnexeChange
         connecteur-type-mapping:
-            autre_document_attache: annexe
+            autre_document_attache:
+                - annexe
+                - autre_annexe
     typologie-change:
         no-workflow: true
         rule:
@@ -551,8 +469,10 @@ action:
             type_piece: type_piece
             type_piece_fichier: type_piece_fichier
             acte_nature: acte_nature
-            arrete: document
-            autre_document_attache: annexe
+            arrete: actes
+            autre_document_attache:
+                - annexe
+                - autre_annexe
     duplicate:
         name-action: "Dupliquer l'acte"
         rule:
@@ -567,33 +487,9 @@ action:
             date_de_lacte: date_de_lacte
             document_papier: document_papier
             classification: classification
-            objet: titre
-    preparation-send-ged:
-        name: "Préparation de l'envoi à la GED"
-        rule:
-            role_id_e: no-role
-        action-automatique: send-ged
-    send-ged:
-        name-action: 'Verser à la GED'
-        name: 'Versé à la GED'
-        rule:
-            last-action:
-                - preparation-send-ged
-                - error-ged
-        action-automatique: orientation
-        action-class: StandardAction
-        connecteur-type: GED
-        connecteur-type-action: GEDEnvoyer
-        connecteur-type-mapping:
-            fatal-error: error-ged
-        editable-content:
-            - acte_publication_date
-        modification-no-change-etat: true
-    error-ged:
-        name: 'Erreur irrécupérable lors du dépôt'
-        rule:
-            role_id_e: no-role
+            objet: objet
 threshold_size: '157286400'
 threshold_fields:
-    - document
+    - actes
     - annexe
+    - autre_annexe

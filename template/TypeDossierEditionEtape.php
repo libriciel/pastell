@@ -103,15 +103,23 @@ use Pastell\Validator\ElementIdValidator;
                                 <?php endforeach; ?>
                             </select>
                         <?php elseif ($element_info['type'] == 'multi_file') : ?>
+                            <?php $is_multiple = !empty($element_info['multiple']); ?>
+                            <?php $selected_list = array_map(
+                                'strval',
+                                (array)($etapeInfo->specific_type_info[$element_id] ?? [])
+                            ); ?>
                             <select class="form-select col-md-8"
-                                    name='<?php hecho($element_id) ?>'
+                                    name='<?php hecho($element_id) ?><?php echo $is_multiple ? '[]' : '' ?>'
                                     id="<?php hecho($element_id) ?>"
+                                    <?php echo $is_multiple ? 'multiple="multiple"' : '' ?>
                             >
-                                <option value=""></option>
+                                <?php if (!$is_multiple) : ?>
+                                    <option value=""></option>
+                                <?php endif; ?>
                                 <?php foreach ($multi_file_field_list as $file_field_id => $file_field_info) : ?>
-                                    <option value="<?php echo $file_field_id ?>"
-                                        <?php echo $file_field_id ==
-                                        $etapeInfo->specific_type_info[$element_id] ? 'selected="selected"' : ''; ?>
+                                    <option value="<?php hecho($file_field_id) ?>"
+                                        <?php echo in_array((string)$file_field_id, $selected_list, true)
+                                            ? 'selected="selected"' : ''; ?>
                                     ><?php hecho($file_field_info->name) ?></option>
                                 <?php endforeach; ?>
                             </select>

@@ -1,0 +1,69 @@
+{
+  "id_type_dossier": "tdt-actes-multi-annexes",
+  "pastell-version": "%VERSION%",
+  "timestamp": 1554987777,
+  "raw_data": {
+    "nom": "tdt-actes-multi-annexes",
+    "type": "Flux Généraux",
+    "etape": [
+      {
+        "type": "tdt_actes",
+        "requis": "on",
+        "num_etape": 0,
+        "automatique": "on",
+        "specific_type_info": {
+          "objet_acte": "objet",
+          "fichier_acte": "actes",
+          "fichier_annexe": ["annexe", "autre_annexe"]
+        },
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      }
+    ],
+    "nom_onglet": "onglet1",
+    "description": "",
+    "id_type_dossier": "tdt-actes-multi-annexes",
+    "formulaireElement": [
+      {
+        "name": "Objet",
+        "type": "text",
+        "titre": "on",
+        "requis": "on",
+        "element_id": "objet",
+        "commentaire": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": ""
+      },
+      {
+        "name": "Actes",
+        "type": "file",
+        "titre": "",
+        "requis": "on",
+        "element_id": "actes",
+        "commentaire": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": ""
+      },
+      {
+        "name": "Annexe(s)",
+        "type": "multi_file",
+        "titre": "",
+        "requis": "",
+        "element_id": "annexe",
+        "commentaire": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": ""
+      },
+      {
+        "name": "Autre(s) annexe(s)",
+        "type": "multi_file",
+        "titre": "",
+        "requis": "",
+        "element_id": "autre_annexe",
+        "commentaire": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": ""
+      }
+    ]
+  }
+}

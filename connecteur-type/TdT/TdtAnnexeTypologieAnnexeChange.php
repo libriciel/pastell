@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Step\AnnexeList;
+
 class TdtAnnexeTypologieAnnexeChange extends ConnecteurTypeActionExecutor
 {
     /**
@@ -17,7 +19,6 @@ class TdtAnnexeTypologieAnnexeChange extends ConnecteurTypeActionExecutor
         $type_pj_element = $this->getMappingValue('type_pj');
         $type_piece_fichier_element = $this->getMappingValue('type_piece_fichier');
         $type_piece_element = $this->getMappingValue('type_piece');
-        $autre_document_attache = $this->getMappingValue('autre_document_attache');
 
         if (! $this->getDonneesFormulaire()->get($type_pj_element)) {
             return true;
@@ -32,17 +33,20 @@ class TdtAnnexeTypologieAnnexeChange extends ConnecteurTypeActionExecutor
             $type_fichier_array[$file_info['filename']][] = $file_info['typologie'];
         }
 
+        $annexe_filename_list = AnnexeList::getFilenames(
+            $this->getMappingValueList(AnnexeList::MAPPING_KEY),
+            $this->getDonneesFormulaire()
+        );
+
         $type_pj = [];
-        if ($this->getDonneesFormulaire()->get($autre_document_attache)) {
-            foreach ($this->getDonneesFormulaire()->get($autre_document_attache) as $annexe_name) {
-                if (empty($type_fichier_array[$annexe_name])) {
-                    $type_pj[] = "";
-                    continue;
-                }
-                $filename = array_shift($type_fichier_array[$annexe_name]);
-                preg_match("#\((.{5})\)$#", $filename, $matches);
-                $type_pj[] = $matches[1];
+        foreach ($annexe_filename_list as $annexe_name) {
+            if (empty($type_fichier_array[$annexe_name])) {
+                $type_pj[] = "";
+                continue;
             }
+            $filename = array_shift($type_fichier_array[$annexe_name]);
+            preg_match("#\((.{5})\)$#", $filename, $matches);
+            $type_pj[] = $matches[1];
         }
 
         $this->getDonneesFormulaire()->removeFile($type_piece_fichier_element);

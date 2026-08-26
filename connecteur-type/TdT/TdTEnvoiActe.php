@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Step\AnnexeList;
+
 class TdTEnvoiActe extends ConnecteurTypeActionExecutor
 {
     /**
@@ -30,16 +32,16 @@ class TdTEnvoiActe extends ConnecteurTypeActionExecutor
             $tdtActes->arrete->content = $this->getDonneesFormulaire()->getFileContent($arrete_element);
             $tdtActes->arrete->contentType = $this->getDonneesFormulaire()->getContentType($arrete_element);
 
-            $autre_document_element = $this->getMappingValue('autre_document_attache');
-
-            if ($this->getDonneesFormulaire()->get($autre_document_element)) {
-                foreach ($this->getDonneesFormulaire()->get($autre_document_element) as $i => $annexe) {
-                    $tdtActes->autre_document_attache[$i] = new Fichier();
-                    $tdtActes->autre_document_attache[$i]->filepath = $this->getDonneesFormulaire()->getFilePath($autre_document_element, $i);
-                    $tdtActes->autre_document_attache[$i]->filename = $this->getDonneesFormulaire()->getFileName($autre_document_element, $i);
-                    $tdtActes->autre_document_attache[$i]->content = $this->getDonneesFormulaire()->getFileContent($autre_document_element, $i);
-                    $tdtActes->autre_document_attache[$i]->contentType = $this->getDonneesFormulaire()->getContentType($autre_document_element, $i);
-                }
+            $annexe_list = AnnexeList::getAll(
+                $this->getMappingValueList(AnnexeList::MAPPING_KEY),
+                $this->getDonneesFormulaire()
+            );
+            foreach ($annexe_list as $i => $annexe) {
+                $tdtActes->autre_document_attache[$i] = new Fichier();
+                $tdtActes->autre_document_attache[$i]->filepath = $this->getDonneesFormulaire()->getFilePath($annexe['element'], $annexe['num']);
+                $tdtActes->autre_document_attache[$i]->filename = $this->getDonneesFormulaire()->getFileName($annexe['element'], $annexe['num']);
+                $tdtActes->autre_document_attache[$i]->content = $this->getDonneesFormulaire()->getFileContent($annexe['element'], $annexe['num']);
+                $tdtActes->autre_document_attache[$i]->contentType = $this->getDonneesFormulaire()->getContentType($annexe['element'], $annexe['num']);
             }
 
             $id_transaction = $tdT->sendActes($tdtActes);

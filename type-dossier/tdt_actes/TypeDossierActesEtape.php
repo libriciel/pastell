@@ -24,6 +24,7 @@ class TypeDossierActesEtape implements TypeDossierEtapeSetSpecificInformation
         $tamponnerTdtAction = $stringMapper->get('tamponner-tdt');
         $teletransmissionTdtAction = $stringMapper->get('teletransmission-tdt');
         $typologieChange = $stringMapper->get('typologie-change');
+        $autreDocumentAttacheChange = $stringMapper->get('autre_document_attache-change');
         $acquiterTdtAction = $stringMapper->get('acquiter-tdt');
 
         if (!empty($typeDossierEtape->specific_type_info[self::FICHIER_ACTE])) {
@@ -40,18 +41,24 @@ class TypeDossierActesEtape implements TypeDossierEtapeSetSpecificInformation
             $result[DocumentType::THRESHOLD_SIZE] = self::THRESHOLD_SIZE;
             $result[DocumentType::THRESHOLD_FIELDS][] = $typeDossierEtape->specific_type_info[self::FICHIER_ACTE];
         }
-        if (!empty($typeDossierEtape->specific_type_info[self::FICHIER_ANNEXE])) {
+        $fichierAnnexeElements = $this->getFichierAnnexeElements($typeDossierEtape);
+        if ($fichierAnnexeElements) {
+            $mappingValue = count($fichierAnnexeElements) === 1 ? $fichierAnnexeElements[0] : $fichierAnnexeElements;
             $result[DocumentType::ACTION][$typePieceAction][Action::CONNECTEUR_TYPE_MAPPING]
-                [self::AUTRE_DOCUMENT_ATTACHE] = $typeDossierEtape->specific_type_info[self::FICHIER_ANNEXE];
+                [self::AUTRE_DOCUMENT_ATTACHE] = $mappingValue;
             $result[DocumentType::ACTION][$sendTdtAction][Action::CONNECTEUR_TYPE_MAPPING]
-                [self::AUTRE_DOCUMENT_ATTACHE] = $typeDossierEtape->specific_type_info[self::FICHIER_ANNEXE];
+                [self::AUTRE_DOCUMENT_ATTACHE] = $mappingValue;
             $result[DocumentType::ACTION][$verifTdtAction][Action::CONNECTEUR_TYPE_MAPPING]
-                [self::AUTRE_DOCUMENT_ATTACHE] = $typeDossierEtape->specific_type_info[self::FICHIER_ANNEXE];
+                [self::AUTRE_DOCUMENT_ATTACHE] = $mappingValue;
             $result[DocumentType::ACTION][$tamponnerTdtAction][Action::CONNECTEUR_TYPE_MAPPING]
-                [self::AUTRE_DOCUMENT_ATTACHE] = $typeDossierEtape->specific_type_info[self::FICHIER_ANNEXE];
+                [self::AUTRE_DOCUMENT_ATTACHE] = $mappingValue;
             $result[DocumentType::ACTION][$typologieChange][Action::CONNECTEUR_TYPE_MAPPING]
-            [self::AUTRE_DOCUMENT_ATTACHE] = $typeDossierEtape->specific_type_info[self::FICHIER_ANNEXE];
-            $result[DocumentType::THRESHOLD_FIELDS][] = $typeDossierEtape->specific_type_info[self::FICHIER_ANNEXE];
+                [self::AUTRE_DOCUMENT_ATTACHE] = $mappingValue;
+            $result[DocumentType::ACTION][$autreDocumentAttacheChange][Action::CONNECTEUR_TYPE_MAPPING]
+                [self::AUTRE_DOCUMENT_ATTACHE] = $mappingValue;
+            foreach ($fichierAnnexeElements as $fichierAnnexeElement) {
+                $result[DocumentType::THRESHOLD_FIELDS][] = $fichierAnnexeElement;
+            }
         }
         if (!empty($typeDossierEtape->specific_type_info[self::OBJET_ACTE])) {
             $result[DocumentType::ACTION][$sendTdtAction][Action::CONNECTEUR_TYPE_MAPPING]['objet']
@@ -72,13 +79,11 @@ class TypeDossierActesEtape implements TypeDossierEtapeSetSpecificInformation
         reset($result[DocumentType::FORMULAIRE]);
         $onglet1 = key($result[DocumentType::FORMULAIRE]);
 
-        if (
-            !empty(
-                $result[DocumentType::FORMULAIRE][$onglet1][$typeDossierEtape->specific_type_info[self::FICHIER_ANNEXE]]
-            )
-        ) {
-            $result[DocumentType::FORMULAIRE][$onglet1][$typeDossierEtape->specific_type_info[self::FICHIER_ANNEXE]]
-                ['onchange'] = 'autre_document_attache-change';
+        foreach ($fichierAnnexeElements as $fichierAnnexeElement) {
+            if (!empty($result[DocumentType::FORMULAIRE][$onglet1][$fichierAnnexeElement])) {
+                $result[DocumentType::FORMULAIRE][$onglet1][$fichierAnnexeElement]
+                    ['onchange'] = 'autre_document_attache-change';
+            }
         }
 
         $result[DocumentType::ACTION][Action::MODIFICATION][Action::ACTION_RULE][Action::ACTION_RULE_LAST_ACTION][]
@@ -109,6 +114,13 @@ class TypeDossierActesEtape implements TypeDossierEtapeSetSpecificInformation
         $result['champs-recherche-avancee'][] = $stringMapper->get('acte_unique_id');
 
         return $result;
+    }
+
+    private function getFichierAnnexeElements(TypeDossierEtapeProperties $typeDossierEtape): array
+    {
+        return array_values(
+            array_filter((array)($typeDossierEtape->specific_type_info[self::FICHIER_ANNEXE] ?? []))
+        );
     }
 
     private function makeEditable(string $actionId, array &$result, StringMapper $stringMapper): void

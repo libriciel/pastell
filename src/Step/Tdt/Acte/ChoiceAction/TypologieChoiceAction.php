@@ -7,6 +7,7 @@ namespace Pastell\Step\Tdt\Acte\ChoiceAction;
 use ConnecteurTypeChoiceActionExecutor;
 use Exception;
 use NotFoundException;
+use Pastell\Step\AnnexeList;
 use Pastell\Step\Tdt\Acte\TypePJ\TypePJProvider;
 use Pastell\Step\Tdt\Acte\TypePJ\TypePJDTO;
 use TdtConnecteur;
@@ -16,7 +17,7 @@ class TypologieChoiceAction extends ConnecteurTypeChoiceActionExecutor
 {
     /**
      * arrete: arrete
-     * autre_document_attache: autre_document_attache
+     * autre_document_attache: autre_document_attache (ou une liste d'éléments)
      * type_acte: type_acte
      * type_pj: type_pj
      * type_piece: type_piece
@@ -106,7 +107,7 @@ class TypologieChoiceAction extends ConnecteurTypeChoiceActionExecutor
      * @throws UnrecoverableException
      * @throws NotFoundException
      */
-    private function getAllPieces(): array|string
+    private function getAllPieces(): array
     {
         $connecteur_type_action = $this->getMappingList();
 
@@ -114,12 +115,13 @@ class TypologieChoiceAction extends ConnecteurTypeChoiceActionExecutor
         if (!$pieces_list) {
             throw new UnrecoverableException("La pièce principale n'est pas présente");
         }
-        $piecesAnnexe = $this->getDonneesFormulaire()
-            ->get($connecteur_type_action['autre_document_attache'] ?? 'autre_document_attache');
-        if ($piecesAnnexe) {
-            $pieces_list = array_merge($pieces_list, $piecesAnnexe);
-        }
-        return $pieces_list;
+        return array_merge(
+            $pieces_list,
+            AnnexeList::getFilenames(
+                AnnexeList::getElements($connecteur_type_action ?: []),
+                $this->getDonneesFormulaire()
+            )
+        );
     }
 
     private function getMappingList(): array|bool

@@ -2,10 +2,14 @@
 
 class FakeTdT extends TdtAdapter
 {
+    public const string ANNEXES_ENVOYEES_FIELD = 'annexes_envoyees';
+
     private int $checkStatus;
+    private DonneesFormulaire $connecteurConfig;
 
     public function setConnecteurConfig(DonneesFormulaire $donneesFormulaire)
     {
+        $this->connecteurConfig = $donneesFormulaire;
         $this->checkStatus = (int)$donneesFormulaire->get('tdt_check_status', TdtConnecteur::STATUS_ACQUITTEMENT_RECU);
     }
 
@@ -16,7 +20,19 @@ class FakeTdT extends TdtAdapter
 
     public function sendActes(TdtActes $tdtActes)
     {
-        return mt_rand(1, mt_getrandmax());
+        $id_transaction = mt_rand(1, mt_getrandmax());
+
+        $annexes_envoyees = $this->getAnnexesEnvoyees();
+        $annexes_envoyees[$id_transaction] = array_map(
+            fn(Fichier $fichier): string => $this->getFilenameTransformation($fichier->filename),
+            $tdtActes->autre_document_attache
+        );
+        $this->connecteurConfig->setData(
+            self::ANNEXES_ENVOYEES_FIELD,
+            json_encode($annexes_envoyees, JSON_THROW_ON_ERROR)
+        );
+
+        return $id_transaction;
     }
 
     public function getStatus($id_transaction)
@@ -71,7 +87,32 @@ class FakeTdT extends TdtAdapter
 
     public function getAnnexesTamponnees(string $transaction_id, ?string $date_publication = null): array
     {
-        return [];
+        $result = [];
+        foreach ($this->getAnnexesEnvoyees()[$transaction_id] ?? [] as $filename) {
+            $result[] = [
+                'filename' => $filename,
+                'content' => file_get_contents($this->getDataDir() . '/_shared/vide.pdf'),
+            ];
+        }
+        return $result;
+    }
+
+    public function getFilenameTransformation($filename)
+    {
+        return $filename;
+    }
+
+    /**
+     * @return array<string, string[]>
+     */
+    private function getAnnexesEnvoyees(): array
+    {
+        return json_decode(
+            $this->connecteurConfig->get(self::ANNEXES_ENVOYEES_FIELD) ?: '[]',
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
     }
 
     public function getPESRetourListe()

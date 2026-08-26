@@ -26,6 +26,22 @@ class DocumentTypeValidationTest extends \PastellTestCase
                 ]
             ],
             [
+                $filePath . 'connecteurTypeMapping.yml',
+                [
+                    'Invalid configuration for path "module.action.test.connecteur-type-mapping.'
+                    . 'autre_document_attache": La valeur doit être un élément ou une liste non vide d\'éléments'
+                ]
+            ],
+            [
+                __DIR__ . '/fixtures/definition-with-connecteurTypeMappingList.yml',
+                [
+                    "action:<b>test</b>:connecteur-type-mapping:autre_document_attache:"
+                    . "<b>toto</b> n'est pas un élément du formulaire",
+                    "action:<b>test</b>:connecteur-type-mapping:autre_document_attache:"
+                    . "<b>titi</b> n'est pas un élément du formulaire",
+                ]
+            ],
+            [
                 $filePath . 'actionProperties.yml',
                 ["formulaire:xx:<b>toto</b> n'est pas une clé de <b>action</b>"]
             ],

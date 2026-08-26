@@ -79,13 +79,15 @@ class ActionConnecteurTypeValidator implements ValidatorInterface
         if (!isset($actionProperties[ActionElement::CONNECTEUR_TYPE_MAPPING->value])) {
             return;
         }
-        foreach ($actionProperties[ActionElement::CONNECTEUR_TYPE_MAPPING->value] as $key => $elementName) {
-            if (
-                !\in_array($elementName, $this->documentTypeValidation->getFormulaireElements(), true)
-                && !\in_array($elementName, $allActionKeys, true)
-            ) {
-                $this->errors[] = "action:<b>$actionName</b>:connecteur-type-mapping:$key:" .
-                    "<b>$elementName</b> n'est pas un élément du formulaire";
+        foreach ($actionProperties[ActionElement::CONNECTEUR_TYPE_MAPPING->value] as $key => $elementNames) {
+            foreach ((array)$elementNames as $elementName) {
+                if (
+                    !\in_array($elementName, $this->documentTypeValidation->getFormulaireElements(), true)
+                    && !\in_array($elementName, $allActionKeys, true)
+                ) {
+                    $this->errors[] = "action:<b>$actionName</b>:connecteur-type-mapping:$key:" .
+                        "<b>$elementName</b> n'est pas un élément du formulaire";
+                }
             }
         }
     }
