@@ -752,7 +752,13 @@ class S2low extends TdtConnecteur
         mkdir($result_folder);
 
         $command = "tar -zxvf $temp_file_path --directory $result_folder 2>&1";
-        exec($command);
+        exec($command, $output, $return_var);
+        if ($return_var !== 0) {
+            $this->getLogger()->error(
+                "Impossible d'extraire l'archive de la réponse de la préfecture (id_d=$new_id_d)",
+                [$command, $output]
+            );
+        }
 
         $file_list = scandir($result_folder);
         $num_file = 0;
