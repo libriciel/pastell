@@ -85,6 +85,9 @@ class FluxDefinitionFiles
         return (($cache_key == self::PASTELL_ALL_FLUX_CACHE_KEY) ? $result_all : $result_restricted );
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.UnusedPrivateMethod")
+     */
     private function compareFluxDefinition($a, $b)
     {
         $str1 = iconv('utf-8', 'ascii//TRANSLIT', $a[DocumentType::NOM] ?? '');

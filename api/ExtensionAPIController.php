@@ -48,7 +48,7 @@ class ExtensionAPIController extends BaseAPIController
         $detail_extension = $this->extensions->getInfo(0, $path);
         $extension_list = $this->extensions->getAll();
 
-        foreach ($extension_list as $id_e => $extension) {
+        foreach ($extension_list as $extension) {
             if (($extension['id'] == $detail_extension['id']) && !($extension['id_e'] == $detail_extension['id_e'])) {
                 throw new ConflictException("L'extension #{$detail_extension['id']} est déja présente");
             }

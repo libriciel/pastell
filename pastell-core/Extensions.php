@@ -64,6 +64,9 @@ class Extensions
         return $result;
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.UnusedPrivateMethod")
+     */
     private function compareExtension($a, $b)
     {
         return strcmp($a['nom'], $b['nom']);
