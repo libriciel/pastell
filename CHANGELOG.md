@@ -1,5 +1,9 @@
 # [4.1.22] - 2026-09-07
 
+## Ajouts
+
+- Commande `app:database:foreign-key-check` : détecte et nettoie les clés étrangères orphelines dans la base de données #2540
+
 ## Corrections
 
 - Message d'erreur explicite en cas de zip malformé lors de la génération d'un bordereau SEDA #2539
