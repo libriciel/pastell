@@ -115,6 +115,11 @@ abstract class SignatureConnecteur extends Connecteur
         return false;
     }
 
+    public function supportsMultiDocument(): bool
+    {
+        return false;
+    }
+
     /**
      * @param array $info output of SignatureConnecteur::getSignature()
      * @return array $all_document_signe

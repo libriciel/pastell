@@ -10,6 +10,14 @@ class SignatureRecupTest extends PastellTestCase
 {
     use SoapUtilitiesTestTrait;
 
+    private ?TypeDossierLoader $typeDossierLoader = null;
+
+    protected function tearDown(): void
+    {
+        $this->typeDossierLoader?->unload();
+        parent::tearDown();
+    }
+
     /**
      * @throws NotFoundException
      * @throws Exception
@@ -84,6 +92,291 @@ class SignatureRecupTest extends PastellTestCase
             'test éàê accent_orig.pdf',
             $donneesFormulaire->getFileName('document_orignal')
         );
+    }
+
+    /**
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    public function testRestSignedMultiDocumentIsRoutedBackToAutreDocumentASigner(): void
+    {
+        $this->setupRestMockForNewFieldMultiDoc();
+
+        $this->typeDossierLoader = $this->getObjectInstancier()->getInstance(TypeDossierLoader::class);
+        $this->typeDossierLoader->createTypeDossierDefinitionFile('parapheur-multidoc');
+
+        $connecteur_info = $this->createConnector('iparapheur-rest', 'i-Parapheur REST');
+        $connecteurDonneesFormulaire = $this->getDonneesFormulaireFactory()
+            ->getConnecteurEntiteFormulaire($connecteur_info['id_ce']);
+        // La case « iparapheur_multi_doc » (dépréciée) reste volontairement décochée :
+        // c'est bien le champ autre_document_a_signer qui pilote le multi-document.
+        $connecteurDonneesFormulaire->setTabData([
+            'url' => 'https://url',
+            'username' => 'user',
+            'password' => 'pass',
+            'tenant_id' => 'tenant-test',
+            'desk_id' => 'desk-test',
+        ]);
+        $this->associateFluxWithConnector($connecteur_info['id_ce'], 'parapheur-multidoc', 'signature');
+
+        $document_info = $this->createDocument('parapheur-multidoc');
+
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document_info['id_d']);
+        $donneesFormulaire->setTabData([
+            'iparapheur_type' => 'FOO',
+            'iparapheur_sous_type' => 'BAR',
+            'titre' => 'LIBELLE',
+        ]);
+        $donneesFormulaire->addFileFromData('fichier', 'document.pdf', 'main content');
+        $donneesFormulaire->addFileFromData('multidoc', 'multidoc-1.pdf', 'multi doc content', 0);
+
+        $this->triggerActionOnDocument($document_info['id_d'], 'orientation');
+        $this->triggerActionOnDocument($document_info['id_d'], 'send-iparapheur');
+        $this->assertLastMessage('Le document a été envoyé au parapheur électronique');
+
+        $this->triggerActionOnDocument($document_info['id_d'], 'verif-iparapheur');
+        $this->assertLastMessage('La signature a été récupérée');
+
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document_info['id_d']);
+
+        // Le document principal signé revient dans « fichier ».
+        $this->assertSame('document.pdf', $donneesFormulaire->getFileName('fichier'));
+        $this->assertSame('document_orig.pdf', $donneesFormulaire->getFileName('document_original'));
+
+        // Le multi-document signé revient dans « multidoc » (et non dans les annexes).
+        $multidoc_names = [];
+        foreach ($donneesFormulaire->get('multidoc') ?: [] as $fileName) {
+            $multidoc_names[] = $fileName;
+        }
+        $this->assertContains('multidoc-1.pdf', $multidoc_names);
+        $this->assertSame('signed multi content', $donneesFormulaire->getFileContent('multidoc', 0));
+
+        // La version d'origine (non signée) est conservée dans « multi_document_original ».
+        $multi_document_original_names = [];
+        foreach ($donneesFormulaire->get('multi_document_original') ?: [] as $fileName) {
+            $multi_document_original_names[] = $fileName;
+        }
+        $this->assertContains('multidoc-1_orig.pdf', $multi_document_original_names);
+    }
+
+    /**
+     * @throws JsonException
+     */
+    private function setupRestMockForNewFieldMultiDoc(): void
+    {
+        $tenantId = 'tenant-test';
+        $deskId = 'desk-test';
+        $folderId = 'b2c3d4e5-f6a7-4890-bcde-f01234567890';
+
+        $createFolderJson = json_encode(['id' => $folderId, 'name' => 'LIBELLE'], JSON_THROW_ON_ERROR);
+        $premisXml = file_get_contents(__DIR__ . '/fixtures/new_field_multi_doc_folder.xml');
+        $fixturesDir = __DIR__ . '/../../../../tests/Connector/IparapheurRest/fixtures/';
+
+        $routes = [
+            'POST /auth/realms/api/protocol/openid-connect/token' => new HttpResponse(
+                200,
+                ['Content-type' => 'application/json'],
+                file_get_contents($fixturesDir . 'authenticate_ok.json')
+            ),
+            "POST /api/standard/v1/tenant/$tenantId/desk/$deskId/folder" => new HttpResponse(
+                201,
+                ['Content-type' => 'application/json'],
+                $createFolderJson
+            ),
+            "GET /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId/premis" => new HttpResponse(
+                200,
+                ['Content-type' => 'application/xml; charset=UTF-8'],
+                $premisXml
+            ),
+            "PUT /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId/task/new-field-start-task-id/start" => new HttpResponse(
+                200,
+                ['Content-type' => 'application/json'],
+                ''
+            ),
+            "GET /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId/zip" => new HttpResponse(
+                200,
+                ['Content-type' => 'application/octet-stream'],
+                $this->buildNewFieldMultiDocZip()
+            ),
+            "DELETE /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId" => new HttpResponse(
+                204,
+                ['Content-type' => 'application/json'],
+                ''
+            ),
+        ];
+
+        $client = $this->getMockBuilder(ClientInterface::class)->getMock();
+        $client->method('sendRequest')
+            ->willReturnCallback(function (RequestInterface $request) use ($routes): ResponseInterface {
+                $key = $request->getMethod() . ' ' . $request->getUri()->getPath();
+                if (!array_key_exists($key, $routes)) {
+                    throw new UnrecoverableException('Unknown path : ' . $key);
+                }
+                return $routes[$key];
+            });
+
+        $clientFactory = $this->getObjectInstancier()->getInstance(ApiClientFactory::class);
+        $clientFactory->setClientInterface($client);
+    }
+
+    private function buildNewFieldMultiDocZip(): string
+    {
+        $zip = new ZipArchive();
+        $path = tempnam(sys_get_temp_dir(), 'new-field-multi-doc-zip-');
+        $zip->open($path, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        $zip->addFromString('document.pdf', 'signed main content');
+        $zip->addFromString('multidoc-1.pdf', 'signed multi content');
+        $zip->close();
+        $content = file_get_contents($path);
+        unlink($path);
+        return $content;
+    }
+
+    /**
+     * Non-régression : avec le connecteur REST et la case dépréciée « Appliquer le multi-document » cochée,
+     * les annexes ET le champ « Autre document(s) à signer » sont envoyés en multi-documents. À la récupération,
+     * chacun doit revenir signé dans son propre champ, et les originaux (annexe + multidoc) doivent être
+     * conservés dans « multi_document_original ».
+     *
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    public function testRestDeprecatedCheckboxSendsAnnexeAndAutreDocumentASignerAsMultiDoc(): void
+    {
+        $this->setupRestMockForDeprecatedMultiDocWithAnnexe();
+
+        $this->typeDossierLoader = $this->getObjectInstancier()->getInstance(TypeDossierLoader::class);
+        $this->typeDossierLoader->createTypeDossierDefinitionFile('parapheur-multidoc-annexe');
+
+        $connecteur_info = $this->createConnector('iparapheur-rest', 'i-Parapheur REST');
+        $connecteurDonneesFormulaire = $this->getDonneesFormulaireFactory()
+            ->getConnecteurEntiteFormulaire($connecteur_info['id_ce']);
+        // La case dépréciée « iparapheur_multi_doc » est cochée : les annexes deviennent elles aussi des multi-documents.
+        $connecteurDonneesFormulaire->setTabData([
+            'url' => 'https://url',
+            'username' => 'user',
+            'password' => 'pass',
+            'tenant_id' => 'tenant-test',
+            'desk_id' => 'desk-test',
+            // Une checkbox cochée est soumise comme 'on' (mappé en true par DonneesFormulaire::get) ;
+            // le connecteur REST teste strictement === true.
+            'iparapheur_multi_doc' => 'on',
+        ]);
+        $this->associateFluxWithConnector($connecteur_info['id_ce'], 'parapheur-multidoc-annexe', 'signature');
+
+        $document_info = $this->createDocument('parapheur-multidoc-annexe');
+
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document_info['id_d']);
+        $donneesFormulaire->setTabData([
+            'iparapheur_type' => 'FOO',
+            'iparapheur_sous_type' => 'BAR',
+            'titre' => 'LIBELLE',
+        ]);
+        $donneesFormulaire->addFileFromData('fichier', 'document.pdf', 'main content');
+        $donneesFormulaire->addFileFromData('multidoc', 'multidoc-1.pdf', 'multi doc content', 0);
+        $donneesFormulaire->addFileFromData('annexe', 'annexe-1.pdf', 'annexe content', 0);
+
+        $this->triggerActionOnDocument($document_info['id_d'], 'orientation');
+        $this->triggerActionOnDocument($document_info['id_d'], 'send-iparapheur');
+        $this->assertLastMessage('Le document a été envoyé au parapheur électronique');
+
+        $this->triggerActionOnDocument($document_info['id_d'], 'verif-iparapheur');
+        $this->assertLastMessage('La signature a été récupérée');
+
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document_info['id_d']);
+
+        // Le document principal signé revient dans « fichier ».
+        $this->assertSame('document.pdf', $donneesFormulaire->getFileName('fichier'));
+
+        // Le multi-document signé revient dans « multidoc ».
+        $this->assertSame('multidoc-1.pdf', $donneesFormulaire->getFileName('multidoc', 0));
+        $this->assertSame('signed multi content', $donneesFormulaire->getFileContent('multidoc', 0));
+
+        // L'annexe signée revient dans « annexe » (et non dans le champ multidoc).
+        $this->assertSame('annexe-1.pdf', $donneesFormulaire->getFileName('annexe', 0));
+        $this->assertSame('signed annexe content', $donneesFormulaire->getFileContent('annexe', 0));
+
+        // Les originaux (annexe + multidoc) sont conservés dans « multi_document_original ».
+        $multi_document_original_names = [];
+        foreach ($donneesFormulaire->get('multi_document_original') ?: [] as $fileName) {
+            $multi_document_original_names[] = $fileName;
+        }
+        $this->assertContains('annexe-1_orig.pdf', $multi_document_original_names);
+        $this->assertContains('multidoc-1_orig.pdf', $multi_document_original_names);
+    }
+
+    /**
+     * @throws JsonException
+     */
+    private function setupRestMockForDeprecatedMultiDocWithAnnexe(): void
+    {
+        $tenantId = 'tenant-test';
+        $deskId = 'desk-test';
+        $folderId = 'c3d4e5f6-a7b8-4901-bdef-012345678901';
+
+        $createFolderJson = json_encode(['id' => $folderId, 'name' => 'LIBELLE'], JSON_THROW_ON_ERROR);
+        $premisXml = file_get_contents(__DIR__ . '/fixtures/deprecated_multidoc_with_annexe_folder.xml');
+        $fixturesDir = __DIR__ . '/../../../../tests/Connector/IparapheurRest/fixtures/';
+
+        $routes = [
+            'POST /auth/realms/api/protocol/openid-connect/token' => new HttpResponse(
+                200,
+                ['Content-type' => 'application/json'],
+                file_get_contents($fixturesDir . 'authenticate_ok.json')
+            ),
+            "POST /api/standard/v1/tenant/$tenantId/desk/$deskId/folder" => new HttpResponse(
+                201,
+                ['Content-type' => 'application/json'],
+                $createFolderJson
+            ),
+            "GET /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId/premis" => new HttpResponse(
+                200,
+                ['Content-type' => 'application/xml; charset=UTF-8'],
+                $premisXml
+            ),
+            "PUT /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId/task/deprecated-multidoc-start-task-id/start" => new HttpResponse(
+                200,
+                ['Content-type' => 'application/json'],
+                ''
+            ),
+            "GET /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId/zip" => new HttpResponse(
+                200,
+                ['Content-type' => 'application/octet-stream'],
+                $this->buildDeprecatedMultiDocWithAnnexeZip()
+            ),
+            "DELETE /api/standard/v1/tenant/$tenantId/desk/$deskId/folder/$folderId" => new HttpResponse(
+                204,
+                ['Content-type' => 'application/json'],
+                ''
+            ),
+        ];
+
+        $client = $this->getMockBuilder(ClientInterface::class)->getMock();
+        $client->method('sendRequest')
+            ->willReturnCallback(function (RequestInterface $request) use ($routes): ResponseInterface {
+                $key = $request->getMethod() . ' ' . $request->getUri()->getPath();
+                if (!array_key_exists($key, $routes)) {
+                    throw new UnrecoverableException('Unknown path : ' . $key);
+                }
+                return $routes[$key];
+            });
+
+        $clientFactory = $this->getObjectInstancier()->getInstance(ApiClientFactory::class);
+        $clientFactory->setClientInterface($client);
+    }
+
+    private function buildDeprecatedMultiDocWithAnnexeZip(): string
+    {
+        $zip = new ZipArchive();
+        $path = tempnam(sys_get_temp_dir(), 'deprecated-multi-doc-with-annexe-zip-');
+        $zip->open($path, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        $zip->addFromString('document.pdf', 'signed main content');
+        $zip->addFromString('annexe-1.pdf', 'signed annexe content');
+        $zip->addFromString('multidoc-1.pdf', 'signed multi content');
+        $zip->close();
+        $content = file_get_contents($path);
+        unlink($path);
+        return $content;
     }
 
     /**

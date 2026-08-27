@@ -7,11 +7,15 @@ configuration_etape_formulaire:
         requis: true
         type: text_select
     document_a_signer:
-        name: 'Document à envoyer au parapheur'
+        name: 'Document à signer'
         requis: true
         type: file
+    autre_document_a_signer:
+        name: 'Autre(s) document(s) à signer'
+        commentaire: "Uniquement avec iparapheur REST. Sinon ignoré"
+        type: multi_file
     annexe:
-        name: 'Autre document(s) à envoyer au parapheur'
+        name: 'Autre(s) document(s) à envoyer au parapheur'
         type: multi_file
     has_date_limite:
         name: "Permettre l'utilisation d'une date limite"

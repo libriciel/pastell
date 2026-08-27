@@ -72,8 +72,13 @@ final class Premis
             $annexes[] = self::createFileObject($annexe->filename, $multi_doc);
         }
 
+        $multiDocuments = [];
+        foreach ($fileToSign->multiDocuments as $multiDocument) {
+            $multiDocuments[] = self::createFileObject($multiDocument->filename, true);
+        }
+
         $instance = new self();
-        $instance->object = array_merge([$intellectual, $mainDoc], $annexes);
+        $instance->object = array_merge([$intellectual, $mainDoc], $annexes, $multiDocuments);
         $instance->event = [];
         $instance->agent = [];
         return $instance;

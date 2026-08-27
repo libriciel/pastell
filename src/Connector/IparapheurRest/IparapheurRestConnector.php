@@ -376,6 +376,12 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                 $documents[] = new SplFileObject($annexePath, 'r');
             }
 
+            foreach ($dossier->multiDocuments as $multiDocument) {
+                $multiDocumentPath = $tmp_folder . DIRECTORY_SEPARATOR . $multiDocument->filename;
+                file_put_contents($multiDocumentPath, $multiDocument->content);
+                $documents[] = new SplFileObject($multiDocumentPath, 'r');
+            }
+
             $tenantId = $this->connecteurConfig->get(self::TENANT_ID, '');
             $deskId = $this->connecteurConfig->get(self::DESK_ID, '');
             $result = new FolderApi($this->client, $this->configuration)->createFolder(
@@ -703,6 +709,11 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     public function hasMultiDocumentSigne($info): bool
     {
         return $this->iparapheur_multi_doc && count($info['documents']) > 1;
+    }
+
+    public function supportsMultiDocument(): bool
+    {
+        return true;
     }
 
     /**

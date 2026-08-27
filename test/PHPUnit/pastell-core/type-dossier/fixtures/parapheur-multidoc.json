@@ -1,0 +1,62 @@
+{
+  "id_type_dossier": "parapheur-multidoc",
+  "pastell-version": "%VERSION%",
+  "timestamp": 1554988321,
+  "raw_data": {
+    "nom": "parapheur-multidoc",
+    "type": "Flux Généraux",
+    "etape": [
+      {
+        "type": "signature",
+        "requis": "on",
+        "num_etape": 0,
+        "automatique": "on",
+        "specific_type_info": {
+          "annexe": "",
+          "has_date_limite": "",
+          "document_a_signer": "fichier",
+          "libelle_parapheur": "titre",
+          "has_metadata_in_json": "",
+          "autre_document_a_signer": "multidoc"
+        },
+        "num_etape_same_type": 0,
+        "etape_with_same_type_exists": false
+      }
+    ],
+    "nom_onglet": "onglet1",
+    "description": "",
+    "id_type_dossier": "parapheur-multidoc",
+    "formulaireElement": [
+      {
+        "name": "Titre",
+        "type": "text",
+        "titre": "on",
+        "requis": "on",
+        "element_id": "titre",
+        "commentaire": "",
+        "champs_affiches": "on",
+        "champs_recherche_avancee": "on"
+      },
+      {
+        "name": "The fichier",
+        "type": "file",
+        "titre": "",
+        "requis": "on",
+        "element_id": "fichier",
+        "commentaire": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": ""
+      },
+      {
+        "name": "Multi-document(s) à signer",
+        "type": "multi_file",
+        "titre": "",
+        "requis": "",
+        "element_id": "multidoc",
+        "commentaire": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": ""
+      }
+    ]
+  }
+}

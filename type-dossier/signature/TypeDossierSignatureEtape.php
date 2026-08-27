@@ -87,6 +87,7 @@ class TypeDossierSignatureEtape implements TypeDossierEtapeSetSpecificInformatio
             [
                 'objet' => 'libelle_parapheur',
                 'document' => 'document_a_signer',
+                'autre_document_a_signer' => 'autre_document_a_signer',
                 'autre_document_attache' => 'annexe'
             ] as $mapping_key => $specific_key
         ) {

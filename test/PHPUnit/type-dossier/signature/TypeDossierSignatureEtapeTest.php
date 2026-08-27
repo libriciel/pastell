@@ -19,6 +19,33 @@ class TypeDossierSignatureEtapeTest extends PastellTestCase
         return $typeDossierData;
     }
 
+    public function testAutreDocumentASignerIsMapped(): void
+    {
+        $typeDossierTranslator = $this->getObjectInstancier()->getInstance(TypeDossierTranslator::class);
+        $typeDossierData = $this->getDefaultTypeDossierProperties();
+        $typeDossierData->etape[0]->specific_type_info['autre_document_a_signer'] = 'autre_document_a_signer';
+
+        $result = $typeDossierTranslator->getDefinition($typeDossierData);
+
+        static::assertEquals(
+            'autre_document_a_signer',
+            $result['action']['send-iparapheur']['connecteur-type-mapping']['autre_document_a_signer']
+        );
+    }
+
+    public function testAutreDocumentASignerIsNotMappedWhenEmpty(): void
+    {
+        $typeDossierTranslator = $this->getObjectInstancier()->getInstance(TypeDossierTranslator::class);
+        $typeDossierData = $this->getDefaultTypeDossierProperties();
+
+        $result = $typeDossierTranslator->getDefinition($typeDossierData);
+
+        static::assertArrayNotHasKey(
+            'autre_document_a_signer',
+            $result['action']['send-iparapheur']['connecteur-type-mapping']
+        );
+    }
+
     public function testHasDateLimite()
     {
         $typeDossierTranslator = $this->getObjectInstancier()->getInstance(TypeDossierTranslator::class);

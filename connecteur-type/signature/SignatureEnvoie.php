@@ -32,6 +32,7 @@ class SignatureEnvoie extends ConnecteurTypeActionExecutor
         $has_date_limite = $this->getMappingValue('iparapheur_has_date_limite');
         $iparapheur_date_limite = $this->getMappingValue('iparapheur_date_limite');
         $annexe_element = $this->getMappingValue('autre_document_attache');
+        $multi_document_element = $this->getMappingValue('autre_document_a_signer');
         $primo_signature_detachee = $this->getMappingValue('primo_signature_detachee');
         $json_metadata = $this->getMappingValue('json_metadata');
         $iparapheur_dossier_id = $this->getMappingValue('iparapheur_dossier_id');
@@ -81,6 +82,18 @@ class SignatureEnvoie extends ConnecteurTypeActionExecutor
                 $annexe->contentType = $donneesFormulaire->getContentType($annexe_element, $num);
 
                 $fileToSign->annexes[] = $annexe;
+            }
+        }
+
+        if ($multi_document_element && $donneesFormulaire->get($multi_document_element)) {
+            foreach ($donneesFormulaire->get($multi_document_element) as $num => $fileName) {
+                $multiDocument = new Fichier();
+                $multiDocument->filename = $donneesFormulaire->getFileName($multi_document_element, $num);
+                $multiDocument->filepath = $donneesFormulaire->getFilePath($multi_document_element, $num);
+                $multiDocument->content = $donneesFormulaire->getFileContent($multi_document_element, $num);
+                $multiDocument->contentType = $donneesFormulaire->getContentType($multi_document_element, $num);
+
+                $fileToSign->multiDocuments[] = $multiDocument;
             }
         }
 

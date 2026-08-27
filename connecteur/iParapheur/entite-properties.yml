@@ -49,9 +49,9 @@ formulaire:
             name: 'Métadonnées à envoyer au iparapheur'
             commentaire: "De la forme : nom_element_pastell_1:nom_metadonne_parapheur_1, nom_element_pastell_2:nom_metadonne_parapheur_2, ..\nAttention, il faut que le flux le supporte !"
         iparapheur_multi_doc:
-            name: 'Appliquer le multi-document'
+            name: 'Appliquer le multi-document (déprécié)'
             type: checkbox
-            commentaire: 'Si le sous-type iparapheur le permet (Signature multi-document), alors les fichiers multiples envoyés seront des multi-documents signés'
+            commentaire: 'Si le sous-type iparapheur le permet (Signature multi-document), alors les fichiers Annexe(s) envoyés seront des multi-documents signés'
 action:
     test-iparapheur:
         name: 'Tester la connexion'
