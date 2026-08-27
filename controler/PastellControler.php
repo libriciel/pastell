@@ -26,14 +26,14 @@ class PastellControler extends Controler
         }
 
         $magicLinkId = $this->getAuthentification()->getMagicLinkId();
-        if ($magicLinkId !== null) {
-            if (! $this->getInstance(MagicLinkService::class)->isActive($magicLinkId)) {
-                $this->getAuthentification()->deconnexion();
-                $request_uri = $_SERVER['REQUEST_URI'];
-                $this->setLastError('Votre accès temporaire a expiré ou a été révoqué.');
-                $this->redirect('/Connexion/connexion?request_uri=' . urlencode($request_uri));
-            }
-            return;
+        if (
+            $magicLinkId !== null
+            && ! $this->getInstance(MagicLinkService::class)->isActive($magicLinkId)
+        ) {
+            $this->getAuthentification()->deconnexion();
+            $request_uri = $_SERVER['REQUEST_URI'];
+            $this->setLastError('Votre accès temporaire a expiré ou a été révoqué.');
+            $this->redirect('/Connexion/connexion?request_uri=' . urlencode($request_uri));
         }
 
         if (! $this->getUtilisateur()->isEnabled($this->getAuthentification()->getId())) {

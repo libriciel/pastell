@@ -27,13 +27,14 @@ final class MagicLinkService
 {
     public const int MAX_DURATION_IN_HOURS = 24;
 
-    public const int HISTORY_RETENTION_IN_MONTHS = 1;
+    public const int HISTORY_RETENTION_IN_DAYS = 365;
 
     public const int MAX_CODE_ATTEMPTS = 3;
 
     private const int CODE_LENGTH = 6;
 
     public const string DEFAULT_TEMP_USER_ROLE = 'admin';
+    public const string TEMP_USER_FIRSTNAME = 'magiclink';
 
     public function __construct(
         private readonly MagicLinkSQL $magicLink,
@@ -86,26 +87,26 @@ final class MagicLinkService
         $magicLinkId = $this->uuidGenerator->generate();
         $id_u = $this->createTemporaryUser($magicLinkId, $email, $role, $entityId);
 
-        $token = $this->tokenGenerator->generate();
-        $code = $this->generateCode();
-        $expiresAt = date(Date::DATE_ISO, strtotime("+$durationInHours hours"));
-
-        $this->magicLink->create(
-            $magicLinkId,
-            $id_u,
-            $token,
-            $code,
-            $motif,
-            $createdBy,
-            $expiresAt,
-            $nom,
-            $prenom,
-            $email,
-        );
-
         try {
+            $token = $this->tokenGenerator->generate();
+            $code = $this->generateCode();
+            $expiresAt = date(Date::DATE_ISO, strtotime("+$durationInHours hours"));
+
+            $this->magicLink->create(
+                $magicLinkId,
+                $id_u,
+                $token,
+                $code,
+                $motif,
+                $createdBy,
+                $expiresAt,
+                $nom,
+                $prenom,
+                $email,
+            );
+
             $this->sendMagicLinkEmail($email, $prenom, $nom, $motif, $expiresAt, $token);
-        } catch (TransportExceptionInterface $e) {
+        } catch (\Throwable $e) {
             $this->magicLink->delete($magicLinkId);
             $this->utilisateurDeletionService->delete($id_u);
             throw $e;
@@ -191,13 +192,18 @@ final class MagicLinkService
         $id_u = $this->userCreationService->create(
             $magicLinkId,
             $email,
-            $magicLinkId,
+            self::TEMP_USER_FIRSTNAME,
             $magicLinkId,
             $entityId,
             $this->tokenGenerator->generate(),
         );
 
-        $this->roleUtilisateur->addRole($id_u, $role, $entityId);
+        try {
+            $this->roleUtilisateur->addRole($id_u, $role, $entityId);
+        } catch (\Throwable $e) {
+            $this->utilisateurDeletionService->delete($id_u);
+            throw $e;
+        }
 
         return $id_u;
     }
@@ -283,8 +289,16 @@ final class MagicLinkService
     {
         $count = 0;
         foreach ($this->magicLink->getToCleanUp() as $link) {
-            $this->magicLink->revoke((string)$link['id']);
+            $magicLinkId = (string)$link['id'];
+            $this->magicLink->revoke($magicLinkId);
             $this->deleteTemporaryUser($link);
+            $this->journal->add(
+                Journal::CONNEXION,
+                EntiteSQL::ID_E_ENTITE_RACINE,
+                Journal::NO_ID_D,
+                'magic-link',
+                "Nettoyage automatique de l'accès temporaire #$magicLinkId (expiré ou révoqué)"
+            );
             $count++;
         }
         return $count;
@@ -294,9 +308,20 @@ final class MagicLinkService
     {
         $expirationDate = date(
             Date::DATE_ISO,
-            strtotime('-' . self::HISTORY_RETENTION_IN_MONTHS . ' month'),
+            strtotime('-' . self::HISTORY_RETENTION_IN_DAYS . ' day'),
         );
-        return $this->magicLink->deleteClosedBefore($expirationDate);
+        $count = $this->magicLink->deleteClosedBefore($expirationDate);
+        if ($count > 0) {
+            $this->journal->add(
+                Journal::CONNEXION,
+                EntiteSQL::ID_E_ENTITE_RACINE,
+                Journal::NO_ID_D,
+                'magic-link',
+                "Purge de l'historique des accès temporaires : "
+                . "$count accès supprimé(s) (clôturés avant le $expirationDate)"
+            );
+        }
+        return $count;
     }
 
     /**
@@ -310,6 +335,6 @@ final class MagicLinkService
     private function deleteTemporaryUser(array $link): void
     {
         $this->utilisateurDeletionService->delete((int)$link['id_u']);
-        $this->revokeService->anonymise($link);
+        $this->revokeService->maskTitulaire($link);
     }
 }

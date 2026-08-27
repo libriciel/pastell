@@ -110,7 +110,7 @@ SQL;
         return $result === false ? null : $result;
     }
 
-    public function anonymiseTitulaire(string $id, string $nom, string $prenom, string $email): void
+    public function updateTitulaire(string $id, string $nom, string $prenom, string $email): void
     {
         $query = <<<SQL
 UPDATE magic_link
@@ -123,8 +123,11 @@ SQL;
     public function deleteClosedBefore(string $date): int
     {
         $condition = <<<SQL
-(revoked_at IS NOT NULL AND revoked_at <= ?)
-   OR (revoked_at IS NULL AND expires_at <= ?)
+user_deleted_at IS NOT NULL
+  AND (
+    (revoked_at IS NOT NULL AND revoked_at <= ?)
+    OR (revoked_at IS NULL AND expires_at <= ?)
+  )
 SQL;
 
         $rows = $this->query("SELECT id FROM magic_link WHERE $condition;", $date, $date);

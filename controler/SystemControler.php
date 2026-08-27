@@ -672,9 +672,12 @@ class SystemControler extends PastellControler
         $prenom = trim((string)$recuperateur->get('prenom'));
         $mail = trim((string)$recuperateur->get('mail'));
         $role = (string)$recuperateur->get('role');
-        $entityId = $recuperateur->getInt('id_e');
+        $entityId = (string)$recuperateur->get('id_e');
 
-        if (! $motif || $duration < 1 || $nom === '' || $prenom === '' || $mail === '' || $role === '') {
+        if (
+            ! $motif || $duration < 1 || $nom === '' || $prenom === ''
+            || $mail === '' || $role === '' || $entityId === ''
+        ) {
             $this->setLastError(
                 'Le nom, le prénom, le mail, le motif, le rôle de base, l\'entité de base '
                 . 'et une durée valide (en heures) sont obligatoires'
@@ -694,7 +697,7 @@ class SystemControler extends PastellControler
 
         try {
             $this->getInstance(MagicLinkService::class)
-                ->create($motif, $duration, $this->getId_u(), $nom, $prenom, $mail, $role, $entityId);
+                ->create($motif, $duration, $this->getId_u(), $nom, $prenom, $mail, $role, (int)$entityId);
         } catch (UnrecoverableException | ConflictException | TransportExceptionInterface $e) {
             $this->setLastError($e->getMessage());
             $this->redirect('System/magicLinkEdition');

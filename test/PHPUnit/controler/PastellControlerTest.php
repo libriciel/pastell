@@ -146,4 +146,42 @@ class PastellControlerTest extends ControlerTestCase
 
         static::assertFalse($authentification->isConnected());
     }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function testMagicLinkDisabledUserIsBlocked(): void
+    {
+        $pastellControler = $this->getControlerInstance(PastellControler::class);
+        $_SERVER['REQUEST_URI'] = '/';
+
+        $id_u = $this->authenticateNewUserWithPermission([]);
+
+        $magicLinkSQL = $this->getObjectInstancier()->getInstance(MagicLinkSQL::class);
+        $magicLinkId = $magicLinkSQL->create(
+            '22222222-2222-4222-8222-222222222222',
+            $id_u,
+            'token-desactive',
+            '123456',
+            'Intervention',
+            1,
+            date('Y-m-d H:i:s', strtotime('+1 day')),
+            'Durand',
+            'Lea',
+            'lea.durand@example.org',
+        );
+
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->setMagicLinkId($magicLinkId);
+
+        $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->disable($id_u);
+
+        try {
+            $pastellControler->_beforeAction();
+            static::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('compte a été désactivé', $e->getMessage());
+        }
+    }
 }

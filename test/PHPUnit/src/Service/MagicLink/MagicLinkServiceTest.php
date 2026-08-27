@@ -355,7 +355,7 @@ class MagicLinkServiceTest extends PastellTestCase
      * @throws ConflictException
      * @throws Exception
      */
-    public function testRevokeAnonymisesTitulaire(): void
+    public function testRevokeMasksTitulaire(): void
     {
         $service = $this->getMagicLinkService();
         $service->create('À révoquer', 24, 1, 'Dupont', 'Jean', 'jean.dupont@example.org');
@@ -376,7 +376,7 @@ class MagicLinkServiceTest extends PastellTestCase
      * @throws ConflictException
      * @throws Exception
      */
-    public function testPruneExpiredAnonymisesTitulaire(): void
+    public function testPruneExpiredMasksTitulaire(): void
     {
         $service = $this->getMagicLinkService();
         $service->create('Expirée', 24, 1, 'Durand', 'Lea', 'lea.durand@example.org');
@@ -436,7 +436,7 @@ class MagicLinkServiceTest extends PastellTestCase
 
         static::getSQLQuery()->query(
             'UPDATE magic_link SET revoked_at = ? WHERE id = ?',
-            date(Date::DATE_ISO, strtotime('-2 month')),
+            date(Date::DATE_ISO, strtotime('-2 year')),
             $link['id'],
         );
 
@@ -460,13 +460,42 @@ class MagicLinkServiceTest extends PastellTestCase
 
         static::getSQLQuery()->query(
             'UPDATE magic_link SET expires_at = ? WHERE id = ?',
-            date(Date::DATE_ISO, strtotime('-2 month')),
+            date(Date::DATE_ISO, strtotime('-2 year')),
+            $link['id'],
+        );
+        $service->pruneExpired();
+
+        static::getSQLQuery()->query(
+            'UPDATE magic_link SET revoked_at = ? WHERE id = ?',
+            date(Date::DATE_ISO, strtotime('-2 year')),
             $link['id'],
         );
 
         static::assertCount(1, $service->getHistory());
         static::assertSame(1, $service->pruneHistory());
         static::assertCount(0, $service->getHistory());
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     * @throws Exception
+     */
+    public function testPruneHistoryKeepsUncleanedLink(): void
+    {
+        $service = $this->getMagicLinkService();
+        $service->create('Jamais nettoyée', 24, 1, 'Durand', 'Lea', 'lea.durand@example.org');
+        $link = $service->getActiveLinks()[0];
+
+        static::getSQLQuery()->query(
+            'UPDATE magic_link SET expires_at = ? WHERE id = ?',
+            date(Date::DATE_ISO, strtotime('-2 year')),
+            $link['id'],
+        );
+
+        static::assertSame(0, $service->pruneHistory());
+        static::assertCount(1, $service->getHistory());
     }
 
     /**
