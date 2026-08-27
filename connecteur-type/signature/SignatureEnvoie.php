@@ -32,6 +32,7 @@ class SignatureEnvoie extends ConnecteurTypeActionExecutor
         $has_date_limite = $this->getMappingValue('iparapheur_has_date_limite');
         $iparapheur_date_limite = $this->getMappingValue('iparapheur_date_limite');
         $annexe_element = $this->getMappingValue('autre_document_attache');
+        $autre_document_a_signer_element = $this->getMappingValue('autre_document_a_signer');
         $primo_signature_detachee = $this->getMappingValue('primo_signature_detachee');
         $json_metadata = $this->getMappingValue('json_metadata');
         $iparapheur_dossier_id = $this->getMappingValue('iparapheur_dossier_id');
@@ -84,6 +85,18 @@ class SignatureEnvoie extends ConnecteurTypeActionExecutor
             }
         }
 
+        if ($autre_document_a_signer_element && $donneesFormulaire->get($autre_document_a_signer_element)) {
+            foreach ($donneesFormulaire->get($autre_document_a_signer_element) as $num => $fileName) {
+                $multiDocument = new Fichier();
+                $multiDocument->filename = $donneesFormulaire->getFileName($autre_document_a_signer_element, $num);
+                $multiDocument->filepath = $donneesFormulaire->getFilePath($autre_document_a_signer_element, $num);
+                $multiDocument->content = $donneesFormulaire->getFileContent($autre_document_a_signer_element, $num);
+                $multiDocument->contentType = $donneesFormulaire->getContentType($autre_document_a_signer_element, $num);
+
+                $fileToSign->multiDocuments[] = $multiDocument;
+            }
+        }
+
         if ($donneesFormulaire->get($primo_signature_detachee)) {
             $fileToSign->signature_content = $donneesFormulaire->getFileContent($primo_signature_detachee);
             $fileToSign->signature_type = $donneesFormulaire->getContentType($primo_signature_detachee);
@@ -106,7 +119,6 @@ class SignatureEnvoie extends ConnecteurTypeActionExecutor
         if ($donneesFormulaire->get($has_date_limite)) {
             $fileToSign->date_limite = $donneesFormulaire->get($iparapheur_date_limite);
         }
-
 
         if ($donneesFormulaire->get($iparapheur_annotation_publique)) {
             $fileToSign->annotationPublic = $donneesFormulaire->get($iparapheur_annotation_publique);

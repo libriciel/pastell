@@ -13,6 +13,8 @@ use FileToSign;
 use JsonException;
 use NotFoundException;
 use Pastell\Client\IparapheurV5\Model\Premis;
+use Pastell\Client\IparapheurV5\Model\PremisObject;
+use Pastell\Client\IparapheurV5\Model\SignificantProperties;
 use Pastell\Connector\IparapheurRest\IpRestApiException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -289,6 +291,62 @@ final class IparapheurRestConnectorTest extends PastellTestCase
 
         $premis = Premis::fromFileToSign($fts);
         self::assertStringEqualsFile(__DIR__ . '/fixtures/premis_sent.xml', $premis->generateDraftPremis());
+    }
+
+    public function testHasMultiDocumentSigne(): void
+    {
+        $this->getConnectorId();
+        $connector = $this->makeConnector();
+
+        self::assertTrue($connector->hasMultiDocumentSigne(['documents' => [new Fichier(), new Fichier()]]));
+        self::assertFalse($connector->hasMultiDocumentSigne(['documents' => [new Fichier()]]));
+    }
+
+    public function testSupportsMultiDocument(): void
+    {
+        $this->getConnectorId();
+        self::assertTrue($this->makeConnector()->supportsMultiDocument());
+    }
+
+    public function testMultiDocumentsAreMainDocuments(): void
+    {
+        $doc = new Fichier();
+        $doc->filename = 'main.pdf';
+        $doc->content = '%PDF-1.4';
+
+        $annexe = new Fichier();
+        $annexe->filename = 'annexe.pdf';
+        $annexe->content = '%PDF-annexe';
+
+        $multiDocument = new Fichier();
+        $multiDocument->filename = 'multi.pdf';
+        $multiDocument->content = '%PDF-multi';
+
+        $fts = new FileToSign();
+        $fts->document = $doc;
+        $fts->annexes = [$annexe];
+        $fts->multiDocuments = [$multiDocument];
+        $fts->type = 'TYPE';
+        $fts->sousType = 'SOUS-TYPE';
+        $fts->dossierTitre = 'Test';
+
+        $premis = Premis::fromFileToSign($fts);
+
+        $mainDocumentByName = [];
+        foreach ($premis->object as $object) {
+            if ($object->type !== PremisObject::FILE) {
+                continue;
+            }
+            foreach ($object->significantProperties as $property) {
+                if ($property->significantPropertiesType === SignificantProperties::MAIN_DOCUMENT) {
+                    $mainDocumentByName[$object->originalName] = $property->significantPropertiesValue;
+                }
+            }
+        }
+
+        self::assertSame(SignificantProperties::TRUE, $mainDocumentByName['main.pdf']);
+        self::assertSame(SignificantProperties::FALSE, $mainDocumentByName['annexe.pdf']);
+        self::assertSame(SignificantProperties::TRUE, $mainDocumentByName['multi.pdf']);
     }
 
     /**
