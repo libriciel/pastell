@@ -9,12 +9,15 @@
   - Ajout d'une recherche avancée 
   - Ajout du tri par dates sur la liste des travaux
   - Possibilité de suspendre/reprendre les travaux correspondants à la recherche
-- iparapheur REST :
-  - **BREAKING** : Suppression de la case 'Appliquer le multi-document' du connecteur iparapheur REST #2593
-  - Nouveau champ « Autre document(s) à signer », transmis au Tdt en plus des annexes dans les flux
-    `ls-actes`, `document-autorisation-urbanisme` et `rh-document-individuel` #2520
-  - Studio, l'étape « Envoi à la préfecture (via un Tdt) » permet désormais de sélectionner plusieurs éléments
-    multi-fichiers pour « Annexe de l'acte » #2520
+- iparapheur REST "Multi-documents ET annexes" :
+    - **BREAKING** : Suppression de la case 'Appliquer le multi-document' du connecteur iparapheur REST #2593
+    - Studio, l'étape « Visa/Signature » dispose d'un nouveau champ « Autre(s) document(s) à signer ».
+      Ce champ n'est pris en compte qu'avec le connecteur de signature iparapheur REST : les fichiers sélectionnés
+      sont transmis au parapheur en tant que multi-documents #2548
+    - Studio, l'étape « Envoi à la préfecture (via un Tdt) » permet désormais de sélectionner plusieurs éléments
+      multi-fichiers pour « Annexe de l'acte » #2520
+    - Nouveau champ « Autre(s) document(s) à signer », dans les flux
+      `ls-actes`, `document-autorisation-urbanisme` et `rh-document-individuel` #2520
 - Accès temporaires : génération d'un lien d'accès à durée limitée envoyé par mail à l'intervenant, révocable à tout moment, avec historique des accès.
   La connexion est protégée par un code à 6 chiffres (visible dans la liste des accès actifs et transmis à
   l'intervenant par l'administrateur) : après 3 saisies erronées, l'accès est automatiquement révoqué #2421
