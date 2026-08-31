@@ -39,6 +39,7 @@
 - La page `Role/detail` affiche désormais les droits par catégorie. Une barre de recherche est également ajoutée #2483
 - Centralisation de l'envoi des notifications d'échec aux administrateurs de la plateforme via le service `AdminMailer`
   et la nouvelle exception `NotificationException` #2546
+- Studio, l'édition d'étape présente les champs multi-fichiers multiples sous forme de liste de sélection #2547
 
 ## Correction
 
