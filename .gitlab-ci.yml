@@ -2,11 +2,11 @@ include:
   - project: "libriciel/integration-continue/templates"
     ref: publish-container-to-registry@2.0.0
     file: '/jobs/publish-container-to-registry/publish-container-to-registry.yml'
-  - template: Code-Quality.gitlab-ci.yml
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
   - template: Security/Container-Scanning.gitlab-ci.yml
+  - component: $LIBRICIEL_CATALOG_PATH/qlty/code-quality@~latest
   - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.2.0
   - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@1.4.0
     inputs:
@@ -191,10 +191,6 @@ publish-compose:
   needs: [ "publish-container-to-registry", "package-sbom-compose" ]
   before_script:
     - sed -i "s/canary/${CI_COMMIT_REF_NAME}/" docker/docker-compose.yml
-
-code_quality:
-  tags:
-    - cq-sans-dind
 
 container_scanning:
   variables:
