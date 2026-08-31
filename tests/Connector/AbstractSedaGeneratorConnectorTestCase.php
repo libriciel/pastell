@@ -245,6 +245,7 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
      */
     public function testWhenAKeywordIsAssociatedWithAFile(): void
     {
+        \error_reporting(E_ALL);
         $this->setCurl(function (array $json_data) {
             static::assertJsonStringEqualsJsonString(
                 '{"Keywords":[],"ArchiveUnits":[],"Files":[]}',

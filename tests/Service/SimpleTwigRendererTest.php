@@ -16,6 +16,7 @@ class SimpleTwigRendererTest extends PastellTestCase
 {
     protected function setUp(): void
     {
+        \error_reporting(E_ALL);
         SimpleTwigRenderer\SimpleTwigXpathCommon::clearCache();
     }
 

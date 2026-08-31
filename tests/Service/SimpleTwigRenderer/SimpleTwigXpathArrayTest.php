@@ -17,6 +17,7 @@ class SimpleTwigXpathArrayTest extends PastellTestCase
 
     protected function setUp(): void
     {
+        \error_reporting(E_ALL);
         parent::setUp();
         $this->xml_file = file_get_contents(__DIR__ . '/test.xml');
         $this->method = SimpleTwigXpathArray::XPATH_ARRAY_FUNCTION;
