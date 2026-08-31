@@ -1,3 +1,9 @@
+# [5.0.9] - 2026-09-07
+
+## Corrections
+
+- Le container `flow` ne démarrait plus #2545
+
 # [5.0.8] - 2026-08-03
 
 ## Évolutions

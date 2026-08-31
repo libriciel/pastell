@@ -193,7 +193,7 @@ services:
     security_opt:
       - no-new-privileges:true
     tmpfs:
-      - /tmp:mode=770,rw,noexec,nosuid,nodev
+      - /tmp:mode=0700,uid=100001,gid=100001,rw,noexec,nosuid,nodev,size=1g
 
   cloudooo:
     image: 'registry.libriciel.fr/public/actes/cloudooo:25.2.7-rc.3@sha256:524987e6d9c389ed4cac08c5169774a0ade6dda95153a3f1e9ffd601782b03c5'
