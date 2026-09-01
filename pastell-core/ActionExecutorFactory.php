@@ -2,8 +2,11 @@
 
 use Monolog\Logger;
 use Pastell\Configuration\JobStatus;
+use Pastell\Exception\NotificationException;
+use Pastell\Mailer\AdminMailer;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\LockInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class ActionExecutorFactory
 {
@@ -36,6 +39,17 @@ class ActionExecutorFactory
     public function getLastException(): ?Exception
     {
         return $this->lastException;
+    }
+
+    private function notifyAdminFromException(NotificationException $e): void
+    {
+        try {
+            $this->objectInstancier->getInstance(AdminMailer::class)->notifyFromException($e);
+        } catch (TransportExceptionInterface $transportException) {
+            $this->getLogger()->error(
+                'Échec de l\'envoi de la notification aux administrateurs : ' . $transportException->getMessage()
+            );
+        }
     }
 
     public function getLogger(): Logger
@@ -105,6 +119,16 @@ class ActionExecutorFactory
                 throw new Exception("Une action est déjà en cours de réalisation sur ce connecteur");
             }
             $result = $this->executeOnConnecteurThrow($id_ce, $id_u, $action_name, $from_api, $action_params);
+        } catch (NotificationException $e) {
+            $jobQueue = $this->objectInstancier->getInstance(JobQueueSQL::class);
+            $id_job = $jobQueue->getJobIdForConnecteur($id_ce, $action_name);
+            if ($id_job) {
+                $jobQueue->lock($id_job, JobStatus::ERROR_ACTION);
+            }
+            $this->notifyAdminFromException($e);
+            $this->lastMessage = $e->getMessage();
+            $this->lastException = $e;
+            $result =  false;
         } catch (Exception $e) {
             $this->lastMessage = $e->getMessage();
             $result =  false;
