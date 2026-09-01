@@ -1,13 +1,14 @@
 {
   "id_type_dossier": "draft-rh-document-individuel",
   "pastell-version": "%VERSION%",
-  "timestamp": 1784724696,
+  "timestamp": 1788247148,
   "raw_data": {
     "id_type_dossier": "draft-rh-document-individuel",
     "nom": "Document individuel (Draft)",
     "type": "Ressources humaines",
     "description": "",
     "nom_onglet": "Information",
+    "affiche_one": false,
     "restriction_pack": "",
     "formulaireElement": [
       {
@@ -21,6 +22,7 @@
         "titre": "on",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -35,6 +37,7 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -49,6 +52,7 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -63,6 +67,7 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -77,6 +82,7 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -91,6 +97,7 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -105,6 +112,7 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -119,6 +127,7 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -133,6 +142,7 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -147,6 +157,7 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -161,6 +172,7 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -175,6 +187,7 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -182,14 +195,15 @@
         "element_id": "siret_collectivite",
         "name": "Num\u00e9ro SIRET de la collectivit\u00e9 territoriale",
         "type": "text",
-        "commentaire": "Numéro SIREN + numéro NIC (14 chiffres)",
+        "commentaire": "Num\u00e9ro SIREN + num\u00e9ro NIC (14 chiffres)",
         "requis": "on",
         "champs_affiches": "",
         "champs_recherche_avancee": "",
         "titre": false,
-        "preg_match": "#^[0-9]{14}$#",
-        "preg_match_error": "Doit contenir 14 chiffres",
         "select_value": "",
+        "preg_match": "#^[0-9]{14}$#",
+        "default_value": false,
+        "preg_match_error": "Doit contenir 14 chiffres",
         "content_type": ""
       },
       {
@@ -203,6 +217,7 @@
         "titre": false,
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -217,6 +232,7 @@
         "titre": false,
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -231,6 +247,7 @@
         "titre": false,
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -245,12 +262,13 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": "application\/pdf"
       },
       {
         "element_id": "autre_document_a_signer",
-        "name": "Autre document(s) \u00e0 signer",
+        "name": "Autre(s) document(s) \u00e0 signer",
         "type": "multi_file",
         "commentaire": "",
         "requis": "",
@@ -259,6 +277,7 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -273,6 +292,7 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": ""
       },
@@ -287,6 +307,7 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
+        "default_value": false,
         "preg_match_error": "",
         "content_type": "application\/json, application\/xml"
       }
@@ -313,8 +334,10 @@
         "specific_type_info": {
           "libelle_parapheur": "titre_document",
           "document_a_signer": "document",
+          "autre_document_a_signer": "autre_document_a_signer",
           "annexe": "annexes",
           "has_date_limite": "on",
+          "has_primo_signature": "",
           "has_metadata_in_json": "on",
           "continue_after_refusal": ""
         },
@@ -347,7 +370,9 @@
         "defaultChecked": false,
         "requis": "",
         "automatique": "on",
-        "specific_type_info": [],
+        "specific_type_info": {
+          "add_displayed_fields": ""
+        },
         "num_etape_same_type": 0,
         "etape_with_same_type_exists": false
       },
@@ -370,7 +395,8 @@
         "requis": "",
         "automatique": "on",
         "specific_type_info": {
-          "sae_has_metadata_in_json": ""
+          "sae_has_metadata_in_json": "",
+          "continue_after_refusal": ""
         },
         "num_etape_same_type": 0,
         "etape_with_same_type_exists": false

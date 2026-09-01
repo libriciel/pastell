@@ -1,7 +1,7 @@
 {
   "id_type_dossier": "draft-ls-actes",
   "pastell-version": "%VERSION%",
-  "timestamp": 1784722617,
+  "timestamp": 1787929061,
   "raw_data": {
     "id_type_dossier": "draft-ls-actes",
     "nom": "Actes (Draft)",
@@ -43,9 +43,9 @@
       },
       {
         "element_id": "autre_document_a_signer",
-        "name": "Autre document(s) \u00e0 signer",
+        "name": "Autre(s) document(s) \u00e0 signer",
         "type": "multi_file",
-        "commentaire": "Attention ! La taille totale des documents acte + annexes ne peut pas d\u00e9passer 150 Mo",
+        "commentaire": "Pris en compte pour la signature multi-document iparapheur rest.<br \/>\r\nAttention ! La taille totale des documents acte + annexes ne peut pas d\u00e9passer 150 Mo",
         "requis": "",
         "champs_affiches": "",
         "champs_recherche_avancee": "",
@@ -109,6 +109,7 @@
         "specific_type_info": {
           "libelle_parapheur": "objet",
           "document_a_signer": "arrete",
+          "autre_document_a_signer": "autre_document_a_signer",
           "annexe": "autre_document_attache",
           "has_date_limite": "on",
           "has_primo_signature": "",
@@ -169,7 +170,8 @@
         "requis": "",
         "automatique": "on",
         "specific_type_info": {
-          "sae_has_metadata_in_json": ""
+          "sae_has_metadata_in_json": "",
+          "continue_after_refusal": ""
         },
         "num_etape_same_type": 0,
         "etape_with_same_type_exists": false

@@ -7,7 +7,7 @@
   sont transmis au parapheur en tant que multi-documents #2548
 - Studio, l'étape « Envoi à la préfecture (via un Tdt) » permet désormais de sélectionner plusieurs éléments
   multi-fichiers pour « Annexe de l'acte » #2520
-- Nouveau champ « Autre(s) document(s) à signer », transmis au Tdt en plus des annexes dans les flux
+- Nouveau champ « Autre(s) document(s) à signer » dans les flux
   `ls-actes`, `document-autorisation-urbanisme` et `rh-document-individuel` #2520
 - Ajout du paramètre `descendance` sur la route `GET /api/v2/utilisateur` pour inclure les utilisateurs des entités filles #2463
 - Alerte du taux d'occupation du workspace : alerte quotidienne par mail à l'administrateur lorsque le seuil

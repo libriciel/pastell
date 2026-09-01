@@ -1,13 +1,15 @@
 {
   "id_type_dossier": "draft-document-autorisation-urbanisme",
   "pastell-version": "%VERSION%",
-  "timestamp": 1784724519,
+  "timestamp": 1788246894,
   "raw_data": {
     "id_type_dossier": "draft-document-autorisation-urbanisme",
     "nom": "Document d'autorisation d'urbanisme (Draft)",
     "type": "Urbanisme",
     "description": "",
     "nom_onglet": "Information",
+    "affiche_one": false,
+    "restriction_pack": "",
     "formulaireElement": [
       {
         "element_id": "titre",
@@ -20,7 +22,9 @@
         "titre": "on",
         "select_value": "",
         "preg_match": "",
-        "preg_match_error": ""
+        "default_value": false,
+        "preg_match_error": "",
+        "content_type": false
       },
       {
         "element_id": "id_document_externe",
@@ -33,7 +37,9 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
-        "preg_match_error": ""
+        "default_value": false,
+        "preg_match_error": "",
+        "content_type": false
       },
       {
         "element_id": "document",
@@ -46,11 +52,13 @@
         "titre": false,
         "select_value": "",
         "preg_match": "",
-        "preg_match_error": ""
+        "default_value": false,
+        "preg_match_error": "",
+        "content_type": false
       },
       {
         "element_id": "autre_document_a_signer",
-        "name": "Autre document(s) \u00e0 signer",
+        "name": "Autre(s) document(s) \u00e0 signer",
         "type": "multi_file",
         "commentaire": "",
         "requis": "",
@@ -59,7 +67,9 @@
         "titre": false,
         "select_value": "",
         "preg_match": "",
-        "preg_match_error": ""
+        "default_value": false,
+        "preg_match_error": "",
+        "content_type": false
       },
       {
         "element_id": "annexe",
@@ -72,7 +82,9 @@
         "titre": false,
         "select_value": "",
         "preg_match": "",
-        "preg_match_error": ""
+        "default_value": false,
+        "preg_match_error": "",
+        "content_type": false
       },
       {
         "element_id": "metadonnees",
@@ -85,14 +97,16 @@
         "titre": "",
         "select_value": "",
         "preg_match": "",
-        "preg_match_error": ""
+        "default_value": false,
+        "preg_match_error": "",
+        "content_type": false
       }
     ],
     "etape": [
       {
         "num_etape": 0,
         "type": "transformation",
-        "label": "Extraction des métadonnées",
+        "label": "Extraction des m\u00e9tadonn\u00e9es",
         "defaultChecked": false,
         "requis": "on",
         "automatique": "on",
@@ -101,7 +115,7 @@
         "etape_with_same_type_exists": false
       },
       {
-        "num_etape": 1,
+        "num_etape": "1",
         "type": "signature",
         "label": null,
         "defaultChecked": false,
@@ -110,8 +124,10 @@
         "specific_type_info": {
           "libelle_parapheur": "titre",
           "document_a_signer": "document",
+          "autre_document_a_signer": "autre_document_a_signer",
           "annexe": "annexe",
           "has_date_limite": "on",
+          "has_primo_signature": "",
           "has_metadata_in_json": "on",
           "continue_after_refusal": ""
         },
@@ -121,7 +137,7 @@
       {
         "num_etape": 2,
         "type": "tdt_actes",
-        "label": "Envoi au contrôle de légalité",
+        "label": "Envoi au contr\u00f4le de l\u00e9galit\u00e9",
         "defaultChecked": false,
         "requis": "",
         "automatique": "on",
@@ -144,14 +160,16 @@
         "defaultChecked": false,
         "requis": "",
         "automatique": "on",
-        "specific_type_info": [],
+        "specific_type_info": {
+          "add_displayed_fields": ""
+        },
         "num_etape_same_type": 0,
         "etape_with_same_type_exists": false
       },
       {
         "num_etape": 4,
         "type": "depot",
-        "label": "Versement entrepôts (GED, FTP, …)",
+        "label": "Versement entrep\u00f4ts (GED, FTP, \u2026)",
         "defaultChecked": false,
         "requis": "",
         "automatique": "on",
@@ -162,12 +180,13 @@
       {
         "num_etape": 5,
         "type": "sae",
-        "label": "Système d'Archivage Électronique",
+        "label": "Syst\u00e8me d'Archivage \u00c9lectronique",
         "defaultChecked": false,
         "requis": "",
         "automatique": "on",
         "specific_type_info": {
-          "sae_has_metadata_in_json": ""
+          "sae_has_metadata_in_json": "",
+          "continue_after_refusal": ""
         },
         "num_etape_same_type": 0,
         "etape_with_same_type_exists": false
