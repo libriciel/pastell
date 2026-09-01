@@ -10,15 +10,18 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mime\Address;
 
-class AdminMailer
+readonly class AdminMailer
 {
     public function __construct(
-        private readonly Mailer $mailer,
-        private readonly ConfigurationSQL $configurationSQL,
-        private readonly string $plateforme_mail,
+        private Mailer $mailer,
+        private ConfigurationSQL $configurationSQL,
+        private string $plateforme_mail,
     ) {
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function notify(string $subject, string $htmlTemplate, array $context, array $to = []): void
     {
         $templatedEmail = $this->createEmail($subject, $to)
@@ -27,12 +30,18 @@ class AdminMailer
         $this->mailer->send($templatedEmail);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function notifyText(string $subject, string $body, array $to = []): void
     {
         $templatedEmail = $this->createEmail($subject, $to)->text($body);
         $this->mailer->send($templatedEmail);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function notifyFromException(NotificationException $exception): void
     {
         $htmlTemplate = $exception->getHtmlTemplate();
