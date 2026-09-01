@@ -39,6 +39,21 @@
         "content_type": "application\/pdf"
       },
       {
+        "element_id": "autre_document_a_signer",
+        "name": "Autre(s) document(s) \u00e0 signer",
+        "type": "multi_file",
+        "commentaire": "Sp\u00e9cifique \u00e0 la signature multi-document iparapheur rest",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
         "element_id": "annexe",
         "name": "Annexe(s)",
         "type": "multi_file",
@@ -89,8 +104,10 @@
         "specific_type_info": {
           "libelle_parapheur": "libelle",
           "document_a_signer": "document",
+          "autre_document_a_signer": "autre_document_a_signer",
           "annexe": "annexe",
           "has_date_limite": "on",
+          "has_primo_signature": "",
           "has_metadata_in_json": "on",
           "continue_after_refusal": ""
         },
@@ -104,7 +121,9 @@
         "defaultChecked": false,
         "requis": "",
         "automatique": "on",
-        "specific_type_info": [],
+        "specific_type_info": {
+          "add_displayed_fields": ""
+        },
         "num_etape_same_type": 0,
         "etape_with_same_type_exists": false
       },

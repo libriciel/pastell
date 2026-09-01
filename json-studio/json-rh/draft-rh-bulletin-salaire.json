@@ -25,10 +25,12 @@
         "automatique": "on",
         "defaultChecked": false,
         "specific_type_info": {
+          "libelle_parapheur": "titre_document",
+          "document_a_signer": "document",
+          "autre_document_a_signer": "autre_document_a_signer",
           "annexe": "annexes",
           "has_date_limite": "on",
-          "document_a_signer": "document",
-          "libelle_parapheur": "titre_document",
+          "has_primo_signature": "",
           "has_metadata_in_json": "on",
           "continue_after_refusal": ""
         },
@@ -42,7 +44,9 @@
         "num_etape": 2,
         "automatique": "on",
         "defaultChecked": false,
-        "specific_type_info": [],
+        "specific_type_info": {
+          "add_displayed_fields": ""
+        },
         "num_etape_same_type": 0,
         "etape_with_same_type_exists": false
       },
@@ -251,7 +255,7 @@
         "requis": "on",
         "element_id": "siret_collectivite",
         "preg_match": "#^[0-9]{14}$#",
-        "commentaire": "Numéro SIREN + numéro NIC (14 chiffres)",
+        "commentaire": "Num\u00e9ro SIREN + num\u00e9ro NIC (14 chiffres)",
         "content_type": "",
         "select_value": "",
         "champs_affiches": "",
@@ -327,6 +331,21 @@
         "champs_affiches": "",
         "preg_match_error": "",
         "champs_recherche_avancee": ""
+      },
+      {
+        "element_id": "autre_document_a_signer",
+        "name": "Autre(s) document(s) \u00e0 signer",
+        "type": "multi_file",
+        "commentaire": "Sp\u00e9cifique \u00e0 la signature multi-document iparapheur rest",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
       },
       {
         "name": "Annexe(s)",

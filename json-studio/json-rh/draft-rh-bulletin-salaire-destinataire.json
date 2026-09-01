@@ -224,7 +224,7 @@
         "element_id": "siret_collectivite",
         "name": "Num\u00e9ro SIRET de la collectivit\u00e9 territoriale",
         "type": "text",
-        "commentaire": "Numéro SIREN + numéro NIC (14 chiffres)",
+        "commentaire": "Num\u00e9ro SIREN + num\u00e9ro NIC (14 chiffres)",
         "requis": "on",
         "champs_affiches": "",
         "champs_recherche_avancee": "",
@@ -309,6 +309,21 @@
         "default_value": false,
         "preg_match_error": "",
         "content_type": "application\/pdf"
+      },
+      {
+        "element_id": "autre_document_a_signer",
+        "name": "Autre(s) document(s) sign\u00e9(s)",
+        "type": "multi_file",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
       },
       {
         "element_id": "annexes",
