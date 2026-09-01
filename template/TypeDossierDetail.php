@@ -13,12 +13,13 @@
 
 ?>
 
-<a class='btn btn-link' href='<?php $this->url("TypeDossier/list")?>'>
+<a class='btn btn-link' href='<?php $this->url('TypeDossier/list')?>'>
     <i class="fas fa-arrow-left"></i>&nbsp;Liste des types de dossier
 </a>
 
 <div class='alert alert-warning'>
-    Ne pas oublier d'ajouter les droits sur ce type de dossier dans les rôles concernés.
+    Ne pas oublier d'ajouter les droits sur ce type de dossier dans les <a href="<?php
+    $this->url('Role/index') ?>">rôles</a> concernés.
 </div>
 
 <div class="box">
