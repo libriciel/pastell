@@ -568,7 +568,8 @@ html body #main_droite.pa-one-block {
 .form_commentaire {
     padding: 0;
     margin: 0;
-    color: #B2B2B2;
+    color: var(--bs-ls-grey-700);
+    font-weight: 500;
 }
 
 .form-select:focus {
