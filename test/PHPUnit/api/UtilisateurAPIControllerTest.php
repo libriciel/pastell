@@ -326,6 +326,59 @@ class UtilisateurAPIControllerTest extends PastellTestCase
         $this->getInternalAPIAsUser($user)->post('/utilisateur', $userInfo);
     }
 
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    private function createUserWithEditionPermissionsOn(string $entityId): int
+    {
+        $user = $this->getObjectInstancier()->getInstance(UserCreationService::class)
+            ->create('tester', 'tester@example.invalid', 'tester', 'tester');
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)
+            ->edit('utilisateurEdition', 'User');
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)
+            ->addDroit(
+                'utilisateurEdition',
+                DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION)
+            );
+        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)
+            ->addRole((string)$user, 'utilisateurEdition', $entityId);
+        return $user;
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testPatchUserOfAnotherEntityFail(): void
+    {
+        $user = $this->createUserWithEditionPermissionsOn('1');
+
+        $this->expectException(ForbiddenException::class);
+        $this->expectExceptionMessage("Acces interdit id_e=0, droit=utilisateur:edition,id_u=$user");
+        $this->getInternalAPIAsUser($user)->patch(
+            '/utilisateur/1',
+            ['id_e' => '1', 'prenom' => 'test2']
+        );
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testPatchMoveUserToAnotherEntityFail(): void
+    {
+        // The entity 2 is a child of the entity 1, so the move is tested the other way around:
+        // a right on the child entity must not allow moving a user to the parent entity.
+        $user = $this->createUserWithEditionPermissionsOn('2');
+        $victim = $this->getObjectInstancier()->getInstance(UserCreationService::class)
+            ->create('victim', 'victim@example.invalid', 'Victim', 'User', 2);
+
+        $this->expectException(ForbiddenException::class);
+        $this->expectExceptionMessage("Acces interdit id_e=1, droit=utilisateur:edition,id_u=$user");
+        $this->getInternalAPIAsUser($user)->patch("/utilisateur/$victim", ['id_e' => '1']);
+    }
+
     public function testPasswordPreservedPatchWithNoPassword(): void
     {
         $info =  [
