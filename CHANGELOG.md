@@ -12,6 +12,10 @@
 - Le type de dossier sélectionné était perdu en changeant d'entité depuis `Document/index` #2543
 - À chaque exécution de l'action import-facture, le fichier yml de l'instance du connecteur CPP était modifié #2544
 
+## Sécurité
+
+- Faille IDOR (CVSS 8.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N) #2551
+
 # [4.1.21] - 2026-08-03
 
 ## Évolutions
