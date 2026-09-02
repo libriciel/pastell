@@ -51,7 +51,7 @@
                 <td>
                     <a href='MailSec/contactDetail?id_a=<?php echo $utilisateur['id_a'] ?>&id_e=<?php echo $id_e ?>'><?php hecho($utilisateur['description']); ?></a>
                 </td>
-                <td><?php echo $utilisateur['email'] ?></td>
+                <td><?php hecho($utilisateur['email']) ?></td>
             </tr>
         <?php endforeach; ?>
         </tbody>

@@ -111,12 +111,12 @@ final class AnnuaireAPIController extends BaseAPIController
         file_put_contents($file_path, $file_content);
 
         try {
-            $nb_import = $this->annuaireImportService->import($id_e, $file_path);
+            $result = $this->annuaireImportService->import($id_e, $file_path);
         } finally {
             unlink($file_path);
         }
 
-        return ['nb_import' => $nb_import];
+        return ['nb_import' => $result['imported']];
     }
 
     /**

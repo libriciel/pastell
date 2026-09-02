@@ -36,7 +36,7 @@ class MailSecConnecteurTest extends PastellTestCase
      */
     private function getMailSec(): MailSec
     {
-        $result = $this->createConnector('mailsec', "Connecteur mailsec de test");
+        $result = $this->createConnector('mailsec', 'Connecteur mailsec de test');
         $id_ce  = $result['id_ce'];
         $this->configureConnector(
             $id_ce,
@@ -54,7 +54,7 @@ class MailSecConnecteurTest extends PastellTestCase
             $this->connecteurConfig->addFileFromCopy(
                 'embeded_image',
                 $filename,
-                __DIR__ . "/fixtures/image-exemple.png",
+                __DIR__ . '/fixtures/image-exemple.png',
                 $filenum
             );
         }
@@ -68,8 +68,8 @@ class MailSecConnecteurTest extends PastellTestCase
 
         $donneesFormulaire->addFileFromCopy(
             'metadata',
-            "metadata.json",
-            __DIR__ . "/fixtures/mail-metadata.json"
+            'metadata.json',
+            __DIR__ . '/fixtures/mail-metadata.json'
         );
         /** @var MailSec $mailsec */
         $mailsec = $this->getConnecteurFactory()->getConnecteurById($id_ce);
@@ -107,11 +107,11 @@ class MailSecConnecteurTest extends PastellTestCase
     public function testSendOneMail()
     {
         $documentId = '1';
-        $key = $this->getDocumentEmail()->add($documentId, self::EMAIL, "to");
+        $key = $this->getDocumentEmail()->add($documentId, self::EMAIL, 'to');
         $document_email_info = $this->getDocumentEmail()->getInfoFromKey($key);
 
         $this->getMailSec()->sendOneMail(1, $documentId, $document_email_info[DocumentEmail::ID_DE]);
-        $this->assertMailEqualsFile(__DIR__ . "/fixtures/mail-text-output.txt");
+        $this->assertMailEqualsFile(__DIR__ . '/fixtures/mail-text-output.txt');
     }
 
     private function assertMailEqualsFile(string $filename): void
@@ -125,9 +125,9 @@ class MailSecConnecteurTest extends PastellTestCase
     public function testSendAllMail()
     {
         $documentId = '1';
-        $this->getDocumentEmail()->add($documentId, self::EMAIL, "to");
+        $this->getDocumentEmail()->add($documentId, self::EMAIL, 'to');
         $this->getMailSec()->sendAllMail(1, $documentId);
-        $this->assertMailEqualsFile(__DIR__ . "/fixtures/mail-text-output.txt");
+        $this->assertMailEqualsFile(__DIR__ . '/fixtures/mail-text-output.txt');
     }
 
     /**
@@ -135,12 +135,12 @@ class MailSecConnecteurTest extends PastellTestCase
      */
     public function testResendUnopenedEmails(): void
     {
-        $this->addContentHTML(__DIR__ . "/fixtures/mail-exemple.html");
+        $this->addContentHTML(__DIR__ . '/fixtures/mail-exemple.html');
         $mailsec = $this->getMailSec();
 
         $documentId = $this->createDocument('test')['id_d'];
-        $keyRead = $this->getDocumentEmail()->add($documentId, "jdoe@example.org", "to");
-        $this->getDocumentEmail()->add($documentId, "john.doe@example.org", "to");
+        $keyRead = $this->getDocumentEmail()->add($documentId, 'jdoe@example.org', 'to');
+        $this->getDocumentEmail()->add($documentId, 'john.doe@example.org', 'to');
 
         $this->getDocumentEmail()->consulter($keyRead);
 
@@ -149,7 +149,7 @@ class MailSecConnecteurTest extends PastellTestCase
         $all = $this->getMailerTransport()->getAllSentMessages();
         $this->assertCount(1, $all);
         $this->assertMailContentEqualsFile(
-            __DIR__ . "/fixtures/mail_john.doe.txt",
+            __DIR__ . '/fixtures/mail_john.doe.txt',
             $all[0]->toString()
         );
     }
@@ -180,13 +180,13 @@ class MailSecConnecteurTest extends PastellTestCase
      */
     public function testSendHTMLFluxKeyNotFound()
     {
-        $this->addContentHTML(__DIR__ . "/fixtures/mail-exemple-key-not-found.html");
+        $this->addContentHTML(__DIR__ . '/fixtures/mail-exemple-key-not-found.html');
         $this->addEmbededImage();
 
         $mailsec = $this->getMailSec();
 
         $documentId = '1';
-        $key = $this->getDocumentEmail()->add($documentId, self::EMAIL, "to");
+        $key = $this->getDocumentEmail()->add($documentId, self::EMAIL, 'to');
 
         $document_email_info = $this->getDocumentEmail()->getInfoFromKey($key);
 
@@ -198,20 +198,20 @@ class MailSecConnecteurTest extends PastellTestCase
     /**
      * @throws Exception
      */
-    public function testSendHTMLFluxMetadataFileNotFound()
+    public function testSendHTMLFluxMetadataFileNotFound(): void
     {
-        $this->addContentHTML(__DIR__ . "/fixtures/mail-exemple-metadata-file-not-found.html");
+        $this->addContentHTML(__DIR__ . '/fixtures/mail-exemple-metadata-file-not-found.html');
         $this->addEmbededImage();
 
         $mailsec = $this->getMailSec();
 
         $documentId = '1';
-        $key = $this->getDocumentEmail()->add($documentId, self::EMAIL, "to");
+        $key = $this->getDocumentEmail()->add($documentId, self::EMAIL, 'to');
 
         $document_email_info = $this->getDocumentEmail()->getInfoFromKey($key);
 
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage("Erreur de lecture du contenu de metadata_not_found");
+        $this->expectExceptionMessage('Erreur de lecture du contenu de metadata_not_found');
         $mailsec->sendOneMail(1, $documentId, $document_email_info[DocumentEmail::ID_DE]);
     }
 
@@ -220,14 +220,14 @@ class MailSecConnecteurTest extends PastellTestCase
      */
     public function testSendHTMLFluxKeyBadType()
     {
-        $this->addContentHTML(__DIR__ . "/fixtures/mail-exemple-key-bad-type.html");
+        $this->addContentHTML(__DIR__ . '/fixtures/mail-exemple-key-bad-type.html');
 
         $this->addEmbededImage();
 
         $mailsec = $this->getMailSec();
 
         $documentId = '1';
-        $key = $this->getDocumentEmail()->add($documentId, "eric.pommateau@adullact-projet.com", "to");
+        $key = $this->getDocumentEmail()->add($documentId, 'eric.pommateau@adullact-projet.com', 'to');
 
         $document_email_info = $this->getDocumentEmail()->getInfoFromKey($key);
 
@@ -251,12 +251,12 @@ class MailSecConnecteurTest extends PastellTestCase
         );
 
         $documentId = '1';
-        $key = $this->getDocumentEmail()->add($documentId, "eric.pommateau@adullact-projet.com", "to");
+        $key = $this->getDocumentEmail()->add($documentId, 'eric.pommateau@adullact-projet.com', 'to');
         $document_email_info = $this->getDocumentEmail()->getInfoFromKey($key);
 
         $mailsec->sendOneMail(1, $documentId, $document_email_info['id_de']);
 
-        $this->assertMailEqualsFile(__DIR__ . "/fixtures/mail-link.txt");
+        $this->assertMailEqualsFile(__DIR__ . '/fixtures/mail-link.txt');
     }
 
     /**
@@ -264,21 +264,21 @@ class MailSecConnecteurTest extends PastellTestCase
      */
     public function testSendAllMailWithMultiplePeople()
     {
-        $this->addContentHTML(__DIR__ . "/fixtures/mail-exemple.html");
+        $this->addContentHTML(__DIR__ . '/fixtures/mail-exemple.html');
         $mailsec = $this->getMailSec();
 
         $documentId = '1';
-        $this->getDocumentEmail()->add($documentId, "jdoe@example.org", "to");
-        $this->getDocumentEmail()->add($documentId, "john.doe@example.org", "to");
+        $this->getDocumentEmail()->add($documentId, 'jdoe@example.org', 'to');
+        $this->getDocumentEmail()->add($documentId, 'john.doe@example.org', 'to');
 
         $mailsec->sendAllMail(1, $documentId);
 
         $this->assertMailContentEqualsFile(
-            __DIR__ . "/fixtures/mail_jdoe.txt",
+            __DIR__ . '/fixtures/mail_jdoe.txt',
             $this->getMailerTransport()->getAllSentMessages()[0]->toString(),
         );
         $this->assertMailContentEqualsFile(
-            __DIR__ . "/fixtures/mail_john.doe.txt",
+            __DIR__ . '/fixtures/mail_john.doe.txt',
             $this->getMailerTransport()->getAllSentMessages()[1]->toString(),
         );
     }
@@ -288,7 +288,7 @@ class MailSecConnecteurTest extends PastellTestCase
      */
     public function testReturnPath()
     {
-        $id_ce = $this->createConnector('undelivered-mail', "Undelivered mail", 0)['id_ce'];
+        $id_ce = $this->createConnector('undelivered-mail', 'Undelivered mail', 0)['id_ce'];
         $this->configureConnector($id_ce, ['return_path' => 'foo@libriciel.invalid'], 0);
         /** @var ConnecteurAssociationService $connecteurAssociationService */
         $connecteurAssociationService = $this->getObjectInstancier()->getInstance(
@@ -301,27 +301,27 @@ class MailSecConnecteurTest extends PastellTestCase
         );
 
         $documentId = '1';
-        $key = $this->getDocumentEmail()->add($documentId, self::EMAIL, "to");
+        $key = $this->getDocumentEmail()->add($documentId, self::EMAIL, 'to');
         $document_email_info = $this->getDocumentEmail()->getInfoFromKey($key);
 
         $this->getMailSec()->sendOneMail(1, $documentId, $document_email_info[DocumentEmail::ID_DE]);
-        $this->assertMailEqualsFile(__DIR__ . "/fixtures/mail-text-output-return-path.txt");
+        $this->assertMailEqualsFile(__DIR__ . '/fixtures/mail-text-output-return-path.txt');
     }
 
     private function assertMailContentEqualsFile(string $filename, string $mailAsString): void
     {
         $mailAsString = preg_replace(
-            "#X-PASTELL-DOCUMENT: .*#",
+            '#X-PASTELL-DOCUMENT: .*#',
             "X-PASTELL-DOCUMENT: NOTTESTABLE\r",
             $mailAsString
         );
         $mailAsString = preg_replace(
-            "#Date: .*#",
+            '#Date: .*#',
             "DATE: NOTTESTABLE\r",
             $mailAsString
         );
         $mailAsString = preg_replace(
-            "#Message-ID: .*#",
+            '#Message-ID: .*#',
             "Message-ID: NOTTESTABLE\r",
             $mailAsString
         );
@@ -331,7 +331,7 @@ class MailSecConnecteurTest extends PastellTestCase
             $mailAsString
         );
         $mailAsString = preg_replace(
-            "#boundary=.*#",
+            '#boundary=.*#',
             "boundary=NOTTESTABLE\r",
             $mailAsString
         );
@@ -352,8 +352,8 @@ class MailSecConnecteurTest extends PastellTestCase
         );
 
         $mailAsString = preg_replace(
-            "#Content-ID: <[0-9a-f]*#",
-            "Content-ID: <NOTTESTABLE",
+            '#Content-ID: <[0-9a-f]*#',
+            'Content-ID: <NOTTESTABLE',
             $mailAsString
         );
 
@@ -372,7 +372,7 @@ class MailSecConnecteurTest extends PastellTestCase
 
     public function testTesterEnvoiReplyTo(): void
     {
-        $result = $this->createConnector('mailsec', "Connecteur mailsec de test");
+        $result = $this->createConnector('mailsec', 'Connecteur mailsec de test');
         $id_ce  = $result['id_ce'];
         $this->configureConnector(
             $id_ce,

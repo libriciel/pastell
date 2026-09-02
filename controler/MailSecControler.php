@@ -312,10 +312,32 @@ class MailSecControler extends PastellControler
             $this->redirect("MailSec/contactImport?id_e=$id_e");
         }
 
-        $nb_import = $this->getInstance(AnnuaireImportService::class)->import($id_e, $file_path);
+        $result = $this->getInstance(AnnuaireImportService::class)->import($id_e, $file_path);
 
-        $this->getLastMessage()->setLastMessage("$nb_import emails ont été importés");
+        $message = $this->appendFailureCount(
+            "{$result['imported']} emails ont été importés",
+            $result['ignored'],
+            'lignes ignorées'
+        );
+        $this->reportBulkResult($message, $result['imported'], $result['ignored']);
         $this->redirect('MailSec/annuaire?id_e=' . $id_e);
+    }
+
+    private function appendFailureCount(string $message, int $nb_failed, string $suffix): string
+    {
+        if ($nb_failed > 0) {
+            $message .= " ($nb_failed $suffix)";
+        }
+        return $message;
+    }
+
+    private function reportBulkResult(string $message, int $nb_done, int $nb_failed): void
+    {
+        if ($nb_done === 0 && $nb_failed > 0) {
+            $this->setLastError($message);
+        } else {
+            $this->getLastMessage()->setLastMessage($message);
+        }
     }
 
     /**
@@ -326,10 +348,12 @@ class MailSecControler extends PastellControler
     {
         $recuperateur = new Recuperateur($_GET);
         $id_e = $recuperateur->getInt('id_e');
+        $search = $recuperateur->get('search', '');
+        $id_g = $recuperateur->getInt('id_g');
 
         $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::LECTURE);
 
-        $csvContent = $this->getInstance(AnnuaireExportService::class)->export($id_e);
+        $csvContent = $this->getInstance(AnnuaireExportService::class)->export($id_e, $search, $id_g);
         $csvOutput = new CSVoutput();
         $csvOutput->displayHTTPHeader("pastell-annuaire-$id_e.csv");
         echo $csvContent;
@@ -534,21 +558,27 @@ class MailSecControler extends PastellControler
 
         $service = $this->getInstance(AnnuaireContactService::class);
         $nb_deleted = 0;
+        $nb_failed = 0;
         foreach ($id_a_list as $id_a) {
             $id_a = (int)$id_a;
             $info = $this->getAnnuaireSQL()->getInfo($id_a);
             if (!is_array($info) || (int)$info['id_e'] !== $id_e) {
                 continue;
             }
-            $service->delete($id_e, $id_a);
-            $nb_deleted++;
+            try {
+                $service->delete($id_e, $id_a);
+                $nb_deleted++;
+            } catch (Throwable) {
+                $nb_failed++;
+            }
         }
 
-        $this->getLastMessage()->setLastMessage(
-            $nb_deleted === 1
-                ? 'Le contact a été supprimé'
-                : "$nb_deleted contacts ont été supprimés"
+        $message = $this->appendFailureCount(
+            $nb_deleted === 1 ? 'Le contact a été supprimé' : "$nb_deleted contacts ont été supprimés",
+            $nb_failed,
+            'non supprimés suite à une erreur'
         );
+        $this->reportBulkResult($message, $nb_deleted, $nb_failed);
         $this->redirect("MailSec/annuaire?id_e=$id_e");
     }
 
@@ -670,6 +700,9 @@ class MailSecControler extends PastellControler
         $contacts_to_delete = [];
         foreach ($id_a_list as $id_a) {
             $id_a = (int)$id_a;
+            if (! $annuaireGroupeSQL->isInGroupe($id_g, $id_a)) {
+                continue;
+            }
             $info = $this->getAnnuaireSQL()->getInfo($id_a);
             if (!is_array($info)) {
                 continue;
@@ -795,16 +828,29 @@ class MailSecControler extends PastellControler
             $this->redirect("MailSec/groupeList?id_e=$id_e");
         }
 
+        $annuaireGroupeSQL = $this->getInstance(AnnuaireGroupeSQL::class);
         $annuaireGroupeService = $this->getObjectInstancier()->getInstance(AnnuaireGroupeService::class);
+        $nb_deleted = 0;
+        $nb_failed = 0;
         foreach ($id_g_list as $id_g) {
-            $annuaireGroupeService->deleteGroupe($id_e, (int)$id_g);
+            $id_g = (int)$id_g;
+            if (!is_array($annuaireGroupeSQL->getInfo($id_e, $id_g))) {
+                continue;
+            }
+            try {
+                $annuaireGroupeService->deleteGroupe($id_e, $id_g);
+                $nb_deleted++;
+            } catch (Throwable) {
+                $nb_failed++;
+            }
         }
 
-        $this->getLastMessage()->setLastMessage(
-            count($id_g_list) === 1
-                ? 'Le groupe a été supprimé'
-                : count($id_g_list) . ' groupes ont été supprimés'
+        $message = $this->appendFailureCount(
+            $nb_deleted === 1 ? 'Le groupe a été supprimé' : "$nb_deleted groupes ont été supprimés",
+            $nb_failed,
+            'non supprimés suite à une erreur'
         );
+        $this->reportBulkResult($message, $nb_deleted, $nb_failed);
         $this->redirect("MailSec/groupeList?id_e=$id_e");
     }
 

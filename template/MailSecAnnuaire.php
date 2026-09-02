@@ -58,7 +58,7 @@
     </form>
 
     <h2>Liste des contacts - résultats de la recherche</h2>
-    <a class='btn btn-outline-primary' href='MailSec/contactExport?id_e=<?php echo $id_e ?>'
+    <a class='btn btn-outline-primary' href='MailSec/contactExport?id_e=<?php echo $id_e ?>&id_g=<?php echo $id_g ?>&search=<?php echo urlencode($search) ?>'
     ><i class='fas fa-download'></i>&nbsp;Exporter</a>
     <?php if ($annuaire_edition) : ?>
         <a href="MailSec/contactImport?id_e=<?php echo $id_e ?>" class='btn btn-primary'
@@ -96,7 +96,7 @@
                         <a href='MailSec/contactDetail?id_a=<?php echo $utilisateur['id_a'] ?>&id_e=<?php echo $id_e ?>'
                         ><?php hecho($utilisateur['description']); ?></a>
                     </td>
-                    <td><?php echo $utilisateur['email'] ?></td>
+                    <td><?php hecho($utilisateur['email']) ?></td>
                     <td>
                         <?php foreach ($utilisateur['groupe'] as $i => $groupe) : ?>
                             <?php
@@ -118,7 +118,7 @@
         </table>
 
         <?php $this->suivantPrecedent($offset, $limit, $nb_email, "MailSec/annuaire?id_e=$id_e&id_g=$id_g&search=" . urlencode($search)); ?>
-        <a class='btn btn-outline-primary' href='MailSec/contactExport?id_e=<?php echo $id_e ?>'
+        <a class='btn btn-outline-primary' href='MailSec/contactExport?id_e=<?php echo $id_e ?>&id_g=<?php echo $id_g ?>&search=<?php echo urlencode($search) ?>'
         ><i class='fas fa-download'></i>&nbsp;Exporter</a>
         <?php if ($annuaire_edition) : ?>
             <a href="MailSec/contactImport?id_e=<?php echo $id_e ?>" class='btn btn-primary'
