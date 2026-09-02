@@ -10,21 +10,15 @@ declare(strict_types=1);
  * @var int $treeselect_open_level
  */
 
-?>
-<script type="module">
-    const domElement = document.querySelector('.<?= $treeselect_container_class ?>')
-    const initialValue = document.getElementById('<?= $treeselect_input_id ?>').value
-    const treeselect = new Treeselect({
-        placeholder: '<?= $treeselect_placeholder ?>',
-        parentHtmlContainer: domElement,
-        options: <?= $treeselect_data ?>,
-        value: initialValue !== '' ? [initialValue] : [],
-        isSingleSelect: true,
-        showTags: false,
-        openLevel: <?= $treeselect_open_level ?>,
-    })
+$treeselect_config = [
+    'containerClass' => $treeselect_container_class,
+    'inputId' => $treeselect_input_id,
+    'placeholder' => $treeselect_placeholder,
+    'openLevel' => $treeselect_open_level,
+    'options' => json_decode($treeselect_data, true),
+];
 
-    treeselect.srcElement.addEventListener('input', (e) => {
-        document.getElementById('<?= $treeselect_input_id ?>').value = e.detail
-    })
+?>
+<script type="application/json" class="treeselect-config">
+<?= json_encode($treeselect_config, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) ?>
 </script>
