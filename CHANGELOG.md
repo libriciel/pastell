@@ -22,6 +22,7 @@
 - Absence de limitation des tentatives de connexion sur l'authentification LDAP
   (CVSS 6.5 - criticité MOYENNE - CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:L) #2552
 - Faille d'exécution de code (CVSS 8.8 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H) #2556
+- Faille IDOR sur le mail sécurisé (CVSS 7.5 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N) #2553
 
 # [4.1.21] - 2026-08-03
 
