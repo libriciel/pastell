@@ -19,6 +19,8 @@
 - Faille XSS (CVSS 7.3 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:N) #2550
 - Faille de contrôle d'accès sur la gestion des utilisateurs
   (CVSS 8.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N) #2549
+- Absence de limitation des tentatives de connexion sur l'authentification LDAP
+  (CVSS 6.5 - criticité MOYENNE - CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:L) #2552
 
 # [4.1.21] - 2026-08-03
 
