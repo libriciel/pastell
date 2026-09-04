@@ -4,6 +4,11 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         bootstrap="test/PHPUnit/init.php"
         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+        displayDetailsOnTestsThatTriggerDeprecations="true"
+        displayDetailsOnPhpunitDeprecations="true"
+        displayDetailsOnTestsThatTriggerWarnings="true"
+        displayDetailsOnTestsThatTriggerNotices="true"
+        displayDetailsOnTestsThatTriggerErrors="true"
 >
     <php>
         <server name="KERNEL_CLASS" value="Pastell\Kernel"/>
