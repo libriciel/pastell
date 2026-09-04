@@ -1,10 +1,17 @@
 <?php
 
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+
 final class DepotCMISTest extends PastellTestCase
 {
     /**
+     * Guzzle 5 (pulled in by dkd/php-cmis) triggers PHP 8.1 deprecations when the client is built.
+     * Nothing can be done on our side until dkd/php-cmis is updated or replaced.
+     * https://packagist.org/packages/dkd/php-cmis
+     *
      * @throws Exception
      */
+    #[IgnoreDeprecations]
     public function testExtensionIsScoped(): void
     {
         $this->getObjectInstancier()->getInstance(Extensions::class)->autoloadExtensions();
@@ -12,13 +19,6 @@ final class DepotCMISTest extends PastellTestCase
         /** @var DepotCMIS $class */
         $class = $this->getConnecteurFactory()->getConnecteurById($connector['id_ce']);
 
-        /*
-         * FIXME : Guzzle5 émet un deprecated...
-         * La seule solution est d'attendre que la lib dkd/php-cmis soit mise à jour ou de passer à autre chose
-         * https://packagist.org/packages/dkd/php-cmis
-         */
-        @ $client = $class->getClient();
-
-        $this->assertInstanceOf(PastellExtension\PastellDepotCmis\GuzzleHttp\Client::class, $client);
+        $this->assertInstanceOf(PastellExtension\PastellDepotCmis\GuzzleHttp\Client::class, $class->getClient());
     }
 }

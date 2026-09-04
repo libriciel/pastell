@@ -30,7 +30,7 @@ class UserValidatorTest extends PastellTestCase
                 'mail@example.org',
                 'firstname',
                 'lastname',
-                $this->getObjectInstancier()->getInstance(TokenGenerator::class)->generate(),
+                (new TokenGenerator())->generate(),
                 0,
                 null
             )
@@ -40,7 +40,7 @@ class UserValidatorTest extends PastellTestCase
     /**
      * @throws Exception
      */
-    public function newUserProvider(): \Generator
+    public static function newUserProvider(): \Generator
     {
         yield 'empty login' => ['', 'mail', 'firstname', 'lastname', '', 0, null, 'Le login est obligatoire'];
         yield 'invalid mail' => [
@@ -90,7 +90,7 @@ class UserValidatorTest extends PastellTestCase
             'mail@example.org',
             'firstname',
             'lastname',
-            $this->getObjectInstancier()->getInstance(TokenGenerator::class)->generate(),
+            (new TokenGenerator())->generate(),
             0,
             null,
             'Un utilisateur avec le même login existe déjà.'
