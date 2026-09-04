@@ -6,9 +6,11 @@ include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
   - template: Security/Container-Scanning.gitlab-ci.yml
-  - component: $LIBRICIEL_CATALOG_PATH/qlty/code-quality@~latest
-    inputs:
-      mode: "changed"
+  # FIXME: disabled because the qlty code-quality job uses too much memory, gets OOM-killed
+  # by the runner and blocks the other jobs of the pipeline.
+#  - component: $LIBRICIEL_CATALOG_PATH/qlty/code-quality@~latest
+#    inputs:
+#      mode: "changed"
   - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.2.0
   - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@1.4.0
     inputs:

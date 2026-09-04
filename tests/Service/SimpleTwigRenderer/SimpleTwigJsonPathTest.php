@@ -18,6 +18,7 @@ final class SimpleTwigJsonPathTest extends PastellTestCase
 
     protected function setUp(): void
     {
+        \error_reporting(E_ALL);
         parent::setUp();
         $this->json_file = file_get_contents(__DIR__ . '/test.json');
         $this->method = SimpleTwigJsonPath::JSONPATH_FUNCTION;
