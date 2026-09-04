@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 
@@ -503,7 +504,7 @@ class UtilisateurAPIControllerTest extends PastellTestCase
      * @throws UnrecoverableException
      * @throws ConflictException
      */
-    public function testCreateTokenForOtherNotApiUser(): void
+    public function testCreateTokenForWebUser(): void
     {
         $classicUser = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create('other', 'other@example.org', 'Other', 'User');
@@ -563,6 +564,22 @@ class UtilisateurAPIControllerTest extends PastellTestCase
      * @throws UnrecoverableException
      * @throws ConflictException
      */
+    public function testRenewTokenForWebUser(): void
+    {
+        $classicUser = $this->createUnprivilegedUser();
+        $userTokenService = $this->getObjectInstancier()->getInstance(UserTokenService::class);
+        $token = $userTokenService->createToken($classicUser, 'token-for-other');
+        $tokenId = $userTokenService->getTokenInfo($token)['id'];
+
+        $this->expectException(ForbiddenException::class);
+        $this->expectExceptionMessage('Les jetons ne peuvent être créés que pour des utilisateurs de type API');
+        $this->getInternalAPI()->post("/utilisateur/$classicUser/token/$tokenId/renew");
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
     public function testRenewTokenForOtherWrongToken(): void
     {
         $apiUser = $this->createApiUser();
@@ -584,6 +601,22 @@ class UtilisateurAPIControllerTest extends PastellTestCase
 
         $this->getInternalAPI()->delete("/utilisateur/$apiUser/token/$tokenId");
         $this->expectOutputRegex('/HTTP\/1.1 204 No Content/');
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testDeleteTokenForWebUser(): void
+    {
+        $classicUser = $this->createUnprivilegedUser();
+        $userTokenService = $this->getObjectInstancier()->getInstance(UserTokenService::class);
+        $token = $userTokenService->createToken($classicUser, 'token-for-other');
+        $tokenId = $userTokenService->getTokenInfo($token)['id'];
+
+        $this->expectException(ForbiddenException::class);
+        $this->expectExceptionMessage('Les jetons ne peuvent être supprimés que pour des utilisateurs de type API');
+        $this->getInternalAPI()->delete("/utilisateur/$classicUser/token/$tokenId");
     }
 
     /**

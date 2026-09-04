@@ -324,6 +324,9 @@ class UtilisateurAPIController extends BaseAPIController
             $tokenId = $this->getFromQueryArgs(2);
             $infoUtilisateur = $this->utilisateur->getInfo($id_u);
             $this->checkDroitFor($infoUtilisateur['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
+            if (!$infoUtilisateur['is_api']) {
+                throw new ForbiddenException('Les jetons ne peuvent être supprimés que pour des utilisateurs de type API');
+            }
         } else {
             $tokenId = $this->getFromQueryArgs(1);
             $id_u = $this->getUtilisateurId();
