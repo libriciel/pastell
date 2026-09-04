@@ -154,6 +154,14 @@ final class MailsecManager
         return $this->objectInstancier->getInstance(OfficeClient::class);
     }
 
+    public function isFieldExposed(?\DonneesFormulaire $donneesFormulaire, string $field): bool
+    {
+        if ($donneesFormulaire === null || $field === '') {
+            return false;
+        }
+        return $donneesFormulaire->getFormulaire()->getField($field) !== false;
+    }
+
     private function getRecipientFlux(string $flux): string
     {
         $recipientFlux = $flux . '-destinataire';
