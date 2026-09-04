@@ -66,6 +66,29 @@ class Gabarit
         $this->render('module/select/TreeSelect');
     }
 
+    /**
+     * @param array<int|string, string> $options [valeur => libellé]
+     * @param array<int|string> $selectedValues
+     */
+    public function renderMultiSelect(
+        string $name,
+        array $options,
+        array $selectedValues = [],
+        string $placeholder = '',
+        bool $multiple = true,
+        string $cssClass = 'form-select col-md-8',
+    ): void {
+        $this->setParameters([
+            'multiselect_name' => $name,
+            'multiselect_options' => $options,
+            'multiselect_selected' => array_map('strval', $selectedValues),
+            'multiselect_placeholder' => $placeholder,
+            'multiselect_multiple' => $multiple,
+            'multiselect_css_class' => $cssClass,
+        ]);
+        $this->render('module/select/MultiSelect');
+    }
+
     public function templateExists($template)
     {
         return file_exists("{$this->template_path}/$template.php");

@@ -1,14 +1,15 @@
 <?php
 
-/** @var Gabarit $this */
-/** @var array $type_de_dossier_info */
-/** @var TypeDossierEtapeProperties $etapeInfo */
-/** @var TypeDossierFormulaireElementProperties[] $multi_file_field_list */
-/** @var TypeDossierFormulaireElementProperties[] $file_field_list */
-/** @var TypeDossierFormulaireElementProperties[] $text_field_list  */
-/** @var TypeDossierFormulaireElementProperties[] $textarea_field_list  */
-/** @var array $formulaire_etape */
-/** @var array $all_etape_type */
+/** @var Gabarit $this
+ * @var array $type_de_dossier_info
+ * @var TypeDossierEtapeProperties $etapeInfo
+ * @var TypeDossierFormulaireElementProperties[] $multi_file_field_list
+ * @var TypeDossierFormulaireElementProperties[] $file_field_list
+ * @var TypeDossierFormulaireElementProperties[] $text_field_list
+ * @var TypeDossierFormulaireElementProperties[] $textarea_field_list
+ * @var array $formulaire_etape
+ * @var array $all_etape_type
+ */
 
 use Pastell\Validator\ElementIdValidator;
 
@@ -102,20 +103,23 @@ use Pastell\Validator\ElementIdValidator;
                                     ><?php hecho($file_field_info->name) ?></option>
                                 <?php endforeach; ?>
                             </select>
+                        <?php elseif ($element_info['type'] == 'multi_file' && !empty($element_info['multiple'])) : ?>
+                            <?php $this->renderMultiSelect(
+                                $element_id,
+                                array_map(static fn ($file_field_info) => $file_field_info->name, $multi_file_field_list),
+                                (array)($etapeInfo->specific_type_info[$element_id] ?? []),
+                                'Sélectionner un ou plusieurs éléments',
+                            ); ?>
                         <?php elseif ($element_info['type'] == 'multi_file') : ?>
-                            <?php $is_multiple = !empty($element_info['multiple']); ?>
                             <?php $selected_list = array_map(
                                 'strval',
                                 (array)($etapeInfo->specific_type_info[$element_id] ?? [])
                             ); ?>
                             <select class="form-select col-md-8"
-                                    name='<?php hecho($element_id) ?><?php echo $is_multiple ? '[]' : '' ?>'
+                                    name='<?php hecho($element_id) ?>'
                                     id="<?php hecho($element_id) ?>"
-                                    <?php echo $is_multiple ? 'multiple="multiple"' : '' ?>
                             >
-                                <?php if (!$is_multiple) : ?>
-                                    <option value=""></option>
-                                <?php endif; ?>
+                                <option value=""></option>
                                 <?php foreach ($multi_file_field_list as $file_field_id => $file_field_info) : ?>
                                     <option value="<?php hecho($file_field_id) ?>"
                                         <?php echo in_array((string)$file_field_id, $selected_list, true)
