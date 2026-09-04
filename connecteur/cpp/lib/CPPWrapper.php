@@ -70,15 +70,20 @@ class CPPWrapper
 
     /**
      * @param CPPWrapperConfig $cppWrapperConfig
-     * @throws CPPException
      */
     public function setCppWrapperConfig(CPPWrapperConfig $cppWrapperConfig)
     {
         $this->cppWrapperConfig = $cppWrapperConfig;
+    }
 
+    /**
+     * @throws CPPException
+     */
+    private function checkPisteAuthConfig(): void
+    {
         if (
-                !($cppWrapperConfig->url_piste_get_token && $cppWrapperConfig->url_piste_api
-                && $cppWrapperConfig->client_id && $cppWrapperConfig->client_secret)
+                !($this->cppWrapperConfig->url_piste_get_token && $this->cppWrapperConfig->url_piste_api
+                && $this->cppWrapperConfig->client_id && $this->cppWrapperConfig->client_secret)
         ) {
             throw new CPPException(
                 "Il manque des éléments pour l'authentification PISTE, le connecteur global est-il bien associé ?"
@@ -174,9 +179,11 @@ class CPPWrapper
     /**
      * @return string
      * @throws CPPWrapperExceptionGetToken
+     * @throws CPPException
      */
     private function getToken(): string
     {
+        $this->checkPisteAuthConfig();
         $memory_key = $this->getCacheKey($this->cppWrapperConfig->client_id);
         $token = $this->memoryCache->fetch($memory_key);
         if ($token) {

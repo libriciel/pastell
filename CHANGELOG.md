@@ -11,6 +11,7 @@
 - Édition des droits d'un rôle : les droits inconnus ne bloquent plus la mise à jour #2532
 - Le type de dossier sélectionné était perdu en changeant d'entité depuis `Document/index` #2543
 - À chaque exécution de l'action import-facture, le fichier yml de l'instance du connecteur CPP était modifié #2544
+- Un connecteur CPP non configuré n'est plus masqué de la liste des associations de connecteurs globaux #2558
 
 ## Sécurité
 
