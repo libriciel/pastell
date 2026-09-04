@@ -21,6 +21,7 @@
   (CVSS 8.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N) #2549
 - Absence de limitation des tentatives de connexion sur l'authentification LDAP
   (CVSS 6.5 - criticité MOYENNE - CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:L) #2552
+- Faille d'exécution de code (CVSS 8.8 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H) #2556
 
 # [4.1.21] - 2026-08-03
 

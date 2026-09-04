@@ -18,6 +18,7 @@ final class SimpleTwigJsonPathTest extends PastellTestCase
 
     protected function setUp(): void
     {
+        \error_reporting(E_ALL);
         parent::setUp();
         $this->json_file = file_get_contents(__DIR__ . '/test.json');
         $this->method = SimpleTwigJsonPath::JSONPATH_FUNCTION;
@@ -64,7 +65,7 @@ final class SimpleTwigJsonPathTest extends PastellTestCase
         $this->expectException(UnrecoverableException::class);
         $this->expectExceptionMessage(
             //phpcs:ignore Generic.Files.LineLength.MaxExceeded
-            'Erreur sur le template {{ jsonpath(\'json\', \'$.phoneNumbers\') }} : An exception has been thrown during the rendering of a template ("Object of class Flow\JSONPath\JSONPath could not be converted to string")'
+            'Erreur sur le template {{ jsonpath(\'json\', \'$.phoneNumbers\') }} : An exception has been thrown during the rendering of a template ("Array to string conversion")'
         );
         $this->twigRenderer()->render($expression, $form);
     }
