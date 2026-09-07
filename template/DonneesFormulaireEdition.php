@@ -106,7 +106,7 @@ if ($donneesFormulaire->getFormulaire()->getNbPage() > 1) {
                         <textarea class='textarea_affiche_formulaire form-control col-md-12' rows='10' cols='40'
                                   id='<?php echo $field->getName(); ?>'
                                   name='<?php echo $field->getName() ?>' <?php echo $donneesFormulaire->isEditable($field->getName()) ?: "disabled='disabled'" ?>
-                        ><?php echo $this->donneesFormulaire->get($field->getName(), $field->getDefault()) ?></textarea>
+                        ><?php echo get_hecho($this->donneesFormulaire->get($field->getName(), $field->getDefault())) ?></textarea>
                     <?php elseif ($field->getType() == 'file') :?>
                             <?php if ($donneesFormulaire->isEditable($field->getName())) : ?>
                                 <?php if ($field->isMultiple()) : ?>

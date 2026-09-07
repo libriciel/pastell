@@ -2,7 +2,9 @@
 
 /**
  * @var Gabarit $this
+ * @var int $id_e
  * @var array $infoGroupe
+ * @var int $offset
  * @var int $nbUtilisateur
  * @var int $id_g
  * @var array $listUtilisateur
@@ -10,15 +12,23 @@
  * @var array $infoEntite
  */
 ?>
-<a class='btn btn-link' href='MailSec/groupeList?id_e=<?php echo $id_e ?>'><i class="fa fa-arrow-left"></i>&nbsp; Voir tous les groupes</a>
+
+<a
+    class='btn btn-link'
+    href='MailSec/groupeList?id_e=<?php echo $id_e ?>'
+><i class="fa fa-arrow-left"></i>&nbsp; Voir tous les groupes</a>
 
 <br/><br/>
 <div class="box">
 <h2>Liste des contacts de «<?php hecho($infoGroupe['nom']); ?>» </h2>
 
-<?php $this->SuivantPrecedent($offset, AnnuaireGroupeSQL::NB_MAX, $nbUtilisateur, "MailSec/groupe?id_e=$id_e&id_g=$id_g"); ?>
-
-
+    <?php
+    $this->suivantPrecedent(
+        $offset,
+        AnnuaireGroupeSQL::NB_MAX,
+        $nbUtilisateur,
+        "MailSec/groupe?id_e=$id_e&id_g=$id_g",
+    ); ?>
 
 <form action='MailSec/delContactFromGroupe' method='post' >
     <?php $this->displayCSRFInput() ?>
@@ -36,10 +46,12 @@
     <tr>
         <td>
             <input type='checkbox' name='id_a[]' value='<?php echo $utilisateur['id_a'] ?>'/>
-            <a href='MailSec/detail?id_a=<?php echo $utilisateur['id_a']?>&id_e=<?php echo $id_e?>'><?php hecho($utilisateur['description']); ?></a>
+            <a href='MailSec/detail?id_a=<?php echo $utilisateur['id_a']?>&id_e=<?php echo $id_e?>'>
+                <?php hecho($utilisateur['description']); ?>
+            </a>
         </td>
         <td>
-            <?php echo $utilisateur['email']?>
+            <?php hecho($utilisateur['email']); ?>
         </td>
     </tr>
 <?php endforeach;?>
@@ -82,29 +94,29 @@
 
 
 <div class="box">
-<h2>Partage</h2>
+    <h2>Partage</h2>
 
-<?php if ($infoGroupe['partage']) : ?>
-<div class='alert alert-info'>
-Ce groupe est actuellement partagé avec les entités-filles (services, collectivités) de <?php hecho($infoEntite['denomination']); ?> qui peuvent l'utiliser
-pour leur propre mail.
-</div>
-<form action='MailSec/partageGroupe' method='post' >
-    <?php $this->displayCSRFInput() ?>
-    <input type='hidden' name='id_e' value='<?php echo $id_e ?>' />
-    <input type='hidden' name='id_g' value='<?php echo $id_g ?>' />
-    <button type='submit' class='btn btn-danger'>Supprimer le partage</button>
-</form>
-<?php else :?>
-<div class='alert alert-info'>
-Cliquer pour partager ce groupe avec les entités filles de <?php hecho($infoEntite['denomination']); ?>.
-</div>
-    <form action='MailSec/partageGroupe' method='post' >
-        <?php $this->displayCSRFInput() ?>
-    <input type='hidden' name='id_e' value='<?php echo $id_e ?>' />
-    <input type='hidden' name='id_g' value='<?php echo $id_g ?>' />
-        <button type='submit' class='btn btn-primary'><i class="fa fa-globe"></i>&nbsp;Partager</button>
-</form>
-<?php endif;?>
+    <?php if ($infoGroupe['partage']) : ?>
+        <div class='alert alert-info'>
+            Ce groupe est actuellement partagé avec les entités-filles (services, collectivités) de
+            <?php hecho($infoEntite['denomination']); ?> qui peuvent l'utiliser pour leur propre mail.
+        </div>
+        <form action='MailSec/partageGroupe' method='post'>
+            <?php $this->displayCSRFInput() ?>
+            <input type='hidden' name='id_e' value='<?php echo $id_e ?>'/>
+            <input type='hidden' name='id_g' value='<?php echo $id_g ?>'/>
+            <button type='submit' class='btn btn-danger'>Supprimer le partage</button>
+        </form>
+    <?php else : ?>
+        <div class='alert alert-info'>
+            Cliquer pour partager ce groupe avec les entités filles de <?php hecho($infoEntite['denomination']); ?>.
+        </div>
+        <form action='MailSec/partageGroupe' method='post'>
+            <?php $this->displayCSRFInput() ?>
+            <input type='hidden' name='id_e' value='<?php echo $id_e ?>'/>
+            <input type='hidden' name='id_g' value='<?php echo $id_g ?>'/>
+            <button type='submit' class='btn btn-primary'><i class="fa fa-globe"></i>&nbsp;Partager</button>
+        </form>
+    <?php endif; ?>
 
 </div>

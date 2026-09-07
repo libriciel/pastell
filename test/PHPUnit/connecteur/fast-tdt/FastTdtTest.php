@@ -211,14 +211,20 @@ class FastTdtTest extends PastellTestCase
                 '999-1234----7-2_9.xml',
             ]);
 
+        $matcher = static::exactly(2);
         $webdavWrapper
-            ->expects($this->exactly(2))
+            ->expects($matcher)
             ->method('delete')
-            ->withConsecutive(
-                ['', '999-1234----7-2_1.xml'],
-                ['', '999-1234----7-2_9.xml']
-            )
-            ->willReturn(['statusCode' => 204]);
+            ->willReturnCallback(function ($arg1, $arg2) use ($matcher) {
+                match ($matcher->numberOfInvocations()) {
+                    1 => static::assertSame(['', '999-1234----7-2_1.xml'], [$arg1, $arg2]),
+                    2 => static::assertSame(['', '999-1234----7-2_9.xml'], [$arg1, $arg2]),
+                    default => throw new \UnexpectedValueException(
+                        'Unexpected invocation count: ' . $matcher->numberOfInvocations()
+                    ),
+                };
+                return ['statusCode' => 204];
+            });
 
         $soapClientFactory = $this->createMock(SoapClientFactory::class);
 

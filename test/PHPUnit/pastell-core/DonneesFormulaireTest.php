@@ -331,6 +331,14 @@ class DonneesFormulaireTest extends PastellTestCase
         $this->assertEquals("Ceci est un autre texte de défaut", $this->getDonneesFormulaire()->getWithDefault('test_default_onglet_2'));
     }
 
+    /**
+     * @throws Exception
+     */
+    public function testGetWithDefaultUnknownField(): void
+    {
+        static::assertFalse($this->getDonneesFormulaire()->getWithDefault('field_that_does_not_exist'));
+    }
+
     public function testEmptyForms(): void
     {
         $filepath = $this->getEmulatedDisk() . '/tmp/toto.yml';

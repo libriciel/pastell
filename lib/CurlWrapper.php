@@ -49,11 +49,6 @@ class CurlWrapper
         $this->setProperties(CURLOPT_MAXREDIRS, 5);
     }
 
-    public function __destruct()
-    {
-        $this->curlFunctions->curl_close($this->curlHandle);
-    }
-
     public function setProxy(string $http_proxy_url): void
     {
         $this->http_proxy_url = $http_proxy_url;

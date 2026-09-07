@@ -100,11 +100,12 @@ class DocumentControlerTest extends ControlerTestCase
     }
 
     /**
-     * @throws ForbiddenException
+     * @throws LastErrorException
+     * @throws LastMessageException
      * @throws NotFoundException
      * @throws UnrecoverableException
      */
-    public function testTextareaReadOnly()
+    public function testTextareaReadOnly(): void
     {
         $info = $this->createDocument('test');
 
@@ -113,18 +114,19 @@ class DocumentControlerTest extends ControlerTestCase
 
         $this->setGetInfo(['id_e' => 1,'id_d' => $info['id_d']]);
 
-        $this->setOutputCallback(function ($output) {
-            $this->assertDoesNotMatchRegularExpression(
-                "#<textarea(.*)name='test_textarea'(.*)</textarea>#s",
-                $output
-            );
-
-            $this->assertMatchesRegularExpression(
-                "#<textarea(.*)name='test_textarea_read_write'(.*)</textarea>#s",
-                $output
-            );
-        });
+        \ob_start();
         $documentControler->editionAction();
+        $output = ob_get_clean();
+
+        static::assertDoesNotMatchRegularExpression(
+            "#<textarea(.*)name='test_textarea'(.*)</textarea>#s",
+            $output
+        );
+
+        static::assertMatchesRegularExpression(
+            "#<textarea(.*)name='test_textarea_read_write'(.*)</textarea>#s",
+            $output
+        );
     }
 
     public function testListDocument(): void

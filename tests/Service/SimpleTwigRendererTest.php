@@ -4,6 +4,7 @@ namespace Pastell\Tests\Service;
 
 use DonneesFormulaireException;
 use Exception;
+use Generator;
 use NotFoundException;
 use Pastell\Service\SimpleTwigRenderer;
 use Pastell\Service\SimpleTwigRendererExemple;
@@ -16,80 +17,106 @@ class SimpleTwigRendererTest extends PastellTestCase
 {
     protected function setUp(): void
     {
+        \error_reporting(E_ALL);
         SimpleTwigRenderer\SimpleTwigXpathCommon::clearCache();
     }
 
-    public function renderDataProvider(): array
+    public function renderDataProvider(): Generator
     {
         $xpath = '//*[local-name()="ActeRecu"]/@*[local-name()="Date"]';
 
-        return [
-            ["",""],
-            ["constante","constante"],
-            ["Services d'aide et d'accompagnement à domicile (SAAD)","{{ variable }}"],
-            [
-                "Arrêté individuel Bond James (matricule 007)",
-                "Arrêté individuel {{ nom_agent }} {{ prenom_agent}} (matricule {{ matricule_agent }})",
-            ],
-            [
-                'foo 12 buz',
-                "foo {{ xpath('pes_aller','//EnTetePES/CodBud/@V') }} buz"
-            ],
-            'with_jsonpath' => [
+        yield ["",""];
+        yield ["constante","constante"];
+        yield ["Services d'aide et d'accompagnement à domicile (SAAD)","{{ variable }}"];
+        yield [
+            "Arrêté individuel Bond James (matricule 007)",
+            "Arrêté individuel {{ nom_agent }} {{ prenom_agent}} (matricule {{ matricule_agent }})",
+        ];
+        yield [
+            'foo 12 buz',
+            "foo {{ xpath('pes_aller','//EnTetePES/CodBud/@V') }} buz"
+        ];
+        yield 'with_jsonpath' => [
             'foo 19.95 buz',
-                "foo {{ jsonpath('test_json','$.store.bicycle.price') }} buz"
-            ],
-            [
-                '',"{{ not_existing_value }}"
-            ],
-            [
-                'foo  bar','foo {{ xpath("pes_aller","//NotExistingPath") }} bar'
-            ],
-            [
-                'foo  bar','foo {{ jsonpath("test_json","$.notExistingPath") }} bar'
-            ],
-            [
-                '','{{ jsonpath("not_existing_file","$.notExistingPath")}}'
-            ],
-            [
-                'Durand','{{ csvpath("test_csv_with_comma",1,1) }}'
-            ],
-            [
-                'Durand','{{ csvpath("test_csv_with_semicolon",1,1,";") }}'
-            ],
-            [
-                'Michel;Michele','{{ csvpath("test_csv_with_comma",0,3) }}'
-            ],
-            [
-                '','{{ csvpath("test_csv_with_comma",42,0) }}'
-            ],
-            [
-                '','{{ csvpath("test_csv_with_comma",0,42) }}'
-            ],
-            'csv_path_with_not_existing_file' => [
-                '','{{ csvpath("not_existing_file",1,2) }}'
-            ],
-            'csvpath_in_expression' => [
-                'true','{% if (csvpath("test_csv_with_semicolon",0,1,";")  == "Michel") %}true{% else %}false{% endif %}'
-            ],
-            'csvpath_in_false_expression' => [
-                'false','{% if (csvpath("test_csv_with_semicolon",0,1,";")  == "Jean-Pierre") %}true{% else %}false{% endif %}'
-            ],
-            'xpath_with_namespaces' => [
-                '2017-12-07',"{{ xpath( 'aractes' , '$xpath' ) }}"
-            ],
-            'xpath_without_namespaces' => [
-                '2017-12-27',"{{ xpath( 'aractes' , '/actes:ARActe/@actes:DateReception' ) }}"
-            ],
-            'xpath_array' => [
-                '3, 2',"{{ xpath_array( 'aractes' , '//*/@actes:CodeMatiere' ) | join(', ') }}"
-            ],
-            'ls_unique_filter' => [
-                '3, 1, 2',"{{ [ 3, 1, 2, 1, 3, 2] | ls_unique | join(', ') }}"
-            ],
-            'test_other_metadata' => [
-                'Eric Lyon',"{{ pa_user_name }} {{ pa_entity_name }}"
-            ]
+            "foo {{ jsonpath('test_json','$.store.bicycle.price') }} buz"
+        ];
+        yield 'jsonpath_array_of_scalars' => [
+            'Nigel Rees, Evelyn Waugh',
+            "{{ jsonpath_array('test_json', '$.store.book[:2].author')|join(', ') }}",
+        ];
+        // A JSON object is returned as a Flow\JSONPath\JSONPath instance: the sandbox must let us read its keys
+        yield 'jsonpath_object_dot_access' => [
+            'red',
+            "{{ jsonpath('test_json', '$.store.bicycle').color }}",
+        ];
+        yield 'jsonpath_object_bracket_access' => [
+            'red',
+            "{{ jsonpath('test_json', '$.store.bicycle')['color'] }}",
+        ];
+        yield 'jsonpath_array_of_objects_in_for_loop' => [
+            'Sayings of the Century;Sword of Honour;',
+            "{% for book in jsonpath_array('test_json', '$.store.book[:2]') %}{{ book.title }};{% endfor %}",
+        ];
+        yield 'jsonpath_array_of_objects_first' => [
+            'Nigel Rees',
+            "{{ jsonpath_array('test_json', '$.store.book[*]')|first.author }}",
+        ];
+        yield [
+            '',"{{ not_existing_value }}"
+        ];
+        yield [
+            'foo  bar','foo {{ xpath("pes_aller","//NotExistingPath") }} bar'
+        ];
+        yield [
+            'foo  bar','foo {{ jsonpath("test_json","$.notExistingPath") }} bar'
+        ];
+        yield [
+            '','{{ jsonpath("not_existing_file","$.notExistingPath")}}'
+        ];
+        yield [
+            'Durand','{{ csvpath("test_csv_with_comma",1,1) }}'
+        ];
+        yield [
+            'Durand','{{ csvpath("test_csv_with_semicolon",1,1,";") }}'
+        ];
+        yield [
+            'Michel;Michele','{{ csvpath("test_csv_with_comma",0,3) }}'
+        ];
+        yield [
+            '','{{ csvpath("test_csv_with_comma",42,0) }}'
+        ];
+        yield [
+            '','{{ csvpath("test_csv_with_comma",0,42) }}'
+        ];
+        yield 'csv_path_with_not_existing_file' => [
+            '','{{ csvpath("not_existing_file",1,2) }}'
+        ];
+        yield 'csvpath_in_expression' => [
+            'true','{% if (csvpath("test_csv_with_semicolon",0,1,";")  == "Michel") %}true{% else %}false{% endif %}'
+        ];
+        yield 'csvpath_in_false_expression' => [
+            'false','{% if (csvpath("test_csv_with_semicolon",0,1,";")  == "Jean-Pierre") %}true{% else %}false{% endif %}'
+        ];
+        yield 'xpath_with_namespaces' => [
+            '2017-12-07',"{{ xpath( 'aractes' , '$xpath' ) }}"
+        ];
+        yield 'xpath_without_namespaces' => [
+            '2017-12-27',"{{ xpath( 'aractes' , '/actes:ARActe/@actes:DateReception' ) }}"
+        ];
+        yield 'xpath_array' => [
+            '3, 2',"{{ xpath_array( 'aractes' , '//*/@actes:CodeMatiere' ) | join(', ') }}"
+        ];
+        yield 'ls_unique_filter' => [
+            '3, 1, 2',"{{ [ 3, 1, 2, 1, 3, 2] | ls_unique | join(', ') }}"
+        ];
+        yield 'test_other_metadata' => [
+            'Eric Lyon',"{{ pa_user_name }} {{ pa_entity_name }}"
+        ];
+        yield 'tests_are_allowed' => [
+            'defined,empty,null,even,same,divisible,iterable,default',
+            "{{ nom_agent is defined ? 'defined' }},{{ '' is empty ? 'empty' }},{{ not_existing_value is null ? 'null' }},"
+            . "{{ 2 is even ? 'even' }},{{ 1 is same as(1) ? 'same' }},{{ 4 is divisible by(2) ? 'divisible' }},"
+            . "{{ [] is iterable ? 'iterable' }},{{ not_existing_value ?? 'default' }}",
         ];
     }
 
@@ -186,7 +213,10 @@ Message d\'erreur : Unclosed "variable".<br />
         $simpleTwigRenderer = new SimpleTwigRenderer();
         $this->expectException(UnrecoverableException::class);
         $this->expectExceptionMessage('Erreur sur le template');
-        echo $simpleTwigRenderer->render("{{ range(0,jsonpath('fichier_json','$.Liste_sous_traitants.length')) }} ", $donneesFormulaire);
+        echo $simpleTwigRenderer->render(
+            "{{ range(0,jsonpath('fichier_json','$.Liste_sous_traitants.length')) }} ",
+            $donneesFormulaire
+        );
     }
 
     /**
@@ -268,16 +298,13 @@ Message d\'erreur : Unclosed "variable".<br />
         );
     }
 
-    public function exempleProvider(): array
+    public function exempleProvider(): Generator
     {
         $simpleTwigRendererExemple = new SimpleTwigRendererExemple();
-        return  array_map(
-            function ($a) {
-                    unset($a[1]);
-                    return $a;
-            },
-            $simpleTwigRendererExemple->getExemple()
-        );
+        foreach ($simpleTwigRendererExemple->getExemple() as $key => $exemple) {
+            unset($exemple[1]);
+            yield $key => $exemple;
+        }
     }
 
     /**
@@ -294,5 +321,106 @@ Message d\'erreur : Unclosed "variable".<br />
             $data[1],
             $simpleTwigRenderer->render($expression, $donneesFormulaire)
         );
+    }
+
+    public function forbiddenTemplateDataProvider(): Generator
+    {
+        yield 'read_a_php_constant' => [
+            'Function "constant" is not allowed',
+            "{{ constant('BD_PASS') }}",
+        ];
+        yield 'read_a_file_with_a_php_callable_in_map' => [
+            'must be a Closure in sandbox mode',
+            "{{ ['/etc/passwd']|map('file_get_contents')|join }}",
+        ];
+        yield 'call_a_php_callable_through_call_user_func_in_map' => [
+            'must be a Closure in sandbox mode',
+            '{{ {"/etc/passwd":"file_get_contents"}|map("call_user_func")|join }}',
+        ];
+        yield 'read_a_file_with_a_php_callable_in_filter' => [
+            'must be a Closure in sandbox mode',
+            "{{ ['/etc/passwd']|filter('file_get_contents')|join }}",
+        ];
+        yield 'write_a_file_with_a_php_callable_in_sort' => [
+            'must be a Closure in sandbox mode',
+            "{{ ['/tmp/pastell-sandbox-escape', 'pwned']|sort('file_put_contents')|join }}",
+        ];
+        yield 'read_a_file_with_the_source_function' => [
+            'Function "source" is not allowed',
+            "{{ source('/etc/passwd') }}",
+        ];
+        yield 'read_a_file_with_the_include_function' => [
+            'Function "include" is not allowed',
+            "{{ include('/etc/passwd') }}",
+        ];
+        yield 'read_a_file_with_the_include_tag' => [
+            'Tag "include" is not allowed',
+            "{% include '/etc/passwd' %}",
+        ];
+        yield 'call_a_php_callable_with_the_invoke_filter' => [
+            'Filter "invoke" is not allowed',
+            "{{ 'file_get_contents'|invoke('/etc/passwd') }}",
+        ];
+        yield 'read_a_php_enum' => [
+            'Function "enum" is not allowed',
+            "{{ enum('Pastell\\\\Seda\\\\SedaVersion').cases()|join }}",
+        ];
+        yield 'guess_a_php_constant_with_the_constant_test' => [
+            'Test "constant" is not allowed',
+            "{{ 'pastell' is constant('BD_PASS') ? 'yes' : 'no' }}",
+        ];
+        yield 'extend_a_template' => [
+            'Tag "extends" is not allowed',
+            "{% extends '/etc/passwd' %}",
+        ];
+        // The "use" tag resolves its template while parsing, so the empty loader refuses it before the sandbox does
+        yield 'use_a_template' => [
+            'Template "/etc/passwd" is not defined',
+            "{% use '/etc/passwd' %}",
+        ];
+    }
+
+    /**
+     * @dataProvider forbiddenTemplateDataProvider
+     * @throws DonneesFormulaireException
+     */
+    public function testRenderWithAForbiddenExpression(string $expected_message, string $template): void
+    {
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
+
+        $simpleTwigRenderer = new SimpleTwigRenderer();
+        $this->expectException(UnrecoverableException::class);
+        $this->expectExceptionMessage($expected_message);
+        $simpleTwigRenderer->render($template, $donneesFormulaire);
+    }
+
+    /**
+     * SimpleXMLElement::asXML() writes the file it is given: only the string conversion of the nodes returned by
+     * xpath() is allowed.
+     * @throws DonneesFormulaireException
+     */
+    public function testRenderCanNotCallAMethodOnAnXMLNode(): void
+    {
+        $written_file = '/tmp/pastell-sandbox-escape.xml';
+        $this->assertFileDoesNotExist($written_file);
+
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
+        $donneesFormulaire->addFileFromCopy(
+            'aractes',
+            'aractes.xml',
+            __DIR__ . '/fixtures/aractes.xml'
+        );
+
+        $simpleTwigRenderer = new SimpleTwigRenderer();
+        try {
+            $simpleTwigRenderer->render(
+                "{{ xpath_array('aractes', '//*/@actes:CodeMatiere')|first.asXML('$written_file') }}",
+                $donneesFormulaire
+            );
+            $this->fail('The asXML() method should not be allowed');
+        } catch (UnrecoverableException $e) {
+            $this->assertStringContainsString('"asxml" method on a "SimpleXMLElement" object is not allowed', $e->getMessage());
+        }
+        $this->assertFileDoesNotExist($written_file);
     }
 }

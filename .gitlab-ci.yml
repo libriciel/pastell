@@ -1,9 +1,13 @@
 include:
-  - template: Code-Quality.gitlab-ci.yml
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
   - template: Security/Container-Scanning.gitlab-ci.yml
+  # FIXME: disabled because the qlty code-quality job uses too much memory, gets OOM-killed
+  # by the runner and blocks the other jobs of the pipeline.
+#  - component: $LIBRICIEL_CATALOG_PATH/qlty/code-quality@~latest
+#    inputs:
+#      mode: "changed"
   - component: $LIBRICIEL_CATALOG_PATH/renovate-runner/runner@1.6.0
   - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.2.0
   - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@1.4.0
@@ -254,10 +258,6 @@ publish-compose:
     COMPOSE_FILE_NAME: compose.yaml
   before_script:
     - sed -i "s/canary/${CI_COMMIT_REF_NAME}/" docker/compose.yaml
-
-code_quality:
-  tags:
-    - cq-sans-dind
 
 container_scanning:
   variables:

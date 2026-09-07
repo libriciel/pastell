@@ -182,9 +182,13 @@ class UtilisateurAPIController extends BaseAPIController
 
         $infoUtilisateurExistant = $this->utilisateur->getUserFromData($data);
 
-        $id_e = $this->getFromRequest('id_e', $infoUtilisateurExistant['id_e']);
+        $currentEntityId = (int)$infoUtilisateurExistant['id_e'];
+        $this->checkDroitFor($currentEntityId, DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
 
-        $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
+        $id_e = (int)$this->getFromRequest('id_e', $currentEntityId);
+        if ($id_e !== $currentEntityId) {
+            $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
+        }
 
         // Modification de l'utilisateur chargé avec les infos passées par l'API
         foreach ($data as $key => $newValeur) {
@@ -205,7 +209,7 @@ class UtilisateurAPIController extends BaseAPIController
             $email,
             $prenom,
             $nom,
-            (int)$id_e,
+            $id_e,
             $password,
         );
 
@@ -306,6 +310,9 @@ class UtilisateurAPIController extends BaseAPIController
             $tokenId = $this->getFromQueryArgs(2);
             $infoUtilisateur = $this->utilisateur->getInfo($id_u);
             $this->checkDroitFor($infoUtilisateur['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
+            if (!$infoUtilisateur['is_api']) {
+                throw new ForbiddenException('Les jetons ne peuvent être supprimés que pour des utilisateurs de type API');
+            }
         } else {
             $tokenId = $this->getFromQueryArgs(1);
             $id_u = $this->getUtilisateurId();

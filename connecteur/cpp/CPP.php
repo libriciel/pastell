@@ -93,6 +93,9 @@ class CPP extends PortailFactureConnecteur
 
     private function getNbJours(DonneesFormulaire $donneesFormulaire, string $field_name): ?int
     {
+        if (! $donneesFormulaire->fieldExists($field_name)) {
+            return null;
+        }
         $nb_jours = $donneesFormulaire->getWithDefault($field_name);
         return is_numeric($nb_jours) ? (int)$nb_jours : null;
     }

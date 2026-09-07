@@ -122,7 +122,7 @@ class FluxControler extends PastellControler
             foreach ($all_connecteur_type as $connecteur_type) {
                 try {
                     $global_connecteur = $this->getConnecteurFactory()->getGlobalConnecteur($connecteur_type);
-                } catch (Exception) {
+                } catch (Throwable $e) {
                     $global_connecteur =  false;
                 }
                 $all_type[$connecteur_type] = $global_connecteur;
