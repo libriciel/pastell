@@ -194,9 +194,6 @@ class LDAPVerification extends Connecteur
     }
 
     /**
-     * @param $login
-     * @param $password
-     * @return bool
      * @throws UnrecoverableException
      */
     public function verifLogin($login, $password): bool
@@ -204,12 +201,15 @@ class LDAPVerification extends Connecteur
         if (!$login) {
             return false;
         }
-        $ldap = $this->getConnexionObject();
-        $user_id = $this->getUserDN($login);
-        if (!@ $this->ldapWrapper->ldap_bind($ldap, $user_id, $password)) {
+        if (!\is_string($password) || $password === '') {
             return false;
         }
-        return true;
+        $user_id = $this->getUserDN($login);
+        if (empty($user_id)) {
+            return false;
+        }
+        $ldap = $this->getConnexionObject();
+        return @$this->ldapWrapper->ldap_bind($ldap, $user_id, $password);
     }
 
     /**

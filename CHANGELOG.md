@@ -1,8 +1,31 @@
 # [5.0.9] - 2026-09-07
 
+## Ajouts
+
+- Commande `app:database:foreign-key-check` : détecte et nettoie les clés étrangères orphelines dans la base de données #2540
+
 ## Corrections
 
+- Message d'erreur explicite en cas de zip malformé lors de la génération d'un bordereau SEDA #2539
+- Mise à jour du lien "Tester les expressions XPath" dans la documentation des expressions Twig #2532
+- Édition des droits d'un rôle : les droits inconnus ne bloquent plus la mise à jour #2532
+- Le type de dossier sélectionné était perdu en changeant d'entité depuis `Document/index` #2543
+- À chaque exécution de l'action import-facture, le fichier yml de l'instance du connecteur CPP était modifié #2544
+- Un connecteur CPP non configuré n'est plus masqué de la liste des associations de connecteurs globaux #2558
 - Le container `flow` ne démarrait plus #2545
+
+## Sécurité
+
+- Faille IDOR (CVSS 8.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N) #2551
+- Faille XSS (CVSS 7.3 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:N) #2550
+- Faille de contrôle d'accès sur la gestion des utilisateurs
+  (CVSS 8.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N) #2549
+- Absence de limitation des tentatives de connexion sur l'authentification LDAP
+  (CVSS 6.5 - criticité MOYENNE - CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:L) #2552
+- Faille d'exécution de code (CVSS 8.8 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H) #2556
+- Faille IDOR sur le mail sécurisé (CVSS 7.5 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N) #2553
+- Faille de contrôle d'accès sur la suppression des jetons des utilisateurs web
+  (CVSS 3.8 - criticité FAIBLE - CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:N/I:L/A:L) #2559
 
 # [5.0.8] - 2026-08-03
 
@@ -360,6 +383,10 @@
 
 # [4.1.22] - 2026-09-07
 
+## Ajouts
+
+- Commande `app:database:foreign-key-check` : détecte et nettoie les clés étrangères orphelines dans la base de données #2540
+
 ## Corrections
 
 - Message d'erreur explicite en cas de zip malformé lors de la génération d'un bordereau SEDA #2539
@@ -367,6 +394,20 @@
 - Édition des droits d'un rôle : les droits inconnus ne bloquent plus la mise à jour #2532
 - Le type de dossier sélectionné était perdu en changeant d'entité depuis `Document/index` #2543
 - À chaque exécution de l'action import-facture, le fichier yml de l'instance du connecteur CPP était modifié #2544
+- Un connecteur CPP non configuré n'est plus masqué de la liste des associations de connecteurs globaux #2558
+
+## Sécurité
+
+- Faille IDOR (CVSS 8.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N) #2551
+- Faille XSS (CVSS 7.3 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:N) #2550
+- Faille de contrôle d'accès sur la gestion des utilisateurs
+  (CVSS 8.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N) #2549
+- Absence de limitation des tentatives de connexion sur l'authentification LDAP
+  (CVSS 6.5 - criticité MOYENNE - CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:L) #2552
+- Faille d'exécution de code (CVSS 8.8 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H) #2556
+- Faille IDOR sur le mail sécurisé (CVSS 7.5 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N) #2553
+- Faille de contrôle d'accès sur la suppression des jetons des utilisateurs web
+  (CVSS 3.8 - criticité FAIBLE - CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:N/I:L/A:L) #2559
 
 # [4.1.21] - 2026-08-03
 

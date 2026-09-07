@@ -1,6 +1,6 @@
 <?php
 
-final class ExtensionTestActionTest extends \ActionExecutor
+final class ExtensionTestAction extends \ActionExecutor
 {
     public function go()
     {

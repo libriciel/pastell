@@ -70,6 +70,7 @@ class FakeIparapheur extends SignatureConnecteur
 
         $document = $this->getDocDonneesFormulaire();
         if ($document->get($this->signatureField)) {
+            $info['signature'] = false;
             $info['document_signe'] = [
                 'document' => $document->getFileContent($this->signatureField),
                 'nom_document' => $document->getFileName($this->signatureField)

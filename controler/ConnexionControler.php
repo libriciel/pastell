@@ -378,32 +378,32 @@ class ConnexionControler extends PastellControler
         }
         $verificationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur('Vérification');
 
+        $loginAttemptLimit = $this->getObjectInstancier()->getInstance(LoginAttemptLimit::class);
+        if ($loginAttemptLimit->getRateLimit($login)->getRemainingTokens() <= 0) {
+            $this->getLastError()->setLastError('Trop de tentatives de connexion, veuillez réessayer plus tard.');
+            $this->redirect($redirect_fail);
+        }
+
         if ($verificationConnecteur && $login !== 'admin') {
             /** @var LDAPVerification $verificationConnecteur */
             if (!$verificationConnecteur->verifLDAP($login)) {
+                $loginAttemptLimit->consumeLoginAttempt($login);
                 $this->getLastError()->setLastError(
                     "Vous ne pouvez pas vous connecter car vous êtes inconnu sur l'annuaire LDAP"
                 );
                 $this->redirect($redirect_fail);
             }
             if (!$verificationConnecteur->verifLogin($login, $password)) {
+                $loginAttemptLimit->consumeLoginAttempt($login);
                 $this->getLastError()->setLastError('Identifiant ou mot de passe incorrect. (LDAP)');
                 $this->redirect($redirect_fail);
             }
-        } else {
-            $loginAttemptLimit = $this->getObjectInstancier()->getInstance(LoginAttemptLimit::class);
-            $rateLimit = $loginAttemptLimit->getRateLimit($login);
-            if ($rateLimit->getRemainingTokens() <= 0) {
-                $this->getLastError()->setLastError('Trop de tentatives de connexion, veuillez réessayer plus tard.');
-                $this->redirect($redirect_fail);
-            }
-            if (!$this->getUtilisateur()->verifPassword($id_u, $password)) {
-                $loginAttemptLimit->consumeLoginAttempt($login);
-                $this->getLastError()->setLastError('Identifiant ou mot de passe incorrect.');
-                $this->redirect($redirect_fail);
-            }
-            $loginAttemptLimit->resetLoginAttempt($login);
+        } elseif (!$this->getUtilisateur()->verifPassword($id_u, $password)) {
+            $loginAttemptLimit->consumeLoginAttempt($login);
+            $this->getLastError()->setLastError('Identifiant ou mot de passe incorrect.');
+            $this->redirect($redirect_fail);
         }
+        $loginAttemptLimit->resetLoginAttempt($login);
 
         $this->getJournal()->setId($id_u);
         $infoUtilisateur = $this->getUtilisateur()->getInfo($id_u);
