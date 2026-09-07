@@ -185,7 +185,7 @@ services:
       - /var/lib/nginx/tmp:mode=770,uid=10001,gid=10001,rw,noexec,nosuid,nodev
 
   flow:
-    image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.6.0@sha256:08fe0f069ccfdff0d5110c4ae39191079f2e22b1e94ea195fce2f9afc699b3a4'
+    image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.7.0@sha256:731db41b3889113e65898d3f8afeed664bf8da92688c6afbbfb47dd956246995'
     restart: unless-stopped
     read_only: true
     cap_drop:
