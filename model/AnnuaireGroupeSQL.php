@@ -79,9 +79,10 @@ SQL;
     public function delete(int $id_e, int $id_g): void
     {
         $sql = <<<SQL
-DELETE FROM annuaire_groupe_contact WHERE id_g=?
+DELETE FROM annuaire_groupe_contact
+WHERE id_g = ? AND id_g IN (SELECT id_g FROM annuaire_groupe WHERE id_e = ?)
 SQL;
-        $this->query($sql, $id_g);
+        $this->query($sql, $id_g, $id_e);
         $sql = <<<SQL
 DELETE FROM annuaire_groupe WHERE id_e=? AND id_g=?
 SQL;

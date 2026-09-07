@@ -25,6 +25,7 @@
   - `DELETE /api/v2/annuaire/groupe/:id_g` : supprimer un groupe
   - `DELETE /api/v2/annuaire/groupe/:id_g/:id_a` : retirer un contact d'un groupe
 - Mise à jour de jQuery en version 4 et de select2 en version 4.1.0 #2461
+- Suppression en lot des contacts de l'annuaire #2367
 
 ## Évolutions
 
@@ -39,6 +40,7 @@
 - La page `Role/detail` affiche désormais les droits par catégorie. Une barre de recherche est également ajoutée #2483
 - Centralisation de l'envoi des notifications d'échec aux administrateurs de la plateforme via le service `AdminMailer`
   et la nouvelle exception `NotificationException` #2546
+- Amélioration de la navigation sur les pages d'administration de l'annuaire #2367
 - Studio, l'édition d'étape présente les champs multi-fichiers multiples sous forme de liste de sélection #2547
 
 ## Correction

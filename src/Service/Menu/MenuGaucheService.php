@@ -52,6 +52,8 @@ class MenuGaucheService
     public const string DOCUMENT_LIST = 'Document/list';
 
     public const string MAILSEC_ANNUAIRE = 'MailSec/annuaire';
+    public const string MAILSEC_GROUPES = 'MailSec/groupeList';
+    public const string MAILSEC_GROUPES_ROLES = 'MailSec/groupeRoleList';
 
 
     public function __construct(
@@ -173,15 +175,22 @@ class MenuGaucheService
             }
         }
 
-        $donnees_options = [];
+        $annuaire_options = [];
         if ($annuaire_lecture) {
-            $donnees_options[] = MenuGaucheOption::withParameters('Annuaire (mail sécurisé)', self::MAILSEC_ANNUAIRE, ['id_e' => $id_e]);
+            $annuaire_options = [
+                MenuGaucheOption::withParameters('Contacts', self::MAILSEC_ANNUAIRE, ['id_e' => $id_e]),
+                MenuGaucheOption::withParameters('Groupes', self::MAILSEC_GROUPES, ['id_e' => $id_e]),
+                MenuGaucheOption::withParameters('Groupes basés sur des roles', self::MAILSEC_GROUPES_ROLES, ['id_e' => $id_e]),
+            ];
         }
+
+        $donnees_options = [];
         $donnees_options[] = MenuGaucheOption::withParameters('Agents (Actes)', self::ENTITE_AGENTS, ['id_e' => $id_e]);
 
         return [
             'Administration' => $administration_options,
             'Tâches automatiques' => $daemon_options,
+            'Annuaire (mail sécurisé)' => $annuaire_options,
             'Données pour les types de dossier' => $donnees_options,
         ];
     }

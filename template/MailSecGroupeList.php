@@ -11,29 +11,43 @@
  */
 
 ?>
-<a class='btn btn-link'
-   href='MailSec/annuaire?id_e=<?php echo $id_e; ?>'
-><i class="fas fa-arrow-left"></i>&nbsp;Voir la liste des contacts</a>
-
 
 <div class="box">
+    <?php if ($annuaire_edition) : ?>
+        <a href="MailSec/groupeEdition?id_e=<?= $id_e?>"
+           class='btn btn-primary'
+        ><i class="fas fa-plus-circle"></i>&nbsp;Ajouter</a>
+    <?php endif;?>
     <h2>Liste des groupes de contacts de <?php hecho($infoEntite['denomination']); ?></h2>
 
-    <form action='MailSec/delGroupe' method='post'>
+    <?php if ($annuaire_edition) : ?>
+        <button type='submit' form='form-suppression-groupes' class='btn btn-danger' id='btn-suppression-groupes-top' disabled>
+            <i class='fa fa-trash'></i>&nbsp;Supprimer la sélection
+        </button>
+    <?php endif;?>
+    <form action='MailSec/groupeSuppression' method='post' id='form-suppression-groupes'>
         <?php $this->displayCSRFInput(); ?>
         <input type='hidden' name='id_e' value='<?php echo $id_e; ?>'/>
 
         <table class="table table-striped">
+            <thead>
             <tr>
+                <?php if ($annuaire_edition) : ?>
+                    <th><input type='checkbox' id='select-all-groupes' title='Tout sélectionner'/></th>
+                <?php endif; ?>
                 <th>Nom</th>
                 <th>Contact</th>
                 <th>Partagé ?</th>
             </tr>
+            </thead>
+            <tbody>
             <?php foreach ($listGroupe as $groupe) : ?>
                 <tr>
+                    <?php if ($annuaire_edition) : ?>
+                        <td><input type='checkbox' name='id_g[]' value='<?php echo $groupe['id_g']; ?>' class='groupes-checkbox'/></td>
+                    <?php endif; ?>
                     <td>
-                        <input type='checkbox' name='id_g[]' value='<?php echo $groupe['id_g']; ?>'/>
-                        <a href='MailSec/groupe?id_e=<?php echo $id_e; ?>&id_g=<?php echo $groupe['id_g']; ?>'
+                        <a href='MailSec/groupeDetail?id_e=<?php echo $id_e; ?>&id_g=<?php echo $groupe['id_g']; ?>'
                         ><?php hecho($groupe['nom']); ?></a>
                     </td>
                     <td>
@@ -41,7 +55,7 @@
                             <?php echo $groupe['contactsInfo']['contacts']; ?>
                             <?php if ($groupe['contactsInfo']['nb_contacts'] > 3) : ?>
                                 <br/> et <a
-                                    href='MailSec/groupe?id_e=<?php echo $id_e; ?>&id_g=<?php echo $groupe['id_g']; ?>'
+                                    href='MailSec/groupeDetail?id_e=<?php echo $id_e; ?>&id_g=<?php echo $groupe['id_g']; ?>'
                                 ><?php echo $groupe['contactsInfo']['nb_contacts'] - 3; ?> autres</a>
                             <?php endif; ?>
                         <?php else : ?>
@@ -53,39 +67,31 @@
                     </td>
                 </tr>
             <?php endforeach; ?>
-
+            </tbody>
         </table>
+
         <?php if ($annuaire_edition) : ?>
-            <button type="submit" class="btn btn-danger">
-                <i class="fas fa-trash"></i>&nbsp;Supprimer</button>
+            <button type='submit' class='btn btn-danger' id='btn-suppression-groupes-bottom' disabled>
+                <i class='fa fa-trash'></i>&nbsp;Supprimer la sélection
+            </button>
         <?php endif; ?>
 
     </form>
 </div>
 
 <?php if ($annuaire_edition) : ?>
-    <div class="box">
-        <h2>Créer un groupe</h2>
-        <form action='MailSec/addGroupe' method='post'>
-            <?php $this->displayCSRFInput(); ?>
-            <input type='hidden' name='id_e' value='<?php echo $id_e; ?>'/>
-
-            <table class='table table-striped'>
-
-                <tr>
-                    <th>Nom</th>
-                    <td>
-                        <input class="form-control col-md-4" type='text' name='nom'
-                               value='<?php echo $this->getLastError()->getLastInput('nom'); ?>'/>
-                    </td>
-                </tr>
-
-            </table>
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-plus"></i>&nbsp;Créer
-            </button>
-        </form>
-    </div>
+<script>
+    document.getElementById('select-all-groupes').addEventListener('change', function () {
+        document.querySelectorAll('.groupes-checkbox').forEach(cb => cb.checked = this.checked);
+        updateDeleteButton();
+    });
+    document.querySelectorAll('.groupes-checkbox').forEach(cb => cb.addEventListener('change', updateDeleteButton));
+    function updateDeleteButton() {
+        const anyChecked = document.querySelectorAll('.groupes-checkbox:checked').length > 0;
+        document.getElementById('btn-suppression-groupes-top').disabled = !anyChecked;
+        document.getElementById('btn-suppression-groupes-bottom').disabled = !anyChecked;
+    }
+</script>
 <?php endif; ?>
 
 <?php if ($groupe_herited) : ?>

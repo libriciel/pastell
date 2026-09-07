@@ -15,11 +15,11 @@ final class AnnuaireExportService
     ) {
     }
 
-    public function export(int $id_e): string
+    public function export(int $id_e, string $search = '', int $id_g = 0): string
     {
         $stream = fopen('php://temp', 'w');
 
-        foreach ($this->annuaireSQL->getUtilisateur($id_e) as $utilisateur) {
+        foreach ($this->annuaireSQL->getFilteredUtilisateur($id_e, $search, $id_g) as $utilisateur) {
             $line = [$utilisateur['email'], $utilisateur['description']];
             foreach ($this->annuaireGroupeSQL->getGroupeFromUtilisateur($utilisateur['id_a']) as $groupe) {
                 $line[] = $groupe['nom'];

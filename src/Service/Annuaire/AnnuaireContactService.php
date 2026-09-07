@@ -55,7 +55,7 @@ final class AnnuaireContactService
 
     public function delete(int $id_e, int $id_a): void
     {
-        $this->annuaireGroupeSQL->deleteAllGroupFromContact($id_a);
         $this->annuaireSQL->delete($id_e, $id_a);
+        $this->annuaireGroupeSQL->deleteAllGroupFromContact($id_a);
     }
 }

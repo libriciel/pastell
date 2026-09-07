@@ -15,41 +15,50 @@ class AnnuaireSQL extends SQL
 
     public function getUtilisateurList($id_e, $offset, $limit, $search, $id_g): array
     {
-        $sql = 'SELECT * FROM annuaire ';
-        if ($id_g) {
-            $sql .= ' JOIN annuaire_groupe_contact ON annuaire_groupe_contact.id_a=annuaire.id_a AND annuaire_groupe_contact.id_g=?';
-            $data[] = $id_g;
-        }
-        $sql .= ' WHERE annuaire.id_e=? ';
-        $data[] = $id_e;
+        $data = [];
+        $sql = 'SELECT * FROM annuaire '
+            . $this->buildFilterClause($id_e, $search, $id_g, $data)
+            . " ORDER BY description ASC LIMIT $offset,$limit";
 
-        if ($search) {
-            $sql .= ' AND (description LIKE ? OR email LIKE ? )';
-            $data[] = "%$search%";
-            $data[] = "%$search%";
-        }
+        return $this->query($sql, $data);
+    }
 
-        $sql .= " ORDER BY description ASC LIMIT $offset,$limit";
+    public function getFilteredUtilisateur($id_e, $search, $id_g): array
+    {
+        $data = [];
+        $sql = 'SELECT annuaire.* FROM annuaire '
+            . $this->buildFilterClause($id_e, $search, $id_g, $data)
+            . ' ORDER BY description ASC';
 
         return $this->query($sql, $data);
     }
 
     public function getNbUtilisateur($id_e, $search, $id_g)
     {
-        $sql = 'SELECT count(*) FROM annuaire ';
+        $data = [];
+        $sql = 'SELECT count(*) FROM annuaire '
+            . $this->buildFilterClause($id_e, $search, $id_g, $data);
+
+        return $this->queryOne($sql, $data);
+    }
+
+    private function buildFilterClause($id_e, $search, $id_g, array &$data): string
+    {
+        $sql = '';
         if ($id_g) {
             $sql .= ' JOIN annuaire_groupe_contact ON annuaire_groupe_contact.id_a=annuaire.id_a AND annuaire_groupe_contact.id_g=?';
             $data[] = $id_g;
         }
         $sql .= ' WHERE annuaire.id_e=? ';
         $data[] = $id_e;
+
         if ($search) {
             $sql .= ' AND (description LIKE ? OR email LIKE ? )';
             $data[] = "%$search%";
             $data[] = "%$search%";
         }
 
-        return $this->queryOne($sql, $data);
+        return $sql;
     }
 
     public function getFromEmail($id_e, $email)

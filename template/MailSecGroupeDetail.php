@@ -5,9 +5,12 @@
  * @var array $infoGroupe
  * @var int $nbUtilisateur
  * @var int $id_g
+ * @var int $id_e
+ * @var int $offset
  * @var array $listUtilisateur
  * @var bool $annuaire_edition
  * @var array $infoEntite
+ * @var int $nb_max
  */
 ?>
 <a class='btn btn-link' href='MailSec/groupeList?id_e=<?php echo $id_e ?>'><i class="fas fa-arrow-left"></i>&nbsp; Voir tous les groupes</a>
@@ -16,41 +19,68 @@
 <div class="box">
 <h2>Liste des contacts de «<?php hecho($infoGroupe['nom']); ?>» </h2>
 
-<?php $this->SuivantPrecedent($offset, AnnuaireGroupeSQL::NB_MAX, $nbUtilisateur, "MailSec/groupe?id_e=$id_e&id_g=$id_g"); ?>
+<?php $this->suivantPrecedent($offset, $nb_max, $nbUtilisateur, "MailSec/groupeDetail?id_e=$id_e&id_g=$id_g"); ?>
 
-
-
-<form action='MailSec/delContactFromGroupe' method='post' >
+<form action='MailSec/groupeRetrait' method='post' id='form-suppression-groupe'>
     <?php $this->displayCSRFInput() ?>
     <input type='hidden' name='id_e' value='<?php echo $id_e ?>' />
     <input type='hidden' name='id_g' value='<?php echo $id_g ?>' />
 
-<table  class="table table-striped">
-    <tr>
+    <?php if ($annuaire_edition) : ?>
+        <button type='submit' class='btn btn-danger' id='btn-suppression-groupe-top' disabled>
+            <i class='fa fa-trash'></i>&nbsp;Retirer du groupe
+        </button>
+    <?php endif; ?>
 
-        <th>Description</th>
-        <th>Email</th>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <?php if ($annuaire_edition) : ?>
+                <th><input type='checkbox' id='select-all-groupe' title='Tout sélectionner'/></th>
+            <?php endif; ?>
+            <th>Description</th>
+            <th>Email</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($listUtilisateur as $utilisateur) : ?>
+            <tr>
+                <?php if ($annuaire_edition) : ?>
+                    <td><input type='checkbox' name='id_a[]' value='<?php echo $utilisateur['id_a'] ?>' class='groupe-checkbox'/></td>
+                <?php endif; ?>
+                <td>
+                    <a href='MailSec/contactDetail?id_a=<?php echo $utilisateur['id_a'] ?>&id_e=<?php echo $id_e ?>'><?php hecho($utilisateur['description']); ?></a>
+                </td>
+                <td><?php hecho($utilisateur['email']) ?></td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
 
-    </tr>
-<?php foreach ($listUtilisateur as $utilisateur) : ?>
-    <tr>
-        <td>
-            <input type='checkbox' name='id_a[]' value='<?php echo $utilisateur['id_a'] ?>'/>
-            <a href='MailSec/detail?id_a=<?php echo $utilisateur['id_a']?>&id_e=<?php echo $id_e?>'><?php hecho($utilisateur['description']); ?></a>
-        </td>
-        <td>
-            <?php echo $utilisateur['email']?>
-        </td>
-    </tr>
-<?php endforeach;?>
+    <?php $this->suivantPrecedent($offset, $nb_max, $nbUtilisateur, "MailSec/groupeDetail?id_e=$id_e&id_g=$id_g"); ?>
 
-</table>
-<?php if ($annuaire_edition) : ?>
-    <button type='submit' class='btn btn-danger'>Enlever du groupe</button>
-<?php endif; ?>
-
+    <?php if ($annuaire_edition) : ?>
+        <button type='submit' class='btn btn-danger' id='btn-suppression-groupe-bottom' disabled>
+            <i class='fa fa-trash'></i>&nbsp;Retirer du groupe
+        </button>
+    <?php endif; ?>
 </form>
 </div>
+
+<?php if ($annuaire_edition) : ?>
+<script>
+    document.getElementById('select-all-groupe').addEventListener('change', function () {
+        document.querySelectorAll('.groupe-checkbox').forEach(cb => cb.checked = this.checked);
+        updateDeleteButton();
+    });
+    document.querySelectorAll('.groupe-checkbox').forEach(cb => cb.addEventListener('change', updateDeleteButton));
+    function updateDeleteButton() {
+        const anyChecked = document.querySelectorAll('.groupe-checkbox:checked').length > 0;
+        document.getElementById('btn-suppression-groupe-top').disabled = !anyChecked;
+        document.getElementById('btn-suppression-groupe-bottom').disabled = !anyChecked;
+    }
+</script>
+<?php endif; ?>
 
 <?php if ($annuaire_edition) : ?>
 <div class="box">
