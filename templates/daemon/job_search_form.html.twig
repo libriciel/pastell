@@ -1,0 +1,80 @@
+<div class="box">
+    <h2>Recherche avancée</h2>
+    <form method="get" action="{{ path(search_action) }}" class="mb-0">
+        {% if id_e is defined %}
+            <input type="hidden" name="id_e" value="{{ id_e }}">
+        {% endif %}
+        <input type="hidden" name="filtre" value="{{ filtre|default('') }}">
+
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4 col-lg-2">
+                <label class="form-label" for="search-type">Type</label>
+                <select class="form-select" id="search-type" name="type">
+                    <option value="">Tous</option>
+                    {% for type_value, type_label in type_list %}
+                        <option value="{{ type_value }}"
+                            {{ search.type == type_value ? 'selected' : '' }}>{{ type_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label" for="search-job-status">État</label>
+                <select class="form-select" id="search-job-status" name="job_status">
+                    <option value="">Tous</option>
+                    {% for status in job_status_list %}
+                        <option value="{{ status.value }}"
+                            {{ search.job_status != '' and search.job_status == status.value ? 'selected' : '' }}>
+                            {{ status.label() }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-4 col-lg-2">
+                <label class="form-label" for="search-suspended">Suspendu</label>
+                <select class="form-select" id="search-suspended" name="suspended">
+                    <option value="">Indifférent</option>
+                    <option value="oui" {{ search.suspended == 'oui' ? 'selected' : '' }}>Oui</option>
+                    <option value="non" {{ search.suspended == 'non' ? 'selected' : '' }}>Non</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <label class="form-label" for="search-id-e">Entité</label>
+                <select class="form-select" id="search-id-e" name="search_id_e">
+                    <option value="">Toutes</option>
+                    {% for entite in entite_list %}
+                        <option value="{{ entite.id_e }}"
+                            {{ search.id_e != '' and search.id_e == entite.id_e ? 'selected' : '' }}>
+                            {{ entite.denomination }} ({{ entite.id_e }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-6 col-lg-2">
+                <label class="form-label" for="search-id-verrou">File d'attente</label>
+                <select class="form-select" id="search-id-verrou" name="id_verrou">
+                    <option value="">Toutes</option>
+                    <option value="{{ verrou_none_value }}"
+                        {{ search.id_verrou == verrou_none_value ? 'selected' : '' }}>(vide)</option>
+                    {% for verrou in verrou_list %}
+                        <option value="{{ verrou }}"
+                            {{ search.id_verrou == verrou ? 'selected' : '' }}>{{ verrou }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-magnifying-glass"></i>&nbsp;Rechercher
+                </button>
+                <a class="btn btn-secondary"
+                   href="{{ path(search_action, id_e is defined ? {'id_e': id_e, 'filtre': filtre|default('')} : {'filtre': filtre|default('')}) }}">
+                    Réinitialiser
+                </a>
+            </div>
+        </div>
+    </form>
+</div>

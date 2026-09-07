@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Logger;
+use Pastell\Configuration\JobStatus;
 use Pastell\Security\LibricielFeedbackReader;
 use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Droit\DroitType;
@@ -381,6 +382,49 @@ class PastellControler extends Controler
     public function getJobQueueSQL(): JobQueueSQL
     {
         return $this->getInstance(JobQueueSQL::class);
+    }
+
+    /**
+     * Reads the advanced job search criteria from the request. Values left empty
+     * are ignored downstream so each criterion is optional.
+     *
+     * @return array<string,string>
+     */
+    protected function getJobAdvancedFilters(Recuperateur $recuperateur): array
+    {
+        return [
+            'type' => $recuperateur->get('type', ''),
+            'job_status' => $recuperateur->get('job_status', ''),
+            'suspended' => $recuperateur->get('suspended', ''),
+            'id_e' => $recuperateur->get('search_id_e', ''),
+            'id_verrou' => $recuperateur->get('id_verrou', ''),
+        ];
+    }
+
+    /**
+     * Sets the view parameters required to render the advanced job search form.
+     *
+     * @param array<string,string> $advancedFilters current criteria values
+     * @param string $search_action route name the form submits to
+     * @param array<int,array{id_e:int,denomination:string}> $entite_list
+     * @param string[] $verrou_list
+     */
+    protected function setJobSearchViewParameters(
+        array $advancedFilters,
+        string $search_action,
+        array $entite_list,
+        array $verrou_list
+    ): void {
+        $this->setViewParameter('search', $advancedFilters);
+        $this->setViewParameter('search_action', $search_action);
+        $this->setViewParameter('job_status_list', JobStatus::cases());
+        $this->setViewParameter('type_list', [
+            Job::TYPE_DOCUMENT => 'Dossier',
+            Job::TYPE_CONNECTEUR => 'Connecteur',
+        ]);
+        $this->setViewParameter('entite_list', $entite_list);
+        $this->setViewParameter('verrou_list', $verrou_list);
+        $this->setViewParameter('verrou_none_value', JobQueueSQL::VERROU_NONE);
     }
 
     /**

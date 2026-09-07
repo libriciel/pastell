@@ -4,6 +4,13 @@ use Pastell\Configuration\JobStatus;
 
 class JobQueueSQL extends SQL
 {
+    /**
+     * Valeur sentinelle utilisée par la recherche avancée pour cibler les
+     * travaux sans file d'attente (id_verrou vide), la chaîne vide servant
+     * déjà à « toutes les files ».
+     */
+    public const VERROU_NONE = '__none__';
+
     public function __construct(
         SQLQuery $sqlQuery,
         private readonly WorkerSQL $workerSQL,
@@ -365,20 +372,22 @@ SQL;
     }
 
     /**
+     * @param array<string,mixed> $advancedFilters
      * @return Job[]
      */
     public function getFilteredJobList(
         int $limit = 20,
         int $offset = 0,
         string $filtre = '',
-        ?int $id_daemon = null
+        ?int $id_daemon = null,
+        array $advancedFilters = []
     ): array {
         if (!in_array($filtre, ['lock', 'actif', 'wait'])) {
             $filtre = '';
         }
 
-        $sql = 'SELECT *, job_queue.id_job as id_job 
-            FROM job_queue 
+        $sql = 'SELECT *, job_queue.id_job as id_job
+            FROM job_queue
             LEFT JOIN worker ON job_queue.id_job = worker.id_job
             WHERE 1=1';
 
@@ -401,20 +410,25 @@ SQL;
                 break;
         }
 
-        $sql .= " ORDER BY job_queue.job_status, job_queue.next_try 
+        $this->appendAdvancedFilters($advancedFilters, $sql, $params);
+
+        $sql .= " ORDER BY job_queue.job_status, job_queue.next_try
               LIMIT $offset, $limit";
 
         $result = $this->query($sql, $params);
         return $this->mapResultToJobList($result);
     }
 
-    public function getNbJob($filtre, ?int $id_daemon = null): int
+    /**
+     * @param array<string,mixed> $advancedFilters
+     */
+    public function getNbJob($filtre, ?int $id_daemon = null, array $advancedFilters = []): int
     {
         $sql = <<<SQL
 SELECT count(*)
 FROM job_queue
 LEFT JOIN worker ON job_queue.id_job = worker.id_job
-WHERE 1=1 
+WHERE 1=1
 SQL;
 
         $params = [];
@@ -433,6 +447,91 @@ SQL;
             $sql .= ' AND worker.termine = 0';
         }
 
+        $this->appendAdvancedFilters($advancedFilters, $sql, $params);
+
         return $this->queryOne($sql, $params);
+    }
+
+    /**
+     * Appends the advanced search criteria (type, job_status, suspended, id_e,
+     * id_verrou) to a job_queue query. Empty values are ignored so each
+     * criterion is optional.
+     *
+     * @param array<string,mixed> $filters
+     * @param array<int,mixed> $params
+     */
+    private function appendAdvancedFilters(array $filters, string &$sql, array &$params): void
+    {
+        if (isset($filters['type']) && $filters['type'] !== '') {
+            $sql .= ' AND job_queue.type = ?';
+            $params[] = (int)$filters['type'];
+        }
+        if (isset($filters['job_status']) && $filters['job_status'] !== '') {
+            $sql .= ' AND job_queue.job_status = ?';
+            $params[] = (int)$filters['job_status'];
+        }
+        if (isset($filters['suspended']) && $filters['suspended'] !== '') {
+            if ($filters['suspended'] === 'oui') {
+                $sql .= ' AND job_queue.job_status != 0';
+            } elseif ($filters['suspended'] === 'non') {
+                $sql .= ' AND job_queue.job_status = 0';
+            }
+        }
+        if (isset($filters['id_e']) && $filters['id_e'] !== '') {
+            $sql .= ' AND job_queue.id_e = ?';
+            $params[] = (int)$filters['id_e'];
+        }
+        if (isset($filters['id_verrou']) && $filters['id_verrou'] !== '') {
+            if ($filters['id_verrou'] === self::VERROU_NONE) {
+                $sql .= " AND job_queue.id_verrou = ''";
+            } else {
+                $sql .= ' AND job_queue.id_verrou = ?';
+                $params[] = $filters['id_verrou'];
+            }
+        }
+    }
+
+    /**
+     * Distinct queue identifiers (id_verrou) present in the job queue, used to
+     * populate the advanced search "File d'attente" dropdown.
+     *
+     * @return string[]
+     */
+    public function getDistinctVerrou(?int $id_daemon = null): array
+    {
+        $sql = "SELECT DISTINCT id_verrou FROM job_queue WHERE id_verrou != ''";
+        $params = [];
+        if ($id_daemon !== null) {
+            $sql .= ' AND id_daemon = ?';
+            $params[] = $id_daemon;
+        }
+        $sql .= ' ORDER BY id_verrou';
+        return array_column($this->query($sql, $params), 'id_verrou');
+    }
+
+    /**
+     * Distinct entities that own at least one job, with their denomination, used
+     * to populate the advanced search "Entité" dropdown.
+     *
+     * @return array<int,array{id_e:int,denomination:string}>
+     */
+    public function getDistinctEntiteWithJob(?int $id_daemon = null): array
+    {
+        $sql = 'SELECT DISTINCT id_e FROM job_queue';
+        $params = [];
+        if ($id_daemon !== null) {
+            $sql .= ' WHERE id_daemon = ?';
+            $params[] = $id_daemon;
+        }
+        $sql .= ' ORDER BY id_e';
+
+        $entite_list = [];
+        foreach ($this->query($sql, $params) as $row) {
+            $entite_list[] = [
+                'id_e' => (int)$row['id_e'],
+                'denomination' => $this->entiteSQL->getDenomination($row['id_e']),
+            ];
+        }
+        return $entite_list;
     }
 }

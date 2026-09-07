@@ -1,7 +1,18 @@
 {% extends 'base.html.twig' %}
 
 {% block main %}
-    {{ gabarit.SuivantPrecedent(offset,limit,count, path('app.legacy.daemon_job', {'filtre': filtre})) }}
+    {% include 'daemon/job_search_form.html.twig' %}
+
+    {% set pagination_params = {
+        'filtre': filtre,
+        'type': search.type,
+        'job_status': search.job_status,
+        'suspended': search.suspended,
+        'search_id_e': search.id_e,
+        'id_verrou': search.id_verrou
+    } %}
+
+    {{ gabarit.SuivantPrecedent(offset, limit, count, path('app.legacy.daemon_job', pagination_params)) }}
     {% include 'daemon/job_list.html.twig' %}
-    {{ gabarit.SuivantPrecedent(offset,limit,count, path('app.legacy.daemon_job', {'filtre': filtre})) }}
+    {{ gabarit.SuivantPrecedent(offset, limit, count, path('app.legacy.daemon_job', pagination_params)) }}
 {% endblock %}

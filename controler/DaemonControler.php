@@ -37,6 +37,12 @@ class DaemonControler extends PastellControler
     public function indexAction(): void
     {
         $this->indexData();
+        $this->setJobSearchViewParameters(
+            $this->getJobAdvancedFilters($this->getGetInfo()),
+            'app.legacy.daemon_index',
+            $this->getJobQueueSQL()->getDistinctEntiteWithJob(),
+            $this->getJobQueueSQL()->getDistinctVerrou()
+        );
         $this->setViewParameter('page_url', 'index');
         $this->setViewParameter('twigTemplate', 'daemon/index.html.twig');
         $this->setViewParameter('page_title', 'Gestionnaire de tâches');
@@ -87,7 +93,24 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('daemon_pid', $this->getDaemonManager()->getDaemonPID());
         $this->setViewParameter('sub_title', 'Liste de tous les travaux');
         $this->setViewParameter('return_url', urlencode('Daemon/index'));
-        $this->setViewParameter('job_list', $this->getJobQueueSQL()->getAllJobs());
+        $this->setViewParameter('filtre', '');
+
+        $advancedFilters = $this->getJobAdvancedFilters($this->getGetInfo());
+        $offset = $this->getGetInfo()->getInt('offset', 0);
+        $this->setViewParameter('search', $advancedFilters);
+        $this->setViewParameter('offset', $offset);
+        $this->setViewParameter('limit', self::NB_JOB_DISPLAYING);
+        $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob('', null, $advancedFilters));
+        $this->setViewParameter(
+            'job_list',
+            $this->getJobQueueSQL()->getFilteredJobList(
+                self::NB_JOB_DISPLAYING,
+                $offset,
+                '',
+                null,
+                $advancedFilters
+            )
+        );
     }
 
     /**
@@ -293,18 +316,28 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('limit', self::NB_JOB_DISPLAYING);
         $this->setViewParameter('filtre', $filtre);
 
+        $advancedFilters = $this->getJobAdvancedFilters($recuperateur);
+        $this->setJobSearchViewParameters(
+            $advancedFilters,
+            'app.legacy.daemon_job',
+            $this->getJobQueueSQL()->getDistinctEntiteWithJob(),
+            $this->getJobQueueSQL()->getDistinctVerrou()
+        );
+
         $this->setViewParameter(
             'return_url',
             "Daemon/job?filtre=$filtre&offset=" . $this->getViewParameterByKey('offset')
         );
 
-        $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob($filtre));
+        $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob($filtre, null, $advancedFilters));
         $this->setViewParameter(
             'job_list',
             $this->getJobQueueSQL()->getFilteredJobList(
                 $this->getViewParameterByKey('limit'),
                 $this->getViewParameterByKey('offset'),
-                $filtre
+                $filtre,
+                null,
+                $advancedFilters
             )
         );
 

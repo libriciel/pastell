@@ -844,6 +844,13 @@ class EntiteControler extends PastellControler
         $id_e = $recuperateur->getInt('id_e', 0);
 
         $this->daemonData();
+        $daemon = $this->resolveDaemonForEntity($this->getGetInfo()->getInt('id_e'));
+        $this->setJobSearchViewParameters(
+            $this->getJobAdvancedFilters($this->getGetInfo()),
+            'app.legacy.entite_daemon',
+            $this->getJobQueueSQL()->getDistinctEntiteWithJob($daemon->id_daemon),
+            $this->getJobQueueSQL()->getDistinctVerrou($daemon->id_daemon)
+        );
         $this->setViewParameter('page_url', 'index');
         $this->setViewParameter('twigTemplate', 'daemon/entity/index.html.twig');
         $this->setViewParameter('page_title', 'Gestionnaire de tâches local');
@@ -883,7 +890,15 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('job_stat_info', $this->getJobQueueSQL()->getStatInfoForDaemon($daemon->id_daemon));
         $this->setViewParameter('sub_title', 'Liste de tous les travaux');
         $this->setViewParameter('return_url', "Entite/daemon?id_e=$daemon->id_e");
-        $job_list = $this->getJobQueueSQL()->getJobsByDaemon($daemon->id_daemon, 20, 0);
+        $this->setViewParameter('filtre', '');
+
+        $advancedFilters = $this->getJobAdvancedFilters($recuperateur);
+        $offset = $recuperateur->getInt('offset', 0);
+        $this->setViewParameter('search', $advancedFilters);
+        $this->setViewParameter('offset', $offset);
+        $this->setViewParameter('limit', 20);
+        $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob('', $daemon->id_daemon, $advancedFilters));
+        $job_list = $this->getJobQueueSQL()->getFilteredJobList(20, $offset, '', $daemon->id_daemon, $advancedFilters);
         $this->setViewParameter('job_list', $job_list);
         $this->setViewParameter('daemon', $daemon);
     }
@@ -958,14 +973,23 @@ class EntiteControler extends PastellControler
             "Entite/job?filtre=$filtre&offset=" . $this->getViewParameterByKey('offset') . "&id_e=$id_e"
         );
 
-        $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob($filtre, $daemon->id_daemon));
+        $advancedFilters = $this->getJobAdvancedFilters($recuperateur);
+        $this->setJobSearchViewParameters(
+            $advancedFilters,
+            'app.legacy.entite_job',
+            $this->getJobQueueSQL()->getDistinctEntiteWithJob($daemon->id_daemon),
+            $this->getJobQueueSQL()->getDistinctVerrou($daemon->id_daemon)
+        );
+
+        $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob($filtre, $daemon->id_daemon, $advancedFilters));
         $this->setViewParameter(
             'job_list',
             $this->getJobQueueSQL()->getFilteredJobList(
                 $this->getViewParameterByKey('limit'),
                 $this->getViewParameterByKey('offset'),
                 $filtre,
-                $daemon->id_daemon
+                $daemon->id_daemon,
+                $advancedFilters
             )
         );
 
