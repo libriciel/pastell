@@ -85,6 +85,40 @@ class EntityUtilitiesServiceTest extends PastellTestCase
         static::assertSame($expected, $this->service->buildEntityTreeselectOptions($flatList));
     }
 
+    public function testBuildEntitySubtreeTreeselectOptionsKeepsOnlyRootAndDescendants(): void
+    {
+        $flatList = [
+            ['id_e' => 1, 'denomination' => 'Racine', 'profondeur' => 0],
+            ['id_e' => 2, 'denomination' => 'Entité courante', 'profondeur' => 1],
+            ['id_e' => 3, 'denomination' => 'Fille', 'profondeur' => 2],
+            ['id_e' => 4, 'denomination' => 'Autre branche', 'profondeur' => 1],
+        ];
+
+        $expected = [
+            [
+                'name' => 'Entité courante',
+                'value' => '2',
+                'children' => [
+                    ['name' => 'Fille', 'value' => '3'],
+                ],
+            ],
+        ];
+
+        static::assertSame(
+            $expected,
+            $this->service->buildEntitySubtreeTreeselectOptions($flatList, 2)
+        );
+    }
+
+    public function testBuildEntitySubtreeTreeselectOptionsReturnsEmptyWhenRootNotFound(): void
+    {
+        $flatList = [
+            ['id_e' => 1, 'denomination' => 'Racine', 'profondeur' => 0],
+        ];
+
+        static::assertSame([], $this->service->buildEntitySubtreeTreeselectOptions($flatList, 99));
+    }
+
     public function testAddDenominationForEntiteRacine(): void
     {
         $connecteurInfo = $this->getObjectInstancier()->getInstance(FluxEntiteSQL::class)

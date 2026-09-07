@@ -40,7 +40,6 @@ class DaemonControler extends PastellControler
         $this->setJobSearchViewParameters(
             $this->getJobAdvancedFilters($this->getGetInfo()),
             'app.legacy.daemon_index',
-            $this->getJobQueueSQL()->getDistinctEntiteWithJob(),
             $this->getJobQueueSQL()->getDistinctVerrou()
         );
         $this->setViewParameter('page_url', 'index');
@@ -320,7 +319,6 @@ class DaemonControler extends PastellControler
         $this->setJobSearchViewParameters(
             $advancedFilters,
             'app.legacy.daemon_job',
-            $this->getJobQueueSQL()->getDistinctEntiteWithJob(),
             $this->getJobQueueSQL()->getDistinctVerrou()
         );
 

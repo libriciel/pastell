@@ -42,15 +42,9 @@
 
             <div class="col-md-6 col-lg-3">
                 <label class="form-label" for="search-id-e">Entité</label>
-                <select class="form-select" id="search-id-e" name="search_id_e">
-                    <option value="">Toutes</option>
-                    {% for entite in entite_list %}
-                        <option value="{{ entite.id_e }}"
-                            {{ search.id_e != '' and search.id_e == entite.id_e ? 'selected' : '' }}>
-                            {{ entite.denomination }} ({{ entite.id_e }})
-                        </option>
-                    {% endfor %}
-                </select>
+                <input type="hidden" id="search-id-e" name="search_id_e" value="{{ search.id_e }}">
+                <div class="treeselect-job-search-entity"></div>
+                <script type="application/json" class="treeselect-config">{{ entity_treeselect_config|raw }}</script>
             </div>
 
             <div class="col-md-6 col-lg-2">

@@ -508,30 +508,4 @@ SQL;
         $sql .= ' ORDER BY id_verrou';
         return array_column($this->query($sql, $params), 'id_verrou');
     }
-
-    /**
-     * Distinct entities that own at least one job, with their denomination, used
-     * to populate the advanced search "Entité" dropdown.
-     *
-     * @return array<int,array{id_e:int,denomination:string}>
-     */
-    public function getDistinctEntiteWithJob(?int $id_daemon = null): array
-    {
-        $sql = 'SELECT DISTINCT id_e FROM job_queue';
-        $params = [];
-        if ($id_daemon !== null) {
-            $sql .= ' WHERE id_daemon = ?';
-            $params[] = $id_daemon;
-        }
-        $sql .= ' ORDER BY id_e';
-
-        $entite_list = [];
-        foreach ($this->query($sql, $params) as $row) {
-            $entite_list[] = [
-                'id_e' => (int)$row['id_e'],
-                'denomination' => $this->entiteSQL->getDenomination($row['id_e']),
-            ];
-        }
-        return $entite_list;
-    }
 }

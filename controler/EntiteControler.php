@@ -848,8 +848,8 @@ class EntiteControler extends PastellControler
         $this->setJobSearchViewParameters(
             $this->getJobAdvancedFilters($this->getGetInfo()),
             'app.legacy.entite_daemon',
-            $this->getJobQueueSQL()->getDistinctEntiteWithJob($daemon->id_daemon),
-            $this->getJobQueueSQL()->getDistinctVerrou($daemon->id_daemon)
+            $this->getJobQueueSQL()->getDistinctVerrou($daemon->id_daemon),
+            $this->getGetInfo()->getInt('id_e')
         );
         $this->setViewParameter('page_url', 'index');
         $this->setViewParameter('twigTemplate', 'daemon/entity/index.html.twig');
@@ -977,8 +977,8 @@ class EntiteControler extends PastellControler
         $this->setJobSearchViewParameters(
             $advancedFilters,
             'app.legacy.entite_job',
-            $this->getJobQueueSQL()->getDistinctEntiteWithJob($daemon->id_daemon),
-            $this->getJobQueueSQL()->getDistinctVerrou($daemon->id_daemon)
+            $this->getJobQueueSQL()->getDistinctVerrou($daemon->id_daemon),
+            $id_e
         );
 
         $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob($filtre, $daemon->id_daemon, $advancedFilters));
