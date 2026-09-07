@@ -19,11 +19,18 @@ class ConnecteurFileTest extends PastellTestCase
      */
     public static function filesEntitiesProvider(): Generator
     {
-        $pattern = '/{,extensions/*/build/}connecteur/*/{'
-            . ConnecteurDefinitionFiles::ENTITE_PROPERTIES_FILENAME . ','
-            . ConnecteurDefinitionFiles::GLOBAL_PROPERTIES_FILENAME . '}';
-        foreach (glob(PASTELL_PATH . $pattern, GLOB_BRACE) as $filePath) {
-            yield basename(dirname($filePath)) . '/' . basename($filePath) => [$filePath];
+        // GLOB_BRACE is not available on musl-based systems (Alpine), so patterns are expanded manually.
+        $directories = ['/connecteur/*/', '/extensions/*/build/connecteur/*/'];
+        $filenames = [
+            ConnecteurDefinitionFiles::ENTITE_PROPERTIES_FILENAME,
+            ConnecteurDefinitionFiles::GLOBAL_PROPERTIES_FILENAME,
+        ];
+        foreach ($directories as $directory) {
+            foreach ($filenames as $filename) {
+                foreach (glob(PASTELL_PATH . $directory . $filename) ?: [] as $filePath) {
+                    yield basename(dirname($filePath)) . '/' . basename($filePath) => [$filePath];
+                }
+            }
         }
     }
 }

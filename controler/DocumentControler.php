@@ -194,7 +194,7 @@ class DocumentControler extends PastellControler
         $this->setViewParameter(
             'job_list',
             $this->hasDroitFor($id_e, DroitService::DROIT_DAEMON, DroitType::LECTURE) ?
-                $this->getWorkerSQL()->getJobsForDocument($id_d) :
+                $this->getJobQueueSQL()->getJobsForDocument($id_d) :
                 false
         );
         $this->setViewParameter('return_url', urlencode("Document/detail?id_e=$id_e&id_d=$id_d"));

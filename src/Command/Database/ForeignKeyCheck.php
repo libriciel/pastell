@@ -33,10 +33,6 @@ class ForeignKeyCheck extends BaseCommand
             'id_e' => ['entite', 'id_e'],
             'role' => ['role', 'role'],
         ],
-        'collectivite_fournisseur' => [
-            'id_e_col' => ['entite', 'id_e'],
-            'id_e_fournisseur' => ['entite', 'id_e'],
-        ],
         'connecteur_action' => [
             'id_e' => ['entite', 'id_e'],
             'id_u' => ['utilisateur', 'id_u'],

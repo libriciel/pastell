@@ -103,7 +103,7 @@ unit_test:
       GIT_STRATEGY: none
       COMPOSER_PROCESS_TIMEOUT: 1200
     services:
-        - name: hubdocker.libriciel.fr/mariadb:11.4.12-noble
+        - name: hubdocker.libriciel.fr/mariadb:11.4.13-noble
           alias: mariadb
     script:
         - cd /app
@@ -140,9 +140,9 @@ acceptance_test:
         FF_NETWORK_PER_BUILD: "true"
         DONT_INIT_DATABASE: "true"
     services:
-        - name: hubdocker.libriciel.fr/mariadb:11.4.12-noble
+        - name: hubdocker.libriciel.fr/mariadb:11.4.13-noble
           alias: mariadb
-        - name: hubdocker.libriciel.fr/redis:8.10.0-alpine3.23
+        - name: hubdocker.libriciel.fr/redis:8.10.1-alpine3.23
           alias: redis
         - name: ${CONTAINER_IMAGE_APP}
           alias: app
@@ -168,7 +168,7 @@ acceptance_test:
 .security_scan_base:
   stage: test
   image:
-    name: hubdocker.libriciel.fr/aquasec/trivy:0.73.0
+    name: hubdocker.libriciel.fr/aquasec/trivy:0.74.0
     entrypoint: [""]
   services:
     - docker:dind

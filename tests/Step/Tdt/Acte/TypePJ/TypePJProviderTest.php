@@ -7,9 +7,9 @@ namespace Pastell\Tests\Step\Tdt\Acte\TypePJ;
 use Exception;
 use Pastell\Step\Tdt\Acte\TypePJ\TypePJProvider;
 use Pastell\Step\Tdt\Acte\TypePJ\TypePJDTO;
-use PHPUnit;
+use PHPUnit\Framework\TestCase;
 
-class TypePJProviderTest extends PHPUnit\Framework\TestCase
+class TypePJProviderTest extends TestCase
 {
     /**
      * @throws Exception
