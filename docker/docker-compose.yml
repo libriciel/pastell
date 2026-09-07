@@ -90,7 +90,7 @@ services:
         user: "${UID:-33}:${GID:-33}"
 
     db:
-        image: 'hubdocker.libriciel.fr/mariadb:10.11.18-jammy'
+        image: 'hubdocker.libriciel.fr/mariadb:10.11.19-jammy'
         restart: unless-stopped
         command:
             - "--character-set-server=utf8mb4"
@@ -104,7 +104,7 @@ services:
             - ${MARIADB_DATADIR:-mariadb_datadir}:/var/lib/mysql/
 
     redis:
-        image: 'hubdocker.libriciel.fr/redis:7.2.15'
+        image: 'hubdocker.libriciel.fr/redis:7.2.16'
         restart: unless-stopped
 
     seda-generator:
@@ -114,7 +114,7 @@ services:
             - '/etc/localtime:/etc/localtime:ro'
 
     flow:
-        image: 'registry.libriciel.fr:443/public/libriciel/outils-documentaires/flow:1.6.0'
+        image: 'registry.libriciel.fr:443/public/libriciel/outils-documentaires/flow:1.7.0'
         restart: unless-stopped
 
     cloudooo:
@@ -122,7 +122,7 @@ services:
         restart: unless-stopped
 
     pes-viewer:
-        image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.1'
+        image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.2'
         restart: unless-stopped
         deploy:
             resources:
@@ -138,7 +138,7 @@ services:
             - ${LOCAL_CACERTS_PATH:-local_cacerts}:/usr/local/share/ca-certificates
 
     libriciel-feedback:
-        image: 'registry.libriciel.fr:443/public/libriciel/deploiement/libriciel-feedback:2.0.4'
+        image: 'registry.libriciel.fr:443/public/libriciel/deploiement/libriciel-feedback:2.0.7'
         restart: unless-stopped
         user: "10001:10001"
         read_only: true
@@ -151,7 +151,7 @@ services:
             VERSION: canary
 
     libriciel-stack-update:
-        image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-stack-update:1.1.1'
+        image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-stack-update:1.1.3'
         restart: unless-stopped
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -165,6 +165,33 @@ services:
             TZ: ${TIMEZONE:-Europe/Paris}
         networks:
             - stack-update-network
+
+    libriciel-postfix:
+        image: 'registry.libriciel.fr/public/systeme/libriciel-postfix:1.0.1'
+        restart: unless-stopped
+        read_only: true
+        cap_drop:
+            - ALL
+        cap_add:
+            - SETUID
+            - SETGID
+            - DAC_OVERRIDE
+            - CHOWN
+            - FOWNER
+        environment:
+            TENANT_ID: ${GAPI_TENANT_ID:-}
+            CLIENT_ID: ${GAPI_CLIENT_ID:-}
+            CLIENT_SECRET: ${GAPI_CLIENT_SECRET:-}
+            MAILBOX: ${GAPI_MAILBOX:-}
+            MAIL_HTTP_PROXY: ${MAIL_HTTP_PROXY:-}
+            MAIL_HTTPS_PROXY: ${MAIL_HTTPS_PROXY:-}
+        tmpfs:
+            - /var/cache/graphapi:uid=1000,gid=1000,mode=0700,noexec,nosuid,nodev
+            - /etc/postfix:uid=0,gid=0,mode=0755,noexec,nosuid,nodev
+            - /var/lib/postfix:uid=100,gid=0,mode=0755,nosuid,nodev
+        volumes:
+            - ${EMAIL_PATH:-/data/pastell/libriciel-postfix}:/config:ro,noexec,nosuid,nodev
+            - ${EMAIL_PATH:-/data/pastell/libriciel-postfix}/cache:/var/spool/postfix:noexec,nosuid,nodev
 
 volumes:
     mariadb_datadir:
