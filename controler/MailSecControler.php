@@ -244,9 +244,9 @@ class MailSecControler extends PastellControler
         $this->setDroitViewParameter($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION);
 
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
-        $entity_tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree(
+        $entity_tree = $entityUtilitiesService->buildEntityTreeselectOptions(
             $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION))
-        ));
+        );
         $this->setViewParameter('entity_treeselect_data', json_encode($entity_tree, JSON_THROW_ON_ERROR));
 
         $this->setViewParameter('listGroupe', $this->getAnnuaireRoleSQL()->getAll($id_e));

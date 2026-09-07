@@ -316,13 +316,11 @@ class RechercheAvanceFormulaireHTML extends PastellControler
     private function displayEntite(): void
     {
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
-        $tree = $entityUtilitiesService->toTreeselectOptions(
-            $entityUtilitiesService->buildEntityTree(
-                $this->getInstance(RoleUtilisateur::class)->getArbreFille(
-                    $this->getId_u(),
-                    DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
-                ),
-            )
+        $tree = $entityUtilitiesService->buildEntityTreeselectOptions(
+            $this->getInstance(RoleUtilisateur::class)->getArbreFille(
+                $this->getId_u(),
+                DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
+            ),
         );
         $id_e = $this->getParameter('id_e');
         ?>

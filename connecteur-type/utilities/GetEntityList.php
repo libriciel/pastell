@@ -37,7 +37,7 @@ class GetEntityList extends ConnecteurTypeChoiceActionExecutor
             $this->id_u,
             DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION)
         );
-        $tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree($arbreFille));
+        $tree = $entityUtilitiesService->buildEntityTreeselectOptions($arbreFille);
         $this->setViewParameter('entity_treeselect_data', json_encode($tree, JSON_THROW_ON_ERROR));
 
         $this->setViewParameter(

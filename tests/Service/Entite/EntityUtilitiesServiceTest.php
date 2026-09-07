@@ -19,24 +19,24 @@ class EntityUtilitiesServiceTest extends PastellTestCase
         $this->service = $this->getObjectInstancier()->getInstance(EntityUtilitiesService::class);
     }
 
-    public function testBuildEntityTreeEmptyList(): void
+    public function testBuildEntityTreeselectOptionsEmptyList(): void
     {
-        static::assertSame([], $this->service->buildEntityTree([]));
+        static::assertSame([], $this->service->buildEntityTreeselectOptions([]));
     }
 
-    public function testBuildEntityTreeSingleEntity(): void
+    public function testBuildEntityTreeselectOptionsSingleEntity(): void
     {
         $flatList = [
             ['id_e' => 1, 'denomination' => 'Entité A', 'profondeur' => 0],
         ];
 
         static::assertSame(
-            [['id_e' => 1, 'denomination' => 'Entité A', 'profondeur' => 0]],
-            $this->service->buildEntityTree($flatList)
+            [['name' => 'Entité A', 'value' => '1']],
+            $this->service->buildEntityTreeselectOptions($flatList)
         );
     }
 
-    public function testBuildEntityTreeWithChildren(): void
+    public function testBuildEntityTreeselectOptionsWithChildren(): void
     {
         $flatList = [
             ['id_e' => 1, 'denomination' => 'Parent', 'profondeur' => 0],
@@ -46,26 +46,24 @@ class EntityUtilitiesServiceTest extends PastellTestCase
 
         $expected = [
             [
-                'id_e' => 1,
-                'denomination' => 'Parent',
-                'profondeur' => 0,
+                'name' => 'Parent',
+                'value' => '1',
                 'children' => [
                     [
-                        'id_e' => 2,
-                        'denomination' => 'Enfant',
-                        'profondeur' => 1,
+                        'name' => 'Enfant',
+                        'value' => '2',
                         'children' => [
-                            ['id_e' => 3, 'denomination' => 'Petit-enfant', 'profondeur' => 2],
+                            ['name' => 'Petit-enfant', 'value' => '3'],
                         ],
                     ],
                 ],
             ],
         ];
 
-        static::assertSame($expected, $this->service->buildEntityTree($flatList));
+        static::assertSame($expected, $this->service->buildEntityTreeselectOptions($flatList));
     }
 
-    public function testBuildEntityTreeWithSiblingEntities(): void
+    public function testBuildEntityTreeselectOptionsWithSiblingEntities(): void
     {
         $flatList = [
             ['id_e' => 1, 'denomination' => 'Entité 1', 'profondeur' => 0],
@@ -75,17 +73,16 @@ class EntityUtilitiesServiceTest extends PastellTestCase
 
         $expected = [
             [
-                'id_e' => 1,
-                'denomination' => 'Entité 1',
-                'profondeur' => 0,
+                'name' => 'Entité 1',
+                'value' => '1',
                 'children' => [
-                    ['id_e' => 2, 'denomination' => 'Enfant de Entité 1', 'profondeur' => 1],
+                    ['name' => 'Enfant de Entité 1', 'value' => '2'],
                 ],
             ],
-            ['id_e' => 3, 'denomination' => 'Entité 2', 'profondeur' => 0],
+            ['name' => 'Entité 2', 'value' => '3'],
         ];
 
-        static::assertSame($expected, $this->service->buildEntityTree($flatList));
+        static::assertSame($expected, $this->service->buildEntityTreeselectOptions($flatList));
     }
 
     public function testAddDenominationForEntiteRacine(): void

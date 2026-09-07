@@ -250,10 +250,10 @@ class UtilisateurControler extends PastellControler
 
         $this->setViewParameter('infoEntite', $this->getEntiteSQL()->getInfo($infoUtilisateur['id_e']));
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
-        $entity_tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree(
+        $entity_tree = $entityUtilitiesService->buildEntityTreeselectOptions(
             $this->getRoleUtilisateur()
                 ->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION))
-        ));
+        );
 
         $this->setViewParameter('entity_treeselect_data', \json_encode($entity_tree, \JSON_THROW_ON_ERROR));
 
@@ -347,9 +347,9 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('info', $info);
         $this->setViewParameter('id_u', $id_u);
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
-        $entity_tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree(
+        $entity_tree = $entityUtilitiesService->buildEntityTreeselectOptions(
             $this->getRoleUtilisateur()->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION))
-        ));
+        );
         $this->setViewParameter('entity_treeselect_data', \json_encode($entity_tree, \JSON_THROW_ON_ERROR));
 
         $moduleListService = $this->getInstance(ModuleListService::class);
@@ -404,9 +404,9 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('info', $info);
         $this->setViewParameter('id_u', $id_u);
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
-        $entity_tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree(
+        $entity_tree = $entityUtilitiesService->buildEntityTreeselectOptions(
             $this->getRoleUtilisateur()->getArbreFilleWithRacine($id_u, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE))
-        ));
+        );
         $this->setViewParameter('entity_treeselect_data', \json_encode($entity_tree, \JSON_THROW_ON_ERROR));
 
         $moduleListService = $this->getInstance(ModuleListService::class);
