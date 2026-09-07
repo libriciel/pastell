@@ -23,6 +23,8 @@
   (CVSS 6.5 - criticité MOYENNE - CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:L) #2552
 - Faille d'exécution de code (CVSS 8.8 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H) #2556
 - Faille IDOR sur le mail sécurisé (CVSS 7.5 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N) #2553
+- Faille de contrôle d'accès sur la suppression des jetons des utilisateurs web
+  (CVSS 3.8 - criticité FAIBLE - CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:N/I:L/A:L) #2559
 
 # [4.1.21] - 2026-08-03
 
