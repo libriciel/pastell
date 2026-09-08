@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\Utilisateur\UserTokenService;
+use Symfony\Component\RateLimiter\RateLimit;
 
 class ApiAuthenticationTest extends PastellTestCase
 {
@@ -47,12 +48,21 @@ class ApiAuthenticationTest extends PastellTestCase
     public function testExpiredTokenAuthentication(): void
     {
         $loginAttemptLimit = $this->createMock(LoginAttemptLimit::class);
+        $loginAttemptLimit->method('getRateLimit')
+            ->willReturn(new RateLimit(5, new \DateTimeImmutable(), true, 5));
+        $loginAttemptLimit->expects(static::once())
+            ->method('consumeLoginAttempt')
+            ->with('127.0.0.1');
         $this->getObjectInstancier()->setInstance(LoginAttemptLimit::class, $loginAttemptLimit);
 
         $userTokenService = $this->getObjectInstancier()->getInstance(UserTokenService::class);
         $token = $userTokenService->createToken(self::ID_U_ADMIN, 'token', date(Date::DATE_ISO, strtotime('-1 day')));
         $httpApi = $this->getObjectInstancier()->getInstance(HttpApi::class);
-        $httpApi->setServerArray(['REQUEST_METHOD' => 'get', 'HTTP_AUTHORIZATION' => "Bearer $token"]);
+        $httpApi->setServerArray([
+            'REQUEST_METHOD' => 'get',
+            'HTTP_AUTHORIZATION' => "Bearer $token",
+            'REMOTE_ADDR' => '127.0.0.1',
+        ]);
         $httpApi->setGetArray(['api_function' => 'v2/version']);
         $this->expectOutputRegex('/401 Unauthorized/');
         $httpApi->dispatch();

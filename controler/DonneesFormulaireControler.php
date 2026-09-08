@@ -33,13 +33,31 @@ class DonneesFormulaireControler extends PastellControler
                 exit_wrapper();
             }
         } elseif ($id_ce) {
-            if (!$this->getDroitService()->hasDroitFor($this->getId_u(), $id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION)) {
+            if (!$this->hasDroitOnConnecteur($id_ce, DroitType::EDITION)) {
                 echo 'KO';
                 exit_wrapper();
             }
         } else {
             throw new Exception('id_d ou id_ce est obligatoire');
         }
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    private function hasDroitOnConnecteur($id_ce, DroitType $droit_type): bool
+    {
+        $connecteur_info = $this->getConnecteurEntiteSQL()->getInfo($id_ce);
+        if (!$connecteur_info) {
+            return false;
+        }
+
+        return $this->getDroitService()->hasDroitFor(
+            $this->getId_u(),
+            (int)$connecteur_info['id_e'],
+            DroitService::DROIT_CONNECTEUR,
+            $droit_type,
+        );
     }
 
     /**
@@ -67,7 +85,7 @@ class DonneesFormulaireControler extends PastellControler
                 exit_wrapper();
             }
         } elseif ($id_ce) {
-            if (!$this->getDroitService()->hasDroitFor($this->getId_u(), $id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE)) {
+            if (!$this->hasDroitOnConnecteur($id_ce, DroitType::LECTURE)) {
                 echo 'KO';
                 exit_wrapper();
             }

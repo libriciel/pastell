@@ -1,9 +1,13 @@
 include:
-  - template: Code-Quality.gitlab-ci.yml
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
   - template: Security/Container-Scanning.gitlab-ci.yml
+  # FIXME: disabled because the qlty code-quality job uses too much memory, gets OOM-killed
+  # by the runner and blocks the other jobs of the pipeline.
+#  - component: $LIBRICIEL_CATALOG_PATH/qlty/code-quality@~latest
+#    inputs:
+#      mode: "changed"
   - component: $LIBRICIEL_CATALOG_PATH/renovate-runner/runner@1.6.0
   - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.2.0
   - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@1.4.0
@@ -23,6 +27,8 @@ stages:
 variables:
     CONTAINER_IMAGE_APP: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-app"
     CONTAINER_IMAGE_WEB: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-web"
+    APK_PINNED_PACKAGES: ""
+    DOCKER_BUILD_OPTS: ""
     DATABASE_HOST: mariadb
     DATABASE_NAME: pastell_test
     MYSQL_DATABASE: pastell_test
@@ -54,8 +60,7 @@ build-app:
     - sed -i "s/%BUILD_DATE%/$date/" ./manifest.yml
     - sed -i "s/%VERSION%/${CI_COMMIT_REF_NAME}/" ./manifest.yml
     - sed -i "s/%GITHUB_API_TOKEN%/${GITHUB_API_TOKEN}/" ./docker/github/auth.json
-    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker build --secret id=composer_auth,src=./docker/github/auth.json --target dev --pull -t ${CONTAINER_IMAGE_APP} -f docker/app/Dockerfile .
+    - docker build ${DOCKER_BUILD_OPTS} --build-arg APK_PINNED_PACKAGES="${APK_PINNED_PACKAGES}" --secret id=composer_auth,src=./docker/github/auth.json --target dev --pull -t ${CONTAINER_IMAGE_APP} -f docker/app/Dockerfile .
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
     - docker push ${CONTAINER_IMAGE_APP}
 
@@ -67,7 +72,7 @@ build-web:
     DOCKER_BUILDKIT: 1
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker build  --pull -t ${CONTAINER_IMAGE_WEB} -f docker/web/Dockerfile .
+    - docker build ${DOCKER_BUILD_OPTS} --pull -t ${CONTAINER_IMAGE_WEB} -f docker/web/Dockerfile .
     - docker push ${CONTAINER_IMAGE_WEB}
 
 lint:
@@ -212,9 +217,9 @@ publish-container-to-registry:
     - sed -i "s/%VERSION%/${CI_COMMIT_REF_NAME}/" ./manifest.yml
   script:
     - docker login -u "$REGISTRY_CONTAINER_USER" -p "$REGISTRY_CONTAINER_PASSWORD" "$REGISTRY_CONTAINER_HOST"
-    - docker build --pull -t ${APP_IMAGE} -f docker/app/Dockerfile .
+    - docker build ${DOCKER_BUILD_OPTS} --build-arg APK_PINNED_PACKAGES="${APK_PINNED_PACKAGES}" --pull -t ${APP_IMAGE} -f docker/app/Dockerfile .
     - docker push ${APP_IMAGE}
-    - docker build --pull -t ${WEB_IMAGE} -f docker/web/Dockerfile .
+    - docker build ${DOCKER_BUILD_OPTS} --pull -t ${WEB_IMAGE} -f docker/web/Dockerfile .
     - docker push ${WEB_IMAGE}
 
 deploy_dev:
@@ -254,10 +259,6 @@ publish-compose:
     COMPOSE_FILE_NAME: compose.yaml
   before_script:
     - sed -i "s/canary/${CI_COMMIT_REF_NAME}/" docker/compose.yaml
-
-code_quality:
-  tags:
-    - cq-sans-dind
 
 container_scanning:
   variables:

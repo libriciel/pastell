@@ -8,7 +8,7 @@ class ChorusParCsv extends PortailFactureConnecteur
 {
     private const DEPOSE_DEPUIS_NB_JOURS = 30;
 
-    private $depose_depuis_nb_jours;
+    private int $depose_depuis_nb_jours = self::DEPOSE_DEPUIS_NB_JOURS;
 
     private $user_login;
 
@@ -66,24 +66,13 @@ class ChorusParCsv extends PortailFactureConnecteur
         return $this->user_login;
     }
 
-    /**
-     * @param DonneesFormulaire $donneesFormulaire
-     * @return float|int|string
-     */
-    public function getDeposeDepuisNbJours(DonneesFormulaire $donneesFormulaire)
+    public function getDeposeDepuisNbJours(DonneesFormulaire $donneesFormulaire): int
     {
-        $depose_depuis_nb_jours = $donneesFormulaire->get('depose_depuis_nb_jours');
-        if (($depose_depuis_nb_jours) && (is_numeric($depose_depuis_nb_jours))) {
-            return $depose_depuis_nb_jours;
-        }
-        $donneesFormulaire->setData('depose_depuis_nb_jours', self::DEPOSE_DEPUIS_NB_JOURS);
-        return self::DEPOSE_DEPUIS_NB_JOURS;
+        $depose_depuis_nb_jours = $donneesFormulaire->getWithDefault('depose_depuis_nb_jours');
+        return is_numeric($depose_depuis_nb_jours) ? (int)$depose_depuis_nb_jours : self::DEPOSE_DEPUIS_NB_JOURS;
     }
 
-    /**
-     * @return false|string
-     */
-    public function getDateDepuisLe()
+    public function getDateDepuisLe(): string
     {
         $time_debut = time() - ($this->depose_depuis_nb_jours * 86400);
         return date('Y-m-d', $time_debut);

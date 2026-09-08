@@ -30,17 +30,18 @@ class FakeIparapheurTest extends PastellTestCase
                 'iparapheur_sous_type' => 'SOUS_TYPE'
             ]
         );
-        $donneesFormulaire->addFileFromData('arrete', 'arrete.pdf', '%PDF1-4');
-        $donneesFormulaire->addFileFromData('signature', 'signature.pdf', '%PDF1-4');
-        $donneesFormulaire->addFileFromData('document_signe', 'document_signe.pdf', '%PDF1-4');
+        $donneesFormulaire->addFileFromData('arrete', 'arrete.pdf', 'arrete');
+        $donneesFormulaire->addFileFromData('signature', 'signature.pdf', 'deposited-signature');
+        $donneesFormulaire->addFileFromData('document_signe', 'document_signe.pdf', 'deposited-bordereau');
 
         $this->triggerActionOnDocument($id_d, 'send-iparapheur');
         $this->triggerActionOnDocument($id_d, 'verif-iparapheur');
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
-        $this->assertSame('%PDF1-4', $donneesFormulaire->getFileContent('signature'));
-        $this->assertSame('signature.pdf', $donneesFormulaire->getFileName('signature'));
-        $this->assertSame('%PDF1-4', $donneesFormulaire->getFileContent('document_signe'));
+        $this->assertSame('deposited-signature', $donneesFormulaire->getFileContent('signature'));
+        $this->assertSame('arrete_signe.pdf', $donneesFormulaire->getFileName('signature'));
+
+        $this->assertSame('deposited-bordereau', $donneesFormulaire->getFileContent('document_signe'));
         $this->assertSame('document_signe.pdf', $donneesFormulaire->getFileName('document_signe'));
     }
 }

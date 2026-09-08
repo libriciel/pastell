@@ -114,7 +114,7 @@ class PastellBootstrap
             return;
         }
 
-        $id_ce = $connecteurCreationService->createAndAssociateGlobalConnecteur(
+        $connecteurCreationService->createAndAssociateGlobalConnecteur(
             'cloudooo',
             ConvertisseurPDF::CONNECTEUR_TYPE_ID,
             'Conversion Office PDF',
@@ -144,7 +144,7 @@ class PastellBootstrap
             return;
         }
 
-        $id_ce = $connecteurCreationService->createAndAssociateGlobalConnecteur(
+        $connecteurCreationService->createAndAssociateGlobalConnecteur(
             'pes-viewer',
             PESViewer::CONNECTEUR_TYPE_ID,
             '',

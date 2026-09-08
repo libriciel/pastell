@@ -28,7 +28,7 @@ final class RecipientControllerTest extends WebTestCase
         self::ensureKernelShutdown();
         self::$class = null;
         $this->client = self::createClient();
-        $this->mailsec = new MailSecTestHelper();
+        $this->mailsec = new MailSecTestHelper('MailSecTestHelper');
     }
 
     public function testIndex(): void

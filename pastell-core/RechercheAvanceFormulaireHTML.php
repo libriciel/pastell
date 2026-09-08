@@ -110,7 +110,6 @@ class RechercheAvanceFormulaireHTML extends PastellControler
         $type = $this->getParameter('type');
         $select = $this->getParameter($field_name);
 
-        $id_d = 0;
         $field = $this->documentType->getFormulaire()->getField($field_name);
 
         $action_name = $field->getProperties('choice-action');
