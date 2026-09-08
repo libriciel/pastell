@@ -10,6 +10,7 @@ use Pastell\Service\TypeDossier\TypeDossierActionService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\ViewModel\DeleteConfirmation;
 
 class TypeDossierControler extends PastellControler
 {
@@ -196,16 +197,25 @@ class TypeDossierControler extends PastellControler
      * @throws LastErrorException
      * @throws LastMessageException
      * @throws NotFoundException
+     * @throws UnrecoverableException
      */
-    public function deleteAction()
+    public function deleteAction(): void
     {
         $this->commonEdition();
 
-        $id_type_dossier = $this->getViewParameterByKey('type_de_dossier_info')['id_type_dossier'];
-        $this->verifyTypeDossierIsUnused($id_type_dossier);
+        $type_dossier_info = $this->getViewParameterByKey('type_de_dossier_info');
+        $this->verifyTypeDossierIsUnused($type_dossier_info['id_type_dossier']);
 
-        $this->setViewParameter('template_milieu', "TypeDossierDelete");
-        $this->renderDefault();
+        $this->renderDeleteConfirmation(
+            "Suppression du type de dossier {$type_dossier_info['id_type_dossier']}",
+            new DeleteConfirmation(
+                '/TypeDossier/doDelete',
+                'TypeDossier/list',
+                [$type_dossier_info],
+                ['Type de dossier' => 'id_type_dossier'],
+                ['id_t' => $type_dossier_info['id_t']],
+            )
+        );
     }
 
     /**

@@ -57,7 +57,7 @@ class UtilisateurControlerTest extends ControlerTestCase
     {
         $this->setGetInfo(['id_u' => 2]);
         $this->getUtilisateurControler()->suppressionAction();
-        $this->expectOutputRegex("#<title>Utilisateur Eric Pommateau - Suppression de l(.*)utilisateur  - Pastell</title>#");
+        $this->expectOutputRegex("#<title>Suppression de l(.*)utilisateur Eric Pommateau - Pastell</title>#");
     }
 
     public function testDoSuppressionAction(): void
