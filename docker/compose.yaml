@@ -193,7 +193,7 @@ services:
     security_opt:
       - no-new-privileges:true
     tmpfs:
-      - /tmp:mode=770,rw,noexec,nosuid,nodev
+      - /tmp:mode=0700,uid=100001,gid=100001,rw,noexec,nosuid,nodev,size=1g
 
   cloudooo:
     image: 'registry.libriciel.fr/public/actes/cloudooo:25.2.7-rc.3@sha256:524987e6d9c389ed4cac08c5169774a0ade6dda95153a3f1e9ffd601782b03c5'
@@ -262,6 +262,33 @@ services:
       TZ: ${TZ:-Europe/Paris}
     networks:
       - stack-update-network
+
+  libriciel-postfix:
+    image: 'registry.libriciel.fr/public/systeme/libriciel-postfix:1.0.1@sha256:06e0feeb32c390f1c970ef86710ec4eac6c6d232ccfcaa3a5b410c1e5377ecda'
+    restart: unless-stopped
+    read_only: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
+      - CHOWN
+      - FOWNER
+    environment:
+      TENANT_ID: ${GAPI_TENANT_ID:-}
+      CLIENT_ID: ${GAPI_CLIENT_ID:-}
+      CLIENT_SECRET: ${GAPI_CLIENT_SECRET:-}
+      MAILBOX: ${GAPI_MAILBOX:-}
+      MAIL_HTTP_PROXY: ${MAIL_HTTP_PROXY:-}
+      MAIL_HTTPS_PROXY: ${MAIL_HTTPS_PROXY:-}
+    tmpfs:
+      - /var/cache/graphapi:uid=1000,gid=1000,mode=0700,noexec,nosuid,nodev
+      - /etc/postfix:uid=0,gid=0,mode=0755,noexec,nosuid,nodev
+      - /var/lib/postfix:uid=100,gid=0,mode=0755,nosuid,nodev
+    volumes:
+      - ${EMAIL_PATH:-/data/pastell/libriciel-postfix}:/config:ro,noexec,nosuid,nodev
+      - ${EMAIL_PATH:-/data/pastell/libriciel-postfix}/cache:/var/spool/postfix:noexec,nosuid,nodev*
 
 volumes:
   web_logs_datadir:

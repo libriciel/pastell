@@ -2,8 +2,17 @@
 
 class FrequenceConnecteurAPIControllerTest extends PastellTestCase
 {
+    /**
+     * @throws Exception
+     */
     public function testList(): void
     {
+        static::getSQLQuery()->query(
+            "INSERT INTO connecteur_frequence
+                (id_cf, type_connecteur, famille_connecteur, id_connecteur, id_ce, action_type, type_document, action, expression, id_verrou)
+             VALUES (2, 'entite', '', 'i-parapheur', 42, 'document', 'actes-generique', 'verif-tdt', '30', '')"
+        );
+
         $result = $this->getInternalAPI()->get('/frequenceConnecteur');
         static::assertSame(
             [
@@ -81,7 +90,7 @@ class FrequenceConnecteurAPIControllerTest extends PastellTestCase
         );
         static::assertSame(
             [
-                'id_cf' => '3',
+                'id_cf' => '2',
                 'type_connecteur' => 'entite',
                 'famille_connecteur' => 'signature',
                 'id_connecteur' => '',

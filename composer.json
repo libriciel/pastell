@@ -90,7 +90,7 @@
     "phpmd/phpmd": "^2.11",
     "phpstan/phpstan": "^2.1",
     "phpstan/phpstan-symfony": "^2.0",
-    "phpunit/phpunit": "^9.5",
+    "phpunit/phpunit": "^10.5",
     "rector/rector": "^2.1",
     "squizlabs/php_codesniffer": "^4.0",
     "symfony/debug-bundle": "^6.2",
@@ -121,6 +121,7 @@
     "phpcs": "phpcs",
     "phpcbf": "phpcbf",
     "phpstan": "phpstan",
+    "phpmd": "phpmd action,api,connecteur,connecteur-type,controler,lib,mailsec,model,module,pastell-core,src,type-dossier text phpmd.xml.dist",
     "auto-scripts": {
       "cache:clear": "symfony-cmd",
       "assets:install %PUBLIC_DIR%": "symfony-cmd"

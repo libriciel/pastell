@@ -64,7 +64,7 @@ class ExtensionsGraphique
             fputs($fp, "}");
             fclose($fp);
 
-            exec("dot -T$type -o$file_jpg $file", $output, $return_var);
+            exec("dot -T$type -o$file_jpg $file");
         }
         return $file_jpg;
     }

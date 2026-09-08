@@ -14,10 +14,13 @@ class GlaneurSFTP extends GlaneurConnecteur
     /** @var SFTPFactory */
     private $sftpFactory;
 
-    public function __construct(DocumentTypeFactory $documentTypeFactory, GlaneurDocumentCreator $glaneurLocalDocumentCreator)
-    {
+    public function __construct(
+        DocumentTypeFactory $documentTypeFactory,
+        GlaneurDocumentCreator $glaneurLocalDocumentCreator,
+        SFTPFactory $sftpFactory
+    ) {
         parent::__construct($documentTypeFactory, $glaneurLocalDocumentCreator);
-        $this->setSFTPFactory(new SFTPFactory());
+        $this->setSFTPFactory($sftpFactory);
     }
 
     public function setSFTPFactory(SFTPFactory $sftpFactory)

@@ -15,6 +15,7 @@ class SplitFile
     public function split($filepath, int $size, $chunk_name): array
     {
         $dirname = dirname($filepath);
+
         $command = "cd $dirname && split -a 6 -b $size $filepath $chunk_name";
         $this->logger->debug('Execute shell command', [$command]);
         exec($command, $ouput, $return_var);

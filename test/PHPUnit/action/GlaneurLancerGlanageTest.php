@@ -7,6 +7,14 @@ class GlaneurLancerGlanageTest extends PastellTestCase
     public function testGlaner(): void
     {
         $this->setMailerTransportForTesting();
+
+        $sftp = $this->createMock(SFTP::class);
+        $sftp->method('listDirectory')
+            ->willThrowException(new UnrecoverableException('Cannot connect to localhost:22'));
+        $sftpFactory = $this->createMock(SFTPFactory::class);
+        $sftpFactory->method('getInstance')->willReturn($sftp);
+        $this->getObjectInstancier()->setInstance(SFTPFactory::class, $sftpFactory);
+
         $id_ce = $this->createConnector('glaneur-sftp', 'Glaneur SFTP')['id_ce'];
         $this->configureConnector($id_ce, [
             'traitement_actif' => 'On',

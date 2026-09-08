@@ -17,7 +17,9 @@ WORKDIR /app
 
 EXPOSE 9000
 
-RUN apk add --no-cache \
+ARG APK_PINNED_PACKAGES=""
+
+RUN apk add --no-cache ${APK_PINNED_PACKAGES} \
     bash \
     bash-completion \
     c-client \

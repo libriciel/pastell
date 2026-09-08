@@ -37,9 +37,9 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
     /**
      * @throws Exception
      */
-    public function __construct($name = null, array $data = [], $dataName = '')
+    public function __construct(string $name)
     {
-        parent::__construct($name, $data, $dataName);
+        parent::__construct($name);
         $this->tmpFolder = new TmpFolder();
         $this->tmp_folder = $this->tmpFolder->create();
         \mkdir($this->tmp_folder . '/workspace');
@@ -147,7 +147,7 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
         return $id_d;
     }
 
-    public function caseProvider(): iterable
+    public static function caseProvider(): iterable
     {
         $all_dir = \scandir(__DIR__ . '/fixtures/seda-test-cases');
         $all_dir = \array_diff($all_dir, ['.', '..']);
@@ -245,6 +245,7 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
      */
     public function testWhenAKeywordIsAssociatedWithAFile(): void
     {
+        \error_reporting(E_ALL);
         $this->setCurl(function (array $json_data) {
             static::assertJsonStringEqualsJsonString(
                 '{"Keywords":[],"ArchiveUnits":[],"Files":[]}',

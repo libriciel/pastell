@@ -326,6 +326,10 @@ final class RecipientController extends AbstractController
             $mailSecInfo->id_d_reponse,
             $mailSecInfo->flux_reponse
         );
+        if (!$this->mailsecManager->isFieldExposed($donneesFormulaire, $field)) {
+            $this->addFlash('danger', "Ce fichier n'existe pas");
+            return $this->redirectToRoute('mailsec_recipient_reply', ['key' => $key]);
+        }
         $donneesFormulaire->removeFile($field, $num);
         return $this->redirectToRoute('mailsec_recipient_reply', ['key' => $key]);
     }
@@ -335,6 +339,7 @@ final class RecipientController extends AbstractController
      * @throws InvalidKeyException
      * @throws NotFoundException
      * @throws UnavailableMailException
+     * @throws UnrecoverableException
      */
     #[Route('/mail/{key}/downloadFile', name: 'mailsec_recipient_downloadFile', methods: ['GET'])]
     public function downloadFile(string $key, Request $request): Response
@@ -345,17 +350,21 @@ final class RecipientController extends AbstractController
         $num = (int)$request->get('num');
         $responseFile = $request->get('fichier_reponse');
 
-        if ($responseFile) {
-            $filePath = $mailSecInfo->donneesFormulaireReponse->getFilePath($field, $num);
-            $fileName = $mailSecInfo->donneesFormulaireReponse->getFileName($field, $num);
-            $mimeType = $mailSecInfo->donneesFormulaireReponse->getContentType($field, $num);
-        } else {
-            $filePath = $mailSecInfo->donneesFormulaire->getFilePath($field, $num);
-            $fileName = $mailSecInfo->donneesFormulaire->getFileName($field, $num);
-            $mimeType = $mailSecInfo->donneesFormulaire->getContentType($field, $num);
+        $donneesFormulaire = $responseFile
+            ? $mailSecInfo->donneesFormulaireReponse
+            : $mailSecInfo->donneesFormulaire;
+
+        if (!$this->mailsecManager->isFieldExposed($donneesFormulaire, $field)) {
+            $this->addFlash('danger', "Ce fichier n'existe pas");
+            return $this->redirectToRoute('mailsec_recipient_index', ['key' => $key]);
         }
+
+        $filePath = $donneesFormulaire->getFilePath($field, $num);
+        $fileName = $donneesFormulaire->getFileName($field, $num);
+        $mimeType = $donneesFormulaire->getContentType($field, $num);
+
         if (!file_exists($filePath)) {
-            $this->addFlash('error', "Ce fichier n'existe pas");
+            $this->addFlash('danger', "Ce fichier n'existe pas");
             return $this->redirectToRoute('mailsec_recipient_index', ['key' => $key]);
         }
 
@@ -385,6 +394,15 @@ final class RecipientController extends AbstractController
 
         $field = $request->get('field');
         $responseFile = (bool)$request->get('fichier_reponse');
+
+        $donneesFormulaire = $responseFile
+            ? $mailSecInfo->donneesFormulaireReponse
+            : $mailSecInfo->donneesFormulaire;
+
+        if (!$this->mailsecManager->isFieldExposed($donneesFormulaire, $field)) {
+            $this->addFlash('danger', "Ce fichier n'existe pas");
+            return $this->redirectToRoute('mailsec_recipient_index', ['key' => $key]);
+        }
 
         $documentId = $responseFile ? $mailSecInfo->id_d_reponse : $mailSecInfo->id_d;
 
