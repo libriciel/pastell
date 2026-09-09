@@ -125,7 +125,7 @@ use Pastell\Utilities\Certificate;
                     </form>
                 </td>
                 <td>
-                    <form action='Utilisateur/suppression' method='post'>
+                    <form action='Utilisateur/suppression' method='post' class='js-delete-modal'>
                         <?php $this->displayCSRFInput() ?>
                         <input type='hidden' name='id_u_list[]' value='<?= $id_u ?>'/>
                         <input type='hidden' name='id_e' value='<?= $info['id_e'] ?>'/>
@@ -292,7 +292,7 @@ use Pastell\Utilities\Certificate;
                                href='<?php echo $userNotificationUrl; ?>'
                             ><i class="fas fa-pen"></i>&nbsp;Modifier</a>
 
-                            <a class="btn btn-danger"
+                            <a class="btn btn-danger js-delete-modal"
                                href="Utilisateur/notificationSuppression?id_n=<?= $infoNotification['id_n'] ?>&source=detail">
                                 <i class="fas fa-trash"></i>&nbsp;Supprimer
                             </a>
@@ -376,7 +376,7 @@ if ($id_u == $id_current_u || ($utilisateur_edition && $info['is_api'])) : ?>
                             <i class="fas fa-arrows-rotate"></i>&nbsp;Renouveler
                         </a>
                         <a
-                                class='btn btn-danger'
+                                class='btn btn-danger js-delete-modal'
                                 href='Utilisateur/deleteToken?id=<?php
                                 echo $token['id'] . '&source=detail'; ?>'
                         >

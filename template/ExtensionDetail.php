@@ -38,7 +38,7 @@ $extensionId = get_hecho($extension_info['id_e']);
        class='btn btn-primary'
     ><i class="fas fa-pen"></i>&nbsp;Modifier</a>
     <a href='<?php $this->url("Extension/delete?id_extension=$extensionId"); ?>'
-       class='btn btn-danger'
+       class='btn btn-danger js-delete-modal'
     ><i class="fas fa-trash"></i>&nbsp;Supprimer</a>
 </div>
 

@@ -121,7 +121,7 @@ declare(strict_types=1);
                                     <i class="fas fa-play"></i>&nbsp;Démarrer
                                 </a>
                             <?php endif ?>
-                            <a class='btn btn-danger'
+                            <a class='btn btn-danger js-delete-modal'
                                href='Daemon/deleteDaemon?id_daemon=<?=$entity['id_daemon']?>'
                             ><i class="fas fa-trash"></i>&nbsp;Supprimer</a>
                         <?php endif ?>

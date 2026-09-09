@@ -79,9 +79,8 @@ class UtilisateurControlerTest extends ControlerTestCase
         $id_u3 = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create('tester', 'tester@example.org', 'tester', 'tester');
         $this->setGetInfo(['id_u_list' => [2, $id_u3]]);
+        $this->expectOutputRegex('#2</strong>\s+utilisateurs vont#u');
         $this->getUtilisateurControler()->suppressionAction();
-        $this->expectOutputRegex('#Eric Pommateau#');
-        $this->expectOutputRegex('#tester tester#');
     }
 
     public function testDoSuppressionAction(): void

@@ -25,7 +25,7 @@
             <i class='fa fa-trash'></i>&nbsp;Supprimer la sélection
         </button>
     <?php endif;?>
-    <form action='MailSec/groupeSuppression' method='post' id='form-suppression-groupes'>
+    <form action='MailSec/groupeSuppression' method='post' id='form-suppression-groupes' class='js-delete-modal'>
         <?php $this->displayCSRFInput(); ?>
         <input type='hidden' name='id_e' value='<?php echo $id_e; ?>'/>
 

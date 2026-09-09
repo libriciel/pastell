@@ -547,8 +547,8 @@ class EntiteControler extends PastellControler
                 'Entite/doSupprimer',
                 "Entite/detail?id_e=$id_e",
                 [$info],
-                ['Dénomination' => 'denomination', 'SIREN' => 'siren', 'Type' => 'type'],
                 ['id_e' => $id_e],
+                DeleteConfirmation::ENTITE,
             )
         );
     }

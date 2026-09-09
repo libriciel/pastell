@@ -180,8 +180,8 @@ class ConnecteurControler extends PastellControler
                 'Connecteur/doDelete',
                 "Connecteur/edition?id_ce={$connector_info['id_ce']}",
                 [$connector_info],
-                ['Type' => 'type', 'Identifiant' => 'id_connecteur', 'Libellé' => 'libelle'],
                 ['id_ce' => $connector_info['id_ce']],
+                DeleteConfirmation::CONNECTEUR,
             )
         );
     }

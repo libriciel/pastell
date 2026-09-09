@@ -15,37 +15,11 @@ $item_count = count($delete_confirmation->items);
 <div class="delete-confirmation" data-modal-title="<?php hecho($page_title ?? 'Suppression') ?>">
 <div class='alert alert-danger' style='margin-top:10px;'>
     <strong><?= $item_count ?></strong>
-    <?php if ($item_count > 1): ?>
-        ressources vont être supprimées
-    <?php else : ?>
-        ressource va être supprimée
-    <?php endif; ?>
+    <?php hecho($delete_confirmation->getDeletionLabel()) ?>.
      L'action de <strong>suppression</strong> est irréversible.
 </div>
 
 <div class="box">
-    <?php if ($delete_confirmation->items && $delete_confirmation->columns) : ?>
-        <div class="delete-confirmation__table-wrapper">
-            <table class='table table-striped'>
-                <thead>
-                <tr>
-                    <?php foreach (array_keys($delete_confirmation->columns) as $label) : ?>
-                        <th><?php hecho($label) ?></th>
-                    <?php endforeach ?>
-                </tr>
-                </thead>
-                <?php foreach ($delete_confirmation->items as $item) : ?>
-                    <tr>
-                        <?php foreach ($delete_confirmation->columns as $source) :
-                            $cell = is_string($source) ? ($item[$source] ?? '') : $source($item); ?>
-                            <td><?php hecho((string)$cell) ?></td>
-                        <?php endforeach ?>
-                    </tr>
-                <?php endforeach ?>
-            </table>
-        </div>
-    <?php endif ?>
-
     <form action='<?php $this->url($delete_confirmation->actionUrl) ?>' method='post'>
         <?php $this->displayCSRFInput() ?>
         <?php foreach ($delete_confirmation->formData as $name => $value) : ?>
@@ -57,7 +31,7 @@ $item_count = count($delete_confirmation->items);
                 <input type='hidden' name='<?php hecho($name) ?>' value='<?php hecho((string)$value) ?>'/>
             <?php endif ?>
         <?php endforeach ?>
-        <div style='margin-top:20px;'>
+        <div class="delete-confirmation__actions">
             <?php if ($delete_confirmation->cancelUrl !== '') : ?>
                 <a class='btn btn-outline-primary js-delete-cancel'
                    href='<?php $this->url($delete_confirmation->cancelUrl) ?>'>
@@ -65,7 +39,7 @@ $item_count = count($delete_confirmation->items);
                 </a>
             <?php endif ?>
             <button type='submit' class='btn btn-danger'>
-                <i class="fas fa-trash"></i>&nbsp;Supprimer
+                <i class="fas fa-trash"></i>&nbsp;<?php hecho($delete_confirmation->submitLabel) ?>
             </button>
         </div>
     </form>

@@ -162,7 +162,7 @@ $listConnectorsUrl = \sprintf(
         <i class="fas fa-upload"></i>&nbsp;Importer
     </a>
 
-    <a class='btn btn-danger <?php echo $usage_flux_list ? 'disabled' : '' ?>'
+    <a class='btn btn-danger js-delete-modal <?php echo $usage_flux_list ? 'disabled' : '' ?>'
        href="<?php $this->url("Connecteur/delete?id_ce=$id_ce") ?>"
          >
         <i class="fas fa-trash"></i>&nbsp;Supprimer
@@ -268,7 +268,7 @@ $listConnectorsUrl = \sprintf(
                     <?php if ($daemon_edition) :
                         $deleteJobUrl = "Daemon/deleteJob?id_job={$job->id_job}&id_ce={$job->id_ce}";
                         ?>
-                        <a href="<?php echo $deleteJobUrl; ?>" class="btn btn-danger">
+                        <a href="<?php echo $deleteJobUrl; ?>" class="btn btn-danger js-delete-modal">
                             <i class="fas fa-trash"></i>&nbsp;Supprimer
                         </a>
                     <?php endif; ?>

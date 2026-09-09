@@ -67,7 +67,7 @@
     >
         <i class="fas fa-pen"></i>&nbsp;Modifier
     </a>
-    <a class='btn btn-danger'
+    <a class='btn btn-danger js-delete-modal'
        href="<?php $this->url("Daemon/deleteFrequence?id_cf={$connecteurFrequence->id_cf}") ?>"
     >
         <i class="fas fa-trash"></i>&nbsp;Supprimer

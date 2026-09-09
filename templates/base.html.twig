@@ -28,6 +28,7 @@
         'css/datepicker.css',
         'css/select/multiselect.css',
         'css/select/treeselect.css',
+        'css/delete-confirmation.css',
     ] %}
     {% block stylesheets %}
         {% for cssFile in cssFiles %}
@@ -55,6 +56,7 @@
         'js/mdp.js',
         'node_modules/treeselectjs/dist/treeselectjs.umd.js',
         'js/select/treeselect.js',
+        'js/delete-confirmation.js',
     ] %}
     {% block javascript %}
     {% for jsFile in jsFiles %}
@@ -164,6 +166,19 @@
 </script>
 
 {{ gabarit.render('ToTheTop') }}
+
+<div class="modal fade" id="delete-confirmation-modal" tabindex="-1"
+     aria-labelledby="delete-confirmation-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h5" id="delete-confirmation-modal-title">Confirmation de suppression</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+</div>
 
 {% include '_includes/footer.html.twig' %}
 

@@ -250,6 +250,11 @@ class PastellControler extends Controler
     {
         $this->setViewParameter('page_title', $pageTitle);
         $this->setViewParameter('delete_confirmation', $deleteConfirmation);
+        if ($this->getServerInfo('HTTP_X_REQUESTED_WITH') === 'XMLHttpRequest') {
+            $this->getGabarit()->setParameters($this->getViewParameter());
+            $this->getGabarit()->render('DeleteConfirmation');
+            return;
+        }
         $this->setViewParameter('template_milieu', 'DeleteConfirmation');
         $this->renderDefault();
     }

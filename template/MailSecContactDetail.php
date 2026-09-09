@@ -49,7 +49,7 @@
                 </td>
                 <td>
 
-                    <form action='MailSec/contactSuppression' method='post'>
+                    <form action='MailSec/contactSuppression' method='post' class='js-delete-modal'>
                         <?php
                         $this->displayCSRFInput(); ?>
                         <input type='hidden' name='id_e' value='<?php
