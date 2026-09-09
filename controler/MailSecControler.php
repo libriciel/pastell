@@ -554,8 +554,8 @@ class MailSecControler extends PastellControler
                 'MailSec/doContactSuppression',
                 "MailSec/annuaire?id_e=$id_e",
                 $contacts_to_delete,
-                ['Description' => 'description', 'Email' => 'email'],
                 ['id_e' => $id_e, 'id_a' => array_column($contacts_to_delete, 'id_a')],
+                DeleteConfirmation::CONTACT,
             )
         );
     }
@@ -830,8 +830,8 @@ class MailSecControler extends PastellControler
                 'MailSec/doGroupeSuppression',
                 "MailSec/groupeList?id_e=$id_e",
                 $groupes_to_delete,
-                ['Nom' => 'nom', 'Nombre de contacts' => 'nb_contacts'],
                 ['id_e' => $id_e, 'id_g' => array_column($groupes_to_delete, 'id_g')],
+                DeleteConfirmation::GROUPE,
             )
         );
     }

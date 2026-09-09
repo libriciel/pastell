@@ -192,8 +192,8 @@ class RoleControler extends PastellControler
                 'Role/doDelete',
                 "Role/detail?role=$role",
                 [$role_info + ['role' => $role]],
-                ['Identifiant' => 'role', 'Libellé' => 'libelle'],
                 ['role' => $role],
+                DeleteConfirmation::ROLE,
             )
         );
     }

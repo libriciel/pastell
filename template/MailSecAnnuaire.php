@@ -69,7 +69,7 @@
     <?php endif; ?>
     <?php $this->suivantPrecedent($offset, $limit, $nb_email, "MailSec/annuaire?id_e=$id_e&id_g=$id_g&search=" . urlencode($search)); ?>
 
-    <form action='MailSec/contactSuppression' method='post' id='form-suppression-lot'>
+    <form action='MailSec/contactSuppression' method='post' id='form-suppression-lot' class='js-delete-modal'>
         <?php $this->displayCSRFInput() ?>
         <input type='hidden' name='id_e' value='<?php echo $id_e ?>'/>
 

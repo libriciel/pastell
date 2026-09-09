@@ -89,7 +89,7 @@ $exportUserUrl = sprintf(
     ); ?>
 
 <?php if ($utilisateur_suppression) : ?>
-<form action='Utilisateur/suppression' method='post' id='form-suppression-lot'>
+<form action='Utilisateur/suppression' method='post' id='form-suppression-lot' class='js-delete-modal'>
     <?php $this->displayCSRFInput() ?>
     <input type='hidden' name='id_e' value='<?= $id_e ?>'/>
     <input type='hidden' name='source' value='list'/>

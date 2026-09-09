@@ -1,0 +1,67 @@
+#delete-confirmation-modal .modal-dialog-scrollable .modal-content {
+    max-height: 90%;
+}
+
+#delete-confirmation-modal .modal-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#delete-confirmation-modal .modal-body .delete-confirmation {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
+}
+
+#delete-confirmation-modal .modal-body .delete-confirmation .alert {
+    margin-top: 0;
+    flex-shrink: 0;
+}
+
+#delete-confirmation-modal .modal-body .box {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
+}
+
+#delete-confirmation-modal .modal-body .box .delete-confirmation__table-wrapper {
+    min-height: 0;
+    flex: 1;
+    overflow-y: auto;
+}
+
+#delete-confirmation-modal .modal-body .box form {
+    flex-shrink: 0;
+}
+
+#delete-confirmation-modal .modal-body .box .delete-confirmation__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+    margin-top: 20px;
+}
+
+#delete-confirmation-modal .modal-body .box .table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+#delete-confirmation-modal .modal-body .box .table thead th {
+    position: sticky;
+    top: 0;
+    background-color: var(--bs-body-bg);
+    z-index: 1;
+}
+
+#delete-confirmation-modal .modal-body .box .table th,
+#delete-confirmation-modal .modal-body .box .table td {
+    word-break: break-word;
+}

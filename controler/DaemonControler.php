@@ -15,12 +15,6 @@ class DaemonControler extends PastellControler
 {
     public const NB_JOB_DISPLAYING = 50;
 
-    private const array JOB_CONFIRMATION_COLUMNS = [
-        'Identifiant' => 'id_job',
-        'État source' => 'etat_source',
-        'État cible' => 'etat_cible',
-    ];
-
     public function _beforeAction()
     {
         parent::_beforeAction();
@@ -441,6 +435,7 @@ class DaemonControler extends PastellControler
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @throws NotFoundException
      */
     public function deleteFrequenceAction(): void
     {
@@ -454,13 +449,15 @@ class DaemonControler extends PastellControler
             new DeleteConfirmation(
                 'Daemon/doDeleteFrequence',
                 "Daemon/connecteurFrequenceDetail?id_cf=$id_cf",
-                [[
-                    'type' => $connecteurFrequence->type_connecteur ?: 'Tous',
-                    'action' => $connecteurFrequence->action ?: 'Toutes',
-                    'frequence' => $connecteurFrequence->getExpressionAsString(),
-                ]],
-                ['Type' => 'type', 'Action' => 'action', 'Fréquence' => 'frequence'],
+                [
+                    [
+                        'type' => $connecteurFrequence->type_connecteur ?: 'Tous',
+                        'action' => $connecteurFrequence->action ?: 'Toutes',
+                        'frequence' => $connecteurFrequence->getExpressionAsString(),
+                    ]
+                ],
                 ['id_cf' => $id_cf],
+                DeleteConfirmation::FREQUENCE,
             )
         );
     }
@@ -493,8 +490,8 @@ class DaemonControler extends PastellControler
                 'Daemon/doDeleteJob',
                 "Connecteur/edition?id_ce=$id_connecteur",
                 [$this->getJobConfirmationItem($job)],
-                self::JOB_CONFIRMATION_COLUMNS,
                 ['id_job' => $job->id_job, 'id_ce' => $id_connecteur],
+                DeleteConfirmation::TRAVAIL,
             )
         );
     }
@@ -527,8 +524,8 @@ class DaemonControler extends PastellControler
                 'Daemon/doDeleteJobDocument',
                 "Document/detail?id_d=$id_document&id_e=$id_e",
                 [$this->getJobConfirmationItem($job)],
-                self::JOB_CONFIRMATION_COLUMNS,
                 ['id_job' => $job->id_job, 'id_d' => $id_document, 'id_e' => $id_e],
+                DeleteConfirmation::TRAVAIL,
             )
         );
     }
@@ -725,8 +722,8 @@ class DaemonControler extends PastellControler
                 'Daemon/doDeleteDaemon',
                 'Daemon/configuration',
                 [$entite],
-                ['Entité' => 'denomination'],
                 ['id_d' => $daemon->id_daemon],
+                DeleteConfirmation::GESTIONNAIRE_TACHES,
             )
         );
     }
