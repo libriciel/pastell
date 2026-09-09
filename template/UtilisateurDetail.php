@@ -379,7 +379,6 @@ if ($id_u == $id_current_u || ($utilisateur_edition && $info['is_api'])) : ?>
                                 class='btn btn-danger'
                                 href='Utilisateur/deleteToken?id=<?php
                                 echo $token['id'] . '&source=detail'; ?>'
-                                onclick="return confirm('Êtes-vous certain de vouloir supprimer définitivement ce jeton ?')"
                         >
                             <i class="fas fa-trash"></i>&nbsp;Supprimer
                         </a>

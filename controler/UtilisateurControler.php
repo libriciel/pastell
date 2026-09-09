@@ -688,11 +688,47 @@ class UtilisateurControler extends PastellControler
      * @throws LastErrorException
      * @throws LastMessageException
      */
-    public function notificationSuppressionAction()
+    public function notificationSuppressionAction(): void
     {
-        $recuperateur = $this->getPostInfo();
-        $source = $recuperateur->get('source', 'moi');
-        $id_n = $recuperateur->get('id_n');
+        $source = $this->getGetInfo()->get('source', 'moi');
+        $id_n = $this->getGetInfo()->get('id_n');
+
+        $infoNotification = $this->getNotification()->getInfo($id_n);
+        if (!$infoNotification) {
+            $this->setLastError("La notification n'existe pas");
+            $this->redirectToPageUtilisateur($source, $this->getId_u());
+        }
+        if ($infoNotification['id_u'] !== $this->getId_u()) {
+            $this->setLastError("Vous ne pouvez pas supprimer les notifications d'un autre utilisateur");
+            $this->redirectToPageUtilisateur($source, $this->getId_u());
+        }
+
+        $infoNotification['denomination'] =
+            $this->getEntiteSQL()->getInfo($infoNotification['id_e'])['denomination'] ?? '';
+
+        $this->renderDeleteConfirmation(
+            'Suppression de la notification',
+            new DeleteConfirmation(
+                'Utilisateur/doNotificationSuppression',
+                $source === 'moi' ? 'Utilisateur/moi' : "Utilisateur/$source?id_u={$infoNotification['id_u']}",
+                [$infoNotification],
+                [
+                    'Entité' => 'denomination',
+                    'Type de dossier' => static fn(array $n): string => $n['type'] ?: 'Tous',
+                ],
+                ['id_n' => $id_n, 'source' => $source],
+            )
+        );
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function doNotificationSuppressionAction(): void
+    {
+        $source = $this->getPostInfo()->get('source', 'moi');
+        $id_n = $this->getPostInfo()->get('id_n');
 
         $infoNotification = $this->getNotification()->getInfo($id_n);
         if (!$infoNotification) {
@@ -1004,11 +1040,36 @@ EOT;
     public function deleteTokenAction(): void
     {
         $userTokenService = $this->getObjectInstancier()->getInstance(UserTokenService::class);
-        $recuperateur = $this->getPostInfo();
-        $id = $recuperateur->get('id');
-        $recupGet = $this->getGetInfo();
+        $id = $this->getGetInfo()->getInt('id');
+        $source = $this->getGetInfo()->get('source') ?: 'moi';
         $id_u = $userTokenService->getUser($id);
-        $source = $recupGet->get('source') ?: 'moi';
+        $this->verifDroitApi($id_u);
+
+        $tokens = $userTokenService->getTokens($id_u);
+        $token = array_values(array_filter($tokens, static fn(array $t): bool => (int)$t['id'] === $id));
+
+        $this->renderDeleteConfirmation(
+            'Suppression du jeton',
+            new DeleteConfirmation(
+                'Utilisateur/doDeleteToken',
+                $source === 'detail' ? "Utilisateur/detail?id_u=$id_u" : 'Utilisateur/moi',
+                $token,
+                ['Nom' => 'name', 'Créé le' => 'created_at'],
+                ['id' => $id, 'source' => $source],
+            )
+        );
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function doDeleteTokenAction(): void
+    {
+        $userTokenService = $this->getObjectInstancier()->getInstance(UserTokenService::class);
+        $id = $this->getPostInfo()->getInt('id');
+        $source = $this->getPostInfo()->get('source') ?: 'moi';
+        $id_u = $userTokenService->getUser($id);
         $this->verifDroitApi($id_u);
 
         $userTokenService->deleteToken($id);

@@ -8,6 +8,7 @@ use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\ViewModel\DeleteConfirmation;
 
 class MailSecControler extends PastellControler
 {
@@ -525,7 +526,8 @@ class MailSecControler extends PastellControler
             if (!is_array($info) || (int)$info['id_e'] !== $id_e) {
                 continue;
             }
-            $contacts_to_delete[] = ['id_a' => $id_a, 'info' => $info];
+            $info['id_a'] = $id_a;
+            $contacts_to_delete[] = $info;
         }
 
         if (! $contacts_to_delete) {
@@ -533,10 +535,16 @@ class MailSecControler extends PastellControler
             $this->redirect("MailSec/annuaire?id_e=$id_e");
         }
 
-        $this->setViewParameter('contacts_to_delete', $contacts_to_delete);
-        $this->setViewParameter('page_title', 'Suppression de contact(s)');
-        $this->setViewParameter('template_milieu', 'MailSecContactSuppression');
-        $this->renderDefault();
+        $this->renderDeleteConfirmation(
+            'Suppression de contact(s)',
+            new DeleteConfirmation(
+                'MailSec/doContactSuppression',
+                "MailSec/annuaire?id_e=$id_e",
+                $contacts_to_delete,
+                ['Description' => 'description', 'Email' => 'email'],
+                ['id_e' => $id_e, 'id_a' => array_column($contacts_to_delete, 'id_a')],
+            )
+        );
     }
 
     /**
@@ -792,11 +800,9 @@ class MailSecControler extends PastellControler
             if (!is_array($info)) {
                 continue;
             }
-            $groupes_to_delete[] = [
-                'id_g' => $id_g,
-                'info' => $info,
-                'nb_contacts' => $annuaireGroupeSQL->getNbUtilisateur($id_g),
-            ];
+            $info['id_g'] = $id_g;
+            $info['nb_contacts'] = $annuaireGroupeSQL->getNbUtilisateur($id_g);
+            $groupes_to_delete[] = $info;
         }
 
         if (! $groupes_to_delete) {
@@ -804,11 +810,17 @@ class MailSecControler extends PastellControler
             $this->redirect("MailSec/groupeList?id_e=$id_e");
         }
 
-        $this->setViewParameter('groupes_to_delete', $groupes_to_delete);
-        $this->setViewParameter('page_title', 'Suppression de groupe(s)');
-        $this->setViewParameter('template_milieu', 'MailSecGroupesSuppression');
         $this->setMenuGaucheSelect(MenuGaucheService::MAILSEC_GROUPES);
-        $this->renderDefault();
+        $this->renderDeleteConfirmation(
+            'Suppression de groupe(s)',
+            new DeleteConfirmation(
+                'MailSec/doGroupeSuppression',
+                "MailSec/groupeList?id_e=$id_e",
+                $groupes_to_delete,
+                ['Nom' => 'nom', 'Nombre de contacts' => 'nb_contacts'],
+                ['id_e' => $id_e, 'id_g' => array_column($groupes_to_delete, 'id_g')],
+            )
+        );
     }
 
     /**

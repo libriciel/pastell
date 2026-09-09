@@ -231,7 +231,6 @@ declare(strict_types=1);
                     <a
                         class='btn btn-danger'
                         href='Utilisateur/deleteToken?id=<?php echo $token['id']; ?>'
-                        onclick="return confirm('Êtes-vous certain de vouloir supprimer définitivement ce jeton ?')"
                     >
                         <i class="fas fa-trash"></i>&nbsp;Supprimer
                     </a>
