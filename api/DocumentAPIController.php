@@ -137,38 +137,8 @@ class DocumentAPIController extends BaseAPIController
         return $documents;
     }
 
-    /**
-     * @throws NotFoundException
-     * @throws ForbiddenException
-     */
-    private function countByEntityFormat()
-    {
-        $id_e = $this->getFromRequest('id_e');
-        $type = $this->getFromRequest('type');
-
-        if ($id_e === false || $type === false) {
-            throw new Exception('Les paramètres id_e et type sont obligatoires.');
-        }
-
-        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
-        $this->checkDroitFor($id_e, $type, DroitType::LECTURE);
-
-        $req = $this->getRequest();
-        unset($req['id_e']);
-        unset($req['type']);
-        unset($req['api_function']);
-        unset($req['output']);
-
-        return $this->documentCount->getCountByEntityFormat($id_e, $type, $req);
-    }
-
     private function count()
     {
-        $output = $this->getFromRequest('output', 'detail');
-        if ($output === 'simple') {
-            return $this->countByEntityFormat();
-        }
-
         $id_e = $this->getFromRequest('id_e');
         $type = $this->getFromRequest('type');
         return $this->documentCount->getAll($this->getUtilisateurId(), $id_e, $type);

@@ -69,9 +69,4 @@ class DocumentCount
 
         return $result;
     }
-
-    public function getCountByEntityFormat($id_e, $type, $req)
-    {
-        return $this->documentEntite->getCountByEntityFormat($id_e, $type, $req);
-    }
 }
