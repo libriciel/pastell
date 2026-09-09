@@ -96,4 +96,92 @@ class PastellControlerTest extends ControlerTestCase
             $pastellControler->getViewParameterByKey('navigation')[1]['same_level_entities'][0]['denomination']
         );
     }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function testMagicLinkActiveKeepsSession(): void
+    {
+        $pastellControler = $this->getControlerInstance(PastellControler::class);
+        $_SERVER['REQUEST_URI'] = '/';
+
+        $magicLinkSQL = $this->getObjectInstancier()->getInstance(MagicLinkSQL::class);
+        $magicLinkId = $magicLinkSQL->create(
+            '11111111-1111-4111-8111-111111111111',
+            1,
+            'token-actif',
+            '123456',
+            'Intervention',
+            1,
+            date('Y-m-d H:i:s', strtotime('+1 day')),
+            'Dupont',
+            'Jean',
+            'jean.dupont@example.org',
+        );
+
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->setMagicLinkId($magicLinkId);
+
+        $pastellControler->_beforeAction();
+
+        static::assertTrue($authentification->isConnected());
+        static::assertSame($magicLinkId, $authentification->getMagicLinkId());
+    }
+
+    public function testMagicLinkInactiveDisconnects(): void
+    {
+        $pastellControler = $this->getControlerInstance(PastellControler::class);
+        $_SERVER['REQUEST_URI'] = '/';
+
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->setMagicLinkId('99999999-9999-4999-8999-999999999999');
+
+        try {
+            $pastellControler->_beforeAction();
+            static::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('accès temporaire a expiré ou a été révoqué', $e->getMessage());
+        }
+
+        static::assertFalse($authentification->isConnected());
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function testMagicLinkDisabledUserIsBlocked(): void
+    {
+        $pastellControler = $this->getControlerInstance(PastellControler::class);
+        $_SERVER['REQUEST_URI'] = '/';
+
+        $id_u = $this->authenticateNewUserWithPermission([]);
+
+        $magicLinkSQL = $this->getObjectInstancier()->getInstance(MagicLinkSQL::class);
+        $magicLinkId = $magicLinkSQL->create(
+            '22222222-2222-4222-8222-222222222222',
+            $id_u,
+            'token-desactive',
+            '123456',
+            'Intervention',
+            1,
+            date('Y-m-d H:i:s', strtotime('+1 day')),
+            'Durand',
+            'Lea',
+            'lea.durand@example.org',
+        );
+
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->setMagicLinkId($magicLinkId);
+
+        $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->disable($id_u);
+
+        try {
+            $pastellControler->_beforeAction();
+            static::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('compte a été désactivé', $e->getMessage());
+        }
+    }
 }

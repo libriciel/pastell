@@ -17,6 +17,8 @@ class MenuGaucheService
     public const string SYSTEM_FLUX = 'System/flux';
     public const string SYSTEM_DEFINITION = 'System/definition';
     public const string SYSTEM_CONNECTEUR = 'System/connecteur';
+    public const string SYSTEM_MAGIC_LINK = 'System/magicLink';
+    public const string SYSTEM_MAGIC_LINK_HISTORY = 'System/magicLinkHistory';
 
     public const string ROLE_INDEX = 'Role/index';
 
@@ -80,6 +82,10 @@ class MenuGaucheService
             ],
             'Connecteurs' => [
                 MenuGaucheOption::fromLien('Connecteurs disponibles', self::SYSTEM_CONNECTEUR),
+            ],
+            'Accès temporaires' => [
+                MenuGaucheOption::fromLien('Accès actifs', self::SYSTEM_MAGIC_LINK),
+                MenuGaucheOption::fromLien('Historique des accès', self::SYSTEM_MAGIC_LINK_HISTORY),
             ],
         ];
     }

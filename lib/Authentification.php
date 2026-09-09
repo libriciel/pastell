@@ -39,4 +39,17 @@ class Authentification
             unset($_SESSION['connexion']);
         }
     }
+
+    public function setMagicLinkId(string $magicLinkId): void
+    {
+        $_SESSION['connexion']['magic_link_id'] = $magicLinkId;
+    }
+
+    public function getMagicLinkId(): ?string
+    {
+        if (! $this->isConnected()) {
+            return null;
+        }
+        return $_SESSION['connexion']['magic_link_id'] ?? null;
+    }
 }

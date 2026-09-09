@@ -2045,6 +2045,139 @@
             }
         }
     },
+    "magic_link": {
+        "Engine": "MyISAM",
+        "Column": {
+            "id": {
+                "Field": "id",
+                "Type": "char(36)",
+                "Null": "NO",
+                "Key": "PRI",
+                "Default": null,
+                "Extra": ""
+            },
+            "id_u": {
+                "Field": "id_u",
+                "Type": "int(11)",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "token": {
+                "Field": "token",
+                "Type": "varchar(64)",
+                "Null": "NO",
+                "Key": "UNI",
+                "Default": null,
+                "Extra": ""
+            },
+            "code": {
+                "Field": "code",
+                "Type": "varchar(6)",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "code_attempts": {
+                "Field": "code_attempts",
+                "Type": "int(11)",
+                "Null": "NO",
+                "Key": "",
+                "Default": "0",
+                "Extra": ""
+            },
+            "motif": {
+                "Field": "motif",
+                "Type": "varchar(128)",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "created_by": {
+                "Field": "created_by",
+                "Type": "int(11)",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "created_at": {
+                "Field": "created_at",
+                "Type": "datetime",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "expires_at": {
+                "Field": "expires_at",
+                "Type": "datetime",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "revoked_at": {
+                "Field": "revoked_at",
+                "Type": "datetime",
+                "Null": "YES",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "user_deleted_at": {
+                "Field": "user_deleted_at",
+                "Type": "datetime",
+                "Null": "YES",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "titulaire_nom": {
+                "Field": "titulaire_nom",
+                "Type": "varchar(64)",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "titulaire_prenom": {
+                "Field": "titulaire_prenom",
+                "Type": "varchar(64)",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "titulaire_email": {
+                "Field": "titulaire_email",
+                "Type": "varchar(256)",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            }
+        },
+        "Index": {
+            "PRIMARY": {
+                "type": "BTREE",
+                "col": [
+                    "id"
+                ],
+                "unique": true
+            },
+            "magic_link_token_uindex": {
+                "type": "BTREE",
+                "col": [
+                    "token"
+                ],
+                "unique": true
+            }
+        }
+    },
     "notification": {
         "Engine": "MyISAM",
         "Column": {

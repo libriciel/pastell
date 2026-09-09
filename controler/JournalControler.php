@@ -192,7 +192,7 @@ class JournalControler extends PastellControler
         if ($this->getViewParameterByKey('id_u')) {
             $id_u = $this->getViewParameterByKey('id_u');
             $infoUtilisateur = $this->getUtilisateur()->getInfo($id_u);
-            $page_title .= ' - ' . $infoUtilisateur['login'];
+            $page_title .= ' - ' . ($infoUtilisateur['login'] ?? "utilisateur supprimé (id_u=$id_u)");
         }
 
         $this->setViewParameter('limit', 20);

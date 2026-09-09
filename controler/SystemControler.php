@@ -7,9 +7,11 @@ use Pastell\Mailer\Mailer;
 use Pastell\Service\Connecteur\MissingConnecteurService;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\FeatureToggle\DisplayFeatureToggleInTestPage;
 use Pastell\Service\FeatureToggleService;
+use Pastell\Service\MagicLink\MagicLinkService;
 use Pastell\Service\Pack\PackService;
 use Pastell\System\HealthCheck;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -583,7 +585,6 @@ class SystemControler extends PastellControler
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', "Modification du seuil d'alerte taux d'occupation du workspace");
         $this->setViewParameter('template_milieu', 'SystemEditWorkspaceAlertThreshold');
-        $this->setViewParameter('menu_gauche_select', self::SYSTEM_INDEX_PAGE);
         $this->setViewParameter('workspace_alert_threshold', $this->getConfigurationSQL()->getWorkspaceAlertThreshold());
         $this->renderDefault();
     }
@@ -605,5 +606,187 @@ class SystemControler extends PastellControler
         }
         $this->setLastMessage("Le seuil d'alerte taux d'occupation du workspace a été modifié");
         $this->redirect(self::SYSTEM_INDEX_PAGE);
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws NotFoundException
+     * @throws LastErrorException
+     */
+    public function magicLinkAction(): void
+    {
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+
+        $activeMagicLinks = $this->getInstance(MagicLinkService::class)->getActiveLinks();
+
+        $this->setViewParameter('page_title', 'Liste des accès actifs');
+        $this->setViewParameter('active_magic_links', $activeMagicLinks);
+        $this->setViewParameter('template_milieu', 'SystemMagicLink');
+        $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_MAGIC_LINK);
+        $this->renderDefault();
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws NotFoundException
+     * @throws LastErrorException
+     * @throws JsonException
+     */
+    public function magicLinkEditionAction(): void
+    {
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->setViewParameter('page_title', "Création d'un accès temporaire");
+
+        $roleAuthorized = $this->getRoleUtilisateur()->getAuthorizedRoleToDelegate($this->getId_u());
+        $roleTree = array_map(static fn($r) => ['name' => $r['libelle'], 'value' => $r['role']], $roleAuthorized);
+        $this->setViewParameter('role_treeselect_data', \json_encode($roleTree, \JSON_THROW_ON_ERROR));
+
+        $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
+        $entity_tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree(
+            $this->getRoleUtilisateur()->getArbreFilleWithRacine(
+                $this->getId_u(),
+                DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION)
+            )
+        ));
+        $this->setViewParameter('entity_treeselect_data', \json_encode($entity_tree, \JSON_THROW_ON_ERROR));
+
+        $this->setViewParameter('template_milieu', 'SystemMagicLinkEdition');
+        $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_MAGIC_LINK);
+        $this->renderDefault();
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     * @throws Exception
+     * @throws TransportExceptionInterface
+     */
+    public function doMagicLinkEditionAction(): void
+    {
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+
+        $recuperateur = $this->getPostInfo();
+        $motif = $recuperateur->get('motif');
+        $duration = $recuperateur->getInt('duration');
+        $nom = trim((string)$recuperateur->get('nom'));
+        $prenom = trim((string)$recuperateur->get('prenom'));
+        $mail = trim((string)$recuperateur->get('mail'));
+        $role = (string)$recuperateur->get('role');
+        $entityId = (string)$recuperateur->get('id_e');
+
+        if (
+            ! $motif || $duration < 1 || $nom === '' || $prenom === ''
+            || $mail === '' || $role === '' || $entityId === ''
+        ) {
+            $this->setLastError(
+                'Le nom, le prénom, le mail, le motif, le rôle de base, l\'entité de base '
+                . 'et une durée valide (en heures) sont obligatoires'
+            );
+            $this->redirect('System/magicLinkEdition');
+        }
+
+        if ($duration > MagicLinkService::MAX_DURATION_IN_HOURS) {
+            $this->setLastError(
+                \sprintf(
+                    'La durée de vie d\'un accès temporaire ne peut pas dépasser %d heures',
+                    MagicLinkService::MAX_DURATION_IN_HOURS
+                )
+            );
+            $this->redirect('System/magicLinkEdition');
+        }
+
+        try {
+            $this->getInstance(MagicLinkService::class)
+                ->create($motif, $duration, $this->getId_u(), $nom, $prenom, $mail, $role, (int)$entityId);
+        } catch (UnrecoverableException | ConflictException | TransportExceptionInterface $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect('System/magicLinkEdition');
+        }
+
+        $this->setLastMessage(
+            "Le lien d'accès a été envoyé à $mail. "
+            . "Pensez à communiquer le code à 6 chiffres à l'intervenant."
+        );
+        $this->redirect('System/magicLink');
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws NotFoundException
+     * @throws LastErrorException
+     */
+    public function magicLinkRevokeAction(): void
+    {
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+
+        $magicLinkId = (string)$this->getGetInfo()->get('id');
+        $magicLink = $this->getInstance(MagicLinkService::class)->getActiveLink($magicLinkId);
+        if ($magicLink === null) {
+            $this->setLastError("Cet accès temporaire n'existe pas ou n'est plus actif.");
+            $this->redirect('System/magicLink');
+        }
+
+        $this->setViewParameter('page_title', "Révocation d'un accès");
+        $this->setViewParameter('magic_link', $magicLink);
+        $this->setViewParameter('template_milieu', 'SystemMagicLinkRevoke');
+        $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_MAGIC_LINK);
+        $this->renderDefault();
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function doMagicLinkRevokeAction(): void
+    {
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+
+        $magicLinkId = (string)$this->getPostInfo()->get('id');
+        $this->getInstance(MagicLinkService::class)->revoke($magicLinkId);
+
+        $this->setLastMessage("L'accès temporaire a été révoqué.");
+        $this->redirect('System/magicLink');
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function doMagicLinkResendAction(): void
+    {
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+
+        $magicLinkId = (string)$this->getPostInfo()->get('id');
+        try {
+            $this->getInstance(MagicLinkService::class)->resend($magicLinkId);
+        } catch (UnrecoverableException | TransportExceptionInterface $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect('System/magicLink');
+        }
+
+        $this->setLastMessage("Le lien d'accès a été renvoyé par mail.");
+        $this->redirect('System/magicLink');
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
+    public function magicLinkHistoryAction(): void
+    {
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+
+        $search = (string)$this->getGetInfo()->get('search');
+
+        $this->setViewParameter('page_title', 'Historique des accès créés');
+        $this->setViewParameter(
+            'magic_link_history',
+            $this->getInstance(MagicLinkService::class)->getHistory($search)
+        );
+        $this->setViewParameter('search', $search);
+        $this->setViewParameter('template_milieu', 'SystemMagicLinkHistory');
+        $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_MAGIC_LINK_HISTORY);
+        $this->renderDefault();
     }
 }

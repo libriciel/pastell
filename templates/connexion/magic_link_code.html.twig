@@ -1,0 +1,51 @@
+{% extends 'connexion/base.html.twig' %}
+
+{% block main %}
+
+    <div class="page-height d-flex position-relative">
+        <ls-auth-page-sidebar class="sidebar"></ls-auth-page-sidebar>
+        <div class="login-form">
+            <ls-auth-page-alert></ls-auth-page-alert>
+            <div class="form-content">
+                <div class="text-center h-100">
+                    <img src="{{ asset('img/commun/pastell-color-grey.svg') }}" alt="logo de l'application">
+                </div>
+
+                <h1 class="page-title">Veuillez saisir le code à 6 chiffres qui vous a été communiqué</h1>
+                <form action="{{ path('app.legacy.connexion_doMagicLinkCode') }}" method="post">
+                    {% if gabarit.getLastError().getLastError() %}
+                        <div class="alert alert-danger">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <span>{{ gabarit.getLastError().getLastError() }}</span>
+                        </div>
+                    {% endif %}
+                    <div class="row form-group">
+                        <label class="col-sm-3 col-form-label" for="code">Code</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa fa-key"></i></span>
+                                <input type="text" name="code" id="code" class="form-control"
+                                       autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*"
+                                       maxlength="6" required autofocus/>
+                            </div>
+                        </div>
+                    </div>
+                    {{ gabarit.displayCSRFInput() }}
+                    <input type="hidden" name="token" value="{{ token }}"/>
+                    <div class="ls-action-bar ls-action-bar-align-right">
+                        <button type="submit" class="btn btn-primary" title="Valider">
+                            <i class="fas fa-right-to-bracket"></i>&nbsp;<span>Valider</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        {% if login_page_configuration != '' %}
+            document.getElementsByTagName("ls-auth-page-sidebar")[0].configuration = {{ login_page_configuration | raw }};
+            document.getElementsByTagName("ls-auth-page-alert")[0].configuration = {{ login_page_configuration | raw }};
+        {% endif %}
+    </script>
+{% endblock %}

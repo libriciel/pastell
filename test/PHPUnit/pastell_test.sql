@@ -87,6 +87,7 @@ TRUNCATE TABLE `job_queue`;
 TRUNCATE TABLE `journal`;
 TRUNCATE TABLE `journal_attente_preuve`;
 TRUNCATE TABLE `journal_historique`;
+TRUNCATE TABLE `magic_link`;
 TRUNCATE TABLE `notification`;
 TRUNCATE TABLE `notification_digest`;
 TRUNCATE TABLE `role`;

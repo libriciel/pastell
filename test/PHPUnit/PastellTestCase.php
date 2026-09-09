@@ -200,6 +200,7 @@ iparapheur_retour: Archive',
         $this->reinitFileSystem();
         $_POST = [];
         $_GET = [];
+        $_SESSION = [];
         ObjectInstancierFactory::setObjectInstancier($this->getObjectInstancier());
     }
 
