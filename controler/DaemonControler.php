@@ -40,7 +40,7 @@ class DaemonControler extends PastellControler
         $this->setJobSearchViewParameters(
             $this->getJobAdvancedFilters($this->getGetInfo()),
             'app.legacy.daemon_index',
-            $this->getJobQueueSQL()->getDistinctVerrou()
+            $this->getConnecteurFrequenceSQL()->getDistinctVerrou()
         );
         $this->setViewParameter('page_url', 'index');
         $this->setViewParameter('twigTemplate', 'daemon/index.html.twig');
@@ -319,7 +319,7 @@ class DaemonControler extends PastellControler
         $this->setJobSearchViewParameters(
             $advancedFilters,
             'app.legacy.daemon_job',
-            $this->getJobQueueSQL()->getDistinctVerrou()
+            $this->getConnecteurFrequenceSQL()->getDistinctVerrou()
         );
 
         $this->setViewParameter(

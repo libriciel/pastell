@@ -386,26 +386,24 @@ class PastellControler extends Controler
     }
 
     /**
-     * Reads the advanced job search criteria from the request. Values left empty
-     * are ignored downstream so each criterion is optional.
-     *
-     * @return array<string,string>
+     * @return array{type:string[],job_status:string[],suspended:string,id_e:string,include_children:string,id_verrou:string[]}
      */
     protected function getJobAdvancedFilters(Recuperateur $recuperateur): array
     {
         return [
-            'type' => $recuperateur->get('type', ''),
-            'job_status' => $recuperateur->get('job_status', ''),
+            'type' => (array)$recuperateur->get('job_type', []),
+            'job_status' => (array)$recuperateur->get('job_status', []),
             'suspended' => $recuperateur->get('suspended', ''),
             'id_e' => $recuperateur->get('search_id_e', ''),
-            'id_verrou' => $recuperateur->get('id_verrou', ''),
+            'include_children' => $recuperateur->get('include_children', ''),
+            'id_verrou' => (array)$recuperateur->get('id_verrou', []),
         ];
     }
 
     /**
      * Sets the view parameters required to render the advanced job search form.
      *
-     * @param array<string,string> $advancedFilters current criteria values
+     * @param array<string,array<string>|string> $advancedFilters current criteria values
      * @param string $search_action route name the form submits to
      * @param string[] $verrou_list
      */

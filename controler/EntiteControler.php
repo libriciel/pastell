@@ -844,11 +844,10 @@ class EntiteControler extends PastellControler
         $id_e = $recuperateur->getInt('id_e', 0);
 
         $this->daemonData();
-        $daemon = $this->resolveDaemonForEntity($this->getGetInfo()->getInt('id_e'));
         $this->setJobSearchViewParameters(
             $this->getJobAdvancedFilters($this->getGetInfo()),
             'app.legacy.entite_daemon',
-            $this->getJobQueueSQL()->getDistinctVerrou($daemon->id_daemon),
+            $this->getObjectInstancier()->getInstance(ConnecteurFrequenceSQL::class)->getDistinctVerrou(),
             $this->getGetInfo()->getInt('id_e')
         );
         $this->setViewParameter('page_url', 'index');
@@ -977,7 +976,7 @@ class EntiteControler extends PastellControler
         $this->setJobSearchViewParameters(
             $advancedFilters,
             'app.legacy.entite_job',
-            $this->getJobQueueSQL()->getDistinctVerrou($daemon->id_daemon),
+            $this->getObjectInstancier()->getInstance(ConnecteurFrequenceSQL::class)->getDistinctVerrou(),
             $id_e
         );
 

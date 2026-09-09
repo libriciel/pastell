@@ -5,10 +5,11 @@
 
     {% set pagination_params = {
         'filtre': filtre,
-        'type': search.type,
+        'job_type': search.type,
         'job_status': search.job_status,
         'suspended': search.suspended,
         'search_id_e': search.id_e,
+        'include_children': search.include_children,
         'id_verrou': search.id_verrou
     } %}
 

@@ -6,29 +6,33 @@
         {% endif %}
         <input type="hidden" name="filtre" value="{{ filtre|default('') }}">
 
-        <div class="row g-3 align-items-end">
+        <div class="row g-3 align-items-start">
             <div class="col-md-4 col-lg-2">
                 <label class="form-label" for="search-type">Type</label>
-                <select class="form-select" id="search-type" name="type">
-                    <option value="">Tous</option>
-                    {% for type_value, type_label in type_list %}
-                        <option value="{{ type_value }}"
-                            {{ search.type == type_value ? 'selected' : '' }}>{{ type_label }}</option>
-                    {% endfor %}
-                </select>
+                <div class="select2-multiselect-field">
+                    <select class="form-select select2-multiselect" id="search-type" name="job_type[]"
+                            data-placeholder="Tous" multiple="multiple">
+                        {% for type_value, type_label in type_list %}
+                            <option value="{{ type_value }}"
+                                {{ type_value in search.type ? 'selected' : '' }}>{{ type_label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
 
             <div class="col-md-4 col-lg-3">
                 <label class="form-label" for="search-job-status">État</label>
-                <select class="form-select" id="search-job-status" name="job_status">
-                    <option value="">Tous</option>
-                    {% for status in job_status_list %}
-                        <option value="{{ status.value }}"
-                            {{ search.job_status != '' and search.job_status == status.value ? 'selected' : '' }}>
-                            {{ status.label() }}
-                        </option>
-                    {% endfor %}
-                </select>
+                <div class="select2-multiselect-field">
+                    <select class="form-select select2-multiselect" id="search-job-status" name="job_status[]"
+                            data-placeholder="Tous" multiple="multiple">
+                        {% for status in job_status_list %}
+                            <option value="{{ status.value }}"
+                                {{ status.value in search.job_status ? 'selected' : '' }}>
+                                {{ status.name == 'WAITING' ? status.label() : 'Suspendu - ' ~ status.label() }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
 
             <div class="col-md-4 col-lg-2">
@@ -45,19 +49,29 @@
                 <input type="hidden" id="search-id-e" name="search_id_e" value="{{ search.id_e }}">
                 <div class="treeselect-job-search-entity"></div>
                 <script type="application/json" class="treeselect-config">{{ entity_treeselect_config|raw }}</script>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" value="1"
+                           id="search-include-children" name="include_children"
+                           {{ search.include_children ? 'checked' : '' }}>
+                    <label class="form-check-label" for="search-include-children">
+                        Inclure les entités filles
+                    </label>
+                </div>
             </div>
 
             <div class="col-md-6 col-lg-2">
                 <label class="form-label" for="search-id-verrou">File d'attente</label>
-                <select class="form-select" id="search-id-verrou" name="id_verrou">
-                    <option value="">Toutes</option>
-                    <option value="{{ verrou_none_value }}"
-                        {{ search.id_verrou == verrou_none_value ? 'selected' : '' }}>(vide)</option>
-                    {% for verrou in verrou_list %}
-                        <option value="{{ verrou }}"
-                            {{ search.id_verrou == verrou ? 'selected' : '' }}>{{ verrou }}</option>
-                    {% endfor %}
-                </select>
+                <div class="select2-multiselect-field">
+                    <select class="form-select select2-multiselect" id="search-id-verrou" name="id_verrou[]"
+                            data-placeholder="Toutes" multiple="multiple">
+                        <option value="{{ verrou_none_value }}"
+                            {{ verrou_none_value in search.id_verrou ? 'selected' : '' }}>(vide)</option>
+                        {% for verrou in verrou_list %}
+                            <option value="{{ verrou }}"
+                                {{ verrou in search.id_verrou ? 'selected' : '' }}>{{ verrou }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
 
             <div class="col-12">

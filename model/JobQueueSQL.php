@@ -453,23 +453,29 @@ SQL;
     }
 
     /**
-     * Appends the advanced search criteria (type, job_status, suspended, id_e,
-     * id_verrou) to a job_queue query. Empty values are ignored so each
-     * criterion is optional.
-     *
      * @param array<string,mixed> $filters
      * @param array<int,mixed> $params
      */
     private function appendAdvancedFilters(array $filters, string &$sql, array &$params): void
     {
-        if (isset($filters['type']) && $filters['type'] !== '') {
-            $sql .= ' AND job_queue.type = ?';
-            $params[] = (int)$filters['type'];
+        $typeList = array_filter((array)($filters['type'] ?? []), static fn ($v) => $v !== '');
+        if ($typeList !== []) {
+            $placeholders = implode(', ', array_fill(0, count($typeList), '?'));
+            $sql .= " AND job_queue.type IN ($placeholders)";
+            foreach ($typeList as $type) {
+                $params[] = (int)$type;
+            }
         }
-        if (isset($filters['job_status']) && $filters['job_status'] !== '') {
-            $sql .= ' AND job_queue.job_status = ?';
-            $params[] = (int)$filters['job_status'];
+
+        $statusList = array_filter((array)($filters['job_status'] ?? []), static fn ($v) => $v !== '');
+        if ($statusList !== []) {
+            $placeholders = implode(', ', array_fill(0, count($statusList), '?'));
+            $sql .= " AND job_queue.job_status IN ($placeholders)";
+            foreach ($statusList as $status) {
+                $params[] = (int)$status;
+            }
         }
+
         if (isset($filters['suspended']) && $filters['suspended'] !== '') {
             if ($filters['suspended'] === 'oui') {
                 $sql .= ' AND job_queue.job_status != 0';
@@ -477,35 +483,40 @@ SQL;
                 $sql .= ' AND job_queue.job_status = 0';
             }
         }
+
         if (isset($filters['id_e']) && $filters['id_e'] !== '') {
-            $sql .= ' AND job_queue.id_e = ?';
+            if (!empty($filters['include_children'])) {
+                $sql .= ' AND job_queue.id_e IN'
+                    . ' (SELECT id_e FROM entite_ancetre WHERE id_e_ancetre = ?)';
+            } else {
+                $sql .= ' AND job_queue.id_e = ?';
+            }
             $params[] = (int)$filters['id_e'];
         }
-        if (isset($filters['id_verrou']) && $filters['id_verrou'] !== '') {
-            if ($filters['id_verrou'] === self::VERROU_NONE) {
-                $sql .= " AND job_queue.id_verrou = ''";
-            } else {
-                $sql .= ' AND job_queue.id_verrou = ?';
-                $params[] = $filters['id_verrou'];
-            }
-        }
-    }
 
-    /**
-     * Distinct queue identifiers (id_verrou) present in the job queue, used to
-     * populate the advanced search "File d'attente" dropdown.
-     *
-     * @return string[]
-     */
-    public function getDistinctVerrou(?int $id_daemon = null): array
-    {
-        $sql = "SELECT DISTINCT id_verrou FROM job_queue WHERE id_verrou != ''";
-        $params = [];
-        if ($id_daemon !== null) {
-            $sql .= ' AND id_daemon = ?';
-            $params[] = $id_daemon;
+        $verrouList = array_filter((array)($filters['id_verrou'] ?? []), static fn ($v) => $v !== '');
+        if ($verrouList !== []) {
+            $conditions = [];
+            $namedVerrou = [];
+            $includeNone = false;
+            foreach ($verrouList as $verrou) {
+                if ($verrou === self::VERROU_NONE) {
+                    $includeNone = true;
+                } else {
+                    $namedVerrou[] = $verrou;
+                }
+            }
+            if ($namedVerrou !== []) {
+                $placeholders = implode(', ', array_fill(0, count($namedVerrou), '?'));
+                $conditions[] = "job_queue.id_verrou IN ($placeholders)";
+                foreach ($namedVerrou as $verrou) {
+                    $params[] = $verrou;
+                }
+            }
+            if ($includeNone) {
+                $conditions[] = "job_queue.id_verrou = ''";
+            }
+            $sql .= ' AND (' . implode(' OR ', $conditions) . ')';
         }
-        $sql .= ' ORDER BY id_verrou';
-        return array_column($this->query($sql, $params), 'id_verrou');
     }
 }
