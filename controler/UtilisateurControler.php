@@ -712,11 +712,8 @@ class UtilisateurControler extends PastellControler
                 'Utilisateur/doNotificationSuppression',
                 $source === 'moi' ? 'Utilisateur/moi' : "Utilisateur/$source?id_u={$infoNotification['id_u']}",
                 [$infoNotification],
-                [
-                    'Entité' => 'denomination',
-                    'Type de dossier' => static fn(array $n): string => $n['type'] ?: 'Tous',
-                ],
                 ['id_n' => $id_n, 'source' => $source],
+                DeleteConfirmation::NOTIFICATION,
             )
         );
     }
@@ -867,11 +864,11 @@ class UtilisateurControler extends PastellControler
                 $redirect_url,
                 $users_to_delete,
                 [
-                    'Prénom Nom' => static fn(array $user): string => "{$user['prenom']} {$user['nom']}",
-                    'Login' => 'login',
-                    'Email' => 'email',
+                    'id_e' => $id_e,
+                    'source' => $source,
+                    'id_u_list' => array_column($users_to_delete, 'id_u'),
                 ],
-                ['id_e' => $id_e, 'source' => $source, 'id_u_list' => array_map(intval(...), $id_u_list)],
+                DeleteConfirmation::UTILISATEUR,
             )
         );
     }
@@ -1054,8 +1051,8 @@ EOT;
                 'Utilisateur/doDeleteToken',
                 $source === 'detail' ? "Utilisateur/detail?id_u=$id_u" : 'Utilisateur/moi',
                 $token,
-                ['Nom' => 'name', 'Créé le' => 'created_at'],
                 ['id' => $id, 'source' => $source],
+                DeleteConfirmation::JETON,
             )
         );
     }

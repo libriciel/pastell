@@ -39,7 +39,7 @@
                                 <i class="fas fa-download"></i>&nbsp;Exporter
                             </a>
                             &nbsp;
-                            <a href="<?php $this->url("TypeDossier/delete?id_t={$type_dossier_info['id_t']}") ?>" class="btn btn-danger">
+                            <a href="<?php $this->url("TypeDossier/delete?id_t={$type_dossier_info['id_t']}") ?>" class="btn btn-danger js-delete-modal">
                                 <i class="fas fa-trash"></i>&nbsp;Supprimer
                             </a>
                             &nbsp;

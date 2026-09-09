@@ -133,8 +133,8 @@ class ExtensionControler extends PastellControler
                 'Extension/doDelete',
                 "Extension/detail?id_extension=$id_extension",
                 [$extension_info],
-                ['Nom' => 'nom', 'Identifiant' => 'id', 'Emplacement' => 'path'],
                 ['id_extension' => $id_extension],
+                DeleteConfirmation::EXTENSION,
             )
         );
     }

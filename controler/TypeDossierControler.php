@@ -209,8 +209,8 @@ class TypeDossierControler extends PastellControler
                 '/TypeDossier/doDelete',
                 'TypeDossier/list',
                 [$type_dossier_info],
-                ['Type de dossier' => 'id_type_dossier'],
                 ['id_t' => $type_dossier_info['id_t']],
+                DeleteConfirmation::TYPE_DOSSIER,
             )
         );
     }

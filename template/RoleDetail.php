@@ -18,7 +18,7 @@
     <div class="bloc-flex">
         <a class='btn btn-primary inline' href='<?php
         $this->url("Role/edition?role=" . get_hecho($role)) ?>'><i class='fas fa-pen'></i>&nbsp;Modifier le libellé</a>
-        <a class='btn btn-danger inline' href='<?php
+        <a class='btn btn-danger inline js-delete-modal' href='<?php
         $this->url("Role/delete?role=" . get_hecho($role)) ?>'>
             <i class="fas fa-trash"></i>&nbsp;Supprimer le rôle
         </a>

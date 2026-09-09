@@ -818,8 +818,8 @@ class DocumentControler extends PastellControler
                     'Document/action',
                     "Document/detail?id_d=$id_d&id_e=$id_e&page=$page",
                     [$infoDocument],
-                    ['Identifiant' => 'id_d', 'Titre' => 'titre', 'Type' => fn () => $documentType->getName()],
                     ['id_d' => $id_d, 'id_e' => $id_e, 'page' => $page, 'action' => $action, 'go' => 1],
+                    DeleteConfirmation::DOSSIER,
                 )
             );
             return;
