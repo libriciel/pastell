@@ -18,13 +18,10 @@
     <div class="bloc-flex">
         <a class='btn btn-primary inline' href='<?php
         $this->url("Role/edition?role=" . get_hecho($role)) ?>'><i class='fas fa-pen'></i>&nbsp;Modifier le libellé</a>
-        <form action='<?php $this->url("Role/doDelete") ?>' method='post' class="form-suppression">
-            <?php $this->displayCSRFInput() ?>
-            <input type='hidden' name='role' value='<?php hecho($role) ?>'/>
-            <button type="submit" class="btn btn-danger">
-                <i class="fas fa-trash"></i>&nbsp;Supprimer le rôle
-            </button>
-        </form>
+        <a class='btn btn-danger inline' href='<?php
+        $this->url("Role/delete?role=" . get_hecho($role)) ?>'>
+            <i class="fas fa-trash"></i>&nbsp;Supprimer le rôle
+        </a>
     </div>
 </div>
 

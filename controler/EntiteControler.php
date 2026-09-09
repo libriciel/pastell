@@ -5,6 +5,7 @@ use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntiteDeletionService;
+use Pastell\ViewModel\DeleteConfirmation;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Entite\EntityUpdateService;
 use Pastell\Service\FeatureToggleService;
@@ -529,15 +530,40 @@ class EntiteControler extends PastellControler
         $this->renderDefault();
     }
 
-    public function supprimerAction()
+    public function supprimerAction(): void
     {
-        $recuperateur = new Recuperateur($_GET);
-        $id_e = $recuperateur->getInt('id_e', 0);
+        $id_e = $this->getGetInfo()->getInt('id_e', 0);
+        $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
+
+        if (! $this->getInstance(EntiteDeletionService::class)->canDelete($id_e)) {
+            $this->setLastError("L'entité ne peut pas être supprimée");
+            $this->redirect("/Entite/detail?id_e=$id_e");
+        }
+
+        $info = $this->getEntiteSQL()->getInfo($id_e);
+        $this->renderDeleteConfirmation(
+            "Suppression de l'entité {$info['denomination']}",
+            new DeleteConfirmation(
+                'Entite/doSupprimer',
+                "Entite/detail?id_e=$id_e",
+                [$info],
+                ['Dénomination' => 'denomination', 'SIREN' => 'siren', 'Type' => 'type'],
+                ['id_e' => $id_e],
+            )
+        );
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function doSupprimerAction(): void
+    {
+        $id_e = $this->getPostInfo()->getInt('id_e', 0);
         $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
         $entiteDeletionService = $this->getInstance(EntiteDeletionService::class);
 
-        $canDelete = $entiteDeletionService->canDelete($id_e);
-        if (! $canDelete) {
+        if (! $entiteDeletionService->canDelete($id_e)) {
             $this->setLastError("L'entité ne peut pas être supprimée");
             $this->redirect("/Entite/detail?id_e=$id_e");
         }

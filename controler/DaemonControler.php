@@ -15,6 +15,12 @@ class DaemonControler extends PastellControler
 {
     public const NB_JOB_DISPLAYING = 50;
 
+    private const array JOB_CONFIRMATION_COLUMNS = [
+        'Identifiant' => 'id_job',
+        'État source' => 'etat_source',
+        'État cible' => 'etat_cible',
+    ];
+
     public function _beforeAction()
     {
         parent::_beforeAction();
@@ -520,6 +526,33 @@ class DaemonControler extends PastellControler
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $id_cf = $this->getGetInfo()->get('id_cf');
+        $connecteurFrequence = $this->verifConnecteur($id_cf);
+
+        $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_FREQUENCE_CONFIGURATION);
+        $this->renderDeleteConfirmation(
+            'Suppression de la fréquence',
+            new DeleteConfirmation(
+                'Daemon/doDeleteFrequence',
+                "Daemon/connecteurFrequenceDetail?id_cf=$id_cf",
+                [[
+                    'type' => $connecteurFrequence->type_connecteur ?: 'Tous',
+                    'action' => $connecteurFrequence->action ?: 'Toutes',
+                    'frequence' => $connecteurFrequence->getExpressionAsString(),
+                ]],
+                ['Type' => 'type', 'Action' => 'action', 'Fréquence' => 'frequence'],
+                ['id_cf' => $id_cf],
+            )
+        );
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function doDeleteFrequenceAction(): void
+    {
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
+        $id_cf = $this->getPostInfo()->get('id_cf');
         $this->getConnecteurFrequenceSQL()->delete($id_cf);
         $this->setLastMessage('La fréquence a été supprimée');
         $this->redirect('Daemon/frequenceConfiguration');
@@ -531,20 +564,30 @@ class DaemonControler extends PastellControler
      */
     public function deleteJobAction(): void
     {
-        $id_job = $this->getGetInfo()->get('id_job');
         $id_connecteur = $this->getGetInfo()->get('id_ce', 'Connecteur/index');
-        if ($id_job) {
-            $job = $this->getJobQueueSQL()->getJob($id_job);
-            if ($job === null) {
-                $this->setLastError('Impossible de trouver le travail à supprimer');
-            } else {
-                $this->checkDroitFor($job->id_e, DroitService::DROIT_DAEMON, DroitType::EDITION);
-                $this->getJobQueueSQL()->deleteJob($job->id_job);
-                $this->setLastMessage('Le travail a été supprimé');
-            }
-        } else {
-            $this->setLastError('Identifiant de travail manquant');
-        }
+        $job = $this->verifJobToDelete("Connecteur/edition?id_ce=$id_connecteur");
+
+        $this->renderDeleteConfirmation(
+            'Suppression du travail',
+            new DeleteConfirmation(
+                'Daemon/doDeleteJob',
+                "Connecteur/edition?id_ce=$id_connecteur",
+                [$this->getJobConfirmationItem($job)],
+                self::JOB_CONFIRMATION_COLUMNS,
+                ['id_job' => $job->id_job, 'id_ce' => $id_connecteur],
+            )
+        );
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function doDeleteJobAction(): void
+    {
+        $id_job = $this->getPostInfo()->get('id_job');
+        $id_connecteur = $this->getPostInfo()->get('id_ce', 'Connecteur/index');
+        $this->doDeleteJobById($id_job);
         $this->redirect("Connecteur/edition?id_ce=$id_connecteur");
     }
 
@@ -554,22 +597,85 @@ class DaemonControler extends PastellControler
      */
     public function deleteJobDocumentAction(): void
     {
-        $id_job = $this->getGetInfo()->get('id_job');
         $id_document = $this->getGetInfo()->get('id_d');
         $id_e = $this->getGetInfo()->get('id_e');
-        if ($id_job) {
-            $job = $this->getJobQueueSQL()->getJob($id_job);
-            if ($job === null) {
-                $this->setLastError('Impossible de trouver le travail à supprimer');
-            } else {
-                $this->checkDroitFor($job->id_e, DroitService::DROIT_DAEMON, DroitType::EDITION);
-                $this->getJobQueueSQL()->deleteJob($job->id_job);
-                $this->setLastMessage('Le travail a été supprimé');
-            }
-        } else {
-            $this->setLastError('Identifiant de travail manquant');
-        }
+        $job = $this->verifJobToDelete("Document/detail?id_d=$id_document&id_e=$id_e");
+
+        $this->renderDeleteConfirmation(
+            'Suppression du travail',
+            new DeleteConfirmation(
+                'Daemon/doDeleteJobDocument',
+                "Document/detail?id_d=$id_document&id_e=$id_e",
+                [$this->getJobConfirmationItem($job)],
+                self::JOB_CONFIRMATION_COLUMNS,
+                ['id_job' => $job->id_job, 'id_d' => $id_document, 'id_e' => $id_e],
+            )
+        );
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function doDeleteJobDocumentAction(): void
+    {
+        $id_job = $this->getPostInfo()->get('id_job');
+        $id_document = $this->getPostInfo()->get('id_d');
+        $id_e = $this->getPostInfo()->get('id_e');
+        $this->doDeleteJobById($id_job);
         $this->redirect("Document/detail?id_d=$id_document&id_e=$id_e");
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    private function verifJobToDelete(string $redirect_url): Job
+    {
+        $id_job = $this->getGetInfo()->get('id_job');
+        if (!$id_job) {
+            $this->setLastError('Identifiant de travail manquant');
+            $this->redirect($redirect_url);
+        }
+        $job = $this->getJobQueueSQL()->getJob($id_job);
+        if ($job === null) {
+            $this->setLastError('Impossible de trouver le travail à supprimer');
+            $this->redirect($redirect_url);
+        }
+        $this->checkDroitFor($job->id_e, DroitService::DROIT_DAEMON, DroitType::EDITION);
+        return $job;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getJobConfirmationItem(Job $job): array
+    {
+        return [
+            'id_job' => $job->id_job,
+            'etat_source' => $job->etat_source,
+            'etat_cible' => $job->etat_cible,
+        ];
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    private function doDeleteJobById($id_job): void
+    {
+        if (!$id_job) {
+            $this->setLastError('Identifiant de travail manquant');
+            return;
+        }
+        $job = $this->getJobQueueSQL()->getJob($id_job);
+        if ($job === null) {
+            $this->setLastError('Impossible de trouver le travail à supprimer');
+            return;
+        }
+        $this->checkDroitFor($job->id_e, DroitService::DROIT_DAEMON, DroitType::EDITION);
+        $this->getJobQueueSQL()->deleteJob($job->id_job);
+        $this->setLastMessage('Le travail a été supprimé');
     }
 
     /**

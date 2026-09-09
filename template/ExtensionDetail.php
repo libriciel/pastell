@@ -39,7 +39,6 @@ $extensionId = get_hecho($extension_info['id_e']);
     ><i class="fas fa-pen"></i>&nbsp;Modifier</a>
     <a href='<?php $this->url("Extension/delete?id_extension=$extensionId"); ?>'
        class='btn btn-danger'
-       onclick='return confirm("Êtes-vous sûr de vouloir supprimer cette extension ?")'
     ><i class="fas fa-trash"></i>&nbsp;Supprimer</a>
 </div>
 

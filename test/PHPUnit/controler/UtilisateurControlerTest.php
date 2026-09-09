@@ -214,7 +214,7 @@ class UtilisateurControlerTest extends ControlerTestCase
         $token = $userTokenService->createToken(self::ID_U_ADMIN, 'token');
         $this->setPostInfo(['id' => 1]);
         try {
-            $this->getUtilisateurControler()->deleteTokenAction();
+            $this->getUtilisateurControler()->doDeleteTokenAction();
         } catch (Exception $e) {
             self::assertMatchesRegularExpression(
                 "/Le jeton a été supprimé/",
@@ -356,7 +356,7 @@ class UtilisateurControlerTest extends ControlerTestCase
         $userController->getAuthentification()->connexion('admin_inferieur', $this->admin_inf);
         $this->setPostInfo(['id' => 1]);
         try {
-            $userController->deleteTokenAction();
+            $userController->doDeleteTokenAction();
         } catch (Exception $e) {
             self::assertMatchesRegularExpression(
                 "/Vous n'avez pas les droits nécessaires pour éxecuter cette action/",
@@ -376,7 +376,7 @@ class UtilisateurControlerTest extends ControlerTestCase
         $token = $this->userTokenService->createToken($this->api_user_id, 'token');
         $this->setPostInfo(['id' => 1]);
         try {
-            $this->getUtilisateurControler()->deleteTokenAction();
+            $this->getUtilisateurControler()->doDeleteTokenAction();
         } catch (Exception $e) {
             self::assertMatchesRegularExpression(
                 '/Le jeton a été supprimé/',
@@ -568,7 +568,7 @@ class UtilisateurControlerTest extends ControlerTestCase
         ]);
 
         try {
-            $this->getUtilisateurControler()->notificationSuppressionAction();
+            $this->getUtilisateurControler()->doNotificationSuppressionAction();
         } catch (LastMessageException $e) {
             static::assertStringContainsString(
                 'La notification a été supprimée',

@@ -3,6 +3,7 @@
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\ViewModel\DeleteConfirmation;
 
 class ExtensionControler extends PastellControler
 {
@@ -120,8 +121,27 @@ class ExtensionControler extends PastellControler
         $this->redirect("/Extension/index");
     }
 
-    public function deleteAction()
+    public function deleteAction(): void
     {
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $id_extension = $this->getGetInfo()->get('id_extension');
+        $extension_info = $this->getExtensions()->getInfo($id_extension);
+
+        $this->renderDeleteConfirmation(
+            "Suppression de l'extension {$extension_info['nom']}",
+            new DeleteConfirmation(
+                'Extension/doDelete',
+                "Extension/detail?id_extension=$id_extension",
+                [$extension_info],
+                ['Nom' => 'nom', 'Identifiant' => 'id', 'Emplacement' => 'path'],
+                ['id_extension' => $id_extension],
+            )
+        );
+    }
+
+    public function doDeleteAction(): void
+    {
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         try {
             $id_extension = $this->getPostInfo()->getInt('id_extension');
             $this->apiDelete("/extension/{$id_extension}");

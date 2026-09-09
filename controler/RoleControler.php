@@ -3,6 +3,7 @@
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\ViewModel\DeleteConfirmation;
 
 class RoleControler extends PastellControler
 {
@@ -177,6 +178,24 @@ class RoleControler extends PastellControler
             $this->getRoleSQL()->addDroit($role, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         }
         $this->redirect("/Role/detail?role=$role");
+    }
+
+    public function deleteAction(): void
+    {
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION);
+        $role = $this->getGetInfo()->get('role');
+        $role_info = $this->getRoleSQL()->getInfo($role) ?: [];
+
+        $this->renderDeleteConfirmation(
+            "Suppression du rôle {$role}",
+            new DeleteConfirmation(
+                'Role/doDelete',
+                "Role/detail?role=$role",
+                [$role_info + ['role' => $role]],
+                ['Identifiant' => 'role', 'Libellé' => 'libelle'],
+                ['role' => $role],
+            )
+        );
     }
 
     /**
