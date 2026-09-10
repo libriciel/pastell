@@ -92,13 +92,10 @@ class TdtAnnexeTypologieAnnexeChange extends ConnecteurTypeActionExecutor
     {
         try {
             $config = $this->getConnecteurConfigByType(TdtConnecteur::FAMILLE_CONNECTEUR);
-            $data = new ActesTypePJData();
-            $data->classification_file_path = $config->getFilePath($this->getMappingValue('classification_file'));
-            if (! file_exists($data->classification_file_path)) {
-                return null;
-            }
-            $data->acte_nature = $this->getDonneesFormulaire()->get($this->getMappingValue('acte_nature'));
-            return $this->objectInstancier->getInstance(ActesTypePJ::class)->getTypePJListe($data);
+            return $this->objectInstancier->getInstance(ActesTypePJ::class)->getTypePJListeForClassification(
+                $config->getFilePath($this->getMappingValue('classification_file')),
+                $this->getDonneesFormulaire()->get($this->getMappingValue('acte_nature'))
+            );
         } catch (Exception $e) {
             $this->getLogger()->warning(
                 'Impossible de valider les typologies via la classification TdT : ' . $e->getMessage()

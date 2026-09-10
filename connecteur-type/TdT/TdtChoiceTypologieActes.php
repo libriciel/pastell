@@ -56,7 +56,6 @@ class TdtChoiceTypologieActes extends ConnecteurTypeChoiceActionExecutor
 
         $connecteur_type_action = $this->getMappingList();
 
-        $actesTypePJData = new ActesTypePJData();
         $id_ce = $this->getConnecteurFactory()->getConnecteurId(
             $this->id_e,
             $this->type,
@@ -68,19 +67,14 @@ class TdtChoiceTypologieActes extends ConnecteurTypeChoiceActionExecutor
         }
 
         $configTdt = $this->getConnecteurConfigByType(TdtConnecteur::FAMILLE_CONNECTEUR);
-        $actesTypePJData->classification_file_path = $configTdt->getFilePath($connecteur_type_action['classification_file'] ?? 'classification_file');
 
-        if (! file_exists($actesTypePJData->classification_file_path)) {
-            throw new UnrecoverableException("Aucun fichier de classification n'est présent sur le connecteur TDT");
-        }
-
-        $actesTypePJData->acte_nature = $this->getDonneesFormulaire()->get($connecteur_type_action['acte_nature'] ?? 'acte_nature');
-
-        $actesTypePJ = $this->objectInstancier->getInstance(ActesTypePJ::class);
-
-        $result['actes_type_pj_list'] = $actesTypePJ->getTypePJListe($actesTypePJData);
+        $result['actes_type_pj_list'] = $this->objectInstancier->getInstance(ActesTypePJ::class)
+            ->getTypePJListeForClassification(
+                $configTdt->getFilePath($connecteur_type_action['classification_file'] ?? 'classification_file'),
+                $this->getDonneesFormulaire()->get($connecteur_type_action['acte_nature'] ?? 'acte_nature')
+            );
         if (! $result['actes_type_pj_list']) {
-            throw new UnrecoverableException("Aucun type de pièce ne correspond pour la nature et la classification selectionnée");
+            throw new UnrecoverableException("Aucun fichier de classification n'est présent sur le connecteur TDT");
         }
 
         $result['pieces'] = $this->getAllPieces();
