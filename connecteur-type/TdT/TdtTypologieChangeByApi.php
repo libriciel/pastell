@@ -102,19 +102,13 @@ class TdtTypologieChangeByApi extends ConnecteurTypeActionExecutor
         }
 
 
-        $classification_file_element = $this->getMappingValue('classification_file');
-        $acte_nature = $this->getMappingValue('acte_nature');
-
-        $actesTypePJData = new ActesTypePJData();
-
         $configTdt = $this->getConnecteurConfigByType(TdtConnecteur::FAMILLE_CONNECTEUR);
-        $actesTypePJData->classification_file_path = $configTdt->getFilePath($classification_file_element);
 
-        $actesTypePJData->acte_nature = $this->getDonneesFormulaire()->get($acte_nature);
-
-        $actesTypePJ = $this->objectInstancier->getInstance(ActesTypePJ::class);
-
-        $result['actes_type_pj_list'] = $actesTypePJ->getTypePJListe($actesTypePJData);
+        $result['actes_type_pj_list'] = $this->objectInstancier->getInstance(ActesTypePJ::class)
+            ->getTypePJListeForClassification(
+                $configTdt->getFilePath($this->getMappingValue('classification_file')),
+                $this->getDonneesFormulaire()->get($this->getMappingValue('acte_nature'))
+            );
         if (! $result['actes_type_pj_list']) {
             throw new UnrecoverableException(
                 'Aucun type de pièce ne correspond pour la nature et la classification selectionnée'
