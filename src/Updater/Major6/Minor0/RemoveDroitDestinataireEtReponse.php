@@ -7,12 +7,13 @@ namespace Pastell\Updater\Major6\Minor0;
 use Exception;
 use Pastell\Updater\Version;
 use PastellLogger;
+use RoleDroit;
 use SQLQuery;
 
 final class RemoveDroitDestinataireEtReponse implements Version
 {
-    private const string LIKE_DESTINATAIRE = '%-destinataire:%';
-    private const string LIKE_REPONSE = '%-reponse:%';
+    private const string LIKE_DESTINATAIRE = '%' . RoleDroit::SUFFIX_DESTINATAIRE . ':%';
+    private const string LIKE_REPONSE = '%' . RoleDroit::SUFFIX_REPONSE . ':%';
 
     public function __construct(
         private readonly SQLQuery $sqlQuery,
