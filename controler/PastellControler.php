@@ -2,6 +2,7 @@
 
 use Monolog\Logger;
 use Pastell\Configuration\JobStatus;
+use Pastell\Model\Daemon\JobAdvancedFilters;
 use Pastell\Security\LibricielFeedbackReader;
 use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Entite\EntityUtilitiesService;
@@ -385,30 +386,21 @@ class PastellControler extends Controler
         return $this->getInstance(JobQueueSQL::class);
     }
 
-    /**
-     * @return array{type:string[],job_status:string[],suspended:string,id_e:string,include_children:string,id_verrou:string[]}
-     */
-    protected function getJobAdvancedFilters(Recuperateur $recuperateur): array
+    protected function getJobAdvancedFilters(Recuperateur $recuperateur): JobAdvancedFilters
     {
-        return [
-            'type' => (array)$recuperateur->get('job_type', []),
-            'job_status' => (array)$recuperateur->get('job_status', []),
-            'suspended' => $recuperateur->get('suspended', ''),
-            'id_e' => $recuperateur->get('search_id_e', ''),
-            'include_children' => $recuperateur->get('include_children', ''),
-            'id_verrou' => (array)$recuperateur->get('id_verrou', []),
-        ];
+        return JobAdvancedFilters::fromRecuperateur($recuperateur);
     }
 
     /**
      * Sets the view parameters required to render the advanced job search form.
      *
-     * @param array<string,array<string>|string> $advancedFilters current criteria values
+     * @param JobAdvancedFilters $advancedFilters current criteria values
      * @param string $search_action route name the form submits to
      * @param string[] $verrou_list
+     * @throws JsonException
      */
     protected function setJobSearchViewParameters(
-        array $advancedFilters,
+        JobAdvancedFilters $advancedFilters,
         string $search_action,
         array $verrou_list,
         ?int $rootEntityId = null

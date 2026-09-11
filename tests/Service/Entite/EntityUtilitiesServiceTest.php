@@ -19,12 +19,12 @@ class EntityUtilitiesServiceTest extends PastellTestCase
         $this->service = $this->getObjectInstancier()->getInstance(EntityUtilitiesService::class);
     }
 
-    public function testBuildEntityTreeselectOptionsEmptyList(): void
+    public function testTreeselectOptionsEmptyList(): void
     {
         static::assertSame([], $this->service->buildEntityTreeselectOptions([]));
     }
 
-    public function testBuildEntityTreeselectOptionsSingleEntity(): void
+    public function testTreeselectOptionsSingleEntity(): void
     {
         $flatList = [
             ['id_e' => 1, 'denomination' => 'Entité A', 'profondeur' => 0],
@@ -36,7 +36,7 @@ class EntityUtilitiesServiceTest extends PastellTestCase
         );
     }
 
-    public function testBuildEntityTreeselectOptionsWithChildren(): void
+    public function testTreeselectOptionsWithChildren(): void
     {
         $flatList = [
             ['id_e' => 1, 'denomination' => 'Parent', 'profondeur' => 0],
@@ -63,7 +63,7 @@ class EntityUtilitiesServiceTest extends PastellTestCase
         static::assertSame($expected, $this->service->buildEntityTreeselectOptions($flatList));
     }
 
-    public function testBuildEntityTreeselectOptionsWithSiblingEntities(): void
+    public function testTreeselectOptionsWithSiblings(): void
     {
         $flatList = [
             ['id_e' => 1, 'denomination' => 'Entité 1', 'profondeur' => 0],
@@ -85,7 +85,7 @@ class EntityUtilitiesServiceTest extends PastellTestCase
         static::assertSame($expected, $this->service->buildEntityTreeselectOptions($flatList));
     }
 
-    public function testBuildEntitySubtreeTreeselectOptionsKeepsOnlyRootAndDescendants(): void
+    public function testSubtreeOptionsKeepsRootAndDescendants(): void
     {
         $flatList = [
             ['id_e' => 1, 'denomination' => 'Racine', 'profondeur' => 0],
@@ -110,7 +110,7 @@ class EntityUtilitiesServiceTest extends PastellTestCase
         );
     }
 
-    public function testBuildEntitySubtreeTreeselectOptionsReturnsEmptyWhenRootNotFound(): void
+    public function testSubtreeOptionsEmptyWhenRootNotFound(): void
     {
         $flatList = [
             ['id_e' => 1, 'denomination' => 'Racine', 'profondeur' => 0],

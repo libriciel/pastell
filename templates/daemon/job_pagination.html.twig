@@ -1,0 +1,20 @@
+{#
+    Pagination + liste des tâches, mutualisée entre le gestionnaire global et par entité.
+    Variables attendues :
+      - search_route : nom de la route pour les liens de pagination
+      - with_filtre  : (optionnel) ajoute le critère `filtre` aux paramètres (pages « job »)
+      - id_e         : (optionnel) présent uniquement dans le contexte par entité
+#}
+{% set pagination_params = {
+    'job_type': search.type,
+    'job_status': search.job_status,
+    'search_id_e': search.id_e,
+    'include_children': search.include_children,
+    'id_verrou': search.id_verrou
+}
+    |merge(id_e is defined ? {'id_e': id_e} : {})
+    |merge(with_filtre|default(false) ? {'filtre': filtre} : {}) %}
+
+{{ gabarit.SuivantPrecedent(offset, limit, count, path(search_route, pagination_params)) }}
+{% include 'daemon/job_list.html.twig' %}
+{{ gabarit.SuivantPrecedent(offset, limit, count, path(search_route, pagination_params)) }}

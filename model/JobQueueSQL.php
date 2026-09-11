@@ -1,15 +1,12 @@
 <?php
 
 use Pastell\Configuration\JobStatus;
+use Pastell\Model\Daemon\JobAdvancedFilters;
 
 class JobQueueSQL extends SQL
 {
-    /**
-     * Valeur sentinelle utilisée par la recherche avancée pour cibler les
-     * travaux sans file d'attente (id_verrou vide), la chaîne vide servant
-     * déjà à « toutes les files ».
-     */
-    public const VERROU_NONE = '__none__';
+    /** Cible l'absence de file (id_verrou vide) dans la recherche avancée de jobs */
+    public const string VERROU_NONE = '__none__';
 
     public function __construct(
         SQLQuery $sqlQuery,
@@ -372,7 +369,6 @@ SQL;
     }
 
     /**
-     * @param array<string,mixed> $advancedFilters
      * @return Job[]
      */
     public function getFilteredJobList(
@@ -380,7 +376,7 @@ SQL;
         int $offset = 0,
         string $filtre = '',
         ?int $id_daemon = null,
-        array $advancedFilters = []
+        ?JobAdvancedFilters $advancedFilters = null
     ): array {
         if (!in_array($filtre, ['lock', 'actif', 'wait'])) {
             $filtre = '';
@@ -419,10 +415,7 @@ SQL;
         return $this->mapResultToJobList($result);
     }
 
-    /**
-     * @param array<string,mixed> $advancedFilters
-     */
-    public function getNbJob($filtre, ?int $id_daemon = null, array $advancedFilters = []): int
+    public function getNbJob($filtre, ?int $id_daemon = null, ?JobAdvancedFilters $advancedFilters = null): int
     {
         $sql = <<<SQL
 SELECT count(*)
@@ -453,12 +446,15 @@ SQL;
     }
 
     /**
-     * @param array<string,mixed> $filters
      * @param array<int,mixed> $params
      */
-    private function appendAdvancedFilters(array $filters, string &$sql, array &$params): void
+    private function appendAdvancedFilters(?JobAdvancedFilters $filters, string &$sql, array &$params): void
     {
-        $typeList = array_filter((array)($filters['type'] ?? []), static fn ($v) => $v !== '');
+        if ($filters === null) {
+            return;
+        }
+
+        $typeList = array_filter($filters->type, static fn ($v) => $v !== '');
         if ($typeList !== []) {
             $placeholders = implode(', ', array_fill(0, count($typeList), '?'));
             $sql .= " AND job_queue.type IN ($placeholders)";
@@ -467,7 +463,7 @@ SQL;
             }
         }
 
-        $statusList = array_filter((array)($filters['job_status'] ?? []), static fn ($v) => $v !== '');
+        $statusList = array_filter($filters->job_status, static fn ($v) => $v !== '');
         if ($statusList !== []) {
             $placeholders = implode(', ', array_fill(0, count($statusList), '?'));
             $sql .= " AND job_queue.job_status IN ($placeholders)";
@@ -476,25 +472,17 @@ SQL;
             }
         }
 
-        if (isset($filters['suspended']) && $filters['suspended'] !== '') {
-            if ($filters['suspended'] === 'oui') {
-                $sql .= ' AND job_queue.job_status != 0';
-            } elseif ($filters['suspended'] === 'non') {
-                $sql .= ' AND job_queue.job_status = 0';
-            }
-        }
-
-        if (isset($filters['id_e']) && $filters['id_e'] !== '') {
-            if (!empty($filters['include_children'])) {
+        if ($filters->id_e !== '') {
+            if ($filters->include_children !== '') {
                 $sql .= ' AND job_queue.id_e IN'
                     . ' (SELECT id_e FROM entite_ancetre WHERE id_e_ancetre = ?)';
             } else {
                 $sql .= ' AND job_queue.id_e = ?';
             }
-            $params[] = (int)$filters['id_e'];
+            $params[] = (int)$filters->id_e;
         }
 
-        $verrouList = array_filter((array)($filters['id_verrou'] ?? []), static fn ($v) => $v !== '');
+        $verrouList = array_filter($filters->id_verrou, static fn ($v) => $v !== '');
         if ($verrouList !== []) {
             $conditions = [];
             $namedVerrou = [];

@@ -9,6 +9,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            container.addEventListener('mousedown', function () {
+                if (window.jQuery) {
+                    window.jQuery('.select2-multiselect').each(function () {
+                        if (window.jQuery(this).data('select2')) {
+                            window.jQuery(this).select2('close');
+                        }
+                    });
+                }
+            }, true);
+
             const treeselect = new Treeselect({
                 placeholder: config.placeholder,
                 parentHtmlContainer: container,

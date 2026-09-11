@@ -14,10 +14,6 @@ final class EntityUtilitiesService
         return $this->toTreeselectOptions(ArrayHelper::buildNestedTree($flatList));
     }
 
-    /**
-     * Comme buildEntityTreeselectOptions(), mais ne conserve que l'entité $rootEntityId
-     * et ses descendantes (les entités ancêtres ou de niveau supérieur sont exclues).
-     */
     public function buildEntitySubtreeTreeselectOptions(array $flatList, int $rootEntityId): array
     {
         $node = $this->findNodeByEntityId(ArrayHelper::buildNestedTree($flatList), $rootEntityId);
