@@ -25,7 +25,7 @@ select.select2-multiselect:not(.select2-hidden-accessible) {
     background-color: #fff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     min-height: 30.8px;
-    padding: 0 34px 0 6px;
+    padding: 4px 34px 4px 6px;
 }
 
 .select2-selection--multiple.select2-multiselect-selection::after {
@@ -42,6 +42,7 @@ select.select2-multiselect:not(.select2-hidden-accessible) {
 }
 
 .select2-selection--multiple.select2-multiselect-selection .select2-selection__rendered {
+    position: relative;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -63,6 +64,24 @@ select.select2-multiselect:not(.select2-hidden-accessible) {
     margin: 0;
     height: 22px;
     cursor: default;
+    caret-color: transparent;
+}
+
+.select2-selection--multiple.select2-multiselect-selection:has(.select2-selection__choice) .select2-search--inline {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    z-index: 0;
+}
+
+.select2-selection--multiple.select2-multiselect-selection:has(.select2-selection__choice) .select2-search--inline .select2-search__field {
+    width: 100% !important;
+    height: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
 }
 
 .select2-container--focus .select2-selection--multiple.select2-multiselect-selection,
@@ -73,6 +92,8 @@ select.select2-multiselect:not(.select2-hidden-accessible) {
 }
 
 .select2-selection--multiple.select2-multiselect-selection .select2-selection__choice {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
     align-items: center;
     background-color: #eef1f4;
