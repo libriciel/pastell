@@ -7,6 +7,8 @@
 - Refonte du Gestionnaire de tâches #964 
   - Ajout d'une recherche avancée 
   - Ajout du tri par dates sur la liste des travaux
+- Double authentification (TOTP) : activation, réinitialisation et désactivation depuis l'espace personnel, avec
+  codes de récupération. Un administrateur peut réinitialiser ou désactiver celle d'un utilisateur #2453
 - Studio, l'étape « Envoi à la préfecture (via un Tdt) » permet désormais de sélectionner plusieurs éléments
   multi-fichiers pour « Annexe de l'acte » #2520
 - Nouveau champ « Autre document(s) à signer », transmis au Tdt en plus des annexes dans les flux

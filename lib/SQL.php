@@ -34,6 +34,15 @@ abstract class SQL
         return $this->sqlQuery->queryOneCol($query, $param);
     }
 
+    public function execute($query, $param = false): int
+    {
+        if (! is_array($param)) {
+            $param = func_get_args();
+            array_shift($param);
+        }
+        return $this->sqlQuery->execute($query, $param);
+    }
+
     public function lastInsertId($name = null)
     {
         return $this->sqlQuery->getPdo()->lastInsertId($name);

@@ -1,0 +1,84 @@
+{% extends 'connexion/base.html.twig' %}
+
+{% block main %}
+
+    <div class="page-height d-flex position-relative">
+        <ls-auth-page-sidebar class="sidebar"></ls-auth-page-sidebar>
+        <div class="login-form">
+            <ls-auth-page-alert></ls-auth-page-alert>
+            <div class="form-content">
+                <div class="text-center h-100">
+                    <img src="{{ asset('img/commun/pastell-color-grey.svg') }}" alt="logo de l'application">
+                </div>
+
+                <h1 class="page-title">Saisissez le code de votre application d'authentification</h1>
+                <form action="{{ path('app.legacy.connexion_doMfa') }}" method="post">
+                    {% if gabarit.getLastError().getLastError() %}
+                        <div class="alert alert-danger">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <span>{{ gabarit.getLastError().getLastError() }}</span>
+                        </div>
+                    {% endif %}
+                    <div class="row form-group">
+                        <label class="col-sm-3 col-form-label" for="code" id="code-label">Code</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa fa-key"></i></span>
+                                <input type="text" name="code" id="code" class="form-control"
+                                       autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*"
+                                       maxlength="6" required autofocus/>
+                            </div>
+                            <button type="button" id="use-recovery-code"
+                                    class="btn btn-link p-0 mt-1 text-decoration-underline">
+                                Utiliser un code de récupération
+                            </button>
+                        </div>
+                    </div>
+                    {{ gabarit.displayCSRFInput() }}
+                    <div class="ls-action-bar ls-action-bar-align-right">
+                        <button type="submit" class="btn btn-primary" title="Valider">
+                            <i class="fas fa-right-to-bracket"></i>&nbsp;<span>Valider</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        {% if login_page_configuration != '' %}
+            document.getElementsByTagName("ls-auth-page-sidebar")[0].configuration = {{ login_page_configuration | raw }};
+            document.getElementsByTagName("ls-auth-page-alert")[0].configuration = {{ login_page_configuration | raw }};
+        {% endif %}
+
+        (function () {
+            var toggle = document.getElementById('use-recovery-code');
+            if (!toggle) {
+                return;
+            }
+            var input = document.getElementById('code');
+            var label = document.getElementById('code-label');
+            var recoveryMode = false;
+            toggle.addEventListener('click', function () {
+                recoveryMode = !recoveryMode;
+                input.value = '';
+                if (recoveryMode) {
+                    input.removeAttribute('pattern');
+                    input.removeAttribute('maxlength');
+                    input.setAttribute('inputmode', 'text');
+                    input.setAttribute('placeholder', 'xxxxx-xxxxx-xxxxx-xxxxx');
+                    label.textContent = 'Code de récupération';
+                    toggle.textContent = 'Utiliser le code de mon application';
+                } else {
+                    input.setAttribute('pattern', '[0-9]*');
+                    input.setAttribute('maxlength', '6');
+                    input.setAttribute('inputmode', 'numeric');
+                    input.removeAttribute('placeholder');
+                    label.textContent = 'Code';
+                    toggle.textContent = 'Utiliser un code de récupération';
+                }
+                input.focus();
+            });
+        })();
+    </script>
+{% endblock %}

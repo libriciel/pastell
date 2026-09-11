@@ -54,6 +54,9 @@ class SQLQuery
         return $this->pdo;
     }
 
+    /**
+     * @throws Exception
+     */
     public function query($query, $param = false)
     {
         $start = microtime(true);
@@ -62,18 +65,7 @@ class SQLQuery
             array_shift($param);
         }
 
-        try {
-            $pdoStatement = $this->getPdo()->prepare($query);
-        } catch (Exception $e) {
-            throw new Exception($e->getMessage() . " - " . $query);
-        }
-        $this->logger->debug("SQL REQUEST : $query");
-        try {
-            $pdoStatement->execute($param);
-        } catch (Exception $e) {
-            $message = $e->getMessage() . " - " . $pdoStatement->queryString . "|" . implode(",", $param);
-            throw new Exception($message, -1, $e);
-        }
+        $pdoStatement = $this->prepareAndRun($query, $param);
         $result = [];
         if ($pdoStatement->columnCount()) {
             $result = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
@@ -86,6 +78,35 @@ class SQLQuery
         }
 
         return $result;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function execute($query, $param = false): int
+    {
+        if (! is_array($param)) {
+            $param = func_get_args();
+            array_shift($param);
+        }
+        return $this->prepareAndRun($query, $param)->rowCount();
+    }
+
+    private function prepareAndRun(string $query, array $param): PDOStatement
+    {
+        try {
+            $pdoStatement = $this->getPdo()->prepare($query);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage() . " - " . $query);
+        }
+        $this->logger->debug("SQL REQUEST : $query");
+        try {
+            $pdoStatement->execute($param);
+        } catch (Exception $e) {
+            $message = $e->getMessage() . " - " . $pdoStatement->queryString . "|" . implode(",", $param);
+            throw new Exception($message, -1, $e);
+        }
+        return $pdoStatement;
     }
 
     public function queryOne($query, $param = false)

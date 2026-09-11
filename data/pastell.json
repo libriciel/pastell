@@ -2688,6 +2688,105 @@
             }
         }
     },
+    "utilisateur_mfa": {
+        "Engine": "MyISAM",
+        "Column": {
+            "id_u": {
+                "Field": "id_u",
+                "Type": "int(11)",
+                "Null": "NO",
+                "Key": "PRI",
+                "Default": null,
+                "Extra": ""
+            },
+            "secret": {
+                "Field": "secret",
+                "Type": "varchar(255)",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "is_enabled": {
+                "Field": "is_enabled",
+                "Type": "tinyint(1)",
+                "Null": "NO",
+                "Key": "",
+                "Default": "0",
+                "Extra": ""
+            },
+            "created_at": {
+                "Field": "created_at",
+                "Type": "datetime",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            }
+        },
+        "Index": {
+            "PRIMARY": {
+                "type": "BTREE",
+                "col": [
+                    "id_u"
+                ],
+                "unique": true
+            }
+        }
+    },
+    "utilisateur_mfa_recovery_code": {
+        "Engine": "MyISAM",
+        "Column": {
+            "id": {
+                "Field": "id",
+                "Type": "int(11)",
+                "Null": "NO",
+                "Key": "PRI",
+                "Default": null,
+                "Extra": "auto_increment"
+            },
+            "id_u": {
+                "Field": "id_u",
+                "Type": "int(11)",
+                "Null": "NO",
+                "Key": "MUL",
+                "Default": null,
+                "Extra": ""
+            },
+            "code_hash": {
+                "Field": "code_hash",
+                "Type": "varchar(64)",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "used_at": {
+                "Field": "used_at",
+                "Type": "datetime",
+                "Null": "YES",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            }
+        },
+        "Index": {
+            "PRIMARY": {
+                "type": "BTREE",
+                "col": [
+                    "id"
+                ],
+                "unique": true
+            },
+            "id_u": {
+                "type": "BTREE",
+                "col": [
+                    "id_u"
+                ],
+                "unique": false
+            }
+        }
+    },
     "utilisateur_new_email": {
         "Engine": "MyISAM",
         "Column": {

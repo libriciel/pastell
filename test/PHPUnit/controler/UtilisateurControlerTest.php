@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Utilisateur\MfaService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Entite\EntityCreationService;
@@ -191,6 +192,77 @@ class UtilisateurControlerTest extends ControlerTestCase
             /* Nothing to do*/
         }
         self::assertTrue($utilisateurSQL->isEnabled(1));
+    }
+
+    private function enableMfaFor(int $id_u): void
+    {
+        $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
+        $mfaService->enroll($id_u, $mfaService->generateSecret());
+        $mfaService->confirm($id_u);
+    }
+
+    public function testDisableMfaByAdmin(): void
+    {
+        $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
+        $this->enableMfaFor(2);
+
+        $this->setPostInfo(['id_u' => 2]);
+        try {
+            $this->getUtilisateurControler()->disableMfaAction();
+        } catch (Exception) {
+        }
+
+        self::assertFalse($mfaService->isEnabled(2));
+    }
+
+    public function testDisableMfaNotEnabled(): void
+    {
+        $this->setPostInfo(['id_u' => 2]);
+        try {
+            $this->getUtilisateurControler()->disableMfaAction();
+            self::fail('Une redirection était attendue');
+        } catch (LastErrorException $e) {
+            self::assertStringContainsString("n'est pas activée", $e->getMessage());
+        }
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testDisableMfaNoRights(): void
+    {
+        $this->setUpRemoteToken();
+        $this->enableMfaFor($this->api_user_id);
+        $userController = $this->getUtilisateurControler();
+        $userController->getAuthentification()->connexion('admin_inferieur', $this->admin_inf);
+
+        $this->setPostInfo(['id_u' => $this->api_user_id]);
+        try {
+            $userController->disableMfaAction();
+            self::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            self::assertStringContainsString('droits nécessaires', $e->getMessage());
+        }
+
+        self::assertTrue($this->getObjectInstancier()->getInstance(MfaService::class)->isEnabled($this->api_user_id));
+    }
+
+    public function testDisableMfaSelfRedirects(): void
+    {
+        $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
+        $this->enableMfaFor(self::ID_U_ADMIN);
+
+        $this->setPostInfo(['id_u' => self::ID_U_ADMIN]);
+        try {
+            $this->getUtilisateurControler()->disableMfaAction();
+            self::fail('Une redirection était attendue');
+        } catch (LastMessageException $e) {
+            self::assertStringContainsString('/Mfa/authRequired', $e->getMessage());
+        }
+
+        self::assertTrue($mfaService->isEnabled(self::ID_U_ADMIN));
     }
 
     public function testAddToken(): void

@@ -360,8 +360,55 @@ class UtilisateurControler extends PastellControler
         );
 
         $this->setDroitViewParameter((int) $info['id_e'], DroitService::DROIT_JOURNAL, DroitType::LECTURE);
+
+        $this->setViewParameter('mfa_enabled', $this->getMfaService()->isEnabled((int) $id_u));
+        $this->setViewParameter(
+            'mfa_admin_disable',
+            $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION)
+        );
+
         $this->setViewParameter('template_milieu', 'UtilisateurDetail');
         $this->renderDefault();
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function disableMfaAction(): void
+    {
+        $id_u = (int) $this->getPostInfo()->get('id_u');
+        if ($id_u === (int) $this->getId_u()) {
+            $this->redirect('/Mfa/authRequired?action=desactivation');
+        }
+
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+
+        $redirect = "/Utilisateur/detail?id_u=$id_u";
+
+        $info = $this->getUtilisateur()->getInfo($id_u);
+        if (!$info) {
+            $this->setLastError("Utilisateur $id_u inconnu");
+            $this->redirect('/Utilisateur/index');
+        }
+
+        $mfaService = $this->getMfaService();
+        if (!$mfaService->isEnabled($id_u)) {
+            $this->setLastError("La double authentification n'est pas activée pour cet utilisateur.");
+            $this->redirect($redirect);
+        }
+
+        $mfaService->delete($id_u);
+        $this->getJournal()->add(
+            Journal::MODIFICATION_UTILISATEUR,
+            $info['id_e'],
+            0,
+            'double authentification désactivée',
+            "{$info['login']} ($id_u) : double authentification désactivée par un administrateur"
+        );
+
+        $this->setLastMessage('La double authentification a été désactivée.');
+        $this->redirect($redirect);
     }
 
     private function getNotificationList($id_u)
@@ -421,6 +468,21 @@ class UtilisateurControler extends PastellControler
             ->getInstance(UserTokenService::class)
             ->getTokens($this->getId_u());
         $this->setViewParameter('tokens', $tokens);
+
+        $mfaService = $this->getMfaService();
+        $mfaInfo = $mfaService->getInfo($id_u);
+        $mfaEnabled = !empty($mfaInfo['is_enabled']);
+        $this->setViewParameter('mfa_enabled', $mfaEnabled);
+        $this->setViewParameter('mfa_created_at', $mfaInfo['created_at'] ?? '');
+        $this->setViewParameter(
+            'mfa_recovery_remaining',
+            $mfaEnabled ? $mfaService->countRemainingRecoveryCodes($id_u) : 0
+        );
+        $this->setViewParameter(
+            'mfa_admin',
+            $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION)
+        );
+
         $this->setViewParameter('template_milieu', 'UtilisateurMoi');
         $this->setViewParameter('pages_without_left_menu', true);
         $this->renderDefault();

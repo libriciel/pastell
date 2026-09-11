@@ -17,6 +17,8 @@
  * @var Authentification $authentification
  * @var array $tokens
  * @var array $tree
+ * @var bool $mfa_enabled
+ * @var bool $mfa_admin_disable
  */
 
 use Pastell\Utilities\Certificate;
@@ -71,6 +73,27 @@ use Pastell\Utilities\Certificate;
             </th>
 
             <td><?php echo $info['is_api'] ? 'Oui' : 'Non' ?></td>
+        </tr>
+
+        <tr>
+            <th>Double authentification</th>
+            <td>
+                <?php echo $mfa_enabled ? 'Activée' : 'Désactivée' ?>
+                <?php if ($mfa_enabled && (int)$id_u === (int)$id_current_u) : ?>
+                    <a href='Mfa/authRequired?action=desactivation' class='btn btn-danger btn-sm'>
+                        <i class='fas fa-shield-alt'></i>&nbsp;Désactiver
+                    </a>
+                <?php elseif ($mfa_admin_disable && $mfa_enabled) : ?>
+                    <form action='Utilisateur/disableMfa' method='post' class='d-inline'>
+                        <?php $this->displayCSRFInput() ?>
+                        <input type='hidden' name='id_u' value='<?php echo $id_u ?>'/>
+                        <button type='submit' class='btn btn-danger btn-sm'
+                                onclick="return confirm('Désactiver la double authentification de cet utilisateur ?')">
+                            <i class='fas fa-shield-alt'></i>&nbsp;Désactiver
+                        </button>
+                    </form>
+                <?php endif; ?>
+            </td>
         </tr>
 
         <tr>
