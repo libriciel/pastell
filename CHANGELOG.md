@@ -9,6 +9,8 @@
   - Ajout du tri par dates sur la liste des travaux
 - Double authentification (TOTP) : activation, réinitialisation et désactivation depuis l'espace personnel, avec
   codes de récupération. Un administrateur peut réinitialiser ou désactiver celle d'un utilisateur #2453
+- Obligation de double authentification par entité (page « Sécurité », droit `système:édition`) : s'applique à
+  l'entité et à ses filles, prime sur le droit administrateur et force la configuration à la connexion #2563
 - Studio, l'étape « Envoi à la préfecture (via un Tdt) » permet désormais de sélectionner plusieurs éléments
   multi-fichiers pour « Annexe de l'acte » #2520
 - Nouveau champ « Autre document(s) à signer », transmis au Tdt en plus des annexes dans les flux

@@ -8,10 +8,12 @@ use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
+use EntiteMfaObligationSQL;
 use OTPHP\TOTP;
 use Random\RandomException;
 use UtilisateurMfaRecoveryCodeSQL;
 use UtilisateurMfaSQL;
+use UtilisateurSQL;
 
 final class MfaService
 {
@@ -21,12 +23,31 @@ final class MfaService
     public function __construct(
         private readonly UtilisateurMfaSQL $utilisateurMfaSQL,
         private readonly UtilisateurMfaRecoveryCodeSQL $recoveryCodeSQL,
+        private readonly EntiteMfaObligationSQL $entiteMfaObligationSQL,
+        private readonly UtilisateurSQL $utilisateurSQL,
     ) {
     }
 
     public function isEnabled(int $id_u): bool
     {
         return $this->utilisateurMfaSQL->isEnabled($id_u);
+    }
+
+    public function mustEnroll(int $id_u): bool
+    {
+        if ($this->isEnabled($id_u)) {
+            return false;
+        }
+        return $this->utilisateurMfaSQL->isEnrolmentRequired($id_u) || $this->isObligatory($id_u);
+    }
+
+    public function isObligatory(int $id_u): bool
+    {
+        $info = $this->utilisateurSQL->getInfo($id_u);
+        if (!$info || !empty($info['is_api'])) {
+            return false;
+        }
+        return $this->entiteMfaObligationSQL->appliesTo((int)$info['id_e']);
     }
 
     public function getInfo(int $id_u): array
@@ -74,6 +95,12 @@ final class MfaService
     public function delete(int $id_u): void
     {
         $this->utilisateurMfaSQL->delete($id_u);
+        $this->recoveryCodeSQL->deleteAll($id_u);
+    }
+
+    public function requireReenrolment(int $id_u): void
+    {
+        $this->utilisateurMfaSQL->requireReenrolment($id_u);
         $this->recoveryCodeSQL->deleteAll($id_u);
     }
 

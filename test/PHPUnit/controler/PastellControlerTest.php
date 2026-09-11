@@ -129,6 +129,53 @@ class PastellControlerTest extends ControlerTestCase
         static::assertSame($magicLinkId, $authentification->getMagicLinkId());
     }
 
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function testObligationForcesEnrolment(): void
+    {
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+        $_SERVER['REQUEST_URI'] = '/';
+
+        try {
+            $this->getControlerInstance(PastellControler::class)->_beforeAction();
+            static::fail('Une redirection vers /Mfa/enrolement était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('configurer votre double authentification', $e->getMessage());
+        }
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function testMagicLinkExemptFromObligation(): void
+    {
+        $pastellControler = $this->getControlerInstance(PastellControler::class);
+        $_SERVER['REQUEST_URI'] = '/';
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+
+        $magicLinkId = $this->getObjectInstancier()->getInstance(MagicLinkSQL::class)->create(
+            '22222222-2222-4222-8222-222222222222',
+            1,
+            'token-oblig',
+            '123456',
+            'Intervention',
+            1,
+            date('Y-m-d H:i:s', strtotime('+1 day')),
+            'Dupont',
+            'Jean',
+            'jean.dupont@example.org',
+        );
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->setMagicLinkId($magicLinkId);
+
+        $pastellControler->_beforeAction();
+
+        static::assertTrue($authentification->isConnected());
+    }
+
     public function testMagicLinkInactiveDisconnects(): void
     {
         $pastellControler = $this->getControlerInstance(PastellControler::class);

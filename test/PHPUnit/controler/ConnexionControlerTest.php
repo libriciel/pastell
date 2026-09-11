@@ -404,4 +404,23 @@ class ConnexionControlerTest extends ControlerTestCase
             static::assertStringContainsString('/Connexion/connexion', $e->getMessage());
         }
     }
+
+    public function testMfaEnrolmentForcedByObligation(): void
+    {
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->deconnexion();
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+        $this->mockLoginAttemptLimit();
+        $this->setPostInfo(['login' => 'admin', 'password' => 'admin', 'request_uri' => '/']);
+        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+
+        try {
+            $this->connexionControler->doConnexionAction();
+            static::fail('Une redirection était attendue');
+        } catch (LastMessageException $e) {
+            static::assertStringContainsString('/Mfa/enrolement', $e->getMessage());
+        }
+
+        static::assertTrue($authentification->isConnected());
+    }
 }

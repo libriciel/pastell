@@ -81,10 +81,21 @@ declare(strict_types=1);
             <a href='Mfa/authRequired?action=regenerate' class='btn btn-outline-primary'>
                 <i class="fas fa-arrows-rotate"></i>&nbsp;Régénérer les codes de récupération
             </a>
-            <a href='Mfa/authRequired?action=desactivation' class='btn btn-danger'>
-                <i class="fas fa-shield-alt"></i>&nbsp;Désactiver
-            </a>
+            <?php if (!empty($mfa_obligatory)) : ?>
+                <a href='Mfa/authRequired?action=reinitialisation' class='btn btn-warning'>
+                    <i class="fas fa-rotate"></i>&nbsp;Réinitialiser
+                </a>
+            <?php else : ?>
+                <a href='Mfa/authRequired?action=desactivation' class='btn btn-danger'>
+                    <i class="fas fa-shield-alt"></i>&nbsp;Désactiver
+                </a>
+            <?php endif; ?>
         </div>
+        <?php if (!empty($mfa_obligatory)) : ?>
+            <p class="text-muted mt-2">
+                <i class="fas fa-lock"></i>&nbsp;La double authentification est obligatoire sur votre entité.
+            </p>
+        <?php endif; ?>
     <?php else : ?>
         <p>
             Renforcez la sécurité de votre compte en activant la double authentification (TOTP).

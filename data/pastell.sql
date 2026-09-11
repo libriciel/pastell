@@ -191,6 +191,12 @@ CREATE TABLE `entite_ancetre` (
 	PRIMARY KEY (`id_e`,`id_e_ancetre`),
 	KEY `id_e_ancetre` (`id_e_ancetre`,`id_e`)
 )  ENGINE=MyISAM  ;
+CREATE TABLE `entite_mfa_obligation` (
+	`id_e` int(11) NOT NULL,
+	`created_at` datetime NOT NULL,
+	`id_u_created_by` int(11) DEFAULT NULL,
+	PRIMARY KEY (`id_e`)
+)  ENGINE=MyISAM  ;
 CREATE TABLE `entite_properties` (
 	`id_e` int(11) NOT NULL,
 	`flux` varchar(16) NOT NULL,
@@ -386,6 +392,7 @@ CREATE TABLE `utilisateur_mfa` (
 	`id_u` int(11) NOT NULL,
 	`secret` varchar(255) NOT NULL,
 	`is_enabled` tinyint(1) NOT NULL DEFAULT '0',
+	`enrolment_required` tinyint(1) NOT NULL DEFAULT '0',
 	`created_at` datetime NOT NULL,
 	PRIMARY KEY (`id_u`)
 )  ENGINE=MyISAM  ;
