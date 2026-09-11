@@ -407,6 +407,21 @@ class ConnexionControler extends PastellControler
         }
         $loginAttemptLimit->resetLoginAttempt($login);
 
+        if ($this->getMfaService()->isEnabled((int)$id_u)) {
+            $_SESSION['mfa_pending'] = [
+                'id_u' => (int)$id_u,
+                'login' => $login,
+                'request_uri' => $this->getPostInfo()->get('request_uri'),
+            ];
+            $this->redirect('/Connexion/mfa');
+        }
+
+        $this->finalizeConnexion((int)$id_u, $login);
+        return $id_u;
+    }
+
+    private function finalizeConnexion(int $id_u, string $login): void
+    {
         $this->getJournal()->setId($id_u);
         $infoUtilisateur = $this->getUtilisateur()->getInfo($id_u);
         $nom = $infoUtilisateur['prenom'] . ' ' . $infoUtilisateur['nom'];
@@ -418,7 +433,103 @@ class ConnexionControler extends PastellControler
             "$nom s'est connecté depuis l'adresse " . $_SERVER['REMOTE_ADDR']
         );
         $this->setSessionInfo($login, $id_u);
-        return $id_u;
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function mfaAction(): void
+    {
+        if (empty($_SESSION['mfa_pending'])) {
+            $this->redirect('/Connexion/connexion');
+        }
+        $this->renderMfaCodePage();
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function doMfaAction(): void
+    {
+        if (empty($_SESSION['mfa_pending'])) {
+            $this->redirect('/Connexion/connexion');
+        }
+
+        $pending = $_SESSION['mfa_pending'];
+        $id_u = (int)$pending['id_u'];
+        $login = (string)$pending['login'];
+        $code = (string)$this->getPostInfo()->get('code');
+
+        $loginAttemptLimit = $this->getObjectInstancier()->getInstance(LoginAttemptLimit::class);
+        if ($loginAttemptLimit->getRateLimit($login)->getRemainingTokens() <= 0) {
+            $this->setLastError('Trop de tentatives de connexion, veuillez réessayer plus tard.');
+            $this->redirect('/Connexion/mfa');
+        }
+
+        $mfaService = $this->getMfaService();
+        $info = $mfaService->getInfo($id_u);
+        $totpOk = !empty($info['secret']) && $mfaService->verify($info['secret'], $code);
+        $recoveryOk = !$totpOk && $mfaService->verifyRecoveryCode($id_u, $code);
+
+        if (!$totpOk && !$recoveryOk) {
+            $loginAttemptLimit->consumeLoginAttempt($login);
+            $userInfo = $this->getUtilisateur()->getInfo($id_u);
+            $this->getJournal()->setId($id_u);
+            $this->getJournal()->add(
+                Journal::CONNEXION,
+                $userInfo['id_e'],
+                Journal::NO_ID_D,
+                'Échec double authentification',
+                "$login a saisi un code de double authentification invalide depuis l'adresse "
+                    . ($_SERVER['REMOTE_ADDR'] ?? '')
+            );
+            $this->setLastError('Le code saisi est invalide.');
+            $this->redirect('/Connexion/mfa');
+        }
+
+        $loginAttemptLimit->resetLoginAttempt($login);
+        $request_uri = (string)($pending['request_uri'] ?? '/');
+        unset($_SESSION['mfa_pending']);
+
+        if ($recoveryOk) {
+            $userInfo = $this->getUtilisateur()->getInfo($id_u);
+            $this->getJournal()->setId($id_u);
+            $this->getJournal()->add(
+                Journal::CONNEXION,
+                $userInfo['id_e'],
+                Journal::NO_ID_D,
+                'Connexion par code de récupération',
+                "$login s'est connecté avec un code de récupération depuis l'adresse "
+                    . ($_SERVER['REMOTE_ADDR'] ?? '')
+            );
+            $remaining = $mfaService->countRemainingRecoveryCodes($id_u);
+            if ($remaining <= 3) {
+                $this->setLastMessage(
+                    "Il vous reste $remaining code(s) de récupération. Pensez à les régénérer depuis votre espace."
+                );
+            }
+        }
+
+        $this->finalizeConnexion($id_u, $login);
+        $this->redirect(urldecode($request_uri) ?: '/');
+    }
+
+    /**
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    private function renderMfaCodePage(): void
+    {
+        $this->setViewParameter('login_page_configuration', $this->getLoginPageConfiguration());
+        $this->setViewParameter('page', 'connexion');
+        $this->setViewParameter('page_title', 'Double authentification');
+        $this->render('connexion/mfa_code.html.twig');
     }
 
     public function doConnexionAction()

@@ -13,6 +13,7 @@ use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\MagicLink\MagicLinkService;
 use Pastell\Service\Module\ModuleListService;
 use Pastell\ViewModel\DeleteConfirmation;
+use Pastell\Service\Utilisateur\MfaService;
 
 class PastellControler extends Controler
 {
@@ -46,6 +47,11 @@ class PastellControler extends Controler
             $this->setLastError('Votre compte a été désactivé');
             $this->redirect('/Connexion/connexion?request_uri=' . urlencode($request_uri));
         }
+    }
+
+    protected function getMfaService(): MfaService
+    {
+        return $this->getInstance(MfaService::class);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Pastell\Tests\Service;
 
 use Notification;
 use NotificationDigestSQL;
+use Pastell\Service\Utilisateur\MfaService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
 use PastellTestCase;
 use UtilisateurNewEmailSQL;
@@ -77,5 +78,20 @@ class UtilisateurDeletionServiceTest extends PastellTestCase
         $this->getObjectInstancier()->getInstance(UtilisateurDeletionService::class)->delete(2);
 
         self::assertEmpty($notificationDigestSQL->getAll());
+    }
+
+    public function testDeleteCleansMfa(): void
+    {
+        $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
+        $mfaService->enroll(2, $mfaService->generateSecret());
+        $mfaService->confirm(2);
+        $mfaService->generateRecoveryCodes(2);
+        self::assertTrue($mfaService->isEnabled(2));
+        self::assertSame(10, $mfaService->countRemainingRecoveryCodes(2));
+
+        $this->getObjectInstancier()->getInstance(UtilisateurDeletionService::class)->delete(2);
+
+        self::assertFalse($mfaService->isEnabled(2));
+        self::assertSame(0, $mfaService->countRemainingRecoveryCodes(2));
     }
 }
