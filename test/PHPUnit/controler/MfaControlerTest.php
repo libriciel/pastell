@@ -236,4 +236,75 @@ class MfaControlerTest extends ControlerTestCase
 
         self::assertTrue($this->getMfaService()->isEnabled(self::ID_U_ADMIN));
     }
+
+    public function testReinitialisationResetsMfa(): void
+    {
+        $this->enableMfa();
+        try {
+            $this->doAuthRequired('reinitialisation', 'admin');
+            self::fail('Une redirection était attendue');
+        } catch (LastMessageException $e) {
+            self::assertStringContainsString('/Mfa/enrolement', $e->getMessage());
+        }
+
+        $mfaService = $this->getMfaService();
+        self::assertFalse($mfaService->isEnabled(self::ID_U_ADMIN));
+        self::assertEmpty($mfaService->getInfo(self::ID_U_ADMIN));
+        $this->assertJournalContains('double authentification réinitialisée');
+    }
+
+    public function testReinitialisationNoForce(): void
+    {
+        $this->enableMfa();
+        try {
+            $this->doAuthRequired('reinitialisation', 'admin');
+        } catch (LastMessageException) {
+        }
+
+        self::assertFalse($this->getMfaService()->mustEnroll(self::ID_U_ADMIN));
+    }
+
+    public function testDesactivationBlockedWhenObligatory(): void
+    {
+        $this->enableMfa();
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+
+        try {
+            $this->doAuthRequired('desactivation', 'admin');
+            self::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            self::assertStringContainsString('obligatoire', $e->getMessage());
+        }
+
+        self::assertTrue($this->getMfaService()->isEnabled(self::ID_U_ADMIN));
+    }
+
+    public function testReinitialisationForcesWhenObligatory(): void
+    {
+        $this->enableMfa();
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+
+        try {
+            $this->doAuthRequired('reinitialisation', 'admin');
+        } catch (LastMessageException) {
+        }
+
+        self::assertTrue($this->getMfaService()->mustEnroll(self::ID_U_ADMIN));
+    }
+
+    public function testCancelBlockedWhenObligatory(): void
+    {
+        $mfaService = $this->getMfaService();
+        $mfaService->enroll(self::ID_U_ADMIN, $mfaService->generateSecret());
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+
+        try {
+            $this->getMfaControler()->cancelEnrolementAction();
+            self::fail('Une redirection était attendue');
+        } catch (LastMessageException $e) {
+            self::assertStringContainsString('/Mfa/enrolement', $e->getMessage());
+        }
+
+        self::assertNotEmpty($mfaService->getInfo(self::ID_U_ADMIN));
+    }
 }

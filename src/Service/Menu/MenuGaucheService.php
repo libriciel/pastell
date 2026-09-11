@@ -48,6 +48,7 @@ class MenuGaucheService
     public const string ENTITE_JOB_LOCK = 'Entite/job?filtre=lock';
     public const string ENTITE_JOB_WAIT = 'Entite/job?filtre=wait';
     public const string ENTITE_DAEMON_ADMIN = 'Entite/daemonAdmin';
+    public const string ENTITE_SECURITE = 'Entite/securite';
 
     public const string FLUX_INDEX = 'Flux/index';
 
@@ -162,6 +163,7 @@ class MenuGaucheService
         }
 
         if ($system_edition) {
+            $administration_options[] = MenuGaucheOption::withParameters('Sécurité', self::ENTITE_SECURITE, ['id_e' => $id_e]);
             $administration_options[] = MenuGaucheOption::withParameters('Export de la configuration', self::ENTITE_EXPORT_CONFIG, ['id_e' => $id_e]);
             $administration_options[] = MenuGaucheOption::withParameters('Import de la configuration', self::ENTITE_IMPORT_CONFIG, ['id_e' => $id_e]);
         }

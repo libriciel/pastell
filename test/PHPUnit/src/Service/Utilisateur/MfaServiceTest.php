@@ -113,4 +113,72 @@ class MfaServiceTest extends PastellTestCase
         $mfaService->delete(self::ID_U_ADMIN);
         self::assertSame(0, $mfaService->countRemainingRecoveryCodes(self::ID_U_ADMIN));
     }
+
+    private function getEntiteMfaObligationSQL(): EntiteMfaObligationSQL
+    {
+        return $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class);
+    }
+
+    public function testNoEnrollWithoutObligation(): void
+    {
+        self::assertFalse($this->getMfaService()->mustEnroll(self::ID_U_ADMIN));
+    }
+
+    public function testMustEnrollWithObligation(): void
+    {
+        $this->getEntiteMfaObligationSQL()->enable(0);
+        self::assertTrue($this->getMfaService()->mustEnroll(self::ID_U_ADMIN));
+    }
+
+    public function testNoEnrollWhenAlreadyEnabled(): void
+    {
+        $this->getEntiteMfaObligationSQL()->enable(0);
+        $mfaService = $this->getMfaService();
+        $mfaService->enroll(self::ID_U_ADMIN, $mfaService->generateSecret());
+        $mfaService->confirm(self::ID_U_ADMIN);
+        self::assertFalse($mfaService->mustEnroll(self::ID_U_ADMIN));
+    }
+
+    public function testObligatoryWithObligation(): void
+    {
+        $this->getEntiteMfaObligationSQL()->enable(0);
+        $mfaService = $this->getMfaService();
+        $mfaService->enroll(self::ID_U_ADMIN, $mfaService->generateSecret());
+        $mfaService->confirm(self::ID_U_ADMIN);
+        self::assertTrue($mfaService->isObligatory(self::ID_U_ADMIN));
+    }
+
+    public function testNotObligatoryWithoutObligation(): void
+    {
+        self::assertFalse($this->getMfaService()->isObligatory(self::ID_U_ADMIN));
+    }
+
+    public function testReenrolmentForcesEnroll(): void
+    {
+        $mfaService = $this->getMfaService();
+        $mfaService->enroll(self::ID_U_ADMIN, $mfaService->generateSecret());
+        $mfaService->confirm(self::ID_U_ADMIN);
+
+        $mfaService->requireReenrolment(self::ID_U_ADMIN);
+
+        self::assertFalse($mfaService->isEnabled(self::ID_U_ADMIN));
+        self::assertTrue($mfaService->mustEnroll(self::ID_U_ADMIN));
+        self::assertSame(0, $mfaService->countRemainingRecoveryCodes(self::ID_U_ADMIN));
+    }
+
+    public function testReenrolmentClearedAfterConfirm(): void
+    {
+        $mfaService = $this->getMfaService();
+        $mfaService->requireReenrolment(self::ID_U_ADMIN);
+        $mfaService->enroll(self::ID_U_ADMIN, $mfaService->generateSecret());
+        self::assertTrue($mfaService->mustEnroll(self::ID_U_ADMIN));
+
+        $mfaService->confirm(self::ID_U_ADMIN);
+        self::assertFalse($mfaService->mustEnroll(self::ID_U_ADMIN));
+    }
+
+    public function testNoEnrollWithoutReset(): void
+    {
+        self::assertFalse($this->getMfaService()->mustEnroll(self::ID_U_ADMIN));
+    }
 }

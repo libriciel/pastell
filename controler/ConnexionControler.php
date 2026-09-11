@@ -416,6 +416,14 @@ class ConnexionControler extends PastellControler
             $this->redirect('/Connexion/mfa');
         }
 
+        if ($this->getMfaService()->mustEnroll((int)$id_u)) {
+            $this->finalizeConnexion((int)$id_u, $login);
+            $this->setLastMessage(
+                'Veuillez configurer votre double authentification pour accéder à Pastell.'
+            );
+            $this->redirect('/Mfa/enrolement');
+        }
+
         $this->finalizeConnexion((int)$id_u, $login);
         return $id_u;
     }

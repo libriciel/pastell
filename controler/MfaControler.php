@@ -8,6 +8,9 @@ use Random\RandomException;
 
 class MfaControler extends PastellControler
 {
+    public const string MFA_OBLIGATOIRE_MESSAGE =
+        'La double authentification est obligatoire sur votre entité et ne peut pas être désactivée.';
+
     /**
      * @throws LastMessageException
      * @throws LastErrorException
@@ -67,6 +70,7 @@ class MfaControler extends PastellControler
         match ($action) {
             MfaAuthAction::REGENERATE => $this->doRegenerateRecoveryCodes($id_u),
             MfaAuthAction::DESACTIVATION => $this->doDesactivation($id_u),
+            MfaAuthAction::REINITIALISATION => $this->doReinitialisation($id_u),
         };
     }
 
@@ -99,6 +103,7 @@ class MfaControler extends PastellControler
 
         $this->setViewParameter('secret', $secret);
         $this->setViewParameter('qr_code_svg', $mfaService->getQrCodeSvg($uri));
+        $this->setViewParameter('enrolment_required', $mfaService->mustEnroll($id_u));
         $this->setViewParameter('page_title', 'Activer la double authentification');
         $this->setViewParameter('template_milieu', 'MfaEnrolement');
         $this->setViewParameter('pages_without_left_menu', true);
@@ -112,9 +117,14 @@ class MfaControler extends PastellControler
     public function cancelEnrolementAction(): void
     {
         $id_u = $this->getId_u();
-        $info = $this->getMfaService()->getInfo($id_u);
+        $mfaService = $this->getMfaService();
+        if ($mfaService->mustEnroll($id_u)) {
+            $this->redirect('/Mfa/enrolement');
+        }
+
+        $info = $mfaService->getInfo($id_u);
         if (!empty($info) && empty($info['is_enabled'])) {
-            $this->getMfaService()->delete($id_u);
+            $mfaService->delete($id_u);
         }
         $this->redirect('/Utilisateur/moi');
     }
@@ -171,10 +181,38 @@ class MfaControler extends PastellControler
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @throws NotFoundException
+     */
+    private function doReinitialisation(int $id_u): void
+    {
+        $mfaService = $this->getMfaService();
+        $mfaService->delete($id_u);
+        $userInfo = $this->getUtilisateur()->getInfo($id_u);
+        $this->getJournal()->add(
+            Journal::MODIFICATION_UTILISATEUR,
+            $userInfo['id_e'],
+            Journal::NO_ID_D,
+            'double authentification réinitialisée',
+            "{$userInfo['login']} ($id_u) a réinitialisé sa double authentification"
+        );
+
+        $this->setLastMessage('Configurez votre nouvelle double authentification.');
+        $this->redirect('/Mfa/enrolement');
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
      */
     private function doDesactivation(int $id_u): void
     {
-        $this->getMfaService()->delete($id_u);
+        $mfaService = $this->getMfaService();
+        if ($mfaService->isObligatory($id_u)) {
+            $this->setLastError(self::MFA_OBLIGATOIRE_MESSAGE);
+            $this->redirect('/Utilisateur/moi');
+        }
+
+        $mfaService->delete($id_u);
         $userInfo = $this->getUtilisateur()->getInfo($id_u);
         $this->getJournal()->add(
             Journal::MODIFICATION_UTILISATEUR,

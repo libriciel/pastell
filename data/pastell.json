@@ -1351,6 +1351,44 @@
             }
         }
     },
+    "entite_mfa_obligation": {
+        "Engine": "MyISAM",
+        "Column": {
+            "id_e": {
+                "Field": "id_e",
+                "Type": "int(11)",
+                "Null": "NO",
+                "Key": "PRI",
+                "Default": null,
+                "Extra": ""
+            },
+            "created_at": {
+                "Field": "created_at",
+                "Type": "datetime",
+                "Null": "NO",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "id_u_created_by": {
+                "Field": "id_u_created_by",
+                "Type": "int(11)",
+                "Null": "YES",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            }
+        },
+        "Index": {
+            "PRIMARY": {
+                "type": "BTREE",
+                "col": [
+                    "id_e"
+                ],
+                "unique": true
+            }
+        }
+    },
     "entite_properties": {
         "Engine": "MyISAM",
         "Column": {
@@ -2709,6 +2747,14 @@
             },
             "is_enabled": {
                 "Field": "is_enabled",
+                "Type": "tinyint(1)",
+                "Null": "NO",
+                "Key": "",
+                "Default": "0",
+                "Extra": ""
+            },
+            "enrolment_required": {
+                "Field": "enrolment_required",
                 "Type": "tinyint(1)",
                 "Null": "NO",
                 "Key": "",

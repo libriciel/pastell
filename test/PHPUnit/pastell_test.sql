@@ -63,6 +63,7 @@ INSERT INTO `entite_ancetre` (`id_e_ancetre`, `id_e`, `niveau`) VALUES
 (1, 2, 1),
 (0, 2, 2);
 
+TRUNCATE TABLE `entite_mfa_obligation`;
 TRUNCATE TABLE `entite_properties`;
 TRUNCATE TABLE `extension`;
 INSERT INTO `extension` (`id_e`, `nom`, `path`) VALUES

@@ -215,6 +215,60 @@ class UtilisateurControlerTest extends ControlerTestCase
         self::assertFalse($mfaService->isEnabled(2));
     }
 
+    private function makeObligatory(int $id_u): void
+    {
+        $id_e = $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->getInfo($id_u)['id_e'];
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable((int)$id_e);
+    }
+
+    public function testResetMfaByAdmin(): void
+    {
+        $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
+        $this->enableMfaFor(2);
+        $this->makeObligatory(2);
+
+        $this->setPostInfo(['id_u' => 2]);
+        try {
+            $this->getUtilisateurControler()->resetMfaAction();
+        } catch (Exception) {
+        }
+
+        self::assertTrue($mfaService->mustEnroll(2));
+    }
+
+    public function testResetMfaNotObligatory(): void
+    {
+        $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
+        $this->enableMfaFor(2);
+
+        $this->setPostInfo(['id_u' => 2]);
+        try {
+            $this->getUtilisateurControler()->resetMfaAction();
+            self::fail('Une redirection était attendue');
+        } catch (LastErrorException $e) {
+            self::assertStringContainsString('peut seulement être désactivée', $e->getMessage());
+        }
+
+        self::assertTrue($mfaService->isEnabled(2));
+    }
+
+    public function testDisableMfaBlockedObligatory(): void
+    {
+        $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
+        $this->enableMfaFor(2);
+        $this->makeObligatory(2);
+
+        $this->setPostInfo(['id_u' => 2]);
+        try {
+            $this->getUtilisateurControler()->disableMfaAction();
+            self::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            self::assertStringContainsString('obligatoire', $e->getMessage());
+        }
+
+        self::assertTrue($mfaService->isEnabled(2));
+    }
+
     public function testDisableMfaNotEnabled(): void
     {
         $this->setPostInfo(['id_u' => 2]);

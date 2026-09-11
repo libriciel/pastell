@@ -7,6 +7,7 @@ use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\PasswordEntropy;
 use Pastell\Service\Module\ModuleListService;
+use Pastell\Service\Utilisateur\MfaService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Utilisateur\UserUpdateService;
@@ -361,11 +362,13 @@ class UtilisateurControler extends PastellControler
 
         $this->setDroitViewParameter((int) $info['id_e'], DroitService::DROIT_JOURNAL, DroitType::LECTURE);
 
-        $this->setViewParameter('mfa_enabled', $this->getMfaService()->isEnabled((int) $id_u));
+        $mfaService = $this->getInstance(MfaService::class);
+        $this->setViewParameter('mfa_enabled', $mfaService->isEnabled((int) $id_u));
         $this->setViewParameter(
-            'mfa_admin_disable',
+            'mfa_admin_reset',
             $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION)
         );
+        $this->setViewParameter('mfa_obligatory', $mfaService->isObligatory((int) $id_u));
 
         $this->setViewParameter('template_milieu', 'UtilisateurDetail');
         $this->renderDefault();
@@ -398,6 +401,11 @@ class UtilisateurControler extends PastellControler
             $this->redirect($redirect);
         }
 
+        if ($mfaService->isObligatory($id_u)) {
+            $this->setLastError(MfaControler::MFA_OBLIGATOIRE_MESSAGE);
+            $this->redirect($redirect);
+        }
+
         $mfaService->delete($id_u);
         $this->getJournal()->add(
             Journal::MODIFICATION_UTILISATEUR,
@@ -408,6 +416,51 @@ class UtilisateurControler extends PastellControler
         );
 
         $this->setLastMessage('La double authentification a été désactivée.');
+        $this->redirect($redirect);
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function resetMfaAction(): void
+    {
+        $id_u = (int) $this->getPostInfo()->get('id_u');
+        if ($id_u === (int) $this->getId_u()) {
+            $this->redirect('/Mfa/authRequired?action=reinitialisation');
+        }
+
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+
+        $redirect = "/Utilisateur/detail?id_u=$id_u";
+
+        $info = $this->getUtilisateur()->getInfo($id_u);
+        if (!$info) {
+            $this->setLastError("Utilisateur $id_u inconnu");
+            $this->redirect('/Utilisateur/index');
+        }
+
+        $mfaService = $this->getMfaService();
+        if (!$mfaService->isEnabled($id_u)) {
+            $this->setLastError("La double authentification n'est pas activée pour cet utilisateur.");
+            $this->redirect($redirect);
+        }
+
+        if (!$mfaService->isObligatory($id_u)) {
+            $this->setLastError('La double authentification de cet utilisateur peut seulement être désactivée.');
+            $this->redirect($redirect);
+        }
+
+        $mfaService->requireReenrolment($id_u);
+        $this->getJournal()->add(
+            Journal::MODIFICATION_UTILISATEUR,
+            $info['id_e'],
+            0,
+            'double authentification réinitialisée',
+            "{$info['login']} ($id_u) : double authentification réinitialisée par un administrateur"
+        );
+
+        $this->setLastMessage('La double authentification a été réinitialisée.');
         $this->redirect($redirect);
     }
 
@@ -482,6 +535,7 @@ class UtilisateurControler extends PastellControler
             'mfa_admin',
             $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION)
         );
+        $this->setViewParameter('mfa_obligatory', $mfaService->isObligatory($id_u));
 
         $this->setViewParameter('template_milieu', 'UtilisateurMoi');
         $this->setViewParameter('pages_without_left_menu', true);

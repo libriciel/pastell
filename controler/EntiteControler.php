@@ -1054,6 +1054,96 @@ class EntiteControler extends PastellControler
         $this->redirect("Entite/daemonAdmin?id_e=$id_e");
     }
 
+    private function getEntiteMfaObligationSQL(): EntiteMfaObligationSQL
+    {
+        return $this->getInstance(EntiteMfaObligationSQL::class);
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
+    public function securiteAction(): void
+    {
+        $id_e = $this->getGetInfo()->getInt('id_e');
+        $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+
+        $this->setSecuriteViewParameters($id_e);
+        $this->setNavigationInfo($id_e, 'Entite/securite');
+        $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_SECURITE);
+        $this->setViewParameter('page_title', 'Sécurité');
+        $this->setViewParameter('id_e', $id_e);
+        $this->setViewParameter('template_milieu', 'EntiteSecurite');
+        $this->renderDefault();
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
+    public function doSecuriteAction(): void
+    {
+        $id_e = $this->getPostInfo()->getInt('id_e');
+        $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+
+        $obligationSQL = $this->getEntiteMfaObligationSQL();
+        if ($obligationSQL->getEnforcingProperAncestor($id_e) !== null) {
+            $this->setLastError(
+                "L'obligation de double authentification est imposée par une entité mère "
+                . 'et ne peut pas être modifiée ici.'
+            );
+            $this->redirect("Entite/securite?id_e=$id_e");
+        }
+
+        $enable = (bool)$this->getPostInfo()->getInt('mfa_obligation');
+        if ($enable) {
+            $obligationSQL->enable($id_e, (int)$this->getId_u());
+            $action = 'activée';
+        } else {
+            $obligationSQL->disable($id_e);
+            $action = 'désactivée';
+        }
+
+        $info = $this->getEntiteSQL()->getInfo($id_e);
+        $this->getJournal()->add(
+            Journal::MODIFICATION_ENTITE,
+            $id_e,
+            Journal::NO_ID_D,
+            "obligation de double authentification $action",
+            "L'obligation de double authentification a été $action sur l'entité {$info['denomination']} ($id_e)"
+        );
+        $this->setLastMessage("L'obligation de double authentification a été $action.");
+        $this->redirect("Entite/securite?id_e=$id_e");
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    private function setSecuriteViewParameters(int $id_e): void
+    {
+        $obligationSQL = $this->getEntiteMfaObligationSQL();
+        $enforcingProperAncestor = $obligationSQL->getEnforcingProperAncestor($id_e);
+        $isInherited = $enforcingProperAncestor !== null;
+
+        $ancestorName = null;
+        if ($isInherited) {
+            if ($enforcingProperAncestor === EntiteSQL::ID_E_ENTITE_RACINE) {
+                $denomination = EntiteSQL::ENTITE_RACINE_DENOMINATION;
+            } else {
+                $ancestorInfo = $this->getEntiteSQL()->getInfo($enforcingProperAncestor);
+                $denomination = $ancestorInfo ? $ancestorInfo['denomination'] : '';
+            }
+            $ancestorName = "$denomination ($enforcingProperAncestor)";
+        }
+
+        $this->setViewParameter('mfa_obligation_enabled', $obligationSQL->appliesTo($id_e));
+        $this->setViewParameter('mfa_obligation_inherited', $isInherited);
+        $this->setViewParameter('mfa_obligation_ancestor_id', $enforcingProperAncestor);
+        $this->setViewParameter('mfa_obligation_ancestor_name', $ancestorName);
+    }
+
     private function resolveDaemonForEntity(int $id_e): Daemon
     {
         $daemon = $id_e === EntiteSQL::ID_E_ENTITE_RACINE ?

@@ -47,6 +47,30 @@ class PastellControler extends Controler
             $this->setLastError('Votre compte a été désactivé');
             $this->redirect('/Connexion/connexion?request_uri=' . urlencode($request_uri));
         }
+
+        $this->enforceMfaEnrolment();
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    private function enforceMfaEnrolment(): void
+    {
+        if ($this->getAuthentification()->getMagicLinkId() !== null) {
+            return;
+        }
+        if (!$this->getInstance(MfaService::class)->mustEnroll((int)$this->getId_u())) {
+            return;
+        }
+        $path = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '';
+        if (preg_match('#/(Mfa/|Connexion/(logout|sessionLogout))#', $path)) {
+            return;
+        }
+        $this->setLastError(
+            'Veuillez configurer votre double authentification pour accéder à Pastell.'
+        );
+        $this->redirect('/Mfa/enrolement');
     }
 
     protected function getMfaService(): MfaService
