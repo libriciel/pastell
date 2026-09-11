@@ -4,6 +4,9 @@ use Pastell\Service\Droit\DroitService;
 
 class RoleDroit
 {
+    public const string SUFFIX_DESTINATAIRE = '-destinataire';
+    public const string SUFFIX_REPONSE = '-reponse';
+
     public function __construct(
         private readonly DocumentTypeFactory $documentTypeFactory,
     ) {
@@ -32,15 +35,12 @@ class RoleDroit
             'daemon:edition',
         ];
         sort($droit);
-        return array_merge($droit, $this->documentTypeFactory->getAllDroit());
-    }
-
-    /**
-     * @deprecated 4.1.22 no longer used, to be deleted in 6.0.0
-     */
-    public function areExistingRolesDroits(array $rolesDroits): bool
-    {
-        return count(array_intersect($rolesDroits, $this->getAllDroit())) === count($rolesDroits);
+        $documentDroit = array_filter(
+            $this->documentTypeFactory->getAllDroit(),
+            static fn (string $droit): bool => !str_contains($droit, self::SUFFIX_DESTINATAIRE . ':')
+                && !str_contains($droit, self::SUFFIX_REPONSE . ':')
+        );
+        return array_merge($droit, $documentDroit);
     }
 
     public function filterExistingRolesDroits(array $rolesDroits): array

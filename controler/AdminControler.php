@@ -58,11 +58,7 @@ class AdminControler extends Controler
         $this->getRoleSQL()->edit('admin', 'Administrateur');
 
         foreach ($this->getRoleDroit()->getAllDroit() as $droit) {
-            if (
-                !str_contains($droit, '-destinataire:')
-                && !str_contains($droit, '-reponse:')
-                && !str_contains($droit, 'changement-email:')
-            ) {
+            if (!str_contains($droit, 'changement-email:')) {
                 $this->getRoleSQL()->addDroit('admin', $droit);
             }
         }

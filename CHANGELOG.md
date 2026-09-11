@@ -69,6 +69,8 @@ l'intervenant par l'administrateur) : après 3 saisies erronées, l'accès est a
   `BaseAPIController::checkOneDroit()` -> `BaseAPIController::checkOneDroitFor()`
   `BaseAPIController::hasOneDroit()` -> `BaseAPIController::hasOneDroitFor()`
   `DroitService::hasOneDroit()` -> `DroitService::hasOneDroitFor()`
+- Les droits `*-destinataire:*` et `*-reponse:*` ne sont plus gérables depuis la page `Role/detail`, 
+les droits résiduels sont supprimés par un updater #2490
 
 # [5.0.9] - 2026-09-07
 
