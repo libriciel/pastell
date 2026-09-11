@@ -9,6 +9,8 @@
   - Ajout d'une recherche avancée 
   - Ajout du tri par dates sur la liste des travaux
   - Possibilité de suspendre/reprendre les travaux correspondants à la recherche
+- Double authentification (TOTP) : activation, réinitialisation et désactivation depuis l'espace personnel, avec
+  codes de récupération. Un administrateur peut réinitialiser ou désactiver celle d'un utilisateur #2453
 - iparapheur REST :
   - **BREAKING** : Suppression de la case 'Appliquer le multi-document' du connecteur iparapheur REST #2593
   - Nouveau champ « Autre document(s) à signer », transmis au Tdt en plus des annexes dans les flux
