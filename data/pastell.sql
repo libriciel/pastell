@@ -382,6 +382,21 @@ CREATE TABLE `utilisateur` (
 	PRIMARY KEY (`id_u`),
 	KEY `id_e` (`id_e`)
 )  ENGINE=MyISAM  ;
+CREATE TABLE `utilisateur_mfa` (
+	`id_u` int(11) NOT NULL,
+	`secret` varchar(255) NOT NULL,
+	`is_enabled` tinyint(1) NOT NULL DEFAULT '0',
+	`created_at` datetime NOT NULL,
+	PRIMARY KEY (`id_u`)
+)  ENGINE=MyISAM  ;
+CREATE TABLE `utilisateur_mfa_recovery_code` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`id_u` int(11) NOT NULL,
+	`code_hash` varchar(64) NOT NULL,
+	`used_at` datetime DEFAULT NULL,
+	PRIMARY KEY (`id`),
+	KEY `id_u` (`id_u`)
+)  ENGINE=MyISAM  ;
 CREATE TABLE `utilisateur_new_email` (
 	`id_u` int(11) NOT NULL,
 	`email` varchar(255) NOT NULL,
