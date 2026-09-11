@@ -29,6 +29,7 @@ class UtilisateurDeletionService
         private readonly UtilisateurNewEmailSQL $utilisateurNewEmailSQL,
         private readonly NotificationDigestSQL $notificationDigestSQL,
         private readonly MagicLinkRevokeService $magicLinkRevokeService,
+        private readonly MfaService $mfaService,
     ) {
         $this->utilisateurSQL = $utilisateurSQL;
         $this->utilisateurRoleService = $utilisateurRoleService;
@@ -47,6 +48,7 @@ class UtilisateurDeletionService
         $this->notificationDigestSQL->deleteByEmail($userInfo['email']);
         $this->usersToken->deleteAllForUser($id_u);
         $this->utilisateurNewEmailSQL->delete($id_u);
+        $this->mfaService->delete($id_u);
         $this->utilisateurSQL->desinscription($id_u);
         $this->journalEntryService->add(
             JournalEventType::USER_MODIFICATION,
