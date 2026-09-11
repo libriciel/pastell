@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Utilisateur\MfaObligationService;
 use Pastell\Service\Utilisateur\MfaService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UserPasswordService;
@@ -212,6 +213,63 @@ class UtilisateurControlerTest extends ControlerTestCase
         }
 
         self::assertFalse($mfaService->isEnabled(2));
+    }
+
+    private function makeObligatory(int $id_u): void
+    {
+        $id_e = (int)$this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->getInfo($id_u)['id_e'];
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable($id_e);
+    }
+
+    private function postMfaAdminAction(string $action): void
+    {
+        $this->setPostInfo(['id_u' => 2]);
+        $controler = $this->getUtilisateurControler();
+        $controler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        $controler->$action();
+    }
+
+    public function testDisableMfaBlockedObligatory(): void
+    {
+        $this->enableMfa(2);
+        $this->makeObligatory(2);
+
+        try {
+            $this->postMfaAdminAction('disableMfaAction');
+            self::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            self::assertStringContainsString('obligatoire', $e->getMessage());
+        }
+
+        self::assertTrue($this->getObjectInstancier()->getInstance(MfaService::class)->isEnabled(2));
+    }
+
+    public function testResetMfaByAdmin(): void
+    {
+        $this->enableMfa(2);
+        $this->makeObligatory(2);
+
+        try {
+            $this->postMfaAdminAction('resetMfaAction');
+        } catch (LastMessageException) {
+        }
+
+        self::assertFalse($this->getObjectInstancier()->getInstance(MfaService::class)->isEnabled(2));
+        self::assertTrue($this->getObjectInstancier()->getInstance(MfaObligationService::class)->mustEnroll(2));
+    }
+
+    public function testResetMfaNotObligatory(): void
+    {
+        $this->enableMfa(2);
+
+        try {
+            $this->postMfaAdminAction('resetMfaAction');
+            self::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            self::assertStringContainsString('peut seulement être désactivée', $e->getMessage());
+        }
+
+        self::assertTrue($this->getObjectInstancier()->getInstance(MfaService::class)->isEnabled(2));
     }
 
     public function testDisableMfaNotEnabled(): void

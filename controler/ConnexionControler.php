@@ -5,6 +5,7 @@ use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\PasswordEntropy;
 use Pastell\Service\Utilisateur\MfaLoginResult;
+use Pastell\Service\Utilisateur\MfaObligationService;
 use Pastell\Service\Utilisateur\PasswordResetService;
 use Pastell\Service\Utilisateur\UserAuthenticationService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
@@ -412,6 +413,12 @@ class ConnexionControler extends PastellControler
 
         $loginAttemptLimit->resetLoginAttempt($login);
         $this->finalizeConnexion((int)$id_u, $login);
+
+        if ($this->getInstance(MfaObligationService::class)->mustEnroll((int)$id_u)) {
+            $this->startMfaEnrolment((int)$id_u);
+            $this->setLastMessage('Veuillez configurer votre double authentification pour accéder à Pastell.');
+            $this->redirect('/Mfa/enrolement');
+        }
         return $id_u;
     }
 

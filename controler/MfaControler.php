@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\Utilisateur\MfaManagementAction;
+use Pastell\Service\Utilisateur\MfaObligationService;
 use Pastell\Service\Utilisateur\UserAuthenticationService;
 use Random\RandomException;
 
@@ -24,6 +25,11 @@ class MfaControler extends PastellControler
     private function getUserAuthenticationService(): UserAuthenticationService
     {
         return $this->getObjectInstancier()->getInstance(UserAuthenticationService::class);
+    }
+
+    private function getMfaObligationService(): MfaObligationService
+    {
+        return $this->getObjectInstancier()->getInstance(MfaObligationService::class);
     }
 
     /**
@@ -96,6 +102,7 @@ class MfaControler extends PastellControler
                     $this->getMfaService()->regenerateRecoveryCodes($id_u)
                 ),
                 MfaManagementAction::DISABLE => $this->disable($id_u),
+                MfaManagementAction::RESET => $this->reset($id_u),
             };
         } catch (UnrecoverableException $e) {
             $this->setLastError($e->getMessage());
@@ -109,11 +116,7 @@ class MfaControler extends PastellControler
      */
     private function startEnrolement(int $id_u): void
     {
-        $mfaService = $this->getMfaService();
-        if (!$mfaService->isPending($id_u)) {
-            $mfaService->enroll($id_u);
-        }
-        $this->getAuthentification()->authoriseMfaEnrolment();
+        $this->startMfaEnrolment($id_u);
         $this->redirect('/Mfa/enrolement');
     }
 
@@ -147,6 +150,7 @@ class MfaControler extends PastellControler
 
         $this->setViewParameter('secret', $enrolment->secret);
         $this->setViewParameter('qr_code_svg', $enrolment->qrCodeSvg);
+        $this->setViewParameter('enrolment_required', $this->getMfaObligationService()->mustEnroll($id_u));
         $this->setViewParameter('page_title', 'Activer la double authentification');
         $this->setViewParameter('template_milieu', 'MfaEnrolement');
         $this->setViewParameter('pages_without_left_menu', true);
@@ -184,8 +188,11 @@ class MfaControler extends PastellControler
     {
         $this->checkPostRequest('/Utilisateur/moi');
         $id_u = $this->getId_u();
-        if ($this->getMfaService()->isPending($id_u)) {
-            $this->getMfaService()->delete($id_u);
+        try {
+            $this->getMfaObligationService()->cancelEnrolment($id_u);
+        } catch (UnrecoverableException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect('/Mfa/enrolement');
         }
         $this->getAuthentification()->clearMfaEnrolmentAuthorisation();
         $this->redirect('/Utilisateur/moi');
@@ -197,7 +204,7 @@ class MfaControler extends PastellControler
      */
     private function redirectIfEnabled(int $id_u): void
     {
-        if ($this->getMfaService()->isEnabled($id_u)) {
+        if (!$this->getMfaService()->canEnrol($id_u)) {
             $this->setLastMessage('La double authentification est déjà activée.');
             $this->redirect('/Utilisateur/moi');
         }
@@ -211,9 +218,22 @@ class MfaControler extends PastellControler
      */
     private function disable(int $id_u): void
     {
-        $this->getMfaService()->disable($id_u);
+        $this->getMfaObligationService()->disableMfa($id_u);
         $this->setLastMessage('La double authentification est désactivée.');
         $this->redirect('/Utilisateur/moi');
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     * @throws UnrecoverableException
+     */
+    private function reset(int $id_u): void
+    {
+        $this->getMfaObligationService()->resetMfa($id_u);
+        $this->setLastMessage('Configurez votre nouvelle double authentification.');
+        $this->startEnrolement($id_u);
     }
 
     /**

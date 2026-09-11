@@ -18,6 +18,8 @@ use Pastell\Service\MagicLink\MagicLinkService;
 use Pastell\Service\Module\ModuleListService;
 use Pastell\ViewModel\DeleteConfirmation;
 use Pastell\Service\Journal\JournalEntryService;
+use Pastell\Service\Utilisateur\MfaManagementAction;
+use Pastell\Service\Utilisateur\MfaObligationService;
 use Pastell\Service\Utilisateur\MfaService;
 
 class PastellControler extends Controler
@@ -52,6 +54,38 @@ class PastellControler extends Controler
             $this->setLastError('Votre compte a été désactivé');
             $this->redirect('/Connexion/connexion?request_uri=' . urlencode($request_uri));
         }
+
+        $this->enforceMfaEnrolment();
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    private function enforceMfaEnrolment(): void
+    {
+        if ($this instanceof MfaControler || $this->getAuthentification()->getMagicLinkId() !== null) {
+            return;
+        }
+        if (!$this->getInstance(MfaObligationService::class)->mustEnroll((int)$this->getId_u())) {
+            return;
+        }
+        $this->setLastError(
+            'Veuillez configurer votre double authentification pour accéder à Pastell.'
+        );
+        if (
+            $this->getAuthentification()->isMfaEnrolmentAuthorised()
+            && $this->getMfaService()->isPending((int)$this->getId_u())
+        ) {
+            $this->redirect('/Mfa/enrolement');
+        }
+        $this->redirect('/Mfa/authRequired?action=' . MfaManagementAction::ENABLE->value);
+    }
+
+    protected function startMfaEnrolment(int $id_u): void
+    {
+        $this->getMfaService()->startEnrolment($id_u);
+        $this->getAuthentification()->authoriseMfaEnrolment();
     }
 
     protected function getMfaService(): MfaService

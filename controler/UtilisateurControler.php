@@ -10,6 +10,7 @@ use Pastell\Service\Notification\NotificationService;
 use Pastell\Service\PasswordEntropy;
 use Pastell\Service\Module\ModuleListService;
 use Pastell\Service\Utilisateur\MfaManagementAction;
+use Pastell\Service\Utilisateur\MfaObligationService;
 use Pastell\Service\Utilisateur\RoleDelegationService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
@@ -372,6 +373,10 @@ class UtilisateurControler extends PastellControler
 
         $this->setViewParameter('mfa_enabled', $this->getMfaService()->isEnabled((int) $id_u));
         $this->setViewParameter(
+            'mfa_obligatory',
+            $this->getInstance(MfaObligationService::class)->isObligatory((int) $id_u)
+        );
+        $this->setViewParameter(
             'root_system_edition',
             $this->hasDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION)
         );
@@ -397,7 +402,7 @@ class UtilisateurControler extends PastellControler
         $redirect = "/Utilisateur/detail?id_u=$id_u";
 
         try {
-            $this->getMfaService()->disable($id_u, (int) $this->getId_u());
+            $this->getInstance(MfaObligationService::class)->disableMfa($id_u, (int) $this->getId_u());
         } catch (NotFoundException $e) {
             $this->setLastError($e->getMessage());
             $this->redirect('/Utilisateur/index');
@@ -407,6 +412,36 @@ class UtilisateurControler extends PastellControler
         }
 
         $this->setLastMessage('La double authentification a été désactivée.');
+        $this->redirect($redirect);
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function resetMfaAction(): void
+    {
+        $this->checkPostRequest('/Utilisateur/index');
+        $id_u = (int) $this->getPostInfo()->get('id_u');
+        if ($id_u === (int) $this->getId_u()) {
+            $this->redirect('/Mfa/authRequired?action=' . MfaManagementAction::RESET->value);
+        }
+
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+
+        $redirect = "/Utilisateur/detail?id_u=$id_u";
+
+        try {
+            $this->getInstance(MfaObligationService::class)->resetMfa($id_u, (int) $this->getId_u());
+        } catch (NotFoundException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect('/Utilisateur/index');
+        } catch (UnrecoverableException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect($redirect);
+        }
+
+        $this->setLastMessage('La double authentification a été réinitialisée.');
         $this->redirect($redirect);
     }
 
@@ -479,6 +514,10 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter(
             'mfa_recovery_remaining',
             $mfaEnabled ? $mfaService->countRemainingRecoveryCodes($id_u) : 0
+        );
+        $this->setViewParameter(
+            'mfa_obligatory',
+            $this->getInstance(MfaObligationService::class)->isObligatory($id_u)
         );
 
         $this->setViewParameter('template_milieu', 'UtilisateurMoi');

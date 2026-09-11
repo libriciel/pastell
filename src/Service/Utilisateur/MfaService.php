@@ -44,6 +44,11 @@ final class MfaService
         return $this->getPendingSecret($id_u) !== null;
     }
 
+    public function canEnrol(int $id_u): bool
+    {
+        return !$this->isEnabled($id_u) || $this->isPending($id_u);
+    }
+
     public function getEnrolment(int $id_u, string $label): ?MfaEnrolment
     {
         $secret = $this->getPendingSecret($id_u);
@@ -55,11 +60,7 @@ final class MfaService
 
     private function getPendingSecret(int $id_u): ?string
     {
-        $info = $this->utilisateurMfaSQL->getInfo($id_u);
-        if (empty($info['secret']) || !empty($info['is_enabled'])) {
-            return null;
-        }
-        return $info['secret'];
+        return $this->utilisateurMfaSQL->getInfo($id_u)['pending_secret'] ?? null;
     }
 
     public function getActivatedAt(int $id_u): ?string
@@ -81,13 +82,12 @@ final class MfaService
         return $writer->writeString($uri);
     }
 
-    private function verifyForUser(int $id_u, string $code): bool
+    private function verifyForUser(int $id_u, ?string $secret, string $code): bool
     {
-        $info = $this->utilisateurMfaSQL->getInfo($id_u);
-        if (empty($info['secret'])) {
+        if (empty($secret)) {
             return false;
         }
-        $counter = $this->getMatchingCounter($info['secret'], $code);
+        $counter = $this->getMatchingCounter($secret, $code);
         if ($counter === null) {
             return false;
         }
@@ -113,11 +113,6 @@ final class MfaService
         $this->utilisateurMfaSQL->enroll($id_u, TOTP::generate($this->clock)->getSecret());
     }
 
-    private function confirm(int $id_u): void
-    {
-        $this->utilisateurMfaSQL->confirm($id_u);
-    }
-
     /**
      * @return string[]
      * @throws UnrecoverableException
@@ -125,20 +120,32 @@ final class MfaService
      */
     public function activate(int $id_u, string $code): array
     {
-        if ($this->isEnabled($id_u)) {
+        $was_enabled = $this->isEnabled($id_u);
+        $pending_secret = $this->getPendingSecret($id_u);
+        if ($pending_secret === null && $was_enabled) {
             throw new UnrecoverableException('La double authentification est déjà activée.');
         }
-        if (!$this->verifyForUser($id_u, $code)) {
+        $counter = $pending_secret === null ? null : $this->getMatchingCounter($pending_secret, $code);
+        if ($counter === null) {
             throw new UnrecoverableException('Le code saisi est invalide.');
         }
-        $this->confirm($id_u);
+        $this->utilisateurMfaSQL->confirm($id_u, $counter);
         $user_info = $this->utilisateurSQL->getInfo($id_u);
-        $this->addJournalEntry(
-            $user_info,
-            $id_u,
-            'double authentification activée',
-            "{$user_info['login']} ($id_u) a activé la double authentification"
-        );
+        if ($was_enabled) {
+            $this->addJournalEntry(
+                $user_info,
+                $id_u,
+                'double authentification réinitialisée',
+                "{$user_info['login']} ($id_u) a réinitialisé sa double authentification"
+            );
+        } else {
+            $this->addJournalEntry(
+                $user_info,
+                $id_u,
+                'double authentification activée',
+                "{$user_info['login']} ($id_u) a activé la double authentification"
+            );
+        }
         return $this->generateRecoveryCodes($id_u);
     }
 
@@ -189,7 +196,8 @@ final class MfaService
         if (!$user_info || !$this->isEnabled($id_u)) {
             return MfaLoginResult::INVALID;
         }
-        if ($this->verifyForUser($id_u, $code)) {
+        $secret = $this->utilisateurMfaSQL->getInfo($id_u)['secret'] ?? null;
+        if ($this->verifyForUser($id_u, $secret, $code)) {
             return MfaLoginResult::TOTP;
         }
         if ($this->verifyRecoveryCode($id_u, $code)) {
@@ -242,6 +250,46 @@ final class MfaService
             $action,
             $message
         );
+    }
+
+    /**
+     * @throws NotFoundException
+     * @throws UnrecoverableException
+     */
+    public function reset(int $id_u, ?int $admin_id_u = null): void
+    {
+        $user_info = $this->utilisateurSQL->getInfo($id_u);
+        if (!$user_info) {
+            throw new NotFoundException("Utilisateur $id_u inconnu");
+        }
+        $this->assertEnabled($id_u);
+        if ($admin_id_u === null) {
+            $this->enroll($id_u);
+            return;
+        }
+        $this->delete($id_u);
+        $this->addJournalEntry(
+            $user_info,
+            $admin_id_u,
+            'double authentification réinitialisée',
+            "{$user_info['login']} ($id_u) : double authentification réinitialisée par un administrateur"
+        );
+    }
+
+    public function cancelEnrolment(int $id_u): void
+    {
+        if ($this->isEnabled($id_u)) {
+            $this->utilisateurMfaSQL->clearPendingSecret($id_u);
+            return;
+        }
+        $this->delete($id_u);
+    }
+
+    public function startEnrolment(int $id_u): void
+    {
+        if (!$this->isPending($id_u)) {
+            $this->enroll($id_u);
+        }
     }
 
     public function delete(int $id_u): void

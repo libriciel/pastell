@@ -4,6 +4,7 @@ use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityType;
+use Pastell\Service\Utilisateur\MfaService;
 
 class PastellControlerTest extends ControlerTestCase
 {
@@ -128,6 +129,104 @@ class PastellControlerTest extends ControlerTestCase
 
         static::assertTrue($authentification->isConnected());
         static::assertSame($magicLinkId, $authentification->getMagicLinkId());
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function testObligationForcesEnrolment(): void
+    {
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+        $_SERVER['REQUEST_URI'] = '/';
+
+        try {
+            $this->getControlerInstance(PastellControler::class)->_beforeAction();
+            static::fail('Une redirection vers /Mfa/enrolement était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('configurer votre double authentification', $e->getMessage());
+            static::assertStringContainsString('Mfa/authRequired', $e->getMessage());
+        }
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function testAuthorisedEnrolmentSkipsPassword(): void
+    {
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+        $this->getObjectInstancier()->getInstance(Authentification::class)->authoriseMfaEnrolment();
+        $this->getObjectInstancier()->getInstance(MfaService::class)->enroll(self::ID_U_ADMIN);
+        $_SERVER['REQUEST_URI'] = '/';
+
+        try {
+            $this->getControlerInstance(PastellControler::class)->_beforeAction();
+            static::fail('Une redirection vers /Mfa/enrolement était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('Mfa/enrolement', $e->getMessage());
+        }
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function testAuthorisedWithoutPendingAsksPassword(): void
+    {
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+        $this->getObjectInstancier()->getInstance(Authentification::class)->authoriseMfaEnrolment();
+        $_SERVER['REQUEST_URI'] = '/';
+
+        try {
+            $this->getControlerInstance(PastellControler::class)->_beforeAction();
+            static::fail('Une redirection vers /Mfa/authRequired était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('Mfa/authRequired', $e->getMessage());
+        }
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function testMfaPathDoesNotExempt(): void
+    {
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+        $_SERVER['REQUEST_URI'] = '/Mfa/enrolement?page_request=Document/index';
+
+        $this->expectException(LastErrorException::class);
+        $this->getControlerInstance(PastellControler::class)->_beforeAction();
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function testMagicLinkExemptFromObligation(): void
+    {
+        $pastellControler = $this->getControlerInstance(PastellControler::class);
+        $_SERVER['REQUEST_URI'] = '/';
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+
+        $magicLinkId = $this->getObjectInstancier()->getInstance(MagicLinkSQL::class)->create(
+            '22222222-2222-4222-8222-222222222222',
+            1,
+            'token-oblig',
+            '123456',
+            'Intervention',
+            1,
+            date('Y-m-d H:i:s', strtotime('+1 day')),
+            'Dupont',
+            'Jean',
+            'jean.dupont@example.org',
+        );
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->setMagicLinkId($magicLinkId);
+
+        $pastellControler->_beforeAction();
+
+        static::assertTrue($authentification->isConnected());
     }
 
     public function testMagicLinkInactiveDisconnects(): void

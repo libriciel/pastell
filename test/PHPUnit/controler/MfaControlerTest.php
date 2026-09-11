@@ -409,4 +409,110 @@ class MfaControlerTest extends ControlerTestCase
 
         self::assertTrue($this->getMfaService()->isEnabled(self::ID_U_ERIC));
     }
+
+    public function testEnrolementHidesCancelWhenObligatory(): void
+    {
+        $this->enrollAuthorised();
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+
+        ob_start();
+        $this->getMfaControler()->enrolementAction();
+        $output = (string)ob_get_clean();
+
+        self::assertStringNotContainsString('Mfa/cancelEnrolement', $output);
+    }
+
+    public function testDisableBlockedWhenObligatory(): void
+    {
+        $this->enableMfa(self::ID_U_ADMIN);
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+
+        try {
+            $this->doAuthRequired('disable', 'admin');
+            self::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            self::assertStringContainsString('obligatoire', $e->getMessage());
+        }
+
+        self::assertTrue($this->getMfaService()->isEnabled(self::ID_U_ADMIN));
+    }
+
+    public function testResetStartsEnrolement(): void
+    {
+        $this->enableMfa(self::ID_U_ADMIN);
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+
+        try {
+            $this->doAuthRequired('reset', 'admin');
+            self::fail('Une redirection était attendue');
+        } catch (LastMessageException $e) {
+            self::assertStringContainsString('/Mfa/enrolement', $e->getMessage());
+        }
+
+        self::assertTrue($this->getMfaService()->isEnabled(self::ID_U_ADMIN));
+        self::assertTrue($this->getMfaService()->isPending(self::ID_U_ADMIN));
+    }
+
+    /**
+     * @throws RandomException
+     */
+    public function testResetSwapsSecretOnConfirm(): void
+    {
+        $old_secret = $this->enableMfa(self::ID_U_ADMIN);
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+        try {
+            $this->doAuthRequired('reset', 'admin');
+        } catch (LastMessageException) {
+        }
+        $new_secret = $this->getMfaService()->getEnrolment(self::ID_U_ADMIN, 'admin')->secret;
+
+        $this->getMfaService()->activate(self::ID_U_ADMIN, TOTP::createFromSecret($new_secret, new Clock())->now());
+
+        $info = $this->getObjectInstancier()->getInstance(UtilisateurMfaSQL::class)->getInfo(self::ID_U_ADMIN);
+        self::assertNotSame($old_secret, $new_secret);
+        self::assertSame($new_secret, $info['secret']);
+        self::assertFalse($this->getMfaService()->isPending(self::ID_U_ADMIN));
+        $this->assertJournalContains('double authentification réinitialisée');
+    }
+
+    public function testCancelResetKeepsSecret(): void
+    {
+        $secret = $this->enableMfa(self::ID_U_ADMIN);
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+        try {
+            $this->doAuthRequired('reset', 'admin');
+        } catch (LastMessageException) {
+        }
+        $controler = $this->getMfaControler();
+        $controler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+
+        try {
+            $controler->cancelEnrolementAction();
+            self::fail('Une redirection était attendue');
+        } catch (LastMessageException $e) {
+            self::assertStringContainsString('/Utilisateur/moi', $e->getMessage());
+        }
+
+        $info = $this->getObjectInstancier()->getInstance(UtilisateurMfaSQL::class)->getInfo(self::ID_U_ADMIN);
+        self::assertTrue($this->getMfaService()->isEnabled(self::ID_U_ADMIN));
+        self::assertSame($secret, $info['secret']);
+        self::assertFalse($this->getMfaService()->isPending(self::ID_U_ADMIN));
+    }
+
+    public function testCancelBlockedWhenRequired(): void
+    {
+        $this->getMfaService()->enroll(self::ID_U_ADMIN);
+        $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class)->enable(0);
+        $controler = $this->getMfaControler();
+        $controler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+
+        try {
+            $controler->cancelEnrolementAction();
+            self::fail('Une redirection était attendue');
+        } catch (LastErrorException $e) {
+            self::assertStringContainsString('/Mfa/enrolement', $e->getMessage());
+        }
+
+        self::assertTrue($this->getMfaService()->isPending(self::ID_U_ADMIN));
+    }
 }

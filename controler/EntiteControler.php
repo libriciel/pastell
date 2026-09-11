@@ -6,6 +6,7 @@ use Pastell\Service\Crypto;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\MfaObligationService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Utilisateur\UtilisateurListService;
 use Pastell\Service\Entite\EntiteDeletionService;
@@ -1040,6 +1041,63 @@ class EntiteControler extends PastellControler
             $this->setLastError($e->getMessage());
         }
         $this->redirect("Entite/daemonAdmin?id_e=$id_e");
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     * @throws NotFoundException
+     */
+    public function securiteAction(): void
+    {
+        $id_e = $this->getGetInfo()->getInt('id_e');
+        $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+
+        $mfaObligationService = $this->getInstance(MfaObligationService::class);
+        $enforcing_parent_id_e = $mfaObligationService->getEnforcingParent($id_e);
+        $this->setViewParameter('mfa_obligation_enabled', $mfaObligationService->appliesTo($id_e));
+        $this->setViewParameter('mfa_obligation_parent_id_e', $enforcing_parent_id_e);
+        $this->setViewParameter(
+            'mfa_obligation_parent_denomination',
+            $enforcing_parent_id_e === null
+                ? null
+                : $this->getInstance(EntityInfoService::class)->getDenomination($enforcing_parent_id_e)
+        );
+        $this->setViewParameter('id_e', $id_e);
+
+        $this->setNavigationInfo($id_e, 'Entite/securite');
+        $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_SECURITE);
+        $this->setViewParameter('page_title', 'Sécurité');
+        $this->setViewParameter('template_milieu', 'EntiteSecurite');
+        $this->renderDefault();
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function doSecuriteAction(): void
+    {
+        $id_e = $this->getPostInfo()->getInt('id_e');
+        $enable = (bool)$this->getPostInfo()->getInt('mfa_obligation');
+        $this->checkPostRequest("Entite/securite?id_e=$id_e");
+        $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+
+        $mfaObligationService = $this->getInstance(MfaObligationService::class);
+        try {
+            if ($enable) {
+                $mfaObligationService->enableForEntity($id_e, (int)$this->getId_u());
+            } else {
+                $mfaObligationService->disableForEntity($id_e, (int)$this->getId_u());
+            }
+        } catch (UnrecoverableException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect("Entite/securite?id_e=$id_e");
+        }
+
+        $state = $enable ? 'activée' : 'désactivée';
+        $this->setLastMessage("L'obligation de double authentification a été $state.");
+        $this->redirect("Entite/securite?id_e=$id_e");
     }
 
     private function resolveDaemonForEntity(int $id_e): Daemon

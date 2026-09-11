@@ -9,6 +9,7 @@ enum MfaManagementAction: string
     case ENABLE = 'enable';
     case REGENERATE = 'regenerate';
     case DISABLE = 'disable';
+    case RESET = 'reset';
 
     public function description(): string
     {
@@ -16,6 +17,7 @@ enum MfaManagementAction: string
             self::ENABLE => 'Confirmez votre mot de passe pour activer la double authentification.',
             self::REGENERATE => 'Régénérer vos codes de récupération invalidera définitivement les anciens.',
             self::DISABLE => 'Désactiver votre double authentification réduira la sécurité de votre compte.',
+            self::RESET => 'Réinitialiser votre double authentification vous obligera à reconfigurer votre application.',
         };
     }
 
@@ -25,6 +27,7 @@ enum MfaManagementAction: string
             self::ENABLE => 'Continuer',
             self::REGENERATE => 'Régénérer les codes de récupération',
             self::DISABLE => 'Désactiver',
+            self::RESET => 'Réinitialiser',
         };
     }
 

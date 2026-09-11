@@ -1351,6 +1351,28 @@
             }
         }
     },
+    "entite_mfa_obligation": {
+        "Engine": "MyISAM",
+        "Column": {
+            "id_e": {
+                "Field": "id_e",
+                "Type": "int(11)",
+                "Null": "NO",
+                "Key": "PRI",
+                "Default": null,
+                "Extra": ""
+            }
+        },
+        "Index": {
+            "PRIMARY": {
+                "type": "BTREE",
+                "col": [
+                    "id_e"
+                ],
+                "unique": true
+            }
+        }
+    },
     "entite_properties": {
         "Engine": "MyISAM",
         "Column": {
@@ -2713,6 +2735,14 @@
                 "Null": "NO",
                 "Key": "",
                 "Default": "0",
+                "Extra": ""
+            },
+            "pending_secret": {
+                "Field": "pending_secret",
+                "Type": "varchar(255)",
+                "Null": "YES",
+                "Key": "",
+                "Default": null,
                 "Extra": ""
             },
             "activated_at": {

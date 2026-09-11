@@ -5,6 +5,7 @@ namespace Pastell\Service\Entite;
 use AnnuaireRoleSQL;
 use AnnuaireSQL;
 use ConnecteurEntiteSQL;
+use EntiteMfaObligationSQL;
 use EntiteSQL;
 use FluxEntiteHeritageSQL;
 use FluxEntiteSQL;
@@ -30,6 +31,7 @@ class EntiteDeletionService
         private readonly NotificationService $notificationService,
         private readonly AnnuaireRoleSQL $annuaireRoleSQL,
         private readonly \DaemonSQL $daemonSQL,
+        private readonly EntiteMfaObligationSQL $entiteMfaObligationSQL,
     ) {
     }
 
@@ -42,6 +44,7 @@ class EntiteDeletionService
         $info = $this->entiteSQL->getInfo($id_e);
         $this->notificationService->removeAllForEntite($id_e);
         $this->annuaireRoleSQL->deleteByEntite($id_e);
+        $this->entiteMfaObligationSQL->disable($id_e);
         $this->entiteSQL->delete($id_e);
         $this->journalEntryService->add(
             JournalEventType::ENTITY_MODIFICATION,
@@ -58,6 +61,7 @@ class EntiteDeletionService
     public function deleteEmptyEntity(int $id_e): void
     {
         $this->checkEmptyOrThrow($id_e);
+        $this->entiteMfaObligationSQL->disable($id_e);
         $this->entiteSQL->delete($id_e);
     }
 

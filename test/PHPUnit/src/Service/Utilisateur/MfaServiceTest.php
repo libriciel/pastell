@@ -70,6 +70,18 @@ class MfaServiceTest extends PastellTestCase
         self::assertStringContainsString('<svg', $enrolment->qrCodeSvg);
     }
 
+    public function testCanEnrol(): void
+    {
+        $mfaService = $this->getMfaService();
+        self::assertTrue($mfaService->canEnrol(self::ID_U_ADMIN));
+
+        $this->enableMfa(self::ID_U_ADMIN);
+        self::assertFalse($mfaService->canEnrol(self::ID_U_ADMIN));
+
+        $mfaService->enroll(self::ID_U_ADMIN);
+        self::assertTrue($mfaService->canEnrol(self::ID_U_ADMIN));
+    }
+
     public function testEnrolmentHiddenOnceEnabled(): void
     {
         $this->enableMfa(self::ID_U_ADMIN);
@@ -118,6 +130,23 @@ class MfaServiceTest extends PastellTestCase
         self::assertMatchesRegularExpression('/^([a-z0-9]{5}-){3}[a-z0-9]{5}$/', $recovery_codes[0]);
         self::assertSame(10, $this->getMfaService()->countRemainingRecoveryCodes(self::ID_U_ADMIN));
         $this->assertJournalContains('double authentification activée');
+    }
+
+    /**
+     * @throws RandomException
+     * @throws UnrecoverableException
+     */
+    public function testResetIgnoresOldCounter(): void
+    {
+        $this->enableMfa(self::ID_U_ADMIN);
+        $this->getObjectInstancier()->getInstance(UtilisateurMfaSQL::class)
+            ->updateLastUsedCounter(self::ID_U_ADMIN, 2_000_000_000);
+        $code = $this->enrollAndGetCode(self::ID_U_ADMIN);
+
+        $this->getMfaService()->activate(self::ID_U_ADMIN, $code);
+
+        self::assertFalse($this->getMfaService()->isPending(self::ID_U_ADMIN));
+        self::assertSame(MfaLoginResult::INVALID, $this->verifyLoginCode($code));
     }
 
     /**

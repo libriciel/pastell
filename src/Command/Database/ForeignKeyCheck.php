@@ -76,6 +76,9 @@ class ForeignKeyCheck extends BaseCommand
             'id_e' => ['entite', 'id_e'],
             'id_e_ancetre' => ['entite', 'id_e'],
         ],
+        'entite_mfa_obligation' => [
+            'id_e' => ['entite', 'id_e'],
+        ],
         'entite_properties' => [
             'id_e' => ['entite', 'id_e'],
         ],

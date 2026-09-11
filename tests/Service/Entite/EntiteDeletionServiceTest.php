@@ -7,6 +7,7 @@ use AnnuaireRoleSQL;
 use AnnuaireSQL;
 use ConnecteurEntiteSQL;
 use DocumentSQL;
+use EntiteMfaObligationSQL;
 use EntiteSQL;
 use FluxEntiteSQL;
 use Pastell\Service\Connecteur\FluxInheritanceService;
@@ -66,6 +67,17 @@ class EntiteDeletionServiceTest extends PastellTestCase
         $this->entiteDeletionService->deleteEmptyEntity($this->entityId);
         self::assertFalse($entiteSQL->exists($this->entityId));
         self::assertSame([], $entiteSQL->getAncetre($this->entityId));
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function testDeleteRemovesMfaObligation(): void
+    {
+        $entiteMfaObligationSQL = $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class);
+        $entiteMfaObligationSQL->enable($this->entityId);
+        $this->entiteDeletionService->deleteEmptyEntity($this->entityId);
+        self::assertFalse($entiteMfaObligationSQL->isDirectlySet($this->entityId));
     }
 
     /**

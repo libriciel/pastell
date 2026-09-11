@@ -19,6 +19,7 @@
  * @var array $tokens
  * @var array $tree
  * @var bool $mfa_enabled
+ * @var bool $mfa_obligatory
  * @var bool $root_system_edition
  */
 
@@ -82,18 +83,35 @@ use Pastell\Service\Entite\RootEntity;
             <td>
                 <?php echo $mfa_enabled ? 'Activée' : 'Désactivée' ?>
                 <?php if ($mfa_enabled && (int)$id_u === (int)$id_current_u) : ?>
-                    <a href='Mfa/authRequired?action=disable' class='btn btn-danger btn-sm'>
-                        <i class='fas fa-shield-alt'></i>&nbsp;Désactiver
-                    </a>
-                <?php elseif ($root_system_edition && $mfa_enabled) : ?>
-                    <form action='Utilisateur/disableMfa' method='post' class='d-inline'>
-                        <?php $this->displayCSRFInput() ?>
-                        <input type='hidden' name='id_u' value='<?php echo $id_u ?>'/>
-                        <button type='submit' class='btn btn-danger btn-sm'
-                                onclick="return confirm('Désactiver la double authentification de cet utilisateur ?')">
+                    <?php if ($mfa_obligatory) : ?>
+                        <a href='Mfa/authRequired?action=reset' class='btn btn-warning btn-sm'>
+                            <i class='fas fa-rotate'></i>&nbsp;Réinitialiser
+                        </a>
+                    <?php else : ?>
+                        <a href='Mfa/authRequired?action=disable' class='btn btn-danger btn-sm'>
                             <i class='fas fa-shield-alt'></i>&nbsp;Désactiver
-                        </button>
-                    </form>
+                        </a>
+                    <?php endif; ?>
+                <?php elseif ($root_system_edition && $mfa_enabled) : ?>
+                    <?php if ($mfa_obligatory) : ?>
+                        <form action='Utilisateur/resetMfa' method='post' class='d-inline'>
+                            <?php $this->displayCSRFInput() ?>
+                            <input type='hidden' name='id_u' value='<?php echo $id_u ?>'/>
+                            <button type='submit' class='btn btn-warning btn-sm'
+                                    onclick="return confirm('Réinitialiser la double authentification de cet utilisateur ?')">
+                                <i class='fas fa-rotate'></i>&nbsp;Réinitialiser
+                            </button>
+                        </form>
+                    <?php else : ?>
+                        <form action='Utilisateur/disableMfa' method='post' class='d-inline'>
+                            <?php $this->displayCSRFInput() ?>
+                            <input type='hidden' name='id_u' value='<?php echo $id_u ?>'/>
+                            <button type='submit' class='btn btn-danger btn-sm'
+                                    onclick="return confirm('Désactiver la double authentification de cet utilisateur ?')">
+                                <i class='fas fa-shield-alt'></i>&nbsp;Désactiver
+                            </button>
+                        </form>
+                    <?php endif; ?>
                 <?php endif; ?>
             </td>
         </tr>

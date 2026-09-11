@@ -14,6 +14,9 @@
 - Double authentification (TOTP) : activation, réinitialisation et désactivation depuis l'espace personnel, avec
   codes de récupération. Un administrateur peut désactiver celle d'un utilisateur. Non disponible
   si un connecteur CAS ou OIDC est configuré #2453
+- Obligation de double authentification par entité (page « Sécurité », droit `système:edition`) : s'applique à
+  l'entité et à ses filles et force la configuration à la connexion. La double authentification ne peut alors plus
+  être désactivée, seulement réinitialisée (par l'utilisateur ou un administrateur) #2563
 - iparapheur REST "Multi-documents ET annexes" :
   - **BREAKING** : Suppression de la case 'Appliquer le multi-document' du connecteur iparapheur REST #2593
   - Studio, l'étape « Visa/Signature » dispose d'un nouveau champ « Autre(s) document(s) à signer ».

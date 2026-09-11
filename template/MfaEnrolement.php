@@ -6,11 +6,14 @@ declare(strict_types=1);
  * @var Gabarit $this
  * @var string $secret
  * @var string $qr_code_svg
+ * @var bool $enrolment_required
  */
 
 ?>
 
-<a href='Utilisateur/moi' class="btn btn-link"><i class="fas fa-arrow-left"></i>&nbsp;Espace utilisateur</a>
+<?php if (!$enrolment_required) : ?>
+    <a href='Utilisateur/moi' class="btn btn-link"><i class="fas fa-arrow-left"></i>&nbsp;Espace utilisateur</a>
+<?php endif; ?>
 
 <div class="box">
     <div id="mfa-qr-step">
@@ -90,12 +93,14 @@ declare(strict_types=1);
     </form>
 
     <div class="d-flex gap-2">
-        <form action='Mfa/cancelEnrolement' method='post'>
-            <?php $this->displayCSRFInput(); ?>
-            <button type="submit" class='btn btn-outline-primary'>
-                <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
-            </button>
-        </form>
+        <?php if (!$enrolment_required) : ?>
+            <form action='Mfa/cancelEnrolement' method='post'>
+                <?php $this->displayCSRFInput(); ?>
+                <button type="submit" class='btn btn-outline-primary'>
+                    <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
+                </button>
+            </form>
+        <?php endif; ?>
 
         <button type="submit" form="mfa-code-form" class="btn btn-primary">
             <i class="fas fa-floppy-disk"></i>&nbsp;Activer

@@ -432,7 +432,7 @@ iparapheur_retour: Archive',
         $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
         $mfaService->enroll($id_u);
         $secret = $mfaService->getEnrolment($id_u, 'test')->secret;
-        $this->getObjectInstancier()->getInstance(UtilisateurMfaSQL::class)->confirm($id_u);
+        $this->getObjectInstancier()->getInstance(UtilisateurMfaSQL::class)->confirm($id_u, null);
         return $secret;
     }
 

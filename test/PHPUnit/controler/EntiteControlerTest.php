@@ -331,4 +331,106 @@ class EntiteControlerTest extends ControlerTestCase
         $job->id_daemon = $id_daemon;
         return (int)$jobQueueSQL->createJob($job);
     }
+
+    private function getEntiteMfaObligationSQL(): EntiteMfaObligationSQL
+    {
+        return $this->getObjectInstancier()->getInstance(EntiteMfaObligationSQL::class);
+    }
+
+    public function testSecuriteActionShowsToggle(): void
+    {
+        $this->expectOutputRegex("#Activer l'obligation#");
+        $this->setGetInfo(['id_e' => 1]);
+        $this->entiteControler->securiteAction();
+        static::assertFalse($this->entiteControler->getViewParameter()['mfa_obligation_enabled']);
+    }
+
+    public function testSecuriteActionShowsDisableButton(): void
+    {
+        $this->getEntiteMfaObligationSQL()->enable(1);
+        $this->expectOutputRegex("#Désactiver l'obligation#");
+        $this->setGetInfo(['id_e' => 1]);
+        $this->entiteControler->securiteAction();
+        static::assertTrue($this->entiteControler->getViewParameter()['mfa_obligation_enabled']);
+    }
+
+    public function testSecuriteFormPostsEntity(): void
+    {
+        $this->setGetInfo(['id_e' => 1]);
+        ob_start();
+        $this->entiteControler->securiteAction();
+        $output = ob_get_clean();
+        static::assertMatchesRegularExpression("#name='id_e' value='1'#", $output);
+    }
+
+    public function testSecuriteEnable(): void
+    {
+        $this->setPostInfo(['id_e' => 1, 'mfa_obligation' => 1]);
+        $this->entiteControler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        try {
+            $this->entiteControler->doSecuriteAction();
+        } catch (LastMessageException) {
+        }
+        static::assertTrue($this->getEntiteMfaObligationSQL()->isDirectlySet(1));
+    }
+
+    public function testSecuriteDisable(): void
+    {
+        $this->getEntiteMfaObligationSQL()->enable(1);
+        $this->setPostInfo(['id_e' => 1, 'mfa_obligation' => 0]);
+        $this->entiteControler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        try {
+            $this->entiteControler->doSecuriteAction();
+        } catch (LastMessageException) {
+        }
+        static::assertFalse($this->getEntiteMfaObligationSQL()->isDirectlySet(1));
+    }
+
+    public function testSecuriteInheritedIsShown(): void
+    {
+        $this->getEntiteMfaObligationSQL()->enable(1);
+        $this->expectOutputRegex('#Bourg-en-Bresse#');
+        $this->setGetInfo(['id_e' => 2]);
+        $this->entiteControler->securiteAction();
+        static::assertSame(1, $this->entiteControler->getViewParameter()['mfa_obligation_parent_id_e']);
+    }
+
+    public function testSecuriteShowsInheritedFirst(): void
+    {
+        $this->getEntiteMfaObligationSQL()->enable(2);
+        $this->getEntiteMfaObligationSQL()->enable(1);
+        $this->expectOutputRegex('#Bourg-en-Bresse#');
+        $this->setGetInfo(['id_e' => 2]);
+        $this->entiteControler->securiteAction();
+        static::assertSame(1, $this->entiteControler->getViewParameter()['mfa_obligation_parent_id_e']);
+    }
+
+    public function testSecuriteDirectLockedByParent(): void
+    {
+        $this->getEntiteMfaObligationSQL()->enable(2);
+        $this->getEntiteMfaObligationSQL()->enable(1);
+        $this->setPostInfo(['id_e' => 2, 'mfa_obligation' => 0]);
+        $this->entiteControler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        try {
+            $this->entiteControler->doSecuriteAction();
+            static::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('entité mère', $e->getMessage());
+        }
+        static::assertTrue($this->getEntiteMfaObligationSQL()->isDirectlySet(2));
+    }
+
+    public function testSecuriteCannotDisableInherited(): void
+    {
+        $this->getEntiteMfaObligationSQL()->enable(1);
+        $this->setPostInfo(['id_e' => 2, 'mfa_obligation' => 0]);
+        $this->entiteControler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        try {
+            $this->entiteControler->doSecuriteAction();
+            static::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('entité mère', $e->getMessage());
+        }
+        static::assertSame(1, $this->getEntiteMfaObligationSQL()->getEnforcingAncestor(2));
+    }
 }
