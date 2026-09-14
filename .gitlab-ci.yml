@@ -93,12 +93,17 @@ unit_test:
           alias: mariadb
     script:
         - cd /var/www/pastell
-        - php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit --coverage-text --colors=never --coverage-clover coverage/coverage.xml --log-junit coverage/logfile.xml
+        - php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit --coverage-text --colors=never --coverage-clover coverage/coverage.xml --coverage-cobertura coverage/cobertura.xml --log-junit coverage/logfile.xml
         - cp -rf coverage $CI_PROJECT_DIR
     coverage: '/^\s*Lines:\s*\d+.\d+\%/'
     artifacts:
         paths:
             - coverage
+        reports:
+          coverage_report:
+            coverage_format: cobertura
+            path: coverage/cobertura.xml
+          junit: coverage/logfile.xml
         expire_in: 1h
 
 quality:
