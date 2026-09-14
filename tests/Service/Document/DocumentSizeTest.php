@@ -36,7 +36,7 @@ class DocumentSizeTest extends PastellTestCase
         $this->assertSame(300, $this->documentSize->getSize($document['id_d']));
     }
 
-    public function humanReadableSizeProvider(): iterable
+    public static function humanReadableSizeProvider(): iterable
     {
         yield [0, '0B'];
         yield [1, '1B'];

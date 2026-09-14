@@ -61,25 +61,21 @@ class ExtensionCppTestCase extends PastellTestCase
         $this->getObjectInstancier()->setInstance('workspacePath', $this->workspace_path);
     }
 
-    /**
-     * @param $flux_id
-     * @return mixed
-     */
-    protected function createCppConnector($flux_id)
+    protected function createCppConnector(string $fluxId)
     {
         $result = $this->createConnector('cpp', 'CPP');
         $id_ce = $result['id_ce'];
 
         $this->configureConnector($id_ce, [
             'url_piste_get_token' => 'cpp url token',
-            'client_id' => "61cde1ef-41ab-441c-b23f-95991f9d919g",
-            'client_secret' => "bd307b18-298e-45a7-a4ef-9169200fad63",
+            'client_id' => '61cde1ef-41ab-441c-b23f-95991f9d919g',
+            'client_secret' => 'bd307b18-298e-45a7-a4ef-9169200fad63',
             'url_piste_api' => 'cpp url api',
             'identifiant_structure' => '00000000000727',
-            'depose_depuis_nb_jours' => (time() - strtotime(self::DATE_DEPUIS_LE)) / 86440,
+            'depose_depuis_nb_jours' => (time() - strtotime(self::DATE_DEPUIS_LE)) / 86400,
         ]);
 
-        $this->associateFluxWithConnector($id_ce, $flux_id, 'PortailFacture');
+        $this->associateFluxWithConnector($id_ce, $fluxId, 'PortailFacture');
 
         return $id_ce;
     }

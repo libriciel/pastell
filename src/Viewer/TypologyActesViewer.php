@@ -37,8 +37,13 @@ final class TypologyActesViewer implements Viewer
                         echo $i ? "Annexe numéro $i" : "Pièce principale" ?></td>
                     <td><?php
                         \hecho($line['filename'] ?? "erreur") ?></td>
-                    <td><?php
-                        \hecho($line['typologie'] ?? "erreur") ?></td>
+                    <td><?php if (! \array_key_exists('typologie', $line)) :
+                        \hecho('erreur');
+                        elseif ($line['typologie'] === '') : ?>
+                        <span style="color: var(--bs-orange, #d97706); font-weight: bold;">Typologie à définir</span>
+                        <?php else :
+                            \hecho($line['typologie']);
+                        endif; ?></td>
                 </tr>
                 <?php
             endforeach; ?>

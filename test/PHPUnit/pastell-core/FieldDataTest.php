@@ -20,7 +20,7 @@ class FieldDataTest extends PHPUnit\Framework\TestCase
         static::assertEquals([], $fieldData->getValue());
     }
 
-    public function getUrlProvider(): \Generator
+    public static function getUrlProvider(): \Generator
     {
         yield ['http://url.tld', 'http://url.tld?field=test&num=0'];
         yield ['http://url.tld?param=1', 'http://url.tld?param=1&field=test&num=0'];
@@ -45,7 +45,7 @@ class FieldDataTest extends PHPUnit\Framework\TestCase
         static::assertTrue($fieldData->isMailList());
     }
 
-    public function fieldDataProvider(): array
+    public static function fieldDataProvider(): array
     {
         $fieldNames = [ElementType::TEXT->value, ElementType::TEXTAREA->value, ElementType::SELECT->value];
         $values = [

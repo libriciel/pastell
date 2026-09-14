@@ -4,7 +4,7 @@ class PESMarchePurgeTest extends PastellMarcheTestCase
 {
     public const PES_MARCHE = 'pes-marche';
 
-    public function getPurgeDataProvider()
+    public static function getPurgeDataProvider()
     {
 
         return [

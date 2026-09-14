@@ -15,7 +15,7 @@ final class AsalaeSedaHelperTest extends SedaHelperTestCase
         return new AsalaeSedaHelper();
     }
 
-    public function atrProviderOk(): iterable
+    public static function atrProviderOk(): iterable
     {
         yield 'asalae OK' => [
             __DIR__ . '/../Helpers/fixtures/atr_asalae_ok.xml',
@@ -28,7 +28,7 @@ final class AsalaeSedaHelperTest extends SedaHelperTestCase
         ];
     }
 
-    public function atrProviderKo(): iterable
+    public static function atrProviderKo(): iterable
     {
         yield 'asalae KO' => [
             __DIR__ . '/../Helpers/fixtures/atr_asalae_ko.xml',
