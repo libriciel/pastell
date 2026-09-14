@@ -28,7 +28,7 @@ final class VitamSedaHelperTest extends SedaHelperTestCase
         ];
     }
 
-    public function atrProviderKo(): iterable
+    public static function atrProviderKo(): iterable
     {
         yield 'vitam KO' => [
             __DIR__ . '/../Helpers/fixtures/atr_vitam_ko.xml',

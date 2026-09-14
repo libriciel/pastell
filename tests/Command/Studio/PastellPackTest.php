@@ -12,7 +12,7 @@ use TypeDossierException;
 
 class PastellPackTest extends PastellTestCase
 {
-    private array $moduleDefinition = [
+    private static array $moduleDefinition = [
         'draft-ls-actes' => [
             '',
             'ls-actes',
@@ -181,7 +181,7 @@ class PastellPackTest extends PastellTestCase
         ],
     ];
 
-    public function jsonProvider(): array
+    public static function jsonProvider(): array
     {
         $result = [];
         $finder = new Finder();
@@ -190,7 +190,7 @@ class PastellPackTest extends PastellTestCase
         foreach ($paths as $file) {
             $data = array_merge(
                 [$file->getPathname()],
-                $this->moduleDefinition[$file->getFilenameWithoutExtension()]
+                self::$moduleDefinition[$file->getFilenameWithoutExtension()]
                 ??
                 ['',$file->getFilenameWithoutExtension(),'']
             );

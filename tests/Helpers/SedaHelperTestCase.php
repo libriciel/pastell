@@ -12,7 +12,7 @@ abstract class SedaHelperTestCase extends TestCase
 {
     abstract public function sedaHelper(): SedaHelper;
     abstract public static function atrProviderOk(): iterable;
-    abstract public function atrProviderKo(): iterable;
+    abstract public static function atrProviderKo(): iterable;
 
     public static function ackProvider(): iterable
     {
@@ -25,10 +25,10 @@ abstract class SedaHelperTestCase extends TestCase
         ];
     }
 
-    public function atrProvider(): iterable
+    public static function atrProvider(): iterable
     {
-        yield from $this->atrProviderOk();
-        yield from $this->atrProviderKo();
+        yield from static::atrProviderOk();
+        yield from static::atrProviderKo();
     }
 
     /**

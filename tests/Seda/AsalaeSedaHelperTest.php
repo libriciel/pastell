@@ -28,7 +28,7 @@ final class AsalaeSedaHelperTest extends SedaHelperTestCase
         ];
     }
 
-    public function atrProviderKo(): iterable
+    public static function atrProviderKo(): iterable
     {
         yield 'asalae KO' => [
             __DIR__ . '/../Helpers/fixtures/atr_asalae_ko.xml',
