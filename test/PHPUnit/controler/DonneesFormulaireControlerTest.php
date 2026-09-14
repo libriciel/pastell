@@ -40,7 +40,7 @@ class DonneesFormulaireControlerTest extends ControlerTestCase
         $tmpFolder->delete($tmp_folder);
     }
 
-    public function visionneuseProvider(): iterable
+    public static function visionneuseProvider(): iterable
     {
         yield 'visionneuseWithDroitLecture' => [
             [DroitService::getDroitFor('helios-generique', DroitType::LECTURE)],

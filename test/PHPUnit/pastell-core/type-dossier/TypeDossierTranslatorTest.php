@@ -6,7 +6,7 @@ class TypeDossierTranslatorTest extends PastellTestCase
 {
     public const TYPE_DOSSIER_ID = 42;
 
-    public function caseProvider(): iterable
+    public static function caseProvider(): iterable
     {
         yield 'cas-nominal' => ['cas-nominal'];
         yield 'double-ged' => ['double-ged'];

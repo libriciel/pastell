@@ -9,7 +9,6 @@ use Exception;
 use NotFoundException;
 use Pastell\Step\AnnexeList;
 use Pastell\Step\Tdt\Acte\TypePJ\TypePJProvider;
-use Pastell\Step\Tdt\Acte\TypePJ\TypePJDTO;
 use TdtConnecteur;
 use UnrecoverableException;
 
@@ -68,7 +67,6 @@ class TypologieChoiceAction extends ConnecteurTypeChoiceActionExecutor
 
         $connecteur_type_action = $this->getMappingList();
 
-        $typePJDTO = new TypePJDTO();
         $id_ce = $this->getConnecteurFactory()->getConnecteurId(
             $this->id_e,
             $this->type,
@@ -80,23 +78,14 @@ class TypologieChoiceAction extends ConnecteurTypeChoiceActionExecutor
         }
 
         $configTdt = $this->getConnecteurConfigByType(TdtConnecteur::FAMILLE_CONNECTEUR);
-        $typePJDTO->classificationFilePath =
-            $configTdt->getFilePath($connecteur_type_action['classification_file'] ?? 'classification_file');
 
-        if (!file_exists($typePJDTO->classificationFilePath)) {
-            throw new UnrecoverableException("Aucun fichier de classification n'est présent sur le connecteur TDT");
-        }
-
-        $typePJDTO->acteNature =
-            $this->getDonneesFormulaire()->get($connecteur_type_action['acte_nature'] ?? 'acte_nature');
-
-        $typePJProvider = $this->objectInstancier->getInstance(TypePJProvider::class);
-
-        $result['actes_type_pj_list'] = $typePJProvider->getByNature($typePJDTO);
-        if (!$result['actes_type_pj_list']) {
-            throw new UnrecoverableException(
-                'Aucun type de pièce ne correspond pour la nature et la classification sélectionnée'
+        $result['actes_type_pj_list'] = $this->objectInstancier->getInstance(TypePJProvider::class)
+            ->getTypePJListeForClassification(
+                $configTdt->getFilePath($connecteur_type_action['classification_file'] ?? 'classification_file'),
+                $this->getDonneesFormulaire()->get($connecteur_type_action['acte_nature'] ?? 'acte_nature')
             );
+        if (! $result['actes_type_pj_list']) {
+            throw new UnrecoverableException("Aucun fichier de classification n'est présent sur le connecteur TDT");
         }
 
         $result['pieces'] = $this->getAllPieces();

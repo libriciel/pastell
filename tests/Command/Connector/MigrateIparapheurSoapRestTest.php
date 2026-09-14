@@ -54,7 +54,7 @@ class MigrateIparapheurSoapRestTest extends PastellTestCase
         );
     }
 
-    public function migrationScenariosProvider(): array
+    public static function migrationScenariosProvider(): array
     {
         return [
             'success' => [

@@ -35,7 +35,7 @@ class DossierMarcheTest extends PastellMarcheTestCase
         }
     }
 
-    public function getCodeCPVProvide()
+    public static function getCodeCPVProvide()
     {
         return [
             ['12345678-9',true],

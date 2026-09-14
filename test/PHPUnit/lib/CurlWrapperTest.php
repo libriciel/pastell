@@ -190,7 +190,7 @@ class CurlWrapperTest extends PHPUnit\Framework\TestCase
         $curlWrapper->get("url");
     }
 
-    public function proxyDataProvider()
+    public static function proxyDataProvider()
     {
         yield 'proxy' => ["mon_proxy","mon_proxy","","url"];
         yield "proxy_url_in_no_proxy" => ["","mon_proxy","my_host","https://my_host:443/toto"];

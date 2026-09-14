@@ -31,7 +31,7 @@ class PieceMarcheTest extends PastellMarcheTestCase
         }
     }
 
-    public function getMontantrovide()
+    public static function getMontantrovide()
     {
         return [
             ['',true],

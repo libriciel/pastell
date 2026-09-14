@@ -13,7 +13,7 @@ class AnnexeListTest extends TestCase
     /**
      * @return \Generator<string, array{array<string, mixed>, string[]}>
      */
-    public function mappingProvider(): \Generator
+    public static function mappingProvider(): \Generator
     {
         yield 'un seul élément' => [['autre_document_attache' => 'annexe'], ['annexe']];
         yield 'plusieurs éléments' => [
