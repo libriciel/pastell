@@ -36,7 +36,7 @@ use Pastell\ViewModel\DeleteConfirmation;
         </table>
     <?php endif ?>
 
-    <form action='<?php $this->url($delete_confirmation->actionUrl) ?>' method='post'>
+    <form action='<?php $this->url(get_hecho($delete_confirmation->actionUrl)) ?>' method='post'>
         <?php $this->displayCSRFInput() ?>
         <?php foreach ($delete_confirmation->formData as $name => $value) : ?>
             <?php if (is_array($value)) : ?>
@@ -49,7 +49,7 @@ use Pastell\ViewModel\DeleteConfirmation;
         <?php endforeach ?>
         <div style='margin-top:20px;'>
             <?php if ($delete_confirmation->cancelUrl !== '') : ?>
-                <a class='btn btn-outline-primary' href='<?php $this->url($delete_confirmation->cancelUrl) ?>'>
+                <a class='btn btn-outline-primary' href='<?php $this->url(get_hecho($delete_confirmation->cancelUrl)) ?>'>
                     <i class="fa fa-times-circle"></i>&nbsp;Annuler
                 </a>
             <?php endif ?>
