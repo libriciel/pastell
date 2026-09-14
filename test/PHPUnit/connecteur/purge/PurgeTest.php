@@ -132,29 +132,26 @@ class PurgeTest extends PastellTestCase
         }
     }
 
-    public static function purgeLockNameProvider()
+    public static function purgeLockNameProvider(): Generator
     {
-        return [
-            [
-                'lock' => 'DEFAULT_FREQUENCE',
-                'additionalConnectorConfig' => []
-            ],
-            [
-                'lock' => 'CUSTOM_LOCK',
-                'additionalConnectorConfig' => [
-                    'verrou' => 'CUSTOM_LOCK'
-                ]
+        yield [
+            'lock' => 'DEFAULT_FREQUENCE',
+            'additionalConnectorConfig' => [],
+        ];
+
+        yield [
+            'lock' => 'CUSTOM_LOCK',
+            'additionalConnectorConfig' => [
+                'verrou' => 'CUSTOM_LOCK',
             ],
         ];
     }
 
     /**
      * @dataProvider purgeLockNameProvider
-     * @param string $lockName
-     * @param array $aditionnalConnectorConfig
      * @throws UnrecoverableException
      */
-    public function testPurge(string $lockName, array $aditionnalConnectorConfig)
+    public function testPurge(string $lock, array $additionalConnectorConfig): void
     {
         $result = $this->createDocument('actes-generique');
         $id_d = $result['id_d'];
@@ -167,7 +164,7 @@ class PurgeTest extends PastellTestCase
                 'actif' => 1,
                 'document_type' => 'actes-generique',
                 'document_etat' => 'creation',
-            ] + $aditionnalConnectorConfig
+            ] + $additionalConnectorConfig
         );
 
 
@@ -183,7 +180,7 @@ class PurgeTest extends PastellTestCase
         $sql = "SELECT * FROM job_queue ";
         $result = $this->getSQLQuery()->query($sql);
         $this->assertEquals('supression', $result[0]['etat_cible']);
-        $this->assertSame($lockName, $result[0]['id_verrou']);
+        $this->assertSame($lock, $result[0]['id_verrou']);
         $this->assertMatchesRegularExpression("#$id_d#", $purge->getLastMessage());
     }
 
