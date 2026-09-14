@@ -4,7 +4,7 @@ use Pastell\Validator\ElementIdValidator;
 
 class TypeDossierFormulaireElementManagerTest extends \PHPUnit\Framework\TestCase
 {
-    public function elementIdProvider()
+    public static function elementIdProvider()
     {
         return [
             [

@@ -16,7 +16,7 @@ class TypeDossierEditionServiceTest extends PastellTestCase
         return $this->getObjectInstancier()->getInstance(TypeDossierEditionService::class);
     }
 
-    public function typeDossierIdProvider(): \Generator
+    public static function typeDossierIdProvider(): \Generator
     {
         yield 'empty' => ['', 'Aucun identifiant de type de dossier fourni'];
         yield 'exists' => ['actes-generique', 'Le type de dossier actes-generique existe déjà sur ce Pastell'];

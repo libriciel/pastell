@@ -19,7 +19,7 @@ class S2lowClientTest extends TestCase
         $clientInterface = $this->getMockBuilder(ClientInterface::class)->getMock();
         $this->sl2owClient = new S2lowClient($clientInterface);
     }
-    public function getApiClassesProvider(): iterable
+    public static function getApiClassesProvider(): iterable
     {
         yield ['connexion', Connexion::class];
         yield ['actes', Actes::class];

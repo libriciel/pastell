@@ -16,7 +16,7 @@ class DocumentTransformServiceTest extends PastellTestCase
         return $this->getObjectInstancier()->getInstance(DocumentTransformService::class);
     }
 
-    public function transformationDataProvider(): \Generator
+    public static function transformationDataProvider(): \Generator
     {
         yield 'Valid TransformationData' => [
             [

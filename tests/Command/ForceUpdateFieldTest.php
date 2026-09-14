@@ -47,7 +47,7 @@ final class ForceUpdateFieldTest extends PastellTestCase
         );
     }
 
-    public function commandArgumentsProvider(): iterable
+    public static function commandArgumentsProvider(): iterable
     {
         yield [
             'dossiers',

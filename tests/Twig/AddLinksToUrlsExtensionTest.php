@@ -28,7 +28,7 @@ final class AddLinksToUrlsExtensionTest extends TestCase
         self::assertSame($expectedResult, $twig->render('template'));
     }
 
-    public function urlGeneratorDataProvider(): \Generator
+    public static function urlGeneratorDataProvider(): \Generator
     {
         yield [
             '{{ "https://url.tld" | ' . AddLinksToUrlsExtension::PASTELL_ADD_LINKS_FILTER . ' | raw }}',

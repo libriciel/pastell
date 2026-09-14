@@ -381,6 +381,12 @@
 - Connecteur iparapheur soap #2268
 - Connecteur `chorus-par-csv` ChorusPro par CSV #2356
 
+# [4.1.23] - 2026-10-05
+
+## Corrections
+
+- Ajout/suppression d'une annexe TdT : les typologies déjà choisies sont conservées #1184
+
 # [4.1.22] - 2026-09-07
 
 ## Ajouts
