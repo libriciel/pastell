@@ -14,6 +14,7 @@ extensions/**/vendor
 /docker/docker-compose.override.yml
 
 phpcs.xml
+.phpcs-cache
 
 # Codeception
 **/tests/_output/*
@@ -36,5 +37,5 @@ phpcs.xml
 
 ###> phpunit/phpunit ###
 /phpunit.xml
-.phpunit.result.cache
+/.phpunit.cache/
 ###< phpunit/phpunit ###

@@ -1,43 +1,56 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        bootstrap="test/PHPUnit/init.php"
-        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
-        displayDetailsOnTestsThatTriggerDeprecations="true"
-        displayDetailsOnPhpunitDeprecations="true"
-        displayDetailsOnTestsThatTriggerWarnings="true"
-        displayDetailsOnTestsThatTriggerNotices="true"
-        displayDetailsOnTestsThatTriggerErrors="true"
+<!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         backupGlobals="false"
+         colors="true"
+         failOnNotice="true"
+         failOnWarning="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnPhpunitDeprecations="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         bootstrap="test/PHPUnit/init.php"
+         cacheDirectory=".phpunit.cache"
 >
     <php>
+        <ini name="display_errors" value="1" />
+        <ini name="error_reporting" value="-1" />
+        <server name="APP_ENV" value="test" force="true" />
+        <server name="SHELL_VERBOSITY" value="-1" />
         <server name="KERNEL_CLASS" value="Pastell\Kernel"/>
-        <server name="SHELL_VERBOSITY" value="0"/>
     </php>
+
     <testsuites>
-        <testsuite name="Pastell Core">
-            <directory>test/PHPUnit/</directory>
-            <directory>tests/</directory>
+        <testsuite name="Pastell Test Suite">
+            <directory>test/PHPUnit</directory>
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
-    <source>
+
+    <source ignoreSuppressionOfDeprecations="true" restrictNotices="true" restrictWarnings="true">
         <include>
-            <directory suffix=".php">action</directory>
-            <directory suffix=".php">api</directory>
-            <directory suffix=".php">batch</directory>
-            <directory suffix=".php">connecteur</directory>
-            <directory suffix=".php">connecteur-type</directory>
-            <directory suffix=".php">controler</directory>
-            <directory suffix=".php">lib</directory>
-            <directory suffix=".php">mailsec</directory>
-            <directory suffix=".php">model</directory>
-            <directory suffix=".php">module</directory>
-            <directory suffix=".php">pastell-core</directory>
-            <directory suffix=".php">script</directory>
-            <directory suffix=".php">src</directory>
-            <directory suffix=".php">template</directory>
-            <directory suffix=".php">web</directory>
-            <directory suffix=".php">web-mailsec</directory>
+            <directory>action</directory>
+            <directory>api</directory>
+            <directory>batch</directory>
+            <directory>connecteur</directory>
+            <directory>connecteur-type</directory>
+            <directory>controler</directory>
+            <directory>lib</directory>
+            <directory>mailsec</directory>
+            <directory>model</directory>
+            <directory>module</directory>
+            <directory>pastell-core</directory>
+            <directory>script</directory>
+            <directory>src</directory>
+            <directory>template</directory>
+            <directory>web</directory>
+            <directory>web-mailsec</directory>
         </include>
     </source>
+
+    <extensions>
+    </extensions>
 </phpunit>
