@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class UsernameDisplayerTest extends TestCase
 {
-    public function getData(): array
+    public static function getData(): array
     {
         return [
             'demon' => [['id_u' => 0], 'Action automatique'],

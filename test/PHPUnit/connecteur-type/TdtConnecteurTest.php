@@ -14,7 +14,7 @@ class TdtConnecteurTest extends PastellTestCase
         $this->tdtConnecteur = $this->getMockForAbstractClass(TdtConnecteur::class);
     }
 
-    public function getShortenedNatureActeProvider()
+    public static function getShortenedNatureActeProvider()
     {
         return [
             'DE' => [1, 'DE'],
@@ -48,7 +48,7 @@ class TdtConnecteurTest extends PastellTestCase
         $this->tdtConnecteur->getShortenedNatureActe('8');
     }
 
-    public function getIntNatureActeProvider()
+    public static function getIntNatureActeProvider()
     {
         return [
             1 => ['DE', 1],
@@ -82,7 +82,7 @@ class TdtConnecteurTest extends PastellTestCase
         $this->tdtConnecteur->getIntNatureActe('XX');
     }
 
-    public function getStatusInfoProvider()
+    public static function getStatusInfoProvider()
     {
         return [
             [-1, "Erreur"],
@@ -111,7 +111,7 @@ class TdtConnecteurTest extends PastellTestCase
         );
     }
 
-    public function getStatusStringProvider()
+    public static function getStatusStringProvider()
     {
         return [
             [-1, 'Erreur'],
@@ -140,7 +140,7 @@ class TdtConnecteurTest extends PastellTestCase
         );
     }
 
-    public function getTransactionNameFromNumberProvider()
+    public static function getTransactionNameFromNumberProvider()
     {
         return [
             [TdtConnecteur::COURRIER_SIMPLE, 'Courrier simple'],

@@ -149,7 +149,7 @@ class IParapheurUnitTest extends PastellTestCase
         );
     }
 
-    public function sendDossierProvider()
+    public static function sendDossierProvider()
     {
         $fileToSign = new FileToSign();
         $fileToSign->type = 'TYPE';
@@ -304,7 +304,7 @@ class IParapheurUnitTest extends PastellTestCase
         $iParapheur->sendDossier($fileToSign);
     }
 
-    public function sendDossierPJProvider()
+    public static function sendDossierPJProvider()
     {
         $fileToSign = new FileToSign();
         $fileToSign->type = 'TYPE';
@@ -416,7 +416,7 @@ class IParapheurUnitTest extends PastellTestCase
         );
     }
 
-    public function isRejectedProvider(): array
+    public static function isRejectedProvider(): array
     {
         return [
             'rejetMailSec' => [true, '10/12/2021 11:59:23 : [RejetMailSecPastell] signé Steph'],

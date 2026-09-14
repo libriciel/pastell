@@ -2,7 +2,7 @@
 
 class FactureCPPSAETest extends ExtensionCppTestCase
 {
-    public function getModuleDataProvider()
+    public static function getModuleDataProvider()
     {
         return [
             'facture-cpp' => [

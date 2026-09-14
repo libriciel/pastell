@@ -22,14 +22,14 @@ class DonneesFormulaireTest extends PastellTestCase
         $this->assertEquals($password, $this->getDonneesFormulaire()->get('password'));
     }
 
-    public function getPassword()
+    public static function getPassword()
     {
         return [
             ['215900689B']
         ];
     }
 
-    public function getProvider(): \Generator
+    public static function getProvider(): \Generator
     {
         // On checkbox field
         yield ['ma_checkbox', 'true', true];
@@ -371,7 +371,7 @@ class DonneesFormulaireTest extends PastellTestCase
         $tmpFolder->delete($tmp_folder);
     }
 
-    public function copyFileProvider(): array
+    public static function copyFileProvider(): array
     {
         return [
             ['foo.txt'],
@@ -422,7 +422,7 @@ class DonneesFormulaireTest extends PastellTestCase
         $tmpFolder->delete($tmp_folder);
     }
 
-    public function copyAllFilesProvider(): array
+    public static function copyAllFilesProvider(): array
     {
         return [
             [['foo.txt', 'école.txt', 'toto.txt']]
@@ -453,7 +453,7 @@ class DonneesFormulaireTest extends PastellTestCase
         $tmpFolder->delete($tmp_folder);
     }
 
-    public function copyAllFilesProviderWithNewFileName(): array
+    public static function copyAllFilesProviderWithNewFileName(): array
     {
         return [
             [['foo.txt', 'école.txt', 'toto.txt'],'newName']
@@ -698,7 +698,7 @@ class DonneesFormulaireTest extends PastellTestCase
         self::assertSame('test.pdf', $donneesFormulaire->getTitre());
     }
 
-    public function contentTypeProvider(): array
+    public static function contentTypeProvider(): array
     {
         return [
             'nominal' => [

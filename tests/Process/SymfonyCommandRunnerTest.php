@@ -16,7 +16,7 @@ class SymfonyCommandRunnerTest extends TestCase
         $this->runner = new SymfonyCommandRunner();
     }
 
-    public function commandProvider(): \Generator
+    public static function commandProvider(): \Generator
     {
         yield 'success exits 0 with no output' => [
             'command' => ['true'],

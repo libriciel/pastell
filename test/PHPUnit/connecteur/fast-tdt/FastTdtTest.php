@@ -90,7 +90,7 @@ class FastTdtTest extends PastellTestCase
         $this->assertEquals('https://domain.tld/webdav/1234/abcd/', $this->fastTdt->getWebdavUrl());
     }
 
-    public function whenTestingConnectionProvider()
+    public static function whenTestingConnectionProvider()
     {
         return [
             ['https://domain.tld'],
@@ -280,7 +280,7 @@ class FastTdtTest extends PastellTestCase
         ]);
     }
 
-    public function whenSendingAnActProvider(): iterable
+    public static function whenSendingAnActProvider(): iterable
     {
         yield [0, ''];
         yield [1, '["22_CO"]'];
@@ -386,7 +386,7 @@ class FastTdtTest extends PastellTestCase
         $this->fastTdt->sendActes($acte);
     }
 
-    public function whenGettingStatusProvider()
+    public static function whenGettingStatusProvider()
     {
         return [
             [
@@ -664,7 +664,7 @@ class FastTdtTest extends PastellTestCase
     }
 
 
-    public function whenGettingHeliosStatusProvider()
+    public static function whenGettingHeliosStatusProvider()
     {
         return [
             [

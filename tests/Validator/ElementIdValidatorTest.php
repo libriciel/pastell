@@ -10,7 +10,7 @@ use UnrecoverableException;
 
 class ElementIdValidatorTest extends TestCase
 {
-    public function elementIdProvider(): \Generator
+    public static function elementIdProvider(): \Generator
     {
         yield 'Valid ElementId' => ['objet_document', true , ''];
         yield 'Empty ElementId' => [

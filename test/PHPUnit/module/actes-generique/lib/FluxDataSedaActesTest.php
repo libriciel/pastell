@@ -2,7 +2,7 @@
 
 class FluxDataSedaActesTest extends PastellTestCase
 {
-    public function getRestrictionAccessDataProvider()
+    public static function getRestrictionAccessDataProvider()
     {
         return [
                 [1,"1.1","AR038"],
@@ -27,7 +27,7 @@ class FluxDataSedaActesTest extends PastellTestCase
     }
 
 
-    public function getProducteurDataProvider()
+    public static function getProducteurDataProvider()
     {
         return [
             [1,"1.1","FOO"],

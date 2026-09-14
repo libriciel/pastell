@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class TextTruncatorTest extends TestCase
 {
-    public function truncateProvider(): \Generator
+    public static function truncateProvider(): \Generator
     {
         yield ['abcdefgh', 6, 'a…h'];
         yield ['aébècêdë', 8, 'a…ë'];

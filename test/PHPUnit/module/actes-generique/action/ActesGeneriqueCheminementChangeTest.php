@@ -38,7 +38,7 @@ class ActesGeneriqueCheminementChangeTest extends PastellTestCase
         );
     }
 
-    public function changeProvider()
+    public static function changeProvider()
     {
         return [
             [false,false,false,false],
