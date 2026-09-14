@@ -11,7 +11,7 @@ class SirenTest extends TestCase
         $this->siren = new Siren();
     }
 
-    public function sirenProvider(): iterable
+    public static function sirenProvider(): iterable
     {
         yield ['493587273', true];
         yield ['', false];

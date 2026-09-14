@@ -2,7 +2,7 @@
 
 class LDAPVerificationTest extends PastellTestCase
 {
-    public function getLDAPFilter()
+    public static function getLDAPFilter()
     {
         yield 'test with parenthesis' => ['(memberOf=pastell)'];
         yield 'test without parenthesis' => ['memberOf=pastell'];

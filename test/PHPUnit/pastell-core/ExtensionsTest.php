@@ -168,7 +168,7 @@ class ExtensionsTest extends PastellTestCase
         static::assertSame($expectedResult, $manifestReader->isVersionOK($expected_version));
     }
 
-    public function versionProvider(): \Generator
+    public static function versionProvider(): \Generator
     {
         yield ['0.0.1', false];
         yield ['0.9', false];

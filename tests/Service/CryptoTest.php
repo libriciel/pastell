@@ -16,7 +16,7 @@ use UnrecoverableException;
 
 class CryptoTest extends TestCase
 {
-    public function messageAndPasswordProvider(): iterable
+    public static function messageAndPasswordProvider(): iterable
     {
         yield ['', 'empty'];
         yield ['my clear message to encrypt', 'empty'];

@@ -21,7 +21,7 @@ class SimpleTwigRendererTest extends PastellTestCase
         SimpleTwigRenderer\SimpleTwigXpathCommon::clearCache();
     }
 
-    public function renderDataProvider(): Generator
+    public static function renderDataProvider(): Generator
     {
         $xpath = '//*[local-name()="ActeRecu"]/@*[local-name()="Date"]';
 
@@ -298,7 +298,7 @@ Message d\'erreur : Unclosed "variable".<br />
         );
     }
 
-    public function exempleProvider(): Generator
+    public static function exempleProvider(): Generator
     {
         $simpleTwigRendererExemple = new SimpleTwigRendererExemple();
         foreach ($simpleTwigRendererExemple->getExemple() as $key => $exemple) {
@@ -323,7 +323,7 @@ Message d\'erreur : Unclosed "variable".<br />
         );
     }
 
-    public function forbiddenTemplateDataProvider(): Generator
+    public static function forbiddenTemplateDataProvider(): Generator
     {
         yield 'read_a_php_constant' => [
             'Function "constant" is not allowed',

@@ -28,7 +28,7 @@ final class DocumentEmailTest extends PastellTestCase
         $this->assertSame(2, $this->documentEmail->getNumberOfMailRead($id_d));
     }
 
-    public function fluxActionProvider(): iterable
+    public static function fluxActionProvider(): iterable
     {
         yield [MailSecTestHelper::FLUX_MAILSEC_BIDIR, MailSecTestHelper::ACTION_MAILSEC_BIDIR_ENVOI_MAIL];
         yield [MailSecTestHelper::FLUX_MAILSEC, MailSecTestHelper::ACTION_MAILSEC_ENVOI_MAIL];

@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class ProxyNeededTest extends TestCase
 {
-    public function dataProvider(): array
+    public static function dataProvider(): array
     {
         return [
             'without_proxy' => ['','','http://localhost',false],

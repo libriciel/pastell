@@ -52,4 +52,18 @@ class TypePJProvider
 
         return $result[$actesTypePJData->acteNature];
     }
+
+    /**
+     * @throws Exception
+     */
+    public function getTypePJListeForClassification(string $classification_file_path, mixed $acte_nature): ?array
+    {
+        if (! file_exists($classification_file_path)) {
+            return null;
+        }
+        $actesTypePJData = new TypePJDTO();
+        $actesTypePJData->classificationFilePath = $classification_file_path;
+        $actesTypePJData->acteNature = $acte_nature;
+        return $this->getByNature($actesTypePJData);
+    }
 }

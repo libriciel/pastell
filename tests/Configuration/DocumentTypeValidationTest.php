@@ -8,7 +8,7 @@ use Pastell\Configuration\DocumentTypeValidation;
 
 class DocumentTypeValidationTest extends \PastellTestCase
 {
-    public function dataProvider(): array
+    public static function dataProvider(): array
     {
         $filePath = __DIR__ . '/fixtures/definition-with-wrong-';
         return [

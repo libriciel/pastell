@@ -183,7 +183,7 @@ class ConnecteurFrequenceTest extends PastellTestCase
         $this->assertFrequency($minute_expected, $connecteurFrequence->getNextTry($nb_try));
     }
 
-    public function frequenceProvider(): \Generator
+    public static function frequenceProvider(): \Generator
     {
         yield [1, 0];
         yield [1, 1];
@@ -196,7 +196,7 @@ class ConnecteurFrequenceTest extends PastellTestCase
         yield [42, 500];
     }
 
-    public function expressionsProvider(): iterable
+    public static function expressionsProvider(): iterable
     {
         yield 'every 10 minutes' => ['10', '2012-06-27 18:23:46', '2012-06-27 18:33:46'];
         yield 'at 2:40' => ['(40 2 * * *)', '2017-04-13 11:48:45', '2017-04-14 02:40:00'];
