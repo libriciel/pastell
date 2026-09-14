@@ -9,7 +9,6 @@ use Exception;
 use JsonException;
 use NotFoundException;
 use Pastell\Step\Tdt\Acte\TypePJ\TypePJProvider;
-use Pastell\Step\Tdt\Acte\TypePJ\TypePJDTO;
 use TdtConnecteur;
 use UnrecoverableException;
 

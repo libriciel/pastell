@@ -61,9 +61,9 @@ class TypePJProvider
         if (! file_exists($classification_file_path)) {
             return null;
         }
-        $actesTypePJData = new ActesTypePJData();
-        $actesTypePJData->classification_file_path = $classification_file_path;
-        $actesTypePJData->acte_nature = $acte_nature;
-        return $this->getTypePJListe($actesTypePJData);
+        $actesTypePJData = new TypePJDTO();
+        $actesTypePJData->classificationFilePath = $classification_file_path;
+        $actesTypePJData->acteNature = $acte_nature;
+        return $this->getByNature($actesTypePJData);
     }
 }

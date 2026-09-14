@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Step\Tdt\Acte\TypePJ\TypePJProvider;
+
 class TdtAnnexeTypologieAnnexeChange extends ConnecteurTypeActionExecutor
 {
     /**
@@ -92,7 +94,7 @@ class TdtAnnexeTypologieAnnexeChange extends ConnecteurTypeActionExecutor
     {
         try {
             $config = $this->getConnecteurConfigByType(TdtConnecteur::FAMILLE_CONNECTEUR);
-            return $this->objectInstancier->getInstance(ActesTypePJ::class)->getTypePJListeForClassification(
+            return $this->objectInstancier->getInstance(TypePJProvider::class)->getTypePJListeForClassification(
                 $config->getFilePath($this->getMappingValue('classification_file')),
                 $this->getDonneesFormulaire()->get($this->getMappingValue('acte_nature'))
             );
