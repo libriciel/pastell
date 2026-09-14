@@ -2,7 +2,7 @@
 
 class ChorusProFournisseurSynchroniserTest extends ExtensionCppTestCase
 {
-    public function getHistoStatutDataProvider()
+    public static function getHistoStatutDataProvider()
     {
         return [
             'Continue' => [

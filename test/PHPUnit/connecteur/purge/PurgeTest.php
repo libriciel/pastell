@@ -2,7 +2,7 @@
 
 class PurgeTest extends PastellTestCase
 {
-    public function getPurgeDataProvider(): iterable
+    public static function getPurgeDataProvider(): iterable
     {
         yield 'ActeAutoTermineEnvoiSAETrue' => [
             "actes-automatique",
@@ -132,7 +132,7 @@ class PurgeTest extends PastellTestCase
         }
     }
 
-    public function purgeLockNameProvider()
+    public static function purgeLockNameProvider()
     {
         return [
             [

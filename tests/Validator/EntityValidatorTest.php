@@ -25,7 +25,7 @@ class EntityValidatorTest extends PastellTestCase
         static::assertTrue($this->entityValidator()->validate('name', '', EntiteSQL::TYPE_COLLECTIVITE, 0, 0));
     }
 
-    public function validationProvider(): \Generator
+    public static function validationProvider(): \Generator
     {
         yield 'empty name' => ['', '', '', 'Le nom (denomination) est obligatoire'];
         yield 'wrong siren' => ['name', '1234', '', 'Le siren « 1234 » ne semble pas valide'];

@@ -15,7 +15,7 @@ final class VitamSedaHelperTest extends SedaHelperTestCase
         return new VitamSedaHelper();
     }
 
-    public function atrProviderOk(): iterable
+    public static function atrProviderOk(): iterable
     {
         yield 'vitam OK' => [
             __DIR__ . '/../Helpers/fixtures/atr_vitam_ok.xml',

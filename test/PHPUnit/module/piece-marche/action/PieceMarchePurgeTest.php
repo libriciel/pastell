@@ -4,7 +4,7 @@ class PieceMarchePurgeTest extends PastellMarcheTestCase
 {
     public const PIECES_MARCHE = 'piece-marche';
 
-    public function getPurgeDataProvider()
+    public static function getPurgeDataProvider()
     {
 
         return [

@@ -4,7 +4,7 @@ class FakeSAETest extends PastellTestCase
 {
     private const ACTES_GENERIQUE = "actes-generique";
 
-    public function dataProvider()
+    public static function dataProvider()
     {
         return [
             [

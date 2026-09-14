@@ -37,7 +37,7 @@ final class DeleteByTypeTest extends PastellTestCase
         );
     }
 
-    public function commandArgumentsProvider(): iterable
+    public static function commandArgumentsProvider(): iterable
     {
         yield ['test', 'all', 'yes', 3];
         yield ['test', 'global', 'yes', 1];

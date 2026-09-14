@@ -11,10 +11,10 @@ use UnrecoverableException;
 abstract class SedaHelperTestCase extends TestCase
 {
     abstract public function sedaHelper(): SedaHelper;
-    abstract public function atrProviderOk(): iterable;
+    abstract public static function atrProviderOk(): iterable;
     abstract public function atrProviderKo(): iterable;
 
-    public function ackProvider(): iterable
+    public static function ackProvider(): iterable
     {
         yield 'asalae' => [
             __DIR__ . '/fixtures/ack_asalae.xml',

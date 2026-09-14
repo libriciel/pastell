@@ -4,7 +4,7 @@ class CPPModifStatusTest extends ExtensionCppTestCase
 {
     private const FLUX_FACTURE_CPP = "facture-cpp";
 
-    public function getStatutCibleDataProvider()
+    public static function getStatutCibleDataProvider()
     {
         return [
             'CibleEqual' => [

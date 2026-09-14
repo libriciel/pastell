@@ -23,7 +23,7 @@ class CryptoClientTest extends TestCase
         $this->cryptoClient = new CryptoClient($clientInterface);
     }
 
-    public function getApiClassesProvider(): iterable
+    public static function getApiClassesProvider(): iterable
     {
         yield ['cades', Cades::class];
         yield ['xades', Xades::class];

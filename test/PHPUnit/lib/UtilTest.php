@@ -10,7 +10,7 @@ class UtilTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expected_result, number_format_fr($number_to_test));
     }
 
-    public function number_format_fr_provider()
+    public static function number_format_fr_provider()
     {
         return [
             [0,"0"],
@@ -27,7 +27,7 @@ class UtilTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expected_date_fr, date_iso_to_fr($date_iso));
     }
 
-    public function date_iso_to_fr_provider()
+    public static function date_iso_to_fr_provider()
     {
         return [
             ['',''],
