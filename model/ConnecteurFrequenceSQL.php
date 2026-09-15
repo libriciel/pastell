@@ -89,6 +89,15 @@ class ConnecteurFrequenceSQL extends SQL
         return $this->query($sql);
     }
 
+    /**
+     * @return string[]
+     */
+    public function getDistinctVerrou(): array
+    {
+        $sql = "SELECT DISTINCT id_verrou FROM connecteur_frequence WHERE id_verrou != '' ORDER BY id_verrou";
+        return array_column($this->query($sql), 'id_verrou');
+    }
+
     public function getConnecteurFrequence($id_cf)
     {
         $info = $this->getInfo($id_cf);

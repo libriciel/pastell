@@ -2,6 +2,7 @@
 
 ## Ajouts
 
+- Refonte du Gestionnaire de tâches : Ajout d'une recherche avancée #964
 - Studio, l'étape « Envoi à la préfecture (via un Tdt) » permet désormais de sélectionner plusieurs éléments
   multi-fichiers pour « Annexe de l'acte » #2520
 - Nouveau champ « Autre document(s) à signer », transmis au Tdt en plus des annexes dans les flux
@@ -69,6 +70,10 @@ l'intervenant par l'administrateur) : après 3 saisies erronées, l'accès est a
   `BaseAPIController::checkOneDroit()` -> `BaseAPIController::checkOneDroitFor()`
   `BaseAPIController::hasOneDroit()` -> `BaseAPIController::hasOneDroitFor()`
   `DroitService::hasOneDroit()` -> `DroitService::hasOneDroitFor()`
+- Suppression d'éléments #964 :
+  - ArrayHelper::buildTreeselectOptions()
+  - EntityUtilitiesService::buildEntityTree() renommée en buildEntityTreeselectOptions()
+  - EntityUtilitiesService::toTreeselectOptions() passée en privée
 - Les droits `*-destinataire:*` et `*-reponse:*` ne sont plus gérables depuis la page `Role/detail`, 
 les droits résiduels sont supprimés par un updater #2490
 

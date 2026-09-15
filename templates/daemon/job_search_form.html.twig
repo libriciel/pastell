@@ -1,0 +1,107 @@
+{% set search_collapsed = not app.request.query.get('expand_search') %}
+<div class="accordion" id="accordionJobSearch">
+    <div class="card">
+        <a id="headingJobSearch"
+           class="card-header ls-accordion{{ search_collapsed ? ' collapsed' : '' }}"
+           data-bs-toggle="collapse" data-bs-target="#collapseJobSearch"
+           aria-expanded="{{ search_collapsed ? 'false' : 'true' }}" aria-controls="collapseJobSearch"
+        >
+            <i class="fas fa-search"></i> Recherche avancée
+            <i class="fas fa-plus-square plier"></i><i class="fas fa-minus-square deplier"></i>
+        </a>
+
+        <div id="collapseJobSearch" class="collapse{{ search_collapsed ? '' : ' show' }}" aria-labelledby="headingJobSearch"
+             data-parent="#accordionJobSearch">
+            <div class="card-body">
+                <form method="get" action="{{ path(search_action) }}" class="mb-0">
+                    {% if id_e is defined %}
+                        <input type="hidden" name="id_e" value="{{ id_e }}">
+                    {% endif %}
+                    <input type="hidden" name="filtre" value="{{ filtre|default('') }}">
+
+                    <table class="table table-striped">
+                        <tr>
+                            <th class="w300"><label class="form-label mb-0" for="search-type">Type</label></th>
+                            <td>
+                                <div class="select2-multiselect-field">
+                                    <select class="form-select select2-multiselect" id="search-type" name="job_type[]"
+                                            data-placeholder="Tous" multiple="multiple">
+                                        {% for type_value, type_label in type_list %}
+                                            <option value="{{ type_value }}"
+                                                {{ type_value in search.type ? 'selected' : '' }}>{{ type_label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th class="w300"><label class="form-label mb-0" for="search-job-status">État</label></th>
+                            <td>
+                                <div class="select2-multiselect-field">
+                                    <select class="form-select select2-multiselect" id="search-job-status" name="job_status[]"
+                                            data-placeholder="Tous" multiple="multiple">
+                                        {% for status in job_status_list %}
+                                            <option value="{{ status.value }}"
+                                                {{ status.value in search.job_status ? 'selected' : '' }}>
+                                                {{ status.name == 'WAITING' ? status.label() : 'Suspendu - ' ~ status.label() }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th class="w300"><label class="form-label mb-0" for="search-id-e">Entité</label></th>
+                            <td>
+                                <input type="hidden" id="search-id-e" name="search_id_e" value="{{ search.id_e }}">
+                                <div class="treeselect-job-search-entity"></div>
+                                <script type="application/json" class="treeselect-config">{{ entity_treeselect_config|raw }}</script>
+                                <div class="mt-2 d-flex align-items-center">
+                                    <input class="form-check-input mt-0 me-2" type="checkbox" value="1"
+                                           id="search-include-children" name="include_children"
+                                           {{ search.include_children ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="search-include-children">
+                                        Inclure les entités filles
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th class="w300"><label class="form-label mb-0" for="search-id-verrou">File d'attente</label></th>
+                            <td>
+                                <div class="select2-multiselect-field">
+                                    <select class="form-select select2-multiselect" id="search-id-verrou" name="id_verrou[]"
+                                            data-placeholder="Toutes" multiple="multiple">
+                                        <option value="{{ verrou_none_value }}"
+                                            {{ verrou_none_value in search.id_verrou ? 'selected' : '' }}>(vide)</option>
+                                        {% for verrou in verrou_list %}
+                                            <option value="{{ verrou }}"
+                                                {{ verrou in search.id_verrou ? 'selected' : '' }}>{{ verrou }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <a class="btn btn-outline-primary"
+                       href="{{ path(search_action, (id_e is defined ? {'id_e': id_e} : {})|merge({'filtre': filtre|default('')})) }}">
+                        <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
+                    </a>
+
+                    <a class="btn btn-outline-primary"
+                       href="{{ path(search_action, (id_e is defined ? {'id_e': id_e} : {})|merge({'filtre': filtre|default(''), 'expand_search': 1})) }}">
+                        <i class="fas fa-undo"></i>&nbsp;Réinitialiser
+                    </a>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>&nbsp;Rechercher
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

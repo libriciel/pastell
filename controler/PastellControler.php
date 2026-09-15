@@ -1,8 +1,11 @@
 <?php
 
 use Monolog\Logger;
+use Pastell\Configuration\JobStatus;
+use Pastell\Model\Daemon\JobAdvancedFilters;
 use Pastell\Security\LibricielFeedbackReader;
 use Pastell\Service\Document\DocumentEmailService;
+use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheService;
@@ -381,6 +384,69 @@ class PastellControler extends Controler
     public function getJobQueueSQL(): JobQueueSQL
     {
         return $this->getInstance(JobQueueSQL::class);
+    }
+
+    protected function getJobAdvancedFilters(Recuperateur $recuperateur): JobAdvancedFilters
+    {
+        return JobAdvancedFilters::fromRecuperateur($recuperateur);
+    }
+
+    /**
+     * Sets the view parameters required to render the advanced job search form.
+     *
+     * @param JobAdvancedFilters $advancedFilters current criteria values
+     * @param string $search_action route name the form submits to
+     * @param string[] $verrou_list
+     * @throws JsonException
+     */
+    protected function setJobSearchViewParameters(
+        JobAdvancedFilters $advancedFilters,
+        string $search_action,
+        array $verrou_list,
+        ?int $rootEntityId = null
+    ): void {
+        $this->setViewParameter('search', $advancedFilters);
+        $this->setViewParameter('search_action', $search_action);
+        $this->setViewParameter('job_status_list', JobStatus::cases());
+        $this->setViewParameter('type_list', [
+            Job::TYPE_DOCUMENT => 'Dossier',
+            Job::TYPE_CONNECTEUR => 'Connecteur',
+        ]);
+        $this->setViewParameter('entity_treeselect_config', $this->buildDaemonEntityTreeselectConfig($rootEntityId));
+        $this->setViewParameter('verrou_list', $verrou_list);
+        $this->setViewParameter('verrou_none_value', JobQueueSQL::VERROU_NONE);
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    private function buildDaemonEntityTreeselectConfig(?int $rootEntityId = null): string
+    {
+        $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
+        if ($rootEntityId === null) {
+            $tree = $entityUtilitiesService->buildEntityTreeselectOptions(
+                $this->getRoleUtilisateur()->getArbreFilleWithRacine(
+                    $this->getId_u(),
+                    DroitService::getDroitFor(DroitService::DROIT_DAEMON, DroitType::LECTURE)
+                )
+            );
+        } else {
+            $tree = $entityUtilitiesService->buildEntitySubtreeTreeselectOptions(
+                $this->getRoleUtilisateur()->getArbreFille(
+                    $this->getId_u(),
+                    DroitService::getDroitFor(DroitService::DROIT_DAEMON, DroitType::LECTURE)
+                ),
+                $rootEntityId
+            );
+        }
+        $config = [
+            'containerClass' => 'treeselect-job-search-entity',
+            'inputId' => 'search-id-e',
+            'placeholder' => 'Toutes les entités',
+            'openLevel' => 3,
+            'options' => $tree,
+        ];
+        return json_encode($config, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
     }
 
     /**

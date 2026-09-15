@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block main %}
-    {{ gabarit.SuivantPrecedent(offset, limit, count, path('app.legacy.entite_job', {'filtre': filtre, 'id_e': id_e})) }}
-    {% include 'daemon/job_list.html.twig' %}
-    {{ gabarit.SuivantPrecedent(offset, limit, count, path('app.legacy.entite_job', {'filtre': filtre, 'id_e': id_e})) }}
+    {% include 'daemon/job_search_form.html.twig' %}
+
+    {% include 'daemon/job_pagination.html.twig' with {'search_route': 'app.legacy.entite_job', 'with_filtre': true} %}
 {% endblock %}

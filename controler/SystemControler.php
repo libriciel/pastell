@@ -642,12 +642,12 @@ class SystemControler extends PastellControler
         $this->setViewParameter('role_treeselect_data', \json_encode($roleTree, \JSON_THROW_ON_ERROR));
 
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
-        $entity_tree = $entityUtilitiesService->toTreeselectOptions($entityUtilitiesService->buildEntityTree(
+        $entity_tree = $entityUtilitiesService->buildEntityTreeselectOptions(
             $this->getRoleUtilisateur()->getArbreFilleWithRacine(
                 $this->getId_u(),
                 DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION)
             )
-        ));
+        );
         $this->setViewParameter('entity_treeselect_data', \json_encode($entity_tree, \JSON_THROW_ON_ERROR));
 
         $this->setViewParameter('template_milieu', 'SystemMagicLinkEdition');

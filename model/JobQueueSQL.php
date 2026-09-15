@@ -1,9 +1,13 @@
 <?php
 
 use Pastell\Configuration\JobStatus;
+use Pastell\Model\Daemon\JobAdvancedFilters;
 
 class JobQueueSQL extends SQL
 {
+    /** Cible l'absence de file (id_verrou vide) dans la recherche avancée de jobs */
+    public const string VERROU_NONE = '__none__';
+
     public function __construct(
         SQLQuery $sqlQuery,
         private readonly WorkerSQL $workerSQL,
@@ -371,14 +375,15 @@ SQL;
         int $limit = 20,
         int $offset = 0,
         string $filtre = '',
-        ?int $id_daemon = null
+        ?int $id_daemon = null,
+        ?JobAdvancedFilters $advancedFilters = null
     ): array {
         if (!in_array($filtre, ['lock', 'actif', 'wait'])) {
             $filtre = '';
         }
 
-        $sql = 'SELECT *, job_queue.id_job as id_job 
-            FROM job_queue 
+        $sql = 'SELECT *, job_queue.id_job as id_job
+            FROM job_queue
             LEFT JOIN worker ON job_queue.id_job = worker.id_job
             WHERE 1=1';
 
@@ -401,20 +406,22 @@ SQL;
                 break;
         }
 
-        $sql .= " ORDER BY job_queue.job_status, job_queue.next_try 
+        $this->appendAdvancedFilters($advancedFilters, $sql, $params);
+
+        $sql .= " ORDER BY job_queue.job_status, job_queue.next_try
               LIMIT $offset, $limit";
 
         $result = $this->query($sql, $params);
         return $this->mapResultToJobList($result);
     }
 
-    public function getNbJob($filtre, ?int $id_daemon = null): int
+    public function getNbJob($filtre, ?int $id_daemon = null, ?JobAdvancedFilters $advancedFilters = null): int
     {
         $sql = <<<SQL
 SELECT count(*)
 FROM job_queue
 LEFT JOIN worker ON job_queue.id_job = worker.id_job
-WHERE 1=1 
+WHERE 1=1
 SQL;
 
         $params = [];
@@ -433,6 +440,71 @@ SQL;
             $sql .= ' AND worker.termine = 0';
         }
 
+        $this->appendAdvancedFilters($advancedFilters, $sql, $params);
+
         return $this->queryOne($sql, $params);
+    }
+
+    /**
+     * @param array<int,mixed> $params
+     */
+    private function appendAdvancedFilters(?JobAdvancedFilters $filters, string &$sql, array &$params): void
+    {
+        if ($filters === null) {
+            return;
+        }
+
+        $typeList = array_filter($filters->type, static fn ($v) => $v !== '');
+        if ($typeList !== []) {
+            $placeholders = implode(', ', array_fill(0, count($typeList), '?'));
+            $sql .= " AND job_queue.type IN ($placeholders)";
+            foreach ($typeList as $type) {
+                $params[] = (int)$type;
+            }
+        }
+
+        $statusList = array_filter($filters->job_status, static fn ($v) => $v !== '');
+        if ($statusList !== []) {
+            $placeholders = implode(', ', array_fill(0, count($statusList), '?'));
+            $sql .= " AND job_queue.job_status IN ($placeholders)";
+            foreach ($statusList as $status) {
+                $params[] = (int)$status;
+            }
+        }
+
+        if ($filters->id_e !== '') {
+            if ($filters->include_children !== '') {
+                $sql .= ' AND job_queue.id_e IN'
+                    . ' (SELECT id_e FROM entite_ancetre WHERE id_e_ancetre = ?)';
+            } else {
+                $sql .= ' AND job_queue.id_e = ?';
+            }
+            $params[] = (int)$filters->id_e;
+        }
+
+        $verrouList = array_filter($filters->id_verrou, static fn ($v) => $v !== '');
+        if ($verrouList !== []) {
+            $conditions = [];
+            $namedVerrou = [];
+            $includeNone = false;
+            foreach ($verrouList as $verrou) {
+                if ($verrou === self::VERROU_NONE) {
+                    $includeNone = true;
+                } else {
+                    $namedVerrou[] = $verrou;
+                }
+            }
+            if ($namedVerrou !== []) {
+                $placeholders = implode(', ', array_fill(0, count($namedVerrou), '?'));
+                $conditions[] = "job_queue.id_verrou IN ($placeholders)";
+                foreach ($namedVerrou as $verrou) {
+                    $params[] = $verrou;
+                }
+            }
+            if ($includeNone) {
+                $conditions[] = "job_queue.id_verrou = ''";
+            }
+            $sql .= ' AND (' . implode(' OR ', $conditions) . ')';
+        }
     }
 }

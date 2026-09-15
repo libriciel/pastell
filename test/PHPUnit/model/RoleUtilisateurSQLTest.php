@@ -3,7 +3,6 @@
 use Pastell\Service\Droit\DroitService;
 use Pastell\Helpers\ArrayHelper;
 use Pastell\Service\Entite\EntityCreationService;
-use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Droit\DroitType;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
@@ -258,7 +257,7 @@ class RoleUtilisateurSQLTest extends PastellTestCase
             $arbre_fille
         );
 
-        $tree = $this->getObjectInstancier()->getInstance(EntityUtilitiesService::class)->buildEntityTree(
+        $tree = ArrayHelper::buildNestedTree(
             $this->roleUtilisateurSQL->getArbreFille($id_u, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)),
         );
         self::assertSame(
@@ -381,7 +380,7 @@ class RoleUtilisateurSQLTest extends PastellTestCase
             $arbre_fille
         );
 
-        $tree = $this->getObjectInstancier()->getInstance(EntityUtilitiesService::class)->buildEntityTree(
+        $tree = ArrayHelper::buildNestedTree(
             $this->roleUtilisateurSQL->getArbreFille($id_u, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)),
         );
         self::assertSame(
