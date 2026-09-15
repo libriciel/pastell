@@ -6,6 +6,7 @@ use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\ViewModel\DeleteConfirmation;
 use Pastell\Service\Module\ModuleListService;
 
 class PastellControler extends Controler
@@ -306,6 +307,17 @@ class PastellControler extends Controler
         }
         $this->setViewParameter('helpURL', $this->getHelpURL());
         parent::renderDefault();
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    public function renderDeleteConfirmation(string $pageTitle, DeleteConfirmation $deleteConfirmation): void
+    {
+        $this->setViewParameter('page_title', $pageTitle);
+        $this->setViewParameter('delete_confirmation', $deleteConfirmation);
+        $this->setViewParameter('template_milieu', 'DeleteConfirmation');
+        $this->renderDefault();
     }
 
     public function setDaemonMenuGauche(): void

@@ -9,6 +9,8 @@ use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Utilisateur\UserUpdateService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
+use Pastell\Utilities\Certificate;
+use Pastell\ViewModel\DeleteConfirmation;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
 
@@ -795,14 +797,16 @@ class UtilisateurControler extends PastellControler
         $this->checkSelfSuppression($id_u);
         $userInfo = $this->getUtilisateur()->getInfo($id_u);
         $this->checkDroitFor($userInfo['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
-        $this->setViewParameter('id_u', $id_u);
-        $this->setViewParameter('info', $userInfo);
-        $this->setViewParameter(
-            'page_title',
-            sprintf("Utilisateur %s %s - Suppression de l'utilisateur ", $userInfo['prenom'], $userInfo['nom'])
+        $this->renderDeleteConfirmation(
+            "Suppression de l'utilisateur {$userInfo['prenom']} {$userInfo['nom']}",
+            new DeleteConfirmation(
+                'Utilisateur/doSuppression',
+                "Utilisateur/detail?id_u=$id_u",
+                [$userInfo],
+                ['Prénom' => 'prenom', 'Nom' => 'nom', 'Login' => 'login', 'Email' => 'email'],
+                ['id_u' => $id_u],
+            )
         );
-        $this->setViewParameter('template_milieu', 'UtilisateurSuppression');
-        $this->renderDefault();
     }
 
     /**

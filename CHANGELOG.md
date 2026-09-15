@@ -386,6 +386,7 @@
 ## Corrections
 
 - Ajout/suppression d'une annexe TdT : les typologies déjà choisies sont conservées #1184
+- Harmonisation des pages de confirmation de suppressions #2560
 
 # [4.1.22] - 2026-09-07
 

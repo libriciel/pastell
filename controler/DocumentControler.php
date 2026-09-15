@@ -5,6 +5,7 @@ use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheOption;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\ViewModel\DeleteConfirmation;
 
 class DocumentControler extends PastellControler
 {
@@ -797,10 +798,11 @@ class DocumentControler extends PastellControler
         $id_d = $recuperateur->get('id_d');
         $action = $recuperateur->get('action');
         $id_e = $recuperateur->get('id_e');
+        $page = $recuperateur->getInt('page', 0);
         $this->setViewParameter('id_d', $id_d);
         $this->setViewParameter('action', $action);
         $this->setViewParameter('id_e', $id_e);
-        $this->setViewParameter('page', $recuperateur->getInt('page', 0));
+        $this->setViewParameter('page', $page);
 
         $infoDocument = $this->getDocumentSQL()->getInfo($id_d);
         $this->setViewParameter('infoDocument', $infoDocument);
@@ -808,6 +810,20 @@ class DocumentControler extends PastellControler
         $type = $infoDocument['type'];
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($type);
         $theAction = $documentType->getAction();
+
+        if (\in_array($action, ['suppression', 'supression'], true)) {
+            $this->renderDeleteConfirmation(
+                "Suppression du dossier « {$infoDocument['titre']} »",
+                new DeleteConfirmation(
+                    'Document/action',
+                    "Document/detail?id_d=$id_d&id_e=$id_e&page=$page",
+                    [$infoDocument],
+                    ['Identifiant' => 'id_d', 'Titre' => 'titre', 'Type' => fn () => $documentType->getName()],
+                    ['id_d' => $id_d, 'id_e' => $id_e, 'page' => $page, 'action' => $action, 'go' => 1],
+                )
+            );
+            return;
+        }
 
         $this->setViewParameter('actionName', $theAction->getDoActionName($action));
 
