@@ -3,6 +3,7 @@
 ## Corrections
 
 - Ajout/suppression d'une annexe TdT : les typologies déjà choisies sont conservées #1184
+- Harmonisation des pages de confirmation de suppressions #2560
 
 # [4.1.22] - 2026-09-07
 
@@ -18,7 +19,6 @@
 - Le type de dossier sélectionné était perdu en changeant d'entité depuis `Document/index` #2543
 - À chaque exécution de l'action import-facture, le fichier yml de l'instance du connecteur CPP était modifié #2544
 - Un connecteur CPP non configuré n'est plus masqué de la liste des associations de connecteurs globaux #2558
-- Ajout/suppression d'une annexe TdT : les typologies déjà choisies sont conservées #1184
 
 ## Sécurité
 
