@@ -6,6 +6,7 @@ use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\Service\Module\ModuleListService;
 use Pastell\ViewModel\DeleteConfirmation;
 
 class PastellControler extends Controler
@@ -282,11 +283,7 @@ class PastellControler extends Controler
                     ->getNbLockSinceOneHour()
             );
 
-            if ($daemonManager->status() == DaemonManager::IS_STOPPED) {
-                $this->setViewParameter('daemon_stopped_warning', true);
-            } else {
-                $this->setViewParameter('daemon_stopped_warning', false);
-            }
+            $this->setViewParameter('daemon_stopped_warning', $daemonManager->status() === DaemonManager::IS_STOPPED);
         }
         $this->setViewParameter('helpURL', $this->getHelpURL());
         parent::renderDefault();
@@ -302,7 +299,6 @@ class PastellControler extends Controler
         $this->setViewParameter('template_milieu', 'DeleteConfirmation');
         $this->renderDefault();
     }
-
     public function setEntiteMenuGauche(int $id_e): void
     {
         $this->setViewParameter(
@@ -361,36 +357,7 @@ class PastellControler extends Controler
      */
     public function getAllModule(): array
     {
-        $all_module = [];
-
-        /** @var FluxAPIController $fluxAPIController */
-        $fluxAPIController = $this->getAPIController('Flux');
-        $list = $fluxAPIController->get();
-
-        foreach ($list as $flux_id => $flux_info) {
-            $all_module[$flux_info['type']][$flux_id]  = $flux_info['nom'];
-        }
-
-        $currentLocale = setlocale(LC_COLLATE, '0');
-        setlocale(LC_COLLATE, 'fr_FR.utf8');
-        ksort($all_module, SORT_LOCALE_STRING);
-        setlocale(LC_COLLATE, $currentLocale);
-
-        return $all_module;
-    }
-
-    /**
-     * @param $controllerName
-     * @return BaseAPIController
-     * @throws NotFoundException
-     */
-    protected function getAPIController($controllerName)
-    {
-        /** @var BaseAPIControllerFactory $baseAPIControllerFactory */
-        $baseAPIControllerFactory = $this->getInstance(BaseAPIControllerFactory::class);
-        $instance = $baseAPIControllerFactory->getInstance($controllerName, $this->getId_u());
-        $instance->setCallerType('console');
-        return $instance;
+        return $this->getInstance(ModuleListService::class)->getModuleListOrderByType($this->getId_u());
     }
 
     private InternalAPI $internalAPI;
