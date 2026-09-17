@@ -75,7 +75,10 @@ l'intervenant par l'administrateur) : après 3 saisies erronées, l'accès est a
   - EntityUtilitiesService::buildEntityTree() renommée en buildEntityTreeselectOptions()
   - EntityUtilitiesService::toTreeselectOptions() passée en privée
 - Les droits `*-destinataire:*` et `*-reponse:*` ne sont plus gérables depuis la page `Role/detail`, 
-les droits résiduels sont supprimés par un updater #2490
+  les droits résiduels sont supprimés par un updater #2490
+- Suppression du format `simple` de la route `GET /api/v2/document/count` #2151
+  - `DocumentCount::getCountByEntityFormat()`
+  - `DocumentEntite::getCountByEntityFormat()`
 
 # [5.0.9] - 2026-09-07
 
@@ -118,8 +121,6 @@ les droits résiduels sont supprimés par un updater #2490
 - Consultation de la réponse d'un mail sécurisé via l'API : droits de lecture vérifiés sur le type de dossier d'origine
   et non plus sur celui de la réponse (ex. `mailsec-bidir:lecture` au lieu de `mailsec-bidir-reponse:lecture`) #2488
 - Il manquait le numéro de l'acte pour la recherche avancée de ls-actes #2479
-- Studio, étape « Envoi à la préfecture (via un Tdt) » : la typologie des annexes n'était pas appliquée car
-l'action `autre_document_attache-change` ne recevait pas le mapping de l'élément portant les annexes #2520
 
 ## Dépréciations
 
