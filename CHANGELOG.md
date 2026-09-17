@@ -2,6 +2,10 @@
 
 ## [4.1.23] - 2026-10-05
 
+### Évolutions
+
+- Accès à la base et logique métier sortis des gabarits vers les contrôleurs ; les vues n'exposent plus `sqlQuery`, `objectInstancier` ni `roleUtilisateur` #2569
+
 ### Corrections
 
 - Ajout/suppression d'une annexe TdT : les typologies déjà choisies sont conservées #1184

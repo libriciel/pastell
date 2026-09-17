@@ -57,7 +57,7 @@
             <?php
 
             foreach ($listDocument as $i => $document) :
-                $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($document['type']);
+                $documentType = $document['documentType'];
                 $action = $documentType->getAction();
                 $formulaire = $documentType->getFormulaire();
                 ?>
@@ -115,7 +115,8 @@
                                 <?php echo $action->getActionName($document['last_action_display']) ?>
                             <?php elseif ($champs == 'date_dernier_etat') :?>
                                 <?php echo time_iso_to_fr($document['last_action_date']) ?>
-                            <?php else :?>
+                            <?php else :
+                                $indexValue = $document['index'][substr($champs, 0, DocumentIndexSQL::FIELD_NAME_LENGTH)] ?? '';?>
                                 <?php if ($formulaire->getField($champs)->getType() == 'file') : ?>
                                     <?php
                                     $downloadFileUrl = \sprintf(
@@ -126,14 +127,12 @@
                                     );
                                     ?>
                                 <a href='<?php echo $downloadFileUrl; ?>'>
-                                    <?php hecho($this->getDocumentIndexSql()->get($document['id_d'], $champs));?>
+                                    <?php hecho($indexValue);?>
                                 </a>
                                 <?php elseif ($formulaire->getField($champs)->getType() == 'date') :?>
-                                    <?php echo date_iso_to_fr(
-                                        $this->getDocumentIndexSql()->get($document['id_d'], $champs)
-                                    ); ?>
+                                    <?php echo date_iso_to_fr($indexValue); ?>
                                 <?php else :?>
-                                    <?php hecho($this->getDocumentIndexSql()->get($document['id_d'], $champs));?>
+                                    <?php hecho($indexValue);?>
                                 <?php endif;?>
                             <?php endif;?>
                         </td>

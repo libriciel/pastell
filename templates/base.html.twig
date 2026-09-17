@@ -76,20 +76,19 @@
             >
                 <i class="fa fa-list-alt"></i>&nbsp;Journal des évènements
             </a>
-            {% if roleUtilisateur.hasOneDroit(authentification.getId, 'entite:edition')
-                or roleUtilisateur.hasOneDroit(authentification.getId, 'annuaire:edition') %}
+            {% if menu_administration_link %}
                 <a href="{{ path('app.legacy.entite_detail', {'id_e': id_e_menu}) }}"
                    class="new_picto"
                 >
                     <i class="fa fa-wrench"></i>&nbsp;Administration
                 </a>
             {% endif %}
-            {% if roleUtilisateur.hasDroit(authentification.getId, 'system:lecture', 0) %}
+            {% if menu_system_lecture %}
                 <a href="{{ path('app.legacy.system_index') }}" class="new_picto" style="float: right;">
                     <i class="fa fa-puzzle-piece"></i><span>Administration avancée</span>
                 </a>
             {% endif %}
-            {% if roleUtilisateur.hasDroit(authentification.getId, 'system:lecture', 0) %}
+            {% if menu_system_lecture %}
                 <a href="{{ path('app.legacy.daemon_index') }}" class='new_picto' style="float: right;">
                     {% if daemon_stopped_warning %}
                         <p class="badge badge-daemon">!</p>
