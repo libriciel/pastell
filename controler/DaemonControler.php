@@ -6,6 +6,7 @@ use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Module\ModuleListService;
+use Pastell\ViewModel\DeleteConfirmation;
 use Symfony\Component\Process\Process;
 
 class DaemonControler extends PastellControler
@@ -651,12 +652,18 @@ class DaemonControler extends PastellControler
             $this->setLastError('Impossible de trouver le gestionnaire de tâches');
             $this->redirect('Daemon/configuration');
         }
-        $this->setViewParameter('page_title', 'Suppression du gestionnaire de tâches');
-        $this->setViewParameter('template_milieu', 'DaemonDelete');
+        $entite = $this->getEntiteSQL()->getInfo($daemon->id_e);
         $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_CONFIGURATION);
-        $this->setViewParameter('daemon', $daemon);
-        $this->setViewParameter('entite', $this->getEntiteSQL()->getInfo($daemon->id_e));
-        $this->renderDefault();
+        $this->renderDeleteConfirmation(
+            "Suppression du gestionnaire de tâches de {$entite['denomination']}",
+            new DeleteConfirmation(
+                'Daemon/doDeleteDaemon',
+                'Daemon/configuration',
+                [$entite],
+                ['Entité' => 'denomination'],
+                ['id_d' => $daemon->id_daemon],
+            )
+        );
     }
 
     /**
