@@ -1,0 +1,56 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Pastell\Service\Module;
+
+use DocumentTypeFactory;
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
+
+final class ModuleListService
+{
+    public function __construct(
+        private readonly DocumentTypeFactory $documentTypeFactory,
+        private readonly DroitService $droitService,
+    ) {
+    }
+
+    public function getModuleListOrderByNom(int $id_u, bool $hasAllDroit = false): array
+    {
+        $moduleList = [];
+        $allDocType = $this->documentTypeFactory->getAllType();
+        foreach ($allDocType as $typeFlux => $listFlux) {
+            foreach ($listFlux as $idFlux => $libelleFlux) {
+                if ($hasAllDroit || $this->droitService->hasOneDroitFor($id_u, $idFlux, DroitType::LECTURE)) {
+                    $moduleList[$idFlux]  = ['type' => $typeFlux,'nom' => $libelleFlux];
+                }
+            }
+        }
+
+        $currentLocale = setlocale(LC_COLLATE, '0');
+        setlocale(LC_COLLATE, 'fr_FR.utf8');
+        uasort($moduleList, static function (array $a, array $b) {
+            return strcoll($a['nom'], $b['nom']);
+        });
+        setlocale(LC_COLLATE, $currentLocale);
+
+        return $moduleList;
+    }
+
+    public function getModuleListOrderByType(int $id_u, bool $hasAllDroit = false): array
+    {
+        $moduleListByType = [];
+        $moduleList = $this->getModuleListOrderByNom($id_u, $hasAllDroit);
+        foreach ($moduleList as $idFlux => $infoFlux) {
+            $moduleListByType[$infoFlux['type']][$idFlux] = $infoFlux['nom'];
+        }
+
+        $currentLocale = setlocale(LC_COLLATE, '0');
+        setlocale(LC_COLLATE, 'fr_FR.utf8');
+        ksort($moduleListByType, SORT_LOCALE_STRING);
+        setlocale(LC_COLLATE, $currentLocale);
+
+        return $moduleListByType;
+    }
+}
