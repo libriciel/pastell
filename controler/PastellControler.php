@@ -6,8 +6,8 @@ use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheService;
-use Pastell\ViewModel\DeleteConfirmation;
 use Pastell\Service\Module\ModuleListService;
+use Pastell\ViewModel\DeleteConfirmation;
 
 class PastellControler extends Controler
 {

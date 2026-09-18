@@ -1,6 +1,5 @@
 <?php
 
-use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Module\ModuleListService;
 use Pastell\Service\Droit\DroitType;
 
@@ -34,6 +33,14 @@ class FluxAPIController extends BaseAPIController
         }
 
         return $this->getFlux($idFlux);
+    }
+
+    /**
+     * @deprecated 4.1.24 Use ModuleListService::getModuleListOrderByNom() instead
+     */
+    public function listFlux()
+    {
+        return $this->moduleListService->getModuleListOrderByNom($this->getUtilisateurId(), $this->hasAllDroit());
     }
 
     public function getFlux(string $idFlux): array
