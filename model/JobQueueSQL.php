@@ -2,6 +2,7 @@
 
 use Pastell\Configuration\JobStatus;
 use Pastell\Model\Daemon\JobAdvancedFilters;
+use Pastell\Model\Daemon\JobSort;
 
 class JobQueueSQL extends SQL
 {
@@ -376,7 +377,8 @@ SQL;
         int $offset = 0,
         string $filtre = '',
         ?int $id_daemon = null,
-        ?JobAdvancedFilters $advancedFilters = null
+        ?JobAdvancedFilters $advancedFilters = null,
+        ?JobSort $sort = null
     ): array {
         if (!in_array($filtre, ['lock', 'actif', 'wait'])) {
             $filtre = '';
@@ -408,11 +410,21 @@ SQL;
 
         $this->appendAdvancedFilters($advancedFilters, $sql, $params);
 
-        $sql .= " ORDER BY job_queue.job_status, job_queue.next_try
-              LIMIT $offset, $limit";
+        $sql .= $this->buildOrderByClause($sort);
+        $sql .= " LIMIT $offset, $limit";
 
         $result = $this->query($sql, $params);
         return $this->mapResultToJobList($result);
+    }
+
+    private function buildOrderByClause(?JobSort $sort): string
+    {
+        if ($sort === null) {
+            return ' ORDER BY job_queue.job_status, job_queue.next_try';
+        }
+
+        $direction = $sort->direction->sql();
+        return " ORDER BY {$sort->column->sqlColumn()} $direction, job_queue.id_job $direction";
     }
 
     public function getNbJob($filtre, ?int $id_daemon = null, ?JobAdvancedFilters $advancedFilters = null): int

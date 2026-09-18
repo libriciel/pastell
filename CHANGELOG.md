@@ -4,7 +4,9 @@
 
 ### Ajouts
 
-- Refonte du Gestionnaire de tâches : Ajout d'une recherche avancée #964
+- Refonte du Gestionnaire de tâches : 
+  - Ajout d'une recherche avancée #964
+  - Ajout du tri par dates sur la liste des travaux #964
 - Studio, l'étape « Envoi à la préfecture (via un Tdt) » permet désormais de sélectionner plusieurs éléments
   multi-fichiers pour « Annexe de l'acte » #2520
 - Nouveau champ « Autre document(s) à signer », transmis au Tdt en plus des annexes dans les flux

@@ -1,5 +1,9 @@
 <?php
 
+use Pastell\Model\Daemon\JobSort;
+use Pastell\Model\Daemon\JobSortColumn;
+use Pastell\Model\Daemon\SortDirection;
+
 class JobQueueSQLTest extends PastellTestCase
 {
     public const ID_D = 'foo';
@@ -152,6 +156,42 @@ class JobQueueSQLTest extends PastellTestCase
         static::assertCount(3, $job_list);
         $job_list = $this->jobQueueSQL->getAllJobs(9, 3);
         static::assertCount(1, $job_list);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetFilteredJobListSortByDate(): void
+    {
+        $old_job = $this->getNewJob();
+        $old_job->next_try = '2000-01-01 00:00:00';
+        $id_old = $this->jobQueueSQL->createJob($old_job);
+
+        $recent_job = $this->getNewJob();
+        $recent_job->next_try = '2030-01-01 00:00:00';
+        $id_recent = $this->jobQueueSQL->createJob($recent_job);
+
+        $asc = $this->jobQueueSQL->getFilteredJobList(
+            20,
+            0,
+            '',
+            null,
+            null,
+            new JobSort(JobSortColumn::NEXT_TRY, SortDirection::ASC)
+        );
+        static::assertSame((int)$id_old, (int)$asc[0]->id_job);
+        static::assertSame((int)$id_recent, (int)$asc[1]->id_job);
+
+        $desc = $this->jobQueueSQL->getFilteredJobList(
+            20,
+            0,
+            '',
+            null,
+            null,
+            new JobSort(JobSortColumn::NEXT_TRY, SortDirection::DESC)
+        );
+        static::assertSame((int)$id_recent, (int)$desc[0]->id_job);
+        static::assertSame((int)$id_old, (int)$desc[1]->id_job);
     }
 
     /**

@@ -3,6 +3,7 @@
 use Monolog\Logger;
 use Pastell\Configuration\JobStatus;
 use Pastell\Model\Daemon\JobAdvancedFilters;
+use Pastell\Model\Daemon\JobSort;
 use Pastell\Security\LibricielFeedbackReader;
 use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Entite\EntityUtilitiesService;
@@ -401,6 +402,11 @@ class PastellControler extends Controler
     protected function getJobAdvancedFilters(Recuperateur $recuperateur): JobAdvancedFilters
     {
         return JobAdvancedFilters::fromRecuperateur($recuperateur);
+    }
+
+    protected function getJobSort(Recuperateur $recuperateur): ?JobSort
+    {
+        return JobSort::fromRecuperateur($recuperateur);
     }
 
     /**

@@ -96,8 +96,10 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('filtre', '');
 
         $advancedFilters = $this->getJobAdvancedFilters($this->getGetInfo());
+        $sort = $this->getJobSort($this->getGetInfo());
         $offset = $this->getGetInfo()->getInt('offset', 0);
         $this->setViewParameter('search', $advancedFilters);
+        $this->setViewParameter('sort', $sort);
         $this->setViewParameter('offset', $offset);
         $this->setViewParameter('limit', self::NB_JOB_DISPLAYING);
         $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob('', null, $advancedFilters));
@@ -108,7 +110,8 @@ class DaemonControler extends PastellControler
                 $offset,
                 '',
                 null,
-                $advancedFilters
+                $advancedFilters,
+                $sort
             )
         );
     }
@@ -317,11 +320,13 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('filtre', $filtre);
 
         $advancedFilters = $this->getJobAdvancedFilters($recuperateur);
+        $sort = $this->getJobSort($recuperateur);
         $this->setJobSearchViewParameters(
             $advancedFilters,
             'app.legacy.daemon_job',
             $this->getConnecteurFrequenceSQL()->getDistinctVerrou()
         );
+        $this->setViewParameter('sort', $sort);
 
         $this->setViewParameter(
             'return_url',
@@ -336,7 +341,8 @@ class DaemonControler extends PastellControler
                 $this->getViewParameterByKey('offset'),
                 $filtre,
                 null,
-                $advancedFilters
+                $advancedFilters,
+                $sort
             )
         );
 
