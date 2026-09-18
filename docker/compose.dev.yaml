@@ -58,7 +58,7 @@ services:
       - "${DATABASE_PORT_TEST:-13306}:3306"
 
   glaneur-sftp:
-    image: atmoz/sftp:alpine
+    image: hubdocker.libriciel.fr/atmoz/sftp:alpine
     volumes:
       - ${PASTELL_GLANEUR:-pastell_glaneur}:/home/${SFTP_USER:-sftp}
     ports:
@@ -66,7 +66,7 @@ services:
     command: ${SFTP_USER:-sftp}:${SFTP_PASSWORD:-sftp}:${UID:-10001}
 
   mailpit:
-    image: axllent/mailpit
+    image: hubdocker.libriciel.fr/axllent/mailpit:v1.31
     ports:
       - "${MAILPIT_PORT:-8025}:8025"
 

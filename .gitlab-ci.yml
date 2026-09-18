@@ -8,6 +8,7 @@ include:
 #  - component: $LIBRICIEL_CATALOG_PATH/qlty/code-quality@~latest
 #    inputs:
 #      mode: "changed"
+  - component: $LIBRICIEL_CATALOG_PATH/project-standards/check-libriciel-standards@3.1.0
   - component: $LIBRICIEL_CATALOG_PATH/renovate-runner/runner@1.6.0
   - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.2.0
   - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@1.4.0

@@ -159,6 +159,17 @@ abstract class BaseAPIController
     }
 
     /**
+     * @deprecated 4.1.21 Use hasOneDroitFor() instead
+     */
+    public function hasOneDroit($droit)
+    {
+        if ($this->hasAllDroit) {
+            return true;
+        }
+        return $this->getDroitService()->hasOneDroit($this->getUtilisateurId(), $droit);
+    }
+
+    /**
      * @throws ForbiddenException
      */
     protected function checkOneDroitFor(string $droit_id, DroitType $droit_type): bool

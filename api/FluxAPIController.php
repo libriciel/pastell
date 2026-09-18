@@ -1,6 +1,5 @@
 <?php
 
-use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Module\ModuleListService;
 use Pastell\Service\Droit\DroitType;
 
@@ -20,11 +19,11 @@ class FluxAPIController extends BaseAPIController
     {
         $idFlux = $this->getFromQueryArgs(0);
         $action = $this->getFromQueryArgs(1);
-        if (! $idFlux) {
+        if (!$idFlux) {
             return $this->moduleListService->getModuleListOrderByNom($this->getUtilisateurId(), $this->hasAllDroit());
         }
 
-        if (! $this->documentTypeFactory->isTypePresent($idFlux)) {
+        if (!$this->documentTypeFactory->isTypePresent($idFlux)) {
             throw new NotFoundException("Le flux $idFlux n'existe pas sur cette plateforme");
         }
         $this->checkOneDroitFor($idFlux, DroitType::LECTURE);
@@ -34,6 +33,14 @@ class FluxAPIController extends BaseAPIController
         }
 
         return $this->getFlux($idFlux);
+    }
+
+    /**
+     * @deprecated 4.1.24 Use ModuleListService::getModuleListOrderByNom() instead
+     */
+    public function listFlux()
+    {
+        return $this->moduleListService->getModuleListOrderByNom($this->getUtilisateurId(), $this->hasAllDroit());
     }
 
     public function getFlux(string $idFlux): array
