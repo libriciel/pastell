@@ -175,4 +175,49 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
         $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
         $this->assertEquals(1, $documentEmail->getInfo($id_d)[0]['non_recu']);
     }
+
+    /**
+     * @throws TypeDossierException
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    public function testNonRecuApresRenvois(): void
+    {
+        $this->typeDossierLoader->createTypeDossierDefinitionFile(self::MAILSEC_ONLY);
+
+        $id_ce = $this->createConnector('mailsec', 'Mail sécurisé')['id_ce'];
+        $this->associateFluxWithConnector($id_ce, self::MAILSEC_ONLY, 'mailsec');
+
+        $id_ce_relance = $this->createConnector('pdf-relance', 'PDF Relance')['id_ce'];
+        $this->configureConnector($id_ce_relance, ['nb_day_relance' => '5', 'nb_day_next_state' => '15']);
+        $this->associateFluxWithConnector($id_ce_relance, self::MAILSEC_ONLY, 'pdf-relance');
+
+        $id_d = $this->createAndFillDocument(self::MAILSEC_ONLY);
+
+        $this->triggerActionOnDocument($id_d, 'orientation');
+        $this->triggerActionOnDocument($id_d, 'send-mailsec');
+        $this->triggerActionOnDocument($id_d, 'renvoi');
+        $this->assertLastDocumentAction('renvoi', $id_d);
+
+        $this->backdateAction($id_d, 'send-mailsec', 20);
+        $this->backdateAction($id_d, 'renvoi', 3);
+
+        $this->triggerActionOnDocument($id_d, 'mailsec-relance');
+
+        $this->assertLastDocumentAction('preparation-non-recu', $id_d);
+        $this->assertLastMessage('Le document passe en non reçu !');
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function backdateAction(string $id_d, string $action, int $days): void
+    {
+        static::getSQLQuery()->query(
+            'UPDATE document_action SET date = ? WHERE id_d = ? AND action = ?',
+            date('Y-m-d H:i:s', strtotime("-$days days")),
+            $id_d,
+            $action
+        );
+    }
 }
