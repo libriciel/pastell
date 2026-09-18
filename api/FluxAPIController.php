@@ -19,11 +19,11 @@ class FluxAPIController extends BaseAPIController
     {
         $idFlux = $this->getFromQueryArgs(0);
         $action = $this->getFromQueryArgs(1);
-        if (! $idFlux) {
+        if (!$idFlux) {
             return $this->moduleListService->getModuleListOrderByNom($this->getUtilisateurId(), $this->hasAllDroit());
         }
 
-        if (! $this->documentTypeFactory->isTypePresent($idFlux)) {
+        if (!$this->documentTypeFactory->isTypePresent($idFlux)) {
             throw new NotFoundException("Le flux $idFlux n'existe pas sur cette plateforme");
         }
         $this->checkOneDroitFor($idFlux, DroitType::LECTURE);

@@ -1,12 +1,13 @@
 # Changelog
 
-# [5.0.9] - 2026-09-07
+## [5.0.9] - 2026-09-07
 
-## Ajouts
+### Ajouts
 
-- Commande `app:database:foreign-key-check` : détecte et nettoie les clés étrangères orphelines dans la base de données #2540
+- Commande `app:database:foreign-key-check` : détecte et nettoie les clés étrangères orphelines dans la base de
+  données #2540
 
-## Corrections
+### Corrections
 
 - Message d'erreur explicite en cas de zip malformé lors de la génération d'un bordereau SEDA #2539
 - Mise à jour du lien "Tester les expressions XPath" dans la documentation des expressions Twig #2532
@@ -16,7 +17,7 @@
 - Un connecteur CPP non configuré n'est plus masqué de la liste des associations de connecteurs globaux #2558
 - Le container `flow` ne démarrait plus #2545
 
-## Sécurité
+### Sécurité
 
 - Faille IDOR (CVSS 8.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N) #2551
 - Faille XSS (CVSS 7.3 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:N) #2550
@@ -29,20 +30,20 @@
 - Faille de contrôle d'accès sur la suppression des jetons des utilisateurs web
   (CVSS 3.8 - criticité FAIBLE - CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:N/I:L/A:L) #2559
 
-# [5.0.8] - 2026-08-03
+## [5.0.8] - 2026-08-03
 
-## Évolutions
+### Évolutions
 
 - Centralisation des vérifications de droits dans `DroitService` : ajout de l'énumération `DroitType` et des
   méthodes `DroitService::getDroitFor()` et `DroitService::hasDroitFor()` #2491
 
-## Corrections
+### Corrections
 
 - Consultation de la réponse d'un mail sécurisé via l'API : droits de lecture vérifiés sur le type de dossier d'origine
   et non plus sur celui de la réponse (ex. `mailsec-bidir:lecture` au lieu de `mailsec-bidir-reponse:lecture`) #2488
 - Il manquait le numéro de l'acte pour la recherche avancée de ls-actes #2479
 
-## Dépréciations
+### Dépréciations
 
 - Les méthodes de construction de chaîne de droit sont dépréciées au profit de `DroitService::getDroitFor()` :
   `DroitService::getDroitLecture()`, `DroitService::getDroitEdition()`, `DroitService::getActionPermission()`,
@@ -63,44 +64,44 @@
   `BaseAPIController::hasOneDroit()` -> `BaseAPIController::hasOneDroitFor()`
   `DroitService::hasOneDroit()` -> `DroitService::hasOneDroitFor()`
 
-# [5.0.7] - 2026-07-22
+## [5.0.7] - 2026-07-22
 
-## Correction
+### Corrections
 
 - Encadrement des appels depot-cmis pour ne plus être pollué par les deprecated #2521
 
-# [5.0.6] - 2026-07-06
+## [5.0.6] - 2026-07-06
 
-## Ajouts
+### Ajouts
 
 - Container `libriciel-stack-update` permettant la mise à jour automatique de l'application #2494
 
-## Évolutions
+### Évolutions
 
 - Création des services `AnnuaireContactService`, `AnnuaireExportService`, `AnnuaireGroupeService` et
   `AnnuaireImportService` pour les opérations sur l'annuaire #2478
 - Suppression du paramètre interne `id_e` dans `AnnuaireGroupeSQL`, `id_e` doit être directement passé à l'appel des
   méthodes #2477
 
-## Corrections
+### Corrections
 
 - Correction du libellé 'Mail sécurisé avec réponse (réponse) - déprécié' de `mailsec-bidir-reponse` #2489
 - La liste des entités pouvait présenter l'entité racine sans les droits utilisateur #2480
-- Prise en compte du "Nombre de jour avant relance du mail securisé" suivant la dernière date de renvoi
+- Prise en compte du "Nombre de jour avant relance du mail sécurisé" suivant la dernière date de renvoi
   pour les relances des mails sécurisés #2484
 - Correction des dépréciations PHP 8.4 dans LDAPWrapper #2474
 - Il manquait le truncate du titre du dossier si sa taille dépasse 255 bytes lors de l'envoi à iparapheur REST #2486
-- Prise en compte du "Nombre de jour avant relance du mail securisé" suivant la dernière date de renvoi
+- Prise en compte du "Nombre de jour avant relance du mail sécurisé" suivant la dernière date de renvoi
   pour les relances des mails sécurisés #2495
 - Les uploads envoyés en `Transfer-Encoding: chunked` (ex. Spring WebClient) arrivaient vides #2507
 
-## Dépréciations
+### Dépréciations
 
 - La classe `AnnuaireGroupe` est dépréciée au profit de `AnnuaireGroupeSQL` #2477
 - La classe `AnnuaireExporter` est dépréciée au profit de `AnnuaireExportService` #2478
 - La classe `AnnuaireImporter` est dépréciée au profit de `AnnuaireImportService` #2478
 
-## Sécurité
+### Sécurité
 
 - Faille de contrôle d'accès sur la gestion des utilisateurs
   (CVSS 8.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N) #2497
@@ -115,34 +116,36 @@
 - Faille de lecture de fichier arbitraire
   (CVSS 7.7 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:N/A:N) #2502
 
-# [5.0.5] - 2026-06-01
+## [5.0.5] - 2026-06-01
 
-## Corrections
+### Corrections
 
 - Un utilisateur qui n'a pas le droit `utilisateur:lecture` ne pouvait pas ajouter/modifier ses notifications #2466
-- Il y avait un message `Syntax error` lors de la vérification du visa facture-cpp (régression 4.1.3) #2470
+- Il y avait un message `Syntax error` lors de la vérification du visa `facture-cpp` (régression 4.1.3) #2470
 - Assignation des tâches orphelines au lancement de pastell #2457
 - Fix : échec de l'envoi d'archive pour les fichiers découpés en de nombreux morceaux (suffixe de découpage porté à 6 caractères) #2464
 
-## Sécurité
+### Sécurité
 
 - Faille d'exécution de commande shell
   (CVSS 7.2 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H) #2465
 - Faille XSS #2468
 
-# [5.0.4] - 2026-05-04
+## [5.0.4] - 2026-05-04
 
-## Ajout
+### Ajouts
 
 - Ajout de ls-dossier-marche activable #2455
 
-## Corrections
+### Corrections
 
-- Les identifiants de champs ne peuvent plus commencer par un chiffre (erreur Twig lors de la génération de bordereaux SEDA) #2161
+- Les identifiants de champs ne peuvent plus commencer par un chiffre (erreur Twig lors de la génération de bordereaux
+  SEDA) #2161
 - Correction de l'extraction des données pour les fichiers PES de type PJ dans le flux pes-marche #2172
 - Bloquer la suppression d'une entité si des contacts ou groupes existent dans son annuaire #2432
 - Lors de la suppression d'une entité, nettoyer les rôles d'annuaire et notifications associés #2432
-- Lors de la suppression d'un utilisateur, nettoyer les notifications, tokens API et demandes de changement d'email associés #2434
+- Lors de la suppression d'un utilisateur, nettoyer les notifications, tokens API et demandes de changement d'email
+  associés #2434
 - Lors de la suppression d'un connecteur, nettoyer les fréquences de connecteur associées #2435
 - Lors de la suppression d'un document, nettoyer les notifications en attente d'envoi associées #2436
 - Lors de la suppression d'une tâche automatique, nettoyer les workers associés #2438
@@ -151,8 +154,10 @@
 - Correction d'un commentaire du connecteur mailsec #2459
 - Correction des doublons lors de la récupération des actes S2low #2429
 - Gestion des utilisateurs exclusivement API par API #2441 :
-    - Ajout de la route `POST /api/v2/utilisateur/:id_u/token/:id_token/renew` pour renouveler un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
-    - Ajout de la route `DELETE /api/v2/utilisateur/:id_u/token/:id_token` pour supprimer un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
+    - Ajout de la route `POST /api/v2/utilisateur/:id_u/token/:id_token/renew` pour renouveler un jeton pour un autre
+      utilisateur (droit `utilisateur:edition` requis)
+    - Ajout de la route `DELETE /api/v2/utilisateur/:id_u/token/:id_token` pour supprimer un jeton pour un autre
+      utilisateur (droit `utilisateur:edition` requis)
 - Il n'est plus possible de créer ou modifier des gestionnaires de tâches avec 0 processus alloués #2414
 - les URLs des mails sécurisés n'affichent plus le port 443 par défaut #2430
 -  iParapheur REST : suppression du LogDossier superflu (sans timestamp ni nom) qui apparaissait en dernier
@@ -160,15 +165,17 @@
 - Migration iParapheur SOAP → REST : correspondance d'identifiant de dossier iParapheur REST pour les dossiers créés avec un connecteur SOAP #2444
 - Corrections d'erreurs silencieuses à l'envoi d'un dossier en signature iParapheur REST V5 avec un dossier mal configuré #2454
 
-# [5.0.3] - 2026-04-07
+## [5.0.3] - 2026-04-07
 
-## Ajouts
+### Ajouts
 
 - Gestion des utilisateurs exclusivement API par API #1943 :
-    - Ajout du paramètre `is_api` à la création d'un utilisateur : crée un utilisateur sans email, authentifiable par jeton uniquement
-    - Ajout de la route `POST /api/v2/utilisateur/:id_u/token` pour créer un jeton pour un autre utilisateur (droit `utilisateur:edition` requis)
+    - Ajout du paramètre `is_api` à la création d'un utilisateur : crée un utilisateur sans email, authentifiable par
+      jeton uniquement
+    - Ajout de la route `POST /api/v2/utilisateur/:id_u/token` pour créer un jeton pour un autre utilisateur (droit
+      `utilisateur:edition` requis)
 
-## Corrections
+### Corrections
 
 - Il manquait des contrôles pour l'évolution en 4.0.6
   "Seul l'utilisateur peut gérer ses notifications, l'administrateur n'a plus les droits #1886" #2402
@@ -185,11 +192,11 @@
 - Ajout des champs `Destinataire(s)` et `Copie à` manquants dans les formulaires destinataire de mails sécurisés #2366
 - Le rate limit sur les tentatives de connexion n'était pas assez restrictif #2202
 - Correction de l'encodage des espaces dans l'URL du connecteur `dépôt WebDAV` #1761
-- Il y avait un message `Syntax error` lors de la vérification du visa facture-cpp (régression 5.0.0) #2416
+- Il y avait un message `Syntax error` lors de la vérification du visa `facture-cpp` (régression 5.0.0) #2416
 
-# [5.0.2] - 2026-03-02
+## [5.0.2] - 2026-03-02
 
-## Corrections
+### Corrections
 
 - Les droits de lecture au lieu d'édition sont désormais requis pour consulter un document par API #2228
 - Correction de l'erreur "droits insuffisants" lors de l'accès à un événement versé dans le journal historique #2091
@@ -198,18 +205,18 @@
 - Correction du tri des entités dans `RoleUtilisateur::getArbreFille` (tri numérique au lieu de lexicographique) #2029
 - Correction d'un warning sur la page d'import d'agents de l'entité racine #2401
 - Suppression de la valeur inutile "Collectivite" dans la liste des types de dossiers des notifications #2191
-- Suppression des clés 'collectivite-properties','herited-properties' jamais utilisées et de
-  DocumentTypeHTML::displaySelectWithCollectivite #2191
+- Suppression des clés `collectivite-properties`,`herited-properties` jamais utilisées et de
+  `DocumentTypeHTML::displaySelectWithCollectivite` #2191
 - Correction du serveur d'exemple dans le connecteur cloudooo (déprécié en 5.0.0) #1963
 - Correction du séparateur CSV dans l'import de l'annuaire mails sécurisés (désormais `,`) #2216
 -  Correction de l'updater DeletePdfRelanceToMailsec qui bloquait le démarrage
    dans le cas d'un connecteur pdf-relance associé à un flux sans connecteur mailsec associé #2403
 
-# [5.0.1] - 2026-02-02
+## [5.0.1] - 2026-02-02
 
 **Ce patch corrige des failles de sécurité**
 
-## Ajouts
+### Ajouts
 
 - Liens vers entité et dossier/connecteur ajoutés sur les listes de tâches automatiques #2246
 - Ajout de la commande `app:connector:update-sftp-fingerprint` #2303
@@ -217,7 +224,7 @@
 - Ajout de la variable d'environnement `ARCHIVE_CREATION_TIMEOUT` pour définir le temps maximum
   (1200 secondes par défaut) pour la création d'une archive #2386
 
-## Évolutions
+### Évolutions
 
 - Ajout des paramètres optionnels `with_preuve` et `id_d` à la commande `app:journal:export-history` #2044
 - Le champ `allow_on_entite_racine` permet de définir si un connecteur d'entité peut être créé au niveau de l'entité racine #2378
@@ -226,7 +233,7 @@
   si la date de fin de la période de récupération est comprise dans les 15 derniers jours,
   elle ne sera pas prise en compte au profit de la date J-15 #2399
 
-## Corrections
+### Corrections
 
 - Les informations des processus liés aux jobs étaient absentes #2394
 - Le fil d'ariane n'est plus bloqué sur une entité désactivée #2285
@@ -235,20 +242,21 @@
 - iparapheur REST, renommage de l'action `test-connexion` en `test-iparapheur` pour être à l'identique que iparapheur SOAP #2395
 - iparapheur REST, renommage de l'externalData `iparapheur_subtype` en `iparapheur_sous_type` et retour d'un tableau sans clé
   pour être à l'identique que iparapheur SOAP #2395
-- Corrige une erreur qui survenait lors du passage d'un mauvais identifiant dans certaines pages de gestion utilisateurs. #2379
+- Corrige une erreur qui survenait lors du passage d'un mauvais identifiant dans certaines pages de gestion
+  utilisateurs #2379
 - Les pages ne sont plus indexées sur les moteurs de recherche #2369
 - Certains fichiers envoyés par API n'étaient pas correctement supprimés dans le répertoire temporaire #2396
 - Amélioration de la génération d'une archive en mode ZIP utilisant des expressions xpath #2382
-- Ajout de CURLOPT_TIMEOUT de 60 secondes pour les appels S2low #2083
+- Ajout de `CURLOPT_TIMEOUT` de 60 secondes pour les appels S2low #2083
 - Lors de la réponse à un mail sécurisé, le bouton pour supprimer une pièce jointe ne fonctionnait pas #2226
 
-## Suppressions
+### Suppressions
 
 - Suppression de la fonction `ConnecteurDefinitionFiles::getAll(bool $global = false)`
   remplacée par `ConnecteurDefinitionFiles::getAllConnecteursEntite(bool $isEntiteRacine = false)`
   et `ConnecteurDefinitionFiles::getAllConnecteursGlobaux()` #2378
 
-## Sécurité
+### Sécurité
 
 - Faille XSRF #2373
 - Faille de création/écrasement de fichier arbitraire
@@ -256,15 +264,9 @@
 - Faille XSS #2375
 - Possibilité de récupérer la liste des entités sans avoir les bonnes permissions #2397
 
-# [5.0.0] - 2025-12-16
+## [5.0.0] - 2025-12-16
 
-## Corrections
-
-- **BREAKING** : Correction du calcul des empreintes dans les connecteurs SFTP (dépôt et glaneur) : les empreintes
-  doivent être mises à jour #1667
-- Les entités désactivées n'apparaissent plus dans le fil d'ariane #2285
-
-## Ajouts
+### Ajouts
 
 - Ajout des permissions daemon:lecture et daemon:edition permettant aux utilisateurs de voir l'état des dossiers en cours #2192
 - Création de la table `configuration` pour stocker les paramètres applicatifs. #2232
@@ -278,7 +280,7 @@
 - Ajout de la configuration LIBELLE_PLATEFORME_MAIL pour personnaliser le nom de la plateforme dans les mails envoyés #1637
 - Un email est envoyé automatiquement à la création d'un utilisateur pour définir son mot de passe #2363
 
-## Évolutions
+### Évolutions
 
 - **BREAKING** : Amélioration de la cryptographie des exports de connecteurs. Un connecteur exporté en v5 ne pourra pas
   être importé sur une v4 (message : "Le mot de passe est incorrect"). Un connecteur exporté en v4 peut être importé en v5.
@@ -301,7 +303,13 @@
 - Uniformisation des listes de sélection de type de dossier #2351
 - Il est possible de modifier un dossier en état "Erreur lors de la transformation du dossier" #2332
 
-## Suppressions
+### Corrections
+
+- **BREAKING** : Correction du calcul des empreintes dans les connecteurs SFTP (dépôt et glaneur) : les empreintes
+  doivent être mises à jour #1667
+- Les entités désactivées n'apparaissent plus dans le fil d'ariane #2285
+
+### Suppressions
 
 - Suppression de la fonction WorkerSQL::getInfo remplacé par WorkerSQL::getWorker #2195
 - Suppression de la fonction WorkerSQL::getFirstJobToLaunch remplacé par WorkerSQL::getJobsToLaunchByLock #2237
@@ -338,7 +346,7 @@
 - Suppression du script `redis-flush-all.php`
 - Suppression du script `workspace_size_by_entite.php`, remplacé par le connecteur de Stats
 
-## Suppressions d'éléments dépréciés
+### Suppressions d'éléments dépréciés
 
 - Suppression de la table collectivite_fournisseur #2205
 - Suppression de la table droit #2276
@@ -367,7 +375,7 @@
   PastellTestCase::getAPIController #2351
 - Suppression du connecteur Opensign 'Liberhorodatage', utilisation de 'Horodateur Pastell interne' #2372
 
-## Dépréciations
+### Dépréciations
 
 - TdtTeletransmettre, use Pastell\Step\Tdt\Acte\Action\TdtTeletransmettreAction instead #2278
 - TdtRetourTeletransmettre, use Pastell\Step\Tdt\Acte\Action\TdtTeletransmettreRetourAction instead #2278
