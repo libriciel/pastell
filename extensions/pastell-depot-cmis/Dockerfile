@@ -1,7 +1,7 @@
-FROM php:7.4-cli
+FROM hubdocker.libriciel.fr/php:7.4-cli
 WORKDIR /app
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=hubdocker.libriciel.fr/composer:2 /usr/bin/composer /usr/bin/composer
 
 RUN curl \
     --location \

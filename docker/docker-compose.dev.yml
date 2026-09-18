@@ -42,30 +42,21 @@ services:
       - "${DATABASE_TEST_PORT:-13306}:3306"
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+    image: hubdocker.libriciel.fr/phpmyadmin/phpmyadmin:5.2
     links:
       - db:db
     ports:
       - "${PHPMYADMIN_WEB_PORT:-8001}:80"
 
   phpmyadmin_test:
-    image: phpmyadmin/phpmyadmin
+    image: hubdocker.libriciel.fr/phpmyadmin/phpmyadmin:5.2
     links:
       - db_test:db
     ports:
       - "${PHPMYADMIN_TEST_PORT:-8004}:80"
 
-  php-redis-admin:
-    image: faktiva/php-redis-admin
-    environment:
-      - PHPREDMIN_DATABASE_REDIS_0_HOST=redis
-    ports:
-      - "${PHP_REDIS_PORT:-8005}:80"
-    depends_on:
-      - redis
-
   glaneur-sftp:
-    image: atmoz/sftp
+    image: hubdocker.libriciel.fr/atmoz/sftp:alpine
     volumes:
       - ${PASTELL_GLANEUR:-pastell_glaneur}:/home/${SFTP_USER:-ftp}
     ports:
@@ -75,7 +66,7 @@ services:
   # Add the following line to your .env for using maildev
   # MAILER_DSN=smtp://maildev:1025?verify_peer=0
   maildev:
-    image: maildev/maildev
+    image: hubdocker.libriciel.fr/maildev/maildev:3.0.0-rc.3
     ports:
       - "1080:1080"
 

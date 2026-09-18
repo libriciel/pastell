@@ -4,10 +4,10 @@ COPY package*.json ./
 RUN npm install
 
 # TODO il faudra passer en PHP 8.1 une fois que scoper suportera cette version
-FROM php:7.4-cli AS extensions_builder
+FROM hubdocker.libriciel.fr/php:7.4-cli AS extensions_builder
 WORKDIR /app
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=hubdocker.libriciel.fr/composer:2 /usr/bin/composer /usr/bin/composer
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
@@ -26,7 +26,7 @@ RUN composer install --ignore-platform-reqs \
     && php-scoper add-prefix --force \
     && composer dump-autoload --working-dir=build
 
-FROM ubuntu:22.04 AS pastell_base
+FROM hubdocker.libriciel.fr/ubuntu:22.04 AS pastell_base
 
 ARG UID=33
 ARG GID=33
