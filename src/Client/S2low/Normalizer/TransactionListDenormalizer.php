@@ -39,4 +39,9 @@ final class TransactionListDenormalizer implements DenormalizerInterface, Denorm
     {
         return $type === ActeListResponse::class;
     }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [ActeListResponse::class => true];
+    }
 }

@@ -375,7 +375,7 @@ Message d\'erreur : Unclosed "variable".<br />
         ];
         // The "use" tag resolves its template while parsing, so the empty loader refuses it before the sandbox does
         yield 'use_a_template' => [
-            'Template "/etc/passwd" is not defined',
+            'Tag "use" is not allowed.',
             "{% use '/etc/passwd' %}",
         ];
     }
