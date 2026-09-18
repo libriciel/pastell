@@ -1,7 +1,7 @@
 controllers:
   resource: ../mailsec/Controller/
-  type: annotation
+  type: attribute
 
 kernel:
   resource: ../mailsec/Kernel.php
-  type: annotation
+  type: attribute

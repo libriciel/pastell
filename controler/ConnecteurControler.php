@@ -13,6 +13,7 @@ use Pastell\Service\Connecteur\ConnecteurModificationService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\ViewModel\DeleteConfirmation;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 
 class ConnecteurControler extends PastellControler
@@ -171,17 +172,18 @@ class ConnecteurControler extends PastellControler
             DroitType::EDITION
         );
 
-        $this->setViewParameter('connecteur_entite_info', $this->getConnecteurEntiteSQL()->getInfo($id_ce));
+        $connector_info = $this->getConnecteurEntiteSQL()->getInfo($id_ce);
 
-        $this->setViewParameter(
-            'page_title',
-            sprintf(
-                'Suppression du connecteur  « %s »',
-                $this->getViewParameterByKey('connecteur_entite_info')['libelle']
+        $this->renderDeleteConfirmation(
+            "Suppression du connecteur {$connector_info['libelle']}",
+            new DeleteConfirmation(
+                'Connecteur/doDelete',
+                "Connecteur/edition?id_ce={$connector_info['id_ce']}",
+                [$connector_info],
+                ['Type' => 'type', 'Identifiant' => 'id_connecteur', 'Libellé' => 'libelle'],
+                ['id_ce' => $connector_info['id_ce']],
             )
         );
-        $this->setViewParameter('template_milieu', 'ConnecteurDelete');
-        $this->renderDefault();
     }
 
     /**

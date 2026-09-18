@@ -1,11 +1,40 @@
-<?xml version="1.0"?>
-<ruleset name="Pastell">
-    <description>Custom standard for Pastell.</description>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
 
     <arg name="basepath" value="."/>
+    <arg name="cache" value=".phpcs-cache"/>
     <arg name="colors"/>
+    <arg name="extensions" value="php"/>
     <arg name="parallel" value="50"/>
     <arg value="ps"/>
+
+    <rule ref="PSR12">
+        <!-- require and require_once before classes declarations -->
+        <exclude name="PSR1.Files.SideEffects.FoundWithSymbols"/>
+
+        <!-- namespaces -->
+        <exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace"/>
+
+        <!-- some methods are not in camel case (related to SEDA NG) -->
+        <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps"/>
+
+        <exclude name="PSR2.Methods.MethodDeclaration.Underscore"/>
+
+    </rule>
+
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="200"/>
+            <property name="absoluteLineLimit" value="200"/>
+        </properties>
+    </rule>
+
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.CloseBraceNewLine"/>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray"/>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.IndexNoNewline"/>
 
     <file>./action</file>
     <file>./api</file>
@@ -32,29 +61,4 @@
     <exclude-pattern>./extensions/*/build</exclude-pattern>
     <exclude-pattern>./test/codeception/tests/_support/_generated</exclude-pattern>
 
-    <rule ref="PSR12">
-        <!-- require and require_once before classes declarations -->
-        <exclude name="PSR1.Files.SideEffects.FoundWithSymbols"/>
-
-        <!-- namespaces -->
-        <exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace"/>
-
-        <!-- some methods are not in camel case (related to SEDA NG) -->
-        <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps"/>
-
-        <exclude name="PSR2.Methods.MethodDeclaration.Underscore"/>
-
-    </rule>
-
-    <rule ref="Generic.Files.LineLength">
-        <properties>
-            <property name="lineLimit" value="200"/>
-            <property name="absoluteLineLimit" value="200"/>
-        </properties>
-    </rule>
-
-    <rule ref="Generic.Arrays.DisallowLongArraySyntax" />
-    <rule ref="Squiz.Arrays.ArrayDeclaration.CloseBraceNewLine" />
-    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray" />
-    <rule ref="Squiz.Arrays.ArrayDeclaration.IndexNoNewline" />
 </ruleset>
