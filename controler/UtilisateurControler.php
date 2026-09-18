@@ -821,15 +821,23 @@ class UtilisateurControler extends PastellControler
             $this->checkSelfSuppression($id_u, $redirect_url);
             $userInfo = $this->getUtilisateur()->getInfo($id_u);
             $this->checkDroitFor($userInfo['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
-            $users_to_delete[] = ['id_u' => $id_u, 'info' => $userInfo];
+            $users_to_delete[] = $userInfo;
         }
 
-        $this->setViewParameter('users_to_delete', $users_to_delete);
-        $this->setViewParameter('id_e', $id_e);
-        $this->setViewParameter('source', $source);
-        $this->setViewParameter('page_title', "Suppression d'utilisateur(s)");
-        $this->setViewParameter('template_milieu', 'UtilisateurSuppression');
-        $this->renderDefault();
+        $this->renderDeleteConfirmation(
+            "Suppression d'utilisateur(s)",
+            new DeleteConfirmation(
+                'Utilisateur/doSuppression',
+                $redirect_url,
+                $users_to_delete,
+                [
+                    'Prénom Nom' => static fn(array $user): string => "{$user['prenom']} {$user['nom']}",
+                    'Login' => 'login',
+                    'Email' => 'email',
+                ],
+                ['id_e' => $id_e, 'source' => $source, 'id_u_list' => array_map(intval(...), $id_u_list)],
+            )
+        );
     }
 
     /**
