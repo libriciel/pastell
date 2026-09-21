@@ -30,8 +30,11 @@ class MailsecRelance extends ConnecteurTypeActionExecutor
                 $date_send_mailsec = $action_info['date'];
             }
         }
-        if (!$date_last_send) {
+        if (!$date_send_mailsec) {
             throw new UnrecoverableException("Impossible de trouver la date du passage à send-mailsec");
+        }
+        if (!$date_last_send) {
+            throw new UnrecoverableException("Impossible de trouver la date du dernier envoi");
         }
 
         if (
