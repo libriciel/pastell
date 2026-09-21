@@ -22,13 +22,20 @@ class MailsecRelance extends ConnecteurTypeActionExecutor
         $last_action = $this->getDocumentActionEntite()->getLastAction($this->id_e, $this->id_d);
         $action_list = $this->getDocumentActionEntite()->getAction($this->id_e, $this->id_d);
         $date_last_send = false;
+        $date_send_mailsec = false;
         foreach ($action_list as $action_info) {
             if (in_array($action_info['action'], [$send_mailsec_action, $renvoi_action], true)) {
                 $date_last_send = $action_info['date'];
             }
+            if ($action_info['action'] === $send_mailsec_action) {
+                $date_send_mailsec = $action_info['date'];
+            }
+        }
+        if (!$date_send_mailsec) {
+            throw new UnrecoverableException('Impossible de trouver la date du passage à send-mailsec');
         }
         if (!$date_last_send) {
-            throw new UnrecoverableException('Impossible de trouver la date du passage à send-mailsec');
+            throw new UnrecoverableException('Impossible de trouver la date du dernier envoi');
         }
 
         if (
@@ -40,7 +47,7 @@ class MailsecRelance extends ConnecteurTypeActionExecutor
             return true;
         }
 
-        if ($connector->mustGoToNextState($date_last_send)) {
+        if ($connector->mustGoToNextState($date_send_mailsec)) {
             $this->changeOrUpdateAction($non_recu_action, 'Le temps de récupération du document est écoulé');
             $this->setLastMessage('Le document passe en non reçu !');
             return true;
@@ -50,7 +57,7 @@ class MailsecRelance extends ConnecteurTypeActionExecutor
             $date_relance = $connector->getDateRelance($date_last_send);
             $message .= "Relance programmée le $date_relance<br/>";
         }
-        $date_non_recu = $connector->getDateNextState($date_last_send);
+        $date_non_recu = $connector->getDateNextState($date_send_mailsec);
         $message .= "Mail défini comme non-reçu le $date_non_recu<br/>";
 
         $this->setLastMessage($message);
