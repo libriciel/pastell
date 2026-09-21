@@ -6,6 +6,7 @@
 
 - Ajout/suppression d'une annexe TdT : les typologies déjà choisies sont conservées #1184
 - Harmonisation des pages de confirmation de suppressions #2560
+- Mail sécurisé : le passage en non reçu n'est plus repoussé par les renvois (régression 4.1.12) #2571
 
 ## [4.1.22] - 2026-09-07
 
