@@ -1,3 +1,20 @@
+{% import _self as ui %}
+
+{% macro sort_header(column, sort, search_route, job_query_params) %}
+    {% set is_active = sort|default(null) is not null and sort.column.value == column.value %}
+    {% set next_dir = (is_active and sort.direction.value == 'desc') ? 'asc' : 'desc' %}
+    <a href="{{ path(search_route, job_query_params|merge({'sort_by': column.value, 'sort_dir': next_dir, 'offset': 0})) }}"
+       class="text-nowrap text-decoration-none{{ is_active ? ' fw-bold' : '' }}"
+       title="Trier par {{ column.label|lower }}">
+        {{ column.label }}
+        {% if is_active %}
+            <i class="fas fa-sort-{{ sort.direction.value == 'asc' ? 'up' : 'down' }}"></i>
+        {% else %}
+            <i class="fas fa-sort text-muted"></i>
+        {% endif %}
+    </a>
+{% endmacro %}
+
 <div class='box'>
     <h2>
         {{ sub_title }}
@@ -22,11 +39,11 @@
             <th>#ID gestionnaire de tâche</th>
             <th>Dossier / Connecteur</th>
             <th>État source<br/>État cible</th>
-            <th>Premier essai</th>
-            <th>Dernier essai</th>
+            <th>{{ ui.sort_header(constant('Pastell\\Model\\Daemon\\JobSortColumn::FIRST_TRY'), sort|default(null), search_route, job_query_params) }}</th>
+            <th>{{ ui.sort_header(constant('Pastell\\Model\\Daemon\\JobSortColumn::LAST_TRY'), sort|default(null), search_route, job_query_params) }}</th>
             <th>Nombre d'essais</th>
             <th>Dernier message</th>
-            <th>Prochain essai</th>
+            <th>{{ ui.sort_header(constant('Pastell\\Model\\Daemon\\JobSortColumn::NEXT_TRY'), sort|default(null), search_route, job_query_params) }}</th>
             <th>File d'attente</th>
             <th>#ID processus</th>
             <th>PID processus</th>

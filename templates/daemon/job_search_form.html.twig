@@ -18,6 +18,10 @@
                         <input type="hidden" name="id_e" value="{{ id_e }}">
                     {% endif %}
                     <input type="hidden" name="filtre" value="{{ filtre|default('') }}">
+                    {% if sort|default(null) is not null %}
+                        <input type="hidden" name="sort_by" value="{{ sort.column.value }}">
+                        <input type="hidden" name="sort_dir" value="{{ sort.direction.value }}">
+                    {% endif %}
 
                     <table class="table table-striped">
                         <tr>

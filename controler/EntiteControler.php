@@ -892,12 +892,14 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('filtre', '');
 
         $advancedFilters = $this->getJobAdvancedFilters($recuperateur);
+        $sort = $this->getJobSort($recuperateur);
         $offset = $recuperateur->getInt('offset', 0);
         $this->setViewParameter('search', $advancedFilters);
+        $this->setViewParameter('sort', $sort);
         $this->setViewParameter('offset', $offset);
         $this->setViewParameter('limit', 20);
         $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob('', $daemon->id_daemon, $advancedFilters));
-        $job_list = $this->getJobQueueSQL()->getFilteredJobList(20, $offset, '', $daemon->id_daemon, $advancedFilters);
+        $job_list = $this->getJobQueueSQL()->getFilteredJobList(20, $offset, '', $daemon->id_daemon, $advancedFilters, $sort);
         $this->setViewParameter('job_list', $job_list);
         $this->setViewParameter('daemon', $daemon);
     }
@@ -973,12 +975,14 @@ class EntiteControler extends PastellControler
         );
 
         $advancedFilters = $this->getJobAdvancedFilters($recuperateur);
+        $sort = $this->getJobSort($recuperateur);
         $this->setJobSearchViewParameters(
             $advancedFilters,
             'app.legacy.entite_job',
             $this->getObjectInstancier()->getInstance(ConnecteurFrequenceSQL::class)->getDistinctVerrou(),
             $id_e
         );
+        $this->setViewParameter('sort', $sort);
 
         $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob($filtre, $daemon->id_daemon, $advancedFilters));
         $this->setViewParameter(
@@ -988,7 +992,8 @@ class EntiteControler extends PastellControler
                 $this->getViewParameterByKey('offset'),
                 $filtre,
                 $daemon->id_daemon,
-                $advancedFilters
+                $advancedFilters,
+                $sort
             )
         );
 

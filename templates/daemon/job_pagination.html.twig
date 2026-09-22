@@ -1,11 +1,12 @@
 {#
     Pagination + liste des tâches, mutualisée entre le gestionnaire global et par entité.
     Variables attendues :
-      - search_route : nom de la route pour les liens de pagination
+      - search_route : nom de la route pour les liens de pagination et de tri
       - with_filtre  : (optionnel) ajoute le critère `filtre` aux paramètres (pages « job »)
       - id_e         : (optionnel) présent uniquement dans le contexte par entité
+      - sort         : (optionnel) Pastell\Model\Daemon\JobSort courant, ou null
 #}
-{% set pagination_params = {
+{% set job_query_params = {
     'job_type': search.type,
     'job_status': search.job_status,
     'search_id_e': search.id_e,
@@ -15,6 +16,9 @@
     |merge(id_e is defined ? {'id_e': id_e} : {})
     |merge(with_filtre|default(false) ? {'filtre': filtre} : {}) %}
 
+{% set pagination_params = job_query_params
+    |merge(sort|default(null) is not null ? {'sort_by': sort.column.value, 'sort_dir': sort.direction.value} : {}) %}
+
 {{ gabarit.SuivantPrecedent(offset, limit, count, path(search_route, pagination_params)) }}
-{% include 'daemon/job_list.html.twig' %}
+{% include 'daemon/job_list.html.twig' with {'search_route': search_route, 'job_query_params': job_query_params} %}
 {{ gabarit.SuivantPrecedent(offset, limit, count, path(search_route, pagination_params)) }}
