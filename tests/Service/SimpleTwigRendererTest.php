@@ -106,6 +106,10 @@ class SimpleTwigRendererTest extends PastellTestCase
         yield 'xpath_array' => [
             '3, 2',"{{ xpath_array( 'aractes' , '//*/@actes:CodeMatiere' ) | join(', ') }}"
         ];
+        yield 'xpath_node_attributes' => [
+            '1234567',
+            "{{ xpath_array('pes_aller', '//BlocBordereau/IdBord')|first.attributes.V }}",
+        ];
         yield 'ls_unique_filter' => [
             '3, 1, 2',"{{ [ 3, 1, 2, 1, 3, 2] | ls_unique | join(', ') }}"
         ];

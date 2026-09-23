@@ -4,13 +4,16 @@
 
 ### Évolutions
 
-- Accès à la base et logique métier sortis des gabarits vers les contrôleurs ; les vues n'exposent plus `sqlQuery`, `objectInstancier` ni `roleUtilisateur` #2569
+- Accès à la base et logique métier sortis des gabarits vers les contrôleurs ; les vues n'exposent plus `sqlQuery`,
+  `objectInstancier` ni `roleUtilisateur` #2569
 
 ### Corrections
 
 - Ajout/suppression d'une annexe TdT : les typologies déjà choisies sont conservées #1184
 - Harmonisation des pages de confirmation de suppressions #2560
 - Mail sécurisé : le passage en non reçu n'est plus repoussé par les renvois (régression 4.1.12) #2571
+- Expressions Twig : la lecture des attributs d'un noeud XML (`node.attributes.V`) est de nouveau autorisée
+  (régression 4.1.22) #2572
 
 ## [4.1.22] - 2026-09-07
 
