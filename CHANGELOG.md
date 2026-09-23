@@ -6,6 +6,7 @@
 
 - Accès à la base et logique métier sortis des gabarits vers les contrôleurs ; les vues n'exposent plus `sqlQuery`,
   `objectInstancier` ni `roleUtilisateur` #2569
+- Logique de réinitialisation de mot de passe extraite de `ConnexionControler` vers un `PasswordResetService` dédié #2569
 
 ### Corrections
 

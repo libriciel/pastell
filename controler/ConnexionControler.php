@@ -1,12 +1,11 @@
 <?php
 
 use Pastell\Mailer\Mailer;
-use Pastell\Service\TokenGenerator;
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\PasswordEntropy;
+use Pastell\Service\Utilisateur\PasswordResetService;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
-use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
@@ -451,8 +450,7 @@ class ConnexionControler extends PastellControler
             $this->redirect('/Connexion/index');
         }
 
-        $utilisateur = new UtilisateurSQL($this->getSQLQuery());
-        $utilisateurInfo = $utilisateur->getInfo($id_u);
+        $utilisateurInfo = $this->getUtilisateur()->getInfo($id_u);
 
         $this->getJournal()->setId($id_u);
         $nom = $utilisateurInfo['prenom'] . ' ' . $utilisateurInfo['nom'];
@@ -518,19 +516,9 @@ class ConnexionControler extends PastellControler
             $this->redirect("/Connexion/changementMdp?mail_verif=$mail_verif_password");
         }
 
-        $utilisateur = new UtilisateurSQL($this->getSQLQuery());
-        $infoUtilisateur = $utilisateur->getInfo($id_u);
-        $utilisateur->setPassword($id_u, $password);
-
-        $utilisateur->reinitPassword($id_u, (new UriSafeTokenGenerator())->generateToken());
-
-        $this->getJournal()->add(
-            Journal::MODIFICATION_UTILISATEUR,
-            $infoUtilisateur['id_e'],
-            0,
-            'mot de passe modifié',
-            "{$infoUtilisateur['login']} ({$infoUtilisateur['id_u']}) a modifié son mot de passe"
-        );
+        $this->getObjectInstancier()
+            ->getInstance(PasswordResetService::class)
+            ->changePassword((int) $id_u, $password);
 
         /* Note : on ne peut pas mettre de message personnalisé pour le moment */
         $this->setLastMessage('Votre mot de passe a été modifié');
@@ -549,19 +537,17 @@ class ConnexionControler extends PastellControler
 
         $login = $recuperateur->get('login');
 
-        $utilisateurListe = new UtilisateurListe($this->getSQLQuery());
+        $utilisateurListe = $this->getObjectInstancier()->getInstance(UtilisateurListe::class);
         $id_u = $utilisateurListe->getByLoginOrEmail($login, $login);
 
         if (!$id_u) {
             $this->setLastError("Aucun compte n'a été trouvé avec ces informations");
             $this->redirect('/Connexion/oublieIdentifiant');
         }
-        $tokenGenerator = new TokenGenerator();
-        $mailVerifPassword = $tokenGenerator->generate();
-
-        $utilisateur = new UtilisateurSQL($this->getSQLQuery());
-        $info = $utilisateur->getInfo($id_u);
-        $utilisateur->reinitPassword($id_u, $mailVerifPassword);
+        $info = $this->getUtilisateur()->getInfo($id_u);
+        $mailVerifPassword = $this->getObjectInstancier()
+            ->getInstance(PasswordResetService::class)
+            ->generateResetToken((int) $id_u);
 
         $link = sprintf(
             '%s/Connexion/changementMdp?mail_verif=%s',
@@ -576,14 +562,6 @@ class ConnexionControler extends PastellControler
         $this->getObjectInstancier()
             ->getInstance(Mailer::class)
             ->send($templatedEmail);
-
-        $this->getJournal()->addActionAutomatique(
-            Journal::MODIFICATION_UTILISATEUR,
-            $info['id_e'],
-            0,
-            'mot de passe modifié',
-            "Procédure initiée pour {$info['email']}"
-        );
 
         $this->setLastMessage('Un email vous a été envoyé avec la suite de la procédure');
         $this->redirect('/Connexion/oublieIdentifiant');
