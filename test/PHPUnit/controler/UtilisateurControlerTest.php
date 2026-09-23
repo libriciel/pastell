@@ -349,6 +349,30 @@ class UtilisateurControlerTest extends ControlerTestCase
         }
     }
 
+    public function testDeleteRolePurgesNotifications(): void
+    {
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->updateDroit(
+            'lecteur',
+            [DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)],
+        );
+        $id_u = $this->getObjectInstancier()->getInstance(UserCreationService::class)
+            ->create('lecteur', 'lecteur@example.org', 'lecteur', 'lecteur', 1);
+        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole($id_u, 'lecteur', 1);
+
+        $notification = $this->getObjectInstancier()->getInstance(Notification::class);
+        $notification->add($id_u, 1, 'actes-generique', Notification::ALL_TYPE, false);
+        static::assertCount(1, $notification->getAll($id_u));
+
+        $this->setPostInfo(['id_u' => $id_u, 'role' => 'lecteur', 'id_e' => 1]);
+        try {
+            $this->getUtilisateurControler()->supprimeRoleAction();
+        } catch (LastMessageException) {
+            /** Nothing to do */
+        }
+
+        static::assertEmpty($notification->getAll($id_u));
+    }
+
     /**
      * @throws UnrecoverableException
      * @throws NotFoundException

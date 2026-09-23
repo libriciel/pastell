@@ -88,6 +88,16 @@ class NotificationTest extends PastellTestCase
         static::assertSame(1, $all_info[0]['daily_digest']);
     }
 
+    public function testRemoveForUserAndEntite(): void
+    {
+        $this->notification->add(1, 1, 'actes-generique', 'send-tdt', false);
+        $this->notification->add(1, 2, 'actes-generique', 'send-tdt', false);
+        $this->notification->add(2, 1, 'actes-generique', 'send-tdt', false);
+        $this->notification->removeAllForUserAndEntite(1, 1);
+        static::assertCount(1, $this->notification->getAll(1));
+        static::assertCount(1, $this->notification->getAll(2));
+    }
+
     public function testDisabledUser(): void
     {
         $this->notification->add(1, 1, 'actes-generique', 'send-tdt', false);

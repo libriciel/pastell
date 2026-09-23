@@ -110,4 +110,12 @@ DELETE FROM notification WHERE id_u=?;
 SQL;
         $this->query($sql, $id_u);
     }
+
+    public function removeAllForUserAndEntite(int $id_u, int $id_e): void
+    {
+        $sql = <<<SQL
+DELETE FROM notification WHERE id_u=? AND id_e=?
+SQL;
+        $this->query($sql, $id_u, $id_e);
+    }
 }
