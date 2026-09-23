@@ -389,6 +389,7 @@ class UtilisateurControler extends PastellControler
         );
         $this->setViewParameter('info', $info);
         $this->setViewParameter('id_u', $id_u);
+        $this->setViewParameter('roleInfo', $this->getRoleUtilisateur()->getRole($id_u));
         $arbre = $this->getRoleUtilisateur()
             ->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
         $this->setViewParameter('arbre', $arbre);
@@ -407,7 +408,9 @@ class UtilisateurControler extends PastellControler
     {
         $result = $this->getNotification()->getAll($id_u);
         foreach ($result as $i => $line) {
-            $action = $this->getDocumentTypeFactory()->getFluxDocumentType($line['type'])->getAction();
+            $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($line['type']);
+            $result[$i]['type_name'] = $documentType->getName();
+            $action = $documentType->getAction();
             foreach ($line['action'] as $j => $action_id) {
                 $result[$i]['action'][$j] = $action->getActionName($action_id);
             }

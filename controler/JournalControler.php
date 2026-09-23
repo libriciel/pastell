@@ -91,6 +91,7 @@ class JournalControler extends PastellControler
             $this->setLastError("Événement introuvable");
             $this->redirect("Journal/index?id_e={$id_e}&type={$type}&id_d={$id_d}&offset={$offset}");
         }
+        $info['type_string'] = $this->getJournal()->getTypeAsString($info['type']);
         $this->setViewParameter('info', $info);
         $this->checkDroitFor($info['id_e'], DroitService::DROIT_JOURNAL, DroitType::LECTURE);
 
@@ -196,22 +197,25 @@ class JournalControler extends PastellControler
         }
 
         $this->setViewParameter('limit', 20);
-        $this->setViewParameter(
-            'all',
-            $this->getJournal()->getAll(
-                $this->getViewParameterByKey('id_e'),
-                $this->getViewParameterByKey('type'),
-                $this->getViewParameterByKey('id_d'),
-                $this->getViewParameterByKey('id_u'),
-                $this->getViewParameterByKey('offset'),
-                $this->getViewParameterByKey('limit'),
-                $this->getViewParameterByKey('recherche'),
-                $this->getViewParameterByKey('date_debut'),
-                $this->getViewParameterByKey('date_fin'),
-                false,
-                false,
-            )
+        $journal = $this->getJournal();
+        $all = $journal->getAll(
+            $this->getViewParameterByKey('id_e'),
+            $this->getViewParameterByKey('type'),
+            $this->getViewParameterByKey('id_d'),
+            $this->getViewParameterByKey('id_u'),
+            $this->getViewParameterByKey('offset'),
+            $this->getViewParameterByKey('limit'),
+            $this->getViewParameterByKey('recherche'),
+            $this->getViewParameterByKey('date_debut'),
+            $this->getViewParameterByKey('date_fin'),
+            false,
+            false,
         );
+        foreach ($all as &$ligne) {
+            $ligne['type_string'] = $journal->getTypeAsString($ligne['type']);
+        }
+        unset($ligne);
+        $this->setViewParameter('all', $all);
         $this->setViewParameter('liste_collectivite', $liste_collectivite);
 
         $this->setNavigationInfo($id_e, "Journal/index?a=a");

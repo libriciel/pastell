@@ -101,7 +101,7 @@ $exportUrl = sprintf(
                         <a href='<?php hecho($journalDetailUrl); ?>'><?php echo $ligne['id_j']?></a>
                     </td>
                     <td><?php echo time_iso_to_fr($ligne['date']) ?></td>
-                    <td><?php echo $this->getJournal()->getTypeAsString($ligne['type']); ?></td>
+                    <td><?php echo $ligne['type_string']; ?></td>
                     <td>
                         <a href='Entite/detail?id_e=<?php echo $ligne['id_e'] ?>'>
                             <?php hecho($ligne['denomination'] ?? $ligne['id_e'])?>

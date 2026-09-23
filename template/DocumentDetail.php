@@ -7,7 +7,8 @@
  * @var string $id_d
  * @var DonneesFormulaire $donneesFormulaire
  * @var Authentification $authentification
- * @var DocumentEmail $documentEmail
+ * @var array $infoDocumentEmail
+ * @var array $reponse_column
  * @var DocumentActionEntite $documentActionEntite
  * @var ActionPossible $actionPossible
  * @var DocumentType $documentType
@@ -96,20 +97,7 @@ $backTitle = sprintf('Liste des "%s" de %s', $documentType->getName(), $infoEnti
 </div>
 
 <?php
-$infoDocumentEmail = $documentEmail->getInfo($id_d);
 if ($infoDocumentEmail) :
-    $reponse_column = [];
-    foreach ($infoDocumentEmail as $i => $infoEmail) {
-        if ($infoEmail['reponse']) {
-            $reponse = json_decode($infoEmail['reponse']);
-            foreach ($reponse as $reponse_key => $reponse_value) {
-                if (!in_array($reponse_key, $reponse_column)) {
-                    $reponse_column[] = $reponse_key;
-                }
-                $infoDocumentEmail[$i][$reponse_key] = $reponse_value;
-            }
-        }
-    }
     ?>
     <div class="box">
         <h2>Utilisateurs destinataires du message</h2>

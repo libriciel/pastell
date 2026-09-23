@@ -2,12 +2,13 @@
 
 /**
  * @var Gabarit $this
+ * @var int $id_e
  * @var array $infoEntite
  * @var array $listGroupe
- * @var AnnuaireRoleSQL $annuaireRole
  * @var bool $annuaire_edition
  * @var array $groupe_herited
  * @var array $arbre
+ * @var array $allRole
  */
 ?>
 <a class='btn btn-link' href='MailSec/annuaire?id_e=<?php echo $id_e ?>'><i class="fa fa-arrow-left"></i>&nbsp;Voir la liste des contacts</a>
@@ -28,7 +29,7 @@
         <th>Partagé ?</th>
     </tr>
 <?php foreach ($listGroupe as $groupe) :
-    $utilisateur = $annuaireRole->getUtilisateur($groupe['id_r']);
+    $utilisateur = $groupe['utilisateur'];
     $nbUtilisateur = count($utilisateur);
     $r = [];
     foreach ($utilisateur as $u) {
@@ -80,10 +81,6 @@
             <tr>
                 <th class="w200">Rôle</th>
                 <td>
-                    <?php
-                        $roleSQL = new RoleSQL($sqlQuery);
-                        $allRole = $roleSQL->getAllRole();
-                    ?>
                     <select name='role' class="form-select col-md-4">
                         <option value=''>...</option>
                         <?php foreach ($allRole as $role) : ?>
@@ -127,7 +124,7 @@
         <th>Contact</th>
     </tr>
     <?php foreach ($groupe_herited as $groupe) :
-        $utilisateur = $annuaireRole->getUtilisateur($groupe['id_r']);
+        $utilisateur = $groupe['utilisateur'];
         $nbUtilisateur = count($utilisateur);
         $r = [];
         foreach ($utilisateur as $u) {

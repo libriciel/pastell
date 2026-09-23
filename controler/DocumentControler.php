@@ -58,6 +58,35 @@ class DocumentControler extends PastellControler
         return $this->getInstance(DocumentActionEntite::class);
     }
 
+    private function enrichListDocumentForDisplay(array $listDocument): array
+    {
+        $documentTypeFactory = $this->getDocumentTypeFactory();
+        $documentIndexSQL = $this->getInstance(DocumentIndexSQL::class);
+        foreach ($listDocument as &$document) {
+            $document['documentType'] = $documentTypeFactory->getFluxDocumentType($document['type']);
+            $document['index'] = $documentIndexSQL->getAll($document['id_d']);
+        }
+        unset($document);
+        return $listDocument;
+    }
+
+    private function getDocumentEmailForDisplay(string $id_d): array
+    {
+        $infoDocumentEmail = $this->getInstance(DocumentEmail::class)->getInfo($id_d);
+        $reponse_column = [];
+        foreach ($infoDocumentEmail as $i => $infoEmail) {
+            if ($infoEmail['reponse']) {
+                foreach (json_decode($infoEmail['reponse']) as $reponse_key => $reponse_value) {
+                    if (!in_array($reponse_key, $reponse_column)) {
+                        $reponse_column[] = $reponse_key;
+                    }
+                    $infoDocumentEmail[$i][$reponse_key] = $reponse_value;
+                }
+            }
+        }
+        return [$infoDocumentEmail, $reponse_column];
+    }
+
     /**
      * @throws LastMessageException
      * @throws LastErrorException
@@ -163,7 +192,9 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('theAction', $documentType->getAction());
         $this->setViewParameter('documentEntite', $this->getDocumentEntite());
         $this->setViewParameter('my_role', $this->getDocumentEntite()->getRole($id_e, $id_d));
-        $this->setViewParameter('documentEmail', $this->getInstance(DocumentEmail::class));
+        [$infoDocumentEmail, $reponse_column] = $this->getDocumentEmailForDisplay($id_d);
+        $this->setViewParameter('infoDocumentEmail', $infoDocumentEmail);
+        $this->setViewParameter('reponse_column', $reponse_column);
         $this->setViewParameter('documentActionEntite', $this->getDocumentActionEntite());
 
         $this->setViewParameter('next_action_automatique', $this->getViewParameterByKey('theAction')->getActionAutomatique($true_last_action));
@@ -335,7 +366,6 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('theAction', $documentType->getAction());
         $this->setViewParameter('documentEntite', $this->getDocumentEntite());
         $this->setViewParameter('my_role', $this->getDocumentEntite()->getRole($id_e, $id_d));
-        $this->setViewParameter('documentEmail', $this->getInstance(DocumentEmail::class));
         $this->setViewParameter('documentActionEntite', $this->getDocumentActionEntite());
         $this->setViewParameter('action_url', 'Document/doEdition');
         $this->setViewParameter('recuperation_fichier_url', "Document/recuperationFichier?id_d=$id_d&id_e=$id_e");
@@ -402,7 +432,7 @@ class DocumentControler extends PastellControler
 
         if ($id_e) {
             $listDocument = $this->getDocumentActionEntite()->getListDocumentByEntite($id_e, $liste_type, $offset, $limit, $search);
-            $this->setViewParameter('listDocument', $listDocument);
+            $this->setViewParameter('listDocument', $this->enrichListDocumentForDisplay($listDocument));
             $this->setViewParameter('count', $this->getDocumentActionEntite()->getNbDocumentByEntite($id_e, $liste_type, $search));
             $this->setViewParameter('type_list', $this->getAllType($listDocument));
         }
@@ -553,7 +583,7 @@ class DocumentControler extends PastellControler
             $indexedFieldValue,
             $sens_tri
         );
-        $this->setViewParameter('listDocument', $listDocument);
+        $this->setViewParameter('listDocument', $this->enrichListDocumentForDisplay($listDocument));
 
         $this->setViewParameter('url_tri', "Document/list?id_e=$id_e&type=$type&search=$search&filtre=$filtre");
 
@@ -650,7 +680,7 @@ class DocumentControler extends PastellControler
             $this->setLastError($e->getMessage());
             $this->redirect('');
         }
-        $this->setViewParameter('listDocument', $listDocument);
+        $this->setViewParameter('listDocument', $this->enrichListDocumentForDisplay($listDocument));
 
         $url_tri = sprintf(
             'Document/search?id_e=%s&search=%s&type=%s&lastetat=%s&last_state_begin=%s&last_state_end=%s' .
