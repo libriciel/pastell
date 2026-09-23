@@ -75,6 +75,36 @@ final class UserUpdateService
         return $this->addToJournal($infoToRetrieve, $oldInfo, $newInfo, $entityId, $login, $userId);
     }
 
+    public function enable(int $userId): string
+    {
+        $info = $this->utilisateurSQL->getInfo($userId);
+        $this->utilisateurSQL->enable($userId);
+        $message = "L'utilisateur {$info['login']} a été activé";
+        $this->journal->add(
+            Journal::MODIFICATION_UTILISATEUR,
+            $info['id_e'],
+            Journal::NO_ID_D,
+            'activation',
+            $message,
+        );
+        return $message;
+    }
+
+    public function disable(int $userId): string
+    {
+        $info = $this->utilisateurSQL->getInfo($userId);
+        $this->utilisateurSQL->disable($userId);
+        $message = "L'utilisateur {$info['login']} a été désactivé";
+        $this->journal->add(
+            Journal::MODIFICATION_UTILISATEUR,
+            $info['id_e'],
+            Journal::NO_ID_D,
+            'désactivation',
+            $message,
+        );
+        return $message;
+    }
+
     /**
      * @throws ConflictException
      * @throws UnrecoverableException

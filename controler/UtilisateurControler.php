@@ -970,15 +970,7 @@ class UtilisateurControler extends PastellControler
         $id_u = $this->getPostInfo()->get('id_u');
         $userInfo = $this->getUtilisateur()->getInfo($id_u);
         $this->checkDroitFor($userInfo['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
-        $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->enable($id_u);
-        $message = "L'utilisateur {$userInfo['login']} a été activé";
-        $this->getJournal()->add(
-            Journal::MODIFICATION_UTILISATEUR,
-            $userInfo['id_e'],
-            Journal::NO_ID_D,
-            'activation',
-            $message
-        );
+        $message = $this->getObjectInstancier()->getInstance(UserUpdateService::class)->enable((int) $id_u);
         $this->setLastMessage($message);
         $this->redirect("/Utilisateur/detail?id_u=$id_u");
     }
@@ -993,15 +985,7 @@ class UtilisateurControler extends PastellControler
         $userInfo = $this->getUtilisateur()->getInfo($id_u);
         $this->checkDroitFor($userInfo['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
         $this->checkSelfDisable($id_u);
-        $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->disable($id_u);
-        $message = "L'utilisateur {$userInfo['login']} a été désactivé";
-        $this->getJournal()->add(
-            Journal::MODIFICATION_UTILISATEUR,
-            $userInfo['id_e'],
-            Journal::NO_ID_D,
-            'désactivation',
-            $message
-        );
+        $message = $this->getObjectInstancier()->getInstance(UserUpdateService::class)->disable((int) $id_u);
         $this->setLastMessage($message);
         $this->redirect("/Utilisateur/detail?id_u=$id_u");
     }
