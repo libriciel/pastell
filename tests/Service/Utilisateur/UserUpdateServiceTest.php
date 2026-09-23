@@ -56,4 +56,18 @@ class UserUpdateServiceTest extends PastellTestCase
         static::assertArrayHasKey('new@example.com', $all);
         static::assertArrayNotHasKey('eric@sigmalis.com', $all);
     }
+
+    public function testDisableThenEnable(): void
+    {
+        $utilisateurSQL = $this->getObjectInstancier()->getInstance(UtilisateurSQL::class);
+        $service = $this->getObjectInstancier()->getInstance(UserUpdateService::class);
+
+        $message = $service->disable(2);
+        static::assertFalse($utilisateurSQL->isEnabled(2));
+        static::assertStringContainsString('a été désactivé', $message);
+
+        $message = $service->enable(2);
+        static::assertTrue($utilisateurSQL->isEnabled(2));
+        static::assertStringContainsString('a été activé', $message);
+    }
 }
