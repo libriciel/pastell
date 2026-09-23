@@ -20,7 +20,7 @@ class SimpleTwigRendererExemple
                 '',
                 [
                     ['acte_numero' => 42],
-                    42
+                    '42'
                 ]
             ],
             'Mélange constante et élément du formulaire' => [

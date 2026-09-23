@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pastell\Tests\Service;
 
 use DonneesFormulaireException;
@@ -25,12 +27,12 @@ class SimpleTwigRendererTest extends PastellTestCase
     {
         $xpath = '//*[local-name()="ActeRecu"]/@*[local-name()="Date"]';
 
-        yield ["",""];
-        yield ["constante","constante"];
-        yield ["Services d'aide et d'accompagnement à domicile (SAAD)","{{ variable }}"];
+        yield ['', ''];
+        yield ['constante', 'constante'];
+        yield ["Services d'aide et d'accompagnement à domicile (SAAD)", '{{ variable }}'];
         yield [
-            "Arrêté individuel Bond James (matricule 007)",
-            "Arrêté individuel {{ nom_agent }} {{ prenom_agent}} (matricule {{ matricule_agent }})",
+            'Arrêté individuel Bond James (matricule 007)',
+            'Arrêté individuel {{ nom_agent }} {{ prenom_agent}} (matricule {{ matricule_agent }})',
         ];
         yield [
             'foo 12 buz',
@@ -62,7 +64,8 @@ class SimpleTwigRendererTest extends PastellTestCase
             "{{ jsonpath_array('test_json', '$.store.book[*]')|first.author }}",
         ];
         yield [
-            '',"{{ not_existing_value }}"
+            '',
+            '{{ not_existing_value }}',
         ];
         yield [
             'foo  bar','foo {{ xpath("pes_aller","//NotExistingPath") }} bar'
@@ -95,7 +98,8 @@ class SimpleTwigRendererTest extends PastellTestCase
             'true','{% if (csvpath("test_csv_with_semicolon",0,1,";")  == "Michel") %}true{% else %}false{% endif %}'
         ];
         yield 'csvpath_in_false_expression' => [
-            'false','{% if (csvpath("test_csv_with_semicolon",0,1,";")  == "Jean-Pierre") %}true{% else %}false{% endif %}'
+            'false',
+            '{% if (csvpath("test_csv_with_semicolon",0,1,";")  == "Jean-Pierre") %}true{% else %}false{% endif %}',
         ];
         yield 'xpath_with_namespaces' => [
             '2017-12-07',"{{ xpath( 'aractes' , '$xpath' ) }}"
@@ -114,25 +118,24 @@ class SimpleTwigRendererTest extends PastellTestCase
             '3, 1, 2',"{{ [ 3, 1, 2, 1, 3, 2] | ls_unique | join(', ') }}"
         ];
         yield 'test_other_metadata' => [
-            'Eric Lyon',"{{ pa_user_name }} {{ pa_entity_name }}"
+            'Eric Lyon',
+            '{{ pa_user_name }} {{ pa_entity_name }}',
         ];
         yield 'tests_are_allowed' => [
             'defined,empty,null,even,same,divisible,iterable,default',
-            "{{ nom_agent is defined ? 'defined' }},{{ '' is empty ? 'empty' }},{{ not_existing_value is null ? 'null' }},"
-            . "{{ 2 is even ? 'even' }},{{ 1 is same as(1) ? 'same' }},{{ 4 is divisible by(2) ? 'divisible' }},"
-            . "{{ [] is iterable ? 'iterable' }},{{ not_existing_value ?? 'default' }}",
+            "{{ nom_agent is defined ? 'defined' }},{{ '' is empty ? 'empty' }},"
+            . "{{ not_existing_value is null ? 'null' }},{{ 2 is even ? 'even' }},{{ 1 is same as(1) ? 'same' }},"
+            . "{{ 4 is divisible by(2) ? 'divisible' }},{{ [] is iterable ? 'iterable' }},"
+            . "{{ not_existing_value ?? 'default' }}",
         ];
     }
 
     /**
-     * @param string $expected_result
-     * @param $template
-     * @throws DonneesFormulaireException
-     * @throws LoaderError
-     * @throws SyntaxError
      * @dataProvider renderDataProvider
+     * @throws UnrecoverableException
+     * @throws DonneesFormulaireException
      */
-    public function testRender(string $expected_result, $template)
+    public function testRender(string $expected_result, string $template): void
     {
         $simpleTwigRenderer = new SimpleTwigRenderer();
 
@@ -149,37 +152,37 @@ class SimpleTwigRendererTest extends PastellTestCase
         $donneesFormulaire->addFileFromCopy(
             'pes_aller',
             'pes.xml',
-            __DIR__ . "/fixtures/HELIOS_SIMU_ALR2_1595923133_1646706116.xml"
+            __DIR__ . '/fixtures/HELIOS_SIMU_ALR2_1595923133_1646706116.xml'
         );
         $donneesFormulaire->addFileFromCopy(
             'test_json',
             'test_json.json',
-            __DIR__ . "/fixtures/test.json"
+            __DIR__ . '/fixtures/test.json'
         );
 
         $donneesFormulaire->addFileFromCopy(
             'test_csv_with_comma',
             'test_csv_with_comma.csv',
-            __DIR__ . "/fixtures/test-with-coma.csv"
+            __DIR__ . '/fixtures/test-with-coma.csv'
         );
 
         $donneesFormulaire->addFileFromCopy(
             'test_csv_with_semicolon',
             'test_csv_with_semicolon.csv',
-            __DIR__ . "/fixtures/test-with-semicolon.csv"
+            __DIR__ . '/fixtures/test-with-semicolon.csv'
         );
         $donneesFormulaire->addFileFromCopy(
             'aractes',
             'aractes.xml',
-            __DIR__ . "/fixtures/aractes.xml"
+            __DIR__ . '/fixtures/aractes.xml'
         );
 
         $other_metadata = [
-          'pa_user_name' => 'Eric',
-          'pa_entity_name' => 'Lyon'
+            'pa_user_name' => 'Eric',
+            'pa_entity_name' => 'Lyon'
         ];
 
-        $this->assertEquals(
+        static::assertSame(
             $expected_result,
             $simpleTwigRenderer->render(
                 $template,
@@ -189,11 +192,7 @@ class SimpleTwigRendererTest extends PastellTestCase
         );
     }
 
-    /**
-     * @throws LoaderError
-     * @throws SyntaxError
-     */
-    public function testRenderWhenNotATwigExpression()
+    public function testRenderWhenNotATwigExpression(): void
     {
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
 
@@ -207,10 +206,10 @@ Message d\'erreur : Unclosed "variable".<br />
 <b>1. {{dsfdsf </b><em>^^^ Unclosed "variable".</em><br />
 <br />
 ');
-        $simpleTwigRenderer->render("{{dsfdsf ", $donneesFormulaire);
+        $simpleTwigRenderer->render('{{dsfdsf ', $donneesFormulaire);
     }
 
-    public function testRenderWhenARuntimeExpressionIsThrown()
+    public function testRenderWhenARuntimeExpressionIsThrown(): void
     {
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
 
@@ -228,32 +227,31 @@ Message d\'erreur : Unclosed "variable".<br />
      * @throws LoaderError
      * @throws SyntaxError
      */
-    public function testRenderWhenNotAXPathExpression()
+    public function testRenderWhenNotAXPathExpression(): void
     {
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
         $donneesFormulaire->addFileFromCopy(
             'pes_aller',
             'pes.xml',
-            __DIR__ . "/fixtures/HELIOS_SIMU_ALR2_1595923133_1646706116.xml"
+            __DIR__ . '/fixtures/HELIOS_SIMU_ALR2_1595923133_1646706116.xml'
         );
         $simpleTwigRenderer = new SimpleTwigRenderer();
         $this->expectException(UnrecoverableException::class);
-        $this->expectExceptionMessage("xpath(): Invalid expression");
+        $this->expectExceptionMessage('xpath(): Invalid expression');
         $simpleTwigRenderer->render("{{ xpath('pes_aller','/////EnTetePES/CodBud/@V') }}", $donneesFormulaire);
     }
 
     /**
-     * @throws LoaderError
-     * @throws SyntaxError
+     * @throws UnrecoverableException
      * @throws Exception
      */
-    public function testXPathOnNonXMLFile()
+    public function testXPathOnNonXMLFile(): void
     {
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
         $donneesFormulaire->addFileFromData(
             'pes_aller',
             'pes.xml',
-            "toto"
+            'toto'
         );
         $simpleTwigRenderer = new SimpleTwigRenderer();
         $this->expectException(UnrecoverableException::class);
@@ -262,42 +260,42 @@ Message d\'erreur : Unclosed "variable".<br />
     }
 
     /**
-     * @throws LoaderError
-     * @throws SyntaxError
+     * @throws UnrecoverableException
      * @throws NotFoundException
      */
-    public function testRenderWithFormulaire()
+    public function testRenderWithFormulaire(): void
     {
         $id_d = $this->createDocument('actes-generique')['id_d'];
 
-        $template1 = "Conseil municipal de la ville TRUC - Titre : {{ titre }} - Date : {{ date_de_lacte }} - select {{ acte_nature }}";
+        $template1 = 'Conseil municipal de la ville TRUC - Titre : {{ titre }} - Date : {{ date_de_lacte }} - '
+            . 'select {{ acte_nature }}';
 
         $this->configureDocument($id_d, [
-            'titre' => "toto",
+            'titre' => 'toto',
             'acte_nature' => '3',
             'date_de_lacte' => '2020-12-25',
             'classification' => '8.2',
-            'objet' => $template1
+            'objet' => $template1,
         ]);
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
 
         $simpleTwigRenderer = new SimpleTwigRenderer();
-        $this->assertEquals(
-            3,
-            $simpleTwigRenderer->render("{{ acte_nature }}", $donneesFormulaire)
+        static::assertSame(
+            '3',
+            $simpleTwigRenderer->render('{{ acte_nature }}', $donneesFormulaire)
         );
-        $this->assertEquals(
-            "Actes individuels",
+        static::assertSame(
+            'Actes individuels',
             $simpleTwigRenderer->render("{{ select_value('acte_nature') }}", $donneesFormulaire)
         );
 
-        $this->assertEquals(
+        static::assertSame(
             '2020-12-25',
-            $simpleTwigRenderer->render("{{ date_de_lacte }}", $donneesFormulaire)
+            $simpleTwigRenderer->render('{{ date_de_lacte }}', $donneesFormulaire)
         );
-        $this->assertEquals(
-            "Conseil municipal de la ville TRUC - Titre :  - Date : 2020-12-25 - select 3",
+        static::assertSame(
+            'Conseil municipal de la ville TRUC - Titre :  - Date : 2020-12-25 - select 3',
             $simpleTwigRenderer->render($donneesFormulaire->get('objet'), $donneesFormulaire)
         );
     }
@@ -312,16 +310,15 @@ Message d\'erreur : Unclosed "variable".<br />
     }
 
     /**
-     * @throws LoaderError
-     * @throws SyntaxError
      * @dataProvider exempleProvider
+     * @throws UnrecoverableException
      */
-    public function testExemple(string $expression, array $data)
+    public function testExemple(string $expression, array $data): void
     {
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
         $donneesFormulaire->setTabData($data[0]);
         $simpleTwigRenderer = new SimpleTwigRenderer();
-        $this->assertEquals(
+        static::assertSame(
             $data[1],
             $simpleTwigRenderer->render($expression, $donneesFormulaire)
         );
@@ -406,7 +403,7 @@ Message d\'erreur : Unclosed "variable".<br />
     public function testRenderCanNotCallAMethodOnAnXMLNode(): void
     {
         $written_file = '/tmp/pastell-sandbox-escape.xml';
-        $this->assertFileDoesNotExist($written_file);
+        static::assertFileDoesNotExist($written_file);
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
         $donneesFormulaire->addFileFromCopy(
@@ -423,8 +420,11 @@ Message d\'erreur : Unclosed "variable".<br />
             );
             $this->fail('The asXML() method should not be allowed');
         } catch (UnrecoverableException $e) {
-            $this->assertStringContainsString('"asxml" method on a "SimpleXMLElement" object is not allowed', $e->getMessage());
+            static::assertStringContainsString(
+                '"asxml" method on a "SimpleXMLElement" object is not allowed',
+                $e->getMessage()
+            );
         }
-        $this->assertFileDoesNotExist($written_file);
+        static::assertFileDoesNotExist($written_file);
     }
 }
