@@ -18,6 +18,9 @@ final class PasswordResetService
     ) {
     }
 
+    /**
+     * @throws Exception
+     */
     public function changePassword(int $id_u, string $password): void
     {
         $info = $this->utilisateurSQL->getInfo($id_u);
