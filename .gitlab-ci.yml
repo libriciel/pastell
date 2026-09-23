@@ -247,10 +247,10 @@ deploy_dev:
     - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-    - scp ./docker/compose.yaml gitlab@pastell-4-0.dev.libriciel.net:/data/docker-file/docker-compose.yml
+    - scp ./docker/compose.yaml svc-pastell-gitlabci@pastell-4-0.dev.libriciel.net:/data/docker-file/docker-compose.yml
     - echo "$DEV_ENV_FILE_CONTENT" > /tmp/.env
-    - scp /tmp/.env gitlab@pastell-4-0.dev.libriciel.net:/data/docker-file/
-    - ssh -tt gitlab@pastell-4-0.dev.libriciel.net "docker login -u gitlab-ci-token -p '$CI_JOB_TOKEN' $CI_REGISTRY && cd /data/docker-file/ && docker-compose pull && docker-compose up -d"
+    - scp /tmp/.env svc-pastell-gitlabci@pastell-4-0.dev.libriciel.net:/data/docker-file/
+    - ssh -tt svc-pastell-gitlabci@pastell-4-0.dev.libriciel.net "docker login -u gitlab-ci-token -p '$CI_JOB_TOKEN' $CI_REGISTRY && cd /data/docker-file/ && docker-compose pull && docker-compose up -d"
     - curl -i -X POST -d "$PAYLOAD" $MATTERMOST_WEBHOOK
 
 generate-sbom-compose:
