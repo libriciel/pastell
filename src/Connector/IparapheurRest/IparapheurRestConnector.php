@@ -508,7 +508,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
             if ($bordereauPath !== null) {
                 $fichier = new Fichier();
                 $fichier->filename = basename($bordereauPath);
-                $fichier->content = file_get_contents($bordereauPath);
+                $fichier->content = $filesMap[$fichier->filename]['content'] ?? file_get_contents($bordereauPath);
                 $info['bordereau'] = $fichier;
                 unset($filesMap[$fichier->filename]);
             }
