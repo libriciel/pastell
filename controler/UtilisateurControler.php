@@ -5,6 +5,7 @@ use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\FeatureToggle\CertificateAuthentication;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\Service\Notification\NotificationService;
 use Pastell\Service\PasswordEntropy;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UserTokenService;
@@ -575,6 +576,7 @@ class UtilisateurControler extends PastellControler
     /**
      * @throws LastErrorException
      * @throws LastMessageException
+     * @throws NotFoundException
      */
     public function supprimeRoleAction(): never
     {
@@ -584,9 +586,9 @@ class UtilisateurControler extends PastellControler
         $id_e = $recuperateur->getInt('id_e', 0);
         $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
         $this->getRoleUtilisateur()->removeRole($id_u, $role, $id_e);
-        if (!$this->getDroitService()->hasDroitFor((int) $id_u, $id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE)) {
-            $this->getNotification()->removeAllForUserAndEntite((int) $id_u, $id_e);
-        }
+        $this->getObjectInstancier()
+            ->getInstance(NotificationService::class)
+            ->purgeIfNoAccess((int) $id_u, $id_e);
         $role_info = $this->getRoleSQL()->getInfo($role);
         $utilisateur_info = $this->getUtilisateur()->getInfo($id_u);
 
