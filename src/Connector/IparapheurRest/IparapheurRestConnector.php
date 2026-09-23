@@ -503,14 +503,14 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                 }
             }
 
-            $entity = $premis->getIntellectualEntity();
-            $bordereauFilename = $entity->originalName . '_bordereau.pdf';
-            if (isset($filesMap[$bordereauFilename])) {
+            $bordereauMatches = glob($tmp_folder . '/*_bordereau.pdf') ?: [];
+            $bordereauPath = $bordereauMatches[0] ?? null;
+            if ($bordereauPath !== null) {
                 $fichier = new Fichier();
-                $fichier->filename = $bordereauFilename;
-                $fichier->content = $filesMap[$bordereauFilename]['content'];
+                $fichier->filename = basename($bordereauPath);
+                $fichier->content = file_get_contents($bordereauPath);
                 $info['bordereau'] = $fichier;
-                unset($filesMap[$bordereauFilename]);
+                unset($filesMap[$fichier->filename]);
             }
 
             foreach ($premis->object as $object) {
