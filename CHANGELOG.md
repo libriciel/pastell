@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.0.10] - 2026-10-05
+
+### Corrections
+
+- Mail sécurisé : le passage en non reçu n'est plus repoussé par les renvois (régression 5.0.6) #2574
+
 ## [5.0.9] - 2026-09-07
 
 ### Ajouts
@@ -16,7 +22,6 @@
 - À chaque exécution de l'action import-facture, le fichier yml de l'instance du connecteur CPP était modifié #2544
 - Un connecteur CPP non configuré n'est plus masqué de la liste des associations de connecteurs globaux #2558
 - Le container `flow` ne démarrait plus #2545
-- Mail sécurisé : le passage en non reçu n'est plus repoussé par les renvois (régression 5.0.6) #2574
 
 ### Sécurité
 
