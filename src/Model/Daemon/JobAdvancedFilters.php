@@ -19,6 +19,7 @@ final readonly class JobAdvancedFilters
         public string $id_e = '',
         public string $include_children = '',
         public array $id_verrou = [],
+        public string $late = '',
     ) {
     }
 
@@ -30,6 +31,7 @@ final readonly class JobAdvancedFilters
             id_e: self::toScalarString($recuperateur->get('search_id_e', '')),
             include_children: self::toScalarString($recuperateur->get('include_children', '')),
             id_verrou: (array)$recuperateur->get('id_verrou', []),
+            late: self::toScalarString($recuperateur->get('late', '')),
         );
     }
 
