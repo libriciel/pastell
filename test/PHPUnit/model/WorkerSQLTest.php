@@ -31,7 +31,7 @@ class WorkerSQLTest extends PastellTestCase
     {
         $id_worker = $this->workerSQL->create(42);
         $worker = $this->workerSQL->getWorker($id_worker);
-        static::assertEquals(42, $worker->pid);
+        static::assertSame(42, $worker->pid);
     }
 
     public function testError(): void
@@ -39,7 +39,7 @@ class WorkerSQLTest extends PastellTestCase
         $id_worker = $this->workerSQL->create(42);
         $this->workerSQL->error($id_worker, "Message d'erreur");
         $worker = $this->workerSQL->getWorker($id_worker);
-        static::assertEquals(1, $worker->termine);
+        static::assertSame(1, $worker->termine);
     }
 
     public function testRunningWorkerInfo(): void
@@ -47,7 +47,7 @@ class WorkerSQLTest extends PastellTestCase
         $id_worker = $this->workerSQL->create(42);
         $this->workerSQL->attachJob($id_worker, 12);
         $worker = $this->workerSQL->getRunningWorker(12);
-        static::assertEquals(12, $worker->id_job);
+        static::assertSame(12, $worker->id_job);
     }
 
     public function testSuccess(): void
@@ -61,7 +61,7 @@ class WorkerSQLTest extends PastellTestCase
     {
         $id_worker = $this->workerSQL->create(42);
         $workers = $this->workerSQL->getAllRunningWorker();
-        static::assertEquals($id_worker, $workers[0]->id_worker);
+        static::assertSame((int)$id_worker, $workers[0]->id_worker);
     }
 
     /**
@@ -88,25 +88,25 @@ class WorkerSQLTest extends PastellTestCase
     /**
      * @throws Exception
      */
-    private function createJob(): string
+    private function createJob(?string $next_try = null): string
     {
         $job = new Job();
         $job->type = Job::TYPE_DOCUMENT;
         $job->etat_source = 'source';
         $job->etat_cible = 'cible';
-        $job->next_try = date('Y-M-d', strtotime('yesterday'));
+        $job->next_try = $next_try ?? date('Y-M-d', strtotime('yesterday'));
         return $this->jobQueueSQL->createJob($job);
     }
 
     /**
      * @throws Exception
      */
-    private function launchWorker(): bool|string
+    private function launchWorker(): int
     {
         $id_job = $this->createJob();
         $id_worker = $this->workerSQL->create(42);
         $this->workerSQL->attachJob($id_worker, $id_job);
-        return $id_worker;
+        return (int)$id_worker;
     }
 
     public function testGetJobToLauch(): void
@@ -115,7 +115,7 @@ class WorkerSQLTest extends PastellTestCase
         $id_worker = $this->workerSQL->create(42);
 
         $id_job_list = $this->workerSQL->getJobsToLaunch(5, $this->globalDaemon->id_daemon);
-        static::assertEquals([$id_job], $id_job_list);
+        static::assertSame([(int)$id_job], $id_job_list);
 
         $this->workerSQL->attachJob($id_worker, $id_job);
         static::assertEmpty($this->workerSQL->getJobsToLaunch(5, $this->globalDaemon->id_daemon));
@@ -138,14 +138,14 @@ class WorkerSQLTest extends PastellTestCase
     {
         $id_worker = $this->launchWorker();
         $info = $this->workerSQL->getActif();
-        static::assertEquals($id_worker, $info[0]['id_worker']);
+        static::assertSame($id_worker, $info[0]['id_worker']);
     }
 
     public function testGetJobListWithWorker(): void
     {
         $id_worker = $this->launchWorker();
         $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'toto');
-        static::assertEquals($id_worker, $job_list[0]->worker->id_worker);
+        static::assertSame($id_worker, $job_list[0]->worker->id_worker);
         static::assertSame(1, $this->jobQueueSQL->getNbJob('toto'));
     }
 
@@ -163,7 +163,32 @@ class WorkerSQLTest extends PastellTestCase
         $id_worker = $this->launchWorker();
         $filters = new JobAdvancedFilters(job_status: [(string)JobStatus::WAITING->value]);
         $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, '', null, $filters);
-        static::assertEquals($id_worker, $job_list[0]->worker->id_worker);
+        static::assertSame($id_worker, $job_list[0]->worker->id_worker);
+        static::assertSame(1, $this->jobQueueSQL->getNbJob('', null, $filters));
+    }
+
+    public function testGetJobLate(): void
+    {
+        $id_job_late = $this->createJob(date('Y-m-d H:i:s', strtotime('-1 hour')));
+        $this->createJob(date('Y-m-d H:i:s', strtotime('+1 hour')));
+        $id_job_suspended = $this->createJob(date('Y-m-d H:i:s', strtotime('-1 hour')));
+        $this->jobQueueSQL->lock((int)$id_job_suspended, JobStatus::SUSPENDED_BY_USER);
+
+        $filters = new JobAdvancedFilters(late: '1');
+        $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, '', null, $filters);
+        static::assertEqualsCanonicalizing(
+            [(int)$id_job_late, (int)$id_job_suspended],
+            array_map(static fn ($job) => $job->id_job, $job_list)
+        );
+        static::assertSame(2, $this->jobQueueSQL->getNbJob('', null, $filters));
+
+        $filters = new JobAdvancedFilters(
+            job_status: [(string)JobStatus::SUSPENDED_BY_USER->value],
+            late: '1',
+        );
+        $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, '', null, $filters);
+        static::assertCount(1, $job_list);
+        static::assertSame((int)$id_job_suspended, $job_list[0]->id_job);
         static::assertSame(1, $this->jobQueueSQL->getNbJob('', null, $filters));
     }
 
@@ -171,7 +196,7 @@ class WorkerSQLTest extends PastellTestCase
     {
         $id_worker = $this->launchWorker();
         $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'actif');
-        static::assertEquals($id_worker, $job_list[0]->worker->id_worker);
+        static::assertSame($id_worker, $job_list[0]->worker->id_worker);
         static::assertSame(1, $this->jobQueueSQL->getNbJob('actif'));
     }
 
@@ -196,13 +221,13 @@ class WorkerSQLTest extends PastellTestCase
         $id_job_1 = $this->jobQueueSQL->createJob($job);
 
         $id_job_list = $this->workerSQL->getJobsToLaunch(5, $this->globalDaemon->id_daemon);
-        $this->assertEquals([$id_job_1], $id_job_list);
+        $this->assertSame([(int)$id_job_1], $id_job_list);
 
         $id_worker = $this->workerSQL->create(42);
         $this->workerSQL->attachJob($id_worker, $id_job_1);
 
         $all_verrou = $this->workerSQL->getVerrou();
-        static::assertEquals(['VERROU'], $all_verrou);
+        static::assertSame(['VERROU'], $all_verrou);
 
         $job->id_d = 'ABCD';
         $this->jobQueueSQL->createJob($job);
@@ -229,7 +254,7 @@ class WorkerSQLTest extends PastellTestCase
         $this->jobQueueSQL->createJob($job);
 
         $id_job_list = $this->workerSQL->getJobsToLaunch(5, $this->globalDaemon->id_daemon);
-        $this->assertEquals([$id_job_1], $id_job_list);
+        $this->assertSame([(int)$id_job_1], $id_job_list);
     }
 
     /**
@@ -255,7 +280,7 @@ class WorkerSQLTest extends PastellTestCase
     {
         $this->addJobWithVerrou();
         $all_verrou = $this->workerSQL->getAllVerrou();
-        static::assertEquals(['VERROU'], $all_verrou);
+        static::assertSame(['VERROU'], $all_verrou);
     }
 
     /**
@@ -265,7 +290,7 @@ class WorkerSQLTest extends PastellTestCase
     {
         $this->addJobWithVerrou();
         $job = $this->workerSQL->getJobsToLaunchByLock('VERROU', $this->globalDaemon->id_daemon);
-        static::assertEquals(1, $job[0]['id_job']);
+        static::assertSame(1, $job[0]['id_job']);
     }
 
     /**
@@ -322,8 +347,8 @@ class WorkerSQLTest extends PastellTestCase
         $id_worker = $this->workerSQL->create(42);
         $this->workerSQL->attachJob($id_worker, $id_job);
 
-        static::assertEquals(
-            $id_worker,
+        static::assertSame(
+            (int)$id_worker,
             $this->workerSQL->getActionEnCoursForConnecteur(1, 'cible')
         );
     }

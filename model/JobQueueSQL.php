@@ -464,6 +464,11 @@ SQL;
             }
         }
 
+        if ($filters->late !== '') {
+            $sql .= ' AND job_queue.next_try < ?';
+            $params[] = $this->getNow();
+        }
+
         if ($filters->id_e !== '') {
             if ($filters->include_children !== '') {
                 $sql .= ' AND job_queue.id_e IN'

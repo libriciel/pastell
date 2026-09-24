@@ -12,7 +12,8 @@
     'job_status': search.job_status,
     'search_id_e': search.id_e,
     'include_children': search.include_children,
-    'id_verrou': search.id_verrou
+    'id_verrou': search.id_verrou,
+    'late': search.late
 } : {})
     |merge(id_e is defined ? {'id_e': id_e} : {})
     |merge(filtre|default('') ? {'filtre': filtre} : {}) %}

@@ -51,6 +51,14 @@
                                         {% endfor %}
                                     </select>
                                 </div>
+                                <div class="mt-2 d-flex align-items-center">
+                                    <input class="form-check-input mt-0 me-2" type="checkbox" value="1"
+                                           id="search-late" name="late"
+                                           {{ search.late ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="search-late">
+                                        Travaux en retard
+                                    </label>
+                                </div>
                             </td>
                         </tr>
 
