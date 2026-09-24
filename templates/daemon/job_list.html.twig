@@ -1,18 +1,22 @@
 {% import _self as ui %}
 
-{% macro sort_header(column, sort, search_route, job_query_params) %}
-    {% set is_active = sort|default(null) is not null and sort.column.value == column.value %}
-    {% set next_dir = (is_active and sort.direction.value == 'desc') ? 'asc' : 'desc' %}
-    <a href="{{ path(search_route, job_query_params|merge({'sort_by': column.value, 'sort_dir': next_dir, 'offset': 0})) }}"
-       class="text-nowrap text-decoration-none{{ is_active ? ' fw-bold' : '' }}"
-       title="Trier par {{ column.label|lower }}">
+{% macro sort_header(column, sort, search_route, job_query_params, sortable) %}
+    {% if not sortable %}
         {{ column.label }}
-        {% if is_active %}
-            <i class="fas fa-sort-{{ sort.direction.value == 'asc' ? 'up' : 'down' }}"></i>
-        {% else %}
-            <i class="fas fa-sort text-muted"></i>
-        {% endif %}
-    </a>
+    {% else %}
+        {% set is_active = sort|default(null) is not null and sort.column.value == column.value %}
+        {% set next_dir = (is_active and sort.direction.value == 'desc') ? 'asc' : 'desc' %}
+        <a href="{{ path(search_route, job_query_params|merge({'sort_by': column.value, 'sort_dir': next_dir, 'offset': 0})) }}"
+           class="text-nowrap text-decoration-none{{ is_active ? ' fw-bold' : '' }}"
+           title="Trier par {{ column.label|lower }}">
+            {{ column.label }}
+            {% if is_active %}
+                <i class="fas fa-sort-{{ sort.direction.value == 'asc' ? 'up' : 'down' }}"></i>
+            {% else %}
+                <i class="fas fa-sort text-muted"></i>
+            {% endif %}
+        </a>
+    {% endif %}
 {% endmacro %}
 
 <div class='box'>
@@ -20,7 +24,7 @@
         {{ sub_title }}
     </h2>
 
-    {% if daemon_edition and filtre is defined and filtre == 'lock' %}
+    {% if daemon_edition and show_unlock_all|default(false) %}
         {% if id_e is defined %}
             <a class='btn btn-warning mb-2' href="{{ path(unlock_all_action, {'id_e': id_e}) }}">
         {% else %}
@@ -39,11 +43,11 @@
             <th>#ID gestionnaire de tâche</th>
             <th>Dossier / Connecteur</th>
             <th>État source<br/>État cible</th>
-            <th>{{ ui.sort_header(constant('Pastell\\Model\\Daemon\\JobSortColumn::FIRST_TRY'), sort|default(null), search_route, job_query_params) }}</th>
-            <th>{{ ui.sort_header(constant('Pastell\\Model\\Daemon\\JobSortColumn::LAST_TRY'), sort|default(null), search_route, job_query_params) }}</th>
+            <th>{{ ui.sort_header(constant('Pastell\\Model\\Daemon\\JobSortColumn::FIRST_TRY'), sort|default(null), search_route|default(null), job_query_params|default({}), search is defined) }}</th>
+            <th>{{ ui.sort_header(constant('Pastell\\Model\\Daemon\\JobSortColumn::LAST_TRY'), sort|default(null), search_route|default(null), job_query_params|default({}), search is defined) }}</th>
             <th>Nombre d'essais</th>
             <th>Dernier message</th>
-            <th>{{ ui.sort_header(constant('Pastell\\Model\\Daemon\\JobSortColumn::NEXT_TRY'), sort|default(null), search_route, job_query_params) }}</th>
+            <th>{{ ui.sort_header(constant('Pastell\\Model\\Daemon\\JobSortColumn::NEXT_TRY'), sort|default(null), search_route|default(null), job_query_params|default({}), search is defined) }}</th>
             <th>File d'attente</th>
             <th>#ID processus</th>
             <th>PID processus</th>
@@ -133,7 +137,7 @@
         {% endfor %}
     </table>
 
-    {% if daemon_edition and filtre is defined and filtre == 'lock' %}
+    {% if daemon_edition and show_unlock_all|default(false) %}
         {% if id_e is defined %}
             <a class='btn btn-warning mb-2' href="{{ path(unlock_all_action, {'id_e': id_e}) }}">
         {% else %}

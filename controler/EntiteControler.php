@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Configuration\JobStatus;
 use Pastell\Service\Crypto;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitType;
@@ -844,13 +845,6 @@ class EntiteControler extends PastellControler
         $id_e = $recuperateur->getInt('id_e', 0);
 
         $this->daemonData();
-        $this->setJobSearchViewParameters(
-            $this->getJobAdvancedFilters($this->getGetInfo()),
-            'app.legacy.entite_daemon',
-            $this->getObjectInstancier()->getInstance(ConnecteurFrequenceSQL::class)->getDistinctVerrou(),
-            $this->getGetInfo()->getInt('id_e')
-        );
-        $this->setViewParameter('page_url', 'index');
         $this->setViewParameter('twigTemplate', 'daemon/entity/index.html.twig');
         $this->setViewParameter('page_title', 'Gestionnaire de tâches local');
         $this->setNavigationInfo($id_e, 'Entite/daemon');
@@ -887,19 +881,10 @@ class EntiteControler extends PastellControler
         $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_DAEMON);
         $this->setViewParameter('nb_worker_actif', $this->getWorkerSQL()->getNbActifForDaemon($daemon->id_daemon));
         $this->setViewParameter('job_stat_info', $this->getJobQueueSQL()->getStatInfoForDaemon($daemon->id_daemon));
+        $this->setViewParameter('job_status_suspended', JobStatus::suspendedValues());
         $this->setViewParameter('sub_title', 'Liste de tous les travaux');
         $this->setViewParameter('return_url', "Entite/daemon?id_e=$daemon->id_e");
-        $this->setViewParameter('filtre', '');
-
-        $advancedFilters = $this->getJobAdvancedFilters($recuperateur);
-        $sort = $this->getJobSort($recuperateur);
-        $offset = $recuperateur->getInt('offset', 0);
-        $this->setViewParameter('search', $advancedFilters);
-        $this->setViewParameter('sort', $sort);
-        $this->setViewParameter('offset', $offset);
-        $this->setViewParameter('limit', 20);
-        $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob('', $daemon->id_daemon, $advancedFilters));
-        $job_list = $this->getJobQueueSQL()->getFilteredJobList(20, $offset, '', $daemon->id_daemon, $advancedFilters, $sort);
+        $job_list = $this->getJobQueueSQL()->getJobsByDaemon($daemon->id_daemon, 20, 0);
         $this->setViewParameter('job_list', $job_list);
         $this->setViewParameter('daemon', $daemon);
     }
@@ -927,76 +912,22 @@ class EntiteControler extends PastellControler
      */
     public function jobAction(): void
     {
-        $recuperateur = $this->getGetInfo();
-        $id_e = $recuperateur->getInt('id_e');
+        $id_e = $this->getGetInfo()->getInt('id_e');
         $this->checkDroitFor($id_e, DroitService::DROIT_DAEMON, DroitType::LECTURE);
         $daemon = $this->resolveDaemonForEntity($id_e);
         $this->setViewParameter('id_e', $id_e);
-        $this->setViewParameter('twigTemplate', 'daemon/entity/job.html.twig');
         $this->setViewParameter('page_title', 'Gestionnaire de tâches local');
-        $filtre = $recuperateur->get('filtre', '');
-
-        $sub_title = '';
-        $this->setNavigationInfo($id_e, 'Entite/job');
-        if ($filtre) {
-            $this->setViewParameter('page_url', "job?filtre=$filtre");
-            switch ($filtre) {
-                case 'actif':
-                    $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB_ACTIF);
-                    $sub_title = 'Liste des travaux actifs';
-                    break;
-                case 'lock':
-                    $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB_LOCK);
-                    $sub_title = 'Liste des travaux suspendus';
-                    break;
-                case 'wait':
-                    $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB_WAIT);
-                    $sub_title = 'Liste des travaux en retard';
-                    break;
-                default:
-                    $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB);
-            }
-        } else {
-            $sub_title = 'Liste de tous les travaux';
-            $this->setViewParameter('page_url', 'job');
-            $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_JOB);
-        }
-        $this->setViewParameter('sub_title', $sub_title);
         $this->setViewParameter('unlock_all_action', 'app.legacy.entite_daemonUnlockAll');
-
-        $this->setViewParameter('offset', $recuperateur->getInt('offset', 0));
-        $this->setViewParameter('limit', 50);
-        $this->setViewParameter('filtre', $filtre);
-        $this->setViewParameter('id_e', $id_e);
-
-        $this->setViewParameter(
-            'return_url',
-            "Entite/job?filtre=$filtre&offset=" . $this->getViewParameterByKey('offset') . "&id_e=$id_e"
-        );
-
-        $advancedFilters = $this->getJobAdvancedFilters($recuperateur);
-        $sort = $this->getJobSort($recuperateur);
-        $this->setJobSearchViewParameters(
-            $advancedFilters,
+        $this->setNavigationInfo($id_e, 'Entite/job');
+        $this->setJobListViewParameters(
             'app.legacy.entite_job',
-            $this->getObjectInstancier()->getInstance(ConnecteurFrequenceSQL::class)->getDistinctVerrou(),
+            'Entite/job',
+            MenuGaucheService::ENTITE_JOB,
+            MenuGaucheService::ENTITE_JOB_ACTIF,
+            50,
+            $daemon->id_daemon,
             $id_e
         );
-        $this->setViewParameter('sort', $sort);
-
-        $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob($filtre, $daemon->id_daemon, $advancedFilters));
-        $this->setViewParameter(
-            'job_list',
-            $this->getJobQueueSQL()->getFilteredJobList(
-                $this->getViewParameterByKey('limit'),
-                $this->getViewParameterByKey('offset'),
-                $filtre,
-                $daemon->id_daemon,
-                $advancedFilters,
-                $sort
-            )
-        );
-
         $this->renderDefault();
     }
 

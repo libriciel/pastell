@@ -1,23 +1,21 @@
-{% set search_collapsed = not app.request.query.get('expand_search') %}
 <div class="accordion" id="accordionJobSearch">
     <div class="card">
         <a id="headingJobSearch"
-           class="card-header ls-accordion{{ search_collapsed ? ' collapsed' : '' }}"
+           class="card-header ls-accordion"
            data-bs-toggle="collapse" data-bs-target="#collapseJobSearch"
-           aria-expanded="{{ search_collapsed ? 'false' : 'true' }}" aria-controls="collapseJobSearch"
+           aria-expanded="true" aria-controls="collapseJobSearch"
         >
             <i class="fas fa-search"></i> Recherche avancée
             <i class="fas fa-plus-square plier"></i><i class="fas fa-minus-square deplier"></i>
         </a>
 
-        <div id="collapseJobSearch" class="collapse{{ search_collapsed ? '' : ' show' }}" aria-labelledby="headingJobSearch"
+        <div id="collapseJobSearch" class="collapse show" aria-labelledby="headingJobSearch"
              data-parent="#accordionJobSearch">
             <div class="card-body">
-                <form method="get" action="{{ path(search_action) }}" class="mb-0">
+                <form method="get" action="{{ path(job_route) }}" class="mb-0">
                     {% if id_e is defined %}
                         <input type="hidden" name="id_e" value="{{ id_e }}">
                     {% endif %}
-                    <input type="hidden" name="filtre" value="{{ filtre|default('') }}">
                     {% if sort|default(null) is not null %}
                         <input type="hidden" name="sort_by" value="{{ sort.column.value }}">
                         <input type="hidden" name="sort_dir" value="{{ sort.direction.value }}">
@@ -92,12 +90,7 @@
                     </table>
 
                     <a class="btn btn-outline-primary"
-                       href="{{ path(search_action, (id_e is defined ? {'id_e': id_e} : {})|merge({'filtre': filtre|default('')})) }}">
-                        <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
-                    </a>
-
-                    <a class="btn btn-outline-primary"
-                       href="{{ path(search_action, (id_e is defined ? {'id_e': id_e} : {})|merge({'filtre': filtre|default(''), 'expand_search': 1})) }}">
+                       href="{{ path(job_route, id_e is defined ? {'id_e': id_e} : {}) }}">
                         <i class="fas fa-undo"></i>&nbsp;Réinitialiser
                     </a>
 

@@ -26,4 +26,12 @@ enum JobStatus: int
             self::KILLED_BY_USER => 'Processus tué manuellement',
         };
     }
+
+    /**
+     * @return int[]
+     */
+    public static function suspendedValues(): array
+    {
+        return array_column(array_filter(self::cases(), static fn (self $status) => $status !== self::WAITING), 'value');
+    }
 }

@@ -1,7 +1,9 @@
 {% extends 'base.html.twig' %}
 
 {% block main %}
-    {% include 'daemon/job_search_form.html.twig' %}
+    {% if search is defined %}
+        {% include 'daemon/job_search_form.html.twig' %}
+    {% endif %}
 
-    {% include 'daemon/job_pagination.html.twig' with {'search_route': 'app.legacy.daemon_job', 'with_filtre': true} %}
+    {% include 'daemon/job_pagination.html.twig' with {'search_route': job_route} %}
 {% endblock %}

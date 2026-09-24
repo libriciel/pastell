@@ -1,23 +1,19 @@
 {% extends 'base.html.twig' %}
 
 {% block main %}
-    <div id='daemon-status'>
-        {% include 'daemon/entity/index_status.html.twig' %}
-    </div>
-
-    {% include 'daemon/job_search_form.html.twig' %}
-
-    <div id='daemon-jobs'>
-        {% include 'daemon/entity/index_jobs.html.twig' %}
+    <div id='daemon-content'>
+        {% include 'daemon/entity/index_content.html.twig' %}
     </div>
 
     <script type="text/javascript">
         function reload() {
-            $.get("{{ path('app.legacy.entite_daemonContent') }}" + window.location.search, function (data) {
-                let content = $("<div>").html(data);
-                $("#daemon-status").html(content.find("#daemon-status-inner"));
-                $("#daemon-jobs").html(content.find("#daemon-jobs-inner"));
-            });
+            let params = new URLSearchParams(window.location.search);
+            let id_e = params.get("id_e");
+            let id_daemon = params.get("id_daemon");
+            let action = "{{ path('app.legacy.entite_daemonContent', { 'id_e': '__IDE__', 'id_daemon': '__IDDAEMON__' })|raw }}"
+                .replace('__IDE__', id_e)
+                .replace('__IDDAEMON__', id_daemon);
+            $("#daemon-content").load(action);
         }
 
         $(document).ready(function () {

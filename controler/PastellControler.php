@@ -399,40 +399,62 @@ class PastellControler extends Controler
         return $this->getInstance(JobQueueSQL::class);
     }
 
-    protected function getJobAdvancedFilters(Recuperateur $recuperateur): JobAdvancedFilters
-    {
-        return JobAdvancedFilters::fromRecuperateur($recuperateur);
-    }
-
-    protected function getJobSort(Recuperateur $recuperateur): ?JobSort
-    {
-        return JobSort::fromRecuperateur($recuperateur);
-    }
-
     /**
-     * Sets the view parameters required to render the advanced job search form.
-     *
-     * @param JobAdvancedFilters $advancedFilters current criteria values
-     * @param string $search_action route name the form submits to
-     * @param string[] $verrou_list
      * @throws JsonException
      */
-    protected function setJobSearchViewParameters(
-        JobAdvancedFilters $advancedFilters,
-        string $search_action,
-        array $verrou_list,
-        ?int $rootEntityId = null
+    protected function setJobListViewParameters(
+        string $route,
+        string $url,
+        string $menu,
+        string $menuActif,
+        int $limit,
+        ?int $id_daemon = null,
+        ?int $rootEntityId = null,
     ): void {
-        $this->setViewParameter('search', $advancedFilters);
-        $this->setViewParameter('search_action', $search_action);
-        $this->setViewParameter('job_status_list', JobStatus::cases());
-        $this->setViewParameter('type_list', [
-            Job::TYPE_DOCUMENT => 'Dossier',
-            Job::TYPE_CONNECTEUR => 'Connecteur',
-        ]);
-        $this->setViewParameter('entity_treeselect_config', $this->buildDaemonEntityTreeselectConfig($rootEntityId));
-        $this->setViewParameter('verrou_list', $verrou_list);
-        $this->setViewParameter('verrou_none_value', JobQueueSQL::VERROU_NONE);
+        $recuperateur = $this->getGetInfo();
+        $filtre = $recuperateur->get('filtre') === 'actif' ? 'actif' : '';
+        $advancedFilters = null;
+        $sort = null;
+        if ($filtre) {
+            $this->setMenuGaucheSelect($menuActif);
+            $this->setViewParameter('sub_title', 'Liste des travaux actifs');
+        } else {
+            $this->setMenuGaucheSelect($menu);
+            $this->setViewParameter('sub_title', 'Liste de tous les travaux');
+            $advancedFilters = JobAdvancedFilters::fromRecuperateur($recuperateur);
+            $sort = JobSort::fromRecuperateur($recuperateur);
+            $this->setViewParameter('search', $advancedFilters);
+            $this->setViewParameter('sort', $sort);
+            $this->setViewParameter('job_status_list', JobStatus::cases());
+            $this->setViewParameter('type_list', [
+                Job::TYPE_DOCUMENT => 'Dossier',
+                Job::TYPE_CONNECTEUR => 'Connecteur',
+            ]);
+            $this->setViewParameter('entity_treeselect_config', $this->buildDaemonEntityTreeselectConfig($rootEntityId));
+            $this->setViewParameter('verrou_list', $this->getInstance(ConnecteurFrequenceSQL::class)->getDistinctVerrou());
+            $this->setViewParameter('verrou_none_value', JobQueueSQL::VERROU_NONE);
+            $this->setViewParameter(
+                'show_unlock_all',
+                $advancedFilters->job_status !== []
+                && !in_array((string)JobStatus::WAITING->value, $advancedFilters->job_status, true)
+            );
+        }
+
+        $offset = $recuperateur->getInt('offset');
+        $query = $recuperateur->getAll();
+        unset($query[FrontController::PAGE_REQUEST]);
+
+        $this->setViewParameter('twigTemplate', 'daemon/job.html.twig');
+        $this->setViewParameter('job_route', $route);
+        $this->setViewParameter('filtre', $filtre);
+        $this->setViewParameter('offset', $offset);
+        $this->setViewParameter('limit', $limit);
+        $this->setViewParameter('return_url', "$url?" . http_build_query($query));
+        $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob($filtre, $id_daemon, $advancedFilters));
+        $this->setViewParameter(
+            'job_list',
+            $this->getJobQueueSQL()->getFilteredJobList($limit, $offset, $filtre, $id_daemon, $advancedFilters, $sort)
+        );
     }
 
     /**

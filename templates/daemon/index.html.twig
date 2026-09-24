@@ -1,23 +1,13 @@
 {% extends 'base.html.twig' %}
 
 {% block main %}
-    <div id='daemon-status'>
-        {% include 'daemon/index_status.html.twig' %}
-    </div>
-
-    {% include 'daemon/job_search_form.html.twig' %}
-
-    <div id='daemon-jobs'>
-        {% include 'daemon/index_jobs.html.twig' %}
+    <div id='daemon-content'>
+        {% include 'daemon/index_content.html.twig' %}
     </div>
 
     <script type="text/javascript">
         function reload() {
-            $.get("{{ path('app.legacy.daemon_indexContent') }}" + window.location.search, function (data) {
-                let content = $("<div>").html(data);
-                $("#daemon-status").html(content.find("#daemon-status-inner"));
-                $("#daemon-jobs").html(content.find("#daemon-jobs-inner"));
-            });
+            $("#daemon-content").load("{{ path('app.legacy.daemon_indexContent') }}");
         }
 
         $(document).ready(function () {
