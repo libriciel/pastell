@@ -15,6 +15,7 @@
 - Mail sécurisé : le passage en non reçu n'est plus repoussé par les renvois (régression 4.1.12) #2571
 - Expressions Twig : la lecture des attributs d'un noeud XML (`node.attributes.V`) est de nouveau autorisée
   (régression 4.1.22) #2572
+- Upload multiple : les fichiers ne sont plus perdus lors d'un ajout en lot #2584
 
 ## [4.1.22] - 2026-09-07
 

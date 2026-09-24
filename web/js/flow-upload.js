@@ -1,289 +1,256 @@
-(function () {
-    const OriginalXHR = window.XMLHttpRequest;
+(function ($) {
+    'use strict';
 
-    window.XMLHttpRequest = function () {
-        const xhr = new OriginalXHR();
-        const originalOpen = xhr.open;
+    const CONTROLS_TEMPLATE = `
+        <div class="flow-error">
+            <input type="file" class="btn btn-outline-primary"/>
+        </div>
+        <div>
+            <a class="flow-browse btn btn-outline-primary"><i class="fa fa-plus-circle"></i>&nbsp;</a>
+            <a href="#" class="progress-resume-link btn">Reprendre</a>
+            <a href="#" class="progress-pause-link btn">Pause</a>
+            <a href="#" class="progress-cancel-link btn">Abandon</a>
+        </div>
+        <div class="flow-progress">
+            <table>
+                <tr>
+                    <td><div class="progress-container"><div class="progress-bar"></div></div></td>
+                </tr>
+                <tr>
+                    <td><ul class="flow-list unstyled"></ul></td>
+                </tr>
+            </table>
+        </div>`;
 
-        xhr.open = function (method, url) {
-            this._method = method ? method.toUpperCase() : 'GET';
-            return originalOpen.apply(this, arguments);
-        };
+    const FILE_ROW_TEMPLATE = '<li class="flow-file"><span class="flow-file-size"></span> <span class="flow-file-progress"></span> </li>';
 
-        xhr.addEventListener('load', function () {
-            if (xhr._method === 'POST' && xhr.responseURL && xhr.responseURL.includes('DonneesFormulaire/chunkUpload')) {
-                const event = new CustomEvent('chunkSuccess', {
-                    detail: {
-                        response: xhr.responseText,
-                    }
-                });
-                window.dispatchEvent(event);
+    const DURATION_UNITS = [
+        [31536000, 'an'],
+        [86400, 'jour'],
+        [3600, 'heure'],
+        [60, 'minute'],
+        [1, 'seconde'],
+    ];
+
+    const SIZE_UNITS = ['octets', 'ko', 'Mo', 'Go', 'To', 'Po'];
+
+    /**
+     * The server rotates the CSRF token on each chunk request and sends the new one back:
+     * it must be stored before the next chunk is sent.
+     */
+    function updateCsrfToken(responseText) {
+        if (!responseText) {
+            return;
+        }
+        let token;
+        try {
+            token = JSON.parse(responseText).csrf_token;
+        } catch (err) {
+            console.error('Non-JSON response received from chunk upload', err);
+            return;
+        }
+        if (token) {
+            $('input[name="csrf_token"]').val(token);
+        }
+    }
+
+    function formatBytes(bytes) {
+        if (!Number.isFinite(bytes) || bytes <= 0) {
+            return '0 octet';
+        }
+        const exponent = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), SIZE_UNITS.length - 1);
+        return `${(bytes / 1024 ** exponent).toFixed(2)} ${SIZE_UNITS[exponent]}`;
+    }
+
+    function formatDuration(seconds) {
+        if (!Number.isFinite(seconds)) {
+            return '';
+        }
+        for (const [unitSize, label] of DURATION_UNITS) {
+            const value = Math.floor(seconds / unitSize);
+            if (value >= 1) {
+                return `${value} ${label}${value > 1 ? 's' : ''}`;
             }
+        }
+        return '0 seconde';
+    }
+
+    function renderControls($container, queryParam) {
+        $container.html(CONTROLS_TEMPLATE);
+        $container.find('.flow-error input').attr({
+            id: queryParam.field,
+            name: queryParam.field,
+            accept: queryParam.accept,
+        });
+        const label = queryParam.single_file ? 'Ajouter un fichier' : 'Ajouter un (ou des) fichier(s)';
+        $container.find('.flow-browse').append(document.createTextNode(label));
+    }
+
+    function submitForm($container, field) {
+        $container.closest('form')
+            .append($('<input>', {type: 'hidden', name: 'fieldSubmittedId', value: field}))
+            .append($('<input>', {type: 'hidden', name: 'ajouter', value: 'ajouter'}))
+            .trigger('submit');
+    }
+
+    window.addFlowControl = function (queryParam, container) {
+        const $container = $(container);
+        renderControls($container, queryParam);
+
+        const $resumeLink = $container.find('.progress-resume-link');
+        const $pauseLink = $container.find('.progress-pause-link');
+        const $cancelLink = $container.find('.progress-cancel-link');
+        const $progress = $container.find('.flow-progress');
+        const $progressBar = $container.find('.progress-bar');
+        const $fileList = $container.find('.flow-list');
+        const fileProgressCells = new Map();
+
+        let pauseRequested = false;
+        let cancelRequested = false;
+        let submitted = false;
+
+        const flow = new Flow({
+            target: queryParam.target,
+            query: (file) => ({
+                id_e: queryParam.id_e,
+                id_d: queryParam.id_d,
+                id_ce: queryParam.id_ce,
+                field: queryParam.field,
+                key: queryParam.key,
+                page: queryParam.page,
+                filename: file.name,
+                num: flow.files.indexOf(file),
+                csrf_token: $('input[name="csrf_token"]').val(),
+            }),
+            singleFile: queryParam.single_file,
+            chunkSize: 1024 * 1024,
+            testChunks: true,
+            simultaneousUploads: 1,
         });
 
-        return xhr;
-    };
+        flow.assignBrowse($container.find('.flow-browse')[0], false, queryParam.single_file, {accept: queryParam.accept});
 
-    Object.assign(window.XMLHttpRequest, OriginalXHR);
-})();
-
-window.addEventListener('chunkSuccess', function (e) {
-    const response = e.detail.response;
-    const csrf_token = JSON.parse(response).csrf_token;
-
-    try {
-        $('input[name="csrf_token"]').val(csrf_token);
-    } catch (err) {
-        console.error("Réponse non-JSON reçue");
-    }
-});
-
-function addFlowControl(query_param, pastell_flow_upload) {
-    button_libelle = query_param.single_file ? "Ajouter un fichier" : "Ajouter un (ou des) fichier(s)";
-    pastell_flow_upload.html(
-        "        <div class=\"flow-error\">\n" +
-        "            <input type='file' class='btn btn-outline-primary' id='" + query_param.field + "'  name='" + query_param.field + "' accept='" + query_param.accept + "'/>\n" +
-        "        </div>\n" +
-        "\n" +
-        "         <div>\n " +
-        "            <a class=\"flow-browse btn btn-outline-primary\"><i class='fa fa-plus-circle'></i>&nbsp;" + button_libelle + "</a>\n" +
-        "            <a href=\"#\" class=\"progress-resume-link btn\">Reprendre</a>\n" +
-        "            <a href=\"#\" class=\"progress-pause-link btn\">Pause</a>\n" +
-        "            <a href=\"#\" class=\"progress-cancel-link btn\">Abandon</a>\n" +
-        "        </div>\n" +
-        "\n" +
-        "        <div class=\"flow-progress\">\n" +
-        "            <table>\n" +
-        "                <tr>\n" +
-        "                    <td><div class=\"progress-container\"><div class=\"progress-bar\"></div></div></td>\n" +
-        "                </tr>\n" +
-        "                <tr>\n" +
-        "                    <td><ul class=\"flow-list unstyled\"></ul></td>\n" +
-        "                </tr>\n" +
-        "            </table>\n" +
-        "        </div>\n");
-
-
-    var r = new Flow({
-        target: query_param.target,
-        query: function (file) {
-            var params = {
-                'id_e': query_param.id_e,
-                'id_d': query_param.id_d,
-                'id_ce': query_param.id_ce,
-                'field': query_param.field,
-                'key': query_param.key,
-                'page': query_param.page,
-            };
-            params.filename = file.name;
-            params.num = r.files.indexOf(file);
-            params.csrf_token = $('input[name="csrf_token"]').val();
-
-            return params;
-        },
-        singleFile: query_param.single_file,
-        chunkSize: 1024 * 1024,
-        testChunks: true,
-        simultaneousUploads: 1
-    });
-
-    var pauseRequested = false;
-
-    pastell_flow_upload.find(".progress-pause-link").click(function () {
-        pauseRequested = true;
-        $(this).text("Arrêt en cours...");
-        return false;
-    });
-
-    window.addEventListener('chunkSuccess', function () {
-        if (pauseRequested) {
-            r.pause();
+        function cancelUpload() {
+            flow.cancel();
             pauseRequested = false;
-            $(pastell_flow_upload).find('.progress-pause-link').text("Pause"); // Reset text
-            $(pastell_flow_upload).find('.progress-resume-link').show();
-            $(pastell_flow_upload).find('.progress-pause-link').hide();
-        }
-    });
-
-    pastell_flow_upload.find(".progress-resume-link").click(function () {
-        r.resume();
-        $(pastell_flow_upload).find('.progress-resume-link').hide();
-        $(pastell_flow_upload).find('.progress-pause-link').show();
-        return false;
-    });
-
-    pastell_flow_upload.find(".progress-cancel-link").click(function () {
-        r.cancel();
-        $(pastell_flow_upload).find('.progress-pause-link').hide();
-        $(pastell_flow_upload).find('.progress-resume-link').hide();
-        $(pastell_flow_upload).find('.progress-cancel-link').hide();
-        $(pastell_flow_upload).find('.flow-progress').hide();
-        $(pastell_flow_upload).find('.flow-file').remove();
-        return false;
-    });
-
-    r.assignBrowse(
-        pastell_flow_upload.find('.flow-browse')[0],
-        false,
-        query_param.single_file,
-        {'accept': query_param.accept}
-    );
-
-    // Handle file add event
-    r.on('fileAdded', function (file, event) {
-        pastell_flow_upload = $(event.target).parents(".pastell-flow-upload")[0];
-
-        // Show progress bar
-        $(pastell_flow_upload).find('.flow-progress, .flow-list').show();
-        const nameSpan = $('<span class="flow-file-name"></span>').text(file.name);
-
-        // Add the file to the list
-        $(pastell_flow_upload).find('.flow-list').append(
-            '<li class="flow-file flow-file-' + file.uniqueIdentifier + '">' +
-            nameSpan.text() +
-            '<span class="flow-file-size"></span> ' +
-            '<span class="flow-file-progress"></span> ' + "</li>"
-        );
-    });
-
-    var isPausedForNext = false;
-    var isFetching = false;
-    var retryLoopCount = 0;
-
-    async function processNextFile() {
-        if (isFetching) {
-            console.log("Already fetching, skipping processNextFile");
-            return;
+            cancelRequested = false;
+            $pauseLink.text('Pause');
+            $cancelLink.text('Abandon');
+            $resumeLink.add($pauseLink).add($cancelLink).add($progress).hide();
+            $fileList.empty();
+            fileProgressCells.clear();
+            $container.removeClass('flow-upload-failed');
         }
 
-        var nextFile = null;
-        for (var i = 0; i < r.files.length; i++) {
-            if (!r.files[i].isComplete()) {
-                nextFile = r.files[i];
-                break;
-            }
-        }
-
-        if (nextFile) {
-            isFetching = true;
-            try {
-                isPausedForNext = false;
-                retryLoopCount = 0;
-                r.resume();
-            } catch (e) {
-            } finally {
-                isFetching = false;
-            }
-        } else {
-            isPausedForNext = false;
-        }
-    }
-
-    r.on('filesSubmitted', async function (files, event) {
-        await processNextFile();
-    });
-
-    r.on('complete', function () {
-        if (isFetching || isPausedForNext) {
-            return;
-        }
-
-        var pendingFiles = r.files.filter(function (f) {
-            return !f.isComplete();
+        // Pausing or cancelling immediately would abort the running request and lose the rotated CSRF token:
+        // both are applied once the current chunk has been acknowledged.
+        $pauseLink.on('click', function (event) {
+            event.preventDefault();
+            pauseRequested = true;
+            $pauseLink.text('Arrêt en cours...');
         });
-        if (pendingFiles.length > 0) {
 
-            if (retryLoopCount < 5) {
-                retryLoopCount++;
-                setTimeout(function () {
-                    if (!r.isUploading()) {
-                        r.resume();
-                    }
-                }, 500);
+        $resumeLink.on('click', function (event) {
+            event.preventDefault();
+            flow.resume();
+            $resumeLink.hide();
+            $pauseLink.show();
+        });
+
+        $cancelLink.on('click', function (event) {
+            event.preventDefault();
+            if (!flow.isUploading()) {
+                cancelUpload();
+                return;
             }
-            return;
-        }
+            cancelRequested = true;
+            $cancelLink.text('Abandon en cours...');
+            $pauseLink.hide();
+        });
 
-        $(pastell_flow_upload).find('.progress-resume-link').hide();
-        $(pastell_flow_upload).find('.progress-pause-link').hide();
-        $(pastell_flow_upload).find('.progress-cancel-link').hide();
+        flow.on('fileAdded', function (file) {
+            $progress.show();
+            $fileList.show();
+            const $row = $(FILE_ROW_TEMPLATE).prepend(document.createTextNode(file.name));
+            fileProgressCells.set(file, $row.find('.flow-file-progress'));
+            $fileList.append($row);
+        });
 
-        var numberOfDownload = $(".progress-cancel-link:visible").length;
-        if (numberOfDownload === 0) {
-            $(pastell_flow_upload)
-                .parents("form")
-                .append("<input type='hidden' name='fieldSubmittedId' value='" + query_param.field + "'>");
-            $(pastell_flow_upload).parents("form").append("<input type='hidden' name='ajouter' value='ajouter'>");
-            $(pastell_flow_upload).parents("form").submit();
-        }
-    });
+        flow.on('filesSubmitted', function () {
+            // Failed files are expected to be added again: they must not prevent the form from being submitted
+            flow.files.filter((file) => file.error).forEach((file) => flow.removeFile(file));
+            $container.removeClass('flow-upload-failed');
 
-    r.on('fileSuccess', function (file, message) {
-        console.log("File Success: " + file.name);
-        let csrf_token = JSON.parse(message).csrf_token;
-        $('input[name="csrf_token"]').val(csrf_token);
+            // The resume link is hidden as soon as the new files start: paused files would never be resumed
+            if (flow.files.some((file) => file.paused)) {
+                pauseRequested = false;
+                $pauseLink.text('Pause');
+                flow.resume();
+                return;
+            }
+            flow.upload();
+        });
 
-        var $self = $('.flow-file-' + file.uniqueIdentifier);
-        $self.find('.flow-file-progress').text('(terminé)');
+        flow.on('uploadStart', function () {
+            $resumeLink.hide();
+            $pauseLink.show();
+            $cancelLink.show();
+        });
 
-        isPausedForNext = true;
-        r.pause();
+        flow.on('fileProgress', function (file, chunk) {
+            if (chunk && chunk.status() === 'success') {
+                updateCsrfToken(chunk.xhr.responseText);
+                if (cancelRequested) {
+                    cancelUpload();
+                    return;
+                }
+                if (pauseRequested) {
+                    pauseRequested = false;
+                    flow.pause();
+                    $pauseLink.text('Pause').hide();
+                    $resumeLink.show();
+                }
+            }
 
-        processNextFile();
-    });
+            const remaining = formatDuration(file.timeRemaining());
+            let progressText = `${Math.floor(file.progress() * 100)}% ${formatBytes(file.averageSpeed)}/s`;
+            if (remaining) {
+                progressText += ` ${remaining} restante(s)`;
+            }
+            fileProgressCells.get(file)?.text(progressText);
+            $progressBar.css({width: `${Math.floor(flow.progress() * 100)}%`});
+        });
 
-    r.on('fileError', function (file, message) {
-        // Reflect that the file upload has resulted in error
-        $('.flow-file-' + file.uniqueIdentifier + ' .flow-file-progress').html('(file could not be uploaded: ' + message + ')');
-    });
-    r.on('fileProgress', function (file) {
-        // Handle progress for both the file and the overall upload
-        $('.flow-file-' + file.uniqueIdentifier + ' .flow-file-progress')
-            .html(Math.floor(file.progress() * 100) + '% '
-                + readablizeBytes(file.averageSpeed) + '/s '
-                + secondsToStr(file.timeRemaining()) + ' restante(s)');
+        flow.on('fileSuccess', function (file) {
+            fileProgressCells.get(file)?.text('(terminé)');
+        });
 
-        var pastell_flow_upload = $('.flow-file-' + file.uniqueIdentifier + ' .flow-file-progress').parents(".pastell-flow-upload")[0];
+        flow.on('fileError', function (file, message) {
+            if (cancelRequested) {
+                cancelUpload();
+                return;
+            }
+            fileProgressCells.get(file)?.text(`(le fichier n'a pas pu être chargé : ${message})`);
+        });
 
-        $(pastell_flow_upload).find('.progress-bar').css({width: Math.floor(r.progress() * 100) + '%'});
-    });
-    r.on('uploadStart', function () {
-        $(pastell_flow_upload).find('.progress-resume-link').hide();
-        $(pastell_flow_upload).find('.progress-pause-link').show();
-        $(pastell_flow_upload).find('.progress-cancel-link').show();
-    });
-    r.on('catchAll', function () {
-        console.log.apply(console, arguments);
-    });
-}
+        flow.on('complete', function () {
+            // After a cancellation, Flow still fires "complete" on an empty file list
+            if (submitted || flow.files.length === 0 || flow.files.some((file) => !file.isComplete())) {
+                return;
+            }
+            $resumeLink.add($pauseLink).add($cancelLink).hide();
 
-function readablizeBytes(bytes) {
-    var s = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'];
-    var e = Math.floor(Math.log(bytes) / Math.log(1024));
-    return (bytes / Math.pow(1024, e)).toFixed(2) + " " + s[e];
-}
+            // Submitting reloads the page and would hide which files failed: they have to be added again
+            if (flow.files.some((file) => file.error)) {
+                $container.addClass('flow-upload-failed');
+                return;
+            }
 
-function secondsToStr(temp) {
-    function numberEnding(number) {
-        return (number > 1) ? 's' : '';
-    }
-
-    var years = Math.floor(temp / 31536000);
-    if (years) {
-        return years + ' year' + numberEnding(years);
-    }
-    var days = Math.floor((temp %= 31536000) / 86400);
-    if (days) {
-        return days + ' day' + numberEnding(days);
-    }
-    var hours = Math.floor((temp %= 86400) / 3600);
-    if (hours) {
-        return hours + ' hour' + numberEnding(hours);
-    }
-    var minutes = Math.floor((temp %= 3600) / 60);
-    if (minutes) {
-        return minutes + ' minute' + numberEnding(minutes);
-    }
-    var seconds = temp % 60;
-    return seconds + ' seconde' + numberEnding(seconds);
-}
+            // Wait for the uploads of the other fields of the form, and keep their failures visible, before submitting it
+            if ($('.progress-cancel-link:visible').length === 0 && $('.flow-upload-failed').length === 0) {
+                submitted = true;
+                submitForm($container, queryParam.field);
+            }
+        });
+    };
+}(jQuery));
