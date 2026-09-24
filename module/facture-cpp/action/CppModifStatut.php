@@ -90,11 +90,6 @@ class CppModifStatut extends ActionExecutor
 
             $doc->addFileFromData('histo_statut_cpp', 'histo_statut_cpp.json', $histo_content, 0);
 
-            if ($statut_cible == PortailFactureConnecteur::STATUT_A_RECYCLER) {
-                $doc->setData(AttrFactureCPP::ATTR_ID_FACTURE_CPP, $doc->get('id_facture_cpp') . "-1-RECYCLEE");
-                $doc->setData(AttrFactureCPP::ATTR_IS_ANNULE, true);
-            }
-
             if ($statut_cible == PortailFactureConnecteur::STATUT_SUSPENDUE) {
                 $doc->setData(AttrFactureCPP::ATTR_ID_FACTURE_CPP, $doc->get('id_facture_cpp') . "-2-SUSPENDUE");
                 $doc->setData(AttrFactureCPP::ATTR_IS_ANNULE, true);
@@ -215,7 +210,6 @@ class CppModifStatut extends ActionExecutor
 
         $statuts_cible_autorisees = [
             PortailFactureConnecteur::STATUT_MISE_A_DISPOSITION,
-            PortailFactureConnecteur::STATUT_A_RECYCLER,
             PortailFactureConnecteur::STATUT_REJETEE,
             PortailFactureConnecteur::STATUT_SUSPENDUE,
             PortailFactureConnecteur::STATUT_SERVICE_FAIT,

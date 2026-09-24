@@ -106,7 +106,6 @@ class StatutFactureCppCreate extends ActionExecutor
             '01' => PortailFactureConnecteur::STATUT_DEPOSEE,
             '02' => PortailFactureConnecteur::STATUT_ACHEMINEMENT,
             '03' => PortailFactureConnecteur::STATUT_MISE_A_DISPOSITION,
-            '04' => PortailFactureConnecteur::STATUT_A_RECYCLER,
             '05' => PortailFactureConnecteur::STATUT_REJETEE,
             '06' => PortailFactureConnecteur::STATUT_SUSPENDUE,
             '07' => PortailFactureConnecteur::STATUT_SERVICE_FAIT,

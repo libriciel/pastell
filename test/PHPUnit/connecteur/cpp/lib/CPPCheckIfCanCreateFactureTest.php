@@ -62,7 +62,7 @@ class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
         $fakeFactureChorus = [
             'date_statut_courant' => $dateStatutCourant,
             'type_integration' => ChorusProImportUtilService::TYPE_INTEGRATION_CPP_CLE,
-            'statut' => PortailFactureConnecteur::STATUT_A_RECYCLER
+            'statut' => PortailFactureConnecteur::STATUT_SUSPENDUE
         ];
 
         $canCreateFacture = $this->checkIfCanCreateFacture->canCreateFacture(
@@ -81,7 +81,7 @@ class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
         $fakeFactureChorus = [
             'date_statut_courant' => $dateStatutCourant,
             'type_integration' => ChorusProImportUtilService::TYPE_INTEGRATION_CPP_TRAVAUX_CLE,
-            'statut' => PortailFactureConnecteur::STATUT_A_RECYCLER
+            'statut' => PortailFactureConnecteur::STATUT_SUSPENDUE
         ];
 
         $canCreateFacture = $this->checkIfCanCreateFacture->canCreateFacture(

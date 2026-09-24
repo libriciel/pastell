@@ -54,6 +54,7 @@ class SynchronisationFacture
             $action = self::RETOUR_SYNCHRO_VERIF;
         }
 
+        // #2467 : A_RECYCLER n'est plus un statut cible, mais des factures peuvent encore l'avoir comme statut courant
         if ($statut_courant == PortailFactureConnecteur::STATUT_A_RECYCLER) {
             $donneesFormulaire->setData(AttrFactureCPP::ATTR_ID_FACTURE_CPP, $id_facture_cpp . "-1-RECYCLEE");
             $donneesFormulaire->setData(AttrFactureCPP::ATTR_IS_ANNULE, true);
