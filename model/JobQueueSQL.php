@@ -380,10 +380,6 @@ SQL;
         ?JobAdvancedFilters $advancedFilters = null,
         ?JobSort $sort = null
     ): array {
-        if (!in_array($filtre, ['lock', 'actif', 'wait'])) {
-            $filtre = '';
-        }
-
         $sql = 'SELECT *, job_queue.id_job as id_job
             FROM job_queue
             LEFT JOIN worker ON job_queue.id_job = worker.id_job
@@ -395,17 +391,8 @@ SQL;
             $params[] = $id_daemon;
         }
 
-        switch ($filtre) {
-            case 'lock':
-                $sql .= ' AND job_queue.job_status != 0 ';
-                break;
-            case 'wait':
-                $sql .= ' AND next_try < ? AND job_queue.job_status=0 ';
-                $params[] = $this->getNow();
-                break;
-            case 'actif':
-                $sql .= ' AND worker.termine=0 ';
-                break;
+        if ($filtre === 'actif') {
+            $sql .= ' AND worker.termine = 0';
         }
 
         $this->appendAdvancedFilters($advancedFilters, $sql, $params);
@@ -440,13 +427,6 @@ SQL;
         if ($id_daemon !== null) {
             $sql .= ' AND job_queue.id_daemon=?';
             $params[] = $id_daemon;
-        }
-        if ($filtre === 'lock') {
-            $sql .= ' AND job_queue.job_status != 0';
-        }
-        if ($filtre === 'wait') {
-            $sql .= ' AND job_queue.next_try < ?';
-            $params[] = $this->getNow();
         }
         if ($filtre === 'actif') {
             $sql .= ' AND worker.termine = 0';

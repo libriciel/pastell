@@ -4,7 +4,8 @@
 
 ### Ajouts
 
-- Refonte du Gestionnaire de tâches #964 
+- Refonte du Gestionnaire de tâches sur la page 'Tous les travaux' #964
+  - La page 'Tous les travaux' remplace 'Travaux suspendus' et 'Travaux en attente'
   - Ajout d'une recherche avancée 
   - Ajout du tri par dates sur la liste des travaux
 - Studio, l'étape « Envoi à la préfecture (via un Tdt) » permet désormais de sélectionner plusieurs éléments

@@ -2,19 +2,20 @@
     Pagination + liste des tâches, mutualisée entre le gestionnaire global et par entité.
     Variables attendues :
       - search_route : nom de la route pour les liens de pagination et de tri
-      - with_filtre  : (optionnel) ajoute le critère `filtre` aux paramètres (pages « job »)
+      - search       : (optionnel) critères de recherche, uniquement sur la page « Tous les travaux » (active le tri)
+      - filtre       : (optionnel) filtre de la page (« actif »)
       - id_e         : (optionnel) présent uniquement dans le contexte par entité
       - sort         : (optionnel) Pastell\Model\Daemon\JobSort courant, ou null
 #}
-{% set job_query_params = {
+{% set job_query_params = (search is defined ? {
     'job_type': search.type,
     'job_status': search.job_status,
     'search_id_e': search.id_e,
     'include_children': search.include_children,
     'id_verrou': search.id_verrou
-}
+} : {})
     |merge(id_e is defined ? {'id_e': id_e} : {})
-    |merge(with_filtre|default(false) ? {'filtre': filtre} : {}) %}
+    |merge(filtre|default('') ? {'filtre': filtre} : {}) %}
 
 {% set pagination_params = job_query_params
     |merge(sort|default(null) is not null ? {'sort_by': sort.column.value, 'sort_dir': sort.direction.value} : {}) %}

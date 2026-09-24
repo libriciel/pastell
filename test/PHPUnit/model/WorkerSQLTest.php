@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Pastell\Configuration\JobStatus;
+use Pastell\Model\Daemon\JobAdvancedFilters;
+
 class WorkerSQLTest extends PastellTestCase
 {
     private WorkerSQL $workerSQL;
@@ -146,20 +149,22 @@ class WorkerSQLTest extends PastellTestCase
         static::assertSame(1, $this->jobQueueSQL->getNbJob('toto'));
     }
 
-    public function testGetJobLock(): void
+    public function testGetJobSuspended(): void
     {
         $this->launchWorker();
-        $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'lock');
+        $filters = new JobAdvancedFilters(job_status: array_map('strval', JobStatus::suspendedValues()));
+        $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, '', null, $filters);
         static::assertEmpty($job_list);
-        static::assertSame(0, $this->jobQueueSQL->getNbJob('lock'));
+        static::assertSame(0, $this->jobQueueSQL->getNbJob('', null, $filters));
     }
 
-    public function testGetJobWait(): void
+    public function testGetJobWaiting(): void
     {
         $id_worker = $this->launchWorker();
-        $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, 'wait');
+        $filters = new JobAdvancedFilters(job_status: [(string)JobStatus::WAITING->value]);
+        $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, '', null, $filters);
         static::assertEquals($id_worker, $job_list[0]->worker->id_worker);
-        static::assertSame(1, $this->jobQueueSQL->getNbJob('wait'));
+        static::assertSame(1, $this->jobQueueSQL->getNbJob('', null, $filters));
     }
 
     public function testGetJobActif(): void

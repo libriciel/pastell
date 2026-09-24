@@ -161,4 +161,48 @@ class DaemonControlerTest extends ControlerTestCase
         $job = $jobQueueSQL->getJob($id_job);
         static::assertSame(JobStatus::WAITING, $job->job_status);
     }
+
+    public function testJobActionDisplaysSearchAndSortOnAllJobs(): void
+    {
+        $this->getInternalAPI()->post('/entite/1/connecteur/13/action/une_action_auto');
+        $daemonControler = $this->getControlerInstance(DaemonControler::class);
+        $this->setGetInfo(['job_status' => array_map('strval', JobStatus::suspendedValues())]);
+        $daemonControler->_beforeAction();
+
+        ob_start();
+        $daemonControler->jobAction();
+        $output = ob_get_clean();
+
+        static::assertStringContainsString('Recherche avancée', $output);
+        static::assertStringContainsString('Trier par', $output);
+        static::assertStringContainsString("Reprendre l'exécution de tous les travaux", $output);
+    }
+
+    public function testJobActionActifHasNoSearchNorSort(): void
+    {
+        $daemonControler = $this->getControlerInstance(DaemonControler::class);
+        $this->setGetInfo(['filtre' => 'actif']);
+        $daemonControler->_beforeAction();
+
+        ob_start();
+        $daemonControler->jobAction();
+        $output = ob_get_clean();
+
+        static::assertStringContainsString('Liste des travaux actifs', $output);
+        static::assertStringNotContainsString('Recherche avancée', $output);
+        static::assertStringNotContainsString('Trier par', $output);
+    }
+
+    public function testIndexActionHasNoSearchNorSort(): void
+    {
+        $daemonControler = $this->getControlerInstance(DaemonControler::class);
+        $daemonControler->_beforeAction();
+
+        ob_start();
+        $daemonControler->indexAction();
+        $output = ob_get_clean();
+
+        static::assertStringNotContainsString('Recherche avancée', $output);
+        static::assertStringNotContainsString('Trier par', $output);
+    }
 }

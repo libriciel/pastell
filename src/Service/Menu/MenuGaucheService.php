@@ -30,8 +30,6 @@ class MenuGaucheService
     public const string DAEMON_VERROU = 'Daemon/verrou';
     public const string DAEMON_JOB = 'Daemon/job';
     public const string DAEMON_JOB_ACTIF = 'Daemon/job?filtre=actif';
-    public const string DAEMON_JOB_LOCK = 'Daemon/job?filtre=lock';
-    public const string DAEMON_JOB_WAIT = 'Daemon/job?filtre=wait';
     public const string DAEMON_FREQUENCE_CONFIGURATION = 'Daemon/frequenceConfiguration';
     public const string DAEMON_CONFIGURATION = 'Daemon/configuration';
 
@@ -45,8 +43,6 @@ class MenuGaucheService
     public const string ENTITE_DAEMON = 'Entite/daemon';
     public const string ENTITE_JOB = 'Entite/job';
     public const string ENTITE_JOB_ACTIF = 'Entite/job?filtre=actif';
-    public const string ENTITE_JOB_LOCK = 'Entite/job?filtre=lock';
-    public const string ENTITE_JOB_WAIT = 'Entite/job?filtre=wait';
     public const string ENTITE_DAEMON_ADMIN = 'Entite/daemonAdmin';
 
     public const string FLUX_INDEX = 'Flux/index';
@@ -106,8 +102,6 @@ class MenuGaucheService
                 MenuGaucheOption::fromLien("Files d'attente", self::DAEMON_VERROU),
                 MenuGaucheOption::fromLien('Tous les travaux', self::DAEMON_JOB),
                 MenuGaucheOption::fromLien('Travaux actifs', self::DAEMON_JOB_ACTIF),
-                MenuGaucheOption::fromLien('Travaux suspendus', self::DAEMON_JOB_LOCK),
-                MenuGaucheOption::fromLien('Travaux en attente', self::DAEMON_JOB_WAIT),
             ],
             'Configuration' => $configuration_options,
         ];
@@ -172,8 +166,6 @@ class MenuGaucheService
                 MenuGaucheOption::withParameters('Gestionnaire de tâches', self::ENTITE_DAEMON, ['id_e' => $id_e]),
                 MenuGaucheOption::withParameters('Tous les travaux', self::ENTITE_JOB, ['id_e' => $id_e]),
                 MenuGaucheOption::withParameters('Travaux actifs', self::ENTITE_JOB_ACTIF, ['id_e' => $id_e]),
-                MenuGaucheOption::withParameters('Travaux suspendus', self::ENTITE_JOB_LOCK, ['id_e' => $id_e]),
-                MenuGaucheOption::withParameters('Travaux en attente', self::ENTITE_JOB_WAIT, ['id_e' => $id_e]),
             ];
 
             if ($daemon_edition) {
