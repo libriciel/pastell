@@ -14,7 +14,7 @@
 
 - Ajout/suppression d'une annexe TdT : les typologies déjà choisies sont conservées #1184
 - Harmonisation des pages de confirmation de suppressions #2560
-- Mail sécurisé : le passage en non reçu n'est plus repoussé par les renvois (régression 4.1.12) #2571
+- Mail sécurisé : le passage en non reçu n'est plus repoussé par les renvois (régression 4.1.20) #2571
 - Expressions Twig : la lecture des attributs d'un noeud XML (`node.attributes.V`) est de nouveau autorisée
   (régression 4.1.22) #2572
 - Upload multiple : les fichiers ne sont plus perdus lors d'un ajout en lot #2584
