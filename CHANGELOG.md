@@ -16,6 +16,8 @@
 - Expressions Twig : la lecture des attributs d'un noeud XML (`node.attributes.V`) est de nouveau autorisée
   (régression 4.1.22) #2572
 - Upload multiple : les fichiers ne sont plus perdus lors d'un ajout en lot #2584
+- Mail sécurisé : l'envoi d'un fichier par le destinataire ne régénère plus l'accusé de notification à chaque morceau
+  envoyé #2586
 
 ## [4.1.22] - 2026-09-07
 

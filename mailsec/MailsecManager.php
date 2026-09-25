@@ -60,13 +60,7 @@ final class MailsecManager
         $mailSecInfo = new MailSecInfo();
         $mailSecInfo->key = $key;
 
-        $info = $this->objectInstancier->getInstance(DocumentEmail::class)->getInfoFromKey($mailSecInfo->key);
-        if (!$info) {
-            throw new InvalidKeyException('Unable to find key');
-        }
-        if ($info['non_recu']) {
-            throw new UnavailableMailException('Email no longer available');
-        }
+        $info = $this->getAvailableMailInfo($key);
 
         $mailSecInfo->id_de = $info['id_de'];
         $mailSecInfo->id_d = $info['id_d'];
@@ -147,6 +141,39 @@ final class MailsecManager
         } catch (ConnectionException) {
         }
         return $mailSecInfo;
+    }
+
+    /**
+     * @throws InvalidKeyException
+     * @throws UnavailableMailException
+     * @throws MissingPasswordException
+     * @throws NotFoundException
+     */
+    public function checkRecipientAccess(string $key, Request $request): void
+    {
+        $info = $this->getAvailableMailInfo($key);
+        $typeDocument = $this->objectInstancier->getInstance(DocumentSQL::class)->getInfo($info['id_d'])['type'];
+        $donneesFormulaire = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)->get(
+            $info['id_d'],
+            $this->getRecipientFlux($typeDocument)
+        );
+        $this->validatePassword($donneesFormulaire, $key, $request);
+    }
+
+    /**
+     * @throws InvalidKeyException
+     * @throws UnavailableMailException
+     */
+    private function getAvailableMailInfo(string $key): array
+    {
+        $info = $this->objectInstancier->getInstance(DocumentEmail::class)->getInfoFromKey($key);
+        if (!$info) {
+            throw new InvalidKeyException('Unable to find key');
+        }
+        if ($info['non_recu']) {
+            throw new UnavailableMailException('Email no longer available');
+        }
+        return $info;
     }
 
     private function getOfficeClient(): OfficeClient

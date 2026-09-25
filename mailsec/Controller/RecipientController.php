@@ -299,7 +299,7 @@ final class RecipientController extends AbstractController
     #[Route('/mail/{key}/chunkUpload', name: 'mailsec_recipient_chunkUpload', methods: ['GET', 'POST'])]
     public function chunkUpload(string $key, Request $request): Response
     {
-        $this->mailsecManager->getMailsecInfo($key, $request);
+        $this->mailsecManager->checkRecipientAccess($key, $request);
 
         $this->objectInstancier->getInstance(DonneesFormulaireControler::class)->chunkUploadAction();
         return $this->redirectToRoute('mailsec_recipient_reply', ['key' => $key]);
