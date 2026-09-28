@@ -27,9 +27,6 @@ class ExtensionControler extends PastellControler
         $this->setViewParameter('all_extensions', $this->extensionList());
 
         $this->setViewParameter('pastell_manifest', $this->getManifestFactory()->getPastellManifest()->getInfo());
-        $this->setViewParameter('extensions_graphe', $this->getObjectInstancier()
-            ->getInstance(ExtensionsGraphique::class)
-            ->creerGraphe());
 
         $this->setViewParameter('template_milieu', "ExtensionIndex");
         $this->setViewParameter('page_title', "Extensions");
@@ -130,17 +127,5 @@ class ExtensionControler extends PastellControler
             $this->setLastError($e->getMessage());
         }
         $this->redirect("/Extension/index");
-    }
-
-    public function graphiqueAction()
-    {
-        if (! file_exists($this->getObjectInstancier()->getInstance(ExtensionsGraphique::class)->getGraphiquePath())) {
-            $file = __DIR__ . "/../web/img/commun/logo_pastell.png";
-            header("Content-type: image/png");
-            readfile($file);
-        } else {
-            header("Content-type: image/jpeg");
-            readfile($this->getObjectInstancier()->getInstance(ExtensionsGraphique::class)->getGraphiquePath());
-        }
     }
 }

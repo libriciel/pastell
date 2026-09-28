@@ -21,7 +21,7 @@ class CommandCheck implements CheckInterface
     public function check(): array
     {
         $commands = [];
-        foreach ($this->verifEnvironnement->checkCommande(['dot', 'xmlstarlet']) as $command => $path) {
+        foreach ($this->verifEnvironnement->checkCommande(['xmlstarlet']) as $command => $path) {
             $commands[] = (new HealthCheckItem(
                 $command,
                 $path ?: "La commande n'est pas disponible"

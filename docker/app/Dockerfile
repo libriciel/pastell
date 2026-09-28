@@ -26,7 +26,6 @@ RUN apk add --no-cache ${APK_PINNED_PACKAGES} \
     ca-certificates \
     curl \
     git \
-    graphviz \
     icu \
     icu-data-full \
     krb5 \
