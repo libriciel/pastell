@@ -10,7 +10,7 @@ include:
 #      mode: "changed"
   - component: $LIBRICIEL_CATALOG_PATH/project-standards/check-libriciel-standards@3.1.0
   - component: $LIBRICIEL_CATALOG_PATH/renovate-runner/runner@1.6.1
-  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.2.0
+  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.2.1
   - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@1.4.0
     inputs:
       compose_file: "docker/compose.yaml"
@@ -130,7 +130,7 @@ quality:
     - if: $CI_COMMIT_TAG != null
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"
   image:
-    name: hubdocker.libriciel.fr/sonarsource/sonar-scanner-cli:12.1@sha256:23ca0f137965d9dff2198074043fd48d386280bc5d0ccac8c8349cea4cf096a9
+    name: hubdocker.libriciel.fr/sonarsource/sonar-scanner-cli:12.2@sha256:a3f4215076706c95a17a68c19322ee916e40a3acd081a8c1a1e839e0194afa57
     entrypoint: [ "/bin/sh", "-c" ]
   script:
     - sonar-scanner -Dsonar.token=$SONAR_LOGIN -Dsonar.host.url=$SONAR_HOST_URL
@@ -149,7 +149,7 @@ acceptance_test:
     services:
         - name: hubdocker.libriciel.fr/mariadb:11.4.13-noble@sha256:70cc072b29b4a89ae07abb2d4da2c64678a7f2dfe092751bb51c87d67dc1338b
           alias: mariadb
-        - name: hubdocker.libriciel.fr/redis:8.10.1-alpine3.23@sha256:becdda6c7f4b3fb42e42fd7f120bbf5c54c4caaaf16f26da24e4563d2c1f0576
+        - name: hubdocker.libriciel.fr/redis:8.10.2-alpine3.23@sha256:3811787313eba226a2ef38658c6ccb91cd5e110edc89c37767de373120a0e5a0
           alias: redis
         - name: ${CONTAINER_IMAGE_APP}
           alias: app
