@@ -4,15 +4,11 @@
  * @var Gabarit $this
  * @var int $id_u
  * @var array $infoUtilisateur
- * @var bool $enable_certificate_authentication
- * @var Certificate $certificat
  * @var array $arbre
  * @var int $id_e
  * @var bool $new_user
  * @var bool $is_api
  */
-
-use Pastell\Utilities\Certificate;
 
 ?>
 

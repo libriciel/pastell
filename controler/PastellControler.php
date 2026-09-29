@@ -308,7 +308,7 @@ class PastellControler extends Controler
                 DroitService::DROIT_DAEMON,
                 DroitType::LECTURE
             );
-            $this->setViewParameter('daemon_lecture', $daemon_lecture);
+            $this->setViewParameter('menu_daemon_lecture', $daemon_lecture);
             $this->setViewParameter('menu_system_lecture', $has_system_lecture);
 
             if ($daemon_lecture) {
