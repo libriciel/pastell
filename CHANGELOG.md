@@ -18,8 +18,17 @@
 - Mail sécurisé : l'envoi d'un fichier par le destinataire ne régénère plus l'accusé de notification à chaque morceau
   envoyé #2586
 - Mail sécurisé : le passage en non reçu n'est plus repoussé par les renvois (régression 5.0.6) #2574
-- i-Parapheur REST : le bordereau de signature n'était pas récupéré lorsque le titre du dossier contenait certains
+- iparapheur REST : le bordereau de signature n'était pas récupéré lorsque le titre du dossier contenait certains
   caractères (`,` `/` `:` …) ou dépassait 245 caractères #2578
+
+### Dépréciations
+
+- **iparapheur REST, "Appliquer le multi-document" est proscrit** #2565
+  - En prévision du **BREAKING** de la version 6.0.0 avec la suppression de la case sur le connecteur
+  - En version 6.0.0, il sera possible d'envoyer plusieurs documents à signer ET les documents annexes (flux studio et ls-)
+  - Dans cette attente, pour exploiter l'option 
+    `Si le sous-type iparapheur le permet (Signature multi-document), alors les fichiers annexes seront des multi-documents signés` 
+    il est recommandé d'utiliser le connecteur iparapheur SOAP qui restera inchangé
 
 ## [5.0.9] - 2026-09-07
 
