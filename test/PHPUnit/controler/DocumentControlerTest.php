@@ -323,6 +323,63 @@ class DocumentControlerTest extends ControlerTestCase
         );
     }
 
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testBulkProcessRequiresTheEditRight(): void
+    {
+        $document = $this->createDocument('test');
+        $documentController = $this->getControlerInstance(DocumentControler::class);
+        $this->authenticateNewUserWithPermission([DroitService::getDroitFor('test', DroitType::LECTURE)]);
+
+        $this->setPostInfo([
+            'id_e' => PastellTestCase::ID_E_COL,
+            'type' => 'test',
+            'action' => 'supression',
+            'id_d' => [$document['id_d']],
+        ]);
+        try {
+            $documentController->doTraitementLotAction();
+            static::fail('A read-only user must not run a bulk action');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString("Vous n'avez pas les droits nécessaires", $e->getMessage());
+        }
+        static::assertNotEmpty(
+            $this->getObjectInstancier()->getInstance(DocumentSQL::class)->getInfo($document['id_d']),
+        );
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testBulkProcessRefusesDocumentsOfAnotherType(): void
+    {
+        $document = $this->createDocument('actes-generique');
+        $documentController = $this->getControlerInstance(DocumentControler::class);
+        $this->authenticateNewUserWithPermission([
+            DroitService::getDroitFor('test', DroitType::LECTURE),
+            DroitService::getDroitFor('test', DroitType::EDITION),
+        ]);
+
+        $this->setPostInfo([
+            'id_e' => PastellTestCase::ID_E_COL,
+            'type' => 'test',
+            'action' => 'supression',
+            'id_d' => [$document['id_d']],
+        ]);
+        try {
+            $documentController->doTraitementLotAction();
+            static::fail('A bulk action must only apply to documents of the checked type');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString("n'est pas de type « test »", $e->getMessage());
+        }
+        static::assertNotEmpty(
+            $this->getObjectInstancier()->getInstance(DocumentSQL::class)->getInfo($document['id_d']),
+        );
+    }
+
     public function testChangeEtat(): void
     {
         $documentController = $this->getControlerInstance(DocumentControler::class);

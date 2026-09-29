@@ -1010,8 +1010,8 @@ class DocumentControler extends PastellControler
      */
     public function doTraitementLotAction(): void
     {
-        $this->validTraitementParLot($_POST);
-        $recuperateur = new Recuperateur($_POST);
+        $recuperateur = $this->getPostInfo();
+        $this->validTraitementParLot($recuperateur->getAll());
         $id_e = $recuperateur->getInt('id_e', EntiteSQL::ID_E_ENTITE_RACINE);
         $type = $recuperateur->get('type');
         $search = $recuperateur->get('search');

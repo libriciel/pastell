@@ -22,7 +22,7 @@
 ### Sécurité
 
 - Faille de contrôle d'accès sur le traitement par lot
-  (CVSS 8.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:H) #2487
+  (CVSS 8.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:H) #2587
 - Faille de contrôle d'accès sur la modification de dossier par l'API
   (CVSS 6.1 - criticité MOYENNE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:L) #2588
 
