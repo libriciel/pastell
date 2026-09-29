@@ -89,7 +89,7 @@
                     <i class="fa fa-puzzle-piece"></i><span>Administration avancée</span>
                 </a>
             {% endif %}
-            {% if menu_system_lecture %}
+            {% if daemon_lecture %}
                 <a href="{{ path('app.legacy.daemon_index') }}" class='new_picto' style="float: right;">
                     {% if daemon_stopped_warning %}
                         <p class="badge badge-daemon">!</p>

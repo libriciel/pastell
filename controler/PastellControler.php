@@ -289,9 +289,12 @@ class PastellControler extends Controler
         $daemonManager = $this->getInstance(DaemonManager::class);
 
         if ($this->getAuthentification()->isConnected()) {
+            $id_u = (int) $this->getId_u();
+            $droitService = $this->getDroitService();
             $this->setViewParameter(
                 'menu_administration_link',
-                $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::LECTURE)
+                $droitService->hasOneDroitFor($id_u, DroitService::DROIT_ENTITE, DroitType::EDITION)
+                || $droitService->hasOneDroitFor($id_u, DroitService::DROIT_ANNUAIRE, DroitType::EDITION)
             );
 
             $has_system_lecture = $this->hasDroitFor(
@@ -299,9 +302,16 @@ class PastellControler extends Controler
                 DroitService::DROIT_SYSTEM,
                 DroitType::LECTURE
             );
+
+            $daemon_lecture = $this->hasDroitFor(
+                EntiteSQL::ID_E_ENTITE_RACINE,
+                DroitService::DROIT_DAEMON,
+                DroitType::LECTURE
+            );
+            $this->setViewParameter('daemon_lecture', $daemon_lecture);
             $this->setViewParameter('menu_system_lecture', $has_system_lecture);
 
-            if ($has_system_lecture) {
+            if ($daemon_lecture) {
                 $this->setViewParameter(
                     'nb_job_lock',
                     $this->getObjectInstancier()

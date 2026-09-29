@@ -105,7 +105,7 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
         $connecteurFrequenceSQL = $this->getObjectInstancier()->getInstance(ConnecteurFrequenceSQL::class);
         $connecteurFrequence = new ConnecteurFrequence();
         $connecteurFrequence->type_connecteur = ConnecteurFrequence::TYPE_ENTITE;
-        $connecteurFrequence->famille_connecteur = 'pdf-relance';
+        $connecteurFrequence->famille_connecteur = 'mailsec';
         $connecteurFrequence->action_type = ConnecteurFrequence::TYPE_ACTION_DOCUMENT;
         $connecteurFrequence->type_document = self::MAILSEC_ONLY;
         $connecteurFrequence->action = 'mailsec-relance';

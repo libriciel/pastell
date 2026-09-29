@@ -7,9 +7,7 @@ namespace Pastell\Service\Utilisateur;
 use ConfigurationSQL;
 use Exception;
 use Pastell\Mailer\Mailer;
-use Pastell\Service\TokenGenerator;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Journal;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mime\Address;
 use UtilisateurSQL;
@@ -18,8 +16,7 @@ final class PasswordResetMailService
 {
     public function __construct(
         private readonly Mailer $mailer,
-        private readonly Journal $journal,
-        private readonly TokenGenerator $tokenGenerator,
+        private readonly PasswordResetService $passwordResetService,
         private readonly UtilisateurSQL $utilisateurSQL,
         private readonly ConfigurationSQL $configurationSQL,
         private readonly string $site_base,
@@ -33,9 +30,8 @@ final class PasswordResetMailService
      */
     public function sendResetMail(int $id_u): void
     {
-        $token = $this->tokenGenerator->generate();
+        $token = $this->passwordResetService->generateResetToken($id_u);
         $info = $this->utilisateurSQL->getInfo($id_u);
-        $this->utilisateurSQL->reinitPassword($id_u, $token);
 
         $link = \sprintf('%s/Connexion/changementMdp?mail_verif=%s', rtrim($this->site_base, '/'), $token);
 
@@ -47,12 +43,5 @@ final class PasswordResetMailService
             ->htmlTemplate('oublie-identifiant.html.twig')
             ->context(['link' => $link, 'login' => $info['login']]);
         $this->mailer->send($templatedEmail);
-        $this->journal->addActionAutomatique(
-            Journal::MODIFICATION_UTILISATEUR,
-            $info['id_e'],
-            0,
-            'mot de passe modifié',
-            "Procédure initiée pour {$info['email']}"
-        );
     }
 }
