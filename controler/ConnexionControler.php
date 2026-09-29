@@ -2,8 +2,8 @@
 
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\PasswordEntropy;
+use Pastell\Service\Utilisateur\PasswordResetService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
-use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
@@ -477,19 +477,9 @@ class ConnexionControler extends PastellControler
             $this->redirect("/Connexion/changementMdp?mail_verif=$mail_verif_password");
         }
 
-        $utilisateur = new UtilisateurSQL($this->getSQLQuery());
-        $infoUtilisateur = $utilisateur->getInfo($id_u);
-        $utilisateur->setPassword($id_u, $password);
-
-        $utilisateur->reinitPassword($id_u, (new UriSafeTokenGenerator())->generateToken());
-
-        $this->getJournal()->add(
-            Journal::MODIFICATION_UTILISATEUR,
-            $infoUtilisateur['id_e'],
-            0,
-            'mot de passe modifié',
-            "{$infoUtilisateur['login']} ({$infoUtilisateur['id_u']}) a modifié son mot de passe"
-        );
+        $this->getObjectInstancier()
+            ->getInstance(PasswordResetService::class)
+            ->changePassword((int) $id_u, $password);
 
         /* Note : on ne peut pas mettre de message personnalisé pour le moment */
         $this->setLastMessage('Votre mot de passe a été modifié');
@@ -508,8 +498,8 @@ class ConnexionControler extends PastellControler
 
         $login = $recuperateur->get('login');
 
-        $utilisateurListe = new UtilisateurListe($this->getSQLQuery());
-        $id_u = $utilisateurListe->getUtilisateurByLogin($login);
+        $utilisateurListe = $this->getObjectInstancier()->getInstance(UtilisateurListe::class);
+        $id_u = $utilisateurListe->getByLoginOrEmail($login, $login);
 
         if (!$id_u) {
             $this->setLastError("Aucun compte n'a été trouvé avec ces informations");

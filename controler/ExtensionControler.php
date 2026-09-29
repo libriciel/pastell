@@ -50,6 +50,16 @@ class ExtensionControler extends PastellControler
         $id_e = $this->getGetInfo()->get("id_extension");
         $extension_info = $this->getExtensions()->getInfo($id_e);
 
+        $connecteurDefinitionFiles = $this->getConnecteurDefinitionFiles();
+        foreach ($extension_info['connecteur'] ?? [] as $connecteur) {
+            $extension_info['connecteur_description'][$connecteur] =
+                $connecteurDefinitionFiles->getInfo($connecteur)['description'] ?? null;
+        }
+        $fluxDefinitionFiles = $this->getFluxDefinitionFiles();
+        foreach ($extension_info['flux'] ?? [] as $flux) {
+            $extension_info['flux_description'][$flux] = $fluxDefinitionFiles->getInfo($flux)['description'] ?? null;
+        }
+
         $this->setViewParameter('extension_info', $extension_info);
         $this->setViewParameter('template_milieu', "ExtensionDetail");
         $this->setViewParameter('page_title', "Extension « {$extension_info['nom']} »");

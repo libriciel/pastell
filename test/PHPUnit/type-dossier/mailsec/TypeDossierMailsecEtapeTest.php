@@ -85,7 +85,7 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
 
         $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
         $document_email_info = $documentEmail->getInfo($id_d);
-        $documentEmail->consulter($document_email_info[0]['key']);
+        $documentEmail->consulter($document_email_info[0]['key'], $this->getJournal());
         $this->assertLastDocumentAction('reception', $id_d);
 
         $this->assertTrue(
@@ -105,7 +105,7 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
         $connecteurFrequenceSQL = $this->getObjectInstancier()->getInstance(ConnecteurFrequenceSQL::class);
         $connecteurFrequence = new ConnecteurFrequence();
         $connecteurFrequence->type_connecteur = ConnecteurFrequence::TYPE_ENTITE;
-        $connecteurFrequence->famille_connecteur = 'mailsec';
+        $connecteurFrequence->famille_connecteur = 'pdf-relance';
         $connecteurFrequence->action_type = ConnecteurFrequence::TYPE_ACTION_DOCUMENT;
         $connecteurFrequence->type_document = self::MAILSEC_ONLY;
         $connecteurFrequence->action = 'mailsec-relance';

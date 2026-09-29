@@ -253,8 +253,6 @@ class PastellControler extends Controler
 
     public function render(string $template): void
     {
-        $this->setViewParameter('sqlQuery', $this->getSQLQuery());
-        $this->setViewParameter('objectInstancier', $this->getObjectInstancier());
         $this->setViewParameter('manifest_info', $this->getManifestFactory()
             ->getPastellManifest()
             ->getInfo());
@@ -271,9 +269,6 @@ class PastellControler extends Controler
         $this->setViewParameter('authentification', $this->getInstance(Authentification::class));
         $this->setViewParameter('libricielFeedback', $this->getInstance(LibricielFeedbackReader::class));
 
-        $this->setViewParameter('roleUtilisateur', $this->getRoleUtilisateur());
-        $this->setViewParameter('sqlQuery', $this->getSQLQuery());
-        $this->setViewParameter('objectInstancier', $this->getObjectInstancier());
         $this->setViewParameter('manifest_info', $this->getManifestFactory()->getPastellManifest()->getInfo());
 
         $this->setViewParameter('timer', $this->getInstance(PastellTimer::class));
@@ -293,17 +288,29 @@ class PastellControler extends Controler
         /** @var DaemonManager $daemonManager */
         $daemonManager = $this->getInstance(DaemonManager::class);
 
-        if (
-            $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::LECTURE)
-        ) {
+        if ($this->getAuthentification()->isConnected()) {
             $this->setViewParameter(
-                'nb_job_lock',
-                $this->getObjectInstancier()
-                    ->getInstance(JobQueueSQL::class)
-                    ->getNbLockSinceOneHour()
+                'menu_administration_link',
+                $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::LECTURE)
             );
 
-            $this->setViewParameter('daemon_stopped_warning', $daemonManager->status() === DaemonManager::IS_STOPPED);
+            $has_system_lecture = $this->hasDroitFor(
+                EntiteSQL::ID_E_ENTITE_RACINE,
+                DroitService::DROIT_SYSTEM,
+                DroitType::LECTURE
+            );
+            $this->setViewParameter('menu_system_lecture', $has_system_lecture);
+
+            if ($has_system_lecture) {
+                $this->setViewParameter(
+                    'nb_job_lock',
+                    $this->getObjectInstancier()
+                        ->getInstance(JobQueueSQL::class)
+                        ->getNbLockSinceOneHour()
+                );
+
+                $this->setViewParameter('daemon_stopped_warning', $daemonManager->status() === DaemonManager::IS_STOPPED);
+            }
         }
         $this->setViewParameter('helpURL', $this->getHelpURL());
         parent::renderDefault();

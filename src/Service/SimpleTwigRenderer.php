@@ -85,10 +85,11 @@ class SimpleTwigRenderer
         'url_encode',
     ];
     /**
-     * The xpath() functions return SimpleXMLElement objects that `{{ node }}` or `|join` converts to a string.
+     * The xpath() functions return SimpleXMLElement objects that `{{ node }}` or `|join` converts to a string, and
+     * whose attributes are read with `node.attributes.V`.
      * @see PastellSecurityPolicy for the navigation into their child elements.
      */
-    private const AUTHORIZED_TWIG_METHODS = [SimpleXMLElement::class => ['__toString']];
+    private const AUTHORIZED_TWIG_METHODS = [SimpleXMLElement::class => ['__toString', 'attributes']];
     private const AUTHORIZED_TWIG_PROPERTIES = [];
     private const AUTHORIZED_TWIG_FUNCTIONS = [
         'attribute',

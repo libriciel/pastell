@@ -402,10 +402,22 @@
 
 ## [4.1.23] - 2026-10-05
 
+### Évolutions
+
+- Accès à la base et logique métier sortis des gabarits vers les contrôleurs ; les vues n'exposent plus `sqlQuery`,
+  `objectInstancier` ni `roleUtilisateur` #2569
+- Logique de réinitialisation de mot de passe extraite de `ConnexionControler` vers un `PasswordResetService` dédié #2580
+
 ### Corrections
 
 - Ajout/suppression d'une annexe TdT : les typologies déjà choisies sont conservées #1184
 - Harmonisation des pages de confirmation de suppressions #2560
+- Mail sécurisé : le passage en non reçu n'est plus repoussé par les renvois (régression 4.1.12) #2571
+- Expressions Twig : la lecture des attributs d'un noeud XML (`node.attributes.V`) est de nouveau autorisée
+  (régression 4.1.22) #2572
+- Upload multiple : les fichiers ne sont plus perdus lors d'un ajout en lot #2584
+- Mail sécurisé : l'envoi d'un fichier par le destinataire ne régénère plus l'accusé de notification à chaque morceau
+  envoyé #2586
 
 ## [4.1.22] - 2026-09-07
 
