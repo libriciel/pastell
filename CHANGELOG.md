@@ -2,8 +2,21 @@
 
 ## [5.0.10] - 2026-10-05
 
+### Évolutions
+
+- Accès à la base et logique métier sortis des gabarits vers les contrôleurs ; les vues n'exposent plus `sqlQuery`,
+  `objectInstancier` ni `roleUtilisateur` #2569
+- Logique de réinitialisation de mot de passe extraite de `ConnexionControler` vers un `PasswordResetService` dédié #2580
+
 ### Corrections
 
+- Ajout/suppression d'une annexe TdT : les typologies déjà choisies sont conservées #1184
+- Harmonisation des pages de confirmation de suppressions #2560
+- Expressions Twig : la lecture des attributs d'un noeud XML (`node.attributes.V`) est de nouveau autorisée
+  (régression 4.1.22) #2572
+- Upload multiple : les fichiers ne sont plus perdus lors d'un ajout en lot #2584
+- Mail sécurisé : l'envoi d'un fichier par le destinataire ne régénère plus l'accusé de notification à chaque morceau
+  envoyé #2586
 - Mail sécurisé : le passage en non reçu n'est plus repoussé par les renvois (régression 5.0.6) #2574
 - i-Parapheur REST : le bordereau de signature n'était pas récupéré lorsque le titre du dossier contenait certains
   caractères (`,` `/` `:` …) ou dépassait 245 caractères #2578
@@ -24,7 +37,6 @@
 - À chaque exécution de l'action import-facture, le fichier yml de l'instance du connecteur CPP était modifié #2544
 - Un connecteur CPP non configuré n'est plus masqué de la liste des associations de connecteurs globaux #2558
 - Le container `flow` ne démarrait plus #2545
-- Mail sécurisé : le passage en non reçu n'est plus repoussé par les renvois (régression 5.0.6) #2574
 
 ### Sécurité
 
@@ -402,10 +414,22 @@
 
 ## [4.1.23] - 2026-10-05
 
+### Évolutions
+
+- Accès à la base et logique métier sortis des gabarits vers les contrôleurs ; les vues n'exposent plus `sqlQuery`,
+  `objectInstancier` ni `roleUtilisateur` #2569
+- Logique de réinitialisation de mot de passe extraite de `ConnexionControler` vers un `PasswordResetService` dédié #2580
+
 ### Corrections
 
 - Ajout/suppression d'une annexe TdT : les typologies déjà choisies sont conservées #1184
 - Harmonisation des pages de confirmation de suppressions #2560
+- Mail sécurisé : le passage en non reçu n'est plus repoussé par les renvois (régression 4.1.12) #2571
+- Expressions Twig : la lecture des attributs d'un noeud XML (`node.attributes.V`) est de nouveau autorisée
+  (régression 4.1.22) #2572
+- Upload multiple : les fichiers ne sont plus perdus lors d'un ajout en lot #2584
+- Mail sécurisé : l'envoi d'un fichier par le destinataire ne régénère plus l'accusé de notification à chaque morceau
+  envoyé #2586
 
 ## [4.1.22] - 2026-09-07
 

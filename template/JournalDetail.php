@@ -44,7 +44,7 @@ $journalBackLink = sprintf(
         </tr>
         <tr>
             <th>Type</th>
-            <td><?php echo $this->getJournal()->getTypeAsString($info['type']); ?></td>
+            <td><?php echo $info['type_string']; ?></td>
         </tr>
         <tr>
             <th>Entité</th>

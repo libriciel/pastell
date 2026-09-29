@@ -4,17 +4,11 @@
  * @var Gabarit $this
  * @var int $id_u
  * @var array $infoUtilisateur
- * @var RoleUtilisateur $roleUtilisateur
- * @var SQLQuery $sqlQuery
  * @var array $arbre
  * @var int $id_e
  * @var bool $new_user
  * @var bool $is_api
  */
-
-use Pastell\Service\Droit\DroitType;
-use Pastell\Service\Droit\DroitService;
-use Pastell\Utilities\Certificate;
 
 ?>
 
@@ -61,10 +55,6 @@ use Pastell\Utilities\Certificate;
                 </td>
             </tr>
 
-            <?php
-            $tabEntite = $roleUtilisateur->getEntite($this->getAuthentification()->getId(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
-            $entiteListe = new EntiteListe($sqlQuery);
-            ?>
             <tr>
                 <th>Entité de base</th>
                 <td>

@@ -9,6 +9,7 @@
  * @var bool $journal_lecture
  * @var array $arbre
  * @var array $notification_list
+ * @var array $roleInfo
  * @var array $all_module
  * @var int $id_u
  * @var int $id_current_u
@@ -144,7 +145,7 @@ use Pastell\Utilities\Certificate;
             <th>&nbsp;</th>
         </tr>
 
-        <?php foreach ($this->getRoleUtilisateur()->getRole($id_u) as $infoRole) : ?>
+        <?php foreach ($roleInfo as $infoRole) : ?>
             <tr>
                 <td><?php hecho($infoRole['role']); ?></td>
                 <td>
@@ -159,7 +160,7 @@ use Pastell\Utilities\Certificate;
                     <?php if (
                             $utilisateur_edition &&
                             ($infoRole['role'] !== 'aucun droit' ||
-                            count($this->getRoleUtilisateur()->getRole($id_u)) > 1)
+                            count($roleInfo) > 1)
 ) : ?>
                         <?php
                         $deleteRoleUrl = \sprintf(
@@ -237,13 +238,7 @@ use Pastell\Utilities\Certificate;
                     </td>
                     <td>
                         <?php if ($infoNotification['type']) : ?>
-                            <?php hecho(
-                                $this
-                                    ->getDocumentTypeFactory()
-                                    ->getFluxDocumentType($infoNotification['type'])
-                                    ->getName()
-                            );
-                            ?>
+                            <?php hecho($infoNotification['type_name']); ?>
                         <?php else : ?>
                             Tous
                         <?php endif; ?>

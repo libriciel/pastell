@@ -115,9 +115,8 @@ $extensionId = get_hecho($extension_info['id_e']);
             <tr>
                 <td><b><?php hecho($connecteur)?></b></td>
                 <td>
-                    <?php $connecteur_info = $this->getConnecteurDefinitionFiles()->getInfo($connecteur); ?>
-                    <?php if (isset($connecteur_info['description'])) : ?>
-                        <?php echo nl2br($connecteur_info['description']); ?>
+                    <?php if (isset($extension_info['connecteur_description'][$connecteur])) : ?>
+                        <?php echo nl2br($extension_info['connecteur_description'][$connecteur]); ?>
                     <?php endif;?>
                 </td>
             </tr>
@@ -136,9 +135,8 @@ $extensionId = get_hecho($extension_info['id_e']);
             <tr>
                 <td><b><?php hecho($flux)?></b></td>
                 <td>
-                    <?php $flux_info = $this->getFluxDefinitionFiles()->getInfo($flux); ?>
-                    <?php if (isset($flux_info['description'])) : ?>
-                        <?php echo nl2br($flux_info['description']); ?>
+                    <?php if (isset($extension_info['flux_description'][$flux])) : ?>
+                        <?php echo nl2br($extension_info['flux_description'][$flux]); ?>
                     <?php endif;?>
                 </td>
             </tr>

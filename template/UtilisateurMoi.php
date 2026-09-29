@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @var string $denominationEntiteDeBase
  * @var int $id_u
  * @var array $notification_list
+ * @var array $roleInfo
  * @var array $arbre
  * @var array $all_module
  * @var array $tokens
@@ -74,7 +75,7 @@ declare(strict_types=1);
         </tr>
 
         <?php
-        foreach ($this->getRoleUtilisateur()->getRole($id_u) as $infoRole) : ?>
+        foreach ($roleInfo as $infoRole) : ?>
             <tr>
                 <td><?php hecho($infoRole['role']); ?></td>
                 <td>
@@ -116,11 +117,7 @@ declare(strict_types=1);
                 </td>
                 <td>
                     <?php if ($infoNotification['type']) : ?>
-                        <?php
-                        hecho(
-                            $this->getDocumentTypeFactory()->getFluxDocumentType($infoNotification['type'])->getName()
-                        );
-                        ?>
+                        <?php hecho($infoNotification['type_name']); ?>
                     <?php else : ?>
                         Tous
                     <?php endif; ?>
