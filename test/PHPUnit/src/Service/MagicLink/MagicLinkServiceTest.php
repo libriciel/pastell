@@ -584,9 +584,13 @@ class MagicLinkServiceTest extends PastellTestCase
 
         $wrongCode = ((string)$service->getActiveLinks()[0]['code'] === '000000') ? '111111' : '000000';
 
-        static::assertSame(MagicLinkCodeStatus::WrongCode, $service->checkCode($token, $wrongCode)->status);
-        static::assertSame(MagicLinkCodeStatus::WrongCode, $service->checkCode($token, $wrongCode)->status);
-        static::assertSame(MagicLinkCodeStatus::Revoked, $service->checkCode($token, $wrongCode)->status);
+        $firstCheck = $service->checkCode($token, $wrongCode);
+        $secondCheck = $service->checkCode($token, $wrongCode);
+        $thirdCheck = $service->checkCode($token, $wrongCode);
+
+        static::assertSame(MagicLinkCodeStatus::WrongCode, $firstCheck->status);
+        static::assertSame(MagicLinkCodeStatus::WrongCode, $secondCheck->status);
+        static::assertSame(MagicLinkCodeStatus::Revoked, $thirdCheck->status);
 
         static::assertSame([], $service->getActiveLinks());
         static::assertCount(1, $service->getHistory());
