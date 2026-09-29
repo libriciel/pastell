@@ -380,6 +380,43 @@ class DocumentControlerTest extends ControlerTestCase
         );
     }
 
+    public static function teletransmissionReturnForeignDocumentProvider(): iterable
+    {
+        yield 'document of another type' => ['test', PastellTestCase::ID_E_COL];
+        yield 'document of another entity' => ['actes-generique', PastellTestCase::ID_E_SERVICE];
+    }
+
+    /**
+     * @dataProvider teletransmissionReturnForeignDocumentProvider
+     * @throws Exception
+     */
+    public function testTeletransmissionReturnRefusesForeignDocuments(string $document_type, int $document_id_e): void
+    {
+        $document = $this->createDocument($document_type, $document_id_e);
+        $this->setGetInfo([
+            'id_e' => PastellTestCase::ID_E_COL,
+            'type' => 'actes-generique',
+            'id_d' => [$document['id_d']],
+        ]);
+        $documentController = $this->getControlerInstance(DocumentControler::class);
+        $this->authenticateNewUserWithPermission([
+            DroitService::getDroitFor('actes-generique', DroitType::LECTURE),
+            DroitService::getDroitFor('actes-generique', DroitType::EDITION),
+        ]);
+
+        try {
+            $documentController->retourTeletransmissionAction();
+            static::fail('A teletransmission return must only apply to documents of the checked entity and type');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString("n'est pas de type « actes-generique »", $e->getMessage());
+        }
+        static::assertSame(
+            'creation',
+            $this->getObjectInstancier()->getInstance(DocumentActionEntite::class)
+                ->getInfo($document['id_d'], $document_id_e)['last_action']
+        );
+    }
+
     public function testChangeEtat(): void
     {
         $documentController = $this->getControlerInstance(DocumentControler::class);

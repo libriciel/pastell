@@ -1085,6 +1085,19 @@ class DocumentControler extends PastellControler
 
         $this->checkDroitFor($id_e, $type, DroitType::EDITION);
 
+        $error = '';
+        foreach ($all_id_d as $id_d) {
+            $infoDocument = $this->getDocumentActionEntite()->getInfo($id_d, $id_e);
+            if (($infoDocument['type'] ?? null) !== $type) {
+                $document_titre = ($infoDocument['titre'] ?? '') ?: $id_d;
+                $error .= "Le document « $document_titre » n'est pas de type « $type »<br/>";
+            }
+        }
+        if ($error) {
+            $this->setLastError($error . "<br/><br/>Aucune action n'a été executée");
+            $this->redirect($url_retour);
+        }
+
         foreach ($all_id_d as $id_d) {
             $infoDocument  = $this->getDocumentActionEntite()->getInfo($id_d, $id_e);
 
