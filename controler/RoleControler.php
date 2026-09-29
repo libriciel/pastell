@@ -3,6 +3,7 @@
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
 class RoleControler extends PastellControler
 {
@@ -141,6 +142,7 @@ class RoleControler extends PastellControler
         $droit = $roleDroit->filterExistingRolesDroits($droit);
 
         $this->getRoleSQL()->updateDroit($role, $droit);
+        $this->getInstance(UtilisateurRoleService::class)->purgeNotificationsForRole($role);
         $this->setLastMessage("Le rôle $role a été mis à jour");
         $this->redirect("/Role/detail?role=$role");
     }

@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
 class UtilisateurRoleAPIController extends BaseAPIController
 {
@@ -10,7 +11,8 @@ class UtilisateurRoleAPIController extends BaseAPIController
     public function __construct(
         private readonly UtilisateurSQL $utilisateur,
         private readonly RoleSQL $roleSQL,
-        private readonly EntiteSQL $entiteSQL
+        private readonly EntiteSQL $entiteSQL,
+        private readonly UtilisateurRoleService $roleUtilisateurService,
     ) {
     }
 
@@ -116,7 +118,7 @@ class UtilisateurRoleAPIController extends BaseAPIController
         }
 
         if (!$this->getRoleUtilisateur()->hasRole($id_u, $role, $id_e)) {
-            $this->getRoleUtilisateur()->addRole($id_u, $role, $id_e);
+            $this->roleUtilisateurService->addRole((int) $id_u, $role, (int) $id_e);
         }
 
         $result['result'] = self::RESULT_OK;
@@ -137,10 +139,10 @@ class UtilisateurRoleAPIController extends BaseAPIController
         $this->verifExists($id_u);
 
         if ($role === self::ALL_ROLES) {
-            $this->getRoleUtilisateur()->removeAllRolesEntite($id_u, $id_e);
+            $this->roleUtilisateurService->removeAllRolesEntite((int) $id_u, (int) $id_e);
         } else {
             $this->verifRoleExists($role);
-            $this->getRoleUtilisateur()->removeRole($id_u, $role, $id_e);
+            $this->roleUtilisateurService->removeRole((int) $id_u, $role, (int) $id_e);
         }
 
         $result['result'] = self::RESULT_OK;

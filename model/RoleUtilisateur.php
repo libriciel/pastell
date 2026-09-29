@@ -382,6 +382,12 @@ SQL;
         return $this->query($sql, $id_e, $role);
     }
 
+    public function getAllUtilisateurIdByRole(string $role): array
+    {
+        $sql = "SELECT DISTINCT id_u FROM utilisateur_role WHERE role = ?";
+        return $this->queryOneCol($sql, $role);
+    }
+
     public function getAllUtilisateurHerite($id_e, $role)
     {
         $sql = "SELECT * FROM entite_ancetre " .

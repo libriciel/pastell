@@ -18,6 +18,8 @@ use UnrecoverableException;
 
 class NotificationServiceTest extends PastellTestCase
 {
+    private const TYPE = 'actes-generique';
+
     private function getService(): NotificationService
     {
         return $this->getObjectInstancier()->getInstance(NotificationService::class);
@@ -38,13 +40,10 @@ class NotificationServiceTest extends PastellTestCase
             ->create('lecteur', 'lecteur@example.org', 'lecteur', 'lecteur', 1);
     }
 
-    private function grantEntiteAccess(int $id_u): void
+    private function grantRole(int $id_u, array $droits, int $id_e): void
     {
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->updateDroit(
-            'lecteur',
-            [DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)],
-        );
-        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole($id_u, 'lecteur', 1);
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->updateDroit('lecteur', $droits);
+        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole($id_u, 'lecteur', $id_e);
     }
 
     /**
@@ -55,25 +54,103 @@ class NotificationServiceTest extends PastellTestCase
     public function testRemovesWhenNoAccess(): void
     {
         $id_u = $this->createUser();
-        $this->getNotification()->add($id_u, 1, 'actes-generique', Notification::ALL_TYPE, false);
+        $this->getNotification()->add($id_u, 1, self::TYPE, Notification::ALL_TYPE, false);
 
-        $this->getService()->purgeIfNoAccess($id_u, 1);
+        $this->getService()->purgeIfNoAccess($id_u);
 
         static::assertEmpty($this->getNotification()->getAll($id_u));
     }
 
     /**
-     * @throws UnrecoverableException
-     * @throws NotFoundException
      * @throws ConflictException
+     * @throws NotFoundException
+     * @throws UnrecoverableException
      */
-    public function testKeepsWhenAccess(): void
+    public function testKeepsWithTypeRight(): void
     {
         $id_u = $this->createUser();
-        $this->grantEntiteAccess($id_u);
-        $this->getNotification()->add($id_u, 1, 'actes-generique', Notification::ALL_TYPE, false);
+        $this->grantRole($id_u, [
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
+            DroitService::getDroitFor(self::TYPE, DroitType::LECTURE),
+        ], 1);
+        $this->getNotification()->add($id_u, 1, self::TYPE, Notification::ALL_TYPE, false);
 
-        $this->getService()->purgeIfNoAccess($id_u, 1);
+        $this->getService()->purgeIfNoAccess($id_u);
+
+        static::assertCount(1, $this->getNotification()->getAll($id_u));
+    }
+
+    /**
+     * @throws ConflictException
+     * @throws NotFoundException
+     * @throws UnrecoverableException
+     */
+    public function testRemovesWithoutTypeRight(): void
+    {
+        $id_u = $this->createUser();
+        $this->grantRole($id_u, [
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
+        ], 1);
+        $this->getNotification()->add($id_u, 1, self::TYPE, Notification::ALL_TYPE, false);
+
+        $this->getService()->purgeIfNoAccess($id_u);
+
+        static::assertEmpty($this->getNotification()->getAll($id_u));
+    }
+
+    /**
+     * @throws ConflictException
+     * @throws NotFoundException
+     * @throws UnrecoverableException
+     */
+    public function testKeepsWithEditionRight(): void
+    {
+        $id_u = $this->createUser();
+        $this->grantRole($id_u, [
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION),
+            DroitService::getDroitFor(self::TYPE, DroitType::EDITION),
+        ], 1);
+        $this->getNotification()->add($id_u, 1, self::TYPE, Notification::ALL_TYPE, false);
+
+        $this->getService()->purgeIfNoAccess($id_u);
+
+        static::assertCount(1, $this->getNotification()->getAll($id_u));
+    }
+
+    /**
+     * @throws ConflictException
+     * @throws NotFoundException
+     * @throws UnrecoverableException
+     */
+    public function testCascadesToChild(): void
+    {
+        $id_u = $this->createUser();
+        $this->grantRole($id_u, [
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
+            DroitService::getDroitFor(self::TYPE, DroitType::LECTURE),
+        ], 1);
+        $this->getNotification()->add($id_u, 2, self::TYPE, Notification::ALL_TYPE, false);
+
+        $this->getService()->purgeIfNoAccess($id_u);
+
+        static::assertCount(1, $this->getNotification()->getAll($id_u));
+    }
+
+    /**
+     * @throws ConflictException
+     * @throws NotFoundException
+     * @throws UnrecoverableException
+     */
+    public function testKeepsViaRootRole(): void
+    {
+        $id_u = $this->createUser();
+        $this->grantRole($id_u, [
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
+            DroitService::getDroitFor(self::TYPE, DroitType::LECTURE),
+        ], 0);
+        $this->getNotification()->add($id_u, 1, self::TYPE, Notification::ALL_TYPE, false);
+
+        $this->getService()->purgeIfNoAccess($id_u);
 
         static::assertCount(1, $this->getNotification()->getAll($id_u));
     }

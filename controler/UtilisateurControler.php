@@ -5,8 +5,8 @@ use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\FeatureToggle\CertificateAuthentication;
 use Pastell\Service\Menu\MenuGaucheService;
-use Pastell\Service\Notification\NotificationService;
 use Pastell\Service\PasswordEntropy;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Utilisateur\UserUpdateService;
@@ -568,7 +568,9 @@ class UtilisateurControler extends PastellControler
         } elseif ($this->getRoleUtilisateur()->hasRole($id_u, $role, $id_e)) {
             $this->setLastError("Ce droit a déjà été attribué à l'utilisateur");
         } elseif ($role) {
-            $this->getRoleUtilisateur()->addRole($id_u, $role, $id_e);
+            $this->getObjectInstancier()
+                ->getInstance(UtilisateurRoleService::class)
+                ->addRole((int) $id_u, $role, (int) $id_e);
         }
         $this->redirect("/Utilisateur/detail?id_u=$id_u");
     }
@@ -585,10 +587,9 @@ class UtilisateurControler extends PastellControler
         $role = $recuperateur->get('role');
         $id_e = $recuperateur->getInt('id_e', 0);
         $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
-        $this->getRoleUtilisateur()->removeRole($id_u, $role, $id_e);
         $this->getObjectInstancier()
-            ->getInstance(NotificationService::class)
-            ->purgeIfNoAccess((int) $id_u, $id_e);
+            ->getInstance(UtilisateurRoleService::class)
+            ->removeRole((int) $id_u, $role, (int) $id_e);
         $role_info = $this->getRoleSQL()->getInfo($role);
         $utilisateur_info = $this->getUtilisateur()->getInfo($id_u);
 

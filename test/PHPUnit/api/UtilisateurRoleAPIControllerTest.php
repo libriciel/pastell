@@ -61,6 +61,14 @@ class UtilisateurRoleAPIControllerTest extends PastellTestCase
         static::assertSame('aucun droit', $list[0]['role']);
     }
 
+    public function testDeletePurgesNotification(): void
+    {
+        $notification = $this->getObjectInstancier()->getInstance(Notification::class);
+        $notification->add(2, 1, 'actes-generique', Notification::ALL_TYPE, false);
+        $this->getInternalAPI()->delete('/utilisateur/2/role?id_e=1&role=admin');
+        static::assertEmpty($notification->getAll(2));
+    }
+
     public function testDeleteSeveral(): void
     {
         $this->expectOutputRegex('#ok#');
