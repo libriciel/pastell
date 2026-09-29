@@ -880,7 +880,7 @@ class DocumentControler extends PastellControler
         if (!$id_e) {
             $this->redirect('/Document/index');
         }
-        $this->checkDroitFor($id_e, $type, DroitType::LECTURE);
+        $this->checkDroitFor($id_e, $type, DroitType::EDITION);
 
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('offset', $recuperateur->getInt('offset', 0));
@@ -982,7 +982,9 @@ class DocumentControler extends PastellControler
         foreach ($all_id_d as $id_d) {
             $infoDocument = $this->getDocumentActionEntite()->getInfo($id_d, $id_e);
             $document_titre = $infoDocument['titre'] ?: $id_d;
-            if (! $this->getActionPossible()->isActionPossible($id_e, $this->getId_u(), $id_d, $action_selected)) {
+            if (($infoDocument['type'] ?? null) !== $type) {
+                $error .= "Le document « $document_titre » n'est pas de type « $type »<br/>";
+            } elseif (!$this->getActionPossible()->isActionPossible($id_e, $this->getId_u(), $id_d, $action_selected)) {
                 $error .= "L'action « $action_libelle » n'est pas possible pour le document « $document_titre »<br/>";
             }
             if ($this->getInstance(JobManager::class)->hasActionProgramme($id_e, $id_d)) {
@@ -1026,7 +1028,9 @@ class DocumentControler extends PastellControler
         foreach ($all_id_d as $id_d) {
             $infoDocument = $this->getDocumentActionEntite()->getInfo($id_d, $id_e);
             $document_titre = $infoDocument['titre'] ?: $id_d;
-            if (! $this->getActionPossible()->isActionPossible($id_e, $this->getId_u(), $id_d, $action_selected)) {
+            if (($infoDocument['type'] ?? null) !== $type) {
+                $error .= "Le document « $document_titre » n'est pas de type « $type »<br/>";
+            } elseif (!$this->getActionPossible()->isActionPossible($id_e, $this->getId_u(), $id_d, $action_selected)) {
                 $error .= "L'action « $action_libelle » n'est pas possible pour le document « $document_titre »<br/>";
             }
 
