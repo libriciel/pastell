@@ -19,6 +19,11 @@
 - Mail sécurisé : l'envoi d'un fichier par le destinataire ne régénère plus l'accusé de notification à chaque morceau
   envoyé #2586
 
+### Sécurité
+
+- Faille de contrôle d'accès sur la modification de dossier par l'API
+  (CVSS 6.1 - criticité MOYENNE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:L) #2588
+
 ## [4.1.22] - 2026-09-07
 
 ### Ajouts
