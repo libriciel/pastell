@@ -20,6 +20,8 @@
 - Upload multiple : les fichiers ne sont plus perdus lors d'un ajout en lot #2584
 - Mail sécurisé : l'envoi d'un fichier par le destinataire ne régénère plus l'accusé de notification à chaque morceau
   envoyé #2586
+- Le bandeau d'avertissement de faille de sécurité n'est visible que pour les utilisateurs ayant le droit
+  `system:lecture` sur l'entité racine #2589
 
 ### Sécurité
 
