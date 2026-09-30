@@ -380,6 +380,32 @@ class DocumentControlerTest extends ControlerTestCase
         );
     }
 
+    /**
+     * @throws Exception
+     */
+    public function testBulkConfirmationRefusesDocumentsOfAnotherType(): void
+    {
+        $document = $this->createDocument('actes-generique');
+        $this->setGetInfo([
+            'id_e' => PastellTestCase::ID_E_COL,
+            'type' => 'test',
+            'action' => 'supression',
+            'id_d' => [$document['id_d']],
+        ]);
+        $documentController = $this->getControlerInstance(DocumentControler::class);
+        $this->authenticateNewUserWithPermission([
+            DroitService::getDroitFor('test', DroitType::LECTURE),
+            DroitService::getDroitFor('test', DroitType::EDITION),
+        ]);
+
+        try {
+            $documentController->confirmTraitementLotAction();
+            static::fail('A bulk confirmation must only list documents of the checked type');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString("n'est pas de type « test »", $e->getMessage());
+        }
+    }
+
     public static function teletransmissionReturnForeignDocumentProvider(): iterable
     {
         yield 'document of another type' => ['test', PastellTestCase::ID_E_COL];
