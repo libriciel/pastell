@@ -27,6 +27,8 @@
   (CVSS 6.1 - criticité MOYENNE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:L) #2588
 - Faille de contrôle d'accès sur le studio
   (CVSS 6.5 - criticité MOYENNE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:L) #2591
+- Faille IDOR sur les actions d'un dossier
+  (CVSS 7.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:L) #2590
 
 ## [4.1.22] - 2026-09-07
 

@@ -406,6 +406,60 @@ class DocumentControlerTest extends ControlerTestCase
         }
     }
 
+    /**
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testActionRefusesDocumentsTheEntityHasNoRoleOn(): void
+    {
+        $document = $this->createDocument('test', PastellTestCase::ID_E_SERVICE);
+        $this->setPostInfo([
+            'id_e' => PastellTestCase::ID_E_COL,
+            'id_d' => $document['id_d'],
+            'action' => CreationAction::ACTION_ID,
+        ]);
+        $documentController = $this->getControlerInstance(DocumentControler::class);
+        $documentController->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        $this->authenticateNewUserWithPermission([
+            DroitService::getDroitFor('test', DroitType::LECTURE),
+            DroitService::getDroitFor('test', DroitType::EDITION),
+        ]);
+
+        try {
+            $documentController->actionAction();
+            static::fail('An action must only apply to documents the entity has a role on');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString("n'est pas permise sur ce dossier", $e->getMessage());
+        }
+        $documentEntite = $this->getObjectInstancier()->getInstance(DocumentEntite::class);
+        static::assertFalse($documentEntite->getRole(PastellTestCase::ID_E_COL, $document['id_d']));
+        static::assertSame('editeur', $documentEntite->getRole(PastellTestCase::ID_E_SERVICE, $document['id_d']));
+    }
+
+    public function testActionRefusesCreationOnOwnDocument(): void
+    {
+        $document = $this->createDocument('test');
+        $this->setPostInfo([
+            'id_e' => PastellTestCase::ID_E_COL,
+            'id_d' => $document['id_d'],
+            'action' => CreationAction::ACTION_ID,
+        ]);
+        $documentController = $this->getControlerInstance(DocumentControler::class);
+        $documentController->setServerInfo(['REQUEST_METHOD' => 'POST']);
+
+        try {
+            $documentController->actionAction();
+            static::fail('The creation action must not be run from the action screen');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString("n'est pas permise sur ce dossier", $e->getMessage());
+        }
+        static::assertSame(
+            'creation',
+            $this->getObjectInstancier()->getInstance(DocumentActionEntite::class)
+                ->getInfo($document['id_d'], PastellTestCase::ID_E_COL)['last_action']
+        );
+    }
+
     public static function teletransmissionReturnForeignDocumentProvider(): iterable
     {
         yield 'document of another type' => ['test', PastellTestCase::ID_E_COL];

@@ -1286,6 +1286,11 @@ class DocumentControler extends PastellControler
 
         $this->checkDroitFor($id_e, $type, DroitType::EDITION, "/Document/detail?id_d=$id_d&id_e=$id_e&page=$page");
 
+        if (!$this->getDocumentEntite()->getRole($id_e, $id_d) || $action === CreationAction::ACTION_ID) {
+            $this->setLastError("L'action « $action » n'est pas permise sur ce dossier");
+            $this->redirect("/Document/list?id_e=$id_e");
+        }
+
         if (! $actionPossible->isActionPossible($id_e, $this->getId_u(), $id_d, $action)) {
             $this->setLastError("L'action « $action »  n'est pas permise (elle a peut-être déjà été effectuée) : " . $actionPossible->getLastBadRule());
             $this->redirect("/Document/detail?id_d=$id_d&id_e=$id_e&page=$page");
