@@ -27,7 +27,7 @@ class GlaneurDocumentCreator
         $files = [];
         foreach ($glaneurLocalDocumentInfo->element_files_association as $key => $files_list) {
             foreach ($files_list as $file_num => $file) {
-                $files[$key]['name'][$file_num] = $file;
+                $files[$key]['name'][$file_num] = basename($file);
                 $files[$key]['tmp_name'][$file_num] = $repertoire . "/" . $file;
                 $files[$key]['error'][$file_num] = UPLOAD_ERR_OK;
             }

@@ -866,6 +866,26 @@ class DocumentControler extends PastellControler
      * @throws LastMessageException
      * @throws LastErrorException
      */
+    private function checkDocumentsType(array $documentIds, int $entityId, string $type, string $returnUrl): void
+    {
+        $error = '';
+        foreach ($documentIds as $documentId) {
+            $infoDocument = $this->getDocumentActionEntite()->getInfo($documentId, $entityId);
+            if (($infoDocument['type'] ?? null) !== $type) {
+                $documentTitle = ($infoDocument['titre'] ?? '') ?: $documentId;
+                $error .= "Le document « $documentTitle » n'est pas de type « $type »<br/>";
+            }
+        }
+        if ($error) {
+            $this->setLastError($error . "<br/><br/>Aucune action n'a été executée");
+            $this->redirect($returnUrl);
+        }
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
     private function validTraitementParLot($input): void
     {
         $recuperateur = new Recuperateur($input);
@@ -878,7 +898,7 @@ class DocumentControler extends PastellControler
         if (!$id_e) {
             $this->redirect('/Document/index');
         }
-        $this->checkDroitFor($id_e, $type, DroitType::LECTURE);
+        $this->checkDroitFor($id_e, $type, DroitType::EDITION);
 
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('offset', $recuperateur->getInt('offset', 0));
@@ -941,8 +961,8 @@ class DocumentControler extends PastellControler
      */
     public function confirmTraitementLotAction(): void
     {
-        $this->validTraitementParLot($_GET);
-        $recuperateur = new Recuperateur($_GET);
+        $recuperateur = $this->getGetInfo();
+        $this->validTraitementParLot($recuperateur->getAll());
         $id_e = $recuperateur->getInt('id_e', EntiteSQL::ID_E_ENTITE_RACINE);
         $type = $recuperateur->get('type');
         $search = $recuperateur->get('search');
@@ -974,13 +994,15 @@ class DocumentControler extends PastellControler
             $this->redirect($url_retour);
         }
 
+        $this->checkDocumentsType($all_id_d, $id_e, $type, $url_retour);
+
         $error = '';
         $listDocument = [];
 
         foreach ($all_id_d as $id_d) {
             $infoDocument = $this->getDocumentActionEntite()->getInfo($id_d, $id_e);
             $document_titre = $infoDocument['titre'] ?: $id_d;
-            if (! $this->getActionPossible()->isActionPossible($id_e, $this->getId_u(), $id_d, $action_selected)) {
+            if (!$this->getActionPossible()->isActionPossible($id_e, $this->getId_u(), $id_d, $action_selected)) {
                 $error .= "L'action « $action_libelle » n'est pas possible pour le document « $document_titre »<br/>";
             }
             if ($this->getInstance(JobManager::class)->hasActionProgramme($id_e, $id_d)) {
@@ -1006,8 +1028,8 @@ class DocumentControler extends PastellControler
      */
     public function doTraitementLotAction(): void
     {
-        $this->validTraitementParLot($_POST);
-        $recuperateur = new Recuperateur($_POST);
+        $recuperateur = $this->getPostInfo();
+        $this->validTraitementParLot($recuperateur->getAll());
         $id_e = $recuperateur->getInt('id_e', EntiteSQL::ID_E_ENTITE_RACINE);
         $type = $recuperateur->get('type');
         $search = $recuperateur->get('search');
@@ -1019,12 +1041,14 @@ class DocumentControler extends PastellControler
 
         $action_libelle = $documentType->getAction()->getDoActionName($action_selected);
 
+        $this->checkDocumentsType($all_id_d, $id_e, $type, $this->getViewParameterByKey('url_retour'));
+
         $error = "";
         $message = "";
         foreach ($all_id_d as $id_d) {
             $infoDocument = $this->getDocumentActionEntite()->getInfo($id_d, $id_e);
             $document_titre = $infoDocument['titre'] ?: $id_d;
-            if (! $this->getActionPossible()->isActionPossible($id_e, $this->getId_u(), $id_d, $action_selected)) {
+            if (!$this->getActionPossible()->isActionPossible($id_e, $this->getId_u(), $id_d, $action_selected)) {
                 $error .= "L'action « $action_libelle » n'est pas possible pour le document « $document_titre »<br/>";
             }
 
@@ -1078,6 +1102,8 @@ class DocumentControler extends PastellControler
         ;
 
         $this->checkDroitFor($id_e, $type, DroitType::EDITION);
+
+        $this->checkDocumentsType($all_id_d, $id_e, $type, $url_retour);
 
         foreach ($all_id_d as $id_d) {
             $infoDocument  = $this->getDocumentActionEntite()->getInfo($id_d, $id_e);
@@ -1253,6 +1279,11 @@ class DocumentControler extends PastellControler
         $actionPossible = $this->getActionPossible();
 
         $this->checkDroitFor($id_e, $type, DroitType::EDITION, "/Document/detail?id_d=$id_d&id_e=$id_e&page=$page");
+
+        if (!$this->getDocumentEntite()->getRole($id_e, $id_d) || $action === CreationAction::ACTION_ID) {
+            $this->setLastError("L'action « $action » n'est pas permise sur ce dossier");
+            $this->redirect("/Document/list?id_e=$id_e");
+        }
 
         if (! $actionPossible->isActionPossible($id_e, $this->getId_u(), $id_d, $action)) {
             $this->setLastError("L'action « $action »  n'est pas permise (elle a peut-être déjà été effectuée) : " . $actionPossible->getLastBadRule());

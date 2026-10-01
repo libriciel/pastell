@@ -237,8 +237,8 @@ class GlaneurGlanerRepertoire
             $name = strval($files['name']);
             foreach ($files->{'file'} as $file) {
                 $filename = strval($file['content']);
-                if (! file_exists($repertoire . "/" . $filename)) {
-                    $this->last_message = "Le fichier $filename n'a pas été trouvé.";
+                if (! $this->isInsideDirectory($repertoire, $filename)) {
+                    $this->last_message[] = "Le fichier $filename n'a pas été trouvé.";
                     return null;
                 }
                 $glaneurLocalDocumentInfo->element_files_association[$name][] = $filename;
@@ -246,5 +246,24 @@ class GlaneurGlanerRepertoire
         }
 
         return $glaneurLocalDocumentInfo;
+    }
+
+    private function isInsideDirectory(string $repertoire, string $filename): bool
+    {
+        if (
+            $filename === ''
+            || \str_starts_with($filename, '/')
+            || \str_contains($filename, '\\')
+            || \str_contains($filename, "\0")
+            || \in_array('..', \explode('/', $filename), true)
+        ) {
+            return false;
+        }
+        $base = \realpath($repertoire);
+        $candidate = \realpath($repertoire . '/' . $filename);
+        if ($base === false || $candidate === false || ! \is_file($candidate)) {
+            return false;
+        }
+        return \str_starts_with($candidate, $base . DIRECTORY_SEPARATOR);
     }
 }
