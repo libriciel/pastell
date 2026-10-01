@@ -8,6 +8,7 @@
   `objectInstancier` ni `roleUtilisateur` #2569
 - Logique de réinitialisation de mot de passe extraite de `ConnexionControler` vers un `PasswordResetService` dédié #2580
 - Nouvelle commande `app:workspace:orphan-check` : liste et supprime les fichiers de documents/connecteurs du workspace sans référence en base #2585
+- Activation/désactivation d'un utilisateur déléguée à `UserUpdateService` #2581
 
 ### Corrections
 
