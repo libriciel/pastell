@@ -162,7 +162,7 @@ class DaemonControlerTest extends ControlerTestCase
         static::assertSame(JobStatus::WAITING, $job->job_status);
     }
 
-    public function testJobActionDisplaysSearchAndSortOnAllJobs(): void
+    public function testJobActionShowsSearchAndSort(): void
     {
         $this->getInternalAPI()->post('/entite/1/connecteur/13/action/une_action_auto');
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
@@ -178,7 +178,7 @@ class DaemonControlerTest extends ControlerTestCase
         static::assertStringContainsString("Reprendre l'exécution de tous les travaux", $output);
     }
 
-    public function testJobActionActifHasNoSearchNorSort(): void
+    public function testActifJobsHaveNoSearch(): void
     {
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
         $this->setGetInfo(['filtre' => 'actif']);
