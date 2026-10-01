@@ -92,4 +92,23 @@ class CPPCheckIfCanCreateFactureTest extends ExtensionCppTestCase
 
         self::assertFalse($canCreateFacture);
     }
+
+    public function testCannotCreateFactureRecuWithStatutARecycler(): void
+    {
+        $dateStatutCourant = date('Y-m-d', strtotime('+5 days'));
+
+        $fakeFactureChorus = [
+            'date_statut_courant' => $dateStatutCourant,
+            'type_integration' => ChorusProImportUtilService::TYPE_INTEGRATION_CPP_CLE,
+            'statut' => PortailFactureConnecteur::STATUT_A_RECYCLER
+        ];
+
+        $canCreateFacture = $this->checkIfCanCreateFacture->canCreateFacture(
+            $fakeFactureChorus,
+            $this->dateLimiteDePriseEnCharge,
+            $this->statusCourant
+        );
+
+        self::assertFalse($canCreateFacture);
+    }
 }
