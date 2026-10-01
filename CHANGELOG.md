@@ -29,6 +29,8 @@
   (CVSS 6.5 - criticité MOYENNE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:L) #2591
 - Faille IDOR sur les actions d'un dossier
   (CVSS 7.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:L) #2590
+- Faille de traversée de chemin sur le glaneur
+  (CVSS 7.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:H/I:L/A:H) #2592
 
 ## [4.1.22] - 2026-09-07
 
