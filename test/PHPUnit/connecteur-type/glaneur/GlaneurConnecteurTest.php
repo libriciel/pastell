@@ -539,6 +539,97 @@ class GlaneurConnecteurTest extends PastellTestCase
         );
     }
 
+    public static function escapingFileNameProvider(): iterable
+    {
+        yield 'parent directory' => ['../%s'];
+        yield 'parent directory through a subdirectory' => ['sub/../../%s'];
+        yield 'current then parent directory' => ['./../%s'];
+        yield 'absolute path' => ['%2$s'];
+        yield 'backslash separators' => ['sub\\..\\..\\%s'];
+    }
+
+    /**
+     * @dataProvider escapingFileNameProvider
+     * @throws Exception
+     */
+    public function testGlanerManifestWithAFileNameEscapingTheDirectory(string $escaping_name_pattern): void
+    {
+        $outside_file = sys_get_temp_dir() . '/pastell_test_outside_' . random_int(0, mt_getrandmax()) . '.pdf';
+        file_put_contents($outside_file, 'not yours');
+        $escaping_name = sprintf($escaping_name_pattern, basename($outside_file), $outside_file);
+
+        mkdir($this->tmp_folder . '/test1/sub/', 0777, true);
+        file_put_contents($this->tmp_folder . '/test1/sub/placeholder.txt', 'placeholder');
+        file_put_contents(
+            $this->tmp_folder . '/test1/manifest.xml',
+            <<<XML
+            <flux type='ls-document'>
+                <data name='libelle' value="Traversal"/>
+                <files name='document'>
+                    <file content='$escaping_name' />
+                </files>
+            </flux>
+            XML
+        );
+
+        try {
+            static::assertFalse(
+                $this->glanerWithProperties([
+                    GlaneurLocalMock::TRAITEMENT_ACTIF => '1',
+                    GlaneurLocalMock::TYPE_DEPOT => GlaneurLocalMock::TYPE_DEPOT_FOLDER,
+                    GlaneurLocalMock::DIRECTORY => $this->tmp_folder,
+                    GlaneurLocalMock::DIRECTORY_SEND => $this->directory_send,
+                    GlaneurLocalMock::DIRECTORY_ERROR => $this->directory_error,
+                    GlaneurLocalMock::MANIFEST_TYPE => GlaneurLocalMock::MANIFEST_TYPE_XML,
+                    GlaneurLocalMock::ACTION_KO => 'erreur',
+                ])
+            );
+            static::assertSame(["Le fichier $escaping_name n'a pas été trouvé."], $this->last_message);
+            static::assertFileExists($outside_file);
+            static::assertSame('not yours', file_get_contents($outside_file));
+        } finally {
+            @unlink($outside_file);
+        }
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    public function testGlanerManifestWithAFileInASubdirectory(): void
+    {
+        $document = __DIR__ . '/fixtures/vide1.pdf';
+        mkdir($this->tmp_folder . '/test1/documents/', 0777, true);
+        copy($document, $this->tmp_folder . '/test1/documents/vide1.pdf');
+        file_put_contents(
+            $this->tmp_folder . '/test1/manifest.xml',
+            <<<XML
+            <flux type='ls-document'>
+                <data name='libelle' value="Subdirectory"/>
+                <files name='document'>
+                    <file content='documents/vide1.pdf' />
+                </files>
+            </flux>
+            XML
+        );
+
+        static::assertNotFalse($this->glanerWithProperties([
+            GlaneurLocalMock::TRAITEMENT_ACTIF => '1',
+            GlaneurLocalMock::TYPE_DEPOT => GlaneurLocalMock::TYPE_DEPOT_FOLDER,
+            GlaneurLocalMock::DIRECTORY => $this->tmp_folder,
+            GlaneurLocalMock::DIRECTORY_SEND => $this->directory_send,
+            GlaneurLocalMock::MANIFEST_TYPE => GlaneurLocalMock::MANIFEST_TYPE_XML,
+            GlaneurLocalMock::ACTION_KO => 'erreur',
+        ]));
+
+        $donneesFormulaire = $this->getObjectInstancier()
+            ->getInstance(DonneesFormulaireFactory::class)
+            ->get($this->created_id_d);
+        static::assertSame('vide1.pdf', $donneesFormulaire->getFileName('document'));
+        static::assertFileEquals($document, $donneesFormulaire->getFilePath('document'));
+    }
+
     /**
      * @throws Exception
      */

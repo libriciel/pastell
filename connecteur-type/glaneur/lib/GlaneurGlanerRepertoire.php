@@ -250,7 +250,13 @@ class GlaneurGlanerRepertoire
 
     private function isInsideDirectory(string $repertoire, string $filename): bool
     {
-        if ($filename === '' || \preg_match('#[/\\\\]#', $filename)) {
+        if (
+            $filename === ''
+            || \str_starts_with($filename, '/')
+            || \str_contains($filename, '\\')
+            || \str_contains($filename, "\0")
+            || \in_array('..', \explode('/', $filename), true)
+        ) {
             return false;
         }
         $base = \realpath($repertoire);
