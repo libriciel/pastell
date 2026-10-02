@@ -9,12 +9,14 @@
 - Logique de réinitialisation de mot de passe extraite de `ConnexionControler` vers un `PasswordResetService` dédié #2580
 - Nouvelle commande `app:workspace:orphan-check` : liste et supprime les fichiers de documents/connecteurs du workspace sans référence en base #2585
 - Activation/désactivation d'un utilisateur déléguée à `UserUpdateService` #2581
+- Chorus Pro - Cadre réforme septembre 2026 : Le statut « à recycler » n'est plus permis 
+  (s'il est renseigné malgré tout, il sera traduit en « rejetée » par Chorus Pro) #2467
 
 ### Corrections
 
 - Ajout/suppression d'une annexe TdT : les typologies déjà choisies sont conservées #1184
 - Harmonisation des pages de confirmation de suppressions #2560
-- Mail sécurisé : le passage en non reçu n'est plus repoussé par les renvois (régression 4.1.12) #2571
+- Mail sécurisé : le passage en non reçu n'est plus repoussé par les renvois (régression 4.1.20) #2571
 - Expressions Twig : la lecture des attributs d'un noeud XML (`node.attributes.V`) est de nouveau autorisée
   (régression 4.1.22) #2572
 - Upload multiple : les fichiers ne sont plus perdus lors d'un ajout en lot #2584
