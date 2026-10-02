@@ -51,11 +51,15 @@
   et la nouvelle exception `NotificationException` #2546
 - Amélioration de la navigation sur les pages d'administration de l'annuaire #2367
 - Studio, l'édition d'étape présente les champs multi-fichiers multiples sous forme de liste de sélection #2547
-- Suppression du graphe des dépendances des extensions sur la page `Extension/index` #938
 
 ### Corrections
 
 - Standardisation du footer selon la charte Libriciel SCOP #2440
+
+### Suppressions
+
+- Suppression du graphe des dépendances des extensions sur la page `Extension/index` #938
+  - Suppression des fichiers obsolètes `extensions_graphe.dot` et `extensions_graphe.jpg` du workspace lors de la mise à jour
 
 ### Suppressions d'éléments dépréciés
 
