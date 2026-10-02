@@ -246,7 +246,6 @@ final class MigrateIparapheurSoapRest extends BaseCommand
             $restForm->setData('iparapheur_type', $validationResult['type_name']);
             $restForm->setData('iparapheur_nb_jour_max', $soapForm->get('iparapheur_nb_jour_max'));
             $restForm->setData('iparapheur_metadata', $soapForm->get('iparapheur_metadata'));
-            $restForm->setData('iparapheur_multi_doc', $soapForm->get('iparapheur_multi_doc'));
 
             $result['associations_migrated'] = $this->connecteurAssociationService->migrateConnecteurAssociation(
                 $connectorInfo['id_ce'],

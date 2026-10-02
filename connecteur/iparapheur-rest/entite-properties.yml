@@ -48,10 +48,6 @@ formulaire:
     iparapheur_metadata:
       name: 'Métadonnées à envoyer au iparapheur'
       commentaire: "De la forme : nom_element_pastell_1:nom_metadonne_parapheur_1, nom_element_pastell_2:nom_metadonne_parapheur_2, ..\nAttention, il faut que le flux le supporte !"
-    iparapheur_multi_doc:
-      name: 'Appliquer le multi-document - déprécié'
-      type: checkbox
-      commentaire: 'Déprécié : ne plus utiliser, le fonctionnement change en 6.0.0.Avant toute utilisation, lire le CHANGELOG de la version 5.0.10 et la documentation du connecteur'
 
 action:
   test-iparapheur:

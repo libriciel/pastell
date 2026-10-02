@@ -433,7 +433,6 @@ class SignatureRecupTest extends PastellTestCase
             'password' => 'pass',
             'tenant_id' => 'tenant-test',
             'desk_id' => 'desk-test',
-            'iparapheur_multi_doc' => 'on',
         ]);
         $this->associateFluxWithConnector($connecteur_info['id_ce'], 'document-a-signer', 'signature');
 

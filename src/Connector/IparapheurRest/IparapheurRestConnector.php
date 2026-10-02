@@ -72,8 +72,6 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     private int $iparapheur_nb_jour_max;
     private string $iparapheur_metadata;
     private ?array $sending_metadata = null;
-    private bool $iparapheur_multi_doc;
-
     private string $resolvedFolderId;
 
     public function __construct(
@@ -90,7 +88,6 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $this->connecteurConfig = $donneesFormulaire;
         $this->iparapheur_nb_jour_max = (int)$donneesFormulaire->get('iparapheur_nb_jour_max');
         $this->iparapheur_metadata = (string)$donneesFormulaire->get('iparapheur_metadata');
-        $this->iparapheur_multi_doc = $donneesFormulaire->get('iparapheur_multi_doc') === true;
         $iparapheurAuthConfig = new IparapheurAuthConfig(
             $donneesFormulaire->get(self::USERNAME) ?: '',
             $donneesFormulaire->get(self::PASSWORD) ?: '',
@@ -355,7 +352,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         $tmp_folder = $tmpFolder->create();
 
         try {
-            $premis = Premis::fromFileToSign($dossier, $this->iparapheur_multi_doc);
+            $premis = Premis::fromFileToSign($dossier);
             $xml = $premis->generateDraftPremis();
 
             $premisPath = tempnam($tmp_folder, 'folder-premis-') . '.xml';
@@ -702,7 +699,7 @@ class IparapheurRestConnector extends SignatureConnecteur implements
      */
     public function hasMultiDocumentSigne($info): bool
     {
-        return $this->iparapheur_multi_doc && count($info['documents']) > 1;
+        return \count($info['documents']) > 1;
     }
 
     /**
