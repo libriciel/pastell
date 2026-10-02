@@ -23,12 +23,15 @@
 
 ### Dépréciations
 
-- **iparapheur REST, "Appliquer le multi-document" est proscrit** #2565
-  - En prévision du **BREAKING** de la version 6.0.0 avec la suppression de la case sur le connecteur
-  - En version 6.0.0, il sera possible d'envoyer plusieurs documents à signer ET les documents annexes (flux studio et ls-)
-  - Dans cette attente, pour exploiter l'option 
-    `Si le sous-type iparapheur le permet (Signature multi-document), alors les fichiers annexes seront des multi-documents signés` 
-    il est recommandé d'utiliser le connecteur iparapheur SOAP qui restera inchangé
+- iparapheur REST : la case « Appliquer le multi-document » est dépréciée et sera supprimée en 6.0.0 #2565
+  - Lorsqu'elle est cochée, **toutes les annexes** sont envoyées comme documents à signer : il n'est pas possible
+    d'avoir à la fois plusieurs documents à signer et de vraies annexes
+  - En 6.0.0, les flux studio et `ls-` disposeront d'un nouveau champ distinguant le document principal, les autres
+    documents à signer et les annexes
+  - **BREAKING** : après la montée en 6.0.0, les connecteurs sur lesquels la case est cochée ne fonctionneront plus de
+    la même façon, les annexes seront de nouveau envoyées comme annexes, et non plus comme documents à signer
+  - D'ici là, pour faire signer plusieurs documents, il est recommandé d'utiliser le connecteur iparapheur SOAP, dont
+    l'option « Appliquer le multi-document » reste inchangée
 
 ## [5.0.9] - 2026-09-07
 

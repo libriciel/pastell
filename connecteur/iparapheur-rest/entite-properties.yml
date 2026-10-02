@@ -51,7 +51,7 @@ formulaire:
     iparapheur_multi_doc:
       name: 'Appliquer le multi-document - déprécié'
       type: checkbox
-      commentaire: 'Suppression en 6.0.0, voir changelog 5.0.10 et documentation'
+      commentaire: 'Déprécié : ne plus utiliser, le fonctionnement change en 6.0.0.Avant toute utilisation, lire le CHANGELOG de la version 5.0.10 et la documentation du connecteur'
 
 action:
   test-iparapheur:
