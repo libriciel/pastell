@@ -12,7 +12,7 @@ include:
 #    inputs:
 #      mode: "changed"
   - component: $LIBRICIEL_CATALOG_PATH/project-standards/check-libriciel-standards@3.1.0
-  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.2.0
+  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.2.1
   - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@1.4.0
     inputs:
       compose_file: "docker/docker-compose.yml"
@@ -112,7 +112,7 @@ quality:
   only:
     - master
   image:
-    name: hubdocker.libriciel.fr/sonarsource/sonar-scanner-cli:12.1
+    name: hubdocker.libriciel.fr/sonarsource/sonar-scanner-cli:12.2
     entrypoint: [ "/bin/sh", "-c" ]
   script:
     - sonar-scanner -Dsonar.token=$SONAR_LOGIN -Dsonar.host.url=$SONAR_HOST_URL
@@ -147,7 +147,7 @@ security-check:
   stage: test
   allow_failure: true
   image:
-    name: hubdocker.libriciel.fr/aquasec/trivy:0.73.0
+    name: hubdocker.libriciel.fr/aquasec/trivy:0.75.0
     entrypoint: [ "" ]
   services:
     - docker:dind
