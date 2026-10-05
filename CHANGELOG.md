@@ -7,6 +7,10 @@
 - Accès à la base et logique métier sortis des gabarits vers les contrôleurs ; les vues n'exposent plus `sqlQuery`,
   `objectInstancier` ni `roleUtilisateur` #2569
 - Logique de réinitialisation de mot de passe extraite de `ConnexionControler` vers un `PasswordResetService` dédié #2580
+- Nouvelle commande `app:workspace:orphan-check` : liste et supprime les fichiers de documents/connecteurs du workspace sans référence en base #2585
+- Activation/désactivation d'un utilisateur déléguée à `UserUpdateService` #2581
+- Chorus Pro - Cadre réforme septembre 2026 : Le statut « à recycler » n'est plus permis
+  (s'il est renseigné malgré tout, il sera traduit en « rejetée » par Chorus Pro) #2467
 
 ### Corrections
 
@@ -20,6 +24,8 @@
 - Mail sécurisé : le passage en non reçu n'est plus repoussé par les renvois (régression 5.0.6) #2574
 - iparapheur REST : le bordereau de signature n'était pas récupéré lorsque le titre du dossier contenait certains
   caractères (`,` `/` `:` …) ou dépassait 245 caractères #2578
+- Le bandeau d'avertissement de faille de sécurité n'est visible que pour les utilisateurs ayant le droit
+  `system:lecture` sur l'entité racine #2589
 
 ### Dépréciations
 
@@ -32,6 +38,19 @@
     la même façon, les annexes seront de nouveau envoyées comme annexes, et non plus comme documents à signer
   - D'ici là, pour faire signer plusieurs documents, il est recommandé d'utiliser le connecteur iparapheur SOAP, dont
     l'option « Appliquer le multi-document » reste inchangée
+
+### Sécurité
+
+- Faille de contrôle d'accès sur le traitement par lot
+  (CVSS 8.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:H) #2587
+- Faille de contrôle d'accès sur la modification de dossier par l'API
+  (CVSS 6.1 - criticité MOYENNE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:L) #2588
+- Faille de contrôle d'accès sur le studio
+  (CVSS 6.5 - criticité MOYENNE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:L) #2591
+- Faille IDOR sur les actions d'un dossier
+  (CVSS 7.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:L) #2590
+- Faille de traversée de chemin sur le glaneur
+  (CVSS 7.1 - criticité HAUTE - CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:H/I:L/A:H) #2592
 
 ## [5.0.9] - 2026-09-07
 
