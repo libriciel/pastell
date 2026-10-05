@@ -3,8 +3,7 @@ WORKDIR /var/www/pastell/
 COPY package*.json ./
 RUN npm install
 
-# TODO il faudra passer en PHP 8.1 une fois que scoper suportera cette version
-FROM hubdocker.libriciel.fr/php:7.4-cli AS extensions_builder
+FROM hubdocker.libriciel.fr/php:8.1-cli AS extensions_builder
 WORKDIR /app
 
 COPY --from=hubdocker.libriciel.fr/composer:2 /usr/bin/composer /usr/bin/composer
@@ -18,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN curl \
     --location \
     --output /usr/bin/php-scoper \
-    --url https://github.com/humbug/php-scoper/releases/download/0.17.0/php-scoper.phar \
+    --url https://github.com/humbug/php-scoper/releases/download/0.17.7/php-scoper.phar \
     && chmod +x /usr/bin/php-scoper
 
 COPY ./extensions/pastell-depot-cmis/ /app/
