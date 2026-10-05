@@ -130,7 +130,7 @@ services:
       - "${HTTPS_PORT:-443}:443"
 
   db:
-    image: 'hubdocker.libriciel.fr/mariadb:11.4.13-noble@sha256:70cc072b29b4a89ae07abb2d4da2c64678a7f2dfe092751bb51c87d67dc1338b'
+    image: 'hubdocker.libriciel.fr/mariadb:11.4.13-noble@sha256:1292844148b311e4ed4300022a996d39083f415a963e970cf47cad1b3b18e3a6'
     restart: unless-stopped
     command:
       - "--character-set-server=utf8mb4"
@@ -185,7 +185,7 @@ services:
       - /var/lib/nginx/tmp:mode=770,uid=10001,gid=10001,rw,noexec,nosuid,nodev
 
   flow:
-    image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.7.0@sha256:731db41b3889113e65898d3f8afeed664bf8da92688c6afbbfb47dd956246995'
+    image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.7.1@sha256:c5fb55c673eb8acc80a3cbfb03a0a5b69c083dd3bb42fb40b07d5f60a7d8a60d'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -204,7 +204,7 @@ services:
       - no-new-privileges:true
 
   pes-viewer:
-    image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.5@sha256:bc6880f76877115cee5b7db8d32a1204348a9723046f48e7fbce2df13ef5d3a2'
+    image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.6@sha256:d4a49a8c01a2203c3e3b7e9079e5efa002acb73be99722655224f852b92b4528'
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -264,7 +264,7 @@ services:
       - stack-update-network
 
   libriciel-postfix:
-    image: 'registry.libriciel.fr/public/systeme/libriciel-postfix:1.0.1@sha256:06e0feeb32c390f1c970ef86710ec4eac6c6d232ccfcaa3a5b410c1e5377ecda'
+    image: 'registry.libriciel.fr/public/systeme/libriciel-postfix:1.0.3@sha256:8f5a343131ff6126c50b7c00623f11a2e9e4c783cdc25d0ffea2ea6f111249a3'
     restart: unless-stopped
     read_only: true
     cap_drop:
