@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.1.24] - 2026-11-02
+
+### Évolutions
+
+- Classe `RoleUtilisateur` dépréciée au profit de `UtilisateurRoleSQL` et des services `UtilisateurRoleService`, `UtilisateurEntiteService` et `RoleDelegationService` #2594
+
 ## [4.1.23] - 2026-10-05
 
 ### Évolutions

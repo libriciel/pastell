@@ -9,7 +9,7 @@ use Journal;
 use NotificationDigestSQL;
 use Pastell\Utilities\Certificate;
 use Pastell\Validator\UserValidator;
-use RoleUtilisateur;
+use Pastell\Service\Droit\DroitService;
 use UnrecoverableException;
 use UtilisateurSQL;
 
@@ -17,7 +17,7 @@ final class UserUpdateService
 {
     public function __construct(
         private readonly UtilisateurSQL $utilisateurSQL,
-        private readonly RoleUtilisateur $roleUtilisateur,
+        private readonly UtilisateurRoleService $utilisateurRoleService,
         private readonly Journal $journal,
         private readonly UserValidator $userValidator,
         private readonly NotificationDigestSQL $notificationDigestSQL,
@@ -64,9 +64,9 @@ final class UserUpdateService
         $this->utilisateurSQL->setLogin($userId, $login);
         $this->utilisateurSQL->setColBase($userId, $entityId);
 
-        $roles = $this->roleUtilisateur->getRole($userId);
+        $roles = $this->utilisateurRoleService->getRole($userId);
         if (!$roles) {
-            $this->roleUtilisateur->addRole($userId, RoleUtilisateur::AUCUN_DROIT, $entityId);
+            $this->utilisateurRoleService->addRole($userId, DroitService::AUCUN_DROIT, $entityId);
         }
 
         $newInfo = $this->utilisateurSQL->getInfo($userId);
@@ -135,8 +135,8 @@ final class UserUpdateService
         $this->utilisateurSQL->setLogin($userId, $login);
         $this->utilisateurSQL->setColBase($userId, $entityId);
 
-        if (!$this->roleUtilisateur->getRole($userId)) {
-            $this->roleUtilisateur->addRole($userId, RoleUtilisateur::AUCUN_DROIT, $entityId);
+        if (!$this->utilisateurRoleService->getRole($userId)) {
+            $this->utilisateurRoleService->addRole($userId, DroitService::AUCUN_DROIT, $entityId);
         }
 
         $newInfo = $this->utilisateurSQL->getInfo($userId);

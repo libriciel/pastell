@@ -2,6 +2,7 @@
 
 use Pastell\File\Chunk\ChunkRequest;
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Mailsec\MailsecManager;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
@@ -378,7 +379,7 @@ class DocumentAPIControllerTest extends PastellTestCase
                 'readonly',
                 'readonly'
             );
-        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole($userId, 'readonly', self::ID_E_COL);
+        $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)->addRole($userId, 'readonly', self::ID_E_COL);
 
         $id_d = $this->createTestDocument();
 
@@ -483,7 +484,7 @@ class DocumentAPIControllerTest extends PastellTestCase
             $info
         );
 
-        $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
+        $roleUtilisateur = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
 
@@ -700,7 +701,7 @@ class DocumentAPIControllerTest extends PastellTestCase
                 'readonly',
                 'readonly'
             );
-        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole($userId, 'readonly', self::ID_E_COL);
+        $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)->addRole($userId, 'readonly', self::ID_E_COL);
 
         $id_d = $this->createTestDocument();
 

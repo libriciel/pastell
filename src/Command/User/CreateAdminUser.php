@@ -6,7 +6,7 @@ namespace Pastell\Command\User;
 
 use Pastell\Service\Utilisateur\UserCreationService;
 use Exception;
-use RoleUtilisateur;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Command\BaseCommand;
 use Pastell\Service\TokenGenerator;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -26,7 +26,7 @@ final class CreateAdminUser extends BaseCommand
         private readonly UserCreationService $userCreationService,
         private readonly UtilisateurSQL $utilisateurSQL,
         private readonly TokenGenerator $tokenGenerator,
-        private readonly RoleUtilisateur $roleUtilisateur,
+        private readonly UtilisateurRoleService $utilisateurRoleService,
     ) {
         parent::__construct();
     }
@@ -74,7 +74,7 @@ final class CreateAdminUser extends BaseCommand
             ));
             return Command::FAILURE;
         }
-        $this->roleUtilisateur->addRole($id_u, 'admin', 0);
+        $this->utilisateurRoleService->addRole($id_u, 'admin', 0);
 
         $this->getIO()->writeln(sprintf(
             "Création de l'utilisateur %s avec mot de passe : %s",

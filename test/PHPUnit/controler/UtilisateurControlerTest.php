@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Droit\DroitType;
@@ -205,7 +206,7 @@ class UtilisateurControlerTest extends ControlerTestCase
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $this->api_user_id = $userCreationService->createAPI('api_user', $id_e1, 'api', 'user');
         $this->admin_inf = $userCreationService->create('admin_inferieur', 'admin@gmail.com', 'admin', 'admin', $id_e2);
-        $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
+        $roleUtilisateur = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
         $roleUtilisateur->addRole($this->admin_inf, 'admin', $id_e2);
         $this->userTokenService = $this->getObjectInstancier()->getInstance(UserTokenService::class);
     }
@@ -367,8 +368,8 @@ class UtilisateurControlerTest extends ControlerTestCase
             ->edit('entiteLectureEdition', 'Droit utilisateur');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
             ->addDroit('entiteLectureEdition', DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION));
-        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)
-            ->addRole('3', 'entiteLectureEdition', '1');
+        $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)
+            ->addRole(3, 'entiteLectureEdition', 1);
 
         $this->getObjectInstancier()->getInstance(Authentification::class)->connexion('tester', 3);
 

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @deprecated Since 4.1.24, Use UtilisateurRoleSQL + UtilisateurRoleService / DroitService /
+ * UtilisateurEntiteService / RoleDelegationService instead
+ */
 class RoleUtilisateur extends SQL
 {
     public const AUCUN_DROIT = 'aucun droit';

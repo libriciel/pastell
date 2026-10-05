@@ -11,8 +11,7 @@ class ActionPossible
 
     private $documentActionEntite;
     private $documentEntite;
-    /** @var RoleUtilisateur  */
-    private $roleUtilisateur;
+    private DroitService $droitService;
     /** @var DocumentTypeFactory */
     private $documentTypeFactory;
     private DocumentSQL $document;
@@ -39,7 +38,7 @@ class ActionPossible
         $this->document = $objectInstancier->getInstance(DocumentSQL::class);
         $this->documentActionEntite = $objectInstancier->getInstance(DocumentActionEntite::class);
         $this->documentEntite = $objectInstancier->getInstance(DocumentEntite::class);
-        $this->roleUtilisateur = $objectInstancier->getInstance(RoleUtilisateur::class);
+        $this->droitService = $objectInstancier->getInstance(DroitService::class);
         $this->entiteSQL = $objectInstancier->getInstance(EntiteSQL::class);
         $this->documentTypeFactory = $objectInstancier->getInstance(DocumentTypeFactory::class);
         $this->donneesFormulaireFactory = $objectInstancier->getInstance(DonneesFormulaireFactory::class);
@@ -147,7 +146,7 @@ class ActionPossible
             $this->documentActionEntite->getAction($id_e, $id_d)
         );
         $this->connecteur_entite_info = false;
-        $this->utilisateur_droit_list = $this->roleUtilisateur->getAllDroitEntite($id_u, $id_e);
+        $this->utilisateur_droit_list = $this->droitService->getAllDroitEntite($id_u, (int) $id_e);
 
         $this->donneesFormulaire = $this->donneesFormulaireFactory->get($id_d, $type_document);
         $this->entite_info = $this->entiteSQL->getInfo($id_e);
@@ -172,7 +171,7 @@ class ActionPossible
         $this->action_list = [];
         $this->connecteur_entite_info = $this->connecteurEntiteSQL->getInfo($id_ce);
 
-        $this->utilisateur_droit_list = $this->roleUtilisateur->getAllDroitEntite($id_u, $this->connecteur_entite_info['id_e']);
+        $this->utilisateur_droit_list = $this->droitService->getAllDroitEntite($id_u, (int) $this->connecteur_entite_info['id_e']);
         $this->donneesFormulaire = null;
         $this->entite_info = $this->entiteSQL->getInfo($this->connecteur_entite_info['id_e']);
         $this->documentType = ($this->connecteur_entite_info['global']) ?

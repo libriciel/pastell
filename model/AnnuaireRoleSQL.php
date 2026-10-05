@@ -2,14 +2,6 @@
 
 class AnnuaireRoleSQL extends SQL
 {
-    private $roleUtilisateur;
-
-    public function __construct(SQLQuery $sqlQuery, RoleUtilisateur $roleUtilisateur)
-    {
-        parent::__construct($sqlQuery);
-        $this->roleUtilisateur = $roleUtilisateur;
-    }
-
     public function getAll($id_e)
     {
         $sql = "SELECT * FROM annuaire_role WHERE id_e_owner=? ORDER BY nom ASC";
@@ -25,9 +17,15 @@ class AnnuaireRoleSQL extends SQL
 
     public function getUtilisateur($id_r)
     {
-        $sql = "SELECT * FROM annuaire_role WHERE id_r=?";
-        $info = $this->queryOne($sql, $id_r);
-        return $this->roleUtilisateur->getAllUtilisateurHerite($info['id_e'], $info['role']);
+        $sql = <<<SQL
+SELECT entite_ancetre.*, utilisateur_role.*, utilisateur.*
+FROM annuaire_role
+JOIN entite_ancetre ON entite_ancetre.id_e_ancetre = annuaire_role.id_e
+JOIN utilisateur_role ON entite_ancetre.id_e = utilisateur_role.id_e AND utilisateur_role.role = annuaire_role.role
+JOIN utilisateur ON utilisateur_role.id_u = utilisateur.id_u
+WHERE annuaire_role.id_r = ?
+SQL;
+        return $this->query($sql, $id_r);
     }
 
     public function getInfo($id_r)

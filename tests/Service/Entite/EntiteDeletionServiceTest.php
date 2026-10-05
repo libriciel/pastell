@@ -14,7 +14,7 @@ use FluxEntiteSQL;
 use Notification;
 use Pastell\Service\Entite\EntiteDeletionService;
 use PastellTestCase;
-use RoleUtilisateur;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use SQLQuery;
 use UnrecoverableException;
 use UtilisateurSQL;
@@ -101,7 +101,7 @@ class EntiteDeletionServiceTest extends PastellTestCase
 
     public function testCannotDeleteWhenHasUser(): void
     {
-        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->addRole(
+        $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)->addRole(
             1,
             'role-fake',
             $this->entityId

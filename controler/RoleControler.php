@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Menu\MenuGaucheService;
 
 class RoleControler extends PastellControler
@@ -112,7 +113,7 @@ class RoleControler extends PastellControler
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION);
         $role = $this->getPostInfo()->get('role');
 
-        if ($this->getRoleUtilisateur()->anybodyHasRole($role)) {
+        if ($this->getInstance(UtilisateurRoleService::class)->anybodyHasRole($role)) {
             $this->setLastError("Le rôle $role est attribué à des utilisateurs");
             $this->redirect("/Role/detail?role=$role");
         }

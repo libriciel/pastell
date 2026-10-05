@@ -6,6 +6,9 @@ use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 
+/**
+ * @deprecated Since 4.1.24, Use UtilisateurRoleSQLTest instead
+ */
 class RoleUtilisateurSQLTest extends PastellTestCase
 {
     private RoleUtilisateur $roleUtilisateurSQL;

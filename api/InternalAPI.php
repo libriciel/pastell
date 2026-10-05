@@ -104,7 +104,6 @@ class InternalAPI
         }
         $controllerObject->setUtilisateurId($this->id_u);
         $controllerObject->setRequestInfo($data);
-        $controllerObject->setRoleUtilisateur($this->objectInstancier->getInstance(RoleUtilisateur::class));
         $controllerObject->setDroitService($this->objectInstancier->getInstance(DroitService::class));
         $controllerObject->setFileUploader($this->fileUploader);
 

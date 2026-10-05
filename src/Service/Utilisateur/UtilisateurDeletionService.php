@@ -5,7 +5,6 @@ namespace Pastell\Service\Utilisateur;
 use EntiteSQL;
 use Notification;
 use NotificationDigestSQL;
-use RoleUtilisateur;
 use UtilisateurNewEmailSQL;
 use UtilisateurSQL;
 use Journal;
@@ -23,14 +22,11 @@ class UtilisateurDeletionService
      */
     private $journal;
 
-    /**
-     * @var RoleUtilisateur
-     */
-    private $roleUtilisateur;
+    private UtilisateurRoleService $utilisateurRoleService;
 
     public function __construct(
         UtilisateurSQL $utilisateurSQL,
-        RoleUtilisateur $roleUtilisateur,
+        UtilisateurRoleService $utilisateurRoleService,
         Journal $journal,
         private readonly Notification $notification,
         private readonly UsersToken $usersToken,
@@ -39,7 +35,7 @@ class UtilisateurDeletionService
     ) {
         $this->utilisateurSQL = $utilisateurSQL;
         $this->journal = $journal;
-        $this->roleUtilisateur = $roleUtilisateur;
+        $this->utilisateurRoleService = $utilisateurRoleService;
     }
 
     /**
@@ -50,7 +46,7 @@ class UtilisateurDeletionService
     public function delete(int $id_u): void
     {
         $userInfo = $this->utilisateurSQL->getInfo($id_u);
-        $this->roleUtilisateur->removeAllRole($id_u);
+        $this->utilisateurRoleService->removeAllRoles($id_u);
         $this->notification->removeAllForUser($id_u);
         $this->notificationDigestSQL->deleteByEmail($userInfo['email']);
         $this->usersToken->deleteAllForUser($id_u);

@@ -5,7 +5,7 @@ namespace Pastell\Service\Droit;
 use DocumentTypeFactory;
 use EntiteSQL;
 use NotFoundException;
-use RoleUtilisateur;
+use UtilisateurRoleCache;
 use UtilisateurSQL;
 
 class DroitService
@@ -44,8 +44,10 @@ class DroitService
     public const DROIT_ROLE = 'role';
     public const DROIT_ANNUAIRE = 'annuaire';
 
+    public const AUCUN_DROIT = 'aucun droit';
+
     public function __construct(
-        private readonly RoleUtilisateur $roleUtilisateur,
+        private readonly UtilisateurRoleCache $utilisateurRoleCache,
         private readonly DocumentTypeFactory $documentTypeFactory,
         private readonly EntiteSQL $entiteSQL,
         private readonly UtilisateurSQL $utilisateurSQL,
@@ -96,7 +98,7 @@ class DroitService
         if ($this->isRestrictedDroit($droit)) {
             return false;
         }
-        return $this->roleUtilisateur->hasDroit($id_u, $droit, $id_e);
+        return in_array($droit, $this->utilisateurRoleCache->getAllDroitEntite($id_u, $id_e), true);
     }
 
     /**
@@ -107,7 +109,7 @@ class DroitService
         if ($this->isRestrictedDroit($droit)) {
             return false;
         }
-        return $this->roleUtilisateur->hasOneDroit($id_u, $droit);
+        return in_array($droit, $this->utilisateurRoleCache->getAllDroit($id_u), true);
     }
 
     public function hasOneDroitFor(int $id_u, string $droit_id, DroitType $droit_type): bool
@@ -116,15 +118,19 @@ class DroitService
         if ($this->isRestrictedDroit($droit)) {
             return false;
         }
-        return $this->roleUtilisateur->hasOneDroit($id_u, $droit);
+        return in_array($droit, $this->utilisateurRoleCache->getAllDroit($id_u), true);
     }
 
     public function getAllDocumentLecture(int $id_u, int $id_e): array
     {
-        $liste_type = $this->roleUtilisateur->getAllDocumentLecture($id_u, $id_e);
-        foreach ($liste_type as $key => $type) {
-            if ($this->documentTypeFactory->isRestrictedFlux($type)) {
-                unset($liste_type[$key]);
+        $liste_type = [];
+        foreach ($this->utilisateurRoleCache->getAllDroitEntite($id_u, $id_e) as $droit) {
+            if (!preg_match('/^(.*):' . DroitType::LECTURE->value . '$/', $droit, $matches)) {
+                continue;
+            }
+            $type = $matches[1];
+            if (!$this->documentTypeFactory->isRestrictedFlux($type)) {
+                $liste_type[] = $type;
             }
         }
         return $liste_type;
@@ -137,7 +143,7 @@ class DroitService
      */
     public function getAllDroitEntite($id_u, int $id_e): array
     {
-        $data = $this->roleUtilisateur->getAllDroitEntite($id_u, $id_e);
+        $data = $this->utilisateurRoleCache->getAllDroitEntite($id_u, $id_e);
         foreach ($data as $key => $droit) {
             if ($this->isRestrictedDroit($droit)) {
                 unset($data[$key]);
@@ -148,7 +154,7 @@ class DroitService
 
     public function getAllDroit(int $id_u): array
     {
-        $data = $this->roleUtilisateur->getAllDroit($id_u);
+        $data = $this->utilisateurRoleCache->getAllDroit($id_u);
         foreach ($data as $key => $droit) {
             if ($this->isRestrictedDroit($droit)) {
                 unset($data[$key]);
@@ -261,6 +267,6 @@ class DroitService
             return false;
         }
 
-        return $this->roleUtilisateur->hasDroit($id_u, $droit, $id_e);
+        return in_array($droit, $this->utilisateurRoleCache->getAllDroitEntite($id_u, $id_e), true);
     }
 }
