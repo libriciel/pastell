@@ -124,13 +124,13 @@ class UtilisateurAPIController extends BaseAPIController
             $this->checkDroitFor($this->utilisateur->getInfo($id_u)['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
             $action = $this->getFromQueryArgs(1);
             if ($action === 'activate') {
-                $this->utilisateur->enable($id_u);
+                $this->userUpdateService->enable((int) $id_u);
             } elseif ($action === 'deactivate') {
                 if ($id_u == $this->getUtilisateurId()) {
                     throw new UnrecoverableException('Vous ne pouvez pas désactiver votre compte utilisateur.');
                 }
 
-                $this->utilisateur->disable($id_u);
+                $this->userUpdateService->disable((int) $id_u);
             } elseif ($action === 'token') {
                 if (!$this->utilisateur->getInfo($id_u)['is_api']) {
                     throw new ForbiddenException('Les jetons ne peuvent être créés que pour des utilisateurs de type API');

@@ -130,7 +130,7 @@ services:
       - "${HTTPS_PORT:-443}:443"
 
   db:
-    image: 'hubdocker.libriciel.fr/mariadb:11.4.13-noble@sha256:611a2fcc5fa7c6ceb8644c6f74b25ede004ff6c3a6b38c8f8c23d3bbf6c26430'
+    image: 'hubdocker.libriciel.fr/mariadb:11.4.13-noble@sha256:1292844148b311e4ed4300022a996d39083f415a963e970cf47cad1b3b18e3a6'
     restart: unless-stopped
     command:
       - "--character-set-server=utf8mb4"
@@ -157,7 +157,7 @@ services:
       - ${DATABASE_DATADIR:-database_datadir}:/var/lib/mysql/:rw,noexec,nosuid,nodev
 
   redis:
-    image: 'hubdocker.libriciel.fr/redis:8.10.1-alpine3.23@sha256:becdda6c7f4b3fb42e42fd7f120bbf5c54c4caaaf16f26da24e4563d2c1f0576'
+    image: 'hubdocker.libriciel.fr/redis:8.10.2-alpine3.23@sha256:3811787313eba226a2ef38658c6ccb91cd5e110edc89c37767de373120a0e5a0'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -185,7 +185,7 @@ services:
       - /var/lib/nginx/tmp:mode=770,uid=10001,gid=10001,rw,noexec,nosuid,nodev
 
   flow:
-    image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.7.0@sha256:731db41b3889113e65898d3f8afeed664bf8da92688c6afbbfb47dd956246995'
+    image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.7.1@sha256:c5fb55c673eb8acc80a3cbfb03a0a5b69c083dd3bb42fb40b07d5f60a7d8a60d'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -204,7 +204,7 @@ services:
       - no-new-privileges:true
 
   pes-viewer:
-    image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.2@sha256:22ea18abcd74bb56a266d58fadedc2b6d906699cf88991e7dadfc66056e12a3a'
+    image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.6@sha256:d4a49a8c01a2203c3e3b7e9079e5efa002acb73be99722655224f852b92b4528'
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -231,7 +231,7 @@ services:
       - ${LOCAL_CACERTS_PATH:-local_cacerts}:/usr/local/share/ca-certificates:rw,noexec,nosuid,nodev
 
   libriciel-feedback:
-    image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-feedback:2.0.7@sha256:27f9b1343e557fdf174201d8a29603637041b61a397c580f7db16aa9ca12f22b'
+    image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-feedback:2.0.8@sha256:e917a05dca8f51f99061efacdb326bed502ae25a57cfadcd7b24769743d07672'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -264,7 +264,7 @@ services:
       - stack-update-network
 
   libriciel-postfix:
-    image: 'registry.libriciel.fr/public/systeme/libriciel-postfix:1.0.1@sha256:06e0feeb32c390f1c970ef86710ec4eac6c6d232ccfcaa3a5b410c1e5377ecda'
+    image: 'registry.libriciel.fr/public/systeme/libriciel-postfix:1.0.3@sha256:8f5a343131ff6126c50b7c00623f11a2e9e4c783cdc25d0ffea2ea6f111249a3'
     restart: unless-stopped
     read_only: true
     cap_drop:

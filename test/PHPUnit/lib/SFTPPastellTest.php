@@ -42,6 +42,11 @@ class SFTPPastellTest extends TestCase
         $netSFTP
             ->method('getServerPublicHostKey')
             ->willReturn(file_get_contents(__DIR__ . '/fixtures/ssh_server_public_key.txt'));
+        foreach (['get', 'put', 'rename', 'delete', 'mkdir'] as $method) {
+            $netSFTP
+                ->method($method)
+                ->willReturn(true);
+        }
         $this->sftp = new SFTP($netSFTP, $this->sftpProperties);
     }
 

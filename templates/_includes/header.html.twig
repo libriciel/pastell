@@ -43,7 +43,7 @@
 </div>
 
 {% if authentification.isConnected %}
-    {% if libricielFeedback.hasSecurityAlert() %}
+    {% if menu_system_lecture and libricielFeedback.hasSecurityAlert() %}
         <div class="security-banner security-banner">
             <div class="security-banner-warning-icon">
                 <i class="fa fa-exclamation-triangle"></i>
