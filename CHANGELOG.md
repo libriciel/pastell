@@ -11,6 +11,7 @@
 - Activation/désactivation d'un utilisateur déléguée à `UserUpdateService` #2581
 - Chorus Pro - Cadre réforme septembre 2026 : Le statut « à recycler » n'est plus permis 
   (s'il est renseigné malgré tout, il sera traduit en « rejetée » par Chorus Pro) #2467
+- Passage de phpseclib v2 à phpseclib v3
 
 ### Corrections
 

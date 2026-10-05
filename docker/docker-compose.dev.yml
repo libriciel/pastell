@@ -66,12 +66,12 @@ services:
   # Add the following line to your .env for using maildev
   # MAILER_DSN=smtp://maildev:1025?verify_peer=0
   maildev:
-    image: hubdocker.libriciel.fr/maildev/maildev:3.0.0-rc.3
+    image: hubdocker.libriciel.fr/maildev/maildev:3.0.0
     ports:
       - "1080:1080"
 
   node:
-    image: hubdocker.libriciel.fr/node:26.5-alpine3.24
+    image: hubdocker.libriciel.fr/node:26.10-alpine3.24
     working_dir: /app
     user: "node"
     volumes:

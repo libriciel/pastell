@@ -55,11 +55,6 @@ Number: 0123-4567-8888
 Type: home
 Number: 0123-4567-8910
 ', $this->twigRenderer()->render($expression, $form));
-        self::assertSame('Type: iPhone
-Number: 0123-4567-8888
-Type: home
-Number: 0123-4567-8910
-', $this->twigRenderer()->render($expression, $form));
     }
 
     /**
