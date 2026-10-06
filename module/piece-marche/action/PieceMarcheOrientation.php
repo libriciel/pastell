@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Journal\JournalConsultationService;
+
 class PieceMarcheOrientation extends ActionExecutor
 {
     public function go()
@@ -86,7 +88,7 @@ class PieceMarcheOrientation extends ActionExecutor
 
     private function createJournal()
     {
-        $journal = $this->getJournal()->getAll($this->id_e, false, $this->id_d, 0, 0, 10000);
+        $journal = $this->objectInstancier->getInstance(JournalConsultationService::class)->getList($this->id_e, false, $this->id_d, 0, 0, 10000);
         foreach ($journal as $i => $journal_item) {
             $journal[$i]['preuve'] = base64_encode($journal[$i]['preuve']);
         }

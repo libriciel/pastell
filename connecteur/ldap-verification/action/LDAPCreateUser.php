@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Journal\JournalEntryService;
+
 class LDAPCreateUser extends ActionExecutor
 {
     public function go()
@@ -20,8 +22,8 @@ class LDAPCreateUser extends ActionExecutor
                     RoleUtilisateur::AUCUN_DROIT,
                     0
                 );
-                $this->objectInstancier->getInstance(Journal::class)->add(
-                    Journal::MODIFICATION_UTILISATEUR,
+                $this->objectInstancier->getInstance(JournalEntryService::class)->add(
+                    JournalEventType::MODIFICATION_UTILISATEUR,
                     0,
                     0,
                     "Ajout",
@@ -33,8 +35,8 @@ class LDAPCreateUser extends ActionExecutor
                 $oldEmail = $utilisateur->getInfo($user['id_u'])['email'];
                 $utilisateur->setEmail($user['id_u'], $user['email']);
                 $this->objectInstancier->getInstance(NotificationDigestSQL::class)->updateEmail($oldEmail, $user['email']);
-                $this->objectInstancier->getInstance(Journal::class)->add(
-                    Journal::MODIFICATION_UTILISATEUR,
+                $this->objectInstancier->getInstance(JournalEntryService::class)->add(
+                    JournalEventType::MODIFICATION_UTILISATEUR,
                     0,
                     0,
                     "Synchronisation",

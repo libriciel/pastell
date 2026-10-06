@@ -314,10 +314,9 @@ class DocumentAPIControllerTest extends PastellTestCase
         $info = $this->getInternalAPI()->get("entite/1/document/$id_d");
         $this->assertTrue(empty($info['data']['arrete']));
 
-        $journal = $this->getObjectInstancier()->getInstance(Journal::class);
         $this->assertEquals(
             "Modification du document",
-            $journal->getAll(false, false, false, false, 0, 100)[0]['message']
+            $this->getJournalConsultationService()->getList(false, false, false, false, 0, 100)[0]['message']
         );
     }
 

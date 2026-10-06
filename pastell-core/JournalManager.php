@@ -9,7 +9,7 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 class JournalManager
 {
     public function __construct(
-        private readonly Journal $journalSQL,
+        private readonly JournalSQL $journalSQL,
         private readonly int $journal_max_age_in_months,
         private readonly array $admin_email,
         private readonly Monolog\Logger $logger,
@@ -24,7 +24,7 @@ class JournalManager
     {
         $this->logger->info('Lancement de la purge du journal des événements');
         try {
-            $this->journalSQL->purgeToHistorique($this->journal_max_age_in_months);
+            $this->purge();
         } catch (Exception $e) {
             $message = sprintf('Erreur sur la purge du journal : %s', $e->getMessage());
             $this->logger->error($message);
@@ -37,5 +37,19 @@ class JournalManager
         }
         $this->logger->info('Purge du journal des événements terminée');
         return true;
+    }
+
+    private function purge(): void
+    {
+        $date = date('Y-m-d H:i:s', strtotime("-$this->journal_max_age_in_months months"));
+        do {
+            $id_j_list = $this->journalSQL->getIdListOlderThan($date);
+            foreach ($id_j_list as $id_j) {
+                if (!$this->journalSQL->existsInHistorique($id_j)) {
+                    $this->journalSQL->copyToHistorique($id_j);
+                }
+                $this->journalSQL->delete($id_j);
+            }
+        } while ($id_j_list);
     }
 }

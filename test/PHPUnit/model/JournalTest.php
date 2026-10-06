@@ -2,6 +2,9 @@
 
 use Pastell\Storage\StorageInterface;
 
+/**
+ * @deprecated Since 4.1.24, Use JournalSQLTest / JournalConsultationServiceTest instead
+ */
 class JournalTest extends PastellTestCase
 {
     /**
@@ -52,7 +55,7 @@ class JournalTest extends PastellTestCase
 
     public function testAddActionAuto()
     {
-        $id_j = $this->journal->addActionAutomatique(Journal::DOCUMENT_ACTION, 1, "XYZT", "test", "message de test");
+        $id_j = $this->journal->addActionAutomatique(JournalEventType::DOCUMENT_ACTION->value, 1, "XYZT", "test", "message de test");
         $info = $this->journal->getInfo($id_j);
         $this->assertEquals(0, $info['id_u']);
     }
@@ -113,7 +116,7 @@ class JournalTest extends PastellTestCase
 
     public function testGetTypeAsString()
     {
-        $this->assertEquals("Connexion", $this->journal->getTypeAsString(Journal::CONNEXION));
+        $this->assertEquals("Connexion", $this->journal->getTypeAsString(JournalEventType::CONNEXION->value));
     }
 
     public function testGetAllInfo()

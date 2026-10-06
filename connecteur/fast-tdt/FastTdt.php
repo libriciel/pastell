@@ -1,6 +1,7 @@
 <?php
 
 use Sabre\HTTP\ClientHttpException;
+use Pastell\Service\Journal\JournalEntryService;
 
 class FastTdt extends TdtConnecteur
 {
@@ -22,7 +23,7 @@ class FastTdt extends TdtConnecteur
     /** @var SoapClientFactory */
     private $soapClientFactory;
 
-    /** @var Journal */
+    /** @var JournalEntryService */
     private $journal;
 
     private $url = '';
@@ -48,9 +49,9 @@ class FastTdt extends TdtConnecteur
      *
      * @param WebdavWrapper $webdavWrapper
      * @param SoapClientFactory $soapClientFactory
-     * @param Journal $journal
+     * @param JournalEntryService $journal
      */
-    public function __construct(WebdavWrapper $webdavWrapper, SoapClientFactory $soapClientFactory, Journal $journal)
+    public function __construct(WebdavWrapper $webdavWrapper, SoapClientFactory $soapClientFactory, JournalEntryService $journal)
     {
         $this->webDavWrapper = $webdavWrapper;
         $this->soapClientFactory = $soapClientFactory;
@@ -443,7 +444,7 @@ class FastTdt extends TdtConnecteur
                     'md5sum' => md5($filecontent)
                 ];
                 $this->journal->addSQL(
-                    Journal::DOCUMENT_ACTION_ERROR,
+                    JournalEventType::DOCUMENT_ACTION_ERROR,
                     $this->getConnecteurInfo()['id_e'] ?? 0,
                     0,
                     $this->getDocDonneesFormulaire()->id_d,

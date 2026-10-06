@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Journal\JournalConsultationService;
+
 class PDFGeneriqueEnvoiSAE extends ActionExecutor
 {
     /**
@@ -80,7 +82,7 @@ class PDFGeneriqueEnvoiSAE extends ActionExecutor
 
     private function createJournal(): void
     {
-        $journal = $this->getJournal()->getAll($this->id_e, false, $this->id_d, 0, 0, 10000);
+        $journal = $this->objectInstancier->getInstance(JournalConsultationService::class)->getList($this->id_e, false, $this->id_d, 0, 0, 10000);
         foreach ($journal as $i => $journal_item) {
             $journal[$i]['preuve'] = base64_encode($journal[$i]['preuve']);
         }

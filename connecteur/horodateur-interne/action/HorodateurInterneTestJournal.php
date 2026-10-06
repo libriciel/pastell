@@ -1,12 +1,14 @@
 <?php
 
+use Pastell\Service\Journal\JournalConsultationService;
+
 class HorodateurInterneTestJournal extends ActionExecutor
 {
     public function go()
     {
         $message = 'Ceci est une ligne de test ' . mt_rand(0, mt_getrandmax());
-        $id_j = $this->getJournal()->add(Journal::TEST, 0, '', 'test', $message);
-        $info = $this->getJournal()->getAllInfo($id_j);
+        $id_j = $this->getJournalEntryService()->add(JournalEventType::TEST, 0, '', 'test', $message);
+        $info = $this->objectInstancier->getInstance(JournalConsultationService::class)->getAllInfo($id_j);
 
         /** @var Horodateur $horodateur */
         $horodateur = $this->getMyConnecteur();

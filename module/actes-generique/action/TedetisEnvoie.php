@@ -51,7 +51,7 @@ class TedetisEnvoie extends ActionExecutor
                 $this->setDocumentId($this->type, $id_d);
                 $this->go();
             } catch (Exception $e) {
-                $this->getJournal()->add(Journal::DOCUMENT_TRAITEMENT_LOT, $this->id_e, $id_d, $this->action, "Erreur lors du traitement par lot de $id_d : " . $e->getMessage());
+                $this->getJournalEntryService()->add(JournalEventType::DOCUMENT_TRAITEMENT_LOT, $this->id_e, $id_d, $this->action, "Erreur lors du traitement par lot de $id_d : " . $e->getMessage());
             }
         }
         $this->setJobManagerForLot($all_id_d);

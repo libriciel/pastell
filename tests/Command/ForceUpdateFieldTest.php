@@ -6,7 +6,7 @@ use ConnecteurFactory;
 use DonneesFormulaireFactory;
 use Exception;
 use InvalidArgumentException;
-use Journal;
+use Pastell\Service\Journal\JournalEntryService;
 use NotFoundException;
 use Pastell\Command\ForceUpdateField;
 use Pastell\Service\UpdateFieldService;
@@ -24,7 +24,7 @@ final class ForceUpdateFieldTest extends PastellTestCase
 
         $command = new ForceUpdateField(
             $this->getObjectInstancier()->getInstance(UpdateFieldService::class),
-            $this->getObjectInstancier()->getInstance(Journal::class)
+            $this->getObjectInstancier()->getInstance(JournalEntryService::class)
         );
         $this->commandTester = new CommandTester($command);
     }

@@ -5,7 +5,8 @@ namespace Pastell\Command;
 use Pastell\Service\UpdateFieldService;
 use Exception;
 use InvalidArgumentException;
-use Journal;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -20,7 +21,7 @@ class ForceUpdateField extends BaseCommand
 
     public function __construct(
         private UpdateFieldService $updateFieldService,
-        private Journal $journal,
+        private JournalEntryService $journal,
     ) {
         parent::__construct();
     }
@@ -103,7 +104,7 @@ class ForceUpdateField extends BaseCommand
 
         if (!$dryRun) {
             $this->journal->addSQL(
-                Journal::COMMANDE,
+                JournalEventType::COMMANDE,
                 0,
                 0,
                 '',

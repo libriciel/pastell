@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Journal\JournalEntryService;
+
 class UndeliveredMail extends Connecteur
 {
     public const PASTELL_RETURN_INFO_HEADER = "X-PASTELL-DOCUMENT";
@@ -13,7 +15,7 @@ class UndeliveredMail extends Connecteur
 
     private $journal;
 
-    public function __construct(DocumentEmail $documentEmail, Journal $journal)
+    public function __construct(DocumentEmail $documentEmail, JournalEntryService $journal)
     {
         $this->documentEmail = $documentEmail;
         $this->journal = $journal;
@@ -70,7 +72,7 @@ class UndeliveredMail extends Connecteur
                     $this->documentEmail->addError($document_email_info['id_de'], $body);
                     $id_e = $this->documentEmail->getId_e($document_email_info['id_d']);
                     $this->journal->add(
-                        Journal::MAIL_SECURISE,
+                        JournalEventType::MAIL_SECURISE,
                         $id_e,
                         $document_email_info['id_d'],
                         'error-email',

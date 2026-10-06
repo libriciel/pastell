@@ -9,6 +9,7 @@ use DonneesFormulaireException;
 use FluxData;
 use FluxDataSedaDefault;
 use NotFoundException;
+use Pastell\Service\Journal\JournalConsultationService;
 use Pastell\Step\SAE\Enum\SAEActionsEnum;
 use Pastell\Step\SAE\Enum\SAEFieldsEnum;
 use SEDAConnecteur;
@@ -114,7 +115,9 @@ final class SAEGenerateArchiveAction extends ConnecteurTypeActionExecutor
         $date_cloture_journal_mapping = $this->getMappingValue(SAEFieldsEnum::JOURNAL_END_DATE->value);
         $date_cloture_journal_iso8601_mapping = $this->getMappingValue(SAEFieldsEnum::JOURNAL_END_DATE_ISO8601->value);
 
-        $journal = $this->getJournal()->getAll($this->id_e, false, $this->id_d, 0, 0, 10000);
+        $journal = $this->objectInstancier->getInstance(
+            JournalConsultationService::class
+        )->getList($this->id_e, false, $this->id_d, 0, 0, 10000);
         foreach ($journal as $i => $journal_item) {
             $journal[$i]['preuve'] = \base64_encode($journal_item['preuve']);
         }

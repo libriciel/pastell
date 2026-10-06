@@ -4,30 +4,12 @@ use Aws\S3\Exception\S3Exception;
 use Monolog\Logger;
 use Pastell\Storage\StorageInterface;
 
+/**
+ * @deprecated Since 4.1.24, use JournalSQL, JournalConsultationService and JournalExportService instead
+ */
 class Journal extends SQL
 {
-    public const DOCUMENT_ACTION = 1;
-    public const NOTIFICATION = 2;
-    public const MODIFICATION_ENTITE = 3;
-    public const MODIFICATION_UTILISATEUR = 4;
-    public const MAIL_SECURISE = 5;
-    public const CONNEXION = 6;
-    public const DOCUMENT_CONSULTATION = 7 ;
-    public const ENVOI_MAIL = 8;
-    public const DOCUMENT_ACTION_ERROR = 9;
-    public const DOCUMENT_TRAITEMENT_LOT = 10;
-    public const TEST = 11;
-    public const TYPE_DOSSIER_EDITION = 12;
-    public const JOURNAL = 13;
-    public const COMMANDE = 14;
-
     public const DEFAULT_LIMIT = 100;
-
-    public const NO_ID_D = '';
-    public const ACTION_SUPPRIME = 'Supprimé';
-    public const ACTION_MODIFFIE = 'Modifié';
-    public const ACTION_AJOUTE = 'Ajouté';
-    public const ACTION_CREATED = 'Créé';
 
     private $id_u;
     private Horodateur $horodateur;
@@ -68,7 +50,7 @@ class Journal extends SQL
         }
         $infoUtilisateur = $this->utilisateurSQL->getInfo($id_u);
         $nom = $infoUtilisateur['prenom'] . " " . $infoUtilisateur['nom'];
-        return $this->add(Journal::DOCUMENT_CONSULTATION, $id_e, $id_d, "Consulté", "$nom a consulté le dossier");
+        return $this->add(JournalEventType::DOCUMENT_CONSULTATION->value, $id_e, $id_d, "Consulté", "$nom a consulté le dossier");
     }
 
     public function add($type_journal, $id_e, $id_d, $action, $message)

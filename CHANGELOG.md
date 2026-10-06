@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.1.24] - 2026-11-02
+
+### Dépréciations
+
+- Classe `Journal` dépréciée au profit de `JournalSQL`, `JournalConsultationService`, `JournalExportService`, `JournalEntryService` et `JournalEventType` #2595
+
 ## [4.1.23] - 2026-10-05
 
 ### Évolutions

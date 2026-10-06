@@ -11,7 +11,7 @@ class FactureCPPRecupGFChange extends ActionExecutor
         } else {
             $message = '"La GF a indiqué avoir récupéré la facture" passe à Non';
         }
-        $this->getJournal()->addSQL(Journal::DOCUMENT_ACTION, $this->id_e, $this->id_u, $this->id_d, 'recup-par-gf-change', $message);
+        $this->getJournalEntryService()->addSQL(JournalEventType::DOCUMENT_ACTION, $this->id_e, $this->id_u, $this->id_d, 'recup-par-gf-change', $message);
         $this->setLastMessage($message);
         $this->notify($this->action, $this->type, $message);
         return true;

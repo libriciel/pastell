@@ -7,9 +7,10 @@ use DocumentEntite;
 use DocumentSQL;
 use DonneesFormulaireFactory;
 use JobManager;
-use Journal;
 use NotificationDigestSQL;
 use NotFoundException;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 class DocumentDeletionService
 {
@@ -18,7 +19,7 @@ class DocumentDeletionService
         private readonly DonneesFormulaireFactory $donneesFormulaireFactory,
         private readonly DocumentEntite $documentEntite,
         private readonly JobManager $jobManager,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journal,
         private readonly DocumentEmailReponseSQL $documentEmailReponseSQL,
         private readonly NotificationDigestSQL $notificationDigestSQL,
     ) {
@@ -55,7 +56,7 @@ class DocumentDeletionService
             ($message) ? ' - ' . $message : '',
         );
         $this->journal->add(
-            Journal::DOCUMENT_ACTION,
+            JournalEventType::DOCUMENT_ACTION,
             $id_e,
             $id_d,
             'suppression',

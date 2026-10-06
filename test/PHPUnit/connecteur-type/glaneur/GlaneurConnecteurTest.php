@@ -196,7 +196,7 @@ class GlaneurConnecteurTest extends PastellTestCase
         $this->assertEquals("Bordereau de test", $info['titre']);
         $this->assertEquals("helios-automatique", $info['type']);
 
-        $journal = $this->getJournal()->getAll(1, 'helios-automatique', $id_d, 0, 0, 100);
+        $journal = $this->getJournalConsultationService()->getList(1, 'helios-automatique', $id_d, 0, 0, 100);
         $this->assertEquals("[glaneur] Passage en action_ok : importation", $journal[0]['message']);
         $this->assertEquals("[glaneur] Import du document", $journal[1]['message']);
 
@@ -738,7 +738,7 @@ class GlaneurConnecteurTest extends PastellTestCase
         $this->assertMatchesRegularExpression("#Création du document#", $this->last_message[0]);
         $id_d = $this->created_id_d;
 
-        $journal = $this->getJournal()->getAll(1, 'actes-automatique', $id_d, 0, 0, 100);
+        $journal = $this->getJournalConsultationService()->getList(1, 'actes-automatique', $id_d, 0, 0, 100);
         $this->assertEquals("[glaneur] Le dossier n'est pas valide : Le formulaire est incomplet : le champ «Nature de l'acte» est obligatoire.", $journal[0]['message']);
         $this->assertEquals("[glaneur] Import du document", $journal[1]['message']);
     }
@@ -771,7 +771,7 @@ class GlaneurConnecteurTest extends PastellTestCase
         $this->assertMatchesRegularExpression("#Création du document#", $this->last_message[0]);
         $id_d = $this->created_id_d;
 
-        $journal = $this->getJournal()->getAll(1, 'actes-automatique', $id_d, 0, 0, 100);
+        $journal = $this->getJournalConsultationService()->getList(1, 'actes-automatique', $id_d, 0, 0, 100);
         $this->assertEquals("[glaneur] Passage en action_ok forcé : importation", $journal[0]['message']);
         $this->assertEquals("[glaneur] Import du document", $journal[1]['message']);
     }

@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Logger;
+use Pastell\Service\Journal\JournalEntryService;
 
 abstract class ActionExecutor
 {
@@ -119,7 +120,7 @@ abstract class ActionExecutor
         if (! $id_d) {
             $id_d = $this->id_d;
         }
-        return new ActionCreator($this->getSQLQuery(), $this->getJournal(), $id_d);
+        return new ActionCreator($this->getSQLQuery(), $this->getJournalEntryService(), $id_d);
     }
 
     /**
@@ -142,12 +143,9 @@ abstract class ActionExecutor
         return $this->docDonneesFormulaire->getFormulaire();
     }
 
-    /**
-     * @return Journal
-     */
-    public function getJournal()
+    public function getJournalEntryService(): JournalEntryService
     {
-        return $this->objectInstancier->getInstance(Journal::class);
+        return $this->objectInstancier->getInstance(JournalEntryService::class);
     }
 
     /**
@@ -440,8 +438,8 @@ abstract class ActionExecutor
                 $this->id_u,
                 $this->action
             );
-            $this->objectInstancier->getInstance(Journal::class)->add(
-                Journal::DOCUMENT_TRAITEMENT_LOT,
+            $this->objectInstancier->getInstance(JournalEntryService::class)->add(
+                JournalEventType::DOCUMENT_TRAITEMENT_LOT,
                 $this->id_e,
                 $id_d,
                 $this->action,

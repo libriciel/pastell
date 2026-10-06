@@ -5,20 +5,22 @@ declare(strict_types=1);
 namespace Pastell\Service\Utilisateur;
 
 use ConflictException;
-use Journal;
 use NotificationDigestSQL;
 use Pastell\Utilities\Certificate;
 use Pastell\Validator\UserValidator;
 use RoleUtilisateur;
 use UnrecoverableException;
 use UtilisateurSQL;
+use JournalAction;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 final class UserUpdateService
 {
     public function __construct(
         private readonly UtilisateurSQL $utilisateurSQL,
         private readonly RoleUtilisateur $roleUtilisateur,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journal,
         private readonly UserValidator $userValidator,
         private readonly NotificationDigestSQL $notificationDigestSQL,
     ) {
@@ -81,9 +83,9 @@ final class UserUpdateService
         $this->utilisateurSQL->enable($userId);
         $message = "L'utilisateur {$info['login']} a été activé";
         $this->journal->add(
-            Journal::MODIFICATION_UTILISATEUR,
+            JournalEventType::MODIFICATION_UTILISATEUR,
             $info['id_e'],
-            Journal::NO_ID_D,
+            JournalEntryService::NO_ID_D,
             'activation',
             $message,
         );
@@ -96,9 +98,9 @@ final class UserUpdateService
         $this->utilisateurSQL->disable($userId);
         $message = "L'utilisateur {$info['login']} a été désactivé";
         $this->journal->add(
-            Journal::MODIFICATION_UTILISATEUR,
+            JournalEventType::MODIFICATION_UTILISATEUR,
             $info['id_e'],
-            Journal::NO_ID_D,
+            JournalEntryService::NO_ID_D,
             'désactivation',
             $message,
         );
@@ -171,10 +173,10 @@ final class UserUpdateService
         $info = implode('; ', $infoChanged);
 
         $this->journal->add(
-            Journal::MODIFICATION_UTILISATEUR,
+            JournalEventType::MODIFICATION_UTILISATEUR,
             $entityId,
             0,
-            Journal::ACTION_MODIFFIE,
+            JournalAction::MODIFFIE->value,
             "Modification de l'utilisateur $login ($userId) : $info"
         );
 

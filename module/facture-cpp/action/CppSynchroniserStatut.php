@@ -13,7 +13,7 @@ class CppSynchroniserStatut extends ActionExecutor
 
             $result_synchro = $synchronisationFacture->formatResultSynchro($result_synchro);
 
-            //$this->getJournal()->addSQL(Journal::DOCUMENT_ACTION, $this->id_e, $this->id_u, $this->id_d, 'synchroniser-statut', $result_synchro);
+            //$this->getJournalEntryService()->addSQL(JournalEventType::DOCUMENT_ACTION, $this->id_e, $this->id_u, $this->id_d, 'synchroniser-statut', $result_synchro);
             $this->setLastMessage($result_synchro);
         } catch (Exception $e) {
             $this->setLastMessage('ERREUR : ' . $e->getMessage());

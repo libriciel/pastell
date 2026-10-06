@@ -4,6 +4,7 @@ use Pastell\Mailer\Mailer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Part\DataPart;
+use Pastell\Service\Journal\JournalEntryService;
 
 class MailSec extends MailsecConnecteur
 {
@@ -17,7 +18,7 @@ class MailSec extends MailsecConnecteur
 
     public function __construct(
         private readonly DocumentEmail $documentEmail,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journal,
         private readonly EntiteSQL $entiteSQL,
         private readonly Mailer $mailer,
         private readonly string $websec_base,
@@ -143,7 +144,7 @@ class MailSec extends MailsecConnecteur
         $this->send($email_info['email'], $email_info['key']);
         $this->documentEmail->updateRenvoi($email_info['id_de']);
         $this->journal->addActionAutomatique(
-            Journal::MAIL_SECURISE,
+            JournalEventType::MAIL_SECURISE,
             $id_e,
             $id_d,
             'envoi',

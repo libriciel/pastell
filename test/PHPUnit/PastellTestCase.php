@@ -17,6 +17,8 @@ use Pastell\Service\TypeDossier\TypeDossierImportService;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\InMemoryStore;
 use Twig\Environment;
+use Pastell\Service\Journal\JournalConsultationService;
+use Pastell\Service\Journal\JournalEntryService;
 
 define("FIXTURES_PATH", __DIR__ . "/fixtures/");
 define("FIXTURES_TYPE_DOSSIER_PATH", __DIR__ . "/pastell-core/type-dossier/fixtures/");
@@ -110,7 +112,7 @@ abstract class PastellTestCase extends TestCase
         $this->reinitFileSystem();
         $this->objectInstancier->setInstance('use_external_storage_for_journal_proof', false);
         $this->objectInstancier->setInstance(StorageInterface::class, new StorageInterfaceFake());
-        $this->getJournal()->setId(1);
+        $this->getJournalEntryService()->setId(1);
 
         $this->objectInstancier->setInstance('opensslPath', OPENSSL_PATH);
         $this->objectInstancier->setInstance(CommandRunner::class, new SymfonyCommandRunner());
@@ -211,10 +213,26 @@ iparapheur_retour: Archive',
 
     /**
      * @return Journal
+     * @deprecated use getJournalEntryService(), getJournalConsultationService() or getJournalSQL() instead
      */
     protected function getJournal()
     {
         return $this->objectInstancier->getInstance(Journal::class);
+    }
+
+    protected function getJournalEntryService(): JournalEntryService
+    {
+        return $this->objectInstancier->getInstance(JournalEntryService::class);
+    }
+
+    protected function getJournalConsultationService(): JournalConsultationService
+    {
+        return $this->objectInstancier->getInstance(JournalConsultationService::class);
+    }
+
+    protected function getJournalSQL(): \JournalSQL
+    {
+        return $this->objectInstancier->getInstance(\JournalSQL::class);
     }
 
     /**

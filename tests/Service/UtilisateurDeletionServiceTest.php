@@ -21,7 +21,7 @@ class UtilisateurDeletionServiceTest extends PastellTestCase
             UtilisateurDeletionService::class
         );
         $entiteDeletionService->delete(2);
-        $journal_message = $this->getJournal()->getAll()[0]['message'];
+        $journal_message = $this->getJournalConsultationService()->getList()[0]['message'];
         $expected_journal_message = "Suppression de l'utilisateur id_u=2";
         $this->assertEquals(
             $expected_journal_message,

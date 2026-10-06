@@ -2,8 +2,9 @@
 
 namespace Pastell\Service\Journal;
 
-use Journal;
 use JournalHistoriqueSQL;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 class JournalHistoriqueService
 {
@@ -12,7 +13,7 @@ class JournalHistoriqueService
 
     public function __construct(
         JournalHistoriqueSQL $journalHistoriqueSQL,
-        Journal $journal
+        JournalEntryService $journal
     ) {
         $this->journalHistoriqueSQL = $journalHistoriqueSQL;
         $this->journal = $journal;
@@ -36,7 +37,7 @@ class JournalHistoriqueService
         );
 
         $this->journal->addSQL(
-            Journal::JOURNAL,
+            JournalEventType::JOURNAL,
             0,
             0,
             '',

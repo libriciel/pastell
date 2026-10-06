@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\FeatureToggle\DisplayConnecteurEntiteRacine;
+use Pastell\Service\Journal\JournalEntryService;
 
 class Gabarit
 {
@@ -170,9 +171,9 @@ class Gabarit
         return $this->objectInstancier->getInstance(PastellTimer::class);
     }
 
-    public function getJournal(): Journal
+    public function getJournalEntryService(): JournalEntryService
     {
-        return $this->objectInstancier->getInstance(Journal::class);
+        return $this->objectInstancier->getInstance(JournalEntryService::class);
     }
 
     public function getDocumentIndexSql(): DocumentIndexSQL

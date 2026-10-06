@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Mailer\Mailer;
+use Pastell\Service\Journal\JournalEntryService;
 
 class DocumentEmail extends SQL
 {
@@ -15,7 +16,7 @@ class DocumentEmail extends SQL
 
     public function __construct(
         private readonly SQLQuery $sqlQuery,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journal,
         private readonly NotificationMail $notificationMail,
         private readonly string $site_base,
     ) {
@@ -96,7 +97,7 @@ class DocumentEmail extends SQL
         return $this->queryOne($sql, $id_d);
     }
 
-    public function consulter($key, Journal $journal)
+    public function consulter($key, JournalEntryService $journal)
     {
         $result = $this->getInfoFromKey($key);
         if ((! $result) || $result['non_recu']) {
@@ -112,7 +113,7 @@ class DocumentEmail extends SQL
         $id_e = $this->queryOne($sql, $result['id_d']);
 
         $journal->addActionAutomatique(
-            Journal::MAIL_SECURISE,
+            JournalEventType::MAIL_SECURISE,
             $id_e,
             $result['id_d'],
             'Consulté',

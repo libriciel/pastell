@@ -11,7 +11,6 @@ use DonneesFormulaireFactory;
 use Exception;
 use FileUploader;
 use Gabarit;
-use Journal;
 use Mailsec\Exception\InvalidKeyException;
 use Mailsec\Exception\MissingPasswordException;
 use Mailsec\Exception\NotEditableResponseException;
@@ -30,6 +29,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use UnrecoverableException;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 final class RecipientController extends AbstractController
 {
@@ -370,8 +371,8 @@ final class RecipientController extends AbstractController
 
         $response = $this->file($filePath, $fileName);
         $response->headers->set('Content-Type', $mimeType);
-        $this->objectInstancier->getInstance(Journal::class)->add(
-            Journal::DOCUMENT_CONSULTATION,
+        $this->objectInstancier->getInstance(JournalEntryService::class)->add(
+            JournalEventType::DOCUMENT_CONSULTATION,
             $mailSecInfo->id_e,
             $mailSecInfo->id_d,
             'Consulté',

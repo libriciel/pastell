@@ -40,4 +40,20 @@ abstract class SQL
     {
         return $this->sqlQuery->getPdo()->lastInsertId($name);
     }
+
+    /**
+     * @return Generator<array>
+     */
+    protected function queryStream($query, array $param = []): Generator
+    {
+        $max_execution_time = ini_get('max_execution_time');
+        $this->sqlQuery->useUnberfferedQuery();
+        $this->sqlQuery->prepareAndExecute($query, $param);
+
+        while ($this->sqlQuery->hasMoreResult()) {
+            $row = $this->sqlQuery->fetch();
+            ini_set('max_execution_time', $max_execution_time);
+            yield $row;
+        }
+    }
 }

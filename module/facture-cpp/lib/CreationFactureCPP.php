@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Journal\JournalEntryService;
+
 class CreationFactureCPP
 {
     protected $objectInstancier;
@@ -33,7 +35,7 @@ class CreationFactureCPP
             $this->parametrer($new_id_d, $parametrageFluxFactureCPP);
         }
 
-        $actionCreator = new ActionCreatorSQL($this->objectInstancier->getInstance(SQLQuery::class), $this->objectInstancier->getInstance(Journal::class));
+        $actionCreator = new ActionCreatorSQL($this->objectInstancier->getInstance(SQLQuery::class), $this->objectInstancier->getInstance(JournalEntryService::class));
 
         /** @var DonneesFormulaire $donneesFormulaire */
         $donneesFormulaire = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)->get($new_id_d);

@@ -148,8 +148,8 @@ class UtilisateurControler extends PastellControler
             ->getInstance(Mailer::class)
             ->send($templatedEmail);
 
-        $this->getJournal()->add(
-            Journal::MODIFICATION_UTILISATEUR,
+        $this->getJournalEntryService()->add(
+            JournalEventType::MODIFICATION_UTILISATEUR,
             $utilisateur_info['id_e'],
             0,
             'change-email',

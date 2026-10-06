@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
+use Pastell\Service\Journal\JournalEntryService;
 
 class MailSecConnecteurTest extends PastellTestCase
 {
@@ -142,7 +143,7 @@ class MailSecConnecteurTest extends PastellTestCase
         $keyRead = $this->getDocumentEmail()->add($documentId, "jdoe@example.org", "to");
         $this->getDocumentEmail()->add($documentId, "john.doe@example.org", "to");
 
-        $this->getDocumentEmail()->consulter($keyRead, $this->getJournal());
+        $this->getDocumentEmail()->consulter($keyRead, $this->getObjectInstancier()->getInstance(JournalEntryService::class));
 
         $mailsec->resendUnopenedEmails(1, $documentId);
 

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Pastell\Service\Journal\JournalEntryService;
+
 final class DocumentEmailTest extends PastellTestCase
 {
     use MailsecTestTrait;
@@ -22,9 +24,9 @@ final class DocumentEmailTest extends PastellTestCase
 
         $this->assertSame(0, $this->documentEmail->getNumberOfMailRead($id_d));
 
-        $this->documentEmail->consulter($key1, $this->getJournal());
+        $this->documentEmail->consulter($key1, $this->getObjectInstancier()->getInstance(JournalEntryService::class));
         $this->assertSame(1, $this->documentEmail->getNumberOfMailRead($id_d));
-        $this->documentEmail->consulter($key2, $this->getJournal());
+        $this->documentEmail->consulter($key2, $this->getObjectInstancier()->getInstance(JournalEntryService::class));
         $this->assertSame(2, $this->documentEmail->getNumberOfMailRead($id_d));
     }
 
@@ -47,7 +49,7 @@ final class DocumentEmailTest extends PastellTestCase
 
         $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
         $document_email_info = $documentEmail->getInfo($id_d);
-        $documentEmail->consulter($document_email_info[0]['key'], $this->getJournal());
+        $documentEmail->consulter($document_email_info[0]['key'], $this->getObjectInstancier()->getInstance(JournalEntryService::class));
 
         $this->assertLastDocumentAction('reception', $id_d);
         $this->assertActionPossible(['supression', 'renvoi'], $id_d);

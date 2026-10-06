@@ -1,11 +1,13 @@
 <?php
 
+use Pastell\Service\Journal\JournalEntryService;
+
 class ActionChange extends SQL
 {
     public function __construct(
         private readonly DocumentActionSQL $documentActionSQL,
         private readonly DocumentActionEntite $documentActionEntite,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journal,
         private readonly SQLQuery $sqlQuery
     ) {
         parent::__construct($this->sqlQuery);
@@ -14,7 +16,7 @@ class ActionChange extends SQL
     public function addAction($id_d, $id_e, $id_u, $action, $message_journal): void
     {
         $id_a = $this->documentActionSQL->add($id_d, $id_e, $id_u, $action);
-        $id_j = $this->journal->addSQL(Journal::DOCUMENT_ACTION, $id_e, $id_u, $id_d, $action, $message_journal);
+        $id_j = $this->journal->addSQL(JournalEventType::DOCUMENT_ACTION, $id_e, $id_u, $id_d, $action, $message_journal);
         $this->documentActionEntite->add($id_a, $id_e, $id_j);
     }
 
@@ -29,7 +31,7 @@ class ActionChange extends SQL
             $this->addAction($id_d, $id_e, $id_u, $action, "Modification du document");
         } else {
             $this->documentActionSQL->updateDate($document_action['id_a']);
-            $this->journal->addSQL(Journal::DOCUMENT_ACTION, $id_e, $id_u, $id_d, $action, "Modification du document");
+            $this->journal->addSQL(JournalEventType::DOCUMENT_ACTION, $id_e, $id_u, $id_d, $action, "Modification du document");
         }
     }
 
@@ -50,7 +52,7 @@ class ActionChange extends SQL
                 $this->documentActionSQL->updateDate($document_action['id_a']);
             }
             $this->journal->addSQL(
-                Journal::DOCUMENT_ACTION,
+                JournalEventType::DOCUMENT_ACTION,
                 $id_e,
                 $id_u,
                 $id_d,

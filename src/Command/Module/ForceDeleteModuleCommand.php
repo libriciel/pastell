@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Pastell\Command\Module;
 
-use Journal;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Pastell\Service\Journal\JournalEntryService;
+use JournalEventType;
 
 #[AsCommand(
     name: 'app:module:force-delete-module',
@@ -30,7 +31,7 @@ class ForceDeleteModuleCommand extends Command
         private readonly \FluxEntiteSQL $fluxEntiteSQL,
         private readonly \DocumentSQL $documentSQL,
         private readonly \DonneesFormulaireFactory $donneesFormulaireFactory,
-        private readonly \Journal $journal,
+        private readonly JournalEntryService $journal,
     ) {
         parent::__construct();
     }
@@ -118,7 +119,7 @@ class ForceDeleteModuleCommand extends Command
                 $info[self::TITRE],
                 $id_d
             );
-            $this->journal->add(Journal::DOCUMENT_ACTION, 0, $id_d, 'suppression', $message);
+            $this->journal->add(JournalEventType::DOCUMENT_ACTION, 0, $id_d, 'suppression', $message);
         }
 
         foreach ($associations as $association) {

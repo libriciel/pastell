@@ -2,12 +2,14 @@
 
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Journal\JournalConsultationService;
+use Pastell\Service\Journal\JournalExportService;
 
 class JournalAPIController extends BaseAPIController
 {
     public function __construct(
-        private readonly Journal $journal,
-        private readonly SQLQuery $sqlQuery,
+        private readonly JournalConsultationService $journalConsultationService,
+        private readonly JournalExportService $journalExportService,
         private readonly DocumentTypeFactory $documentTypeFactory,
     ) {
     }
@@ -38,7 +40,7 @@ class JournalAPIController extends BaseAPIController
         $this->checkDroitFor($id_e, DroitService::DROIT_JOURNAL, DroitType::LECTURE);
 
         if ($format != 'csv') {
-            $result = $this->journal->getAll(
+            $result = $this->journalConsultationService->getList(
                 $id_e,
                 $type,
                 $id_d,
@@ -61,44 +63,33 @@ class JournalAPIController extends BaseAPIController
         }
 
         // Pour éviter des problèmes mémoires, au format CSV :
-        //  - Utilisation de Pdo. La lecture du recordset se fait ligne à ligne. Pas de chargement de la totalité du recordset en mémoire.
-        //  - comme le parcours des lignes peut être long, réinitialisation du temps max_execution_time la chaque boucle.
-        //  - Génération du fichier csv dans le répertoire /tmp puis retourné
-        // NB : Le problème "mémoire", existe toujours pour le format JSON.
-
+        //  - Lecture du recordset ligne à ligne (requête non bufferisée, cf. JournalExportService).
+        //  - Réinitialisation du max_execution_time à chaque ligne.
+        //  - Génération du fichier csv dans le répertoire /tmp puis retourné.
+        // NB : Le problème "mémoire" existe toujours pour le format JSON.
 
         $tmpFolder = new TmpFolder();
         $tmp_folder = $tmpFolder->create();
         $filecsv = tempnam($tmp_folder, 'exportjournal');
         $handle = fopen($filecsv, 'w');
 
-        $max_execution_time = ini_get('max_execution_time');
-
-        $pdo = $this->sqlQuery->getPdo();
-        list($sql, $param_sql) = $this->journal->getQueryAll(
-            $id_e,
-            $type,
-            $id_d,
-            $id_user,
-            $offset,
-            $limit,
-            $recherche,
-            $date_debut,
-            $date_fin,
-            true
-        );
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($param_sql);
-
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            ini_set('max_execution_time', $max_execution_time);
+        foreach (
+            $this->journalExportService->streamRows(
+                $id_e,
+                $type,
+                $id_d,
+                $id_user,
+                $recherche,
+                $date_debut,
+                $date_fin,
+                $offset,
+                $limit,
+                true
+            ) as $row
+        ) {
             if ($csv_entete_colonne) {
-                // Les entêtes sont les clés du tableau associatif
                 $entetes = array_keys($row);
-                // Suppression de la colonne preuve
-                $index_col_preuve = array_search('preuve', $entetes, true);
-                array_splice($entetes, $index_col_preuve, 1);
-                // Compatibilité avec l'existant et journal->getAll() : ajout de 2 colonnes supplémentaires
+                // Compatibilité avec l'existant : ajout de 2 colonnes supplémentaires
                 $entetes[] = 'document_type_libelle';
                 $entetes[] = 'action_libelle';
                 fputcsv($handle, $entetes);
@@ -106,9 +97,7 @@ class JournalAPIController extends BaseAPIController
             }
             $row['message'] = preg_replace("/(\r\n|\n|\r)/", " ", $row['message']);
             $row['message_horodate'] = preg_replace("/(\r\n|\n|\r)/", " ", $row['message_horodate']);
-            unset($row['preuve']);
             $documentType = $this->documentTypeFactory->getFluxDocumentType($row['document_type']);
-            // Compatibilité avec l'existant et journal->getAll() : ajout de 2 colonnes supplémentaires
             $row['document_type_libelle'] = $documentType->getName();
             $row['action_libelle'] = $documentType->getAction()->getActionName($row['action']);
             fputcsv($handle, $row);
@@ -162,7 +151,7 @@ class JournalAPIController extends BaseAPIController
      */
     private function getInfo($id_j)
     {
-        $info = $this->journal->getAllInfo($id_j);
+        $info = $this->journalConsultationService->getAllInfo($id_j);
         if (! $info) {
             throw new NotFoundException("L'événement $id_j n'a pas été trouvé");
         }

@@ -3,13 +3,14 @@
 use Pastell\Mailer\Mailer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Pastell\Service\Journal\JournalEntryService;
 
 class NotificationMail
 {
     public function __construct(
         private readonly Notification $notification,
         private readonly Mailer $mailer,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journal,
         private readonly NotificationDigestSQL $notificationDigestSQL,
         private readonly EntiteSQL $entiteSQL,
         private readonly DocumentSQL $documentSQL,
@@ -59,7 +60,7 @@ class NotificationMail
         }
         $this->mailer->send($templatedEmail);
         $this->journal->addActionAutomatique(
-            Journal::NOTIFICATION,
+            JournalEventType::NOTIFICATION,
             $id_e,
             $id_d,
             $action,
@@ -86,7 +87,7 @@ class NotificationMail
                 ->context(['info' => $all_info, 'SITE_BASE' => $this->site_base]);
             $this->mailer->send($templatedEmail);
             $this->journal->addActionAutomatique(
-                Journal::NOTIFICATION,
+                JournalEventType::NOTIFICATION,
                 0,
                 0,
                 false,

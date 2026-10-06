@@ -23,10 +23,9 @@ class DocumentModificationServiceTest extends PastellTestCase
         $this->assertEmpty($donneesFormulaire->get('arrete'));
 
 
-        $journal = $this->getObjectInstancier()->getInstance(Journal::class);
         $this->assertEquals(
             "Modification du document",
-            $journal->getAll(false, false, false, false, 0, 100)[0]['message']
+            $this->getJournalConsultationService()->getList(false, false, false, false, 0, 100)[0]['message']
         );
     }
 

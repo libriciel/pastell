@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Journal\JournalEntryService;
+
 class ActionCreatorSQL extends SQL
 {
     private $journal;
@@ -7,7 +9,7 @@ class ActionCreatorSQL extends SQL
     private $lastAction;
     private $id_a;
 
-    public function __construct(SQLQuery $sqlQuery, Journal $journal)
+    public function __construct(SQLQuery $sqlQuery, JournalEntryService $journal)
     {
         parent::__construct($sqlQuery);
         $this->journal = $journal;
@@ -33,7 +35,7 @@ class ActionCreatorSQL extends SQL
 
         $sql = "UPDATE document_action SET date=now() WHERE id_a=?";
         $this->query($sql, $document_action['id_a']);
-        $this->journal->addSQL(Journal::DOCUMENT_ACTION, $id_e, $id_u, $id_d, $action, "Modification du document");
+        $this->journal->addSQL(JournalEventType::DOCUMENT_ACTION, $id_e, $id_u, $id_d, $action, "Modification du document");
         return false;
     }
 
@@ -63,7 +65,7 @@ class ActionCreatorSQL extends SQL
             throw new Exception("Problème lors de l'ajout dans le journal (id_a non présent)");
         }
 
-        $id_j = $this->journal->addSQL(Journal::DOCUMENT_ACTION, $id_e, $id_u, $id_d, $this->lastAction, $message_journal);
+        $id_j = $this->journal->addSQL(JournalEventType::DOCUMENT_ACTION, $id_e, $id_u, $id_d, $this->lastAction, $message_journal);
 
         $sql = "INSERT INTO document_action_entite (id_a,id_e,id_j) VALUES (?,?,?)";
         $this->query($sql, $this->id_a, $id_e, $id_j);

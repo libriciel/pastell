@@ -6,13 +6,15 @@ namespace Pastell\Service\Utilisateur;
 
 use ConflictException;
 use Exception;
-use Journal;
 use Pastell\Service\TokenGenerator;
 use Pastell\Utilities\Certificate;
 use Pastell\Validator\UserValidator;
 use RoleUtilisateur;
 use UnrecoverableException;
 use UtilisateurSQL;
+use JournalAction;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 final class UserCreationService
 {
@@ -20,7 +22,7 @@ final class UserCreationService
         private readonly UtilisateurSQL $utilisateurSQL,
         private readonly TokenGenerator $tokenGenerator,
         private readonly RoleUtilisateur $roleUtilisateur,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journal,
         private readonly UserValidator $userValidator,
     ) {
     }
@@ -73,10 +75,10 @@ final class UserCreationService
         ]);
 
         $this->journal->add(
-            Journal::MODIFICATION_UTILISATEUR,
+            JournalEventType::MODIFICATION_UTILISATEUR,
             $entityId,
             0,
-            Journal::ACTION_CREATED,
+            JournalAction::CREATED->value,
             "Création de l'utilisateur $login ($userId) : $info"
         );
 
@@ -110,10 +112,10 @@ final class UserCreationService
         ]);
 
         $this->journal->add(
-            Journal::MODIFICATION_UTILISATEUR,
+            JournalEventType::MODIFICATION_UTILISATEUR,
             $id_e,
             0,
-            Journal::ACTION_CREATED,
+            JournalAction::CREATED->value,
             "Création de l'utilisateur API $login ($userId) : $info"
         );
 

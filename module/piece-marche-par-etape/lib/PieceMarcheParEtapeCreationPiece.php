@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Journal\JournalEntryService;
+
 class PieceMarcheParEtapeCreationPiece
 {
     protected $objectInstancier;
@@ -55,7 +57,7 @@ class PieceMarcheParEtapeCreationPiece
         $titre = $donneesFormulaire->getTitre();
         $this->objectInstancier->getInstance(DocumentSQL::class)->setTitre($new_id_d, $titre);
 
-        $actionCreator = new ActionCreatorSQL($this->objectInstancier->getInstance(SQLQuery::class), $this->objectInstancier->getInstance(Journal::class));
+        $actionCreator = new ActionCreatorSQL($this->objectInstancier->getInstance(SQLQuery::class), $this->objectInstancier->getInstance(JournalEntryService::class));
 
         $erreur = false;
         if (!$donneesFormulaire->isValidable()) {

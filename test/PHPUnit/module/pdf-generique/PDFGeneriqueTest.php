@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Journal\JournalEntryService;
+
 class PDFGeneriqueTest extends PastellTestCase
 {
     public const FILENAME = "Délib Libriciel.pdf";
@@ -81,7 +83,7 @@ class PDFGeneriqueTest extends PastellTestCase
         $info = $documentEmail->getInfo($id_d);
         $key = $info[0]['key'];
 
-        $documentEmail->consulter($key, $this->getJournal());
+        $documentEmail->consulter($key, $this->getObjectInstancier()->getInstance(JournalEntryService::class));
 
         $notificationDigestSql = $this->getObjectInstancier()->getInstance(NotificationDigestSQL::class);
 

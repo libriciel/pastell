@@ -173,10 +173,10 @@ class ConnexionControler extends PastellControler
     {
         $infoUtilisateur = $this->getUtilisateur()->getInfo($id_u);
         $login = $infoUtilisateur['login'];
-        $this->getJournal()->setId($id_u);
+        $this->getJournalEntryService()->setId($id_u);
         $nom = $infoUtilisateur['prenom'] . ' ' . $infoUtilisateur['nom'];
-        $this->getJournal()->add(
-            Journal::CONNEXION,
+        $this->getJournalEntryService()->add(
+            JournalEventType::CONNEXION,
             $infoUtilisateur['id_e'],
             0,
             'Connecté',
@@ -419,11 +419,11 @@ class ConnexionControler extends PastellControler
             $this->redirect($redirect_fail);
         }
 
-        $this->getJournal()->setId($id_u);
+        $this->getJournalEntryService()->setId($id_u);
         $infoUtilisateur = $this->getUtilisateur()->getInfo($id_u);
         $nom = $infoUtilisateur['prenom'] . ' ' . $infoUtilisateur['nom'];
-        $this->getJournal()->add(
-            Journal::CONNEXION,
+        $this->getJournalEntryService()->add(
+            JournalEventType::CONNEXION,
             $infoUtilisateur['id_e'],
             0,
             'Connecté',
@@ -452,10 +452,10 @@ class ConnexionControler extends PastellControler
 
         $utilisateurInfo = $this->getUtilisateur()->getInfo($id_u);
 
-        $this->getJournal()->setId($id_u);
+        $this->getJournalEntryService()->setId($id_u);
         $nom = $utilisateurInfo['prenom'] . ' ' . $utilisateurInfo['nom'];
-        $this->getJournal()->add(
-            Journal::CONNEXION,
+        $this->getJournalEntryService()->add(
+            JournalEventType::CONNEXION,
             $utilisateurInfo['id_e'],
             0,
             'Connecté',

@@ -8,6 +8,7 @@ use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Module\ModuleListService;
 use Pastell\ViewModel\DeleteConfirmation;
+use Pastell\Service\Journal\JournalEntryService;
 
 class PastellControler extends Controler
 {
@@ -466,12 +467,9 @@ class PastellControler extends Controler
         return $this->getInstance(WorkerSQL::class);
     }
 
-    /**
-     * @return Journal
-     */
-    public function getJournal(): Journal
+    public function getJournalEntryService(): JournalEntryService
     {
-        return $this->getInstance(Journal::class);
+        return $this->getInstance(JournalEntryService::class);
     }
 
     /**

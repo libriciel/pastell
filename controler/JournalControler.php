@@ -2,6 +2,8 @@
 
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Journal\JournalConsultationService;
+use Pastell\Service\Journal\JournalExportService;
 use Pastell\Service\Menu\MenuGaucheOption;
 use Pastell\Service\Menu\MenuGaucheService;
 
@@ -86,12 +88,13 @@ class JournalControler extends PastellControler
         $this->setViewParameter('type', $type);
         $this->setViewParameter('id_d', $id_d);
 
-        $info = $this->getJournal()->getAllInfo($id_j);
+        $journalConsultationService = $this->getInstance(JournalConsultationService::class);
+        $info = $journalConsultationService->getAllInfo($id_j);
         if (!$info) {
             $this->setLastError("Événement introuvable");
             $this->redirect("Journal/index?id_e={$id_e}&type={$type}&id_d={$id_d}&offset={$offset}");
         }
-        $info['type_string'] = $this->getJournal()->getTypeAsString($info['type']);
+        $info['type_string'] = $journalConsultationService->getTypeAsString($info['type']);
         $this->setViewParameter('info', $info);
         $this->checkDroitFor($info['id_e'], DroitService::DROIT_JOURNAL, DroitType::LECTURE);
 
@@ -168,7 +171,8 @@ class JournalControler extends PastellControler
         $infoEntite = $this->getEntiteSQL()->getInfo($this->getViewParameterByKey('id_e'));
 
 
-        $this->setViewParameter('count', $this->getJournal()->countAll(
+        $journalConsultationService = $this->getInstance(JournalConsultationService::class);
+        $this->setViewParameter('count', $journalConsultationService->countAll(
             $this->getViewParameterByKey('id_e'),
             $this->getViewParameterByKey('type'),
             $this->getViewParameterByKey('id_d'),
@@ -197,8 +201,7 @@ class JournalControler extends PastellControler
         }
 
         $this->setViewParameter('limit', 20);
-        $journal = $this->getJournal();
-        $all = $journal->getAll(
+        $all = $journalConsultationService->getList(
             $this->getViewParameterByKey('id_e'),
             $this->getViewParameterByKey('type'),
             $this->getViewParameterByKey('id_d'),
@@ -212,7 +215,7 @@ class JournalControler extends PastellControler
             false,
         );
         foreach ($all as &$ligne) {
-            $ligne['type_string'] = $journal->getTypeAsString($ligne['type']);
+            $ligne['type_string'] = $journalConsultationService->getTypeAsString($ligne['type']);
         }
         unset($ligne);
         $this->setViewParameter('all', $all);
@@ -248,12 +251,6 @@ class JournalControler extends PastellControler
         $date_debut = date_fr_to_iso($date_debut);
         $date_fin = date_fr_to_iso($date_fin);
 
-        list($sql,$value) = $this->getJournal()->getQueryAll($id_e, $type, $id_d, $id_u, 0, -1, $recherche, $date_debut, $date_fin) ;
-
-
-        $this->getSQLQuery()->useUnberfferedQuery();
-
-        $this->getSQLQuery()->prepareAndExecute($sql, $value);
         $CSVoutput = new CSVoutput();
         $CSVoutput->displayHTTPHeader("pastell-export-journal-$id_e-$id_u-$type-$id_d.csv");
 
@@ -266,9 +263,17 @@ class JournalControler extends PastellControler
             ];
             $CSVoutput->displayLine($headers);
         }
-        while ($this->getSQLQuery()->hasMoreResult()) {
-            $data = $this->getSQLQuery()->fetch();
-            unset($data['preuve']);
+        foreach (
+            $this->getInstance(JournalExportService::class)->streamRows(
+                $id_e,
+                $type,
+                $id_d,
+                $id_u,
+                $recherche,
+                $date_debut,
+                $date_fin
+            ) as $data
+        ) {
             $CSVoutput->displayLine($data);
         }
         $CSVoutput->end();
@@ -284,9 +289,9 @@ class JournalControler extends PastellControler
 
         $id_j = $recuperateur->get('id_j');
 
-        $info  = $this->getJournal()->getInfo($id_j);
+        $info  = $this->getInstance(JournalConsultationService::class)->getInfo($id_j);
 
-        $this->checkDroitFor($info['id_e'], DroitService::DROIT_JOURNAL, DroitType::LECTURE);
+        $this->checkDroitFor($info->id_e, DroitService::DROIT_JOURNAL, DroitType::LECTURE);
 
 
         header("Content-Type: text/plain; charset=utf-8");
@@ -294,7 +299,7 @@ class JournalControler extends PastellControler
         header("Cache-Control: must-revalidate, post-check=0,pre-check=0");
         header("Pragma: public");
 
-        echo $info['message_horodate'];
+        echo $info->message_horodate;
     }
 
     /**
@@ -308,9 +313,9 @@ class JournalControler extends PastellControler
 
         $id_j = $recuperateur->get('id_j');
 
-        $info  = $this->getJournal()->getInfo($id_j);
+        $info  = $this->getInstance(JournalConsultationService::class)->getInfo($id_j);
 
-        $this->checkDroitFor($info['id_e'], DroitService::DROIT_JOURNAL, DroitType::LECTURE);
+        $this->checkDroitFor($info->id_e, DroitService::DROIT_JOURNAL, DroitType::LECTURE);
 
         header("Content-Type: application/timestamp-reply");
         header("Content-Transfer-Encoding: base64");
@@ -320,6 +325,6 @@ class JournalControler extends PastellControler
         header("Pragma: public");
 
 
-        echo $info['preuve'];
+        echo $info->preuve;
     }
 }

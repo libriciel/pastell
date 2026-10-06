@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Document\DocumentDeletionService;
+use Pastell\Service\Journal\JournalEntryService;
 
 use function Clue\StreamFilter\append;
 
@@ -19,7 +20,7 @@ class Purge extends Connecteur
 
     public function __construct(
         private readonly DocumentActionEntite $documentActionEntite,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journal,
         private readonly JobManager $jobManager,
         private readonly ActionPossible $actionPossible,
         private readonly DocumentTypeFactory $documentTypeFactory,
@@ -171,7 +172,7 @@ class Purge extends Connecteur
             }
 
             $this->journal->add(
-                Journal::DOCUMENT_TRAITEMENT_LOT,
+                JournalEventType::DOCUMENT_TRAITEMENT_LOT,
                 $document_info['id_e'],
                 $document_info['id_d'],
                 $etat_cible,

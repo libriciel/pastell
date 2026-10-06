@@ -52,7 +52,7 @@ class GlaneurDocumentCreatorTest extends PastellTestCase
                 $this->tmp_folder
             )
         );
-        $journal_logs = $this->getJournal()->getAll(1, "", "", "", 0, 100);
+        $journal_logs = $this->getJournalConsultationService()->getList(1, "", "", "", 0, 100);
         $this->assertEquals(
             "notification envoyée à eric@sigmalis.com",
             $journal_logs[0]['message']

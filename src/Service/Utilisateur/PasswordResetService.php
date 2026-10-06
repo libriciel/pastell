@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Pastell\Service\Utilisateur;
 
 use Exception;
-use Journal;
 use Pastell\Service\TokenGenerator;
 use UtilisateurSQL;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 final class PasswordResetService
 {
     public function __construct(
         private readonly UtilisateurSQL $utilisateurSQL,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journal,
         private readonly TokenGenerator $tokenGenerator,
     ) {
     }
@@ -27,7 +28,7 @@ final class PasswordResetService
         $this->utilisateurSQL->setPassword($id_u, $password);
         $this->utilisateurSQL->reinitPassword($id_u, $this->tokenGenerator->generate());
         $this->journal->add(
-            Journal::MODIFICATION_UTILISATEUR,
+            JournalEventType::MODIFICATION_UTILISATEUR,
             $info['id_e'],
             0,
             'mot de passe modifié',
@@ -44,7 +45,7 @@ final class PasswordResetService
         $token = $this->tokenGenerator->generate();
         $this->utilisateurSQL->reinitPassword($id_u, $token);
         $this->journal->addActionAutomatique(
-            Journal::MODIFICATION_UTILISATEUR,
+            JournalEventType::MODIFICATION_UTILISATEUR,
             $info['id_e'],
             0,
             'mot de passe modifié',

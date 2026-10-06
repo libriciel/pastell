@@ -5,8 +5,10 @@ namespace Pastell\Service\TypeDossier;
 use TypeDossierSQL;
 use TypeDossierPersonnaliseDirectoryManager;
 use EntiteSQL;
-use Journal;
 use TypeDossierException;
+use JournalAction;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 class TypeDossierDeletionService
 {
@@ -26,7 +28,7 @@ class TypeDossierDeletionService
     private $typeDossierExportService;
 
     /**
-     * @var Journal
+     * @var JournalEntryService
      */
     private $journal;
 
@@ -34,7 +36,7 @@ class TypeDossierDeletionService
         TypeDossierSQL $typeDossierSQL,
         TypeDossierPersonnaliseDirectoryManager $typeDossierPersonnaliseDirectoryManager,
         TypeDossierExportService $typeDossierExportService,
-        Journal $journal
+        JournalEntryService $journal
     ) {
         $this->typeDossierSQL = $typeDossierSQL;
         $this->typeDossierPersonnaliseDirectoryManager = $typeDossierPersonnaliseDirectoryManager;
@@ -54,10 +56,10 @@ class TypeDossierDeletionService
         $this->typeDossierSQL->delete($id_t);
 
         $this->journal->add(
-            Journal::TYPE_DOSSIER_EDITION,
+            JournalEventType::TYPE_DOSSIER_EDITION,
             EntiteSQL::ID_E_ENTITE_RACINE,
-            Journal::NO_ID_D,
-            Journal::ACTION_SUPPRIME,
+            JournalEntryService::NO_ID_D,
+            JournalAction::SUPPRIME->value,
             "Suppression du type de dossier id_t=$id_t. JSON contenant l'export de la definition du type de dossier : " . $export
         );
     }

@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace Pastell\Service\Entite;
 
 use EntiteSQL;
-use Journal;
 use Pastell\Validator\EntityValidator;
 use UnrecoverableException;
+use JournalAction;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 final class EntityUpdateService
 {
     public function __construct(
         private readonly EntiteSQL $entiteSQL,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journal,
         private readonly EntityValidator $validator,
     ) {
     }
@@ -47,10 +49,10 @@ final class EntityUpdateService
         $infoChanged  = implode('; ', $infoChanged);
 
         $this->journal->add(
-            Journal::MODIFICATION_ENTITE,
+            JournalEventType::MODIFICATION_ENTITE,
             $entityId,
             0,
-            Journal::ACTION_MODIFFIE,
+            JournalAction::MODIFFIE->value,
             "Modification de l'entité $name ($entityId) : $infoChanged"
         );
         $this->entiteSQL->updateAncestor($entityId, $parent);

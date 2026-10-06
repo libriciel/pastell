@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Pastell\Service\Utilisateur;
 
+use Pastell\Service\Journal\JournalEntryService;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 use UsersToken;
+use JournalEventType;
 
 final class UserTokenService
 {
     public function __construct(
         private readonly UsersToken $usersToken,
-        private readonly \Journal $journal,
+        private readonly JournalEntryService $journal,
     ) {
     }
 
@@ -24,7 +26,7 @@ final class UserTokenService
             $message .= " (date d'expiration : $expiration)";
         }
         $this->journal->add(
-            \Journal::MODIFICATION_UTILISATEUR,
+            JournalEventType::MODIFICATION_UTILISATEUR,
             0,
             '',
             'create-token',
@@ -72,7 +74,7 @@ final class UserTokenService
         $tokenInfo = $this->usersToken->getTokenInfo($tokenId);
         $this->usersToken->deleteToken($tokenId);
         $this->journal->add(
-            \Journal::MODIFICATION_UTILISATEUR,
+            JournalEventType::MODIFICATION_UTILISATEUR,
             0,
             '',
             'delete-token',
@@ -87,7 +89,7 @@ final class UserTokenService
         $tokenInfo = $this->usersToken->getTokenInfo($tokenId);
         $this->usersToken->updateToken($tokenInfo['id'], $token);
         $this->journal->add(
-            \Journal::MODIFICATION_UTILISATEUR,
+            JournalEventType::MODIFICATION_UTILISATEUR,
             0,
             '',
             'delete-token',
