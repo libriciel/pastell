@@ -689,7 +689,8 @@ class UtilisateurControlerTest extends ControlerTestCase
                   0 => 'En cours de rédaction'
                 ],
                 'daily_digest' => 0,
-                'denomination' => 'Bourg-en-Bresse'
+                'denomination' => 'Bourg-en-Bresse',
+                'type_name' => 'Actes (générique) - déprécié'
                 ]
             ],
             $utilisateurControler->getViewParameterByKey('notification_list')

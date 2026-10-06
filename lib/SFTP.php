@@ -19,7 +19,9 @@ class SFTP
     {
         $this->login();
         $result = $this->netSFTP->nlist($directory);
-        $this->throwErrorIfNeeded();
+        if ($result === false) {
+            $this->throwLastError("Impossible de lister le répertoire $directory");
+        }
         return $result;
     }
 
@@ -30,7 +32,7 @@ class SFTP
     {
         $this->login();
         if (! $this->netSFTP->get($remote_path, $local_path)) {
-            $this->throwErrorIfNeeded();
+            $this->throwLastError("Impossible de récupérer le fichier $remote_path");
         }
         return true;
     }
@@ -41,12 +43,14 @@ class SFTP
     public function put(string $remote_path, string $local_path): bool
     {
         $this->login();
-        $this->netSFTP->put(
+        $result = $this->netSFTP->put(
             $remote_path,
             $local_path,
             phpseclib3\Net\SFTP::SOURCE_LOCAL_FILE
         );
-        $this->throwErrorIfNeeded();
+        if (! $result) {
+            $this->throwLastError("Impossible de déposer le fichier $remote_path");
+        }
         return true;
     }
 
@@ -56,8 +60,9 @@ class SFTP
     public function rename(string $from, string $to): bool
     {
         $this->login();
-        $this->netSFTP->rename($from, $to);
-        $this->throwErrorIfNeeded();
+        if (! $this->netSFTP->rename($from, $to)) {
+            $this->throwLastError("Impossible de renommer $from en $to");
+        }
         return true;
     }
 
@@ -67,8 +72,9 @@ class SFTP
     public function delete(string $remote_path): bool
     {
         $this->login();
-        $this->netSFTP->delete($remote_path);
-        $this->throwErrorIfNeeded();
+        if (! $this->netSFTP->delete($remote_path)) {
+            $this->throwLastError("Impossible de supprimer $remote_path");
+        }
         return true;
     }
 
@@ -78,8 +84,9 @@ class SFTP
     public function mkdir(string $remote_path): bool
     {
         $this->login();
-        $this->netSFTP->mkdir($remote_path);
-        $this->throwErrorIfNeeded();
+        if (! $this->netSFTP->mkdir($remote_path)) {
+            $this->throwLastError("Impossible de créer le répertoire $remote_path");
+        }
         return true;
     }
 
@@ -114,13 +121,9 @@ class SFTP
     /**
      * @throws UnrecoverableException
      */
-    private function throwErrorIfNeeded(): void
+    private function throwLastError(string $defaultMessage): never
     {
-        $errors = $this->netSFTP->getSFTPErrors();
-        /** @see : https://stackoverflow.com/questions/62671036/end-of-file-error-for-phpseclib-for-any-file-get */
-        if ($errors && $errors[0] && $errors[0] !== 'NET_SFTP_STATUS_EOF: End of file') {
-            throw new UnrecoverableException($errors[0]);
-        }
+        throw new UnrecoverableException($this->netSFTP->getLastSFTPError() ?: $defaultMessage);
     }
 
     /**
@@ -143,23 +146,20 @@ class SFTP
     }
 
     /**
-     * @throws Exception
+     * @throws UnrecoverableException
      */
     public function isDir(string $file_or_directory): bool
     {
         $this->login();
-        $result = $this->netSFTP->is_dir($file_or_directory);
-        $this->throwErrorIfNeeded();
-        return $result;
+        return $this->netSFTP->is_dir($file_or_directory);
     }
 
     /**
-     * @throws Exception
+     * @throws UnrecoverableException
      */
     public function exists(string $file_or_directory): bool
     {
         $this->login();
-        $this->throwErrorIfNeeded();
         return $this->netSFTP->file_exists($file_or_directory);
     }
 }

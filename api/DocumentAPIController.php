@@ -534,9 +534,29 @@ class DocumentAPIController extends BaseAPIController
         if ($this->getFromQueryArgs(3) === 'file') {
             return $this->deleteFile($id_d, (int)$id_e);
         }
+        $deletionAction = $this->getDeletionActionName($info['type']);
+        if (
+            $deletionAction === null
+            || !$this->actionPossible->isActionPossible($id_e, $this->getUtilisateurId(), $id_d, $deletionAction)
+        ) {
+            throw new ForbiddenException(
+                "La suppression de ce dossier n'est pas permise : " . $this->actionPossible->getLastBadRule()
+            );
+        }
         $this->documentDeletionService->delete($id_d);
         header_wrapper('HTTP/1.1 204 No Content');
         return [];
+    }
+
+    private function getDeletionActionName(string $type): ?string
+    {
+        $actions = $this->documentTypeFactory->getFluxDocumentType($type)->getAction()->getAll();
+        foreach (['supression', 'suppression'] as $actionName) {
+            if (\in_array($actionName, $actions, true)) {
+                return $actionName;
+            }
+        }
+        return null;
     }
 
     private function deleteFile(
@@ -564,6 +584,11 @@ class DocumentAPIController extends BaseAPIController
     {
         $info = $this->getDocumentInfo((int)$id_e, $id_d);
         $this->checkDroitFor($id_e, $info['type'], DroitType::EDITION);
+        if (!$this->actionPossible->isActionPossible($id_e, $this->getUtilisateurId(), $id_d, 'modification')) {
+            throw new ForbiddenException(
+                "L'action « modification »  n'est pas permise : " . $this->actionPossible->getLastBadRule()
+            );
+        }
 
         $field_name = $this->getFromQueryArgs(4);
         $file_number = $this->getFromQueryArgs(5);

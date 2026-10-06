@@ -12,10 +12,6 @@
  * @var string $entity_treeselect_data
  */
 
-use Pastell\Service\Droit\DroitType;
-use Pastell\Service\Droit\DroitService;
-use Pastell\Utilities\Certificate;
-
 ?>
 
 <div class="box">
@@ -61,10 +57,6 @@ use Pastell\Utilities\Certificate;
                 </td>
             </tr>
 
-            <?php
-            $tabEntite = $roleUtilisateur->getEntite($this->getAuthentification()->getId(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
-            $entiteListe = new EntiteListe($sqlQuery);
-            ?>
             <tr>
                 <th>Entité de base</th>
                 <td>

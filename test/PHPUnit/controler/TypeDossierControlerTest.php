@@ -325,6 +325,40 @@ class TypeDossierControlerTest extends ControlerTestCase
         static::assertFalse($jobQueueSQL->hasDocumentJob(self::ID_E_COL, $id_d));
     }
 
+    /**
+     * @throws Exception
+     */
+    public function testPutInFatalErrorRequiresSystemRight(): void
+    {
+        $studioFlux = 'studio';
+        $this->createTypeDossier($studioFlux);
+        $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+        $roleSQL->addDroit('admin', DroitService::getDroitFor($studioFlux, DroitType::LECTURE));
+        $roleSQL->addDroit('admin', DroitService::getDroitFor($studioFlux, DroitType::EDITION));
+        $document = $this->createDocument($studioFlux);
+        $typeDossierControler = $this->getTypeDossierController();
+        $this->authenticateNewUserWithPermission(
+            [
+                DroitService::getDroitFor($studioFlux, DroitType::LECTURE),
+                DroitService::getDroitFor($studioFlux, DroitType::EDITION),
+            ],
+            EntiteSQL::ID_E_ENTITE_RACINE,
+        );
+
+        $this->setPostInfo(['id_type_dossier' => $studioFlux]);
+        try {
+            $typeDossierControler->doPutInFatalErrorAction();
+            static::fail('A document type right must not allow putting every document in fatal error');
+        } catch (LastErrorException) {
+        }
+
+        static::assertSame(
+            'creation',
+            $this->getObjectInstancier()->getInstance(DocumentActionEntite::class)
+                ->getLastAction(self::ID_E_COL, $document['id_d']),
+        );
+    }
+
     public static function provideDeleteActionsWithFolder(): array
     {
         return [
