@@ -6,6 +6,7 @@ use Pastell\Service\Document\DocumentDeletionService;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Document\DocumentEmailService;
+use Pastell\Service\Journal\JournalEntryService;
 
 class DocumentAPIController extends BaseAPIController
 {
@@ -17,7 +18,7 @@ class DocumentAPIController extends BaseAPIController
         private DocumentEntite $documentEntite,
         private DocumentTypeFactory $documentTypeFactory,
         private ActionExecutorFactory $actionExecutorFactory,
-        private Journal $journal,
+        private JournalEntryService $journalEntryService,
         private UtilisateurSQL $utilisateur,
         private EntiteSQL $entiteSQL,
         private DocumentCount $documentCount,
@@ -408,8 +409,8 @@ class DocumentAPIController extends BaseAPIController
         $infoUtilisateur = $this->utilisateur->getInfo($this->getUtilisateurId());
         $nom = $infoUtilisateur['prenom'] . ' ' . $infoUtilisateur['nom'];
 
-        $this->journal->add(
-            Journal::DOCUMENT_CONSULTATION,
+        $this->journalEntryService->add(
+            JournalEventType::DOCUMENT_CONSULTATION,
             $id_e,
             $id_d,
             'Consulté',

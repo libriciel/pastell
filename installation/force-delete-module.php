@@ -1,5 +1,8 @@
 #! /usr/bin/php
 <?php
+
+use Pastell\Service\Journal\JournalEntryService;
+
 /**
  * @deprecated since 4.0.6 use command app:module:force-delete-module instead
  * @var ObjectInstancier $objectInstancier
@@ -78,7 +81,7 @@ foreach ($result as $document) {
     $objectInstancier->getInstance(DocumentSQL::class)->delete($id_d);
 
     $message = "Le document « {$info['titre']} » ($id_d) a été supprimé par un administrateur";
-    $objectInstancier->getInstance(Journal::class)->add(Journal::DOCUMENT_ACTION, 0, $id_d, "suppression", $message);
+    $objectInstancier->getInstance(JournalEntryService::class)->add(JournalEventType::DOCUMENT_ACTION, 0, $id_d, "suppression", $message);
 }
 
 foreach ($entite_list as $id_e) {

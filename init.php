@@ -9,6 +9,7 @@ use Pastell\Database\DatabaseUpdater;
 use Pastell\Process\CommandRunner;
 use Pastell\Process\SymfonyCommandRunner;
 use Pastell\Service\FeatureToggleService;
+use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Utilities\Identifier\IdentifierGeneratorInterface;
 use Pastell\Utilities\Identifier\UuidGenerator;
 use Pastell\Storage\S3Adapter;
@@ -85,11 +86,15 @@ $id_u_journal = 0;
 if ($objectInstancier->getInstance(Authentification::class)->isConnected()) {
     $id_u_journal = $objectInstancier->getInstance(Authentification::class)->getId();
 }
+$objectInstancier->getInstance(JournalEntryService::class)->setId($id_u_journal);
+// To remove along with the deprecated Journal class
 $objectInstancier->getInstance(Journal::class)->setId($id_u_journal);
 
 try {
     $horodateur = $objectInstancier->getInstance(ConnecteurFactory::class)->getGlobalConnecteur('horodateur');
     if ($horodateur) {
+        $objectInstancier->getInstance(JournalEntryService::class)->setHorodateur($horodateur);
+        // To remove along with the deprecated Journal class
         $objectInstancier->getInstance(Journal::class)->setHorodateur($horodateur);
     }
 } catch (Exception $e) {
@@ -98,14 +103,22 @@ try {
 
 if (USE_EXTERNAL_STORAGE_FOR_JOURNAL_PROOF) {
     if (TESTING_ENVIRONNEMENT) {
-        $objectInstancier->setInstance(StorageInterface::class, new StorageInterfaceFake());
+        $journalProofStorage = new StorageInterfaceFake();
+        $objectInstancier->setInstance(StorageInterface::class, $journalProofStorage);
+        $objectInstancier->getInstance(JournalEntryService::class)->setInterfaceStorage($journalProofStorage);
+        // To remove along with the deprecated Journal class
+        $objectInstancier->getInstance(Journal::class)->setInterfaceStorage($journalProofStorage);
     } else {
-        $objectInstancier->getInstance(Journal::class)->setInterfaceStorage(new S3Adapter(
+        $journalProofStorage = new S3Adapter(
             $objectInstancier->getInstance('s3Url'),
             $objectInstancier->getInstance('s3Key'),
             $objectInstancier->getInstance('s3Secret'),
             S3_BUCKET_JOURNAL,
-        ));
+        );
+        $objectInstancier->setInstance(StorageInterface::class, $journalProofStorage);
+        $objectInstancier->getInstance(JournalEntryService::class)->setInterfaceStorage($journalProofStorage);
+        // To remove along with the deprecated Journal class
+        $objectInstancier->getInstance(Journal::class)->setInterfaceStorage($journalProofStorage);
     }
 }
 
@@ -116,8 +129,6 @@ $sqlQuery->setLogger($logger);
 
 $authentification = $objectInstancier->getInstance(Authentification::class);
 
-
-$journal = $objectInstancier->getInstance(Journal::class);
 $documentTypeFactory = $objectInstancier->getInstance(DocumentTypeFactory::class);
 $donneesFormulaireFactory = $objectInstancier->getInstance(DonneesFormulaireFactory::class);
 

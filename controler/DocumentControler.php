@@ -177,7 +177,7 @@ class DocumentControler extends PastellControler
             $this->redirect("/Document/ar?id_e=$id_e&id_d=$id_d");
         }
 
-        $this->getJournal()->addConsultation($id_e, $id_d, $this->getId_u());
+        $this->getJournalEntryService()->addConsultation($id_e, $id_d, $this->getId_u());
 
         $this->setViewParameter('info', $info_document);
         $this->setViewParameter('id_e', $id_e);
@@ -270,8 +270,8 @@ class DocumentControler extends PastellControler
                 ->getInstance(DocumentEmailReponseSQL::class)
                 ->setLu($id_d_reponse);
 
-            $this->getJournal()->add(
-                Journal::MAIL_SECURISE,
+            $this->getJournalEntryService()->add(
+                JournalEventType::SECURE_MAIL,
                 $id_e,
                 $id_d,
                 "Lecture d'une réponse",
@@ -1566,8 +1566,8 @@ class DocumentControler extends PastellControler
         $infoUtilisateur = $utilisateur->getInfo($this->getId_u());
         $nom = $infoUtilisateur['prenom'] . ' ' . $infoUtilisateur['nom'];
 
-        $this->getJournal()->add(
-            Journal::DOCUMENT_CONSULTATION,
+        $this->getJournalEntryService()->add(
+            JournalEventType::DOCUMENT_CONSULTATION,
             $id_e,
             $id_d,
             'Consulté',

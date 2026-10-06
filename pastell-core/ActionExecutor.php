@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Logger;
+use Pastell\Service\Journal\JournalEntryService;
 
 abstract class ActionExecutor
 {
@@ -144,10 +145,16 @@ abstract class ActionExecutor
 
     /**
      * @return Journal
+     * @deprecated 4.1.25 Use getJournalEntryService() instead
      */
     public function getJournal()
     {
         return $this->objectInstancier->getInstance(Journal::class);
+    }
+
+    public function getJournalEntryService(): JournalEntryService
+    {
+        return $this->objectInstancier->getInstance(JournalEntryService::class);
     }
 
     /**
@@ -440,8 +447,8 @@ abstract class ActionExecutor
                 $this->id_u,
                 $this->action
             );
-            $this->objectInstancier->getInstance(Journal::class)->add(
-                Journal::DOCUMENT_TRAITEMENT_LOT,
+            $this->objectInstancier->getInstance(JournalEntryService::class)->add(
+                JournalEventType::DOCUMENT_BATCH_PROCESSING,
                 $this->id_e,
                 $id_d,
                 $this->action,

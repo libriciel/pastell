@@ -286,8 +286,8 @@ class UtilisateurAPIControllerTest extends PastellTestCase
         $this->assertEquals($utilisateurActivated, $utilisateurReactivated);
 
         $messages = array_column(
-            $this->getObjectInstancier()->getInstance(Journal::class)
-                ->getAll(false, false, false, false, 0, 1000),
+            $this->getJournalConsultationService()
+                ->getList(0, '', '', 0, 0, 1000),
             'message'
         );
         static::assertContains("L'utilisateur eric a été désactivé", $messages);

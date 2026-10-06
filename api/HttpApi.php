@@ -2,6 +2,7 @@
 
 use Monolog\Logger;
 use Symfony\Component\RateLimiter\Exception\RateLimitExceededException;
+use Pastell\Service\Journal\JournalEntryService;
 
 class HttpApi
 {
@@ -145,6 +146,8 @@ class HttpApi
         $internalAPI->setUtilisateurId($utilisateur_id);
         $internalAPI->setCallerType(InternalAPI::CALLER_TYPE_WEBSERVICE);
 
+        $this->objectInstancier->getInstance(JournalEntryService::class)->setId($utilisateur_id);
+        // To remove along with the deprecated Journal class
         $this->objectInstancier->getInstance(Journal::class)->setId($utilisateur_id);
 
         if ($request_method == 'patch' && ! $is_legacy) {
