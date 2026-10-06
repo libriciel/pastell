@@ -762,10 +762,10 @@ class TypeDossierControler extends PastellControler
      * @throws LastMessageException
      * @throws LastErrorException
      */
-    public function doPutInFatalErrorAction()
+    public function doPutInFatalErrorAction(): void
     {
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_type_dossier = $this->getPostInfo()->get('id_type_dossier');
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, $id_type_dossier, DroitType::EDITION);
 
         $dossierFetched = $this->getObjectInstancier()->getInstance(TypeDossierSQL::class)
             ->getNotFinished($id_type_dossier);
@@ -776,9 +776,11 @@ class TypeDossierControler extends PastellControler
                 $dossier['id_e'],
                 $this->getId_u(),
                 'fatal-error',
-                "Passage en erreur fatale via le studio"
+                'Passage en erreur fatale via le studio'
             );
-            $this->getObjectInstancier()->getInstance(JobManager::class)->deleteDocumentForAllEntities($dossier['id_d']);
+            $this->getObjectInstancier()
+                ->getInstance(JobManager::class)
+                ->deleteDocumentForAllEntities($dossier['id_d']);
         }
 
         $this->setLastMessage("Tous les dossiers <b>{$id_type_dossier}</b> ont été mis dans l'état erreur fatale");

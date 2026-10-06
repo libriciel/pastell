@@ -5,6 +5,10 @@ abstract class PortailFactureConnecteur extends Connecteur
     public const STATUT_DEPOSEE = "DEPOSEE";
     public const STATUT_ACHEMINEMENT = "EN_COURS_ACHEMINEMENT";
     public const STATUT_MISE_A_DISPOSITION = "MISE_A_DISPOSITION";
+    /**
+     * @deprecated #2467 : n'est plus un statut cible autorisé (réforme 09/2026),
+     * conservé pour la lecture des factures ayant encore ce statut courant
+     */
     public const STATUT_A_RECYCLER = "A_RECYCLER";
     public const STATUT_REJETEE = "REJETEE";
     public const STATUT_SUSPENDUE = "SUSPENDUE";
@@ -94,7 +98,6 @@ abstract class PortailFactureConnecteur extends Connecteur
     {
         return  [self::STATUT_MISE_A_DISPOSITION,
             self::STATUT_SUSPENDUE,
-            self::STATUT_A_RECYCLER,
             self::STATUT_REJETEE,
             self::STATUT_SERVICE_FAIT,
             self::STATUT_MANDATEE,

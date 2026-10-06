@@ -50,6 +50,7 @@
         'js/jquery.treeview.js',
         'js/pastell.js',
         'js/select/multiselect.js',
+        'js/flow-upload.js',
         'js/search.js',
         'js/top.js',
         'js/mdp.js',
@@ -81,15 +82,14 @@
             >
                 <i class="fas fa-rectangle-list"></i>&nbsp;Journal des évènements
             </a>
-            {% if roleUtilisateur.hasOneDroit(authentification.getId, 'entite:edition')
-                or roleUtilisateur.hasOneDroit(authentification.getId, 'annuaire:edition') %}
+            {% if menu_administration_link %}
                 <a href="{{ path('app.legacy.entite_detail', {'id_e': id_e_menu}) }}"
                    class="new_picto"
                 >
                     <i class="fas fa-wrench"></i>&nbsp;Administration
                 </a>
             {% endif %}
-            {% if roleUtilisateur.hasDroit(authentification.getId, 'system:lecture', 0) %}
+            {% if menu_system_lecture %}
                 <a href="{{ path('app.legacy.system_index') }}" class="new_picto" style="float: right;">
                     {% if workspace_alert_warning %}
                         <p class="badge badge-warning">!</p>
@@ -97,7 +97,7 @@
                     <i class="fas fa-puzzle-piece"></i><span>Administration avancée</span>
                 </a>
             {% endif %}
-            {% if roleUtilisateur.hasDroit(authentification.getId, 'daemon:lecture', 0) %}
+            {% if menu_daemon_lecture %}
                 <a href="{{ path('app.legacy.daemon_index') }}" class='new_picto' style="float: right;">
                     {% if daemon_stopped_warning %}
                         <p class="badge badge-warning">!</p>

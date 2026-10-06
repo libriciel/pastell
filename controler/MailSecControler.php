@@ -194,6 +194,15 @@ class MailSecControler extends PastellControler
         return implode(',<br/>', $r);
     }
 
+    private function withUtilisateur(array $groupes, AnnuaireRoleSQL $annuaireRoleSQL): array
+    {
+        foreach ($groupes as &$groupe) {
+            $groupe['utilisateur'] = $annuaireRoleSQL->getUtilisateur($groupe['id_r']);
+        }
+        unset($groupe);
+        return $groupes;
+    }
+
     /**
      * @throws LastMessageException
      * @throws LastErrorException
@@ -249,7 +258,8 @@ class MailSecControler extends PastellControler
         );
         $this->setViewParameter('entity_treeselect_data', json_encode($entity_tree, JSON_THROW_ON_ERROR));
 
-        $this->setViewParameter('listGroupe', $this->getAnnuaireRoleSQL()->getAll($id_e));
+        $annuaireRoleSQL = $this->getAnnuaireRoleSQL();
+        $this->setViewParameter('listGroupe', $this->withUtilisateur($annuaireRoleSQL->getAll($id_e), $annuaireRoleSQL));
 
         if ($id_e) {
             $this->setViewParameter('infoEntite', $this->getEntiteSQL()->getInfo($id_e));
@@ -260,8 +270,11 @@ class MailSecControler extends PastellControler
         $all_ancetre = $this->getEntiteSQL()->getAncetreId($id_e);
 
         $this->setMenuGaucheSelect(MenuGaucheService::MAILSEC_GROUPES_ROLES);
-        $this->setViewParameter('groupe_herited', $this->getAnnuaireRoleSQL()->getGroupeHerite($all_ancetre));
-        $this->setViewParameter('annuaireRole', $this->getAnnuaireRoleSQL());
+        $this->setViewParameter(
+            'groupe_herited',
+            $this->withUtilisateur($annuaireRoleSQL->getGroupeHerite($all_ancetre), $annuaireRoleSQL)
+        );
+        $this->setViewParameter('allRole', $this->getRoleSQL()->getAllRole());
         $this->setViewParameter('page', "Carnet d'adresses");
         $this->setViewParameter('page_title', $this->getViewParameterByKey('infoEntite')['denomination'] . " - Carnet d'adresses");
         $this->setViewParameter('template_milieu', "MailSecGroupeRoleList");

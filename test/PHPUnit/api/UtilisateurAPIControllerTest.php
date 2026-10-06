@@ -275,6 +275,14 @@ class UtilisateurAPIControllerTest extends PastellTestCase
 
         $utilisateurReactivated = $this->getInternalAPI()->post('/utilisateur/2/activate');
         $this->assertEquals($utilisateurActivated, $utilisateurReactivated);
+
+        $messages = array_column(
+            $this->getObjectInstancier()->getInstance(Journal::class)
+                ->getAll(false, false, false, false, 0, 1000),
+            'message'
+        );
+        static::assertContains("L'utilisateur eric a été désactivé", $messages);
+        static::assertContains("L'utilisateur eric a été activé", $messages);
     }
 
     public function testPostDeactivateMyselfFail(): void

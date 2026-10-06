@@ -347,6 +347,7 @@ class UtilisateurControler extends PastellControler
         }
         $this->setViewParameter('info', $info);
         $this->setViewParameter('id_u', $id_u);
+        $this->setViewParameter('roleInfo', $this->getRoleUtilisateur()->getRole($id_u));
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
         $entity_tree = $entityUtilitiesService->buildEntityTreeselectOptions(
             $this->getRoleUtilisateur()->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION))
@@ -368,7 +369,9 @@ class UtilisateurControler extends PastellControler
     {
         $result = $this->getNotification()->getAll($id_u);
         foreach ($result as $i => $line) {
-            $action = $this->getDocumentTypeFactory()->getFluxDocumentType($line['type'])->getAction();
+            $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($line['type']);
+            $result[$i]['type_name'] = $documentType->getName();
+            $action = $documentType->getAction();
             foreach ($line['action'] as $j => $action_id) {
                 $result[$i]['action'][$j] = $action->getActionName($action_id);
             }
@@ -903,15 +906,7 @@ class UtilisateurControler extends PastellControler
         $id_u = $this->getPostInfo()->get('id_u');
         $userInfo = $this->getUtilisateur()->getInfo($id_u);
         $this->checkDroitFor($userInfo['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
-        $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->enable($id_u);
-        $message = "L'utilisateur {$userInfo['login']} a été activé";
-        $this->getJournal()->add(
-            Journal::MODIFICATION_UTILISATEUR,
-            $userInfo['id_e'],
-            Journal::NO_ID_D,
-            'activation',
-            $message
-        );
+        $message = $this->getObjectInstancier()->getInstance(UserUpdateService::class)->enable((int) $id_u);
         $this->setLastMessage($message);
         $this->redirect("/Utilisateur/detail?id_u=$id_u");
     }
@@ -926,15 +921,7 @@ class UtilisateurControler extends PastellControler
         $userInfo = $this->getUtilisateur()->getInfo($id_u);
         $this->checkDroitFor($userInfo['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
         $this->checkSelfDisable($id_u);
-        $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->disable($id_u);
-        $message = "L'utilisateur {$userInfo['login']} a été désactivé";
-        $this->getJournal()->add(
-            Journal::MODIFICATION_UTILISATEUR,
-            $userInfo['id_e'],
-            Journal::NO_ID_D,
-            'désactivation',
-            $message
-        );
+        $message = $this->getObjectInstancier()->getInstance(UserUpdateService::class)->disable((int) $id_u);
         $this->setLastMessage($message);
         $this->redirect("/Utilisateur/detail?id_u=$id_u");
     }

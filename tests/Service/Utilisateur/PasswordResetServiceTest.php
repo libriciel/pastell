@@ -4,42 +4,41 @@ declare(strict_types=1);
 
 namespace Pastell\Tests\Service\Utilisateur;
 
-use Pastell\Mailer\Mailer;
-use Pastell\Service\Utilisateur\PasswordResetMailService;
-use Pastell\Tests\MailerTransportTesting;
+use Exception;
+use Pastell\Service\Utilisateur\PasswordResetService;
 use PastellTestCase;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use UtilisateurSQL;
 
 class PasswordResetServiceTest extends PastellTestCase
 {
-    /**
-     * @throws TransportExceptionInterface
-     */
-    public function testSendResetMail(): void
+    private function getService(): PasswordResetService
     {
-        $passwordResetService = $this->getObjectInstancier()->getInstance(PasswordResetMailService::class);
-        $pastellMailer = $this->getObjectInstancier()->getInstance(Mailer::class);
+        return $this->getObjectInstancier()->getInstance(PasswordResetService::class);
+    }
 
-        $mailerTransportTesting = new MailerTransportTesting();
-        $mailer = new \Symfony\Component\Mailer\Mailer($mailerTransportTesting);
-        $pastellMailer->setMailer($mailer);
+    private function getUtilisateurSQL(): UtilisateurSQL
+    {
+        return $this->getObjectInstancier()->getInstance(UtilisateurSQL::class);
+    }
 
-        $passwordResetService->sendResetMail(self::ID_U_ADMIN);
+    public function testChangePassword(): void
+    {
+        $this->getUtilisateurSQL()->reinitPassword(1, 'old-token');
 
-        $sentMessage = $mailerTransportTesting->getSentMessage();
-        $messageString = $sentMessage->getMessage()->toString();
+        $this->getService()->changePassword(1, 'N3w-P@ssw0rd-Str0ng!');
 
-        self::assertStringContainsString(
-            'Subject: [Pastell]',
-            $messageString
-        );
-        self::assertStringContainsString(
-            '/Connexion/changementMdp?mail_verif=',
-            $messageString
-        );
-        self::assertStringContainsString(
-            '<strong>admin</strong>',
-            $messageString
-        );
+        static::assertTrue($this->getUtilisateurSQL()->verifPassword(1, 'N3w-P@ssw0rd-Str0ng!'));
+        static::assertNotSame('old-token', $this->getUtilisateurSQL()->getInfo(1)['mail_verif_password']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGenerateResetToken(): void
+    {
+        $token = $this->getService()->generateResetToken(1);
+
+        static::assertNotEmpty($token);
+        static::assertSame($token, $this->getUtilisateurSQL()->getInfo(1)['mail_verif_password']);
     }
 }

@@ -517,6 +517,21 @@ class DocumentAPIControllerTest extends PastellTestCase
         $this->expectOutputRegex('/HTTP\/1.1 204 No Content/');
     }
 
+    public function testDeleteDocumentFollowsTheWorkflowDeletionRule(): void
+    {
+        $documentId = $this->createDocument('actes-generique')['id_d'];
+        $this->getObjectInstancier()->getInstance(ActionChange::class)
+            ->addAction($documentId, self::ID_E_COL, 0, 'send-tdt', 'test');
+
+        try {
+            $this->getInternalAPI()->delete("/entite/1/document/$documentId");
+            static::fail('The deletion of a document sent to the TdT must be refused');
+        } catch (ForbiddenException $e) {
+            static::assertSame("La suppression de ce dossier n'est pas permise : or_1 n'est pas vérifiée", $e->getMessage());
+        }
+        static::assertNotEmpty($this->getObjectInstancier()->getInstance(DocumentSQL::class)->getInfo($documentId));
+    }
+
     public function testCreateDocumentOnDeactivatedEntity(): void
     {
         $this->getInternalAPI()->post('/entite/1/deactivate');
@@ -736,5 +751,18 @@ class DocumentAPIControllerTest extends PastellTestCase
             $this->expectOutputRegex('/HTTP\/1.1 (200 Ok|201 Created)/');
         }
         static::assertSame('123', $this->getDonneesFormulaireFactory()->get($id_d)->getFileContent('fichier', '0'));
+    }
+
+    public function testPostChunkFollowsTheWorkflowModificationRule(): void
+    {
+        $documentId = $this->createDocument('actes-generique')['id_d'];
+        $this->getObjectInstancier()->getInstance(ActionChange::class)
+            ->addAction($documentId, self::ID_E_COL, 0, 'send-tdt', 'test');
+
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_REQUEST['file_name'] = 'toto.txt';
+        $this->expectException(ForbiddenException::class);
+        $this->expectExceptionMessage("L'action « modification »  n'est pas permise");
+        $this->getInternalAPI()->post("entite/1/document/$documentId/chunk/arrete/0");
     }
 }

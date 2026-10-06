@@ -9,6 +9,7 @@
  * @var bool $utilisateur_suppression
  * @var bool $journal_lecture
  * @var array $notification_list
+ * @var array $roleInfo
  * @var string $module_treeselect_data
  * @var string $entity_treeselect_data
  * @var string $role_treeselect_data
@@ -151,7 +152,7 @@ use Pastell\Utilities\Certificate;
             <th>&nbsp;</th>
         </tr>
 
-        <?php foreach ($this->getRoleUtilisateur()->getRole($id_u) as $infoRole) : ?>
+        <?php foreach ($roleInfo as $infoRole) : ?>
             <tr>
                 <td><?php hecho($infoRole['role']); ?></td>
                 <td>
@@ -166,7 +167,7 @@ use Pastell\Utilities\Certificate;
                     <?php if (
                             $utilisateur_edition &&
                             ($infoRole['role'] !== 'aucun droit' ||
-                            count($this->getRoleUtilisateur()->getRole($id_u)) > 1)
+                            count($roleInfo) > 1)
 ) : ?>
                         <?php
                         $deleteRoleUrl = \sprintf(
@@ -253,13 +254,7 @@ use Pastell\Utilities\Certificate;
                     </td>
                     <td>
                         <?php if ($infoNotification['type']) : ?>
-                            <?php hecho(
-                                $this
-                                    ->getDocumentTypeFactory()
-                                    ->getFluxDocumentType($infoNotification['type'])
-                                    ->getName()
-                            );
-                            ?>
+                            <?php hecho($infoNotification['type_name']); ?>
                         <?php else : ?>
                             Tous
                         <?php endif; ?>
