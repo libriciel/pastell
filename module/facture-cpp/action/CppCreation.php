@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Journal\JournalEntryService;
+
 class CppCreation extends ActionExecutor
 {
     /**
@@ -52,9 +54,9 @@ class CppCreation extends ActionExecutor
         $synchronisationFacture = new SynchronisationFacture($portailFactureConnecteur);
 
         $this->objectInstancier
-            ->getInstance(Journal::class)
+            ->getInstance(JournalEntryService::class)
             ->addSQL(
-                Journal::DOCUMENT_ACTION,
+                JournalEventType::DOCUMENT_ACTION,
                 $this->id_e,
                 $this->id_u,
                 $this->id_d,
@@ -120,7 +122,7 @@ class CppCreation extends ActionExecutor
         $this->getDocument()->delete($id_d);
 
         $message = "Le document « {$info['titre']} » ({$id_d}) a été supprimé";
-        $this->getJournal()->add(Journal::DOCUMENT_ACTION, $this->id_e, $id_d, "suppression", $message);
+        $this->getJournalEntryService()->add(JournalEventType::DOCUMENT_ACTION, $this->id_e, $id_d, "suppression", $message);
 
         $this->setLastMessage($message);
         return $message;

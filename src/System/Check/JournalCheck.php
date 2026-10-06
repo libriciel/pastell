@@ -2,13 +2,13 @@
 
 namespace Pastell\System\Check;
 
-use Journal;
+use JournalSQL;
 use Pastell\System\CheckInterface;
 use Pastell\System\HealthCheckItem;
 
 class JournalCheck implements CheckInterface
 {
-    public function __construct(private readonly Journal $journal)
+    public function __construct(private readonly JournalSQL $journalSQL)
     {
     }
 
@@ -16,21 +16,21 @@ class JournalCheck implements CheckInterface
     {
         $firstLineDate = floor(
             (time() - strtotime(
-                $this->journal->getFirstLineDate() ?: date('Y-m-d H:i:s')
+                $this->journalSQL->getFirstDate() ?: date('Y-m-d H:i:s')
             )) / 86400
         );
         return [
             new HealthCheckItem(
                 "Nombre d'enregistrements dans la table journal",
-                number_format_fr($this->journal->getNbLine())
+                number_format_fr($this->journalSQL->getCount())
             ),
             new HealthCheckItem(
                 "Nombre d'enregistrements dans la table journal_historique",
-                number_format_fr($this->journal->getNbLineHistorique())
+                number_format_fr($this->journalSQL->getHistoriqueCount())
             ),
             new HealthCheckItem(
                 'Date du premier enregistrement de la table journal',
-                $this->journal->getFirstLineDate()
+                $this->journalSQL->getFirstDate()
             ),
             new HealthCheckItem("Nombre de mois de conservation du journal", (string)JOURNAL_MAX_AGE_IN_MONTHS),
             (new HealthCheckItem(

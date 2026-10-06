@@ -52,8 +52,8 @@ class ModificationAction extends ActionExecutor
             if ($this->needChangeEtatToModification($action_name)) {
                 $this->changeOrUpdateAction(self::ACTION_ID, self::ACTION_MESSAGE, true);
             } else {
-                $this->getJournal()->addSQL(
-                    Journal::DOCUMENT_ACTION,
+                $this->getJournalEntryService()->addSQL(
+                    JournalEventType::DOCUMENT_ACTION,
                     $this->id_e,
                     $this->id_u,
                     $this->id_d,

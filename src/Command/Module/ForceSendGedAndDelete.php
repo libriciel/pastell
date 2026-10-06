@@ -9,13 +9,14 @@ use EntiteSQL;
 use Exception;
 use FakeGED;
 use GEDConnecteur;
-use Journal;
 use NotFoundException;
 use Pastell\Command\BaseCommand;
 use Pastell\Service\Document\DocumentDeletionService;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 class ForceSendGedAndDelete extends BaseCommand
 {
@@ -26,7 +27,7 @@ class ForceSendGedAndDelete extends BaseCommand
         private readonly EntiteSQL $entiteSQL,
         private readonly ConnecteurFactory $connecteurFactory,
         private readonly DonneesFormulaireFactory $donneesFormulaireFactory,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journalEntryService,
         private readonly DocumentDeletionService $documentDeletionService,
     ) {
         parent::__construct();
@@ -163,8 +164,8 @@ class ForceSendGedAndDelete extends BaseCommand
         );
 
         if (!$dryRun) {
-            $this->journal->addSQL(
-                Journal::COMMANDE,
+            $this->journalEntryService->addSQL(
+                JournalEventType::COMMAND,
                 $entityId,
                 0,
                 '',

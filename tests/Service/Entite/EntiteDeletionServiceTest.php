@@ -40,7 +40,7 @@ class EntiteDeletionServiceTest extends PastellTestCase
 
         $entiteDeletionService = $this->getObjectInstancier()->getInstance(EntiteDeletionService::class);
         $entiteDeletionService->delete(2);
-        $journal_message = $this->getJournal()->getAll()[0]['message'];
+        $journal_message = $this->getJournalSQL()->getAll()[0]['message'];
         $expected_journal_message = file_get_contents(
             __DIR__ . '/../fixtures/entite_delete_service_journal_message.txt'
         );

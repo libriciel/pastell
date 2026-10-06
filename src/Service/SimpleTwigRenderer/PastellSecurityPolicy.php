@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pastell\Service\SimpleTwigRenderer;
 
 use Flow\JSONPath\JSONPath;

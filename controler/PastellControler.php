@@ -9,6 +9,7 @@ use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Module\ModuleListService;
 use Pastell\ViewModel\DeleteConfirmation;
+use Pastell\Service\Journal\JournalEntryService;
 
 class PastellControler extends Controler
 {
@@ -480,11 +481,16 @@ class PastellControler extends Controler
     }
 
     /**
-     * @return Journal
+     * @deprecated 4.1.25 Use getJournalEntryService() instead
      */
     public function getJournal(): Journal
     {
         return $this->getInstance(Journal::class);
+    }
+
+    public function getJournalEntryService(): JournalEntryService
+    {
+        return $this->getInstance(JournalEntryService::class);
     }
 
     /**

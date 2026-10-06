@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.1.25] - 2026-11-02
+
+### Dépréciations
+
+- Classe `Journal` et méthodes `getJournal()` dépréciées au profit de `JournalSQL`, `JournalConsultationService`, `JournalExportService`, `JournalEntryService` et `JournalEventType` #2595
+
 ## [4.1.24] - 2026-10-22
 
 ### Dépréciations
@@ -839,7 +845,7 @@
 - L'ordre des entités (dénomination au lieu de `id_e`) lors de l'import provoquait des erreurs
   `L'entité mère est inconnue` #2049
 - L'action d'envoi d'un PES à l'archivage renvoyait un warning si la balise `BlocPiece` ne contenait pas de balise
-  `InfoPce` (dans le cas de l'utilisation d'un connecteur Bordereau SEDA - seda-ng) #2050
+`InfoPce` (dans le cas de l'utilisation d'un connecteur Bordereau SEDA - seda-ng) #2050
 - Définition de studio : Il y avait une erreur pour les valeurs par défaut des Zones de texte multilignes #2002
 - La balise `MessageDigest` était mal écrite dans les bordereaux SEDA à destination de Vitam #2035
 - Connecteur iParapheur : Il y avait un warning pour la sélection d'un type en cas de problème de connexion #2027

@@ -6,7 +6,7 @@ use ConnecteurFactory;
 use DocumentSQL;
 use DonneesFormulaireFactory;
 use EntiteSQL;
-use Journal;
+use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Command\Module\ForceSendGedAndDelete;
 use Pastell\Service\Document\DocumentDeletionService;
 use PastellTestCase;
@@ -27,7 +27,7 @@ final class ForceSendGedAndDeleteTest extends PastellTestCase
             $this->getObjectInstancier()->getInstance(entiteSQL::class),
             $this->getObjectInstancier()->getInstance(ConnecteurFactory::class),
             $this->getObjectInstancier()->getInstance(DonneesFormulaireFactory::class),
-            $this->getObjectInstancier()->getInstance(Journal::class),
+            $this->getObjectInstancier()->getInstance(JournalEntryService::class),
             $this->getObjectInstancier()->getInstance(DocumentDeletionService::class)
         );
         $this->commandTester = new CommandTester($command);
