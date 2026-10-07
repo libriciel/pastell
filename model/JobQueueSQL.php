@@ -191,15 +191,59 @@ SQL;
         $this->query($sql, JobStatus::SUSPENDED_BY_USER->value, $this->getNow(), $id_verrou, $etat_source, $etat_cible);
     }
 
-    public function unlockAll(?int $id_daemon = null): void
+    private const string RUNNING_WORKER_JOIN = ' LEFT JOIN (SELECT DISTINCT id_job FROM worker WHERE termine = 0)'
+        . ' running_worker ON running_worker.id_job = job_queue.id_job';
+
+    /**
+     * @return int nombre de travaux réellement modifiés
+     */
+    public function lockAll(?int $id_daemon = null, ?JobAdvancedFilters $filters = null): int
     {
-        $sql = 'UPDATE job_queue SET job_status=0';
+        return $this->updateAll(true, $id_daemon, $filters);
+    }
+
+    /**
+     * @return int nombre de travaux réellement modifiés
+     */
+    public function unlockAll(?int $id_daemon = null, ?JobAdvancedFilters $filters = null): int
+    {
+        return $this->updateAll(false, $id_daemon, $filters);
+    }
+
+    private function updateAll(bool $lock, ?int $id_daemon, ?JobAdvancedFilters $filters): int
+    {
+        $setParams = $lock
+            ? [JobStatus::SUSPENDED_BY_USER->value, $this->getNow()]
+            : [JobStatus::WAITING->value];
+        $set = $lock ? 'job_queue.job_status=?, job_queue.lock_since=?' : 'job_queue.job_status=?';
         $params = [];
+        $where = $this->bulkEligibleCondition($lock, $params);
         if ($id_daemon !== null) {
-            $sql .= ' WHERE id_daemon=?';
+            $where .= ' AND job_queue.id_daemon=?';
             $params[] = $id_daemon;
         }
-        $this->query($sql, $params);
+        $this->appendAdvancedFilters($filters, $where, $params);
+        $from = 'job_queue' . self::RUNNING_WORKER_JOIN;
+        $nb = (int)$this->queryOne("SELECT COUNT(*) FROM $from WHERE $where", $params);
+        if ($nb > 0) {
+            $this->query("UPDATE $from SET $set WHERE $where", [...$setParams, ...$params]);
+        }
+        return $nb;
+    }
+
+    /**
+     * @param array<int,mixed> $params
+     */
+    private function bulkEligibleCondition(bool $lock, array &$params): string
+    {
+        $statusList = array_column($lock ? JobStatus::bulkLockable() : JobStatus::bulkUnlockable(), 'value');
+        $statusCondition = 'job_queue.job_status IN (' . implode(', ', array_fill(0, count($statusList), '?')) . ')';
+        array_push($params, ...$statusList);
+        if ($lock) {
+            return "running_worker.id_job IS NULL AND $statusCondition";
+        }
+        $params[] = JobStatus::LAUNCHING->value;
+        return "$statusCondition AND (running_worker.id_job IS NULL OR job_queue.job_status <> ?)";
     }
 
     public function unlock($id_job)
@@ -416,12 +460,46 @@ SQL;
 
     public function getNbJob($filtre, ?int $id_daemon = null, ?JobAdvancedFilters $advancedFilters = null): int
     {
+        [$from, $params] = $this->buildNbJobFrom($filtre, $id_daemon, $advancedFilters);
+        return $this->queryOne("SELECT count(*) $from", $params);
+    }
+
+    /**
+     * @return array{count: int, lockable: int, unlockable: int}
+     */
+    public function getNbJobWithBulkUpdatable(JobAdvancedFilters $advancedFilters, ?int $id_daemon = null): array
+    {
+        [$from, $fromParams] = $this->buildNbJobFrom('', $id_daemon, $advancedFilters, self::RUNNING_WORKER_JOIN);
+        $params = [];
+        $select = sprintf(
+            'SELECT COUNT(DISTINCT job_queue.id_job) AS count,'
+            . ' COUNT(DISTINCT CASE WHEN %s THEN job_queue.id_job END) AS lockable,'
+            . ' COUNT(DISTINCT CASE WHEN %s THEN job_queue.id_job END) AS unlockable',
+            $this->bulkEligibleCondition(true, $params),
+            $this->bulkEligibleCondition(false, $params)
+        );
+        $result = $this->queryOne("$select $from", [...$params, ...$fromParams]);
+        return [
+            'count' => (int)$result['count'],
+            'lockable' => (int)$result['lockable'],
+            'unlockable' => (int)$result['unlockable'],
+        ];
+    }
+
+    /**
+     * @return array{0: string, 1: array<int,mixed>}
+     */
+    private function buildNbJobFrom(
+        $filtre,
+        ?int $id_daemon,
+        ?JobAdvancedFilters $advancedFilters,
+        string $join = ''
+    ): array {
         $sql = <<<SQL
-SELECT count(*)
 FROM job_queue
 LEFT JOIN worker ON job_queue.id_job = worker.id_job
-WHERE 1=1
 SQL;
+        $sql .= $join . ' WHERE 1=1';
 
         $params = [];
         if ($id_daemon !== null) {
@@ -434,7 +512,7 @@ SQL;
 
         $this->appendAdvancedFilters($advancedFilters, $sql, $params);
 
-        return $this->queryOne($sql, $params);
+        return [$sql, $params];
     }
 
     /**
@@ -466,7 +544,7 @@ SQL;
 
         if ($filters->late !== '') {
             $sql .= ' AND job_queue.next_try < ?';
-            $params[] = $this->getNow();
+            $params[] = $filters->late_before !== '' ? $filters->late_before : $this->getNow();
         }
 
         if ($filters->id_e !== '') {

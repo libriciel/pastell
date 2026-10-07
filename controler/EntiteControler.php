@@ -921,13 +921,29 @@ class EntiteControler extends PastellControler
      */
     public function daemonUnlockAllAction(): void
     {
-        $recuperateur = $this->getGetInfo();
-        $id_e = $recuperateur->getInt('id_e');
+        $this->doDaemonJobBulkAction(false);
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function daemonLockAllAction(): void
+    {
+        $this->doDaemonJobBulkAction(true);
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    private function doDaemonJobBulkAction(bool $lock): void
+    {
+        $this->checkPostRequest('Entite/job?id_e=' . $this->getGetInfo()->getInt('id_e'));
+        $id_e = $this->getPostInfo()->getInt('id_e');
         $this->checkDroitFor($id_e, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $daemon = $this->resolveDaemonForEntity($id_e);
-        $this->getWorkerSQL()->menageAll();
-        $this->getJobQueueSQL()->unlockAll($daemon->id_daemon);
-        $this->redirect('Entite/daemon?id_e=' . $id_e);
+        $this->doJobBulkAction($lock, 'Entite/job?id_e=' . $id_e, $daemon->id_daemon);
     }
 
     /**
@@ -944,6 +960,7 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('page_title', 'Gestionnaire de tâches local');
         $this->setViewParameter('unlock_all_action', 'app.legacy.entite_daemonUnlockAll');
+        $this->setViewParameter('lock_all_action', 'app.legacy.entite_daemonLockAll');
         $this->setNavigationInfo($id_e, 'Entite/job');
         $this->setJobListViewParameters(
             'app.legacy.entite_job',

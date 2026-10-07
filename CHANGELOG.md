@@ -8,6 +8,7 @@
   - La page 'Tous les travaux' remplace 'Travaux suspendus' et 'Travaux en attente'
   - Ajout d'une recherche avancée 
   - Ajout du tri par dates sur la liste des travaux
+  - Possibilité de suspendre/reprendre les travaux correspondants à la recherche
 - iparapheur REST :
   - **BREAKING** : Suppression de la case 'Appliquer le multi-document' du connecteur iparapheur REST #2593
   - Nouveau champ « Autre document(s) à signer », transmis au Tdt en plus des annexes dans les flux

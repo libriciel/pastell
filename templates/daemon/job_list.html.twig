@@ -24,14 +24,64 @@
         {{ sub_title }}
     </h2>
 
-    {% if daemon_edition and show_unlock_all|default(false) %}
+    {% set bulk_enabled = daemon_edition and search is defined and unlock_all_action is defined and lock_all_action is defined %}
+
+    {% if bulk_enabled %}
+    <form method="post">
+        {{ gabarit.displayCSRFInput() }}
+        <input type="hidden" name="return_url" value="{{ return_url }}">
         {% if id_e is defined %}
-            <a class='btn btn-warning mb-2' href="{{ path(unlock_all_action, {'id_e': id_e}) }}">
-        {% else %}
-            <a class='btn btn-warning mb-2' href="{{ path(unlock_all_action) }}">
+            <input type="hidden" name="id_e" value="{{ id_e }}">
         {% endif %}
-            <i class="fas fa-unlock-keyhole"></i>&nbsp;Reprendre l'exécution de tous les travaux
-        </a>
+        {# Critères de la recherche affichée #}
+        {% for name, values in {'job_type': search.type, 'job_status': search.job_status, 'id_verrou': search.id_verrou} %}
+            {% for value in values %}
+                <input type="hidden" name="{{ name }}[]" value="{{ value }}">
+            {% endfor %}
+        {% endfor %}
+        {% for name, value in {'search_id_e': search.id_e, 'include_children': search.include_children, 'late': search.late, 'late_before': search.late_before} %}
+            <input type="hidden" name="{{ name }}" value="{{ value }}">
+        {% endfor %}
+
+        {# nb : travaux de la recherche réellement modifiés par l'action (cf. JobQueueSQL::bulkEligibleCondition()) #}
+        {% set search_actions = {
+            'lock': {'route': lock_all_action, 'icon': 'fa-lock', 'verb': 'Suspendre', 'label': 'Suspendre les travaux en attente', 'nb': nb_lockable|default(0)},
+            'unlock': {'route': unlock_all_action, 'icon': 'fa-unlock-keyhole', 'verb': 'Reprendre', 'label': 'Reprendre les travaux suspendus', 'nb': nb_unlockable|default(0)}
+        } %}
+
+        <div class="d-flex flex-wrap gap-2 mb-2">
+            {% for action, info in search_actions %}
+                <button type="button" class="btn btn-outline-warning"
+                        data-bs-toggle="modal" data-bs-target="#job-bulk-modal-{{ action }}"
+                        {{ info.nb > 0 ? '' : 'disabled' }}>
+                    <i class="fas {{ info.icon }}"></i>&nbsp;{{ info.label }} ({{ info.nb }})
+                </button>
+            {% endfor %}
+        </div>
+
+        {% for action, info in search_actions|filter(info => info.nb > 0) %}
+            <div class="modal fade" id="job-bulk-modal-{{ action }}" tabindex="-1"
+                 aria-labelledby="job-bulk-modal-{{ action }}-title" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="job-bulk-modal-{{ action }}-title">Confirmation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                        </div>
+                        <div class="modal-body">
+                            {{ info.verb }} les travaux correspondant à la recherche ({{ info.nb }} actuellement) ?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" formaction="{{ path(info.route) }}" class="btn btn-warning">
+                                <i class="fas {{ info.icon }}"></i>&nbsp;{{ info.verb }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </form>
     {% endif %}
 
     <table class="table table-striped">
@@ -136,14 +186,4 @@
             </tr>
         {% endfor %}
     </table>
-
-    {% if daemon_edition and show_unlock_all|default(false) %}
-        {% if id_e is defined %}
-            <a class='btn btn-warning mb-2' href="{{ path(unlock_all_action, {'id_e': id_e}) }}">
-        {% else %}
-            <a class='btn btn-warning mb-2' href="{{ path(unlock_all_action) }}">
-        {% endif %}
-            <i class="fas fa-unlock-keyhole"></i>&nbsp;Reprendre l'exécution de tous les travaux
-        </a>
-    {% endif %}
 </div>

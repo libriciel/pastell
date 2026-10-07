@@ -444,6 +444,9 @@ class PastellControler extends Controler
             $this->setMenuGaucheSelect($menu);
             $this->setViewParameter('sub_title', 'Liste de tous les travaux');
             $advancedFilters = JobAdvancedFilters::fromRecuperateur($recuperateur);
+            if ($advancedFilters->late !== '' && $advancedFilters->late_before === '') {
+                $advancedFilters = $advancedFilters->withLateBefore($this->getJobQueueSQL()->getNow());
+            }
             $sort = JobSort::fromRecuperateur($recuperateur);
             $this->setViewParameter('search', $advancedFilters);
             $this->setViewParameter('sort', $sort);
@@ -455,11 +458,6 @@ class PastellControler extends Controler
             $this->setViewParameter('entity_treeselect_config', $this->buildDaemonEntityTreeselectConfig($rootEntityId));
             $this->setViewParameter('verrou_list', $this->getInstance(ConnecteurFrequenceSQL::class)->getDistinctVerrou());
             $this->setViewParameter('verrou_none_value', JobQueueSQL::VERROU_NONE);
-            $this->setViewParameter(
-                'show_unlock_all',
-                $advancedFilters->job_status !== []
-                && !in_array((string)JobStatus::WAITING->value, $advancedFilters->job_status, true)
-            );
         }
 
         $offset = $recuperateur->getInt('offset');
@@ -472,11 +470,61 @@ class PastellControler extends Controler
         $this->setViewParameter('offset', $offset);
         $this->setViewParameter('limit', $limit);
         $this->setViewParameter('return_url', "$url?" . http_build_query($query));
-        $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob($filtre, $id_daemon, $advancedFilters));
+        if (
+            $advancedFilters !== null
+            && $this->isViewParameter('daemon_edition')
+            && $this->getViewParameterByKey('daemon_edition')
+        ) {
+            $nbJob = $this->getJobQueueSQL()->getNbJobWithBulkUpdatable($advancedFilters, $id_daemon);
+            $this->setViewParameter('count', $nbJob['count']);
+            $this->setViewParameter('nb_lockable', $nbJob['lockable']);
+            $this->setViewParameter('nb_unlockable', $nbJob['unlockable']);
+        } else {
+            $this->setViewParameter('count', $this->getJobQueueSQL()->getNbJob($filtre, $id_daemon, $advancedFilters));
+        }
         $this->setViewParameter(
             'job_list',
             $this->getJobQueueSQL()->getFilteredJobList($limit, $offset, $filtre, $id_daemon, $advancedFilters, $sort)
         );
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    protected function checkPostRequest(string $redirect): void
+    {
+        if ($this->getServerInfo('REQUEST_METHOD') !== 'POST') {
+            $this->setLastError('Cette action doit être soumise par un formulaire');
+            $this->redirect($redirect);
+        }
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    protected function doJobBulkAction(bool $lock, string $defaultReturnUrl, ?int $id_daemon = null): void
+    {
+        $recuperateur = $this->getPostInfo();
+        $return_url = $recuperateur->get('return_url', $defaultReturnUrl);
+        $filters = JobAdvancedFilters::fromRecuperateur($recuperateur);
+        $nb = $lock
+            ? $this->getJobQueueSQL()->lockAll($id_daemon, $filters)
+            : $this->getJobQueueSQL()->unlockAll($id_daemon, $filters);
+
+        if ($nb === 0) {
+            $this->setLastError(
+                $lock ? "Aucun travail n'a pu être suspendu" : "Aucun travail n'a pu être repris"
+            );
+        } else {
+            $this->setLastMessage(
+                $nb === 1
+                    ? ($lock ? '1 travail a été suspendu' : '1 travail a été repris')
+                    : ($lock ? "$nb travaux ont été suspendus" : "$nb travaux ont été repris")
+            );
+        }
+        $this->redirect($return_url);
     }
 
     /**
