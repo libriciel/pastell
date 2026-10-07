@@ -3,6 +3,7 @@
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
 class RechercheAvanceFormulaireHTML extends PastellControler
 {
@@ -362,7 +363,7 @@ class RechercheAvanceFormulaireHTML extends PastellControler
 
     public function getDocumentStateList(): array
     {
-        $allDroit = $this->getDroitService()->getAllDroit((int) $this->getId_u());
+        $allDroit = $this->getInstance(UtilisateurRoleService::class)->getAllDroit((int) $this->getId_u());
         $documentStateList = $this->getInstance(DocumentTypeFactory::class)->getActionByRole($allDroit);
         foreach ($documentStateList as $stateKey => $state) {
             $documentStateList[$stateKey]['fatal-error'] = 'Erreur fatale';

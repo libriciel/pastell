@@ -54,8 +54,8 @@ class ControlerTestCase extends PastellTestCase
             $id_e,
         );
 
-        $roleUtilisateur = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
-        $roleUtilisateur->addRole($id_u, 'my_role', $id_e);
+        $utilisateurRoleService = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
+        $utilisateurRoleService->addRole($id_u, 'my_role', $id_e);
 
         $this->getObjectInstancier()->getInstance(Authentification::class)->connexion('my_login', $id_u);
 

@@ -35,6 +35,16 @@ final class UtilisateurRoleService
         return $this->utilisateurRoleSQL->getRole($id_u);
     }
 
+    public function getAllDroitEntite(int $id_u, int $id_e): array
+    {
+        return $this->utilisateurRoleCache->getAllDroitEntite($id_u, $id_e);
+    }
+
+    public function getAllDroit(int $id_u): array
+    {
+        return $this->utilisateurRoleCache->getAllDroit($id_u);
+    }
+
     public function anybodyHasRole(string $role): bool
     {
         return $this->utilisateurRoleSQL->anybodyHasRole($role) > 0;
@@ -53,6 +63,8 @@ final class UtilisateurRoleService
     public function removeAllRoles(int $id_u): void
     {
         $this->utilisateurRoleSQL->deleteAllRoles($id_u);
+        // Incomplete: only id_e=0 and 'all' keys are invalidated,
+        // other entities stay stale until TTL (remains from deprecated RoleUtilisateur class #420)
         $this->utilisateurRoleCache->invalidate($id_u, 0);
     }
 

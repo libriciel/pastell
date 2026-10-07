@@ -306,8 +306,8 @@ class ConnecteurAPIControllerTest extends PastellTestCase
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $id_u = $userCreationService->create('badguy', 'test@bar.baz', 'user', 'user');
 
-        $roleUtilisateur = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
-        $roleUtilisateur->addRole($id_u, 'admin', 2);
+        $utilisateurRoleService = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
+        $utilisateurRoleService->addRole($id_u, 'admin', 2);
 
         $internalAPI = $this->getInternalAPI();
         $internalAPI->setUtilisateurId($id_u);
@@ -333,8 +333,8 @@ class ConnecteurAPIControllerTest extends PastellTestCase
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $id_u = $userCreationService->create('badguy', 'test@bar.baz', 'user', 'user');
 
-        $roleUtilisateur = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
-        $roleUtilisateur->addRole($id_u, 'admin', 2);
+        $utilisateurRoleService = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
+        $utilisateurRoleService->addRole($id_u, 'admin', 2);
 
         $internalAPI = $this->getInternalAPI();
         $internalAPI->setUtilisateurId($id_u);
@@ -520,8 +520,8 @@ class ConnecteurAPIControllerTest extends PastellTestCase
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $id_u = $userCreationService->create('badguy', 'test@bar.baz', 'user', 'user');
 
-        $roleUtilisateur = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
-        $roleUtilisateur->addRole($id_u, 'admin', 2);
+        $utilisateurRoleService = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
+        $utilisateurRoleService->addRole($id_u, 'admin', 2);
 
         $this->getInternalAPI()->post(
             '/entite/1/connecteur/12/file/champs5',
@@ -553,8 +553,8 @@ class ConnecteurAPIControllerTest extends PastellTestCase
     {
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $id_u = $userCreationService->create('badguy', 'test@bar.baz', 'user', 'user');
-        $roleUtilisateur = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
-        $roleUtilisateur->addRole($id_u, 'admin', 2);
+        $utilisateurRoleService = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
+        $utilisateurRoleService->addRole($id_u, 'admin', 2);
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("Le connecteur 12 n'appartient pas à l'entité 2");

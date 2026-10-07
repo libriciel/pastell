@@ -206,8 +206,8 @@ class UtilisateurControlerTest extends ControlerTestCase
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $this->api_user_id = $userCreationService->createAPI('api_user', $id_e1, 'api', 'user');
         $this->admin_inf = $userCreationService->create('admin_inferieur', 'admin@gmail.com', 'admin', 'admin', $id_e2);
-        $roleUtilisateur = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
-        $roleUtilisateur->addRole($this->admin_inf, 'admin', $id_e2);
+        $utilisateurRoleService = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
+        $utilisateurRoleService->addRole($this->admin_inf, 'admin', $id_e2);
         $this->userTokenService = $this->getObjectInstancier()->getInstance(UserTokenService::class);
     }
 

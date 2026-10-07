@@ -8,6 +8,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Connecteur\ConnecteurDeletionService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
 require_once __DIR__ . '/../init.php';
 
@@ -35,7 +36,7 @@ $connecteurEntiteSQL = $objectInstancier->getInstance(ConnecteurEntiteSQL::class
 $fluxEntiteSQL = $objectInstancier->getInstance(FluxEntiteSQL::class);
 $utilisateurListe = $objectInstancier->getInstance(UtilisateurListe::class);
 $utilisateur = $objectInstancier->getInstance(UtilisateurSQL::class);
-$utilisateurRoleService = $objectInstancier->getInstance(\Pastell\Service\Utilisateur\UtilisateurRoleService::class);
+$utilisateurRoleService = $objectInstancier->getInstance(UtilisateurRoleService::class);
 $jobManager = $objectInstancier->getInstance(JobManager::class);
 $connecteurDeletionService = $objectInstancier->getInstance(ConnecteurDeletionService::class);
 $connecteurAssociationService = $objectInstancier->getInstance(ConnecteurAssociationService::class);

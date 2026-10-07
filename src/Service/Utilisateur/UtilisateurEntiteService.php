@@ -6,14 +6,13 @@ namespace Pastell\Service\Utilisateur;
 
 use EntiteSQL;
 use Pastell\Service\Droit\DroitService;
-use UtilisateurRoleCache;
 use UtilisateurRoleSQL;
 
 final class UtilisateurEntiteService
 {
     public function __construct(
         private readonly UtilisateurRoleSQL $utilisateurRoleSQL,
-        private readonly UtilisateurRoleCache $utilisateurRoleCache,
+        private readonly UtilisateurRoleService $utilisateurRoleService,
     ) {
     }
 
@@ -32,7 +31,7 @@ final class UtilisateurEntiteService
     public function getArbreFilleWithRacine(int $id_u, string $droit): array
     {
         $arbre = $this->getArbreFille($id_u, $droit);
-        $droitsRacine = $this->utilisateurRoleCache->getAllDroitEntite($id_u, EntiteSQL::ID_E_ENTITE_RACINE);
+        $droitsRacine = $this->utilisateurRoleService->getAllDroitEntite($id_u, EntiteSQL::ID_E_ENTITE_RACINE);
         if (in_array($droit, $droitsRacine, true)) {
             array_unshift($arbre, [
                 'id_e' => EntiteSQL::ID_E_ENTITE_RACINE,

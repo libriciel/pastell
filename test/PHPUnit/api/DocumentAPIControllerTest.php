@@ -484,7 +484,7 @@ class DocumentAPIControllerTest extends PastellTestCase
             $info
         );
 
-        $roleUtilisateur = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
+        $utilisateurRoleService = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
 
@@ -493,7 +493,7 @@ class DocumentAPIControllerTest extends PastellTestCase
         $roleSql->addDroit('lecteur_mail', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $roleSql->addDroit('lecteur_mail', DroitService::getDroitFor('mailsec-bidir', DroitType::LECTURE));
         $userAvecDroit = $userCreationService->create('lecteur_mail', 'lecteur_mail@example.org', 'user', 'user');
-        $roleUtilisateur->addRole($userAvecDroit, 'lecteur_mail', self::ID_E_COL);
+        $utilisateurRoleService->addRole($userAvecDroit, 'lecteur_mail', self::ID_E_COL);
 
         $infoReponse = $this->getInternalAPIAsUser($userAvecDroit)->get("/entite/1/document/$id_d_reponse");
         static::assertSame('mailsec-bidir-reponse', $infoReponse['info']['type']);
@@ -504,7 +504,7 @@ class DocumentAPIControllerTest extends PastellTestCase
         $roleSql->addDroit('lecteur_reponse', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $roleSql->addDroit('lecteur_reponse', DroitService::getDroitFor('mailsec-bidir-reponse', DroitType::LECTURE));
         $userSansDroit = $userCreationService->create('lecteur_reponse', 'lecteur_reponse@example.org', 'user', 'user');
-        $roleUtilisateur->addRole($userSansDroit, 'lecteur_reponse', self::ID_E_COL);
+        $utilisateurRoleService->addRole($userSansDroit, 'lecteur_reponse', self::ID_E_COL);
 
         $this->expectException(ForbiddenException::class);
         $this->expectExceptionMessage("Acces interdit id_e=1, droit=mailsec-bidir:lecture,id_u=$userSansDroit");

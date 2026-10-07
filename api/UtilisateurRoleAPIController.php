@@ -13,7 +13,7 @@ class UtilisateurRoleAPIController extends BaseAPIController
         private readonly UtilisateurSQL $utilisateur,
         private readonly RoleSQL $roleSQL,
         private readonly EntiteSQL $entiteSQL,
-        private readonly UtilisateurRoleService $roleUtilisateurService,
+        private readonly UtilisateurRoleService $utilisateurRoleService,
         private readonly RoleDelegationService $roleDelegationService,
     ) {
     }
@@ -56,7 +56,7 @@ class UtilisateurRoleAPIController extends BaseAPIController
 
         $this->verifExists($id_u);
 
-        $role_list = $this->roleUtilisateurService->getRole((int) $id_u);
+        $role_list = $this->utilisateurRoleService->getRole((int) $id_u);
         $all_droit_utilisateur = $this->getDroitService()->getAllDroitEntite($id_u, $id_e);
 
         // Construction du tableau de retour
@@ -119,8 +119,8 @@ class UtilisateurRoleAPIController extends BaseAPIController
             throw new ForbiddenException("Rôle non délégable par l'utilisateur courant : {role=$role}");
         }
 
-        if (!$this->roleUtilisateurService->hasRole((int) $id_u, $role, (int) $id_e)) {
-            $this->roleUtilisateurService->addRole((int) $id_u, $role, (int) $id_e);
+        if (!$this->utilisateurRoleService->hasRole((int) $id_u, $role, (int) $id_e)) {
+            $this->utilisateurRoleService->addRole((int) $id_u, $role, (int) $id_e);
         }
 
         $result['result'] = self::RESULT_OK;
@@ -141,10 +141,10 @@ class UtilisateurRoleAPIController extends BaseAPIController
         $this->verifExists($id_u);
 
         if ($role === self::ALL_ROLES) {
-            $this->roleUtilisateurService->removeAllRolesForEntite((int) $id_u, (int) $id_e);
+            $this->utilisateurRoleService->removeAllRolesForEntite((int) $id_u, (int) $id_e);
         } else {
             $this->verifRoleExists($role);
-            $this->roleUtilisateurService->removeRole((int) $id_u, $role, (int) $id_e);
+            $this->utilisateurRoleService->removeRole((int) $id_u, $role, (int) $id_e);
         }
 
         $result['result'] = self::RESULT_OK;

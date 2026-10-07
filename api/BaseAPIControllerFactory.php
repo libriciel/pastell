@@ -50,6 +50,7 @@ class BaseAPIControllerFactory
         $controllerObject = $this->objectInstancier->getInstance($controller_name);
         $controllerObject->setUtilisateurId($id_u);
         $controllerObject->setRequestInfo($this->request);
+        $controllerObject->setRoleUtilisateur($this->objectInstancier->getInstance(RoleUtilisateur::class));
         $controllerObject->setDroitService($this->objectInstancier->getInstance(DroitService::class));
         $controllerObject->setFileUploader($this->fileUploader);
 
