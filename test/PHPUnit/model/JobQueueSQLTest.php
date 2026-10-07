@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Configuration\JobStatus;
+use Pastell\Model\Daemon\JobAdvancedFilters;
 use Pastell\Model\Daemon\JobSort;
 use Pastell\Model\Daemon\JobSortColumn;
 use Pastell\Model\Daemon\SortDirection;
@@ -192,6 +194,190 @@ class JobQueueSQLTest extends PastellTestCase
         );
         static::assertSame((int)$id_recent, (int)$desc[0]->id_job);
         static::assertSame((int)$id_old, (int)$desc[1]->id_job);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testBulkUpdateSearch(): void
+    {
+        $id_job_1 = (int)$this->jobQueueSQL->createJob($this->getNewJob());
+        $id_job_2 = (int)$this->jobQueueSQL->createJob($this->getNewJob());
+        $id_job_3 = (int)$this->jobQueueSQL->createJob($this->getNewJob());
+        $this->jobQueueSQL->lock($id_job_2, JobStatus::KILLED_BY_USER);
+        $this->jobQueueSQL->lock($id_job_3, JobStatus::ERROR_ACTION);
+
+        // Les travaux déjà suspendus gardent la raison de leur arrêt
+        static::assertSame(1, $this->jobQueueSQL->lockAll(null, new JobAdvancedFilters()));
+        static::assertSame(JobStatus::SUSPENDED_BY_USER, $this->jobQueueSQL->getJob($id_job_1)->job_status);
+        static::assertSame(JobStatus::KILLED_BY_USER, $this->jobQueueSQL->getJob($id_job_2)->job_status);
+        static::assertSame(JobStatus::ERROR_ACTION, $this->jobQueueSQL->getJob($id_job_3)->job_status);
+
+        static::assertSame(3, $this->jobQueueSQL->unlockAll(null, new JobAdvancedFilters()));
+        static::assertSame(JobStatus::WAITING, $this->jobQueueSQL->getJob($id_job_1)->job_status);
+        static::assertSame(JobStatus::WAITING, $this->jobQueueSQL->getJob($id_job_2)->job_status);
+        static::assertSame(JobStatus::WAITING, $this->jobQueueSQL->getJob($id_job_3)->job_status);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testBulkRunningJobs(): void
+    {
+        $id_job = (int)$this->jobQueueSQL->createJob($this->getNewJob());
+        $id_worker = $this->workerSQL->create(1234);
+        $this->workerSQL->attachJob($id_worker, $id_job);
+
+        static::assertSame(0, $this->jobQueueSQL->lockAll(null, new JobAdvancedFilters()));
+        static::assertSame(
+            ['count' => 1, 'lockable' => 0, 'unlockable' => 0],
+            $this->jobQueueSQL->getNbJobWithBulkUpdatable(new JobAdvancedFilters())
+        );
+        static::assertSame(JobStatus::WAITING, $this->jobQueueSQL->getJob($id_job)->job_status);
+
+        $this->workerSQL->success($id_worker);
+        static::assertSame(1, $this->jobQueueSQL->lockAll(null, new JobAdvancedFilters()));
+        static::assertSame(JobStatus::SUSPENDED_BY_USER, $this->jobQueueSQL->getJob($id_job)->job_status);
+    }
+
+    /**
+     * Un travail en cours de lancement ne peut pas être suspendu, mais peut être repris
+     * @throws Exception
+     */
+    public function testBulkLaunchingJobs(): void
+    {
+        $id_job = (int)$this->jobQueueSQL->createJob($this->getNewJob());
+        $this->jobQueueSQL->lock($id_job, JobStatus::LAUNCHING);
+
+        static::assertSame(
+            ['count' => 1, 'lockable' => 0, 'unlockable' => 1],
+            $this->jobQueueSQL->getNbJobWithBulkUpdatable(new JobAdvancedFilters())
+        );
+        static::assertSame(0, $this->jobQueueSQL->lockAll(null, new JobAdvancedFilters()));
+        static::assertSame(1, $this->jobQueueSQL->unlockAll(null, new JobAdvancedFilters()));
+        static::assertSame(JobStatus::WAITING, $this->jobQueueSQL->getJob($id_job)->job_status);
+    }
+
+    /**
+     * Un travail en cours de lancement avec un worker actif ne peut pas être repris
+     * @throws Exception
+     */
+    public function testBulkUnlockLaunchingJobWithRunningWorker(): void
+    {
+        $id_job = (int)$this->jobQueueSQL->createJob($this->getNewJob());
+        $id_worker = $this->workerSQL->create(1234);
+        $this->workerSQL->attachJob($id_worker, $id_job);
+        $this->jobQueueSQL->lock($id_job, JobStatus::LAUNCHING);
+
+        static::assertSame(
+            ['count' => 1, 'lockable' => 0, 'unlockable' => 0],
+            $this->jobQueueSQL->getNbJobWithBulkUpdatable(new JobAdvancedFilters())
+        );
+        static::assertSame(0, $this->jobQueueSQL->unlockAll(null, new JobAdvancedFilters()));
+        static::assertSame(JobStatus::LAUNCHING, $this->jobQueueSQL->getJob($id_job)->job_status);
+    }
+
+    /**
+     * Un travail ayant plusieurs workers n'est compté qu'une fois
+     * @throws Exception
+     */
+    public function testBulkCountWithSeveralWorkers(): void
+    {
+        $id_job = (int)$this->jobQueueSQL->createJob($this->getNewJob());
+        for ($i = 0; $i < 3; $i++) {
+            $id_worker = $this->workerSQL->create(1234 + $i);
+            $this->workerSQL->attachJob($id_worker, $id_job);
+            $this->workerSQL->success($id_worker);
+        }
+        $this->jobQueueSQL->lock($id_job, JobStatus::ERROR_ACTION);
+
+        static::assertSame(
+            ['count' => 1, 'lockable' => 0, 'unlockable' => 1],
+            $this->jobQueueSQL->getNbJobWithBulkUpdatable(new JobAdvancedFilters())
+        );
+    }
+
+    /**
+     * Un travail dont le worker est mort sans être terminé peut être repris
+     * @throws Exception
+     */
+    public function testBulkUnlockOrphanWorkerJobs(): void
+    {
+        $id_job = (int)$this->jobQueueSQL->createJob($this->getNewJob());
+        $id_worker = $this->workerSQL->create(1234);
+        $this->workerSQL->attachJob($id_worker, $id_job);
+        $this->jobQueueSQL->lock($id_job, JobStatus::ERROR_DAEMON);
+
+        static::assertSame(
+            ['count' => 1, 'lockable' => 0, 'unlockable' => 1],
+            $this->jobQueueSQL->getNbJobWithBulkUpdatable(new JobAdvancedFilters())
+        );
+        static::assertSame(1, $this->jobQueueSQL->unlockAll(null, new JobAdvancedFilters()));
+        static::assertSame(JobStatus::WAITING, $this->jobQueueSQL->getJob($id_job)->job_status);
+    }
+
+    /**
+     * Le filtre « en retard » utilise la date figée à l'affichage
+     * @throws Exception
+     */
+    public function testBulkLateSearchUsesReferenceDate(): void
+    {
+        $id_job = (int)$this->jobQueueSQL->createJob($this->getNewJob());
+
+        $before = new JobAdvancedFilters(late: '1', late_before: '2000-01-01 00:00:00');
+        static::assertSame(0, $this->jobQueueSQL->getNbJobWithBulkUpdatable($before)['count']);
+        static::assertSame(0, $this->jobQueueSQL->lockAll(null, $before));
+
+        $after = new JobAdvancedFilters(late: '1', late_before: '2999-01-01 00:00:00');
+        static::assertSame(1, $this->jobQueueSQL->lockAll(null, $after));
+        static::assertSame(JobStatus::SUSPENDED_BY_USER, $this->jobQueueSQL->getJob($id_job)->job_status);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testBulkDaemonScope(): void
+    {
+        $id_job = (int)$this->jobQueueSQL->createJob($this->getNewJob());
+        $this->jobQueueSQL->updateDaemon($id_job, 42);
+
+        static::assertSame(0, $this->jobQueueSQL->lockAll(43, new JobAdvancedFilters()));
+        static::assertSame(JobStatus::WAITING, $this->jobQueueSQL->getJob($id_job)->job_status);
+
+        static::assertSame(1, $this->jobQueueSQL->lockAll(42, new JobAdvancedFilters()));
+        static::assertSame(JobStatus::SUSPENDED_BY_USER, $this->jobQueueSQL->getJob($id_job)->job_status);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testBulkSearch(): void
+    {
+        $job = $this->getNewJob();
+        $job->id_verrou = 'VERROU_A';
+        $id_job_a = (int)$this->jobQueueSQL->createJob($job);
+        $job = $this->getNewJob();
+        $job->id_verrou = 'VERROU_B';
+        $id_job_b = (int)$this->jobQueueSQL->createJob($job);
+
+        $filters = new JobAdvancedFilters(id_verrou: ['VERROU_A']);
+        static::assertSame(
+            ['count' => 1, 'lockable' => 1, 'unlockable' => 0],
+            $this->jobQueueSQL->getNbJobWithBulkUpdatable($filters)
+        );
+        static::assertSame(0, $this->jobQueueSQL->unlockAll(null, $filters));
+        static::assertSame(1, $this->jobQueueSQL->lockAll(null, $filters));
+        static::assertSame(JobStatus::SUSPENDED_BY_USER, $this->jobQueueSQL->getJob($id_job_a)->job_status);
+        static::assertSame(JobStatus::WAITING, $this->jobQueueSQL->getJob($id_job_b)->job_status);
+
+        $this->jobQueueSQL->lock($id_job_b, JobStatus::SUSPENDED_BY_USER);
+        static::assertSame(
+            ['count' => 1, 'lockable' => 0, 'unlockable' => 1],
+            $this->jobQueueSQL->getNbJobWithBulkUpdatable($filters)
+        );
+        static::assertSame(1, $this->jobQueueSQL->unlockAll(null, $filters));
+        static::assertSame(JobStatus::WAITING, $this->jobQueueSQL->getJob($id_job_a)->job_status);
+        static::assertSame(JobStatus::SUSPENDED_BY_USER, $this->jobQueueSQL->getJob($id_job_b)->job_status);
     }
 
     /**

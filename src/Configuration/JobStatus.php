@@ -28,10 +28,34 @@ enum JobStatus: int
     }
 
     /**
+     * @return self[]
+     */
+    public static function bulkLockable(): array
+    {
+        return [self::WAITING];
+    }
+
+    /**
+     * @return self[]
+     */
+    public static function bulkUnlockable(): array
+    {
+        return self::suspended();
+    }
+
+    /**
      * @return int[]
      */
     public static function suspendedValues(): array
     {
-        return array_column(array_filter(self::cases(), static fn (self $status) => $status !== self::WAITING), 'value');
+        return array_column(self::suspended(), 'value');
+    }
+
+    /**
+     * @return self[]
+     */
+    private static function suspended(): array
+    {
+        return array_values(array_filter(self::cases(), static fn (self $status) => $status !== self::WAITING));
     }
 }

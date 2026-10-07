@@ -22,6 +22,7 @@ class DaemonControlerTest extends ControlerTestCase
     {
         /** @var DaemonControler $daemonControler */
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
+        $daemonControler->setServerInfo(['REQUEST_METHOD' => 'POST']);
         $this->setPostInfo([
             'id_e' => 2,
             'nb_allocated_workers' => 0,
@@ -40,6 +41,7 @@ class DaemonControlerTest extends ControlerTestCase
     {
         /** @var DaemonControler $daemonControler */
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
+        $daemonControler->setServerInfo(['REQUEST_METHOD' => 'POST']);
         $this->setPostInfo(['nb_workers' => 0]);
         $this->expectException(LastErrorException::class);
         $this->expectExceptionMessage('Le nombre de processus doit être supérieur ou égal à 1');
@@ -57,6 +59,7 @@ class DaemonControlerTest extends ControlerTestCase
 
         /** @var DaemonControler $daemonControler */
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
+        $daemonControler->setServerInfo(['REQUEST_METHOD' => 'POST']);
         $this->setPostInfo(['data' => [$daemon->id_daemon => 0]]);
         $this->expectException(LastErrorException::class);
         $this->expectExceptionMessage('Chaque gestionnaire de tâches doit avoir au moins 1 processus alloué');
@@ -175,7 +178,119 @@ class DaemonControlerTest extends ControlerTestCase
 
         static::assertStringContainsString('Recherche avancée', $output);
         static::assertStringContainsString('Trier par', $output);
-        static::assertStringContainsString("Reprendre l'exécution de tous les travaux", $output);
+    }
+
+    public function testBulkButtons(): void
+    {
+        $this->getInternalAPI()->post('/entite/1/connecteur/13/action/une_action_auto');
+        $daemonControler = $this->getControlerInstance(DaemonControler::class);
+        $daemonControler->_beforeAction();
+
+        ob_start();
+        $daemonControler->jobAction();
+        $output = ob_get_clean();
+
+        static::assertStringNotContainsString('id_job_list', $output);
+        static::assertStringContainsString('Suspendre les travaux en attente (1)', $output);
+        static::assertStringContainsString('Reprendre les travaux suspendus (0)', $output);
+    }
+
+    public function testBulkLockAndUnlock(): void
+    {
+        $this->getInternalAPI()->post('/entite/1/connecteur/13/action/une_action_auto');
+        $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
+        $id_job = $jobQueueSQL->getJobIdForConnecteur(13, 'une_action_auto');
+
+        $daemonControler = $this->getControlerInstance(DaemonControler::class);
+        $daemonControler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        $this->setPostInfo([]);
+        try {
+            $daemonControler->lockAllAction();
+        } catch (LastMessageException) {
+            /* Nothing to do */
+        }
+        static::assertSame(JobStatus::SUSPENDED_BY_USER, $jobQueueSQL->getJob($id_job)->job_status);
+
+        $this->setPostInfo([]);
+        try {
+            $daemonControler->unlockAllAction();
+        } catch (LastMessageException) {
+            /* Nothing to do */
+        }
+        static::assertSame(JobStatus::WAITING, $jobQueueSQL->getJob($id_job)->job_status);
+    }
+
+    public function testBulkActionKeepsFinishedWorkers(): void
+    {
+        $this->getInternalAPI()->post('/entite/1/connecteur/13/action/une_action_auto');
+        $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
+        $id_job = $jobQueueSQL->getJobIdForConnecteur(13, 'une_action_auto');
+        $workerSQL = $this->getObjectInstancier()->getInstance(WorkerSQL::class);
+        $id_worker = $workerSQL->create(1234);
+        $workerSQL->attachJob($id_worker, $id_job);
+        $this->getSQLQuery()->query('UPDATE worker SET termine = 1 WHERE id_worker = ?', $id_worker);
+
+        $daemonControler = $this->getControlerInstance(DaemonControler::class);
+        $daemonControler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        $this->setPostInfo([]);
+        try {
+            $daemonControler->lockAllAction();
+        } catch (LastMessageException) {
+            /* Nothing to do */
+        }
+        static::assertSame(
+            1,
+            (int)$this->getSQLQuery()->queryOne('SELECT count(*) FROM worker WHERE id_worker = ?', $id_worker)
+        );
+        static::assertSame(JobStatus::SUSPENDED_BY_USER, $jobQueueSQL->getJob($id_job)->job_status);
+    }
+
+    public function testBulkActionRequiresPost(): void
+    {
+        $this->getInternalAPI()->post('/entite/1/connecteur/13/action/une_action_auto');
+        $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
+        $id_job = $jobQueueSQL->getJobIdForConnecteur(13, 'une_action_auto');
+
+        $daemonControler = $this->getControlerInstance(DaemonControler::class);
+        $daemonControler->setServerInfo(['REQUEST_METHOD' => 'GET']);
+        try {
+            $daemonControler->lockAllAction();
+            static::fail('LastErrorException attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('Cette action doit être soumise par un formulaire', $e->getMessage());
+        }
+        static::assertSame(JobStatus::WAITING, $jobQueueSQL->getJob($id_job)->job_status);
+    }
+
+    public function testBulkLockSearch(): void
+    {
+        $this->getInternalAPI()->post('/entite/1/connecteur/13/action/une_action_auto');
+        $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
+        $id_job = $jobQueueSQL->getJobIdForConnecteur(13, 'une_action_auto');
+
+        $daemonControler = $this->getControlerInstance(DaemonControler::class);
+        $daemonControler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        $this->setPostInfo([
+            'id_verrou' => ['AUTRE_VERROU'],
+        ]);
+        try {
+            $daemonControler->lockAllAction();
+            static::fail('LastErrorException attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString("Aucun travail n'a pu être suspendu", $e->getMessage());
+        }
+        static::assertSame(JobStatus::WAITING, $jobQueueSQL->getJob($id_job)->job_status);
+
+        $this->setPostInfo([
+            'search_id_e' => '1',
+        ]);
+        try {
+            $daemonControler->lockAllAction();
+            static::fail('LastMessageException attendue');
+        } catch (LastMessageException $e) {
+            static::assertStringContainsString('1 travail a été suspendu', $e->getMessage());
+        }
+        static::assertSame(JobStatus::SUSPENDED_BY_USER, $jobQueueSQL->getJob($id_job)->job_status);
     }
 
     public function testActifJobsHaveNoSearch(): void

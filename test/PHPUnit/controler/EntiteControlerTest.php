@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Configuration\JobStatus;
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 
 class EntiteControlerTest extends ControlerTestCase
@@ -195,5 +198,133 @@ class EntiteControlerTest extends ControlerTestCase
         $result = ob_get_contents();
         ob_end_clean();
         static::assertMatchesRegularExpression('/1,000000000,Bourg-en-Bresse,collectivite,"0000-00-00 00:00:00",1,0/', $result);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testBulkDaemonScope(): void
+    {
+        $daemonSQL = $this->getObjectInstancier()->getInstance(DaemonSQL::class);
+        $id_daemon = $daemonSQL->insertDaemon(self::ID_E_SERVICE, 1, '', 1);
+        $id_other_daemon = $daemonSQL->insertDaemon(self::ID_E_COL, 1, '', 1);
+        $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
+        $id_job_service = $this->createJobForBulkAction($jobQueueSQL, self::ID_E_SERVICE, $id_daemon);
+        $id_job_col = $this->createJobForBulkAction($jobQueueSQL, self::ID_E_COL, $id_other_daemon);
+
+        $entiteControler = $this->getControlerInstance(EntiteControler::class);
+        $this->authenticateNewUserWithPermission(
+            [
+                DroitService::getDroitFor(DroitService::DROIT_DAEMON, DroitType::LECTURE),
+                DroitService::getDroitFor(DroitService::DROIT_DAEMON, DroitType::EDITION),
+            ],
+            self::ID_E_SERVICE
+        );
+
+        $entiteControler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        $this->setPostInfo([
+            'id_e' => self::ID_E_SERVICE,
+        ]);
+        try {
+            $entiteControler->daemonLockAllAction();
+            static::fail('LastMessageException attendue');
+        } catch (LastMessageException $e) {
+            static::assertStringContainsString('1 travail a été suspendu', $e->getMessage());
+        }
+        static::assertSame(JobStatus::SUSPENDED_BY_USER, $jobQueueSQL->getJob($id_job_service)->job_status);
+        static::assertSame(JobStatus::WAITING, $jobQueueSQL->getJob($id_job_col)->job_status);
+
+        $this->setPostInfo([
+            'id_e' => self::ID_E_SERVICE,
+        ]);
+        try {
+            $entiteControler->daemonUnlockAllAction();
+            static::fail('LastMessageException attendue');
+        } catch (LastMessageException $e) {
+            static::assertStringContainsString('1 travail a été repris', $e->getMessage());
+        }
+        static::assertSame(JobStatus::WAITING, $jobQueueSQL->getJob($id_job_service)->job_status);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testJobListBulkButtons(): void
+    {
+        $daemonSQL = $this->getObjectInstancier()->getInstance(DaemonSQL::class);
+        $id_daemon = $daemonSQL->insertDaemon(self::ID_E_SERVICE, 1, '', 1);
+        $id_other_daemon = $daemonSQL->insertDaemon(self::ID_E_COL, 1, '', 1);
+        $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
+        $id_job_service = $this->createJobForBulkAction($jobQueueSQL, self::ID_E_SERVICE, $id_daemon);
+        $id_job_col = $this->createJobForBulkAction($jobQueueSQL, self::ID_E_COL, $id_other_daemon);
+
+        $this->setGetInfo(['id_e' => self::ID_E_SERVICE]);
+        $this->entiteControler->_beforeAction();
+        ob_start();
+        $this->entiteControler->jobAction();
+        $output = ob_get_clean();
+
+        static::assertStringContainsString(
+            sprintf('<input type="hidden" name="id_e" value="%d">', self::ID_E_SERVICE),
+            $output
+        );
+        static::assertStringContainsString('Suspendre les travaux en attente (1)', $output);
+        static::assertStringContainsString('Reprendre les travaux suspendus (0)', $output);
+        static::assertSame(
+            [$id_job_service],
+            array_map(
+                static fn (Job $job) => (int)$job->id_job,
+                $this->entiteControler->getViewParameter()['job_list']
+            )
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testJobListRootEntity(): void
+    {
+        $daemonSQL = $this->getObjectInstancier()->getInstance(DaemonSQL::class);
+        if ($daemonSQL->getGlobalDaemon() === null) {
+            $this->getSQLQuery()->query(
+                'INSERT INTO daemon (id_daemon, id_e, nb_workers, admin_emails, late_jobs_threshold)'
+                . ' VALUES (?, NULL, 1, \'\', 1)',
+                DaemonSQL::GLOBAL_DAEMON
+            );
+        }
+        $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
+        $id_job_root = $this->createJobForBulkAction(
+            $jobQueueSQL,
+            EntiteSQL::ID_E_ENTITE_RACINE,
+            DaemonSQL::GLOBAL_DAEMON
+        );
+
+        $this->setGetInfo(['id_e' => EntiteSQL::ID_E_ENTITE_RACINE]);
+        $this->entiteControler->_beforeAction();
+        ob_start();
+        $this->entiteControler->jobAction();
+        ob_end_clean();
+
+        static::assertContains(
+            $id_job_root,
+            array_map(
+                static fn (Job $job) => (int)$job->id_job,
+                $this->entiteControler->getViewParameter()['job_list']
+            )
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function createJobForBulkAction(JobQueueSQL $jobQueueSQL, int $id_e, int $id_daemon): int
+    {
+        $job = new Job();
+        $job->type = Job::TYPE_DOCUMENT;
+        $job->id_e = $id_e;
+        $job->etat_source = 'source';
+        $job->etat_cible = 'cible';
+        $job->id_daemon = $id_daemon;
+        return (int)$jobQueueSQL->createJob($job);
     }
 }
