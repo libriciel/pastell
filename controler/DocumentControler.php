@@ -24,8 +24,10 @@ class DocumentControler extends PastellControler
 
         if ($id_d && ! is_array($id_d)) {
             $document_info = $this->getDocumentSQL()->getInfo($id_d);
-            $type = $document_info['type'];
-            $this->setViewParameter('type_e_menu', $type);
+            if ($document_info) {
+                $type = $document_info['type'];
+                $this->setViewParameter('type_e_menu', $type);
+            }
         }
 
         $this->setNavigationInfo($id_e, "Document/list?type=$type");
@@ -834,6 +836,10 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('page', $page);
 
         $infoDocument = $this->getDocumentSQL()->getInfo($id_d);
+        if (!$infoDocument) {
+            $this->setLastError("Le dossier n'existe pas");
+            $this->redirect("/Document/list?id_e=$id_e");
+        }
         $this->setViewParameter('infoDocument', $infoDocument);
 
         $type = $infoDocument['type'];
@@ -847,8 +853,8 @@ class DocumentControler extends PastellControler
                     'Document/action',
                     "Document/detail?id_d=$id_d&id_e=$id_e&page=$page",
                     [$infoDocument],
-                    ['Identifiant' => 'id_d', 'Titre' => 'titre', 'Type' => fn () => $documentType->getName()],
                     ['id_d' => $id_d, 'id_e' => $id_e, 'page' => $page, 'action' => $action, 'go' => 1],
+                    DeleteConfirmation::DOSSIER,
                 )
             );
             return;

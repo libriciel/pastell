@@ -61,6 +61,12 @@ $backTitle = sprintf('Liste des "%s" de %s', $documentType->getName(), $infoEnti
                 }
                 ?>
                 <td>
+                    <?php if (\in_array($action_name, ['supression', 'suppression'], true)) : ?>
+                        <a class="btn btn-danger js-delete-modal"
+                           href="<?php $this->url("Document/warning?id_d=$id_d&id_e=$id_e&action=$action_name&page=$page") ?>">
+                            <i class="fas fa-trash"></i>&nbsp; <?php hecho($theAction->getDoActionName($action_name)); ?>
+                        </a>
+                    <?php else : ?>
                     <form action='Document/action' method='post'>
                         <?php $this->displayCSRFInput() ?>
                         <input type='hidden' name='id_d' value='<?php echo $id_d; ?>'/>
@@ -69,19 +75,10 @@ $backTitle = sprintf('Liste des "%s" de %s', $documentType->getName(), $infoEnti
 
                         <input type='hidden' name='action' value='<?php echo $action_name; ?>'/>
 
-                        <?php if (\in_array($action_name, ['supression', 'suppression'], true)) {
-                            $submitButtonClass = 'btn-danger';
-                        } elseif ($action_name === 'modification') {
-                            $submitButtonClass = 'btn-primary';
-                        } else {
-                            $submitButtonClass = 'btn-outline-primary';
-                        }
-                        ?>
+                        <?php $submitButtonClass = $action_name === 'modification' ? 'btn-primary' : 'btn-outline-primary'; ?>
                         <button type="submit" class="btn <?php echo $submitButtonClass; ?>"
                         ><i class="fas <?php
                             $icon = [
-                                'supression' => 'fa-trash',
-                                'suppression' => 'fa-trash',
                                 'modification' => 'fa-pen',
                             ];
                             if (isset($icon[$action_name])) {
@@ -92,6 +89,7 @@ $backTitle = sprintf('Liste des "%s" de %s', $documentType->getName(), $infoEnti
                             ?>
         "></i>&nbsp; <?php hecho($theAction->getDoActionName($action_name)); ?></button>
                     </form>
+                    <?php endif; ?>
                 </td>
             <?php endforeach; ?>
         </tr>
@@ -385,7 +383,7 @@ if ($infoDocumentEmail) :
                                         $id_d,
                                     );
                                     ?>
-                                    <a href="<?php echo $deleteJobUrl; ?>" class="btn btn-danger">
+                                    <a href="<?php echo $deleteJobUrl; ?>" class="btn btn-danger js-delete-modal">
                                         <i class="fas fa-trash"></i>&nbsp;
                                         Supprimer
                                     </a>

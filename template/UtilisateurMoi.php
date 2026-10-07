@@ -146,7 +146,7 @@ declare(strict_types=1);
                         <i class="fas fa-pen"></i>&nbsp;Modifier
                     </a>
 
-                    <a class="btn btn-danger"
+                    <a class="btn btn-danger js-delete-modal"
                        href='Utilisateur/notificationSuppression?id_n=<?php
                         echo($infoNotification['id_n']); ?>&source=moi'
                     >
@@ -226,9 +226,8 @@ declare(strict_types=1);
                         <i class="fas fa-arrows-rotate"></i>&nbsp;Renouveler
                     </a>
                     <a
-                        class='btn btn-danger'
+                        class='btn btn-danger js-delete-modal'
                         href='Utilisateur/deleteToken?id=<?php echo $token['id']; ?>'
-                        onclick="return confirm('Êtes-vous certain de vouloir supprimer définitivement ce jeton ?')"
                     >
                         <i class="fas fa-trash"></i>&nbsp;Supprimer
                     </a>
