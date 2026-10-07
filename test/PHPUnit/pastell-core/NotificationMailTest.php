@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Pastell\Service\Notification\NotificationService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class NotificationMailTest extends PastellTestCase
@@ -14,8 +15,9 @@ class NotificationMailTest extends PastellTestCase
     public function testSendMail(): void
     {
         $this->setMailerTransportForTesting();
-        $notification = $this->getObjectInstancier()->getInstance(Notification::class);
-        $notification->add(1, 1, 'actes-generique', 'send-ged', false);
+        $notificationService = $this->getObjectInstancier()
+            ->getInstance(NotificationService::class);
+        $notificationService->subscribe(1, 1, 'actes-generique', 'send-ged', false);
         $id_d = $this->createDocument('test')['id_d'];
         $notificationMail = $this->getObjectInstancier()->getInstance(NotificationMail::class);
         $notificationMail->notify(1, $id_d, 'send-ged', 'actes-generique', 'foo');
@@ -28,8 +30,9 @@ class NotificationMailTest extends PastellTestCase
     public function testSendDailyDigest(): void
     {
         $this->setMailerTransportForTesting();
-        $notification = $this->getObjectInstancier()->getInstance(Notification::class);
-        $notification->add(1, 1, 'actes-generique', 'send-ged', true);
+        $notificationService = $this->getObjectInstancier()
+            ->getInstance(NotificationService::class);
+        $notificationService->subscribe(1, 1, 'actes-generique', 'send-ged', true);
         $id_d = $this->createDocument('test')['id_d'];
         $notificationMail = $this->getObjectInstancier()->getInstance(NotificationMail::class);
         $notificationMail->notify(1, $id_d, 'send-ged', 'actes-generique', 'foo');

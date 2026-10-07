@@ -499,11 +499,11 @@ class UtilisateurControlerTest extends ControlerTestCase
     public function testNotificationSuppressionActionBySelf(): void
     {
         $utilisateurControler = $this->getUtilisateurControler();
-        $utilisateurControler->getNotification()->add(
+        $utilisateurControler->getNotificationService()->subscribe(
             1,
             1,
             'actes-generique',
-            Notification::ALL_TYPE,
+            NotificationSubscription::ALL_ACTION,
             false
         );
 
@@ -533,11 +533,11 @@ class UtilisateurControlerTest extends ControlerTestCase
     public function testNotificationModifBySelf(): void
     {
         $utilisateurControler = $this->getUtilisateurControler();
-        $utilisateurControler->getNotification()->add(
+        $utilisateurControler->getNotificationService()->subscribe(
             1,
             1,
             'actes-generique',
-            Notification::ALL_TYPE,
+            NotificationSubscription::ALL_ACTION,
             false
         );
 
@@ -564,11 +564,11 @@ class UtilisateurControlerTest extends ControlerTestCase
     public function testNotificationModifByOther(): void
     {
         $utilisateurControler = $this->getUtilisateurControler();
-        $utilisateurControler->getNotification()->add(
+        $utilisateurControler->getNotificationService()->subscribe(
             2,
             1,
             'actes-generique',
-            Notification::ALL_TYPE,
+            NotificationSubscription::ALL_ACTION,
             false
         );
 
@@ -591,7 +591,7 @@ class UtilisateurControlerTest extends ControlerTestCase
     public function testDoNotificationModifBySelf(): void
     {
         $utilisateurControler = $this->getUtilisateurControler();
-        $utilisateurControler->getNotification()->add(
+        $utilisateurControler->getNotificationService()->subscribe(
             1,
             1,
             'actes-generique',

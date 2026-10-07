@@ -11,8 +11,8 @@ use DocumentSQL;
 use EntiteSQL;
 use FluxEntiteHeritageSQL;
 use FluxEntiteSQL;
-use Notification;
 use Pastell\Service\Entite\EntiteDeletionService;
+use Pastell\Service\Notification\NotificationService;
 use PastellTestCase;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use SQLQuery;
@@ -185,12 +185,12 @@ class EntiteDeletionServiceTest extends PastellTestCase
      */
     public function testDeleteRemovesNotifications(): void
     {
-        $notification = $this->getObjectInstancier()->getInstance(Notification::class);
-        $notification->add(1, $this->entityId, 'type-fake', 'action-fake', 0);
-        self::assertNotEmpty($notification->getAll(1));
+        $notificationService = $this->getObjectInstancier()->getInstance(NotificationService::class);
+        $notificationService->subscribe(1, $this->entityId, 'type-fake', 'action-fake', false);
+        self::assertNotEmpty($notificationService->getSubscriptionsByUser(1));
 
         $this->entiteDeletionService->delete($this->entityId);
 
-        self::assertEmpty($notification->getAll(1));
+        self::assertEmpty($notificationService->getSubscriptionsByUser(1));
     }
 }

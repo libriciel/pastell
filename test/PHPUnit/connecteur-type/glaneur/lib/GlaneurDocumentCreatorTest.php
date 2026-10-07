@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Notification\NotificationService;
+
 class GlaneurDocumentCreatorTest extends PastellTestCase
 {
     private const HELIOS_AUTOMATIQUE = 'helios-automatique';
@@ -31,8 +33,9 @@ class GlaneurDocumentCreatorTest extends PastellTestCase
      */
     public function testCreateDocument()
     {
-        $notification = $this->getObjectInstancier()->getInstance(Notification::class);
-        $notification->add(1, 1, self::HELIOS_AUTOMATIQUE, self::IMPORTATION, false);
+        $notificationService = $this->getObjectInstancier()
+            ->getInstance(NotificationService::class);
+        $notificationService->subscribe(1, 1, self::HELIOS_AUTOMATIQUE, self::IMPORTATION, false);
 
         $glaneurLocalDocumentCreator = $this->getObjectInstancier()->getInstance(GlaneurDocumentCreator::class);
 

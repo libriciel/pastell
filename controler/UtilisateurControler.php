@@ -5,6 +5,7 @@ use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\FeatureToggle\CertificateAuthentication;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\Service\Notification\NotificationService;
 use Pastell\Service\PasswordEntropy;
 use Pastell\Service\Utilisateur\RoleDelegationService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
@@ -35,12 +36,9 @@ class UtilisateurControler extends PastellControler
         return $this->getInstance(NotificationMail::class);
     }
 
-    /**
-     * @return Notification
-     */
-    public function getNotification()
+    public function getNotificationService(): NotificationService
     {
-        return $this->getInstance(Notification::class);
+        return $this->getInstance(NotificationService::class);
     }
 
     /**
@@ -412,7 +410,7 @@ class UtilisateurControler extends PastellControler
 
     private function getNotificationList($id_u)
     {
-        $result = $this->getNotification()->getAll($id_u);
+        $result = $this->getNotificationService()->getSubscriptionsByUser($id_u);
         foreach ($result as $i => $line) {
             $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($line['type']);
             $result[$i]['type_name'] = $documentType->getName();
@@ -674,7 +672,7 @@ class UtilisateurControler extends PastellControler
             $this->redirectToPageUtilisateur($source, $id_u, $type);
         }
         $this->verifEditMesNotifications($id_u, $id_e, $type, $source);
-        $this->getNotification()->add($id_u, $id_e, $type, 0, $daily_digest);
+        $this->getNotificationService()->subscribe($id_u, $id_e, $type, NotificationSubscription::ALL_ACTION, (bool) $daily_digest);
         $this->redirect("/Utilisateur/notification?id_u=$id_u&id_e=$id_e&type=$type&source=$source");
     }
 
@@ -705,7 +703,7 @@ class UtilisateurControler extends PastellControler
 
         $utilisateur_info = $this->getUtilisateur()->getInfo($id_u);
 
-        $this->setViewParameter('has_daily_digest', $this->getNotification()->hasDailyDigest($id_u, $id_e, $type));
+        $this->setViewParameter('has_daily_digest', $this->getNotificationService()->hasDailyDigest($id_u, $id_e, $type));
 
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($type);
         $titreSelectAction = $type ? 'Paramètre des notifications des documents de type ' . $type :
@@ -716,7 +714,7 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('titreSelectAction', $titreSelectAction);
         $this->setViewParameter(
             'action_list',
-            $this->getNotification()->getNotificationActionList($id_u, $id_e, $type, $action_list)
+            $this->getNotificationService()->setSubscriptionStateOnActionList($id_u, $id_e, $type, $action_list)
         );
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('type', $type);
@@ -739,14 +737,14 @@ class UtilisateurControler extends PastellControler
         $source = $recuperateur->get('source', 'moi');
         $id_n = $recuperateur->get('id_n');
 
-        $infoNotification = $this->getNotification()->getInfo($id_n);
+        $infoNotification = $this->getNotificationService()->getSubscription((int) $id_n);
         if (!$infoNotification) {
             $this->setLastError("La notification n'existe pas");
             $this->redirectToPageUtilisateur($source, $this->getId_u());
         }
-        $id_u = $infoNotification['id_u'];
-        $id_e = $infoNotification['id_e'];
-        $type = $infoNotification['type'];
+        $id_u = $infoNotification->id_u;
+        $id_e = $infoNotification->id_e;
+        $type = $infoNotification->type;
 
         if ($id_u !== $this->getId_u()) {
             $this->setLastError("Vous ne pouvez pas supprimer les notifications d'un autre utilisateur");
@@ -754,7 +752,7 @@ class UtilisateurControler extends PastellControler
         }
         $this->verifEditMesNotifications($id_u, $id_e, $type, $source);
 
-        $this->getNotification()->removeAll($id_u, $id_e, $type);
+        $this->getNotificationService()->unsubscribeAll($id_u, $id_e, $type);
         $this->setLastMessage('La notification a été supprimée');
         $this->redirectToPageUtilisateur($source, $id_u, $type);
     }
@@ -790,21 +788,21 @@ class UtilisateurControler extends PastellControler
             $no_checked = $no_checked || $checked;
         }
 
-        $this->getNotification()->removeAll($id_u, $id_e, $type);
+        $this->getNotificationService()->unsubscribeAll($id_u, $id_e, $type);
 
         $this->setLastMessage('Les notifications ont été modifiées');
         if (!$no_checked) {
             $this->redirectToPageUtilisateur($source, $id_u, $type);
         }
         if ($all_checked) {
-            $this->getNotification()->add($id_u, $id_e, $type, Notification::ALL_TYPE, $daily_digest);
+            $this->getNotificationService()->subscribe($id_u, $id_e, $type, NotificationSubscription::ALL_ACTION, (bool) $daily_digest);
             $this->redirectToPageUtilisateur($source, $id_u, $type);
         }
         foreach ($action_list as $action) {
             if (!$action_checked[$action['id']]) {
                 continue;
             }
-            $this->getNotification()->add($id_u, $id_e, $type, $action['id'], $daily_digest);
+            $this->getNotificationService()->subscribe($id_u, $id_e, $type, (string) $action['id'], (bool) $daily_digest);
         }
         $this->redirectToPageUtilisateur($source, $id_u, $type);
     }
@@ -819,17 +817,21 @@ class UtilisateurControler extends PastellControler
         $recuperateur = $this->getPostInfo();
         $id_n = $recuperateur->getInt('id_n');
         $source = $this->getGetInfo()->get('source', 'moi');
-        $infoNotification = $this->getNotification()->getInfo($id_n);
-        $id_u = $infoNotification['id_u'];
-        $id_e = $infoNotification['id_e'];
-        $type = $infoNotification['type'];
+        $infoNotification = $this->getNotificationService()->getSubscription($id_n);
+        if (!$infoNotification) {
+            $this->setLastError("La notification n'existe pas");
+            $this->redirectToPageUtilisateur($source, $this->getId_u());
+        }
+        $id_u = $infoNotification->id_u;
+        $id_e = $infoNotification->id_e;
+        $type = $infoNotification->type;
 
         if ($id_u !== $this->getId_u()) {
             $this->setLastError("Vous ne pouvez pas modifer les notifications d'un autre utilisateur");
             $this->redirectToPageUtilisateur($source, $this->getId_u());
         }
         $this->verifEditMesNotifications($id_u, $id_e, $type, $source);
-        $this->getNotification()->toogleDailyDigest($id_u, $id_e, $type);
+        $this->getNotificationService()->toggleDailyDigest($id_u, $id_e, $type);
         $this->setLastMessage('La notification a été modifié');
         $this->redirectToPageUtilisateur($source, $id_u, $type);
     }
