@@ -1027,10 +1027,18 @@ EOT;
         $id = $this->getGetInfo()->getInt('id');
         $source = $this->getGetInfo()->get('source') ?: 'moi';
         $id_u = $userTokenService->getUser($id);
+        if ($id_u === null) {
+            $this->setLastError("Le jeton n'existe pas");
+            $this->redirectToPageUtilisateur($source, $this->getId_u());
+        }
         $this->verifDroitApi($id_u);
 
         $tokens = $userTokenService->getTokens($id_u);
         $token = array_values(array_filter($tokens, static fn(array $t): bool => (int)$t['id'] === $id));
+        if ($token === []) {
+            $this->setLastError("Le jeton n'existe pas");
+            $this->redirectToPageUtilisateur($source, $id_u);
+        }
 
         $this->renderDeleteConfirmation(
             'Suppression du jeton',

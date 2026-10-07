@@ -33,12 +33,16 @@ final class DeleteConfirmation
         public readonly array $items,
         public readonly array $formData,
         public readonly array $itemLabel = self::RESSOURCE,
-        public readonly string $submitLabel = 'Supprimer la sélection',
     ) {
     }
 
     public function getDeletionLabel(): string
     {
         return new ResourceLabel(...$this->itemLabel)->deletionLabel(\count($this->items));
+    }
+
+    public function getSubmitLabel(): string
+    {
+        return \count($this->items) > 1 ? 'Supprimer la sélection' : 'Supprimer';
     }
 }

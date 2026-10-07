@@ -132,7 +132,12 @@ class ExtensionControler extends PastellControler
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_extension = $this->getGetInfo()->get('id_extension');
-        $extension_info = $this->getExtensions()->getInfo($id_extension);
+        try {
+            $extension_info = $this->getExtensions()->getInfo($id_extension);
+        } catch (Exception $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect("/Extension/index");
+        }
 
         $this->renderDeleteConfirmation(
             "Suppression de l'extension {$extension_info['nom']}",

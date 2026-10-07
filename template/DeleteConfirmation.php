@@ -20,7 +20,7 @@ $item_count = count($delete_confirmation->items);
 </div>
 
 <div class="box">
-    <form action='<?php $this->url($delete_confirmation->actionUrl) ?>' method='post'>
+    <form action='<?php $this->url(get_hecho($delete_confirmation->actionUrl)) ?>' method='post'>
         <?php $this->displayCSRFInput() ?>
         <?php foreach ($delete_confirmation->formData as $name => $value) : ?>
             <?php if (is_array($value)) : ?>
@@ -34,12 +34,12 @@ $item_count = count($delete_confirmation->items);
         <div class="delete-confirmation__actions">
             <?php if ($delete_confirmation->cancelUrl !== '') : ?>
                 <a class='btn btn-outline-primary js-delete-cancel'
-                   href='<?php $this->url($delete_confirmation->cancelUrl) ?>'>
+                   href='<?php $this->url(get_hecho($delete_confirmation->cancelUrl)) ?>'>
                     <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
                 </a>
             <?php endif ?>
             <button type='submit' class='btn btn-danger'>
-                <i class="fas fa-trash"></i>&nbsp;<?php hecho($delete_confirmation->submitLabel) ?>
+                <i class="fas fa-trash"></i>&nbsp;<?php hecho($delete_confirmation->getSubmitLabel()) ?>
             </button>
         </div>
     </form>

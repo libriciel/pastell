@@ -17,12 +17,19 @@ $(document).ready(function () {
 
         fetch(url, fetchOptions)
             .then(function (response) {
+                if (response.type === 'opaqueredirect') {
+                    window.location.reload();
+                    return null;
+                }
                 if (!response.ok) {
                     throw new Error('HTTP ' + response.status);
                 }
                 return response.text();
             })
             .then(function (html) {
+                if (html === null) {
+                    return;
+                }
                 $body.html(html);
                 var modalTitle = $body.find('.delete-confirmation').data('modalTitle');
                 if (modalTitle) {
@@ -42,7 +49,10 @@ $(document).ready(function () {
     $(document).on('click', 'a.js-delete-modal', function (event) {
         event.preventDefault();
         var url = this.href;
-        openModal(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }, function () {
+        openModal(url, {
+            redirect: 'manual',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }, function () {
             window.location.href = url;
         });
     });
@@ -52,10 +62,11 @@ $(document).ready(function () {
         var form = this;
         openModal(form.action, {
             method: 'POST',
+            redirect: 'manual',
             headers: { 'X-Requested-With': 'XMLHttpRequest' },
             body: new FormData(form)
         }, function () {
-            form.submit();
+            window.location.reload();
         });
     });
 

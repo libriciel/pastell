@@ -35,6 +35,7 @@
     - `DELETE /api/v2/annuaire/groupe/:id_g/:id_a` : retirer un contact d'un groupe
 - Mise à jour de jQuery en version 4 et de select2 en version 4.1.0 #2461
 - Suppression en lot des contacts de l'annuaire #2367
+- Ajout de modales de confirmation avant la suppression de ressources #2562
 
 ### Évolutions
 
