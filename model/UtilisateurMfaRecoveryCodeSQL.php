@@ -10,12 +10,17 @@ class UtilisateurMfaRecoveryCodeSQL extends SQL
     public function replaceAll(int $id_u, array $codeHashes): void
     {
         $this->deleteAll($id_u);
-        $sql = <<<SQL
-INSERT INTO utilisateur_mfa_recovery_code(id_u, code_hash, used_at) VALUES (?, ?, NULL);
-SQL;
-        foreach ($codeHashes as $codeHash) {
-            $this->query($sql, $id_u, $codeHash);
+        if ($codeHashes === []) {
+            return;
         }
+        $values = implode(', ', array_fill(0, count($codeHashes), '(?, ?, NULL)'));
+        $sql = "INSERT INTO utilisateur_mfa_recovery_code(id_u, code_hash, used_at) VALUES $values;";
+        $params = [];
+        foreach ($codeHashes as $codeHash) {
+            $params[] = $id_u;
+            $params[] = $codeHash;
+        }
+        $this->query($sql, $params);
     }
 
     public function deleteAll(int $id_u): void
