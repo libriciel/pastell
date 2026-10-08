@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use OTPHP\TOTP;
+use Pastell\Clock\SystemClock;
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\Utilisateur\MfaService;
 use Symfony\Component\RateLimiter\RateLimit;
@@ -26,49 +27,72 @@ class MfaControlerTest extends ControlerTestCase
         self::assertNotEmpty($lines, "Aucune entrée de journal contenant : $needle");
     }
 
-    /**
-     * @throws LastMessageException
-     * @throws NotFoundException
-     * @throws LastErrorException
-     */
-    public function testEnrolementCreatesSecret(): void
+    private function startEnrolement(): void
     {
-        $this->expectOutputRegex('#Activer la double authentification#');
-        $this->getMfaControler()->enrolementAction();
+        $controler = $this->getMfaControler();
+        $controler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        try {
+            $controler->startEnrolementAction();
+            self::fail('Une redirection était attendue');
+        } catch (LastMessageException) {
+        }
+    }
+
+    public function testStartEnrolementCreatesSecret(): void
+    {
+        $this->startEnrolement();
         self::assertNotEmpty($this->getMfaService()->getInfo(self::ID_U_ADMIN)['secret']);
     }
 
-    /**
-     * @throws NotFoundException
-     * @throws LastMessageException
-     * @throws LastErrorException
-     */
-    public function testEnrolementKeepsSecret(): void
+    public function testStartEnrolementKeepsSecret(): void
     {
-        $this->expectOutputRegex('#Activer la double authentification#');
-        $controler = $this->getMfaControler();
-
-        $controler->enrolementAction();
+        $this->startEnrolement();
         $first = $this->getMfaService()->getInfo(self::ID_U_ADMIN)['secret'];
-        $controler->enrolementAction();
+        $this->startEnrolement();
         $second = $this->getMfaService()->getInfo(self::ID_U_ADMIN)['secret'];
 
         self::assertSame($first, $second);
     }
 
+    public function testStartEnrolementForApi(): void
+    {
+        $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->setIsAPI(self::ID_U_ADMIN, true);
+        $this->startEnrolement();
+        self::assertNotEmpty($this->getMfaService()->getInfo(self::ID_U_ADMIN)['secret']);
+    }
+
+    public function testStartEnrolementRequiresPost(): void
+    {
+        try {
+            $this->getMfaControler()->startEnrolementAction();
+            self::fail('Une redirection était attendue');
+        } catch (LastMessageException) {
+        }
+        self::assertEmpty($this->getMfaService()->getInfo(self::ID_U_ADMIN));
+    }
+
     /**
      * @throws LastMessageException
      * @throws NotFoundException
      * @throws LastErrorException
      */
-    public function testEnrolementAllowedForApi(): void
+    public function testEnrolementDisplaysQr(): void
     {
-        $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->setIsAPI(self::ID_U_ADMIN, true);
+        $mfaService = $this->getMfaService();
+        $mfaService->enroll(self::ID_U_ADMIN, $mfaService->generateSecret());
 
         $this->expectOutputRegex('#Activer la double authentification#');
         $this->getMfaControler()->enrolementAction();
+    }
 
-        self::assertNotEmpty($this->getMfaService()->getInfo(self::ID_U_ADMIN)['secret']);
+    public function testEnrolementNeedsPending(): void
+    {
+        try {
+            $this->getMfaControler()->enrolementAction();
+            self::fail('Une redirection était attendue');
+        } catch (LastMessageException) {
+        }
+        self::assertEmpty($this->getMfaService()->getInfo(self::ID_U_ADMIN));
     }
 
     public function testActivationShowsRecoveryCodes(): void
@@ -76,7 +100,7 @@ class MfaControlerTest extends ControlerTestCase
         $mfaService = $this->getMfaService();
         $secret = $mfaService->generateSecret();
         $mfaService->enroll(self::ID_U_ADMIN, $secret);
-        $this->setPostInfo(['code' => TOTP::createFromSecret($secret)->now()]);
+        $this->setPostInfo(['code' => TOTP::createFromSecret($secret, new SystemClock())->now()]);
 
         $this->expectOutputRegex('#[Cc]odes de récupération#');
         $this->getMfaControler()->doEnrolementAction();
@@ -110,16 +134,23 @@ class MfaControlerTest extends ControlerTestCase
         $controler->doAuthRequiredAction();
     }
 
+    private function cancelEnrolement(): void
+    {
+        $controler = $this->getMfaControler();
+        $controler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        try {
+            $controler->cancelEnrolementAction();
+            self::fail('Une redirection était attendue');
+        } catch (LastMessageException) {
+        }
+    }
+
     public function testCancelEnrolementDeletesRow(): void
     {
         $mfaService = $this->getMfaService();
         $mfaService->enroll(self::ID_U_ADMIN, $mfaService->generateSecret());
 
-        try {
-            $this->getMfaControler()->cancelEnrolementAction();
-            self::fail('Une redirection était attendue');
-        } catch (LastMessageException) {
-        }
+        $this->cancelEnrolement();
 
         self::assertEmpty($mfaService->getInfo(self::ID_U_ADMIN));
     }
@@ -128,11 +159,7 @@ class MfaControlerTest extends ControlerTestCase
     {
         $this->enableMfa();
 
-        try {
-            $this->getMfaControler()->cancelEnrolementAction();
-            self::fail('Une redirection était attendue');
-        } catch (LastMessageException) {
-        }
+        $this->cancelEnrolement();
 
         self::assertTrue($this->getMfaService()->isEnabled(self::ID_U_ADMIN));
     }
@@ -142,7 +169,7 @@ class MfaControlerTest extends ControlerTestCase
         $mfaService = $this->getMfaService();
         $secret = $mfaService->generateSecret();
         $mfaService->enroll(self::ID_U_ADMIN, $secret);
-        $valid = TOTP::createFromSecret($secret)->now();
+        $valid = TOTP::createFromSecret($secret, new SystemClock())->now();
         $this->setPostInfo(['code' => $valid === '000000' ? '111111' : '000000']);
 
         try {
@@ -158,7 +185,7 @@ class MfaControlerTest extends ControlerTestCase
     public function testAuthRequiredRendersPage(): void
     {
         $this->enableMfa();
-        $this->setGetInfo(['action' => 'desactivation']);
+        $this->setGetInfo(['action' => 'disable']);
         $this->expectOutputRegex('#Authentification nécessaire#');
         $this->getMfaControler()->authRequiredAction();
     }
@@ -211,11 +238,11 @@ class MfaControlerTest extends ControlerTestCase
         self::assertSame(0, $this->getMfaService()->countRemainingRecoveryCodes(self::ID_U_ADMIN));
     }
 
-    public function testDesactivationDeletesMfa(): void
+    public function testDisableDeletesMfa(): void
     {
         $this->enableMfa();
         try {
-            $this->doAuthRequired('desactivation', 'admin');
+            $this->doAuthRequired('disable', 'admin');
             self::fail('Une redirection était attendue');
         } catch (LastMessageException) {
         }
@@ -224,11 +251,11 @@ class MfaControlerTest extends ControlerTestCase
         $this->assertJournalContains('double authentification désactivée');
     }
 
-    public function testDesactivationWrongPassword(): void
+    public function testDisableWrongPassword(): void
     {
         $this->enableMfa();
         try {
-            $this->doAuthRequired('desactivation', 'wrong');
+            $this->doAuthRequired('disable', 'wrong');
             self::fail('Une LastErrorException était attendue');
         } catch (LastErrorException $e) {
             self::assertStringContainsString('mot de passe est incorrect', $e->getMessage());
