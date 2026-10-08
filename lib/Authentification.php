@@ -52,4 +52,23 @@ class Authentification
         }
         return $_SESSION['connexion']['magic_link_id'] ?? null;
     }
+
+    public function setMfaPending(int $id_u, string $login, ?string $request_uri): void
+    {
+        $_SESSION['mfa_pending'] = [
+            'id_u' => $id_u,
+            'login' => $login,
+            'request_uri' => $request_uri,
+        ];
+    }
+
+    public function getMfaPending(): ?array
+    {
+        return $_SESSION['mfa_pending'] ?? null;
+    }
+
+    public function clearMfaPending(): void
+    {
+        unset($_SESSION['mfa_pending']);
+    }
 }

@@ -207,8 +207,9 @@ class UtilisateurControlerTest extends ControlerTestCase
         $this->enableMfaFor(2);
 
         $this->setPostInfo(['id_u' => 2]);
+        $controler = $this->getUtilisateurControler();
         try {
-            $this->getUtilisateurControler()->disableMfaAction();
+            $controler->disableMfaAction();
         } catch (Exception) {
         }
 
@@ -218,8 +219,9 @@ class UtilisateurControlerTest extends ControlerTestCase
     public function testDisableMfaNotEnabled(): void
     {
         $this->setPostInfo(['id_u' => 2]);
+        $controler = $this->getUtilisateurControler();
         try {
-            $this->getUtilisateurControler()->disableMfaAction();
+            $controler->disableMfaAction();
             self::fail('Une redirection était attendue');
         } catch (LastErrorException $e) {
             self::assertStringContainsString("n'est pas activée", $e->getMessage());
@@ -255,8 +257,9 @@ class UtilisateurControlerTest extends ControlerTestCase
         $this->enableMfaFor(self::ID_U_ADMIN);
 
         $this->setPostInfo(['id_u' => self::ID_U_ADMIN]);
+        $controler = $this->getUtilisateurControler();
         try {
-            $this->getUtilisateurControler()->disableMfaAction();
+            $controler->disableMfaAction();
             self::fail('Une redirection était attendue');
         } catch (LastMessageException $e) {
             self::assertStringContainsString('/Mfa/authRequired', $e->getMessage());
