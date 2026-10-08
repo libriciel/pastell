@@ -36,8 +36,6 @@ class ListeStatutsCPP extends ChoiceActionExecutor
         /** @var PortailFactureConnecteur $conn */
         $conn = $this->getConnecteur('PortailFacture');
         $liste_statuts = $conn->getListeStatutCible();
-        $liste_statuts[] = PortailFactureConnecteur::STATUT_SERVICE_FAIT . ";" . PortailFactureConnecteur::STATUT_MANDATEE;
-
         return $liste_statuts;
     }
 }

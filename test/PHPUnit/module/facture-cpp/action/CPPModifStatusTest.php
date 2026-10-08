@@ -126,7 +126,6 @@ class CPPModifStatusTest extends ExtensionCppTestCase
             'date_mise_a_dispo' => '2019-06-27 15:00',
             'date_fin_suspension' => '',
             'date_passage_statut' => '2019-06-27 15:00',
-            'is_cpp' => '1',
             'type_integration' => 'CPP',
             'facture_numero_engagement' => '',
             'facture_numero_marche' => '',

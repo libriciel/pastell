@@ -31,6 +31,8 @@ class FactureCPPIparapheurEnvoieTest extends ExtensionCppTestCase
         $connecteur_info = $this->createConnector('fakeIparapheur', "Bouchon Parapheur");
         $this->associateFluxWithConnector($connecteur_info['id_ce'], 'facture-cpp', 'signature');
 
+        $this->createCppConnectorForSynchro('facture-cpp', $statut);
+
         $document_info = $this->createDocument('facture-cpp');
         $id_d = $document_info['id_d'];
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);

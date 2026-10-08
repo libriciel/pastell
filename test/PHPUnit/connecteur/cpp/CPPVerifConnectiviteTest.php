@@ -2,8 +2,6 @@
 
 class CPPVerifConnectiviteTest extends ExtensionCppTestCase
 {
-    private const FICHIER_CSV_INTERPRETE = __DIR__ . "/../../../../connecteur/chorus-par-csv/fixtures/chorus-csv-interprete.csv";
-
     /**
      * @throws Exception
      */
@@ -20,10 +18,9 @@ class CPPVerifConnectiviteTest extends ExtensionCppTestCase
         $erreur .= '"libelle" : "Impossible d\'authentifier l\'utilisateur dans le LDAP."' . "\n";
         $erreur .= '}' . "\n";
 
-        $cppWrapper->expects($this->exactly(3))
+        $cppWrapper->expects($this->exactly(2))
             ->method('testConnexion')
             ->willReturnOnConsecutiveCalls(
-                true,
                 true,
                 $this->throwException(new Exception($erreur))
             );
@@ -47,16 +44,12 @@ class CPPVerifConnectiviteTest extends ExtensionCppTestCase
         $connecteurDonneesFormulaire->setData('user_login', "DEV_DESTTAA074@cpp2017.fr");
         $connecteurDonneesFormulaire->setData('user_password', "Riuxdnup64167[");
 
-        $info = $this->createConnector('chorus-par-csv', "ChorusParCSV", self::ID_E_COL);
-        $id_ce_chorus_csv = $info['id_ce'];
-        $connecteurDonneesFormulaire = $this->getDonneesFormulaireFactory()->getConnecteurEntiteFormulaire($id_ce_chorus_csv);
+        $info = $this->createConnector('cpp', "Chorus", self::ID_E_COL);
+        $id_ce_chorus_erreur = $info['id_ce'];
+        $connecteurDonneesFormulaire = $this->getDonneesFormulaireFactory()->getConnecteurEntiteFormulaire($id_ce_chorus_erreur);
         $connecteurDonneesFormulaire->setData('url', 'cpp url');
-        $connecteurDonneesFormulaire->addFileFromCopy(
-            "fichier_csv_interprete",
-            "chorus-csv-interprete.csv",
-            self::FICHIER_CSV_INTERPRETE
-        );
-
+        $connecteurDonneesFormulaire->setData('user_login', "DEV_DESTTAA035@cpp2017.fr");
+        $connecteurDonneesFormulaire->setData('user_password', "XazxDntp15168!");
 
         $this->triggerActionOnConnector($id_ce_chorus_global, 'verification_connectivite');
 
@@ -68,24 +61,16 @@ class CPPVerifConnectiviteTest extends ExtensionCppTestCase
         $last_message = 'Connecteurs Chorus Pro:<br />' . "\n";
         $last_message .= '<br />' . "\n";
         $last_message .= 'Nombre de connexions Chorus Pro ok : 1<br />' . "\n";
-        $last_message .= 'Nombre de connexions Chorus Pro en erreur : 0<br />' . "\n";
-        $last_message .= '<br />' . "\n";
-        $last_message .= '<br />' . "\n";
-        $last_message .= '<br />' . "\n";
-        $last_message .= 'Connecteurs Chorus Pro par CSV:<br />' . "\n";
-        $last_message .= '<br />' . "\n";
-        $last_message .= 'Bourg-en-Bresse - ChorusParCSV : ' . $this->getSiteBase() . '/Connecteur/edition?id_ce=16<br />' . "\n";
-        $last_message .= 'Nombre de connexions Chorus Pro par CSV ok: 1<br />' . "\n";
-        $last_message .= 'Nombre de connexions Chorus Pro par CSV en erreur : 1<br />' . "\n";
+        $last_message .= 'Nombre de connexions Chorus Pro en erreur : 1<br />' . "\n";
         $last_message .= '<br />' . "\n";
         $last_message .= 'Connexions en erreur:<br />' . "\n";
+        $last_message .= 'Bourg-en-Bresse - Chorus : ' . $this->getSiteBase() . '/Connecteur/edition?id_ce=16<br />' . "\n";
         $last_message .= 'Utilisateur DEV_DESTTAA035@cpp2017.fr<br />' . "\n";
         $last_message .= 'Erreur code HTTP: 401<br />' . "\n";
         $last_message .= '{<br />' . "\n";
         $last_message .= '"codeRetour": 401,<br />' . "\n";
         $last_message .= '"libelle" : "Impossible d\'authentifier l\'utilisateur dans le LDAP."<br />' . "\n";
         $last_message .= '}<br />' . "\n";
-        $last_message .= '<br />' . "\n";
         $last_message .= '<br />' . "\n";
         $last_message .= '<br />' . "\n";
         $last_message .= '<br />' . "\n";
