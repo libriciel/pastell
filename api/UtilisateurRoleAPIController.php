@@ -57,7 +57,7 @@ class UtilisateurRoleAPIController extends BaseAPIController
         $this->verifExists($id_u);
 
         $role_list = $this->utilisateurRoleService->getRole((int) $id_u);
-        $all_droit_utilisateur = $this->getDroitService()->getAllDroitEntite($id_u, $id_e);
+        $all_droit_utilisateur = $this->getDroitService()->getUnrestrictedDroitsForEntite($id_u, $id_e);
 
         // Construction du tableau de retour
         $result = [];
