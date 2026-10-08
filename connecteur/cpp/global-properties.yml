@@ -1,6 +1,6 @@
 nom: CPP
 type: PortailFacture
-description: "Connecteur global pour le portail facture cpp.\nPermet aussi de \"Vérifier la connectivité des connecteurs Chorus Pro\" et Chorus par CSV suivant les login/mot de passe des utilisateurs. Un mail est envoyé à l'administrateur Pastell en cas d'erreur."
+description: "Connecteur global pour le portail facture cpp.\nPermet aussi de \"Vérifier la connectivité des connecteurs Chorus Pro\" suivant les login/mot de passe des utilisateurs. Un mail est envoyé à l'administrateur Pastell en cas d'erreur."
 restriction_pack:
     - pack_chorus_pro
 formulaire:

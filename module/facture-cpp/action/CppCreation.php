@@ -64,9 +64,6 @@ class CppCreation extends ActionExecutor
         /** @var DonneesFormulaire $donneesFormulaire */
         $donneesFormulaire = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)->get($this->id_d);
 
-        //Valorisation des attributs spécifiques
-        $donneesFormulaire->setData('is_cpp', true);
-
         //Extraction des donnees pivot
         $this->objectInstancier->getInstance(ExtraireDonneesPivot::class)->getAllPJ($donneesFormulaire);
         $donnees_facture = $this->objectInstancier

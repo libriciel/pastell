@@ -39,7 +39,7 @@ class FactureCPPEnvoiGED extends GEDEnvoyer
             return false;
         }
 
-        if (($donneesFormulaire->get('is_cpp')) && (!$donneesFormulaire->get('is_annule'))) {
+        if (!$donneesFormulaire->get('is_annule')) {
             // Synchronisation de la facture avant de tester la valeur du statut
             /** @var PortailFactureConnecteur $portailFactureConnecteur */
             $portailFactureConnecteur = $this->getConnecteur('PortailFacture');

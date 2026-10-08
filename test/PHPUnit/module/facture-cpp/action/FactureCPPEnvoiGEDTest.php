@@ -40,6 +40,8 @@ class FactureCPPEnvoiGEDTest extends ExtensionCppTestCase
         $connecteur_info = $this->createConnector('FakeGED', "Bouchon GED");
         $this->associateFluxWithConnector($connecteur_info['id_ce'], 'facture-cpp', 'GED');
 
+        $this->createCppConnectorForSynchro('facture-cpp', $statut);
+
         $document_info = $this->createDocument('facture-cpp');
         $id_d = $document_info['id_d'];
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);

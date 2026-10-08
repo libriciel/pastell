@@ -20,7 +20,6 @@ class FactureCPPOrientationTest extends ExtensionCppTestCase
             'statut_cpp' => PortailFactureConnecteur::STATUT_MISE_A_DISPOSITION,
             'statut_cible_liste' => PortailFactureConnecteur::STATUT_MISE_A_DISPOSITION,
             'no_facture' => "20190627",
-            'is_cpp' => "1",
             'envoi_ged' => true,
             'envoi_auto' => true
         ]);

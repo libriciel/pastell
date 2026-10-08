@@ -11,6 +11,8 @@ class FactureCPPIparapheurRecupTest extends ExtensionCppTestCase
             'iparapheur_wsdl' => 'wsdl'
         ]);
         $this->associateFluxWithConnector($connector['id_ce'], 'facture-cpp', 'signature');
+
+        $this->createCppConnectorForSynchro('facture-cpp', PortailFactureConnecteur::STATUT_MISE_A_DISPOSITION);
     }
 
     /**
