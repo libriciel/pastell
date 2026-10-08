@@ -392,7 +392,7 @@ class DocumentControler extends PastellControler
         $limit = 20;
 
         $liste_type = [];
-        $allDroit = $this->getDroitService()->getAllDroit($this->getId_u());
+        $allDroit = $this->getDroitService()->getUnrestrictedDroits($this->getId_u());
 
         foreach ($allDroit as $droit) {
             if (preg_match('/^(.*):' . DroitType::LECTURE->value . '$/u', $droit, $result)) {
@@ -667,7 +667,7 @@ class DocumentControler extends PastellControler
 
         $this->setViewParameter('indexedFieldValue', $indexedFieldValue);
 
-        $allDroit = $this->getDroitService()->getAllDroit($this->getId_u());
+        $allDroit = $this->getDroitService()->getUnrestrictedDroits($this->getId_u());
         $this->setViewParameter('listeEtat', $this->getDocumentTypeFactory()->getActionByRole($allDroit));
 
         $this->setViewParameter('documentActionEntite', $this->getDocumentActionEntite());

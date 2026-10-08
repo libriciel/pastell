@@ -5,6 +5,8 @@
 ### Dépréciations
 
 - Classe `RoleUtilisateur` dépréciée au profit de `UtilisateurRoleSQL` et des services `UtilisateurRoleService`, `UtilisateurEntiteService` et `RoleDelegationService` #2594
+- `DroitService::getAllDroitEntite()` et `DroitService::getAllDroit()` renommées respectivement en
+  `getUnrestrictedDroitsForEntite()` et `getUnrestrictedDroits()` #2596
 
 ## [4.1.23] - 2026-10-05
 

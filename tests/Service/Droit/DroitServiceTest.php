@@ -59,8 +59,8 @@ class DroitServiceTest extends PastellTestCase
         static::assertFalse($droitService->hasDroitFor(1, 1, $droit_id, DroitType::LECTURE));
         static::assertFalse($droitService->hasOneDroitFor(1, $droit_id, DroitType::LECTURE));
         static::assertNotContains('test', $droitService->getAllDocumentLecture(1, 1));
-        static::assertNotContains($droit_test_lecture, $droitService->getAllDroitEntite(1, 1));
-        static::assertNotContains($droit_test_lecture, $droitService->getAllDroit(1));
+        static::assertNotContains($droit_test_lecture, $droitService->getUnrestrictedDroitsForEntite(1, 1));
+        static::assertNotContains($droit_test_lecture, $droitService->getUnrestrictedDroits(1));
 
         $this->setListPack(['suppl_test' => true]);
         static::assertFalse($droitService->isRestrictedDroit($droit_test_lecture));
@@ -69,7 +69,7 @@ class DroitServiceTest extends PastellTestCase
         static::assertTrue($droitService->hasDroitFor(1, 1, $droit_id, DroitType::LECTURE));
         static::assertTrue($droitService->hasOneDroitFor(1, $droit_id, DroitType::LECTURE));
         static::assertContains('test', $droitService->getAllDocumentLecture(1, 1));
-        static::assertContains($droit_test_lecture, $droitService->getAllDroitEntite(1, 1));
-        static::assertContains($droit_test_lecture, $droitService->getAllDroit(1));
+        static::assertContains($droit_test_lecture, $droitService->getUnrestrictedDroitsForEntite(1, 1));
+        static::assertContains($droit_test_lecture, $droitService->getUnrestrictedDroits(1));
     }
 }
