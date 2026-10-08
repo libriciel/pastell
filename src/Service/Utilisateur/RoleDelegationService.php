@@ -22,7 +22,7 @@ final class RoleDelegationService
 
     public function canDelegateRole(int $id_u, string $role, int $id_e): bool
     {
-        $droit_delegant = $this->utilisateurRoleService->getAllDroitEntite($id_u, $id_e);
+        $droit_delegant = $this->utilisateurRoleService->getDroitsForEntite($id_u, $id_e);
         return \in_array($role, $this->roleSQL->getAuthorizedRoleToDelegate($droit_delegant), true);
     }
 }

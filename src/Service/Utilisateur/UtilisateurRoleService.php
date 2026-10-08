@@ -35,9 +35,9 @@ final class UtilisateurRoleService
         return $this->utilisateurRoleSQL->getRole($id_u);
     }
 
-    public function getAllDroitEntite(int $id_u, int $id_e): array
+    public function getDroitsForEntite($id_u, int $id_e): array
     {
-        return $this->utilisateurRoleCache->getAllDroitEntite($id_u, $id_e);
+        return $this->utilisateurRoleCache->getDroitsForEntite((int) $id_u, $id_e);
     }
 
     public function getAllDroit(int $id_u): array

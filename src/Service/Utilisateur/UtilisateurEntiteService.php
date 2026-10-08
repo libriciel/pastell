@@ -31,7 +31,7 @@ final class UtilisateurEntiteService
     public function getArbreFilleWithRacine(int $id_u, string $droit): array
     {
         $arbre = $this->getArbreFille($id_u, $droit);
-        $droitsRacine = $this->utilisateurRoleService->getAllDroitEntite($id_u, EntiteSQL::ID_E_ENTITE_RACINE);
+        $droitsRacine = $this->utilisateurRoleService->getDroitsForEntite($id_u, EntiteSQL::ID_E_ENTITE_RACINE);
         if (in_array($droit, $droitsRacine, true)) {
             array_unshift($arbre, [
                 'id_e' => EntiteSQL::ID_E_ENTITE_RACINE,
@@ -52,9 +52,9 @@ final class UtilisateurEntiteService
         return $this->utilisateurRoleSQL->getEntite($id_u, $droit);
     }
 
-    public function getAllEntiteDroit($id_u, $id_e = false): array
+    public function getEntiteDroitList(int $id_u, $id_e = false): array
     {
-        return $this->utilisateurRoleSQL->getAllEntiteDroit($id_u, $id_e);
+        return $this->utilisateurRoleSQL->getEntiteDroitList($id_u, $id_e);
     }
 
     public function getEntiteWithDenomination(int $id_u, string $droit): array

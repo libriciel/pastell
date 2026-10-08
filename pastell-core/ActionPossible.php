@@ -147,7 +147,7 @@ class ActionPossible
             $this->documentActionEntite->getAction($id_e, $id_d)
         );
         $this->connecteur_entite_info = false;
-        $this->utilisateur_droit_list = $this->utilisateurRoleService->getAllDroitEntite($id_u, (int) $id_e);
+        $this->utilisateur_droit_list = $this->utilisateurRoleService->getDroitsForEntite($id_u, (int) $id_e);
 
         $this->donneesFormulaire = $this->donneesFormulaireFactory->get($id_d, $type_document);
         $this->entite_info = $this->entiteSQL->getInfo($id_e);
@@ -172,7 +172,7 @@ class ActionPossible
         $this->action_list = [];
         $this->connecteur_entite_info = $this->connecteurEntiteSQL->getInfo($id_ce);
 
-        $this->utilisateur_droit_list = $this->utilisateurRoleService->getAllDroitEntite($id_u, (int) $this->connecteur_entite_info['id_e']);
+        $this->utilisateur_droit_list = $this->utilisateurRoleService->getDroitsForEntite($id_u, (int) $this->connecteur_entite_info['id_e']);
         $this->donneesFormulaire = null;
         $this->entite_info = $this->entiteSQL->getInfo($this->connecteur_entite_info['id_e']);
         $this->documentType = ($this->connecteur_entite_info['global']) ?

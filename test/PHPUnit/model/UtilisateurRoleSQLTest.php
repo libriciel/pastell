@@ -22,10 +22,10 @@ class UtilisateurRoleSQLTest extends PastellTestCase
     public function testInsertDeleteRole()
     {
         $this->sql->deleteAllRoles(2);
-        static::assertSame([], $this->sql->getAllDroitEntite(2, 1));
+        static::assertSame([], $this->sql->getDroitsForEntite(2, 1));
 
         $this->sql->insertRole(2, 'admin', 1);
-        static::assertNotEmpty($this->sql->getAllDroitEntite(2, 1));
+        static::assertNotEmpty($this->sql->getDroitsForEntite(2, 1));
         static::assertNotEmpty($this->sql->getAllDroit(2));
     }
 

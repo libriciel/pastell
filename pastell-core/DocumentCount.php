@@ -42,7 +42,7 @@ class DocumentCount
             $count[$info['id_e']][$info['type']][$info['last_action']] = $info['count'];
         }
 
-        $all_droit = $this->utilisateurEntiteService->getAllEntiteDroit($id_u, $id_e);
+        $all_droit = $this->utilisateurEntiteService->getEntiteDroitList($id_u, $id_e);
 
         $result = [];
 

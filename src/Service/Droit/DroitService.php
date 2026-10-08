@@ -98,7 +98,7 @@ class DroitService
         if ($this->isRestrictedDroit($droit)) {
             return false;
         }
-        return in_array($droit, $this->utilisateurRoleService->getAllDroitEntite($id_u, $id_e), true);
+        return \in_array($droit, $this->utilisateurRoleService->getDroitsForEntite($id_u, $id_e), true);
     }
 
     /**
@@ -124,7 +124,7 @@ class DroitService
     public function getAllDocumentLecture(int $id_u, int $id_e): array
     {
         $liste_type = [];
-        foreach ($this->utilisateurRoleService->getAllDroitEntite($id_u, $id_e) as $droit) {
+        foreach ($this->utilisateurRoleService->getDroitsForEntite($id_u, $id_e) as $droit) {
             if (!preg_match('/^(.*):' . DroitType::LECTURE->value . '$/', $droit, $matches)) {
                 continue;
             }
@@ -143,7 +143,7 @@ class DroitService
      */
     public function getAllDroitEntite($id_u, int $id_e): array
     {
-        $data = $this->utilisateurRoleService->getAllDroitEntite($id_u, $id_e);
+        $data = $this->utilisateurRoleService->getDroitsForEntite($id_u, $id_e);
         foreach ($data as $key => $droit) {
             if ($this->isRestrictedDroit($droit)) {
                 unset($data[$key]);
@@ -267,6 +267,6 @@ class DroitService
             return false;
         }
 
-        return in_array($droit, $this->utilisateurRoleService->getAllDroitEntite($id_u, $id_e), true);
+        return in_array($droit, $this->utilisateurRoleService->getDroitsForEntite($id_u, $id_e), true);
     }
 }

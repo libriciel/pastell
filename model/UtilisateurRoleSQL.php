@@ -2,7 +2,7 @@
 
 class UtilisateurRoleSQL extends SQL
 {
-    public function insertRole($id_u, $role, $id_e): void
+    public function insertRole(int $id_u, string $role, int $id_e): void
     {
         $sql = <<<SQL
 INSERT INTO utilisateur_role(id_u,role,id_e) VALUES (?,?,?)
@@ -10,7 +10,7 @@ SQL;
         $this->query($sql, $id_u, $role, $id_e);
     }
 
-    public function deleteRole($id_u, $role, $id_e): void
+    public function deleteRole(int $id_u, string $role, int $id_e): void
     {
         $sql = <<<SQL
 DELETE FROM utilisateur_role WHERE id_u=? AND role=? AND id_e=?
@@ -18,7 +18,7 @@ SQL;
         $this->query($sql, $id_u, $role, $id_e);
     }
 
-    public function replaceRole($id_u, $role, $id_e, $newRole): void
+    public function replaceRole(int $id_u, string $role, int $id_e, string $newRole): void
     {
         $sql = <<<SQL
 UPDATE utilisateur_role SET role=? WHERE id_u=? AND role=? AND id_e=?
@@ -26,7 +26,7 @@ SQL;
         $this->query($sql, $newRole, $id_u, $role, $id_e);
     }
 
-    public function countRoles($id_u): int
+    public function countRoles(int $id_u): int
     {
         $sql = <<<SQL
 SELECT count(*) FROM utilisateur_role WHERE id_u=?
@@ -34,7 +34,7 @@ SQL;
         return (int) $this->queryOne($sql, $id_u);
     }
 
-    public function hasRole($id_u, $role, $id_e): int
+    public function hasRole(int $id_u, string $role, int $id_e): int
     {
         $sql = <<<SQL
 SELECT count(*) FROM utilisateur_role WHERE id_u=? AND role=? AND id_e=?
@@ -42,7 +42,7 @@ SQL;
         return (int) $this->queryOne($sql, $id_u, $role, $id_e);
     }
 
-    public function deleteAllRoles($id_u): void
+    public function deleteAllRoles(int $id_u): void
     {
         $sql = <<<SQL
 DELETE FROM utilisateur_role WHERE id_u = ?
@@ -50,7 +50,7 @@ SQL;
         $this->query($sql, $id_u);
     }
 
-    public function deleteRolesForEntite($id_u, $id_e): void
+    public function deleteRolesForEntite(int $id_u, int $id_e): void
     {
         $sql = <<<SQL
 DELETE FROM utilisateur_role WHERE id_u = ? AND id_e = ?
@@ -58,7 +58,7 @@ SQL;
         $this->query($sql, $id_u, $id_e);
     }
 
-    public function getAllDroitEntite($id_u, $id_e): array
+    public function getDroitsForEntite(int $id_u, int $id_e): array
     {
         $sql = <<<SQL
 SELECT droit FROM entite_ancetre
@@ -73,7 +73,7 @@ SQL;
         return $result;
     }
 
-    public function getAllDroit($id_u): array
+    public function getAllDroit(int $id_u): array
     {
         $sql = <<<SQL
 SELECT droit FROM utilisateur_role
@@ -87,7 +87,7 @@ SQL;
         return $result;
     }
 
-    public function getRole($id_u): array
+    public function getRole(int $id_u): array
     {
         $sql = <<<SQL
 SELECT utilisateur_role.*,denomination,siren,type FROM utilisateur_role
@@ -97,7 +97,7 @@ SQL;
         return $this->query($sql, $id_u);
     }
 
-    public function getAllEntiteDroit($id_u, $id_e = false): array
+    public function getEntiteDroitList(int $id_u, $id_e = false): array
     {
         $sql = <<<SQL
 SELECT entite.id_e, droit FROM entite_ancetre
@@ -155,7 +155,7 @@ SQL;
         return $this->query($sql, $id_u, $droit);
     }
 
-    public function getEntiteWithDenomination($id_u, $droit): array
+    public function getEntiteWithDenomination(int $id_u, string $droit): array
     {
         $sql = <<<SQL
 SELECT DISTINCT entite.id_e,denomination,siren,type, is_active
@@ -166,7 +166,7 @@ SQL;
         return $this->query($sql, $id_u, $droit);
     }
 
-    public function getEntite($id_u, $droit): array
+    public function getEntite(int $id_u, string $droit): array
     {
         $sql = <<<SQL
 SELECT DISTINCT utilisateur_role.id_e
@@ -182,7 +182,7 @@ SQL;
         return $result;
     }
 
-    public function getEntiteWithAnyDroit($id_u): array
+    public function getEntiteWithAnyDroit(int $id_u): array
     {
         $sql = <<<SQL
 SELECT DISTINCT utilisateur_role.id_e
@@ -198,7 +198,7 @@ SQL;
         return $result;
     }
 
-    public function anybodyHasRole($role): int
+    public function anybodyHasRole(string $role): int
     {
         $sql = <<<SQL
 SELECT count(*) FROM utilisateur_role WHERE role =?
