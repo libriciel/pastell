@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Pastell\Service\LoginAttemptLimit;
-use Pastell\Service\Utilisateur\MfaAuthAction;
+use Pastell\Service\Utilisateur\MfaManagementAction;
 use Random\RandomException;
 
 class MfaControler extends PastellControler
@@ -15,7 +15,7 @@ class MfaControler extends PastellControler
      */
     public function authRequiredAction(): void
     {
-        $action = MfaAuthAction::tryFromParam($this->getGetInfo()->get('action'));
+        $action = MfaManagementAction::tryFromParam($this->getGetInfo()->get('action'));
         if ($action === null) {
             $this->redirect('/Utilisateur/moi');
         }
@@ -40,7 +40,7 @@ class MfaControler extends PastellControler
      */
     public function doAuthRequiredAction(): void
     {
-        $action = MfaAuthAction::tryFromParam($this->getPostInfo()->get('action'));
+        $action = MfaManagementAction::tryFromParam($this->getPostInfo()->get('action'));
         if ($action === null) {
             $this->redirect('/Utilisateur/moi');
         }
@@ -65,9 +65,33 @@ class MfaControler extends PastellControler
         $loginAttemptLimit->resetLoginAttempt($login);
 
         match ($action) {
-            MfaAuthAction::REGENERATE => $this->doRegenerateRecoveryCodes($id_u),
-            MfaAuthAction::DESACTIVATION => $this->doDesactivation($id_u),
+            MfaManagementAction::REGENERATE => $this->doRegenerateRecoveryCodes($id_u),
+            MfaManagementAction::DISABLE => $this->doDisable($id_u),
         };
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function startEnrolementAction(): void
+    {
+        if ($this->getServerInfo('REQUEST_METHOD') !== 'POST') {
+            $this->redirect('/Utilisateur/moi');
+        }
+        $id_u = $this->getId_u();
+        $mfaService = $this->getMfaService();
+        $mfaInfo = $mfaService->getInfo($id_u);
+
+        if (!empty($mfaInfo['is_enabled'])) {
+            $this->setLastMessage('La double authentification est déjà activée.');
+            $this->redirect('/Utilisateur/moi');
+        }
+
+        if (empty($mfaInfo['secret'])) {
+            $mfaService->enroll($id_u, $mfaService->generateSecret());
+        }
+        $this->redirect('/Mfa/enrolement');
     }
 
     /**
@@ -79,22 +103,19 @@ class MfaControler extends PastellControler
     {
         $id_u = $this->getId_u();
         $mfaService = $this->getMfaService();
+        $mfaInfo = $mfaService->getInfo($id_u);
 
-        if ($mfaService->isEnabled($id_u)) {
+        if (!empty($mfaInfo['is_enabled'])) {
             $this->setLastMessage('La double authentification est déjà activée.');
             $this->redirect('/Utilisateur/moi');
         }
 
-        $info = $this->getUtilisateur()->getInfo($id_u);
-
-        $pendingSecret = $mfaService->getInfo($id_u)['secret'] ?? '';
-        if ($pendingSecret !== '') {
-            $secret = $pendingSecret;
-        } else {
-            $secret = $mfaService->generateSecret();
-            $mfaService->enroll($id_u, $secret);
+        $secret = $mfaInfo['secret'] ?? '';
+        if ($secret === '') {
+            $this->redirect('/Utilisateur/moi');
         }
 
+        $info = $this->getUtilisateur()->getInfo($id_u);
         $uri = $mfaService->getProvisioningUri($secret, $info['login']);
 
         $this->setViewParameter('secret', $secret);
@@ -111,6 +132,9 @@ class MfaControler extends PastellControler
      */
     public function cancelEnrolementAction(): void
     {
+        if ($this->getServerInfo('REQUEST_METHOD') !== 'POST') {
+            $this->redirect('/Utilisateur/moi');
+        }
         $id_u = $this->getId_u();
         $info = $this->getMfaService()->getInfo($id_u);
         if (!empty($info) && empty($info['is_enabled'])) {
@@ -131,8 +155,7 @@ class MfaControler extends PastellControler
         $mfaService = $this->getMfaService();
         $code = $this->getPostInfo()->get('code');
 
-        $info = $mfaService->getInfo($id_u);
-        if (empty($info['secret']) || !$mfaService->verify($info['secret'], $code)) {
+        if (!$mfaService->verifyForUser($id_u, $code)) {
             $this->setLastError('Le code saisi est invalide.');
             $this->redirect('/Mfa/enrolement');
         }
@@ -172,7 +195,7 @@ class MfaControler extends PastellControler
      * @throws LastMessageException
      * @throws LastErrorException
      */
-    private function doDesactivation(int $id_u): void
+    private function doDisable(int $id_u): void
     {
         $this->getMfaService()->delete($id_u);
         $userInfo = $this->getUtilisateur()->getInfo($id_u);

@@ -386,7 +386,8 @@ CREATE TABLE `utilisateur_mfa` (
 	`id_u` int(11) NOT NULL,
 	`secret` varchar(255) NOT NULL,
 	`is_enabled` tinyint(1) NOT NULL DEFAULT '0',
-	`created_at` datetime NOT NULL,
+	`activated_at` datetime DEFAULT NULL,
+	`last_used_counter` bigint(20) DEFAULT NULL,
 	PRIMARY KEY (`id_u`)
 )  ENGINE=MyISAM  ;
 CREATE TABLE `utilisateur_mfa_recovery_code` (

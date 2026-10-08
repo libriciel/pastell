@@ -1,6 +1,7 @@
 <?php
 
 use OTPHP\TOTP;
+use Pastell\Clock\SystemClock;
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\MagicLink\MagicLinkService;
 use Pastell\Service\Utilisateur\MfaService;
@@ -328,7 +329,7 @@ class ConnexionControlerTest extends ControlerTestCase
         $secret = $this->enableMfaForAdmin();
         $this->mockLoginAttemptLimit();
         $_SESSION['mfa_pending'] = ['id_u' => 1, 'login' => 'admin', 'request_uri' => '/'];
-        $this->setPostInfo(['code' => TOTP::createFromSecret($secret)->now()]);
+        $this->setPostInfo(['code' => TOTP::createFromSecret($secret, new SystemClock())->now()]);
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
         try {
@@ -349,7 +350,7 @@ class ConnexionControlerTest extends ControlerTestCase
         $secret = $this->enableMfaForAdmin();
         $this->mockLoginAttemptLimit();
         $_SESSION['mfa_pending'] = ['id_u' => 1, 'login' => 'admin', 'request_uri' => '/'];
-        $valid = TOTP::createFromSecret($secret)->now();
+        $valid = TOTP::createFromSecret($secret, new SystemClock())->now();
         $this->setPostInfo(['code' => $this->differentCode($valid)]);
 
         try {

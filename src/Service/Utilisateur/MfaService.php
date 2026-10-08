@@ -9,6 +9,7 @@ use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use OTPHP\TOTP;
+use Pastell\Clock\SystemClock;
 use Random\RandomException;
 use UtilisateurMfaRecoveryCodeSQL;
 use UtilisateurMfaSQL;
@@ -21,6 +22,7 @@ final class MfaService
     public function __construct(
         private readonly UtilisateurMfaSQL $utilisateurMfaSQL,
         private readonly UtilisateurMfaRecoveryCodeSQL $recoveryCodeSQL,
+        private readonly SystemClock $clock,
     ) {
     }
 
@@ -36,12 +38,12 @@ final class MfaService
 
     public function generateSecret(): string
     {
-        return TOTP::generate()->getSecret();
+        return TOTP::generate($this->clock)->getSecret();
     }
 
     public function getProvisioningUri(string $secret, string $label): string
     {
-        $totp = TOTP::createFromSecret($secret);
+        $totp = TOTP::createFromSecret($secret, $this->clock);
         $totp->setLabel($label);
         $totp->setIssuer(self::ISSUER);
         return $totp->getProvisioningUri();
@@ -55,10 +57,35 @@ final class MfaService
 
     public function verify(string $secret, string $code): bool
     {
-        $totp = TOTP::createFromSecret($secret);
-        $now = time();
+        return $this->getMatchingCounter($secret, $code) !== null;
+    }
+
+    public function verifyForUser(int $id_u, string $code): bool
+    {
+        $info = $this->getInfo($id_u);
+        if (empty($info['secret'])) {
+            return false;
+        }
+        $counter = $this->getMatchingCounter($info['secret'], $code);
+        if ($counter === null || $counter <= (int)($info['last_used_counter'] ?? -1)) {
+            return false;
+        }
+        $this->utilisateurMfaSQL->updateLastUsedCounter($id_u, $counter);
+        return true;
+    }
+
+    private function getMatchingCounter(string $secret, string $code): ?int
+    {
+        $totp = TOTP::createFromSecret($secret, $this->clock);
+        $now = $this->clock->now()->getTimestamp();
         $period = $totp->getPeriod();
-        return array_any([-1, 0, 1], fn($step) => $totp->verify($code, $now + $step * $period));
+        foreach ([-1, 0, 1] as $step) {
+            $timestamp = $now + $step * $period;
+            if ($totp->verify($code, $timestamp)) {
+                return intdiv($timestamp, $period);
+            }
+        }
+        return null;
     }
 
     public function enroll(int $id_u, string $secret): void
