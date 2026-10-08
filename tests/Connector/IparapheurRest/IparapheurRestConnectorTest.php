@@ -169,7 +169,6 @@ final class IparapheurRestConnectorTest extends PastellTestCase
             'desk_id' => null,
             'iparapheur_nb_jour_max' => '',
             'iparapheur_metadata' => '',
-            'iparapheur_multi_doc' => false,
             'iparapheur_type_id' => self::TYPE_ID,
         ];
         $map = array_merge($defaults, $overrides);

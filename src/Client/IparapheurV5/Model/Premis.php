@@ -22,7 +22,7 @@ final class Premis
     public const string CADES_BASELINE_B = 'CAdES_BASELINE_B';
     private const int MAX_TITLE_LENGTH = 255;
 
-    public static function fromFileToSign(FileToSign $fileToSign, bool $multi_doc = false): self
+    public static function fromFileToSign(FileToSign $fileToSign): self
     {
         $intellectual = new PremisObject();
         $intellectual->type = PremisObject::INTELLECTUAL_ENTITY;
@@ -69,7 +69,7 @@ final class Premis
 
         $annexes = [];
         foreach ($fileToSign->annexes as $annexe) {
-            $annexes[] = self::createFileObject($annexe->filename, $multi_doc);
+            $annexes[] = self::createFileObject($annexe->filename, false);
         }
 
         $instance = new self();
