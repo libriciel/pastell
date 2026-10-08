@@ -405,17 +405,16 @@ class ConnexionControler extends PastellControler
             $this->getLastError()->setLastError('Identifiant ou mot de passe incorrect.');
             $this->redirect($redirect_fail);
         }
-        $loginAttemptLimit->resetLoginAttempt($login);
-
         if ($this->getMfaService()->isEnabled((int)$id_u)) {
-            $_SESSION['mfa_pending'] = [
-                'id_u' => (int)$id_u,
-                'login' => $login,
-                'request_uri' => $this->getPostInfo()->get('request_uri'),
-            ];
+            $this->getAuthentification()->setMfaPending(
+                (int)$id_u,
+                $login,
+                $this->getPostInfo()->get('request_uri')
+            );
             $this->redirect('/Connexion/mfa');
         }
 
+        $loginAttemptLimit->resetLoginAttempt($login);
         $this->finalizeConnexion((int)$id_u, $login);
         return $id_u;
     }
@@ -444,7 +443,7 @@ class ConnexionControler extends PastellControler
      */
     public function mfaAction(): void
     {
-        if (empty($_SESSION['mfa_pending'])) {
+        if (empty($this->getAuthentification()->getMfaPending())) {
             $this->redirect('/Connexion/connexion');
         }
         $this->renderMfaCodePage();
@@ -456,11 +455,11 @@ class ConnexionControler extends PastellControler
      */
     public function doMfaAction(): void
     {
-        if (empty($_SESSION['mfa_pending'])) {
+        $pending = $this->getAuthentification()->getMfaPending();
+        if (empty($pending)) {
             $this->redirect('/Connexion/connexion');
         }
 
-        $pending = $_SESSION['mfa_pending'];
         $id_u = (int)$pending['id_u'];
         $login = (string)$pending['login'];
         $code = (string)$this->getPostInfo()->get('code');
@@ -472,8 +471,7 @@ class ConnexionControler extends PastellControler
         }
 
         $mfaService = $this->getMfaService();
-        $info = $mfaService->getInfo($id_u);
-        $totpOk = !empty($info['secret']) && $mfaService->verify($info['secret'], $code);
+        $totpOk = $mfaService->verifyForUser($id_u, $code);
         $recoveryOk = !$totpOk && $mfaService->verifyRecoveryCode($id_u, $code);
 
         if (!$totpOk && !$recoveryOk) {
@@ -494,7 +492,7 @@ class ConnexionControler extends PastellControler
 
         $loginAttemptLimit->resetLoginAttempt($login);
         $request_uri = (string)($pending['request_uri'] ?? '/');
-        unset($_SESSION['mfa_pending']);
+        $this->getAuthentification()->clearMfaPending();
 
         if ($recoveryOk) {
             $userInfo = $this->getUtilisateur()->getInfo($id_u);

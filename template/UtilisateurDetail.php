@@ -19,7 +19,7 @@
  * @var array $tokens
  * @var array $tree
  * @var bool $mfa_enabled
- * @var bool $mfa_admin_disable
+ * @var bool $root_system_edition
  */
 
 use Pastell\Utilities\Certificate;
@@ -81,10 +81,10 @@ use Pastell\Utilities\Certificate;
             <td>
                 <?php echo $mfa_enabled ? 'Activée' : 'Désactivée' ?>
                 <?php if ($mfa_enabled && (int)$id_u === (int)$id_current_u) : ?>
-                    <a href='Mfa/authRequired?action=desactivation' class='btn btn-danger btn-sm'>
+                    <a href='Mfa/authRequired?action=disable' class='btn btn-danger btn-sm'>
                         <i class='fas fa-shield-alt'></i>&nbsp;Désactiver
                     </a>
-                <?php elseif ($mfa_admin_disable && $mfa_enabled) : ?>
+                <?php elseif ($root_system_edition && $mfa_enabled) : ?>
                     <form action='Utilisateur/disableMfa' method='post' class='d-inline'>
                         <?php $this->displayCSRFInput() ?>
                         <input type='hidden' name='id_u' value='<?php echo $id_u ?>'/>

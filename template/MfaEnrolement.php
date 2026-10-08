@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 ?>
 
-<a href='Mfa/cancelEnrolement' class="btn btn-link"><i class="fas fa-arrow-left"></i>&nbsp;Espace utilisateur</a>
+<a href='Utilisateur/moi' class="btn btn-link"><i class="fas fa-arrow-left"></i>&nbsp;Espace utilisateur</a>
 
 <div class="box">
     <div id="mfa-qr-step">
@@ -77,7 +77,7 @@ declare(strict_types=1);
         });
     </script>
 
-    <form action='Mfa/doEnrolement' method='post'>
+    <form action='Mfa/doEnrolement' method='post' id="mfa-code-form">
         <?php $this->displayCSRFInput(); ?>
 
         <div class="form-group row">
@@ -87,13 +87,18 @@ declare(strict_types=1);
                        inputmode="numeric" autocomplete="one-time-code" maxlength="6" required autofocus>
             </div>
         </div>
+    </form>
 
-        <a class='btn btn-outline-primary' href='Mfa/cancelEnrolement'>
-            <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
-        </a>
+    <div class="d-flex gap-2">
+        <form action='Mfa/cancelEnrolement' method='post'>
+            <?php $this->displayCSRFInput(); ?>
+            <button type="submit" class='btn btn-outline-primary'>
+                <i class="fas fa-circle-xmark"></i>&nbsp;Annuler
+            </button>
+        </form>
 
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" form="mfa-code-form" class="btn btn-primary">
             <i class="fas fa-floppy-disk"></i>&nbsp;Activer
         </button>
-    </form>
+    </div>
 </div>

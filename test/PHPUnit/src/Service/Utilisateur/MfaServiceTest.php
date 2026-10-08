@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use OTPHP\TOTP;
+use Pastell\Clock\SystemClock;
 use Pastell\Service\Utilisateur\MfaService;
 use Random\RandomException;
 
@@ -22,15 +23,26 @@ class MfaServiceTest extends PastellTestCase
     public function testVerifyValidCode(): void
     {
         $secret = $this->getMfaService()->generateSecret();
-        self::assertTrue($this->getMfaService()->verify($secret, TOTP::createFromSecret($secret)->now()));
+        self::assertTrue($this->getMfaService()->verify($secret, TOTP::createFromSecret($secret, new SystemClock())->now()));
     }
 
     public function testVerifyInvalidCode(): void
     {
         $secret = $this->getMfaService()->generateSecret();
-        $valid = TOTP::createFromSecret($secret)->now();
+        $valid = TOTP::createFromSecret($secret, new SystemClock())->now();
         $wrong = $valid === '000000' ? '111111' : '000000';
         self::assertFalse($this->getMfaService()->verify($secret, $wrong));
+    }
+
+    public function testTotpSingleUse(): void
+    {
+        $mfaService = $this->getMfaService();
+        $secret = $mfaService->generateSecret();
+        $mfaService->enroll(self::ID_U_ADMIN, $secret);
+        $code = TOTP::createFromSecret($secret, new SystemClock())->now();
+
+        self::assertTrue($mfaService->verifyForUser(self::ID_U_ADMIN, $code));
+        self::assertFalse($mfaService->verifyForUser(self::ID_U_ADMIN, $code));
     }
 
     public function testEnrollConfirmDelete(): void
