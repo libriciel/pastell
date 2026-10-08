@@ -2715,10 +2715,18 @@
                 "Default": "0",
                 "Extra": ""
             },
-            "created_at": {
-                "Field": "created_at",
+            "activated_at": {
+                "Field": "activated_at",
                 "Type": "datetime",
-                "Null": "NO",
+                "Null": "YES",
+                "Key": "",
+                "Default": null,
+                "Extra": ""
+            },
+            "last_used_counter": {
+                "Field": "last_used_counter",
+                "Type": "bigint(20)",
+                "Null": "YES",
                 "Key": "",
                 "Default": null,
                 "Extra": ""

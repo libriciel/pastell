@@ -364,7 +364,7 @@ class UtilisateurControler extends PastellControler
 
         $this->setViewParameter('mfa_enabled', $this->getMfaService()->isEnabled((int) $id_u));
         $this->setViewParameter(
-            'mfa_admin_disable',
+            'root_system_edition',
             $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION)
         );
 
@@ -380,7 +380,7 @@ class UtilisateurControler extends PastellControler
     {
         $id_u = (int) $this->getPostInfo()->get('id_u');
         if ($id_u === (int) $this->getId_u()) {
-            $this->redirect('/Mfa/authRequired?action=desactivation');
+            $this->redirect('/Mfa/authRequired?action=disable');
         }
 
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
@@ -476,14 +476,10 @@ class UtilisateurControler extends PastellControler
         $mfaInfo = $mfaService->getInfo($id_u);
         $mfaEnabled = !empty($mfaInfo['is_enabled']);
         $this->setViewParameter('mfa_enabled', $mfaEnabled);
-        $this->setViewParameter('mfa_created_at', $mfaInfo['created_at'] ?? '');
+        $this->setViewParameter('mfa_activated_at', $mfaInfo['activated_at'] ?? '');
         $this->setViewParameter(
             'mfa_recovery_remaining',
             $mfaEnabled ? $mfaService->countRemainingRecoveryCodes($id_u) : 0
-        );
-        $this->setViewParameter(
-            'mfa_admin',
-            $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION)
         );
 
         $this->setViewParameter('template_milieu', 'UtilisateurMoi');
