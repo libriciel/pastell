@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Pastell\Service\Utilisateur;
 
-enum MfaAuthAction: string
+enum MfaManagementAction: string
 {
     case REGENERATE = 'regenerate';
-    case DESACTIVATION = 'desactivation';
+    case DISABLE = 'disable';
 
     public function description(): string
     {
         return match ($this) {
             self::REGENERATE => 'Régénérer vos codes de récupération invalidera définitivement les anciens.',
-            self::DESACTIVATION => 'Désactiver votre double authentification réduira la sécurité de votre compte.',
+            self::DISABLE => 'Désactiver votre double authentification réduira la sécurité de votre compte.',
         };
     }
 
@@ -21,7 +21,7 @@ enum MfaAuthAction: string
     {
         return match ($this) {
             self::REGENERATE => 'Régénérer les codes de récupération',
-            self::DESACTIVATION => 'Désactiver',
+            self::DISABLE => 'Désactiver',
         };
     }
 
