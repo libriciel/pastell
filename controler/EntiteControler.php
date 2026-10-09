@@ -230,7 +230,7 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('search', $search);
         $this->setViewParameter('offset', $offset);
 
-        $this->setDroitViewParameter(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ENTITE, DroitType::EDITION);
+        $this->setRootDroitViewParameter(DroitService::DROIT_ENTITE, DroitType::EDITION);
         $this->setPageTitle("Entité Racine");
         $this->setViewParameter('template_milieu', "EntiteList");
         $this->renderDefault();

@@ -163,6 +163,17 @@ class PastellControler extends Controler
         );
     }
 
+    /**
+     * @throws NotFoundException
+     */
+    public function setRootDroitViewParameter(string $droit_id, DroitType $droit_type): void
+    {
+        $this->setViewParameter(
+            'root_' . $droit_id . '_' . $droit_type->value,
+            $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, $droit_id, $droit_type)
+        );
+    }
+
     public function getId_u()
     {
         return $this->getAuthentification()->getId();

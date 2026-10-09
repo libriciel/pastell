@@ -40,7 +40,7 @@ class RoleControler extends PastellControler
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::LECTURE);
         $this->setViewParameter('role', $this->getGetInfo()->get('role'));
-        $this->setDroitViewParameter(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION);
+        $this->setRootDroitViewParameter(DroitService::DROIT_ROLE, DroitType::EDITION);
         $this->setViewParameter('role_info', $this->getRoleSQL()->getInfo($this->getViewParameterByKey('role')));
 
         /** @var RoleDroit $roleDroit */

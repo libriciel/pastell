@@ -201,7 +201,7 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('next_action_automatique', $this->getViewParameterByKey('theAction')->getActionAutomatique($true_last_action));
         $this->setViewParameter('droit_erreur_fatale', $this->getDroitService()->hasDroitFor($this->getId_u(), 0, $info_document['type'], DroitType::EDITION));
 
-        $this->setDroitViewParameter(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->setRootDroitViewParameter(DroitService::DROIT_SYSTEM, DroitType::EDITION);
         if ($this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION)) {
             $this->setViewParameter('all_action', $documentType->getAction()->getWorkflowAction());
         }
