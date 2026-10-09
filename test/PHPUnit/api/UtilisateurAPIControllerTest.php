@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
@@ -317,8 +318,8 @@ class UtilisateurAPIControllerTest extends PastellTestCase
             ->edit('utilisateurLectureEdition', 'Droit utilisateur');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
             ->addDroit('utilisateurLectureEdition', DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION));
-        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)
-            ->addRole('3', 'utilisateurLectureEdition', '1');
+        $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)
+            ->addRole(3, 'utilisateurLectureEdition', 1);
 
         $userInfo = [
             'id_e' => '1',
@@ -350,8 +351,8 @@ class UtilisateurAPIControllerTest extends PastellTestCase
                 'utilisateurEdition',
                 DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION)
             );
-        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)
-            ->addRole((string)$user, 'utilisateurEdition', $entityId);
+        $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)
+            ->addRole($user, 'utilisateurEdition', (int)$entityId);
         return $user;
     }
 

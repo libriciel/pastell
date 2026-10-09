@@ -8,7 +8,7 @@ use Pastell\Command\User\CreateAdminUser;
 use Pastell\Service\TokenGenerator;
 use Pastell\Service\Utilisateur\UserCreationService;
 use PastellTestCase;
-use RoleUtilisateur;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Symfony\Component\Console\Tester\CommandTester;
 use UtilisateurSQL;
 
@@ -23,7 +23,7 @@ class CreateAdminUserTest extends PastellTestCase
             $this->getObjectInstancier()->getInstance(UserCreationService::class),
             $this->getObjectInstancier()->getInstance(UtilisateurSQL::class),
             $this->getObjectInstancier()->getInstance(TokenGenerator::class),
-            $this->getObjectInstancier()->getInstance(RoleUtilisateur::class),
+            $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class),
         );
         $this->commandTester = new CommandTester($command);
     }

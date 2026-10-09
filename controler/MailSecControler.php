@@ -6,6 +6,7 @@ use Pastell\Service\Annuaire\AnnuaireGroupeService;
 use Pastell\Service\Annuaire\AnnuaireImportService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Menu\MenuGaucheService;
 
 class MailSecControler extends PastellControler
@@ -224,7 +225,7 @@ class MailSecControler extends PastellControler
         $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::LECTURE);
         $this->setDroitViewParameter($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION);
 
-        $this->setViewParameter('arbre', $this->getRoleUtilisateur()->getArbreFille(
+        $this->setViewParameter('arbre', $this->getInstance(UtilisateurEntiteService::class)->getArbreFille(
             $this->getId_u(),
             DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION)
         ));

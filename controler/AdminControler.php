@@ -2,6 +2,7 @@
 
 use Pastell\Service\TokenGenerator;
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
 class AdminControler extends Controler
 {
@@ -20,12 +21,6 @@ class AdminControler extends Controler
     private function getUtilisateur(): UtilisateurSQL
     {
         return $this->getInstance(UtilisateurSQL::class);
-    }
-
-    /** @return RoleUtilisateur */
-    private function getRoleUtilisateur()
-    {
-        return $this->getInstance(RoleUtilisateur::class);
     }
 
     private function getEntiteSQL(): EntiteSQL
@@ -49,7 +44,7 @@ class AdminControler extends Controler
             $this->setLastError($e->getMessage());
             return false;
         }
-        $this->getRoleUtilisateur()->addRole($id_u, 'admin', 0);
+        $this->getInstance(UtilisateurRoleService::class)->addRole($id_u, 'admin', 0);
         return true;
     }
 

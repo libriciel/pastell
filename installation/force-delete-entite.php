@@ -8,6 +8,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Connecteur\ConnecteurDeletionService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
 require_once __DIR__ . '/../init.php';
 
@@ -35,7 +36,7 @@ $connecteurEntiteSQL = $objectInstancier->getInstance(ConnecteurEntiteSQL::class
 $fluxEntiteSQL = $objectInstancier->getInstance(FluxEntiteSQL::class);
 $utilisateurListe = $objectInstancier->getInstance(UtilisateurListe::class);
 $utilisateur = $objectInstancier->getInstance(UtilisateurSQL::class);
-$roleUtilisateur = $objectInstancier->getInstance(RoleUtilisateur::class);
+$utilisateurRoleService = $objectInstancier->getInstance(UtilisateurRoleService::class);
 $jobManager = $objectInstancier->getInstance(JobManager::class);
 $connecteurDeletionService = $objectInstancier->getInstance(ConnecteurDeletionService::class);
 $connecteurAssociationService = $objectInstancier->getInstance(ConnecteurAssociationService::class);
@@ -104,7 +105,7 @@ foreach ($id_e_list as $id_e) {
     $logger->info("Liste des utilisateurs à supprimer : ", $id_u_list);
     foreach ($id_u_list as $id_u) {
         if ($do) {
-            $roleUtilisateur->removeAllRole($id_u);
+            $utilisateurRoleService->removeAllRoles($id_u);
             $utilisateur->desinscription($id_u);
         }
         $logger->info("Suppression du l'utilisateur $id_u : " . ($do ? "[OK]" : "[PASS]"));

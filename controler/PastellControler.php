@@ -5,6 +5,7 @@ use Pastell\Security\LibricielFeedbackReader;
 use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Module\ModuleListService;
 use Pastell\ViewModel\DeleteConfirmation;
@@ -174,7 +175,7 @@ class PastellControler extends Controler
 
     public function setNavigationInfo($id_e, $url)
     {
-        $listeCollectivite = $this->getRoleUtilisateur()->getEntiteWithSomeDroit($this->getId_u());
+        $listeCollectivite = $this->getInstance(UtilisateurEntiteService::class)->getEntiteWithAnyDroit($this->getId_u());
         if (! $listeCollectivite) {
             $this->setViewParameter('navigation', []);
             $this->setViewParameter('navigation_url', $url);
@@ -202,7 +203,7 @@ class PastellControler extends Controler
                     'is_root' => false,
                     'id_e' => $ancestor['id_e'],
                     'name' => $this->getEntiteSQL()->getDenomination($ancestor['id_e']),
-                    'same_level_entities' => $this->getRoleUtilisateur()->getChildrenWithPermission(
+                    'same_level_entities' => $this->getInstance(UtilisateurEntiteService::class)->getChildrenWithAnyDroit(
                         $ancestor['entite_mere'],
                         $this->getId_u()
                     ),
@@ -215,7 +216,7 @@ class PastellControler extends Controler
                 'is_root' => false,
                 'id_e' => $id_e,
                 'name' => $this->getEntiteSQL()->getDenomination($id_e),
-                'same_level_entities' => $this->getRoleUtilisateur()->getChildrenWithPermission(
+                'same_level_entities' => $this->getInstance(UtilisateurEntiteService::class)->getChildrenWithAnyDroit(
                     $this->getEntiteSQL()->getEntiteMere($id_e) ?: 0,
                     $this->getId_u()
                 ),
@@ -352,7 +353,7 @@ class PastellControler extends Controler
             ));
         }
 
-        $listeCollectivite = $this->getRoleUtilisateur()->getEntite(
+        $listeCollectivite = $this->getInstance(UtilisateurEntiteService::class)->getEntite(
             $this->getId_u(),
             DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
         );
@@ -423,6 +424,7 @@ class PastellControler extends Controler
 
     /**
      * @return RoleUtilisateur
+     * @deprecated Since 4.1.24, Use UtilisateurRoleService / DroitService / UtilisateurEntiteService instead
      */
     public function getRoleUtilisateur(): RoleUtilisateur
     {

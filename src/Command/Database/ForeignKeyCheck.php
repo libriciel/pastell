@@ -9,7 +9,7 @@ use Exception;
 use LogicException;
 use Pastell\Command\BaseCommand;
 use PastellLogger;
-use RoleUtilisateur;
+use Pastell\Service\Droit\DroitService;
 use SQLQuery;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -152,7 +152,7 @@ class ForeignKeyCheck extends BaseCommand
 
     private const IGNORED_VALUES = [
         'utilisateur_role' => [
-            'role' => [RoleUtilisateur::AUCUN_DROIT],
+            'role' => [DroitService::AUCUN_DROIT],
         ],
     ];
 

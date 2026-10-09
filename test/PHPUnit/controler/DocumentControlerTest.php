@@ -2,6 +2,7 @@
 
 use Mailsec\MailsecManager;
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Utilities\Identifier\IdentifierGeneratorInterface;
 use Pastell\Utilities\Identifier\UuidGenerator;
 use Symfony\Component\HttpFoundation\Request;
@@ -215,8 +216,8 @@ class DocumentControlerTest extends ControlerTestCase
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $id_u = $userCreationService->create('badguy', 'test@bar.baz', 'foo', 'foo');
 
-        $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
-        $roleUtilisateur->addRole($id_u, 'admin', 2);
+        $utilisateurRoleService = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
+        $utilisateurRoleService->addRole($id_u, 'admin', 2);
         $this->getObjectInstancier()->getInstance(Authentification::class)->connexion('admin', $id_u);
 
         $documentController = $this->getObjectInstancier()->getInstance(DocumentControler::class);
@@ -244,9 +245,9 @@ class DocumentControlerTest extends ControlerTestCase
         $id_u = $userCreationService->create('badguy', 'test@bar.baz', 'foo', 'foo');
 
         $documentController = $this->getControlerInstance(DocumentControler::class);
-        $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
-        $roleUtilisateur->addRole($id_u, 'admin', 2);
-        $roleUtilisateur->addRole($id_u, 'admin', 1);
+        $utilisateurRoleService = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
+        $utilisateurRoleService->addRole($id_u, 'admin', 2);
+        $utilisateurRoleService->addRole($id_u, 'admin', 1);
         $this->getObjectInstancier()->getInstance(Authentification::class)->connexion('admin', $id_u);
 
         ob_start();
@@ -268,9 +269,9 @@ class DocumentControlerTest extends ControlerTestCase
         $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
         $roleSQL->addDroit('utilisateur', DroitService::getDroitFor('actes-generique', DroitType::LECTURE));
 
-        $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
-        $roleUtilisateur->addRole($id_u, 'admin', 2);
-        $roleUtilisateur->addRole($id_u, 'utilisateur', 1);
+        $utilisateurRoleService = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
+        $utilisateurRoleService->addRole($id_u, 'admin', 2);
+        $utilisateurRoleService->addRole($id_u, 'utilisateur', 1);
         $this->getObjectInstancier()->getInstance(Authentification::class)->connexion('admin', $id_u);
 
         $documentController = $this->getControlerInstance(DocumentControler::class);

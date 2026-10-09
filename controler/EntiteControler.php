@@ -5,6 +5,7 @@ use Pastell\Service\FeatureToggle\DisplayConnecteurEntiteRacine;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Entite\EntityUpdateService;
@@ -81,7 +82,7 @@ class EntiteControler extends PastellControler
         $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
 
         $all_role = $this->getRoleSQL()->getAllRole();
-        $all_role[] = ['role' => RoleUtilisateur::AUCUN_DROIT, 'libelle' => RoleUtilisateur::AUCUN_DROIT];
+        $all_role[] = ['role' => DroitService::AUCUN_DROIT, 'libelle' => DroitService::AUCUN_DROIT];
 
         $this->setViewParameter('all_role', $all_role);
         $this->setDroitViewParameter($id_e, DroitService::DROIT_UTILISATEUR, DroitType::CREATION);
@@ -189,7 +190,7 @@ class EntiteControler extends PastellControler
 
     public function hasManyCollectivite()
     {
-        $liste_collectivite = $this->getRoleUtilisateur()->getEntiteWithDenomination(
+        $liste_collectivite = $this->getInstance(UtilisateurEntiteService::class)->getEntiteWithDenomination(
             $this->getId_u(),
             DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
         );
@@ -211,7 +212,7 @@ class EntiteControler extends PastellControler
         $offset = $recuperateur->getInt('offset', 0);
         $search = $recuperateur->get('search', '');
 
-        $liste_collectivite = $this->getRoleUtilisateur()->getEntiteWithDenomination(
+        $liste_collectivite = $this->getInstance(UtilisateurEntiteService::class)->getEntiteWithDenomination(
             $this->getId_u(),
             DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
         );

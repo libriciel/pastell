@@ -2,6 +2,8 @@
 
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Utilisateur\RoleDelegationService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
 class UtilisateurRoleAPIController extends BaseAPIController
 {
@@ -10,7 +12,9 @@ class UtilisateurRoleAPIController extends BaseAPIController
     public function __construct(
         private readonly UtilisateurSQL $utilisateur,
         private readonly RoleSQL $roleSQL,
-        private readonly EntiteSQL $entiteSQL
+        private readonly EntiteSQL $entiteSQL,
+        private readonly UtilisateurRoleService $utilisateurRoleService,
+        private readonly RoleDelegationService $roleDelegationService,
     ) {
     }
 
@@ -52,7 +56,7 @@ class UtilisateurRoleAPIController extends BaseAPIController
 
         $this->verifExists($id_u);
 
-        $role_list = $this->getRoleUtilisateur()->getRole($id_u);
+        $role_list = $this->utilisateurRoleService->getRole((int) $id_u);
         $all_droit_utilisateur = $this->getDroitService()->getAllDroitEntite($id_u, $id_e);
 
         // Construction du tableau de retour
@@ -110,13 +114,13 @@ class UtilisateurRoleAPIController extends BaseAPIController
         $this->verifRoleExists($role);
 
         if (
-            !$this->getRoleUtilisateur()->canDelegateRole($this->getUtilisateurId(), $role, $id_e)
+            !$this->roleDelegationService->canDelegateRole((int) $this->getUtilisateurId(), $role, (int) $id_e)
         ) {
             throw new ForbiddenException("Rôle non délégable par l'utilisateur courant : {role=$role}");
         }
 
-        if (!$this->getRoleUtilisateur()->hasRole($id_u, $role, $id_e)) {
-            $this->getRoleUtilisateur()->addRole($id_u, $role, $id_e);
+        if (!$this->utilisateurRoleService->hasRole((int) $id_u, $role, (int) $id_e)) {
+            $this->utilisateurRoleService->addRole((int) $id_u, $role, (int) $id_e);
         }
 
         $result['result'] = self::RESULT_OK;
@@ -137,10 +141,10 @@ class UtilisateurRoleAPIController extends BaseAPIController
         $this->verifExists($id_u);
 
         if ($role === self::ALL_ROLES) {
-            $this->getRoleUtilisateur()->removeAllRolesEntite($id_u, $id_e);
+            $this->utilisateurRoleService->removeAllRolesForEntite((int) $id_u, (int) $id_e);
         } else {
             $this->verifRoleExists($role);
-            $this->getRoleUtilisateur()->removeRole($id_u, $role, $id_e);
+            $this->utilisateurRoleService->removeRole((int) $id_u, $role, (int) $id_e);
         }
 
         $result['result'] = self::RESULT_OK;

@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Menu\MenuGaucheOption;
 use Pastell\Service\Menu\MenuGaucheService;
 
@@ -149,7 +150,7 @@ class JournalControler extends PastellControler
         $this->setViewParameter('date_debut', $recuperateur->get('date_debut'));
         $this->setViewParameter('date_fin', $recuperateur->get('date_fin'));
 
-        $liste_collectivite = $this->getRoleUtilisateur()->getEntite(
+        $liste_collectivite = $this->getInstance(UtilisateurEntiteService::class)->getEntite(
             $this->getId_u(),
             DroitService::getDroitFor(DroitService::DROIT_JOURNAL, DroitType::LECTURE)
         );

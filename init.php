@@ -120,7 +120,6 @@ $authentification = $objectInstancier->getInstance(Authentification::class);
 $journal = $objectInstancier->getInstance(Journal::class);
 $documentTypeFactory = $objectInstancier->getInstance(DocumentTypeFactory::class);
 $donneesFormulaireFactory = $objectInstancier->getInstance(DonneesFormulaireFactory::class);
-$roleUtilisateur = $objectInstancier->getInstance(RoleUtilisateur::class);
 
 if (PHP_SAPI !== 'cli' || $objectInstancier->getInstance(SQLQuery::class)->isConnected()) {
     $objectInstancier->getInstance(Extensions::class)->autoloadExtensions();

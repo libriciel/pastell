@@ -83,10 +83,9 @@ abstract class PastellTestCase extends TestCase
         $this->objectInstancier->setInstance(LockFactory::class, new LockFactory(new InMemoryStore()));
 
         $this->getObjectInstancier()->setInstance(
-            RoleUtilisateur::class,
-            new RoleUtilisateur(
-                $this->getSQLQuery(),
-                $this->getObjectInstancier()->getInstance(RoleSQL::class),
+            UtilisateurRoleCache::class,
+            new UtilisateurRoleCache(
+                new UtilisateurRoleSQL($this->getSQLQuery()),
                 new MemoryCacheNone(),
                 0
             )
