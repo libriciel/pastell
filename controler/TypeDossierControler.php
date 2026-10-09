@@ -100,7 +100,7 @@ class TypeDossierControler extends PastellControler
     public function listAction()
     {
         $this->setViewParameter('type_dossier_list', $this->getTypeDossierSQL()->getAll());
-        $this->setDroitViewParameter(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->setRootDroitViewParameter(DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', "Types de dossier personnalisés");
         $this->setViewParameter('template_milieu', "TypeDossierList");
         $this->renderDefault();
