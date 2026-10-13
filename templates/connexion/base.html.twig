@@ -18,6 +18,7 @@
         'node_modules/@fortawesome/fontawesome-free/css/all.min.css',
         'node_modules/@libriciel/ls-auth-native/styles.css',
         'node_modules/@libriciel/ls-bootstrap-5/pa-bootstrap.css',
+        'node_modules/@libriciel/design-system/styles/design-system-tokens.css',
         'node_modules/@libriciel/ls-jquery-password/dist/css/ls-jquery-password.css',
     ] %}
 
@@ -33,14 +34,14 @@
 {% block main %}{% endblock %}
 
 <ls-footer
-        class="ls-login-footer"
-        application_name="Pastell {{ manifest_info.version }}"
-        active="pastell"
->
-</ls-footer>
+        variant="login"
+        product-name="Pastell"
+        product-version="{{ manifest_info.version }}"
+        accessibility-href="{{ path('app.legacy.accessibilite_index') }}"
+        accessibility-status="partiellement conforme"
+></ls-footer>
 
 {% set jsFiles = [
-    'node_modules/@libriciel/ls-elements-native/ls-elements.js',
     'node_modules/@libriciel/ls-auth-native/ls-auth.js',
 ] %}
 
@@ -48,6 +49,7 @@
 {% for jsFile in jsFiles %}
     <script type="text/javascript" src="{{ jsFile ~ '?rev=' ~ manifest_info.revision }}"></script>
 {% endfor %}
+<script type="module" src="{{ 'node_modules/@libriciel/design-system/components/footer/index.js?rev=' ~ manifest_info.revision }}"></script>
 {% endblock %}
 
 </body>

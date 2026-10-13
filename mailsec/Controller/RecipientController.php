@@ -21,7 +21,6 @@ use ManifestFactory;
 use NotFoundException;
 use ObjectInstancier;
 use ObjectInstancierFactory;
-use PastellTimer;
 use Recuperateur;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,7 +36,6 @@ final class RecipientController extends AbstractController
     private ObjectInstancier $objectInstancier;
     private Gabarit $gabarit;
     private ManifestFactory $manifestFactory;
-    private PastellTimer $pastellTimer;
     private MailsecManager $mailsecManager;
 
     public function __construct()
@@ -46,7 +44,6 @@ final class RecipientController extends AbstractController
         $this->mailsecManager = new MailsecManager($this->objectInstancier);
         $this->gabarit = $this->objectInstancier->getInstance(Gabarit::class);
         $this->manifestFactory = $this->objectInstancier->getInstance(ManifestFactory::class);
-        $this->pastellTimer = $this->objectInstancier->getInstance(PastellTimer::class);
     }
 
     #[Route('/mail/invalid', name: 'mailsec_recipient_invalid', methods: ['GET'])]
@@ -56,7 +53,6 @@ final class RecipientController extends AbstractController
             'page_title' => 'Mail sécurisé invalide',
             'gabarit' => $this->gabarit,
             'manifest_info' => $this->manifestFactory->getPastellManifest(),
-            'timer' => $this->pastellTimer,
         ]);
     }
 
@@ -67,7 +63,6 @@ final class RecipientController extends AbstractController
             'page_title' => 'Mail sécurisé indisponible',
             'gabarit' => $this->gabarit,
             'manifest_info' => $this->manifestFactory->getPastellManifest(),
-            'timer' => $this->pastellTimer,
         ]);
     }
 
@@ -86,7 +81,6 @@ final class RecipientController extends AbstractController
             'page_title' => $mailSecInfo->denomination_entite . ' - Mail sécurisé',
             'gabarit' => $this->gabarit,
             'manifest_info' => $this->manifestFactory->getPastellManifest(),
-            'timer' => $this->pastellTimer,
             'reponse_url' => $this->generateUrl('mailsec_recipient_reply', ['key' => $key]),
             'recuperation_fichier_url' => $this->generateUrl(
                 'mailsec_recipient_downloadFile',
@@ -126,7 +120,6 @@ final class RecipientController extends AbstractController
             'page_title' => 'Accéder au mail sécurisé',
             'gabarit' => $this->gabarit,
             'manifest_info' => $this->manifestFactory->getPastellManifest(),
-            'timer' => $this->pastellTimer,
             'mail_url' => $this->generateUrl('mailsec_recipient_index', ['key' => $key]),
         ]);
     }
@@ -153,7 +146,6 @@ final class RecipientController extends AbstractController
             'page_title' => 'Mot de passe Mail sécurisé',
             'gabarit' => $this->gabarit,
             'manifest_info' => $this->manifestFactory->getPastellManifest(),
-            'timer' => $this->pastellTimer,
             'key' => $key,
         ]);
     }
@@ -199,7 +191,6 @@ final class RecipientController extends AbstractController
             'page_title' => $mailSecInfo->denomination_entite . ' - Réponse à un mail sécurisé',
             'gabarit' => $this->gabarit,
             'manifest_info' => $this->manifestFactory->getPastellManifest(),
-            'timer' => $this->pastellTimer,
             'reponse_url' => $this->generateUrl('mailsec_recipient_reply', ['key' => $key]),
             'suppression_fichier_url' => $this->generateUrl(
                 'mailsec_recipient_deleteFile',
@@ -257,7 +248,6 @@ final class RecipientController extends AbstractController
             'page_title' => $mailSecInfo->denomination_entite . ' - Mail sécurisé - Validation de la réponse',
             'gabarit' => $this->gabarit,
             'manifest_info' => $this->manifestFactory->getPastellManifest(),
-            'timer' => $this->pastellTimer,
             'reponse_url' => $this->generateUrl('mailsec_recipient_reply', ['key' => $key]),
             'validation_url' => $this->generateUrl('mailsec_recipient_validate', ['key' => $key]),
             'suppression_fichier_url' => $this->generateUrl(
