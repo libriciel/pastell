@@ -21,6 +21,7 @@
         'node_modules/jquery-ui/dist/themes/cupertino/jquery-ui.min.css',
         'img/commun.css',
         'node_modules/@libriciel/ls-bootstrap-5/pa-bootstrap.css',
+        'node_modules/@libriciel/design-system/styles/design-system-tokens.css',
         'img/jquery.treeview.css',
         'node_modules/@libriciel/ls-jquery-password/dist/css/ls-jquery-password.css',
         'node_modules/treeselectjs/dist/treeselectjs.css',
@@ -63,6 +64,7 @@
     {% for jsFile in jsFiles %}
         <script type="text/javascript" src="{{ jsFile ~ '?rev=' ~ manifest_info.revision}}"></script>
     {% endfor %}
+    <script type="module" src="{{ 'node_modules/@libriciel/design-system/components/footer/index.js?rev=' ~ manifest_info.revision }}"></script>
 {% endblock %}
 </head>
 
