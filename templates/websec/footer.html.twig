@@ -1,19 +1,5 @@
-<div id="bottom">
-
-    <div class="bloc_copyright">
-        <div class="bloc_logo_libriciel">
-            <a href='https://www.libriciel.fr/' target="_blank">
-                <img src="{{ asset('img/commun/ls-light.svg') }}" alt="Libriciel"/>
-            </a>
-        </div>
-        <div class="bloc_mentions">
-            <p> Pastell&nbsp;{{ manifest_info.version }}
-                -
-                <a href="https://www.libriciel.fr" target="_blank">Libriciel SCOP</a>
-                - <em>{{ timer.getElapsedTime | round(3) }}s</em></p>
-        </div>
-
-        <div id="bloc_left"></div>
-
-    </div>
-</div>
+<ls-footer
+        variant="authenticated"
+        product-name="Pastell"
+        product-version="{{ manifest_info.version }}"
+></ls-footer>

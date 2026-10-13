@@ -1,20 +1,7 @@
-<div id="bottom">
-
-    <div class="bloc_copyright">
-        <div class="bloc_logo_libriciel">
-            <a href='https://www.libriciel.fr/' target="_blank">
-                <img src="{{ asset('img/commun/ls-light.svg') }}" alt="Libriciel"/>
-            </a>
-        </div>
-        <div class="bloc_mentions">
-            <p> Pastell&nbsp;{{ manifest_info.version }}
-                |
-                <a href="{{ path('app.legacy.accessibilite_index')  }}">Accessibilité</a>
-                : partiellement conforme
-            </p>
-        </div>
-
-        <div id="bloc_left"></div>
-
-    </div>
-</div>
+<ls-footer
+        variant="authenticated"
+        product-name="Pastell"
+        product-version="{{ manifest_info.version }}"
+        accessibility-href="{{ path('app.legacy.accessibilite_index') }}"
+        accessibility-status="partiellement conforme"
+></ls-footer>
