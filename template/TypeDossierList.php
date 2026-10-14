@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @var string $root_system_edition
+ * @var bool $root_system_edition
  */
 ?>
 <div class="box" style="min-height: 500px;">
