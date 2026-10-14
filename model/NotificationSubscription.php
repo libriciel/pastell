@@ -6,6 +6,8 @@ class NotificationSubscription
 {
     public const ALL_ACTION = '0';
 
+    public const ALL_TYPE = '0';
+
     public function __construct(
         public int $id_u,
         public int $id_e,

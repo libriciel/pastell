@@ -2,6 +2,10 @@
 
 ## [4.1.24] - 2026-11-02
 
+### Corrections
+
+- Les notifications sont supprimées au retrait d'un rôle ou à la modification de ses droits lorsque l'utilisateur n'a plus les droits nécessaires #2575
+
 ### Dépréciations
 
 - Classe `Notification` dépréciée au profit de `NotificationSQL` et des services `NotificationService` et `NotificationSubscription` #2582
