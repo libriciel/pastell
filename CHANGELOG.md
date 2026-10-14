@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.1.25] - 2026-11-02
+
+### Dépréciations
+
+- Classes `EntiteListe` et `UtilisateurListe` dépréciées au profit de `EntiteSQL`, `UtilisateurSQL` et du service `UtilisateurListService` #2601
+
 ## [4.1.24] - 2026-10-22
 
 ### Dépréciations

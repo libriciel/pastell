@@ -6,6 +6,7 @@ use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
+use Pastell\Service\Utilisateur\UtilisateurListService;
 use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Entite\EntityUpdateService;
@@ -76,8 +77,8 @@ class EntiteControler extends PastellControler
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
         $descendance = $recuperateur->get('descendance');
-        $role = $recuperateur->get('role');
-        $search = $recuperateur->get('search');
+        $role = (string) $recuperateur->get('role');
+        $search = (string) $recuperateur->get('search');
         $offset = $recuperateur->getInt('offset');
         $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
 
@@ -89,10 +90,10 @@ class EntiteControler extends PastellControler
 
         $this->setViewParameter(
             'nb_utilisateur',
-            $this->getUtilisateurListe()->getNbUtilisateur($id_e, $descendance, $role, $search)
+            $this->getUtilisateur()->countByEntite($id_e, (bool) $descendance, $role, $search)
         );
-        $listeUtilisateur = $this->getUtilisateurListe()
-            ->getAllUtilisateur($id_e, $descendance, $role, $search, $offset);
+        $listeUtilisateur = $this->getInstance(UtilisateurListService::class)
+            ->getAllWithRoles($id_e, (bool) $descendance, $role, $search, $offset);
         foreach ($listeUtilisateur as $key => $utilisateur) {
             foreach ($utilisateur['all_role'] as $j => $userRole) {
                 $listeUtilisateur[$key]['all_role'][$j]['ancetre'] =
@@ -118,15 +119,16 @@ class EntiteControler extends PastellControler
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
         $descendance = $recuperateur->get('descendance');
-        $the_role = $recuperateur->get('role_selected');
-        $search = $recuperateur->get('search');
+        $selected_role = (string) $recuperateur->get('role_selected');
+        $search = (string) $recuperateur->get('search');
 
         $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
 
         $result = [];
         $result[] = ["id_u", "login", "prénom", "nom", "email", "collectivité de base", "id_e", "rôles"];
 
-        $allUtilisateur = $this->getUtilisateurListe()->getAllUtilisateur($id_e, $descendance, $the_role, $search, -1);
+        $allUtilisateur = $this->getInstance(UtilisateurListService::class)
+            ->getAllWithRoles($id_e, (bool) $descendance, $selected_role, $search, 0, null);
         foreach ($allUtilisateur as $i => $user) {
             $r = [];
             foreach ($user['all_role'] as $role) {
@@ -145,7 +147,7 @@ class EntiteControler extends PastellControler
             ];
         }
 
-        $filename = "utilisateur-pastell-$id_e-$descendance-$the_role-$search.csv";
+        $filename = "utilisateur-pastell-$id_e-$descendance-$selected_role-$search.csv";
 
         /** @var CSVoutput $csvOutput */
         $csvOutput = $this->getInstance(CSVoutput::class);
@@ -210,7 +212,7 @@ class EntiteControler extends PastellControler
     {
         $recuperateur = $this->getGetInfo();
         $offset = $recuperateur->getInt('offset', 0);
-        $search = $recuperateur->get('search', '');
+        $search = (string) $recuperateur->get('search', '');
 
         $liste_collectivite = $this->getInstance(UtilisateurEntiteService::class)->getEntiteWithDenomination(
             $this->getId_u(),
@@ -222,8 +224,8 @@ class EntiteControler extends PastellControler
             $this->redirect("/Entite/detail?id_e=" . $liste_collectivite[0]['id_e']);
         }
         if ($nbCollectivite >= 1 && $liste_collectivite[0]['id_e'] == 0) {
-            $liste_collectivite = $this->getEntiteListe()->getAllCollectivite($offset, $search);
-            $nbCollectivite = $this->getEntiteListe()->getNbCollectivite($search);
+            $liste_collectivite = $this->getEntiteSQL()->getAllCollectivite($offset, $search);
+            $nbCollectivite = $this->getEntiteSQL()->getNbCollectivite($search);
         }
         $this->setViewParameter('liste_collectivite', $liste_collectivite);
         $this->setViewParameter('nbCollectivite', $nbCollectivite);
@@ -241,7 +243,7 @@ class EntiteControler extends PastellControler
         $id_e = $this->getGetInfo()->getInt('id_e', 0);
         $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
 
-        $entite_list = $this->getEntiteListe()->getAllFille($id_e);
+        $entite_list = $this->getEntiteSQL()->getFille($id_e);
         $result = [
             [
                 "ID_E",
@@ -289,7 +291,7 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('page_title', "Importer (fichier CSV)");
 
         if ($onglet === "collectivités") {
-            $this->setViewParameter('allCDG', $this->getEntiteListe()->getAll(EntiteSQL::TYPE_CENTRE_DE_GESTION));
+            $this->setViewParameter('allCDG', $this->getEntiteSQL()->getAllByType(EntiteSQL::TYPE_CENTRE_DE_GESTION));
             $this->setViewParameter('cdg_selected', false);
         }
 
@@ -343,7 +345,7 @@ class EntiteControler extends PastellControler
         }
         $this->setViewParameter('infoEntite', $infoEntite);
         $this->setViewParameter('cdg_selected', $infoEntite['centre_de_gestion']);
-        $this->setViewParameter('allCDG', $this->getEntiteListe()->getAll(EntiteSQL::TYPE_CENTRE_DE_GESTION));
+        $this->setViewParameter('allCDG', $this->getEntiteSQL()->getAllByType(EntiteSQL::TYPE_CENTRE_DE_GESTION));
         $this->setViewParameter('template_milieu', "EntiteEdition");
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('entite_mere', $entite_mere);
@@ -382,8 +384,8 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('id_d', $recuperateur->get('id_d'));
         $this->setViewParameter('id_e', $recuperateur->get('id_e'));
         $this->setViewParameter('action', $recuperateur->get('action'));
-        $this->setViewParameter('type', $recuperateur->get('type', EntiteSQL::TYPE_COLLECTIVITE));
-        $this->setViewParameter('liste', $this->getEntiteListe()->getAll($this->getViewParameterByKey('type')));
+        $this->setViewParameter('type', (string) $recuperateur->get('type', EntiteSQL::TYPE_COLLECTIVITE));
+        $this->setViewParameter('liste', $this->getEntiteSQL()->getAllByType($this->getViewParameterByKey('type')));
 
         if (!$this->getViewParameterByKey('liste')) {
             $this->setLastError(

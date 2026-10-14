@@ -1,8 +1,11 @@
 <?php
 
+/**
+ * @deprecated 4.1.25 Use EntiteSQL instead
+ */
 class EntiteListe extends SQL
 {
-    public const NB_AFFICHABLE = 20;
+    public const NB_AFFICHABLE = EntiteSQL::NB_COLLECTIVITE_DISPLAY;
 
     private $recherche;
 
