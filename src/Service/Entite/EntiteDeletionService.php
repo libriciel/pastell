@@ -10,7 +10,7 @@ use EntiteSQL;
 use FluxEntiteHeritageSQL;
 use FluxEntiteSQL;
 use Journal;
-use Notification;
+use Pastell\Service\Notification\NotificationService;
 use UnrecoverableException;
 use UtilisateurListe;
 
@@ -35,7 +35,7 @@ class EntiteDeletionService
         private readonly FluxEntiteHeritageSQL $fluxEntiteHeritageSQL,
         private readonly UtilisateurListe $utilisateurListe,
         private readonly AnnuaireSQL $annuaireSQL,
-        private readonly Notification $notification,
+        private readonly NotificationService $notificationService,
         private readonly AnnuaireRoleSQL $annuaireRoleSQL,
     ) {
         $this->entiteSQL = $entiteSQL;
@@ -50,7 +50,7 @@ class EntiteDeletionService
     {
         $this->canDeleteOrThrow($id_e);
         $info = $this->entiteSQL->getInfo($id_e);
-        $this->notification->removeAllForEntite($id_e);
+        $this->notificationService->removeAllForEntite($id_e);
         $this->annuaireRoleSQL->deleteByEntite($id_e);
         $this->entiteSQL->removeEntite($id_e);
         $this->journal->add(

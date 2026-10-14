@@ -4,6 +4,7 @@
 
 ### Dépréciations
 
+- Classe `Notification` dépréciée au profit de `NotificationSQL` et des services `NotificationService` et `NotificationSubscription` #2582
 - Classe `RoleUtilisateur` dépréciée au profit de `UtilisateurRoleSQL` et des services `UtilisateurRoleService`, `UtilisateurEntiteService` et `RoleDelegationService` #2594
 
 ## [4.1.23] - 2026-10-05

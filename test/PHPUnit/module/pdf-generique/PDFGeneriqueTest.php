@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Notification\NotificationService;
+
 class PDFGeneriqueTest extends PastellTestCase
 {
     public const FILENAME = "Délib Libriciel.pdf";
@@ -71,8 +73,9 @@ class PDFGeneriqueTest extends PastellTestCase
             'to' => 'email@example.org',
         ]);
 
-        $notification = $this->getObjectInstancier()->getInstance(Notification::class);
-        $notification->add(self::ID_U_ADMIN, self::ID_E_COL, 'pdf-generique', 'reception', true);
+        $notificationService = $this->getObjectInstancier()
+            ->getInstance(NotificationService::class);
+        $notificationService->subscribe(self::ID_U_ADMIN, self::ID_E_COL, 'pdf-generique', 'reception', true);
 
         $action = $this->triggerActionOnDocument($id_d, 'send-mailsec');
         $this->assertTrue($action);
