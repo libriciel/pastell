@@ -206,6 +206,20 @@ SQL;
         return (int) $this->queryOne($sql, $role);
     }
 
+    /**
+     * @return int[]
+     */
+    public function getSubscribedUsersByRole(string $role): array
+    {
+        $sql = <<<SQL
+SELECT DISTINCT utilisateur_role.id_u
+FROM utilisateur_role
+JOIN notification ON notification.id_u = utilisateur_role.id_u
+WHERE utilisateur_role.role = ?
+SQL;
+        return array_map(intval(...), $this->queryOneCol($sql, $role));
+    }
+
     public function getChildrenWithAnyDroit(int $id_e_parent, int $id_u, string $excludedRole): array
     {
         $sql = <<<SQL

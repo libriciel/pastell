@@ -36,7 +36,7 @@ class UtilisateurRoleAPIControllerTest extends PastellTestCase
         $this->expectOutputRegex("#ok#");
         $this->getV1("add-several-role-utilisateur.php?id_u=2&id_e=1&deleteRoles=true&role[]=utilisateur&role[]=autre");
         $list = $this->getInternalAPI()->get("utilisateur/2/role");
-        $this->assertEquals('autre', $list[0]['role']);
+        $this->assertEqualsCanonicalizing(['utilisateur', 'autre'], array_column($list, 'role'));
     }
 
     public function testAddSeveralNoRole()

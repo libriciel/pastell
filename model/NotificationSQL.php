@@ -94,13 +94,20 @@ SELECT notification.*, utilisateur.email
 FROM notification
 JOIN utilisateur ON notification.id_u = utilisateur.id_u
 WHERE (notification.id_e = ? OR notification.id_e = 0)
-  AND (type = ? OR type = '0')
+  AND (type = ? OR type = ?)
   AND (action = ? OR action = ?)
   AND is_enabled = 1
 SQL;
         return array_map(
             NotificationSubscription::fromArray(...),
-            $this->query($sql, $id_e, $type, $action, NotificationSubscription::ALL_ACTION),
+            $this->query(
+                $sql,
+                $id_e,
+                $type,
+                NotificationSubscription::ALL_TYPE,
+                $action,
+                NotificationSubscription::ALL_ACTION,
+            ),
         );
     }
 
