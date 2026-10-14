@@ -37,13 +37,12 @@ class NotificationSQLTest extends PastellTestCase
     public function testMatchingOnlyEnabled(): void
     {
         $this->notificationSQL->insert(new NotificationSubscription(1, 1, 'actes-generique', 'send-tdt'));
-        static::assertCount(1, $this->notificationSQL->getMatchingSubscriptions(1, 'actes-generique', 'send-tdt', true));
+        static::assertCount(1, $this->notificationSQL->getMatchingSubscriptions(1, 'actes-generique', 'send-tdt'));
         $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->disable(1);
-        static::assertCount(1, $this->notificationSQL->getMatchingSubscriptions(1, 'actes-generique', 'send-tdt', false));
-        static::assertCount(0, $this->notificationSQL->getMatchingSubscriptions(1, 'actes-generique', 'send-tdt', true));
+        static::assertCount(0, $this->notificationSQL->getMatchingSubscriptions(1, 'actes-generique', 'send-tdt'));
     }
 
-    public function testFromArrayRoundTrip(): void
+    public function testFromArray(): void
     {
         $subscription = NotificationSubscription::fromArray([
             'id_n' => '5',
@@ -55,9 +54,5 @@ class NotificationSQLTest extends PastellTestCase
         ]);
         static::assertSame(5, $subscription->id_n);
         static::assertTrue($subscription->daily_digest);
-        static::assertSame(
-            ['id_n' => 5, 'id_u' => 1, 'id_e' => 2, 'type' => 'actes-generique', 'action' => 'send-tdt', 'daily_digest' => 1],
-            $subscription->toArray(),
-        );
     }
 }

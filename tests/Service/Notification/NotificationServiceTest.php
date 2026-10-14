@@ -72,13 +72,6 @@ class NotificationServiceTest extends PastellTestCase
         static::assertTrue($this->notificationService->hasDailyDigest(1, 1, 'actes-generique'));
     }
 
-    public function testGetRecipientEmails(): void
-    {
-        $this->notificationService->subscribe(1, 1, 'actes-generique', 'send-tdt', false);
-        $emails = $this->notificationService->getRecipientEmails(1, 'actes-generique', 'send-tdt');
-        static::assertSame(['eric@sigmalis.com'], $emails);
-    }
-
     public function testGetRecipientsIgnoresDisabled(): void
     {
         $this->notificationService->subscribe(1, 1, 'actes-generique', 'send-tdt', false);

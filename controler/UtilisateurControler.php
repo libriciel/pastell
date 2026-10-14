@@ -735,9 +735,9 @@ class UtilisateurControler extends PastellControler
     {
         $recuperateur = $this->getPostInfo();
         $source = $recuperateur->get('source', 'moi');
-        $id_n = $recuperateur->get('id_n');
+        $id_n = $recuperateur->getInt('id_n');
 
-        $infoNotification = $this->getNotificationService()->getSubscription((int) $id_n);
+        $infoNotification = $this->getNotificationService()->getSubscription($id_n);
         if (!$infoNotification) {
             $this->setLastError("La notification n'existe pas");
             $this->redirectToPageUtilisateur($source, $this->getId_u());

@@ -84,18 +84,7 @@ class NotificationService
      */
     public function getRecipients(int $id_e, string $type, string $action): array
     {
-        return $this->notificationSQL->getMatchingSubscriptions($id_e, $type, $action, true);
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getRecipientEmails(int $id_e, string $type, string $action): array
-    {
-        return array_values(array_filter(array_map(
-            static fn(NotificationSubscription $recipient): ?string => $recipient->email,
-            $this->getRecipients($id_e, $type, $action),
-        )));
+        return $this->notificationSQL->getMatchingSubscriptions($id_e, $type, $action);
     }
 
     public function removeAllForUser(int $id_u): void

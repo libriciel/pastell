@@ -87,7 +87,7 @@ SQL;
     /**
      * @return NotificationSubscription[]
      */
-    public function getMatchingSubscriptions(int $id_e, string $type, string $action, bool $onlyEnabled): array
+    public function getMatchingSubscriptions(int $id_e, string $type, string $action): array
     {
         $sql = <<<SQL
 SELECT notification.*, utilisateur.email
@@ -95,14 +95,12 @@ FROM notification
 JOIN utilisateur ON notification.id_u = utilisateur.id_u
 WHERE (notification.id_e = ? OR notification.id_e = 0)
   AND (type = ? OR type = '0')
-  AND (action = ? OR action = '0')
+  AND (action = ? OR action = ?)
+  AND is_enabled = 1
 SQL;
-        if ($onlyEnabled) {
-            $sql .= "\n  AND is_enabled = 1";
-        }
         return array_map(
             NotificationSubscription::fromArray(...),
-            $this->query($sql, $id_e, $type, $action),
+            $this->query($sql, $id_e, $type, $action, NotificationSubscription::ALL_ACTION),
         );
     }
 

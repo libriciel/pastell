@@ -23,7 +23,7 @@ class NotificationMail
      */
     public function notify($id_e, $id_d, $action, $type, $message, array $attachment = []): void
     {
-        foreach ($this->notificationService->getRecipients($id_e, $type, $action) as $recipient) {
+        foreach ($this->notificationService->getRecipients((int) $id_e, (string) $type, (string) $action) as $recipient) {
             if ($recipient->daily_digest) {
                 $this->register($recipient->email, $id_e, $id_d, $action, $type, $message);
             } else {

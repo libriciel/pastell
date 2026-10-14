@@ -31,16 +31,4 @@ class NotificationSubscription
             $row['denomination'] ?? null,
         );
     }
-
-    public function toArray(): array
-    {
-        return [
-            'id_n' => $this->id_n,
-            'id_u' => $this->id_u,
-            'id_e' => $this->id_e,
-            'type' => $this->type,
-            'action' => $this->action,
-            'daily_digest' => (int) $this->daily_digest,
-        ];
-    }
 }
