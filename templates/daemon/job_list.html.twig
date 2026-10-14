@@ -62,7 +62,7 @@
         {% for action, info in search_actions|filter(info => info.nb > 0) %}
             <div class="modal fade" id="job-bulk-modal-{{ action }}" tabindex="-1"
                  aria-labelledby="job-bulk-modal-{{ action }}-title" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="job-bulk-modal-{{ action }}-title">Confirmation</h5>
