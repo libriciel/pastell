@@ -34,7 +34,6 @@ $document = $objectInstancier->getInstance(DocumentSQL::class);
 $donneesFormulaireFactory = $objectInstancier->getInstance(DonneesFormulaireFactory::class);
 $connecteurEntiteSQL = $objectInstancier->getInstance(ConnecteurEntiteSQL::class);
 $fluxEntiteSQL = $objectInstancier->getInstance(FluxEntiteSQL::class);
-$utilisateurListe = $objectInstancier->getInstance(UtilisateurListe::class);
 $utilisateur = $objectInstancier->getInstance(UtilisateurSQL::class);
 $utilisateurRoleService = $objectInstancier->getInstance(UtilisateurRoleService::class);
 $jobManager = $objectInstancier->getInstance(JobManager::class);
@@ -97,7 +96,7 @@ foreach ($id_e_list as $id_e) {
         $logger->info("Suppression du connecteur $id_ce : " . ($do ? "[OK]" : "[PASS]"));
     }
 
-    $all_utilisateur = $utilisateurListe->getAllUtilisateurSimple($id_e);
+    $all_utilisateur = $utilisateur->getAllByBaseEntite($id_e);
     $id_u_list = array_map(function ($a) {
         return $a['id_u'];
     }, $all_utilisateur);

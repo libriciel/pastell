@@ -171,4 +171,126 @@ class UtilisateurSQL extends SQL
         $sql = 'UPDATE utilisateur SET is_api = ? WHERE id_u = ?';
         $this->query($sql, $is_api, $id_u);
     }
+
+    public function getAllByCertificat(string $verif_number, int $offset, int $limit): array
+    {
+        $offset = max(0, $offset);
+        $sql = <<<SQL
+SELECT * FROM utilisateur WHERE certificat_verif_number = ?
+ORDER BY nom,prenom,login
+LIMIT $offset,$limit
+SQL;
+        return $this->query($sql, $verif_number);
+    }
+
+    public function countByCertificat(string $verif_number): int
+    {
+        $sql = <<<SQL
+SELECT count(*) FROM utilisateur WHERE certificat_verif_number = ?
+SQL;
+        return (int) $this->queryOne($sql, $verif_number);
+    }
+
+    public function getIdByLoginOrEmail(string $loginOrEmail): ?int
+    {
+        $sql = <<<SQL
+SELECT id_u FROM utilisateur WHERE (login = ? OR email = ?) AND mail_verifie = 1
+SQL;
+        $id_u = $this->queryOne($sql, $loginOrEmail, $loginOrEmail);
+        return $id_u === false ? null : (int) $id_u;
+    }
+
+    public function getIdByVerifPassword(string $mail_verif_password, int $token_ttl_in_second = 1800): ?int
+    {
+        if ($mail_verif_password === '') {
+            return null;
+        }
+        $sql = <<<SQL
+SELECT id_u FROM utilisateur
+WHERE mail_verif_password = ? AND mail_verifie = 1
+AND TIMESTAMPDIFF(SECOND, password_reset_requested_at, ?) < ?
+SQL;
+        $id_u = $this->queryOne($sql, $mail_verif_password, date('c'), $token_ttl_in_second);
+        return $id_u === false ? null : (int) $id_u;
+    }
+
+    public function getAllByBaseEntite(int $id_e): array
+    {
+        $sql = <<<SQL
+SELECT * FROM utilisateur WHERE id_e = ?
+SQL;
+        return $this->query($sql, $id_e);
+    }
+
+    public function countByEntiteDeBase(int $id_e): int
+    {
+        $sql = <<<SQL
+SELECT count(*) FROM utilisateur WHERE id_e = ?
+SQL;
+        return (int) $this->queryOne($sql, $id_e);
+    }
+
+    public function countByEntite(int $id_e, bool $with_fille = false, string $role = '', string $search = ''): int
+    {
+        [$join, $where, $data] = $this->getEntiteFilter($id_e, $with_fille, $role);
+        if ($search) {
+            $where .= ' AND (nom LIKE ? OR prenom LIKE ? OR login LIKE ?)';
+            array_push($data, "%$search%", "%$search%", "%$search%");
+        }
+        $sql = <<<SQL
+SELECT count(DISTINCT utilisateur.id_u) FROM utilisateur
+JOIN utilisateur_role ON utilisateur.id_u = utilisateur_role.id_u
+$join
+WHERE $where
+SQL;
+        return (int) $this->queryOne($sql, $data);
+    }
+
+    public function getAllByEntite(
+        int $id_e,
+        bool $with_fille = false,
+        string $role = '',
+        string $search = '',
+        int $offset = 0,
+        ?int $limit = null,
+    ): array {
+        [$join, $where, $data] = $this->getEntiteFilter($id_e, $with_fille, $role);
+        $having = '';
+        if ($search) {
+            $having = 'HAVING nom LIKE ? OR prenom LIKE ? OR login LIKE ?';
+            array_push($data, "%$search%", "%$search%", "%$search%");
+        }
+        $offset = max(0, $offset);
+        $limitClause = $limit === null ? '' : "LIMIT $offset,$limit";
+        $sql = <<<SQL
+SELECT utilisateur.id_u,nom,prenom,login,email,utilisateur.id_e,
+    entite.denomination,utilisateur.is_enabled
+FROM utilisateur
+LEFT JOIN entite ON entite.id_e = utilisateur.id_e
+JOIN utilisateur_role ON utilisateur.id_u = utilisateur_role.id_u
+$join
+WHERE $where
+GROUP BY utilisateur.id_u
+$having
+ORDER BY nom,prenom
+$limitClause
+SQL;
+        return $this->query($sql, $data);
+    }
+
+    private function getEntiteFilter(int $id_e, bool $with_fille, string $role): array
+    {
+        $join = '';
+        $where = 'utilisateur_role.id_e = ?';
+        if ($with_fille) {
+            $join = 'JOIN entite_ancetre ON utilisateur_role.id_e = entite_ancetre.id_e';
+            $where = 'entite_ancetre.id_e_ancetre = ?';
+        }
+        $data = [$id_e];
+        if ($role) {
+            $where .= ' AND utilisateur_role.role = ?';
+            $data[] = $role;
+        }
+        return [$join, $where, $data];
+    }
 }

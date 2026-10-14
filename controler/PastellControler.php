@@ -512,7 +512,7 @@ class PastellControler extends Controler
     }
 
     /**
-     * @return UtilisateurListe
+     * @deprecated Since 4.1.24, use getUtilisateur() or UtilisateurListService instead
      */
     public function getUtilisateurListe(): UtilisateurListe
     {
@@ -570,7 +570,7 @@ class PastellControler extends Controler
     }
 
     /**
-     * @return EntiteListe
+     * @deprecated Since 4.1.24, use getEntiteSQL() instead
      */
     public function getEntiteListe(): EntiteListe
     {

@@ -12,7 +12,7 @@ use FluxEntiteSQL;
 use Journal;
 use Pastell\Service\Notification\NotificationService;
 use UnrecoverableException;
-use UtilisateurListe;
+use UtilisateurSQL;
 
 class EntiteDeletionService
 {
@@ -33,7 +33,7 @@ class EntiteDeletionService
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
         private readonly FluxEntiteSQL $fluxEntiteSQL,
         private readonly FluxEntiteHeritageSQL $fluxEntiteHeritageSQL,
-        private readonly UtilisateurListe $utilisateurListe,
+        private readonly UtilisateurSQL $utilisateurSQL,
         private readonly AnnuaireSQL $annuaireSQL,
         private readonly NotificationService $notificationService,
         private readonly AnnuaireRoleSQL $annuaireRoleSQL,
@@ -84,10 +84,10 @@ class EntiteDeletionService
         if (count($this->entiteSQL->getFille($id_e))) {
             throw new UnrecoverableException("Suppression impossible : l'entité {id_e=$id_e} possède des entités filles");
         }
-        if ($this->utilisateurListe->getNbUtilisateurWithEntiteDeBase($id_e)) {
+        if ($this->utilisateurSQL->countByEntiteDeBase($id_e)) {
             throw new UnrecoverableException("Suppression impossible : des utilisateurs sont définis sur l'entité {id_e=$id_e}");
         }
-        if ($this->utilisateurListe->getNbUtilisateur($id_e)) {
+        if ($this->utilisateurSQL->countByEntite($id_e)) {
             throw new UnrecoverableException("Suppression impossible : des utilisateurs sont définis sur l'entité {id_e=$id_e}");
         }
         if ($this->connecteurEntiteSQL->getAll($id_e)) {

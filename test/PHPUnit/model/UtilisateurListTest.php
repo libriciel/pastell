@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated Since 4.1.24, Use UtilisateurSQLTest and UtilisateurListServiceTest instead
+ */
 class UtilisateurListTest extends PastellTestCase
 {
     /**

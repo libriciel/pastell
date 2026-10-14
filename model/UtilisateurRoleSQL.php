@@ -198,6 +198,21 @@ SQL;
         return $result;
     }
 
+    public function getRoleWithLibelle(array $id_u_list): array
+    {
+        if ($id_u_list === []) {
+            return [];
+        }
+        $placeholders = implode(',', array_fill(0, count($id_u_list), '?'));
+        $sql = <<<SQL
+SELECT utilisateur_role.*,entite.denomination,entite.entite_mere,role.libelle FROM utilisateur_role
+LEFT JOIN entite ON utilisateur_role.id_e = entite.id_e
+LEFT JOIN role ON utilisateur_role.role = role.role
+WHERE id_u IN ($placeholders)
+SQL;
+        return $this->query($sql, array_values($id_u_list));
+    }
+
     public function anybodyHasRole(string $role): int
     {
         $sql = <<<SQL

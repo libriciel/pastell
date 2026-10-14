@@ -44,7 +44,7 @@ $search = get_hecho($search);
 
     </div>
 
-    <?php $this->SuivantPrecedent($offset, 20, $nbCollectivite, "Entite/detail?search=$search"); ?>
+    <?php $this->suivantPrecedent($offset, EntiteSQL::NB_COLLECTIVITE_DISPLAY, $nbCollectivite, "Entite/detail?search=$search"); ?>
     <h3 id="title-result" class="ls-off title-result">Résultat(s) de la recherche</h3>
     <table class="table table-striped">
         <tr>
