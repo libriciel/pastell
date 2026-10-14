@@ -907,7 +907,7 @@ class EntiteControler extends PastellControler
         $this->setMenuGaucheSelect(MenuGaucheService::ENTITE_DAEMON);
         $this->setViewParameter('nb_worker_actif', $this->getWorkerSQL()->getNbActifForDaemon($daemon->id_daemon));
         $this->setViewParameter('job_stat_info', $this->getJobQueueSQL()->getStatInfoForDaemon($daemon->id_daemon));
-        $this->setViewParameter('job_status_suspended', JobStatus::suspendedValues());
+        $this->setViewParameter('job_status_locked', JobStatus::lockedValues());
         $this->setViewParameter('sub_title', 'Liste de tous les travaux');
         $this->setViewParameter('return_url', "Entite/daemon?id_e=$daemon->id_e");
         $job_list = $this->getJobQueueSQL()->getJobsByDaemon($daemon->id_daemon, 20, 0);

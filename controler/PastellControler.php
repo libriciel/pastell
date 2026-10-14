@@ -423,6 +423,7 @@ class PastellControler extends Controler
 
     /**
      * @throws JsonException
+     * @throws NotFoundException
      */
     protected function setJobListViewParameters(
         string $route,
@@ -472,8 +473,11 @@ class PastellControler extends Controler
         $this->setViewParameter('return_url', "$url?" . http_build_query($query));
         if (
             $advancedFilters !== null
-            && $this->isViewParameter('daemon_edition')
-            && $this->getViewParameterByKey('daemon_edition')
+            && $this->hasDroitFor(
+                $rootEntityId ?? EntiteSQL::ID_E_ENTITE_RACINE,
+                DroitService::DROIT_DAEMON,
+                DroitType::EDITION
+            )
         ) {
             $nbJob = $this->getJobQueueSQL()->getNbJobWithBulkUpdatable($advancedFilters, $id_daemon);
             $this->setViewParameter('count', $nbJob['count']);

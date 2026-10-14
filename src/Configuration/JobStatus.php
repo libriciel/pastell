@@ -40,21 +40,21 @@ enum JobStatus: int
      */
     public static function bulkUnlockable(): array
     {
-        return self::suspended();
+        return self::lockedCases();
     }
 
     /**
      * @return int[]
      */
-    public static function suspendedValues(): array
+    public static function lockedValues(): array
     {
-        return array_column(self::suspended(), 'value');
+        return array_column(self::lockedCases(), 'value');
     }
 
     /**
      * @return self[]
      */
-    private static function suspended(): array
+    private static function lockedCases(): array
     {
         return array_values(array_filter(self::cases(), static fn (self $status) => $status !== self::WAITING));
     }

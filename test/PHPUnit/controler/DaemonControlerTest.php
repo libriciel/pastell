@@ -169,7 +169,7 @@ class DaemonControlerTest extends ControlerTestCase
     {
         $this->getInternalAPI()->post('/entite/1/connecteur/13/action/une_action_auto');
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
-        $this->setGetInfo(['job_status' => array_map('strval', JobStatus::suspendedValues())]);
+        $this->setGetInfo(['job_status' => array_map('strval', JobStatus::lockedValues())]);
         $daemonControler->_beforeAction();
 
         ob_start();
