@@ -141,7 +141,7 @@ class DroitService
      * @param int $id_e
      * @return array
      */
-    public function getAllDroitEntite($id_u, int $id_e): array
+    public function getUnrestrictedDroitsForEntite($id_u, int $id_e): array
     {
         $data = $this->utilisateurRoleService->getDroitsForEntite($id_u, $id_e);
         foreach ($data as $key => $droit) {
@@ -152,7 +152,15 @@ class DroitService
         return array_values($data);
     }
 
-    public function getAllDroit(int $id_u): array
+    /**
+     * @deprecated 4.1.24 Use DroitService::getUnrestrictedDroitsForEntite() instead
+     */
+    public function getAllDroitEntite($id_u, int $id_e): array
+    {
+        return $this->getUnrestrictedDroitsForEntite($id_u, $id_e);
+    }
+
+    public function getUnrestrictedDroits(int $id_u): array
     {
         $data = $this->utilisateurRoleService->getAllDroit($id_u);
         foreach ($data as $key => $droit) {
@@ -161,6 +169,14 @@ class DroitService
             }
         }
         return array_values($data);
+    }
+
+    /**
+     * @deprecated 4.1.24 Use DroitService::getUnrestrictedDroits() instead
+     */
+    public function getAllDroit(int $id_u): array
+    {
+        return $this->getUnrestrictedDroits($id_u);
     }
 
     /**
