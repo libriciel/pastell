@@ -738,9 +738,13 @@ class IparapheurRestConnector extends SignatureConnecteur implements
         return $zipContent ?: '';
     }
 
+    /**
+     * @throws IpRestException
+     */
     public function getSignedFile($info_from_get_signature): Fichier
     {
-        return $info_from_get_signature['documents'][0];
+        return $info_from_get_signature['documents'][0]
+            ?? throw new IpRestException("Le fichier signé n'a pas été trouvé dans l'archive du parapheur");
     }
 
     /**

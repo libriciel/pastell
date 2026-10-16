@@ -557,4 +557,18 @@ final class IparapheurRestConnectorTest extends PastellTestCase
         $lastHistorique = $connector->getLastHistorique($history);
         self::assertFalse($connector->isRejected($lastHistorique));
     }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws JsonException
+     * @throws IpRestException
+     */
+    public function testGetSignedFileNotFound(): void
+    {
+        $this->getConnectorId();
+        $connector = $this->makeConnector();
+        $this->expectException(IpRestException::class);
+        $this->expectExceptionMessage("Le fichier signé n'a pas été trouvé dans l'archive du parapheur");
+        $connector->getSignedFile(['documents' => []]);
+    }
 }
