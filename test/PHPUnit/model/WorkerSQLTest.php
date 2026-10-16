@@ -152,7 +152,7 @@ class WorkerSQLTest extends PastellTestCase
     public function testGetJobSuspended(): void
     {
         $this->launchWorker();
-        $filters = new JobAdvancedFilters(job_status: array_map('strval', JobStatus::suspendedValues()));
+        $filters = new JobAdvancedFilters(job_status: array_map('strval', JobStatus::lockedValues()));
         $job_list = $this->jobQueueSQL->getFilteredJobList(20, 0, '', null, $filters);
         static::assertEmpty($job_list);
         static::assertSame(0, $this->jobQueueSQL->getNbJob('', null, $filters));

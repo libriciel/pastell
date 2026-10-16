@@ -85,7 +85,7 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('nb_workers', $this->getDaemonSQL()->getNbWorkers());
         $this->setViewParameter('job_stat_info', $this->getJobQueueSQL()->getStatInfo());
         $this->setViewParameter('daemon_pid', $this->getDaemonManager()->getDaemonPID());
-        $this->setViewParameter('job_status_suspended', JobStatus::suspendedValues());
+        $this->setViewParameter('job_status_locked', JobStatus::lockedValues());
         $this->setViewParameter('sub_title', 'Liste de tous les travaux');
         $this->setViewParameter('return_url', urlencode('Daemon/index'));
         $this->setViewParameter('job_list', $this->getJobQueueSQL()->getAllJobs());
@@ -206,10 +206,20 @@ class DaemonControler extends PastellControler
      */
     public function unlockAllAction(): void
     {
+        $this->checkPostRequest('Daemon/job');
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
-        $this->getWorkerSQL()->menageAll();
-        $this->getJobQueueSQL()->unlockAll();
-        $this->redirect('Daemon/index');
+        $this->doJobBulkAction(false, 'Daemon/job');
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function lockAllAction(): void
+    {
+        $this->checkPostRequest('Daemon/job');
+        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
+        $this->doJobBulkAction(true, 'Daemon/job');
     }
 
     /**
@@ -259,6 +269,7 @@ class DaemonControler extends PastellControler
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::LECTURE);
         $this->setViewParameter('page_title', 'Gestionnaire de tâches');
         $this->setViewParameter('unlock_all_action', 'app.legacy.daemon_unlockAll');
+        $this->setViewParameter('lock_all_action', 'app.legacy.daemon_lockAll');
         $this->setJobListViewParameters(
             'app.legacy.daemon_job',
             'Daemon/job',
