@@ -477,10 +477,9 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('tokens', $tokens);
 
         $mfaService = $this->getMfaService();
-        $mfaInfo = $mfaService->getInfo($id_u);
-        $mfaEnabled = !empty($mfaInfo['is_enabled']);
+        $mfaEnabled = $mfaService->isEnabled($id_u);
         $this->setViewParameter('mfa_enabled', $mfaEnabled);
-        $this->setViewParameter('mfa_activated_at', $mfaInfo['activated_at'] ?? '');
+        $this->setViewParameter('mfa_activated_at', $mfaService->getActivatedAt($id_u) ?? '');
         $this->setViewParameter(
             'mfa_recovery_remaining',
             $mfaEnabled ? $mfaService->countRemainingRecoveryCodes($id_u) : 0

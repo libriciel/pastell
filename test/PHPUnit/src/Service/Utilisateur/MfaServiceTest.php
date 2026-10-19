@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use OTPHP\TOTP;
-use Pastell\Clock\SystemClock;
+use Symfony\Component\Clock\Clock;
 use Pastell\Service\Utilisateur\MfaService;
 use Random\RandomException;
 
@@ -14,32 +14,30 @@ class MfaServiceTest extends PastellTestCase
         return $this->getObjectInstancier()->getInstance(MfaService::class);
     }
 
-    public function testGenerateSecretIsBase32(): void
+    public function testEnrolSecretIsBase32(): void
     {
-        $secret = $this->getMfaService()->generateSecret();
+        $mfaService = $this->getMfaService();
+        $mfaService->enroll(self::ID_U_ADMIN);
+        $secret = $mfaService->getEnrolment(self::ID_U_ADMIN, 'admin')->secret;
         self::assertMatchesRegularExpression('/^[A-Z2-7]+$/', $secret);
-    }
-
-    public function testVerifyValidCode(): void
-    {
-        $secret = $this->getMfaService()->generateSecret();
-        self::assertTrue($this->getMfaService()->verify($secret, TOTP::createFromSecret($secret, new SystemClock())->now()));
     }
 
     public function testVerifyInvalidCode(): void
     {
-        $secret = $this->getMfaService()->generateSecret();
-        $valid = TOTP::createFromSecret($secret, new SystemClock())->now();
+        $mfaService = $this->getMfaService();
+        $mfaService->enroll(self::ID_U_ADMIN);
+        $secret = $mfaService->getEnrolment(self::ID_U_ADMIN, 'admin')->secret;
+        $valid = TOTP::createFromSecret($secret, new Clock())->now();
         $wrong = $valid === '000000' ? '111111' : '000000';
-        self::assertFalse($this->getMfaService()->verify($secret, $wrong));
+        self::assertFalse($mfaService->verifyForUser(self::ID_U_ADMIN, $wrong));
     }
 
     public function testTotpSingleUse(): void
     {
         $mfaService = $this->getMfaService();
-        $secret = $mfaService->generateSecret();
-        $mfaService->enroll(self::ID_U_ADMIN, $secret);
-        $code = TOTP::createFromSecret($secret, new SystemClock())->now();
+        $mfaService->enroll(self::ID_U_ADMIN);
+        $secret = $mfaService->getEnrolment(self::ID_U_ADMIN, 'admin')->secret;
+        $code = TOTP::createFromSecret($secret, new Clock())->now();
 
         self::assertTrue($mfaService->verifyForUser(self::ID_U_ADMIN, $code));
         self::assertFalse($mfaService->verifyForUser(self::ID_U_ADMIN, $code));
@@ -48,7 +46,7 @@ class MfaServiceTest extends PastellTestCase
     public function testEnrollConfirmDelete(): void
     {
         $mfaService = $this->getMfaService();
-        $mfaService->enroll(self::ID_U_ADMIN, $mfaService->generateSecret());
+        $mfaService->enroll(self::ID_U_ADMIN);
         self::assertFalse($mfaService->isEnabled(self::ID_U_ADMIN));
 
         $mfaService->confirm(self::ID_U_ADMIN);
@@ -56,15 +54,26 @@ class MfaServiceTest extends PastellTestCase
 
         $mfaService->delete(self::ID_U_ADMIN);
         self::assertFalse($mfaService->isEnabled(self::ID_U_ADMIN));
-        self::assertSame([], $mfaService->getInfo(self::ID_U_ADMIN));
+        self::assertFalse($mfaService->isPending(self::ID_U_ADMIN));
     }
 
-    public function testProvisioningUriContainsSecret(): void
+    public function testGetEnrolment(): void
     {
-        $secret = $this->getMfaService()->generateSecret();
-        $uri = $this->getMfaService()->getProvisioningUri($secret, 'jdupont');
-        self::assertStringContainsString($secret, $uri);
-        self::assertStringContainsString('Pastell', $uri);
+        $mfaService = $this->getMfaService();
+        $mfaService->enroll(self::ID_U_ADMIN);
+
+        $enrolment = $mfaService->getEnrolment(self::ID_U_ADMIN, 'jdupont');
+        self::assertNotEmpty($enrolment?->secret);
+        self::assertStringContainsString('<svg', $enrolment->qrCodeSvg);
+    }
+
+    public function testEnrolmentHiddenOnceEnabled(): void
+    {
+        $mfaService = $this->getMfaService();
+        $mfaService->enroll(self::ID_U_ADMIN);
+        $mfaService->confirm(self::ID_U_ADMIN);
+
+        self::assertNull($mfaService->getEnrolment(self::ID_U_ADMIN, 'jdupont'));
     }
 
     /**
@@ -119,7 +128,7 @@ class MfaServiceTest extends PastellTestCase
     public function testDeleteRemovesRecoveryCodes(): void
     {
         $mfaService = $this->getMfaService();
-        $mfaService->enroll(self::ID_U_ADMIN, $mfaService->generateSecret());
+        $mfaService->enroll(self::ID_U_ADMIN);
         $mfaService->generateRecoveryCodes(self::ID_U_ADMIN);
 
         $mfaService->delete(self::ID_U_ADMIN);
