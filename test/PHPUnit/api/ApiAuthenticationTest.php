@@ -12,7 +12,7 @@ class ApiAuthenticationTest extends PastellTestCase
     private function enableMfaForAdmin(): void
     {
         $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
-        $mfaService->enroll(self::ID_U_ADMIN, $mfaService->generateSecret());
+        $mfaService->enroll(self::ID_U_ADMIN);
         $mfaService->confirm(self::ID_U_ADMIN);
     }
 
