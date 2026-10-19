@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use OTPHP\TOTP;
-use Pastell\Clock\SystemClock;
+use Symfony\Component\Clock\Clock;
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\Utilisateur\MfaService;
 use Symfony\Component\RateLimiter\RateLimit;
@@ -41,15 +41,15 @@ class MfaControlerTest extends ControlerTestCase
     public function testStartEnrolementCreatesSecret(): void
     {
         $this->startEnrolement();
-        self::assertNotEmpty($this->getMfaService()->getInfo(self::ID_U_ADMIN)['secret']);
+        self::assertNotEmpty($this->getMfaService()->getEnrolment(self::ID_U_ADMIN, 'admin')?->secret);
     }
 
     public function testStartEnrolementKeepsSecret(): void
     {
         $this->startEnrolement();
-        $first = $this->getMfaService()->getInfo(self::ID_U_ADMIN)['secret'];
+        $first = $this->getMfaService()->getEnrolment(self::ID_U_ADMIN, 'admin')?->secret;
         $this->startEnrolement();
-        $second = $this->getMfaService()->getInfo(self::ID_U_ADMIN)['secret'];
+        $second = $this->getMfaService()->getEnrolment(self::ID_U_ADMIN, 'admin')?->secret;
 
         self::assertSame($first, $second);
     }
@@ -58,7 +58,7 @@ class MfaControlerTest extends ControlerTestCase
     {
         $this->getObjectInstancier()->getInstance(UtilisateurSQL::class)->setIsAPI(self::ID_U_ADMIN, true);
         $this->startEnrolement();
-        self::assertNotEmpty($this->getMfaService()->getInfo(self::ID_U_ADMIN)['secret']);
+        self::assertNotEmpty($this->getMfaService()->getEnrolment(self::ID_U_ADMIN, 'admin')?->secret);
     }
 
     public function testStartEnrolementRequiresPost(): void
@@ -68,7 +68,7 @@ class MfaControlerTest extends ControlerTestCase
             self::fail('Une redirection était attendue');
         } catch (LastMessageException) {
         }
-        self::assertEmpty($this->getMfaService()->getInfo(self::ID_U_ADMIN));
+        self::assertFalse($this->getMfaService()->isPending(self::ID_U_ADMIN));
     }
 
     /**
@@ -79,7 +79,7 @@ class MfaControlerTest extends ControlerTestCase
     public function testEnrolementDisplaysQr(): void
     {
         $mfaService = $this->getMfaService();
-        $mfaService->enroll(self::ID_U_ADMIN, $mfaService->generateSecret());
+        $mfaService->enroll(self::ID_U_ADMIN);
 
         $this->expectOutputRegex('#Activer la double authentification#');
         $this->getMfaControler()->enrolementAction();
@@ -92,15 +92,15 @@ class MfaControlerTest extends ControlerTestCase
             self::fail('Une redirection était attendue');
         } catch (LastMessageException) {
         }
-        self::assertEmpty($this->getMfaService()->getInfo(self::ID_U_ADMIN));
+        self::assertFalse($this->getMfaService()->isPending(self::ID_U_ADMIN));
     }
 
     public function testActivationShowsRecoveryCodes(): void
     {
         $mfaService = $this->getMfaService();
-        $secret = $mfaService->generateSecret();
-        $mfaService->enroll(self::ID_U_ADMIN, $secret);
-        $this->setPostInfo(['code' => TOTP::createFromSecret($secret, new SystemClock())->now()]);
+        $mfaService->enroll(self::ID_U_ADMIN);
+        $secret = $mfaService->getEnrolment(self::ID_U_ADMIN, 'admin')->secret;
+        $this->setPostInfo(['code' => TOTP::createFromSecret($secret, new Clock())->now()]);
 
         $this->expectOutputRegex('#[Cc]odes de récupération#');
         $this->getMfaControler()->doEnrolementAction();
@@ -113,7 +113,7 @@ class MfaControlerTest extends ControlerTestCase
     private function enableMfa(): void
     {
         $mfaService = $this->getMfaService();
-        $mfaService->enroll(self::ID_U_ADMIN, $mfaService->generateSecret());
+        $mfaService->enroll(self::ID_U_ADMIN);
         $mfaService->confirm(self::ID_U_ADMIN);
     }
 
@@ -148,11 +148,11 @@ class MfaControlerTest extends ControlerTestCase
     public function testCancelEnrolementDeletesRow(): void
     {
         $mfaService = $this->getMfaService();
-        $mfaService->enroll(self::ID_U_ADMIN, $mfaService->generateSecret());
+        $mfaService->enroll(self::ID_U_ADMIN);
 
         $this->cancelEnrolement();
 
-        self::assertEmpty($mfaService->getInfo(self::ID_U_ADMIN));
+        self::assertFalse($mfaService->isPending(self::ID_U_ADMIN));
     }
 
     public function testCancelKeepsActiveMfa(): void
@@ -167,9 +167,9 @@ class MfaControlerTest extends ControlerTestCase
     public function testActivationInvalidCode(): void
     {
         $mfaService = $this->getMfaService();
-        $secret = $mfaService->generateSecret();
-        $mfaService->enroll(self::ID_U_ADMIN, $secret);
-        $valid = TOTP::createFromSecret($secret, new SystemClock())->now();
+        $mfaService->enroll(self::ID_U_ADMIN);
+        $secret = $mfaService->getEnrolment(self::ID_U_ADMIN, 'admin')->secret;
+        $valid = TOTP::createFromSecret($secret, new Clock())->now();
         $this->setPostInfo(['code' => $valid === '000000' ? '111111' : '000000']);
 
         try {
