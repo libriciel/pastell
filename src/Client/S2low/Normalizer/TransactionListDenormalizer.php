@@ -35,8 +35,12 @@ final class TransactionListDenormalizer implements DenormalizerInterface, Denorm
         return $acteListResponse;
     }
 
-    public function supportsDenormalization(mixed $data, string $type, ?string $format = null): bool
-    {
+    public function supportsDenormalization(
+        mixed $data,
+        string $type,
+        ?string $format = null,
+        array $context = [],
+    ): bool {
         return $type === ActeListResponse::class;
     }
 
