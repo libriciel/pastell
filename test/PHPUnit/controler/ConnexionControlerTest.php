@@ -1,7 +1,7 @@
 <?php
 
 use OTPHP\TOTP;
-use Pastell\Clock\SystemClock;
+use Symfony\Component\Clock\Clock;
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\MagicLink\MagicLinkService;
 use Pastell\Service\Utilisateur\MfaService;
@@ -288,8 +288,8 @@ class ConnexionControlerTest extends ControlerTestCase
     private function enableMfaForAdmin(): string
     {
         $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
-        $secret = $mfaService->generateSecret();
-        $mfaService->enroll(1, $secret);
+        $mfaService->enroll(1);
+        $secret = $mfaService->getEnrolment(1, 'admin')->secret;
         $mfaService->confirm(1);
         return $secret;
     }
@@ -319,7 +319,7 @@ class ConnexionControlerTest extends ControlerTestCase
         }
 
         static::assertFalse($authentification->isConnected());
-        static::assertSame(1, $_SESSION['mfa_pending']['id_u']);
+        static::assertSame(1, $authentification->getMfaPending()['id_u']);
     }
 
     public function testMfaValidCodeConnects(): void
@@ -328,8 +328,8 @@ class ConnexionControlerTest extends ControlerTestCase
         $authentification->deconnexion();
         $secret = $this->enableMfaForAdmin();
         $this->mockLoginAttemptLimit();
-        $_SESSION['mfa_pending'] = ['id_u' => 1, 'login' => 'admin', 'request_uri' => '/'];
-        $this->setPostInfo(['code' => TOTP::createFromSecret($secret, new SystemClock())->now()]);
+        $authentification->setMfaPending(1, 'admin', '/');
+        $this->setPostInfo(['code' => TOTP::createFromSecret($secret, new Clock())->now()]);
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
         try {
@@ -340,7 +340,7 @@ class ConnexionControlerTest extends ControlerTestCase
 
         static::assertTrue($authentification->isConnected());
         static::assertSame(1, (int)$authentification->getId());
-        static::assertArrayNotHasKey('mfa_pending', $_SESSION);
+        static::assertNull($authentification->getMfaPending());
     }
 
     public function testMfaInvalidCode(): void
@@ -349,8 +349,8 @@ class ConnexionControlerTest extends ControlerTestCase
         $authentification->deconnexion();
         $secret = $this->enableMfaForAdmin();
         $this->mockLoginAttemptLimit();
-        $_SESSION['mfa_pending'] = ['id_u' => 1, 'login' => 'admin', 'request_uri' => '/'];
-        $valid = TOTP::createFromSecret($secret, new SystemClock())->now();
+        $authentification->setMfaPending(1, 'admin', '/');
+        $valid = TOTP::createFromSecret($secret, new Clock())->now();
         $this->setPostInfo(['code' => $this->differentCode($valid)]);
 
         try {
@@ -361,7 +361,7 @@ class ConnexionControlerTest extends ControlerTestCase
         }
 
         static::assertFalse($authentification->isConnected());
-        static::assertArrayHasKey('mfa_pending', $_SESSION);
+        static::assertNotNull($authentification->getMfaPending());
         static::assertNotEmpty(
             $this->getObjectInstancier()->getInstance(Journal::class)
                 ->getAll(false, false, false, false, 0, 100, 'Échec double authentification')
@@ -376,11 +376,11 @@ class ConnexionControlerTest extends ControlerTestCase
         $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
         $authentification->deconnexion();
         $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
-        $mfaService->enroll(1, $mfaService->generateSecret());
+        $mfaService->enroll(1);
         $mfaService->confirm(1);
         $recoveryCodes = $mfaService->generateRecoveryCodes(1);
         $this->mockLoginAttemptLimit();
-        $_SESSION['mfa_pending'] = ['id_u' => 1, 'login' => 'admin', 'request_uri' => '/'];
+        $authentification->setMfaPending(1, 'admin', '/');
         $this->setPostInfo(['code' => $recoveryCodes[0]]);
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
@@ -396,7 +396,7 @@ class ConnexionControlerTest extends ControlerTestCase
 
     public function testMfaNoPendingRedirects(): void
     {
-        unset($_SESSION['mfa_pending']);
+        $this->getObjectInstancier()->getInstance(Authentification::class)->clearMfaPending();
 
         try {
             $this->connexionControler->mfaAction();

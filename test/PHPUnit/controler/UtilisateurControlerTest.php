@@ -197,7 +197,7 @@ class UtilisateurControlerTest extends ControlerTestCase
     private function enableMfaFor(int $id_u): void
     {
         $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
-        $mfaService->enroll($id_u, $mfaService->generateSecret());
+        $mfaService->enroll($id_u);
         $mfaService->confirm($id_u);
     }
 

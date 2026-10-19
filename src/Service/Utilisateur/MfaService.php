@@ -9,7 +9,7 @@ use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use OTPHP\TOTP;
-use Pastell\Clock\SystemClock;
+use Psr\Clock\ClockInterface;
 use Random\RandomException;
 use UtilisateurMfaRecoveryCodeSQL;
 use UtilisateurMfaSQL;
@@ -22,7 +22,7 @@ final class MfaService
     public function __construct(
         private readonly UtilisateurMfaSQL $utilisateurMfaSQL,
         private readonly UtilisateurMfaRecoveryCodeSQL $recoveryCodeSQL,
-        private readonly SystemClock $clock,
+        private readonly ClockInterface $clock,
     ) {
     }
 
@@ -31,17 +31,35 @@ final class MfaService
         return $this->utilisateurMfaSQL->isEnabled($id_u);
     }
 
-    public function getInfo(int $id_u): array
+    public function isPending(int $id_u): bool
     {
-        return $this->utilisateurMfaSQL->getInfo($id_u);
+        return $this->getPendingSecret($id_u) !== null;
     }
 
-    public function generateSecret(): string
+    public function getEnrolment(int $id_u, string $label): ?MfaEnrolment
     {
-        return TOTP::generate($this->clock)->getSecret();
+        $secret = $this->getPendingSecret($id_u);
+        if ($secret === null) {
+            return null;
+        }
+        return new MfaEnrolment($secret, $this->getQrCodeSvg($this->getProvisioningUri($secret, $label)));
     }
 
-    public function getProvisioningUri(string $secret, string $label): string
+    private function getPendingSecret(int $id_u): ?string
+    {
+        $info = $this->utilisateurMfaSQL->getInfo($id_u);
+        if (empty($info['secret']) || !empty($info['is_enabled'])) {
+            return null;
+        }
+        return $info['secret'];
+    }
+
+    public function getActivatedAt(int $id_u): ?string
+    {
+        return $this->utilisateurMfaSQL->getInfo($id_u)['activated_at'] ?? null;
+    }
+
+    private function getProvisioningUri(string $secret, string $label): string
     {
         $totp = TOTP::createFromSecret($secret, $this->clock);
         $totp->setLabel($label);
@@ -49,20 +67,15 @@ final class MfaService
         return $totp->getProvisioningUri();
     }
 
-    public function getQrCodeSvg(string $uri): string
+    private function getQrCodeSvg(string $uri): string
     {
         $writer = new Writer(new ImageRenderer(new RendererStyle(200), new SvgImageBackEnd()));
         return $writer->writeString($uri);
     }
 
-    public function verify(string $secret, string $code): bool
-    {
-        return $this->getMatchingCounter($secret, $code) !== null;
-    }
-
     public function verifyForUser(int $id_u, string $code): bool
     {
-        $info = $this->getInfo($id_u);
+        $info = $this->utilisateurMfaSQL->getInfo($id_u);
         if (empty($info['secret'])) {
             return false;
         }
@@ -88,9 +101,9 @@ final class MfaService
         return null;
     }
 
-    public function enroll(int $id_u, string $secret): void
+    public function enroll(int $id_u): void
     {
-        $this->utilisateurMfaSQL->enroll($id_u, $secret);
+        $this->utilisateurMfaSQL->enroll($id_u, TOTP::generate($this->clock)->getSecret());
     }
 
     public function confirm(int $id_u): void

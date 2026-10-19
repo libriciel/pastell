@@ -81,15 +81,14 @@ class MfaControler extends PastellControler
         }
         $id_u = $this->getId_u();
         $mfaService = $this->getMfaService();
-        $mfaInfo = $mfaService->getInfo($id_u);
 
-        if (!empty($mfaInfo['is_enabled'])) {
+        if ($mfaService->isEnabled($id_u)) {
             $this->setLastMessage('La double authentification est déjà activée.');
             $this->redirect('/Utilisateur/moi');
         }
 
-        if (empty($mfaInfo['secret'])) {
-            $mfaService->enroll($id_u, $mfaService->generateSecret());
+        if (!$mfaService->isPending($id_u)) {
+            $mfaService->enroll($id_u);
         }
         $this->redirect('/Mfa/enrolement');
     }
@@ -103,23 +102,19 @@ class MfaControler extends PastellControler
     {
         $id_u = $this->getId_u();
         $mfaService = $this->getMfaService();
-        $mfaInfo = $mfaService->getInfo($id_u);
 
-        if (!empty($mfaInfo['is_enabled'])) {
+        if ($mfaService->isEnabled($id_u)) {
             $this->setLastMessage('La double authentification est déjà activée.');
             $this->redirect('/Utilisateur/moi');
         }
 
-        $secret = $mfaInfo['secret'] ?? '';
-        if ($secret === '') {
+        $enrolment = $mfaService->getEnrolment($id_u, $this->getUtilisateur()->getInfo($id_u)['login']);
+        if ($enrolment === null) {
             $this->redirect('/Utilisateur/moi');
         }
 
-        $info = $this->getUtilisateur()->getInfo($id_u);
-        $uri = $mfaService->getProvisioningUri($secret, $info['login']);
-
-        $this->setViewParameter('secret', $secret);
-        $this->setViewParameter('qr_code_svg', $mfaService->getQrCodeSvg($uri));
+        $this->setViewParameter('secret', $enrolment->secret);
+        $this->setViewParameter('qr_code_svg', $enrolment->qrCodeSvg);
         $this->setViewParameter('page_title', 'Activer la double authentification');
         $this->setViewParameter('template_milieu', 'MfaEnrolement');
         $this->setViewParameter('pages_without_left_menu', true);
@@ -136,8 +131,7 @@ class MfaControler extends PastellControler
             $this->redirect('/Utilisateur/moi');
         }
         $id_u = $this->getId_u();
-        $info = $this->getMfaService()->getInfo($id_u);
-        if (!empty($info) && empty($info['is_enabled'])) {
+        if ($this->getMfaService()->isPending($id_u)) {
             $this->getMfaService()->delete($id_u);
         }
         $this->redirect('/Utilisateur/moi');
