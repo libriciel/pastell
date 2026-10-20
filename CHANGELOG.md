@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.0.12] - 2026-11-02
+
+### Évolutions
+
+- Passage à Symfony 7.4 #2606
+
 ## [5.0.11] - 2026-10-22
 
 ### Corrections
