@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+/**
+ * @deprecated 4.1.24 Use NotificationSQLTest instead (tests NotificationSQL).
+ */
 class NotificationTest extends PastellTestCase
 {
     /**

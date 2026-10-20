@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Mailer\Mailer;
+use Pastell\Service\Notification\NotificationService;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mime\Address;
@@ -8,7 +9,7 @@ use Symfony\Component\Mime\Address;
 class NotificationMail
 {
     public function __construct(
-        private readonly Notification $notification,
+        private readonly NotificationService $notificationService,
         private readonly Mailer $mailer,
         private readonly Journal $journal,
         private readonly NotificationDigestSQL $notificationDigestSQL,
@@ -25,12 +26,11 @@ class NotificationMail
      */
     public function notify($id_e, $id_d, $action, $type, $message, array $attachment = []): void
     {
-        $lesEmails = $this->notification->getAllInfo($id_e, $type, $action);
-        foreach ($lesEmails as $mail_info) {
-            if ($mail_info['daily_digest']) {
-                $this->register($mail_info['email'], $id_e, $id_d, $action, $type, $message);
+        foreach ($this->notificationService->getRecipients((int) $id_e, (string) $type, (string) $action) as $recipient) {
+            if ($recipient->daily_digest) {
+                $this->register($recipient->email, $id_e, $id_d, $action, $type, $message);
             } else {
-                $this->sendMail($mail_info['email'], $id_e, $id_d, $action, $type, $message, $attachment);
+                $this->sendMail($recipient->email, $id_e, $id_d, $action, $type, $message, $attachment);
             }
         }
     }
