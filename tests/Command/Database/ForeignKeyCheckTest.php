@@ -9,7 +9,7 @@ use Exception;
 use Pastell\Command\Database\ForeignKeyCheck;
 use PastellLogger;
 use PastellTestCase;
-use RoleUtilisateur;
+use Pastell\Service\Droit\DroitService;
 use SQLQuery;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -137,7 +137,7 @@ class ForeignKeyCheckTest extends PastellTestCase
     {
         static::getSQLQuery()->query(
             "INSERT INTO utilisateur_role (id_u, role, id_e) VALUES (1, ?, 0)",
-            [RoleUtilisateur::AUCUN_DROIT]
+            [DroitService::AUCUN_DROIT]
         );
     }
 

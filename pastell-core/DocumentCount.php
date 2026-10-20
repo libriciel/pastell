@@ -1,23 +1,24 @@
 <?php
 
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 
 class DocumentCount
 {
-    private $roleUtilisateur;
+    private $utilisateurEntiteService;
     private $documentEntite;
     private $entiteSQL;
     private $extensions;
     private $documentTypeFactory;
 
     public function __construct(
-        RoleUtilisateur $roleUtilisateur,
+        UtilisateurEntiteService $utilisateurEntiteService,
         DocumentEntite $documentEntite,
         EntiteSQL $entiteSQL,
         Extensions $extensions,
         DocumentTypeFactory $documentTypeFactory
     ) {
-        $this->roleUtilisateur = $roleUtilisateur;
+        $this->utilisateurEntiteService = $utilisateurEntiteService;
         $this->documentEntite = $documentEntite;
         $this->entiteSQL = $entiteSQL;
         $this->extensions = $extensions;
@@ -41,7 +42,7 @@ class DocumentCount
             $count[$info['id_e']][$info['type']][$info['last_action']] = $info['count'];
         }
 
-        $all_droit = $this->roleUtilisateur->getAllEntiteDroit($id_u, $id_e);
+        $all_droit = $this->utilisateurEntiteService->getEntiteDroitList($id_u, $id_e);
 
         $result = [];
 

@@ -4,7 +4,7 @@
  * @var Gabarit $this
  * @var array $role_info
  * @var string $role
- * @var bool $role_edition
+ * @var bool $root_role_edition
  * @var array $all_droit_utilisateur
  */
 ?>
@@ -35,7 +35,7 @@
 <div class="box">
 <form action='<?php $this->url("Role/doDetail") ?>' method='post'>
     <?php $this->displayCSRFInput() ?>
-    <?php if ($role_edition) : ?>
+    <?php if ($root_role_edition) : ?>
         <input type='hidden' name='role' value='<?php hecho($role); ?>'/>
         <button type="submit" class="btn btn-primary">
             <i class="fa fa-floppy-o"></i>&nbsp;Enregistrer
@@ -51,7 +51,7 @@
         <?php foreach ($all_droit_utilisateur as $droit => $ok) : ?>
             <tr>
                 <td>
-                    <?php if ($role_edition) : ?>
+                    <?php if ($root_role_edition) : ?>
                         <input style="width: 10px" type='checkbox' name='droit[]' value='<?php echo $droit ?>' <?php echo $ok ? "checked='checked'" : "" ?>/>&nbsp;
                     <?php endif;?>
                     <?php echo $droit ?>
@@ -60,7 +60,7 @@
             </tr>
         <?php endforeach; ?>
     </table>
-    <?php if ($role_edition) : ?>
+    <?php if ($root_role_edition) : ?>
         <button type="submit" class="btn btn-primary">
             <i class="fa fa-floppy-o"></i>&nbsp;Enregistrer
         </button>

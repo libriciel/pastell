@@ -8,7 +8,7 @@
  * @var int $nbCollectivite
  * @var bool $cdg_feature
  * @var array $liste_collectivite
- * @var bool $entite_edition
+ * @var bool $root_entite_edition
  */
 
 $search = get_hecho($search);
@@ -18,7 +18,7 @@ $search = get_hecho($search);
         <h2>Liste des entités</h2>
     </div>
     <?php
-    if ($entite_edition) : ?>
+    if ($root_entite_edition) : ?>
         <a class='btn btn-primary grow'
            href="<?php $this->url('Entite/edition'); ?>"
         ><i class="fa fa-plus-circle"></i> Ajouter</a>
