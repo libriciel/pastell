@@ -7,6 +7,9 @@ use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Droit\DroitType;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
+/**
+ * @deprecated Since 4.1.24, Use UtilisateurRoleSQLTest instead
+ */
 class RoleUtilisateurSQLTest extends PastellTestCase
 {
     private RoleUtilisateur $roleUtilisateurSQL;

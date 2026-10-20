@@ -163,6 +163,9 @@ class DocumentActionEntite extends SQL
                 " JOIN document ON document_entite.id_d = document.id_d" .
                 " WHERE document_entite.id_e = ? AND document.id_d=? ";
         $result =  $this->queryOne($sql, $id_e, $id_d);
+        if (!$result) {
+            return [];
+        }
 
         $result['last_action_display'] = $this->getLastActionDisplay($id_e, $id_d);
         return $result;

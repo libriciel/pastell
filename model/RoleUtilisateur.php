@@ -1,8 +1,14 @@
 <?php
 
+use Pastell\Service\Droit\DroitService;
+
+/**
+ * @deprecated Since 4.1.24, Use UtilisateurRoleSQL + UtilisateurRoleService / DroitService /
+ * UtilisateurEntiteService / RoleDelegationService instead
+ */
 class RoleUtilisateur extends SQL
 {
-    public const AUCUN_DROIT = 'aucun droit';
+    public const AUCUN_DROIT = DroitService::AUCUN_DROIT;
 
     public const DROIT_EDITION = 'edition';
     public const DROIT_LECTURE = 'lecture';
@@ -311,6 +317,7 @@ SQL;
         return $result;
     }
 
+    /** @deprecated Since 4.1.24, No replacement */
     public function hasManyEntite($id_u, $role)
     {
         if ($this->hasDroit($id_u, $role, 0)) {
@@ -322,6 +329,7 @@ SQL;
         return ($nb_entite > 1);
     }
 
+    /** @deprecated Since 4.1.24, No replacement */
     public function getAllUtilisateur($id_e, $role)
     {
         $sql = "SELECT * FROM utilisateur_role " .
@@ -340,6 +348,7 @@ SQL;
         return $this->query($sql, $id_e, $role);
     }
 
+    /** @deprecated Since 4.1.24, No replacement */
     public function getAllUtilisateurWithDroit($id_e, $droit)
     {
         $sql = "SELECT * FROM entite_ancetre " .
@@ -358,6 +367,7 @@ SQL;
         return $this->queryOne($sql, $role);
     }
 
+    /** @deprecated Since 4.1.24, Use RoleSQL::getAllRole() instead */
     public function getAllRoles()
     {
         $sql = "SELECT * FROM role";

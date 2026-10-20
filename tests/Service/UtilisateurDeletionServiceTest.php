@@ -2,8 +2,8 @@
 
 namespace Pastell\Tests\Service;
 
-use Notification;
 use NotificationDigestSQL;
+use Pastell\Service\Notification\NotificationService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
 use PastellTestCase;
 use UtilisateurNewEmailSQL;
@@ -37,13 +37,13 @@ class UtilisateurDeletionServiceTest extends PastellTestCase
 
     public function testDeleteCleansNotifications(): void
     {
-        $notification = $this->getObjectInstancier()->getInstance(Notification::class);
-        $notification->add(2, 1, 'type-fake', 'action-fake', 0);
-        self::assertNotEmpty($notification->getAll(2));
+        $notificationService = $this->getObjectInstancier()->getInstance(NotificationService::class);
+        $notificationService->subscribe(2, 1, 'type-fake', 'action-fake', false);
+        self::assertNotEmpty($notificationService->getSubscriptionsByUser(2));
 
         $this->getObjectInstancier()->getInstance(UtilisateurDeletionService::class)->delete(2);
 
-        self::assertEmpty($notification->getAll(2));
+        self::assertEmpty($notificationService->getSubscriptionsByUser(2));
     }
 
     public function testDeleteCleansTokens(): void

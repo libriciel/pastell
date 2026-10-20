@@ -3,10 +3,9 @@
 namespace Pastell\Service\Utilisateur;
 
 use EntiteSQL;
-use Notification;
 use NotificationDigestSQL;
 use Pastell\Service\MagicLink\MagicLinkRevokeService;
-use RoleUtilisateur;
+use Pastell\Service\Notification\NotificationService;
 use UtilisateurNewEmailSQL;
 use UtilisateurSQL;
 use Journal;
@@ -24,16 +23,13 @@ class UtilisateurDeletionService
      */
     private $journal;
 
-    /**
-     * @var RoleUtilisateur
-     */
-    private $roleUtilisateur;
+    private UtilisateurRoleService $utilisateurRoleService;
 
     public function __construct(
         UtilisateurSQL $utilisateurSQL,
-        RoleUtilisateur $roleUtilisateur,
+        UtilisateurRoleService $utilisateurRoleService,
         Journal $journal,
-        private readonly Notification $notification,
+        private readonly NotificationService $notificationService,
         private readonly UsersToken $usersToken,
         private readonly UtilisateurNewEmailSQL $utilisateurNewEmailSQL,
         private readonly NotificationDigestSQL $notificationDigestSQL,
@@ -41,7 +37,7 @@ class UtilisateurDeletionService
     ) {
         $this->utilisateurSQL = $utilisateurSQL;
         $this->journal = $journal;
-        $this->roleUtilisateur = $roleUtilisateur;
+        $this->utilisateurRoleService = $utilisateurRoleService;
     }
 
     /**
@@ -53,8 +49,8 @@ class UtilisateurDeletionService
     {
         $userInfo = $this->utilisateurSQL->getInfo($id_u);
         $this->magicLinkRevokeService->closeForDeletedUser($id_u);
-        $this->roleUtilisateur->removeAllRole($id_u);
-        $this->notification->removeAllForUser($id_u);
+        $this->utilisateurRoleService->removeAllRoles($id_u);
+        $this->notificationService->removeAllForUser($id_u);
         $this->notificationDigestSQL->deleteByEmail($userInfo['email']);
         $this->usersToken->deleteAllForUser($id_u);
         $this->utilisateurNewEmailSQL->delete($id_u);

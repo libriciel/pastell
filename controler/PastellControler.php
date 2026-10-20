@@ -9,6 +9,7 @@ use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\MagicLink\MagicLinkService;
 use Pastell\Service\Module\ModuleListService;
@@ -105,6 +106,17 @@ class PastellControler extends Controler
         );
     }
 
+    /**
+     * @throws NotFoundException
+     */
+    public function setRootDroitViewParameter(string $droit_id, DroitType $droit_type): void
+    {
+        $this->setViewParameter(
+            'root_' . $droit_id . '_' . $droit_type->value,
+            $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, $droit_id, $droit_type)
+        );
+    }
+
     public function getId_u()
     {
         return $this->getAuthentification()->getId();
@@ -117,7 +129,7 @@ class PastellControler extends Controler
 
     public function setNavigationInfo($id_e, $url)
     {
-        $listeCollectivite = $this->getRoleUtilisateur()->getEntiteWithSomeDroit($this->getId_u());
+        $listeCollectivite = $this->getInstance(UtilisateurEntiteService::class)->getEntiteWithAnyDroit($this->getId_u());
         if (! $listeCollectivite) {
             $this->setViewParameter('navigation', []);
             $this->setViewParameter('navigation_url', $url);
@@ -145,8 +157,8 @@ class PastellControler extends Controler
                     'is_root' => false,
                     'id_e' => $ancestor['id_e'],
                     'name' => $this->getEntiteSQL()->getDenomination($ancestor['id_e']),
-                    'same_level_entities' => $this->getEntiteSQL()->getSiblingsWithPermission(
-                        $ancestor['id_e'],
+                    'same_level_entities' => $this->getInstance(UtilisateurEntiteService::class)->getChildrenWithAnyDroit(
+                        $ancestor['entite_mere'],
                         $this->getId_u()
                     ),
                     'is_last' => false,
@@ -158,8 +170,8 @@ class PastellControler extends Controler
                 'is_root' => false,
                 'id_e' => $id_e,
                 'name' => $this->getEntiteSQL()->getDenomination($id_e),
-                'same_level_entities' => $this->getEntiteSQL()->getSiblingsWithPermission(
-                    $id_e,
+                'same_level_entities' => $this->getInstance(UtilisateurEntiteService::class)->getChildrenWithAnyDroit(
+                    $this->getEntiteSQL()->getEntiteMere($id_e) ?: 0,
                     $this->getId_u()
                 ),
                 'children' => $this->getEntiteSQL()->getFilleInfoNavigation($id_e, $listeCollectivite),
@@ -326,7 +338,7 @@ class PastellControler extends Controler
             ));
         }
 
-        $listeCollectivite = $this->getRoleUtilisateur()->getEntite(
+        $listeCollectivite = $this->getInstance(UtilisateurEntiteService::class)->getEntite(
             $this->getId_u(),
             DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
         );
@@ -397,6 +409,7 @@ class PastellControler extends Controler
 
     /**
      * @return RoleUtilisateur
+     * @deprecated Since 4.1.24, Use UtilisateurRoleService / DroitService / UtilisateurEntiteService instead
      */
     public function getRoleUtilisateur(): RoleUtilisateur
     {

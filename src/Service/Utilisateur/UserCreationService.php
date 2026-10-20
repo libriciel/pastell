@@ -9,7 +9,7 @@ use Exception;
 use Journal;
 use Pastell\Service\TokenGenerator;
 use Pastell\Validator\UserValidator;
-use RoleUtilisateur;
+use Pastell\Service\Droit\DroitService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use UnrecoverableException;
 use UtilisateurSQL;
@@ -19,7 +19,7 @@ final class UserCreationService
     public function __construct(
         private readonly UtilisateurSQL $utilisateurSQL,
         private readonly TokenGenerator $tokenGenerator,
-        private readonly RoleUtilisateur $roleUtilisateur,
+        private readonly UtilisateurRoleService $utilisateurRoleService,
         private readonly Journal $journal,
         private readonly UserValidator $userValidator,
         private readonly PasswordResetMailService $passwordResetMailService,
@@ -63,7 +63,7 @@ final class UserCreationService
         $this->utilisateurSQL->setLogin($userId, $login);
         $this->utilisateurSQL->setColBase($userId, $entityId);
 
-        $this->roleUtilisateur->addRole($userId, RoleUtilisateur::AUCUN_DROIT, $entityId);
+        $this->utilisateurRoleService->addRole($userId, DroitService::AUCUN_DROIT, $entityId);
 
         if ($sendResetMail) {
             $this->passwordResetMailService->sendResetMail($userId);
@@ -104,7 +104,7 @@ final class UserCreationService
         $this->utilisateurSQL->setColBase($userId, $id_e);
         $this->utilisateurSQL->setLogin($userId, $login);
         $this->utilisateurSQL->setNomPrenom($userId, $lastname, $firstname);
-        $this->roleUtilisateur->addRole($userId, RoleUtilisateur::AUCUN_DROIT, $id_e);
+        $this->utilisateurRoleService->addRole($userId, DroitService::AUCUN_DROIT, $id_e);
 
         $info = \implode('; ', [
             'prenom : ' . $firstname,

@@ -3,6 +3,7 @@
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityUtilitiesService;
+use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 
 class GetEntityList extends ConnecteurTypeChoiceActionExecutor
 {
@@ -33,7 +34,7 @@ class GetEntityList extends ConnecteurTypeChoiceActionExecutor
     public function display()
     {
         $entityUtilitiesService = $this->objectInstancier->getInstance(EntityUtilitiesService::class);
-        $arbreFille = $this->objectInstancier->getInstance(RoleUtilisateur::class)->getArbreFilleWithRacine(
+        $arbreFille = $this->objectInstancier->getInstance(UtilisateurEntiteService::class)->getArbreFilleWithRacine(
             $this->id_u,
             DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION)
         );

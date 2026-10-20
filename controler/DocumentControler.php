@@ -3,6 +3,7 @@
 use Pastell\File\Chunk\ChunkUploader;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Menu\MenuGaucheOption;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\ViewModel\DeleteConfirmation;
@@ -391,7 +392,7 @@ class DocumentControler extends PastellControler
         $limit = 20;
 
         $liste_type = [];
-        $allDroit = $this->getDroitService()->getAllDroit($this->getId_u());
+        $allDroit = $this->getDroitService()->getUnrestrictedDroits($this->getId_u());
 
         foreach ($allDroit as $droit) {
             if (preg_match('/^(.*):' . DroitType::LECTURE->value . '$/u', $droit, $result)) {
@@ -399,7 +400,7 @@ class DocumentControler extends PastellControler
             }
         }
 
-        $liste_collectivite = $this->getRoleUtilisateur()->getEntiteWithSomeDroit($this->getId_u());
+        $liste_collectivite = $this->getInstance(UtilisateurEntiteService::class)->getEntiteWithAnyDroit($this->getId_u());
         if (! $id_e) {
             if (count($liste_collectivite) == 0) {
                 $this->redirect('/Connexion/nodroit');
@@ -493,7 +494,7 @@ class DocumentControler extends PastellControler
 
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($type);
 
-        $liste_collectivite = $this->getRoleUtilisateur()->getEntite(
+        $liste_collectivite = $this->getInstance(UtilisateurEntiteService::class)->getEntite(
             $this->getId_u(),
             DroitService::getDroitFor($type, DroitType::LECTURE)
         );
@@ -666,7 +667,7 @@ class DocumentControler extends PastellControler
 
         $this->setViewParameter('indexedFieldValue', $indexedFieldValue);
 
-        $allDroit = $this->getDroitService()->getAllDroit($this->getId_u());
+        $allDroit = $this->getDroitService()->getUnrestrictedDroits($this->getId_u());
         $this->setViewParameter('listeEtat', $this->getDocumentTypeFactory()->getActionByRole($allDroit));
 
         $this->setViewParameter('documentActionEntite', $this->getDocumentActionEntite());

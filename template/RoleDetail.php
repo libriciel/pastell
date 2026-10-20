@@ -4,7 +4,7 @@
  * @var Gabarit $this
  * @var array $role_info
  * @var string $role
- * @var bool $role_edition
+ * @var bool $root_role_edition
  * @var array<string, array<string, bool>> $droits_administration
  * @var array<string, array<string, array{libelle: string, droits: array<string, bool>}>> $droits_type_dossier
  */
@@ -29,7 +29,7 @@
 <div class="box">
     <form action='<?php $this->url("Role/doDetail") ?>' method='post'>
         <?php $this->displayCSRFInput() ?>
-        <?php if ($role_edition) : ?>
+        <?php if ($root_role_edition) : ?>
             <input type='hidden' name='role' value='<?php hecho($role); ?>'/>
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
@@ -49,7 +49,7 @@
         </p>
 
         <?php
-        $afficherCategorie = static function (string $libelle, array $droits, bool $role_edition, string $categorieType): void {
+        $afficherCategorie = static function (string $libelle, array $droits, bool $root_role_edition, string $categorieType): void {
             ?>
             <div class="js-categorie-droit mb-3 border rounded" data-categorie-type="<?= htmlspecialchars($categorieType) ?>">
                 <div class="d-flex align-items-stretch">
@@ -60,7 +60,7 @@
                         <?php $lastDroit = array_key_last($droits); ?>
                         <?php foreach ($droits as $droit => $enabled) : ?>
                             <div class="js-droit-ligne px-3 py-1 flex-grow-1<?= $droit !== $lastDroit ? ' border-bottom' : '' ?>" style="display: flex; align-items: center;">
-                                <?php if ($role_edition) : ?>
+                                <?php if ($root_role_edition) : ?>
                                     <input style="width: 15px; height: 15px; vertical-align: middle;" type='checkbox' name='droit[]'
                                            value='<?= $droit ?>' <?= $enabled ? "checked='checked'" : '' ?>/>&nbsp;
                                 <?php endif; ?>
@@ -75,7 +75,7 @@
         ?>
 
         <?php foreach ($droits_administration as $libelle => $droits) : ?>
-            <?php $afficherCategorie($libelle, $droits, $role_edition, 'administration'); ?>
+            <?php $afficherCategorie($libelle, $droits, $root_role_edition, 'administration'); ?>
         <?php endforeach; ?>
 
         <h2 id="titre-types-dossiers" style="margin-top: 30px; font-size: 150%;">Types de dossiers</h2>
@@ -83,12 +83,12 @@
             <div class="js-groupe-type-dossier">
                 <h3 class="js-titre-type" style="font-size: 135%; margin-top: 20px;"><?php hecho($type_name) ?></h3>
                 <?php foreach ($groupes_type as $groupe) : ?>
-                    <?php $afficherCategorie($groupe['libelle'], $groupe['droits'], $role_edition, 'dossier'); ?>
+                    <?php $afficherCategorie($groupe['libelle'], $groupe['droits'], $root_role_edition, 'dossier'); ?>
                 <?php endforeach; ?>
             </div>
         <?php endforeach; ?>
 
-        <?php if ($role_edition) : ?>
+        <?php if ($root_role_edition) : ?>
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
             </button>

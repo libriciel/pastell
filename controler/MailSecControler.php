@@ -7,6 +7,7 @@ use Pastell\Service\Annuaire\AnnuaireImportService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityUtilitiesService;
+use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\ViewModel\DeleteConfirmation;
 
@@ -255,7 +256,7 @@ class MailSecControler extends PastellControler
 
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
         $entity_tree = $entityUtilitiesService->buildEntityTreeselectOptions(
-            $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION))
+            $this->getInstance(UtilisateurEntiteService::class)->getArbreFille($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION))
         );
         $this->setViewParameter('entity_treeselect_data', json_encode($entity_tree, JSON_THROW_ON_ERROR));
 
