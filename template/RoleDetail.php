@@ -4,7 +4,7 @@
  * @var Gabarit $this
  * @var array $role_info
  * @var string $role
- * @var bool $role_edition
+ * @var bool $root_role_edition
  * @var array<string, array<string, bool>> $droits_administration
  * @var array<string, array<string, array{libelle: string, droits: array<string, bool>}>> $droits_type_dossier
  */
@@ -29,7 +29,7 @@
 <div class="box">
     <form action='<?php $this->url("Role/doDetail") ?>' method='post'>
         <?php $this->displayCSRFInput() ?>
-        <?php if ($role_edition) : ?>
+        <?php if ($root_role_edition) : ?>
             <input type='hidden' name='role' value='<?php hecho($role); ?>'/>
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
@@ -60,7 +60,7 @@
                         <?php $lastDroit = array_key_last($droits); ?>
                         <?php foreach ($droits as $droit => $enabled) : ?>
                             <div class="js-droit-ligne px-3 py-1 flex-grow-1<?= $droit !== $lastDroit ? ' border-bottom' : '' ?>" style="display: flex; align-items: center;">
-                                <?php if ($role_edition) : ?>
+                                <?php if ($root_role_edition) : ?>
                                     <input style="width: 15px; height: 15px; vertical-align: middle;" type='checkbox' name='droit[]'
                                            value='<?= $droit ?>' <?= $enabled ? "checked='checked'" : '' ?>/>&nbsp;
                                 <?php endif; ?>
@@ -88,7 +88,7 @@
             </div>
         <?php endforeach; ?>
 
-        <?php if ($role_edition) : ?>
+        <?php if ($root_role_edition) : ?>
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-floppy-disk"></i>&nbsp;Enregistrer
             </button>

@@ -103,4 +103,11 @@ class DocumentActionEntiteTest extends PastellTestCase
         $this->assertSame('action-test', $actions[1]['action']);
         $this->assertSame(Action::MODIFICATION, $actions[2]['action']);
     }
+
+    public function testGetInfoOfDocumentNotOnEntity(): void
+    {
+        $id_d = $this->createDocument('test', self::ID_E_SERVICE)['id_d'];
+
+        static::assertSame([], $this->documentActionEntite->getInfo($id_d, self::ID_E_COL));
+    }
 }

@@ -4,6 +4,9 @@ use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Module\ModuleListService;
+use Pastell\Service\Utilisateur\UtilisateurEntiteService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
+
 
 class RechercheAvanceFormulaireHTML extends PastellControler
 {
@@ -317,7 +320,7 @@ class RechercheAvanceFormulaireHTML extends PastellControler
     {
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
         $tree = $entityUtilitiesService->buildEntityTreeselectOptions(
-            $this->getInstance(RoleUtilisateur::class)->getArbreFille(
+            $this->getInstance(UtilisateurEntiteService::class)->getArbreFille(
                 $this->getId_u(),
                 DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
             ),
@@ -384,7 +387,7 @@ class RechercheAvanceFormulaireHTML extends PastellControler
 
     public function getDocumentStateList(): array
     {
-        $allDroit = $this->getInstance(RoleUtilisateur::class)->getAllDroit($this->getId_u());
+        $allDroit = $this->getInstance(UtilisateurRoleService::class)->getAllDroit((int) $this->getId_u());
         $documentStateList = $this->getInstance(DocumentTypeFactory::class)->getActionByRole($allDroit);
         foreach ($documentStateList as $stateKey => $state) {
             $documentStateList[$stateKey]['fatal-error'] = 'Erreur fatale';

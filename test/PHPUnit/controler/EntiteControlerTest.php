@@ -3,6 +3,7 @@
 use Pastell\Configuration\JobStatus;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 
 class EntiteControlerTest extends ControlerTestCase
@@ -55,7 +56,7 @@ class EntiteControlerTest extends ControlerTestCase
         $user = $this->getObjectInstancier()->getInstance(UtilisateurSQL::class);
         $id_u = $user->create('other', 'other', 'other@other.other', 'other');
 
-        $roleUser = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
+        $roleUser = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
         $roleUser->addRole($id_u, 'autre', 0);
 
         $this->setGetInfo([
@@ -115,7 +116,7 @@ class EntiteControlerTest extends ControlerTestCase
      */
     public function testDisplayEntiteWithRoleOnRootAndChild()
     {
-        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)
+        $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)
             ->addRole(self::ID_U_ADMIN, 'admin', self::ID_E_COL);
         $this->entiteControler->_beforeAction();
         ob_start();

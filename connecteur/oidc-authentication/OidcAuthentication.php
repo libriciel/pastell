@@ -3,6 +3,8 @@
 use Jumbojett\OpenIDConnectClient;
 use Jumbojett\OpenIDConnectClientException;
 use Pastell\Security\Authentication\OpenIDConnectClientFactory;
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
 final class OidcAuthentication extends AuthenticationConnecteur
 {
@@ -22,7 +24,7 @@ final class OidcAuthentication extends AuthenticationConnecteur
 
     public function __construct(
         private readonly UtilisateurSQL $utilisateurSQL,
-        private readonly RoleUtilisateur $roleUtilisateur,
+        private readonly UtilisateurRoleService $utilisateurRoleService,
         private readonly string $site_base,
     ) {
         $this->setOpenIDConnectClientFactory(new OpenIDConnectClientFactory());
@@ -137,7 +139,7 @@ final class OidcAuthentication extends AuthenticationConnecteur
             $userInfo[$this->givenNameAttribute] ?? ''
         );
         $this->utilisateurSQL->validMailAuto($id_u);
-        $this->roleUtilisateur->addRole($id_u, RoleUtilisateur::AUCUN_DROIT, 0);
+        $this->utilisateurRoleService->addRole($id_u, DroitService::AUCUN_DROIT, 0);
     }
 
     public function logout($redirectUrl = false)
