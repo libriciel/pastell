@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.0.11] - 2026-11-2
+
+### Corrections
+
+- iparapheur REST : message d'erreur explicite lorsque le fichier signé n'est pas trouvé dans l'archive #2602
+
 ## [5.0.10] - 2026-10-05
 
 ### Évolutions
