@@ -204,7 +204,7 @@ services:
       - no-new-privileges:true
 
   pes-viewer:
-    image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.7@sha256:68c64c184144884ce353c8b21b80b68c1a0e4928be63eaaa637c63af027600ee'
+    image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.8@sha256:517fe836cf7808f3a1961cbbc8074e5749d56bb74b1db48d46772c93bfd54002'
     restart: unless-stopped
     cap_drop:
       - ALL
