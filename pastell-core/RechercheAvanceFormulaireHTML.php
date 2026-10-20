@@ -7,7 +7,6 @@ use Pastell\Service\Module\ModuleListService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
-
 class RechercheAvanceFormulaireHTML extends PastellControler
 {
     private $documentTypeFactory;

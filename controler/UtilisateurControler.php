@@ -697,27 +697,28 @@ class UtilisateurControler extends PastellControler
      */
     public function notificationSuppressionAction(): void
     {
-        $source = $this->getGetInfo()->get('source', 'moi');
-        $id_n = $this->getGetInfo()->get('id_n');
+        $recuperateur = $this->getPostInfo();
+        $source = $recuperateur->get('source', 'moi');
+        $id_n = $recuperateur->getInt('id_n');
 
-        $infoNotification = $this->getNotification()->getInfo($id_n);
-        if (!$infoNotification) {
+        $subscription = $this->getNotificationService()->getSubscription($id_n);
+        if (!$subscription) {
             $this->setLastError("La notification n'existe pas");
             $this->redirectToPageUtilisateur($source, $this->getId_u());
         }
-        if ($infoNotification['id_u'] !== $this->getId_u()) {
+        if ($subscription->id_u !== $this->getId_u()) {
             $this->setLastError("Vous ne pouvez pas supprimer les notifications d'un autre utilisateur");
             $this->redirectToPageUtilisateur($source, $this->getId_u());
         }
 
         $infoNotification['denomination'] =
-            $this->getEntiteSQL()->getInfo($infoNotification['id_e'])['denomination'] ?? '';
+            $this->getEntiteSQL()->getInfo($subscription->id_e)['denomination'] ?? '';
 
         $this->renderDeleteConfirmation(
             'Suppression de la notification',
             new DeleteConfirmation(
                 'Utilisateur/doNotificationSuppression',
-                $source === 'moi' ? 'Utilisateur/moi' : "Utilisateur/$source?id_u={$infoNotification['id_u']}",
+                $source === 'moi' ? 'Utilisateur/moi' : "Utilisateur/$source?id_u={$subscription->id_u}",
                 [$infoNotification],
                 ['id_n' => $id_n, 'source' => $source],
                 DeleteConfirmation::NOTIFICATION,

@@ -49,7 +49,7 @@
         </p>
 
         <?php
-        $afficherCategorie = static function (string $libelle, array $droits, bool $role_edition, string $categorieType): void {
+        $afficherCategorie = static function (string $libelle, array $droits, bool $root_role_edition, string $categorieType): void {
             ?>
             <div class="js-categorie-droit mb-3 border rounded" data-categorie-type="<?= htmlspecialchars($categorieType) ?>">
                 <div class="d-flex align-items-stretch">
@@ -75,7 +75,7 @@
         ?>
 
         <?php foreach ($droits_administration as $libelle => $droits) : ?>
-            <?php $afficherCategorie($libelle, $droits, $role_edition, 'administration'); ?>
+            <?php $afficherCategorie($libelle, $droits, $root_role_edition, 'administration'); ?>
         <?php endforeach; ?>
 
         <h2 id="titre-types-dossiers" style="margin-top: 30px; font-size: 150%;">Types de dossiers</h2>
@@ -83,7 +83,7 @@
             <div class="js-groupe-type-dossier">
                 <h3 class="js-titre-type" style="font-size: 135%; margin-top: 20px;"><?php hecho($type_name) ?></h3>
                 <?php foreach ($groupes_type as $groupe) : ?>
-                    <?php $afficherCategorie($groupe['libelle'], $groupe['droits'], $role_edition, 'dossier'); ?>
+                    <?php $afficherCategorie($groupe['libelle'], $groupe['droits'], $root_role_edition, 'dossier'); ?>
                 <?php endforeach; ?>
             </div>
         <?php endforeach; ?>
