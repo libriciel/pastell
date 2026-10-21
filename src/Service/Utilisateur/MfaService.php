@@ -117,6 +117,12 @@ final class MfaService
         $this->recoveryCodeSQL->deleteAll($id_u);
     }
 
+    public function deleteAllExceptAdmin(): void
+    {
+        $this->utilisateurMfaSQL->deleteAllExcept(UserAuthenticationService::ADMIN_LOGIN);
+        $this->recoveryCodeSQL->deleteAllExcept(UserAuthenticationService::ADMIN_LOGIN);
+    }
+
     /**
      * @return string[] Les codes en clair, à afficher une seule fois.
      * @throws RandomException

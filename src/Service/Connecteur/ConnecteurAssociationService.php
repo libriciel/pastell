@@ -7,8 +7,10 @@ use EntiteSQL;
 use Exception;
 use FluxDefinitionFiles;
 use FluxEntiteSQL;
+use Journal;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Utilisateur\MfaService;
 use UnrecoverableException;
 
 class ConnecteurAssociationService
@@ -19,6 +21,8 @@ class ConnecteurAssociationService
         private readonly DroitService $droitService,
         private readonly FluxDefinitionFiles $fluxDefinitionFiles,
         private readonly ConnecteurActionService $connecteurActionService,
+        private readonly MfaService $mfaService,
+        private readonly Journal $journal,
     ) {
     }
 
@@ -90,6 +94,18 @@ class ConnecteurAssociationService
             ConnecteurActionService::ACTION_ASSOCIE,
             $message
         );
+
+        if ($id_e === EntiteSQL::ID_E_ENTITE_RACINE && $type_connecteur === 'Authentification') {
+            $this->mfaService->deleteAllExceptAdmin();
+            $this->journal->add(
+                Journal::MODIFICATION_UTILISATEUR,
+                EntiteSQL::ID_E_ENTITE_RACINE,
+                Journal::NO_ID_D,
+                'double authentification supprimée',
+                'Double authentification supprimée pour tous les utilisateurs sauf admin : '
+                . "association d'un connecteur d'authentification"
+            );
+        }
 
         return $id_fe;
     }

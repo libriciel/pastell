@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use OTPHP\TOTP;
+use Random\RandomException;
 use Symfony\Component\Clock\Clock;
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\Utilisateur\MfaService;
@@ -10,6 +11,8 @@ use Symfony\Component\RateLimiter\RateLimit;
 
 class MfaControlerTest extends ControlerTestCase
 {
+    private const int ID_U_ERIC = 2;
+
     private function getMfaControler(): MfaControler
     {
         return $this->getControlerInstance(MfaControler::class);
@@ -262,5 +265,63 @@ class MfaControlerTest extends ControlerTestCase
         }
 
         self::assertTrue($this->getMfaService()->isEnabled(self::ID_U_ADMIN));
+    }
+
+    /**
+     * @param array<string, Connecteur> $connecteurs
+     */
+    private function mockGlobalConnecteurs(array $connecteurs): void
+    {
+        $connecteurFactory = $this->createMock(ConnecteurFactory::class);
+        $connecteurFactory->method('getGlobalConnecteur')
+            ->willReturnCallback(static fn(string $type) => $connecteurs[$type] ?? false);
+        $this->getObjectInstancier()->setInstance(ConnecteurFactory::class, $connecteurFactory);
+    }
+
+    private function getMfaControlerAsEric(): MfaControler
+    {
+        $controler = $this->getMfaControler();
+        $this->getObjectInstancier()->getInstance(Authentification::class)->connexion('eric', self::ID_U_ERIC);
+        return $controler;
+    }
+
+    /**
+     * @throws LastErrorException
+     */
+    public function testExternalUserRedirected(): void
+    {
+        $this->mockGlobalConnecteurs(['Authentification' => $this->createMock(AuthenticationConnecteur::class)]);
+        try {
+            $this->getMfaControlerAsEric()->_beforeAction();
+            self::fail('Une redirection était attendue');
+        } catch (LastMessageException $e) {
+            self::assertStringContainsString('/Utilisateur/moi', $e->getMessage());
+        }
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws RandomException
+     * @throws NotFoundException
+     */
+    public function testDoAuthLdapError(): void
+    {
+        $ldapVerification = $this->createMock(LDAPVerification::class);
+        $ldapVerification->method('verifLogin')->willThrowException(new UnrecoverableException('LDAP injoignable'));
+        $this->mockGlobalConnecteurs(['Vérification' => $ldapVerification]);
+        $this->getMfaService()->enroll(self::ID_U_ERIC);
+        $this->getMfaService()->confirm(self::ID_U_ERIC);
+        $this->mockLoginAttemptLimit();
+
+        $controler = $this->getMfaControlerAsEric();
+        $this->setPostInfo(['action' => 'disable', 'password' => 'secret']);
+        try {
+            $controler->doAuthRequiredAction();
+            self::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            self::assertStringContainsString('LDAP injoignable', $e->getMessage());
+        }
+
+        self::assertTrue($this->getMfaService()->isEnabled(self::ID_U_ERIC));
     }
 }
