@@ -4,14 +4,19 @@ namespace Pastell\Tests\Service\Connecteur;
 
 use Exception;
 use FluxEntiteSQL;
+use Journal;
 use SQLQuery;
 use Pastell\Service\Connecteur\ConnecteurActionService;
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
+use Pastell\Service\Utilisateur\MfaService;
 use PastellTestCase;
+use Random\RandomException;
 use UnrecoverableException;
 
 class ConnecteurAssociationServiceTest extends PastellTestCase
 {
+    private const int ID_U_ERIC = 2;
+
     private function getConnecteurAssociationService(): ConnecteurAssociationService
     {
         return $this->getObjectInstancier()->getInstance(ConnecteurAssociationService::class);
@@ -270,5 +275,56 @@ class ConnecteurAssociationServiceTest extends PastellTestCase
             ->addConnecteurAssociation(0, $id_ce);
 
         static::assertGreaterThan(0, $id_fe);
+    }
+
+    private function getMfaService(): MfaService
+    {
+        return $this->getObjectInstancier()->getInstance(MfaService::class);
+    }
+
+    /**
+     * @throws RandomException
+     */
+    private function enableMfa(int $id_u): void
+    {
+        $this->getMfaService()->enroll($id_u);
+        $this->getMfaService()->confirm($id_u);
+        $this->getMfaService()->generateRecoveryCodes($id_u);
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws RandomException
+     */
+    public function testAuthenticationDeletesMfa(): void
+    {
+        $this->enableMfa(self::ID_U_ADMIN);
+        $this->enableMfa(self::ID_U_ERIC);
+        $id_ce = $this->createConnector('cas-authentication', 'CAS', 0)['id_ce'];
+
+        $this->getConnecteurAssociationService()->addConnecteurAssociation(0, $id_ce, 'Authentification');
+
+        static::assertFalse($this->getMfaService()->isEnabled(self::ID_U_ERIC));
+        static::assertSame(0, $this->getMfaService()->countRemainingRecoveryCodes(self::ID_U_ERIC));
+        static::assertTrue($this->getMfaService()->isEnabled(self::ID_U_ADMIN));
+        static::assertSame(10, $this->getMfaService()->countRemainingRecoveryCodes(self::ID_U_ADMIN));
+        static::assertNotEmpty(
+            $this->getObjectInstancier()->getInstance(Journal::class)
+                ->getAll(false, false, false, false, 0, 100, 'double authentification supprimée')
+        );
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws RandomException
+     */
+    public function testOtherTypeKeepsMfa(): void
+    {
+        $this->enableMfa(self::ID_U_ERIC);
+        $id_ce = $this->createConnector('ldap-verification', 'LDAP', 0)['id_ce'];
+
+        $this->getConnecteurAssociationService()->addConnecteurAssociation(0, $id_ce, 'Vérification');
+
+        static::assertTrue($this->getMfaService()->isEnabled(self::ID_U_ERIC));
     }
 }
