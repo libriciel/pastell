@@ -134,4 +134,18 @@ class MfaServiceTest extends PastellTestCase
         $mfaService->delete(self::ID_U_ADMIN);
         self::assertSame(0, $mfaService->countRemainingRecoveryCodes(self::ID_U_ADMIN));
     }
+
+    public function testDeleteAllExceptAdmin(): void
+    {
+        $mfaService = $this->getMfaService();
+        foreach ([self::ID_U_ADMIN, 2] as $id_u) {
+            $mfaService->enroll($id_u);
+            $mfaService->confirm($id_u);
+        }
+
+        $mfaService->deleteAllExceptAdmin();
+
+        self::assertFalse($mfaService->isEnabled(2));
+        self::assertTrue($mfaService->isEnabled(self::ID_U_ADMIN));
+    }
 }
