@@ -779,4 +779,29 @@ class UtilisateurControlerTest extends ControlerTestCase
         $this->expectExceptionMessage("L'utilisateur n'existe pas");
         $this->getUtilisateurControler()->_beforeAction();
     }
+
+    /**
+     * @throws NotFoundException
+     * @throws JsonException
+     */
+    public function testMoiHidesMfaWhenExternal(): void
+    {
+        $connecteurFactory = $this->createMock(ConnecteurFactory::class);
+        $connecteurFactory->method('getGlobalConnecteur')
+            ->willReturnCallback(
+                fn(string $type) => $type === 'Authentification'
+                    ? $this->createMock(AuthenticationConnecteur::class)
+                    : false
+            );
+        $this->getObjectInstancier()->setInstance(ConnecteurFactory::class, $connecteurFactory);
+        $controler = $this->getUtilisateurControler();
+        $this->getObjectInstancier()->getInstance(Authentification::class)->connexion('eric', 2);
+
+        ob_start();
+        $controler->moiAction();
+        $output = ob_get_clean();
+
+        self::assertStringContainsString('Vos rôles sur Pastell', $output);
+        self::assertStringNotContainsString('Double authentification', $output);
+    }
 }

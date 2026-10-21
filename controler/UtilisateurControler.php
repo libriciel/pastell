@@ -12,6 +12,7 @@ use Pastell\Service\Utilisateur\RoleDelegationService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UserAuthenticationService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Utilisateur\UserUpdateService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
@@ -476,6 +477,10 @@ class UtilisateurControler extends PastellControler
             ->getTokens($this->getId_u());
         $this->setViewParameter('tokens', $tokens);
 
+        $this->setViewParameter(
+            'mfa_available',
+            !$this->getInstance(UserAuthenticationService::class)->isExternal($id_u)
+        );
         $mfaService = $this->getMfaService();
         $mfaEnabled = $mfaService->isEnabled($id_u);
         $this->setViewParameter('mfa_enabled', $mfaEnabled);

@@ -12,6 +12,7 @@ declare(strict_types=1);
  * @var string $entity_treeselect_data
  * @var string $module_treeselect_data
  * @var array $tokens
+ * @var bool $mfa_available
  * @var bool $mfa_enabled
  * @var string $mfa_activated_at
  * @var int $mfa_recovery_remaining
@@ -67,6 +68,7 @@ declare(strict_types=1);
     <a href='Utilisateur/modifEmail' class='btn btn-primary'><i class="fas fa-pen"></i>&nbsp;Modifier mon email</a>
 </div>
 
+<?php if ($mfa_available) : ?>
 <div class="box">
     <h2 id="desc-mfa-table">Double authentification (MFA)</h2>
     <?php if (!empty($mfa_enabled)) : ?>
@@ -100,6 +102,7 @@ declare(strict_types=1);
         </form>
     <?php endif; ?>
 </div>
+<?php endif; ?>
 
 <div class="box">
     <h2 id="desc-roles-table">Vos rôles sur Pastell</h2>

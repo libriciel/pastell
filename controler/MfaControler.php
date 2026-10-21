@@ -4,10 +4,28 @@ declare(strict_types=1);
 
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\Utilisateur\MfaManagementAction;
+use Pastell\Service\Utilisateur\UserAuthenticationService;
 use Random\RandomException;
 
 class MfaControler extends PastellControler
 {
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function _beforeAction(): void
+    {
+        parent::_beforeAction();
+        if ($this->getUserAuthenticationService()->isExternal($this->getId_u())) {
+            $this->redirect('/Utilisateur/moi');
+        }
+    }
+
+    private function getUserAuthenticationService(): UserAuthenticationService
+    {
+        return $this->getObjectInstancier()->getInstance(UserAuthenticationService::class);
+    }
+
     /**
      * @throws LastMessageException
      * @throws LastErrorException
@@ -57,7 +75,14 @@ class MfaControler extends PastellControler
             $this->redirect('/Mfa/authRequired?action=' . $action->value);
         }
 
-        if (!$this->getUtilisateur()->verifPassword($id_u, $this->getPostInfo()->get('password'))) {
+        try {
+            $passwordValid = $this->getUserAuthenticationService()
+                ->verifyPassword($id_u, (string) $this->getPostInfo()->get('password'));
+        } catch (UnrecoverableException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect('/Mfa/authRequired?action=' . $action->value);
+        }
+        if (!$passwordValid) {
             $loginAttemptLimit->consumeLoginAttempt($login);
             $this->setLastError('Votre mot de passe est incorrect.');
             $this->redirect('/Mfa/authRequired?action=' . $action->value);

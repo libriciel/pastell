@@ -3,6 +3,7 @@
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\PasswordEntropy;
 use Pastell\Service\Utilisateur\PasswordResetService;
+use Pastell\Service\Utilisateur\UserAuthenticationService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -378,29 +379,20 @@ class ConnexionControler extends PastellControler
             $this->setLastError('Identifiant ou mot de passe incorrect.');
             $this->redirect($redirect_fail);
         }
-        $verificationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur('Vérification');
-
         $loginAttemptLimit = $this->getObjectInstancier()->getInstance(LoginAttemptLimit::class);
         if ($loginAttemptLimit->getRateLimit($login)->getRemainingTokens() <= 0) {
             $this->getLastError()->setLastError('Trop de tentatives de connexion, veuillez réessayer plus tard.');
             $this->redirect($redirect_fail);
         }
 
-        if ($verificationConnecteur && $login !== 'admin') {
-            /** @var LDAPVerification $verificationConnecteur */
-            if (!$verificationConnecteur->verifLDAP($login)) {
-                $loginAttemptLimit->consumeLoginAttempt($login);
-                $this->getLastError()->setLastError(
-                    "Vous ne pouvez pas vous connecter car vous êtes inconnu sur l'annuaire LDAP"
-                );
-                $this->redirect($redirect_fail);
-            }
-            if (!$verificationConnecteur->verifLogin($login, $password)) {
-                $loginAttemptLimit->consumeLoginAttempt($login);
-                $this->getLastError()->setLastError('Identifiant ou mot de passe incorrect. (LDAP)');
-                $this->redirect($redirect_fail);
-            }
-        } elseif (!$this->getUtilisateur()->verifPassword($id_u, $password)) {
+        $userAuthenticationService = $this->getObjectInstancier()->getInstance(UserAuthenticationService::class);
+        try {
+            $passwordValid = $userAuthenticationService->verifyPassword((int)$id_u, (string)$password);
+        } catch (UnrecoverableException $e) {
+            $this->getLastError()->setLastError($e->getMessage());
+            $this->redirect($redirect_fail);
+        }
+        if (!$passwordValid) {
             $loginAttemptLimit->consumeLoginAttempt($login);
             $this->getLastError()->setLastError('Identifiant ou mot de passe incorrect.');
             $this->redirect($redirect_fail);
