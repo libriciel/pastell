@@ -53,4 +53,14 @@ DELETE FROM utilisateur_mfa WHERE id_u = ?;
 SQL;
         $this->query($sql, $id_u);
     }
+
+    public function deleteAllExcept(string $login): void
+    {
+        $sql = <<<SQL
+DELETE utilisateur_mfa FROM utilisateur_mfa
+JOIN utilisateur ON utilisateur.id_u = utilisateur_mfa.id_u
+WHERE utilisateur.login <> ?;
+SQL;
+        $this->query($sql, $login);
+    }
 }

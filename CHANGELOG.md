@@ -10,7 +10,8 @@
   - Ajout du tri par dates sur la liste des travaux
   - Possibilité de suspendre/reprendre les travaux correspondants à la recherche
 - Double authentification (TOTP) : activation, réinitialisation et désactivation depuis l'espace personnel, avec
-  codes de récupération. Un administrateur peut réinitialiser ou désactiver celle d'un utilisateur #2453
+  codes de récupération. Un administrateur peut réinitialiser ou désactiver celle d'un utilisateur. Non disponible
+  si un connecteur CAS ou OIDC est configuré #2453
 - iparapheur REST "Multi-documents ET annexes" :
   - **BREAKING** : Suppression de la case 'Appliquer le multi-document' du connecteur iparapheur REST #2593
   - Studio, l'étape « Visa/Signature » dispose d'un nouveau champ « Autre(s) document(s) à signer ».

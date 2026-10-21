@@ -31,6 +31,16 @@ SQL;
         $this->query($sql, $id_u);
     }
 
+    public function deleteAllExcept(string $login): void
+    {
+        $sql = <<<SQL
+DELETE utilisateur_mfa_recovery_code FROM utilisateur_mfa_recovery_code
+JOIN utilisateur ON utilisateur.id_u = utilisateur_mfa_recovery_code.id_u
+WHERE utilisateur.login <> ?;
+SQL;
+        $this->query($sql, $login);
+    }
+
     public function consume(int $id_u, string $codeHash): bool
     {
         $sql = <<<SQL

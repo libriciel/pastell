@@ -405,4 +405,57 @@ class ConnexionControlerTest extends ControlerTestCase
             static::assertStringContainsString('/Connexion/connexion', $e->getMessage());
         }
     }
+
+    private function loginWithLdap(bool|UnrecoverableException $result): void
+    {
+        $ldapVerification = $this->createMock(LDAPVerification::class);
+        $verifLogin = $ldapVerification->method('verifLogin')->with('eric', 'ldap-password');
+        $result instanceof UnrecoverableException
+            ? $verifLogin->willThrowException($result)
+            : $verifLogin->willReturn($result);
+        $connecteurFactory = $this->createMock(ConnecteurFactory::class);
+        $connecteurFactory->method('getGlobalConnecteur')
+            ->willReturnCallback(static fn(string $type) => $type === 'Vérification' ? $ldapVerification : false);
+        $this->getObjectInstancier()->setInstance(ConnecteurFactory::class, $connecteurFactory);
+        $this->getObjectInstancier()->getInstance(Authentification::class)->deconnexion();
+        $this->mockLoginAttemptLimit();
+        $this->setPostInfo(['login' => 'eric', 'password' => 'ldap-password', 'request_uri' => '/']);
+        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        $this->connexionControler->doConnexionAction();
+    }
+
+    public function testLdapLoginConnects(): void
+    {
+        try {
+            $this->loginWithLdap(true);
+            static::fail('Une redirection était attendue');
+        } catch (LastMessageException) {
+        }
+
+        static::assertSame(2, $this->getObjectInstancier()->getInstance(Authentification::class)->getId());
+    }
+
+    public function testLdapWrongPassword(): void
+    {
+        try {
+            $this->loginWithLdap(false);
+            static::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('Identifiant ou mot de passe incorrect.', $e->getMessage());
+        }
+
+        static::assertFalse($this->getObjectInstancier()->getInstance(Authentification::class)->isConnected());
+    }
+
+    public function testLdapUnreachable(): void
+    {
+        try {
+            $this->loginWithLdap(new UnrecoverableException('LDAP injoignable'));
+            static::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('LDAP injoignable', $e->getMessage());
+        }
+
+        static::assertFalse($this->getObjectInstancier()->getInstance(Authentification::class)->isConnected());
+    }
 }
