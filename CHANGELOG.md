@@ -1,13 +1,22 @@
 # Changelog
 
-## [4.1.24] - 2026-11-02
+## [4.1.24] - 2026-10-22
 
 ### Dépréciations
 
-- Classe `Notification` dépréciée au profit de `NotificationSQL` et des services `NotificationService` et `NotificationSubscription` #2582
-- Classe `RoleUtilisateur` dépréciée au profit de `UtilisateurRoleSQL` et des services `UtilisateurRoleService`, `UtilisateurEntiteService` et `RoleDelegationService` #2594
-- `DroitService::getAllDroitEntite()` et `DroitService::getAllDroit()` dépréciées au profit de 
+- Classe `Notification` dépréciée au profit de `NotificationSQL` et des services `NotificationService` et
+  `NotificationSubscription` #2582
+- Classe `RoleUtilisateur` dépréciée au profit de `UtilisateurRoleSQL` et des services `UtilisateurRoleService`,
+  `UtilisateurEntiteService` et `RoleDelegationService` #2594
+- `DroitService::getAllDroitEntite()` et `DroitService::getAllDroit()` dépréciées au profit de
   `getUnrestrictedDroitsForEntite()` et `getUnrestrictedDroits()` #2596
+
+### Sécurité
+
+- [CVE-2026-109618](https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w) (criticité CRITIQUE)
+  RCE via OOM corruption #2608
+- [CVE-2026-109619](https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp) (criticité CRITIQUE)
+  RCE via stale global state #2608
 
 ## [4.1.23] - 2026-10-05
 
