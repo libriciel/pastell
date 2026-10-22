@@ -1,3 +1,12 @@
+# [4.0.33] - 2026-10-22
+
+### Sécurité
+
+- [CVE-2026-109618](https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w) (criticité CRITIQUE)
+  RCE via OOM corruption #2608
+- [CVE-2026-109619](https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp) (criticité CRITIQUE)
+  RCE via stale global state #2608
+
 # [4.0.32] - 2026-06-01
 
 ## Correction
