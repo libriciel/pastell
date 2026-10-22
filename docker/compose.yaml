@@ -130,7 +130,7 @@ services:
       - "${HTTPS_PORT:-443}:443"
 
   db:
-    image: 'hubdocker.libriciel.fr/mariadb:11.4.13-noble@sha256:1292844148b311e4ed4300022a996d39083f415a963e970cf47cad1b3b18e3a6'
+    image: 'hubdocker.libriciel.fr/mariadb:11.4.13-noble@sha256:250e1609e93c0e6aecf64bfbab2d84d5e89d2481540fe77447ff6c855c3b1873'
     restart: unless-stopped
     command:
       - "--character-set-server=utf8mb4"
@@ -157,7 +157,7 @@ services:
       - ${DATABASE_DATADIR:-database_datadir}:/var/lib/mysql/:rw,noexec,nosuid,nodev
 
   redis:
-    image: 'hubdocker.libriciel.fr/redis:8.10.2-alpine3.23@sha256:3811787313eba226a2ef38658c6ccb91cd5e110edc89c37767de373120a0e5a0'
+    image: 'hubdocker.libriciel.fr/redis:8.10.2-alpine3.23@sha256:615b4cedaff0c1437a1548acae4222572df8c021eeb7382d64cb8b5e3a13ac7a'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -168,7 +168,7 @@ services:
       - /data:mode=750,rw,noexec,nosuid,nodev
 
   seda-generator:
-    image: 'registry.libriciel.fr/public/plateforme/seda-generator:1.2.0@sha256:b2e2b8ddf03cf9c1be2f8ff7d86f37d610d6d766bc46a138046784256b446953'
+    image: 'registry.libriciel.fr/public/plateforme/seda-generator:1.2.1@sha256:bd340adbda387fbe69b97a7fb789c24ef865385a6e4cb5d896c8582cea26cb1b'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -204,7 +204,7 @@ services:
       - no-new-privileges:true
 
   pes-viewer:
-    image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.6@sha256:d4a49a8c01a2203c3e3b7e9079e5efa002acb73be99722655224f852b92b4528'
+    image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.8@sha256:517fe836cf7808f3a1961cbbc8074e5749d56bb74b1db48d46772c93bfd54002'
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -218,7 +218,7 @@ services:
       - ${PES_PJ_PATH:-/data/pastell/pesPJ}:/pesPJ/
 
   cacerts:
-    image: 'registry.libriciel.fr/public/libriciel/ls-docker-cacerts:0.4.0@sha256:209976b9b07ce001403111203f7824bfc57068f033a9c498416a363709690a2d'
+    image: 'registry.libriciel.fr/public/libriciel/ls-docker-cacerts:1.0.2@sha256:f0232b5c86c10fac00ec3c39553f749d648304791dd6b3345bd8f17b6d93caa0'
     cap_drop:
       - ALL
     cap_add:
@@ -264,7 +264,7 @@ services:
       - stack-update-network
 
   libriciel-postfix:
-    image: 'registry.libriciel.fr/public/systeme/libriciel-postfix:1.0.3@sha256:8f5a343131ff6126c50b7c00623f11a2e9e4c783cdc25d0ffea2ea6f111249a3'
+    image: 'registry.libriciel.fr/public/systeme/libriciel-postfix:1.0.4@sha256:f7e4a69058e8d35b7d110fb1c7de0113f90a06c212b2dacb4f74bdc85d3a0d4f'
     restart: unless-stopped
     read_only: true
     cap_drop:
