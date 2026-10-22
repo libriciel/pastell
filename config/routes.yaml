@@ -11,5 +11,5 @@ controllers:
     resource: routing.controllers
 
 legacy:
-  resource: .
-  type: legacy
+    resource: .
+    type: legacy
