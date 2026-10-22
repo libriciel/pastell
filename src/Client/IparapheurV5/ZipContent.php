@@ -13,7 +13,7 @@ use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
+use Symfony\Component\Serializer\Mapping\Loader\AttributeLoader;
 use Symfony\Component\Serializer\NameConverter\MetadataAwareNameConverter;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\BackedEnumNormalizer;
@@ -88,7 +88,7 @@ final class ZipContent
     }
     private function getSerializer(): Serializer
     {
-        $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader());
+        $classMetadataFactory = new ClassMetadataFactory(new AttributeLoader());
 
         $metadataAwareNameConverter = new MetadataAwareNameConverter($classMetadataFactory);
 

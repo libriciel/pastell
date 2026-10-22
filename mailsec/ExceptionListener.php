@@ -32,7 +32,10 @@ final class ExceptionListener implements EventSubscriberInterface
         if ($exception instanceof MissingPasswordException) {
             $event->setResponse(
                 new RedirectResponse(
-                    $this->router->generate('mailsec_recipient_password', ['key' => $event->getRequest()->get('key')])
+                    $this->router->generate(
+                        'mailsec_recipient_password',
+                        ['key' => $event->getRequest()->query->get('key')],
+                    ),
                 )
             );
         }
@@ -53,7 +56,10 @@ final class ExceptionListener implements EventSubscriberInterface
         if ($exception instanceof NotEditableResponseException) {
             $event->setResponse(
                 new RedirectResponse(
-                    $this->router->generate('mailsec_recipient_index', ['key' => $event->getRequest()->get('key')])
+                    $this->router->generate(
+                        'mailsec_recipient_index',
+                        ['key' => $event->getRequest()->query->get('key')],
+                    ),
                 )
             );
         }

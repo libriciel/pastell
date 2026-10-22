@@ -28,7 +28,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use UnrecoverableException;
 
 final class RecipientController extends AbstractController
@@ -319,8 +319,8 @@ final class RecipientController extends AbstractController
         $mailSecInfo = $this->mailsecManager->getMailsecInfo($key, $request);
         $this->mailsecManager->checkResponseCanBeEdited($mailSecInfo);
 
-        $field = $request->get('field');
-        $num = (int)$request->get('num');
+        $field = $request->query->get('field');
+        $num = $request->query->getInt('num');
 
         $donneesFormulaire = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)->get(
             $mailSecInfo->id_d_reponse,
@@ -346,9 +346,9 @@ final class RecipientController extends AbstractController
     {
         $mailSecInfo = $this->mailsecManager->getMailsecInfo($key, $request);
 
-        $field = $request->get('field');
-        $num = (int)$request->get('num');
-        $responseFile = $request->get('fichier_reponse');
+        $field = $request->query->get('field');
+        $num = $request->query->getInt('num');
+        $responseFile = $request->query->get('fichier_reponse');
 
         $donneesFormulaire = $responseFile
             ? $mailSecInfo->donneesFormulaireReponse
@@ -392,8 +392,8 @@ final class RecipientController extends AbstractController
     {
         $mailSecInfo = $this->mailsecManager->getMailsecInfo($key, $request);
 
-        $field = $request->get('field');
-        $responseFile = (bool)$request->get('fichier_reponse');
+        $field = $request->query->get('field');
+        $responseFile = (bool)$request->query->get('fichier_reponse');
 
         $donneesFormulaire = $responseFile
             ? $mailSecInfo->donneesFormulaireReponse
