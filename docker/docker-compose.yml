@@ -108,10 +108,21 @@ services:
         restart: unless-stopped
 
     seda-generator:
-        image: 'registry.libriciel.fr:443/public/plateforme/seda-generator:1.2.0'
+        image: 'registry.libriciel.fr:443/public/plateforme/seda-generator:1.2.1'
         restart: unless-stopped
-        volumes:
-            - '/etc/localtime:/etc/localtime:ro'
+        read_only: true
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
+        user: "app:app"
+        environment:
+            TZ: ${TIMEZONE:-Europe/Paris}
+        tmpfs:
+            - /tmp:mode=770,uid=10001,gid=10001,rw,noexec,nosuid,nodev
+            - /app/var:mode=770,uid=10001,gid=10001,rw,noexec,nosuid,nodev
+            - /data/run:mode=770,uid=10001,gid=10001,size=1M,rw,noexec,nosuid,nodev
+            - /var/lib/nginx/tmp:mode=770,uid=10001,gid=10001,rw,noexec,nosuid,nodev
 
     flow:
         image: 'registry.libriciel.fr:443/public/libriciel/outils-documentaires/flow:1.7.1'
@@ -122,7 +133,7 @@ services:
         restart: unless-stopped
 
     pes-viewer:
-        image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.6'
+        image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.8'
         restart: unless-stopped
         deploy:
             resources:
@@ -132,7 +143,7 @@ services:
             - ${PES_PJ_PATH:-/data/pesPJ}:/pesPJ/
 
     cacerts:
-        image: 'registry.libriciel.fr:443/public/libriciel/ls-docker-cacerts:0.1.1'
+        image: 'registry.libriciel.fr:443/public/libriciel/ls-docker-cacerts:1.0.2'
         volumes:
             - ${CACERTS_PATH:-cacerts}:/etc/ssl/certs/
             - ${LOCAL_CACERTS_PATH:-local_cacerts}:/usr/local/share/ca-certificates
@@ -167,7 +178,7 @@ services:
             - stack-update-network
 
     libriciel-postfix:
-        image: 'registry.libriciel.fr/public/systeme/libriciel-postfix:1.0.3'
+        image: 'registry.libriciel.fr/public/systeme/libriciel-postfix:1.0.4'
         restart: unless-stopped
         read_only: true
         cap_drop:
