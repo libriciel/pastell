@@ -2,6 +2,9 @@
 
 use Pastell\Utilities\Certificate;
 
+/**
+ * @deprecated 4.1.25 Removed in 5.0.x
+ */
 class CertificatConnexion extends SQL
 {
     private Certificate $certificat;

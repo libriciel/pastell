@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.1.25] - 2026-11-02
+
+### Dépréciations
+
+- Classe `CertificatConnexion` dépréciée, supprimée en 5.0 #2609
+
 ## [4.1.24] - 2026-10-22
 
 ### Dépréciations
