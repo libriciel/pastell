@@ -542,6 +542,7 @@ class PastellControler extends Controler
 
     /**
      * @return DocumentEntite
+     * @deprecated 4.1.25 Use DocumentEntiteSQL, DocumentRoleService and DocumentEntiteService instead
      */
     public function getDocumentEntite(): DocumentEntite
     {

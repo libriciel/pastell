@@ -7,10 +7,11 @@ use DocumentIndexSQL;
 use ActionExecutorFactory;
 use DocumentTypeFactory;
 use DocumentSQL;
-use DocumentEntite;
 use CPPException;
 use Exception;
 use NotFoundException;
+use Pastell\Service\Document\DocumentEntiteService;
+use Pastell\Service\Document\DocumentRoleService;
 use UnrecoverableException;
 use DonneesFormulaireFactory;
 
@@ -41,10 +42,8 @@ class ChorusProImportCreationService
      */
     private $documentSQL;
 
-    /**
-     * @var DocumentEntite
-     */
-    private $documentEntite;
+    private DocumentEntiteService $documentEntiteService;
+    private DocumentRoleService $documentRoleService;
 
     /**
      * @var DonneesFormulaireFactory
@@ -71,7 +70,8 @@ class ChorusProImportCreationService
         ActionExecutorFactory $actionExecutorFactory,
         DocumentTypeFactory $documentTypeFactory,
         DocumentSQL $documentSQL,
-        DocumentEntite $documentEntite,
+        DocumentEntiteService $documentEntiteService,
+        DocumentRoleService $documentRoleService,
         DonneesFormulaireFactory $donneesFormulaireFactory
     ) {
         $this->fluxEntiteSQL = $fluxEntiteSQL;
@@ -79,7 +79,8 @@ class ChorusProImportCreationService
         $this->actionExecutorFactory = $actionExecutorFactory;
         $this->documentTypeFactory = $documentTypeFactory;
         $this->documentSQL = $documentSQL;
-        $this->documentEntite = $documentEntite;
+        $this->documentEntiteService = $documentEntiteService;
+        $this->documentRoleService = $documentRoleService;
         $this->donneesFormulaireFactory = $donneesFormulaireFactory;
     }
 
@@ -94,11 +95,10 @@ class ChorusProImportCreationService
         $result = [];
         if ($id_d) {
             // La facture existe. Il faut charger l'id_e pour le message d'erreur.
-            $donneesEntite = $this->documentEntite->getEntite($id_d);
             $result['id_d'] = $id_d;
             $result['message'] = "ERREUR: La facture " . $facture_a_creer['id_facture_cpp'] .
                 $nommage_csv . ", id_d = " . $id_d . " est déja présente sur l'entité id_e = " .
-                $donneesEntite[0]['id_e'];
+                $this->documentEntiteService->getEntiteId($id_d);
             $result['resultat'] = false;
         } else {
             $result = $this->creerFacture($facture_a_creer, $nommage_csv);
@@ -154,7 +154,7 @@ class ChorusProImportCreationService
 
         $id_d = $this->documentSQL->getNewId();
         $this->documentSQL->save($id_d, $authorized_flux);
-        $this->documentEntite->addRole($id_d, $this->id_e, "editeur");
+        $this->documentRoleService->addRole($id_d, $this->id_e, DocumentRoleService::EDITEUR);
 
         $actionExecutorFactory->executeOnDocumentThrow(
             $id_d,

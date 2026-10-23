@@ -12,6 +12,7 @@ use Pastell\Client\S2low\S2lowClientAuth;
 use Pastell\Client\S2low\S2lowClientException;
 use Pastell\Client\S2low\S2lowClientFactory;
 use Pastell\Service\Document\DocumentDeletionService;
+use Pastell\Service\Document\DocumentEntiteService;
 use Psr\Http\Client\ClientExceptionInterface;
 use Recuperateur;
 use DocumentIndexSQL;
@@ -35,7 +36,7 @@ class RecupPesS2lowConnector extends \Connecteur
         private readonly DocumentDeletionService $documentDeletionService,
         private readonly \DonneesFormulaireFactory $formFactory,
         private readonly \JobManager $jobManager,
-        private readonly \DocumentEntite $documentEntite,
+        private readonly DocumentEntiteService $documentEntiteService,
         private readonly DocumentIndexSQL $documentIndexSQL,
     ) {
     }
@@ -75,7 +76,7 @@ class RecupPesS2lowConnector extends \Connecteur
     public function getNumberOfDocumentsToCreate(int $entityId): int
     {
         $maxCreatableDocuments = max(
-            $this->maxNumberOfDocumentsInEntity - $this->documentEntite->getNbAll(
+            $this->maxNumberOfDocumentsInEntity - $this->documentEntiteService->countDocuments(
                 $entityId,
                 self::FLUX
             ),

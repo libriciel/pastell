@@ -8,6 +8,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Connecteur\ConnecteurDeletionService;
+use Pastell\Service\Document\DocumentEntiteService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
 require_once __DIR__ . '/../init.php';
@@ -29,7 +30,7 @@ if (! $id_e) {
 }
 
 $entiteSQL = $objectInstancier->getInstance(EntiteSQL::class);
-$documentEntite = $objectInstancier->getInstance(DocumentEntite::class);
+$documentEntiteService = $objectInstancier->getInstance(DocumentEntiteService::class);
 $document = $objectInstancier->getInstance(DocumentSQL::class);
 $donneesFormulaireFactory = $objectInstancier->getInstance(DonneesFormulaireFactory::class);
 $connecteurEntiteSQL = $objectInstancier->getInstance(ConnecteurEntiteSQL::class);
@@ -54,7 +55,7 @@ $logger->info("Liste des entités à supprimer : ", $id_e_list);
 foreach ($id_e_list as $id_e) {
     $logger->info("Traitement de l'entité $id_e");
 
-    $all_doc = $documentEntite->getAll($id_e);
+    $all_doc = $documentEntiteService->getDocuments((int) $id_e);
     $id_d_list = array_map(function ($a) {
         return $a['id_d'];
     }, $all_doc);

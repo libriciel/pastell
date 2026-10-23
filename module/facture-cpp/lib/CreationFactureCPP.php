@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Document\DocumentRoleService;
+
 class CreationFactureCPP
 {
     protected $objectInstancier;
@@ -79,7 +81,8 @@ class CreationFactureCPP
 
         $new_id_d = $this->objectInstancier->getInstance(DocumentSQL::class)->getNewId();
         $this->objectInstancier->getInstance(DocumentSQL::class)->save($new_id_d, $nom_flux_cpp);
-        $this->objectInstancier->getInstance(DocumentEntite::class)->addRole($new_id_d, $id_e, "editeur");
+        $this->objectInstancier->getInstance(DocumentRoleService::class)
+            ->addRole($new_id_d, (int) $id_e, DocumentRoleService::EDITEUR);
 
         return $new_id_d;
     }

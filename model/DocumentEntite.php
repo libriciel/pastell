@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated 4.1.25 Use DocumentEntiteSQL, DocumentRoleService and DocumentEntiteService instead.
+ */
 class DocumentEntite extends SQL
 {
     public function getDocument($id_e, $type)

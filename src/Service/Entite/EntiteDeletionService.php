@@ -5,11 +5,11 @@ namespace Pastell\Service\Entite;
 use AnnuaireRoleSQL;
 use AnnuaireSQL;
 use ConnecteurEntiteSQL;
-use DocumentEntite;
 use EntiteSQL;
 use FluxEntiteHeritageSQL;
 use FluxEntiteSQL;
 use Journal;
+use Pastell\Service\Document\DocumentEntiteService;
 use Pastell\Service\Notification\NotificationService;
 use UnrecoverableException;
 use UtilisateurListe;
@@ -29,7 +29,7 @@ class EntiteDeletionService
     public function __construct(
         EntiteSQL $entiteSQL,
         Journal $journal,
-        private readonly DocumentEntite $documentEntite,
+        private readonly DocumentEntiteService $documentEntiteService,
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
         private readonly FluxEntiteSQL $fluxEntiteSQL,
         private readonly FluxEntiteHeritageSQL $fluxEntiteHeritageSQL,
@@ -78,7 +78,7 @@ class EntiteDeletionService
      */
     private function canDeleteOrThrow(int $id_e): void
     {
-        if ($this->documentEntite->getNbAll($id_e)) {
+        if ($this->documentEntiteService->countDocuments($id_e)) {
             throw new UnrecoverableException("Suppression impossible : des documents sont définis sur l'entité {id_e=$id_e}");
         }
         if (count($this->entiteSQL->getFille($id_e))) {

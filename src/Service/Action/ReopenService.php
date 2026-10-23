@@ -6,10 +6,10 @@ namespace Pastell\Service\Action;
 
 use DocumentActionEntite;
 use DocumentActionSQL;
-use DocumentEntite;
 use DocumentSQL;
 use Journal;
 use NotificationMail;
+use Pastell\Service\Document\DocumentEntiteService;
 use UnrecoverableException;
 
 class ReopenService
@@ -19,7 +19,7 @@ class ReopenService
     public function __construct(
         private readonly DocumentActionSQL $documentActionSQL,
         private readonly DocumentActionEntite $documentActionEntite,
-        private readonly DocumentEntite $documentEntite,
+        private readonly DocumentEntiteService $documentEntiteService,
         private readonly Journal $journal,
         private readonly NotificationMail $notificationMail,
         private readonly DocumentSQL $documentSQL,
@@ -41,7 +41,7 @@ class ReopenService
         $this->documentActionEntite->remove($id_a);
 
         $lastAction = $this->documentActionSQL->getLastActionInfo($id_d, $id_e);
-        $this->documentEntite->changeAction($id_e, $id_d, $lastAction['action'], $lastAction['date']);
+        $this->documentEntiteService->updateLastAction($id_e, $id_d, $lastAction['action'], $lastAction['date']);
 
         $message = "Le dossier a été rouvert." ;
          $this->journal->addSQL(

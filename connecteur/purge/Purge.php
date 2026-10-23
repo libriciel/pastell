@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Document\DocumentDeletionService;
+use Pastell\Service\Document\DocumentEntiteService;
 
 use function Clue\StreamFilter\append;
 
@@ -24,7 +25,7 @@ class Purge extends Connecteur
         private readonly ActionPossible $actionPossible,
         private readonly DocumentTypeFactory $documentTypeFactory,
         private readonly DonneesFormulaireFactory $donneesFormulaireFactory,
-        private readonly DocumentEntite $documentEntite,
+        private readonly DocumentEntiteService $documentEntiteService,
         private readonly DocumentDeletionService $documentDeletionService,
         private readonly EntiteSQL $entiteSQL,
     ) {
@@ -96,19 +97,19 @@ class Purge extends Connecteur
     {
         $nb_days = (int)$this->connecteurConfig->get('nb_days');
         $doc_type = $this->connecteurConfig->get('document_type');
-        $documentList = $this->documentEntite->getDocumentLastActionOlderThanInDays(
+        $documentList = $this->documentEntiteService->getDocumentsWithLastActionOlderThan(
             $nb_days,
-            $doc_type,
-            $this->entityId
+            $doc_type ?: null,
+            $this->entityId ?: null
         );
         if ($this->includeChildren) {
             $children_documents = [];
             foreach ($this->entiteSQL->getAllChildren($this->entityId) as $child) {
                 foreach (
-                    $this->documentEntite->getDocumentLastActionOlderThanInDays(
+                    $this->documentEntiteService->getDocumentsWithLastActionOlderThan(
                         $nb_days,
-                        $doc_type,
-                        $child['id_e']
+                        $doc_type ?: null,
+                        (int) $child['id_e']
                     ) as $document
                 ) {
                     $children_documents[] = $document;

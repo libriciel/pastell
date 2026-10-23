@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.25] - 2026-11-02
+
+### Dépréciations
+
+- Classe `DocumentEntite` dépréciée au profit de `DocumentEntiteSQL` et des services `DocumentRoleService` et
+  `DocumentEntiteService` #2611
+
 ## [4.1.24] - 2026-10-22
 
 ### Dépréciations

@@ -6,6 +6,7 @@ namespace Pastell\Tests\Command\Module;
 
 use Pastell\Command\Module\SetNewStatusDocumentBatchCommand;
 use Pastell\Configuration\DocumentTypeValidation;
+use Pastell\Service\Document\DocumentEntiteService;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class SetNewStatusDocumentBatchCommandTest extends \PastellTestCase
@@ -53,8 +54,8 @@ class SetNewStatusDocumentBatchCommandTest extends \PastellTestCase
         $this->createDocument(self::ACTES_GENERIQUE);
         $this->createDocument(self::MAILSEC);
 
-        $documentEntity = $this->getObjectInstancier()->getInstance(\DocumentEntite::class);
-        $documents = $documentEntity->getAll(self::ID_E_COL);
+        $documentEntiteService = $this->getObjectInstancier()->getInstance(DocumentEntiteService::class);
+        $documents = $documentEntiteService->getDocuments(self::ID_E_COL);
         foreach ($documents as $document) {
             self::assertSame(self::CREATION, $document[self::LAST_ACTION]);
         }
@@ -66,7 +67,7 @@ class SetNewStatusDocumentBatchCommandTest extends \PastellTestCase
             self::CREATION,
             self::FATAL_ERROR
         );
-        $documents = $documentEntity->getAll(self::ID_E_COL);
+        $documents = $documentEntiteService->getDocuments(self::ID_E_COL);
         foreach ($documents as $document) {
             if ($document['type'] === self::ACTES_GENERIQUE) {
                 self::assertSame(self::FATAL_ERROR, $document[self::LAST_ACTION]);
