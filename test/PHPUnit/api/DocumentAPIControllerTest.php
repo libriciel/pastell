@@ -1,6 +1,8 @@
 <?php
 
 use Pastell\File\Chunk\ChunkRequest;
+use Pastell\Service\Document\DocumentEmailRecipientType;
+use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Mailsec\MailsecManager;
@@ -393,9 +395,9 @@ class DocumentAPIControllerTest extends PastellTestCase
     {
         $id_d = $this->createDocument('mailsec-bidir')['id_d'];
 
-        $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
-        $key = $documentEmail->add($id_d, "foo@bar.com", "to");
-        $id_de = $documentEmail->getInfoFromKey($key)['id_de'];
+        $key = $this->getObjectInstancier()->getInstance(DocumentEmailService::class)
+            ->addRecipient($id_d, 'foo@bar.com', DocumentEmailRecipientType::TO);
+        $id_de = $this->getObjectInstancier()->getInstance(DocumentEmailSQL::class)->getByKey($key)['id_de'];
 
         $mailSecInfo = new MailSecInfo();
         $mailSecInfo->id_de = $id_de;

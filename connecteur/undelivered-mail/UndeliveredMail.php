@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Document\DocumentEmailService;
+
 class UndeliveredMail extends Connecteur
 {
     public const PASTELL_RETURN_INFO_HEADER = "X-PASTELL-DOCUMENT";
@@ -8,15 +10,12 @@ class UndeliveredMail extends Connecteur
     /** @var  DonneesFormulaire */
     private $connecteurConfig;
 
-    /** @var DocumentEmail  */
-    private $documentEmail;
-
-    private $journal;
-
-    public function __construct(DocumentEmail $documentEmail, Journal $journal)
-    {
-        $this->documentEmail = $documentEmail;
-        $this->journal = $journal;
+    public function __construct(
+        private readonly DocumentEmailSQL $documentEmailSQL,
+        private readonly DocumentEmailService $documentEmailService,
+        private readonly DocumentEntiteSQL $documentEntiteSQL,
+        private readonly Journal $journal,
+    ) {
     }
 
     public function setConnecteurConfig(DonneesFormulaire $donneesFormulaire)
@@ -64,11 +63,11 @@ class UndeliveredMail extends Connecteur
             if ($line_result['is_pastell_return']) {
                 $line_result['body'] = $body;
                 $line_result['pastell_header'] = trim($matches[1]);
-                $document_email_info = $this->documentEmail->getInfoFromKey($line_result['pastell_header']);
-                $line_result['id_de'] = $document_email_info['id_de'];
-                if ($process) {
-                    $this->documentEmail->addError($document_email_info['id_de'], $body);
-                    $id_e = $this->documentEmail->getId_e($document_email_info['id_d']);
+                $document_email_info = $this->documentEmailSQL->getByKey($line_result['pastell_header']);
+                $line_result['id_de'] = $document_email_info['id_de'] ?? false;
+                if ($process && $document_email_info !== null) {
+                    $this->documentEmailService->addError($document_email_info['id_de'], $body);
+                    $id_e = $this->documentEntiteSQL->getEntiteId($document_email_info['id_d']);
                     $this->journal->add(
                         Journal::MAIL_SECURISE,
                         $id_e,

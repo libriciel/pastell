@@ -14,7 +14,7 @@ trait MailsecTestTrait
         ]);
         $this->triggerActionOnDocument($id_d, $action_envoi);
 
-        $info = $this->getObjectInstancier()->getInstance(DocumentEmail::class)->getInfo($id_d);
+        $info = $this->getObjectInstancier()->getInstance(DocumentEmailSQL::class)->getAllByDocument($id_d);
         $key = $info[0]['key'];
 
         return ['id_d' => $id_d,'key' => $key];

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Pastell\Tests\Controller;
 
-use DocumentEmail;
+use DocumentEmailSQL;
 use DocumentEmailReponseSQL;
 use DonneesFormulaireFactory;
 use Mailsec\Kernel;
@@ -94,8 +94,8 @@ final class RecipientControllerTest extends WebTestCase
         $this->client->submitForm('Enregistrer', [
             'reponse' => 'The reply',
         ]);
-        $documentEmail = $this->mailsec->getObjectInstancier()->getInstance(DocumentEmail::class);
-        $info = $documentEmail->getInfoFromKey($key);
+        $documentEmailSQL = $this->mailsec->getObjectInstancier()->getInstance(DocumentEmailSQL::class);
+        $info = $documentEmailSQL->getByKey($key);
         $id_de = $info['id_de'];
 
         $documentEmailReponseSQL = $this->mailsec->getObjectInstancier()->getInstance(DocumentEmailReponseSQL::class);
@@ -147,15 +147,15 @@ final class RecipientControllerTest extends WebTestCase
         $this->client->request('POST', '/mail/' . $mailsecInfo['key'] . '/password', ['password' => 'wrong']);
         self::assertResponseIsSuccessful();
 
-        $documentEmail = $this->mailsec->getObjectInstancier()->getInstance(DocumentEmail::class);
-        $info = $documentEmail->getInfoFromKey($mailsecInfo['key']);
+        $documentEmailSQL = $this->mailsec->getObjectInstancier()->getInstance(DocumentEmailSQL::class);
+        $info = $documentEmailSQL->getByKey($mailsecInfo['key']);
         self::assertSame(0, $info['lu']);
 
         $this->client->request('POST', '/mail/' . $mailsecInfo['key'] . '/password', ['password' => 'secret']);
         $this->client->followRedirect();
         self::assertResponseIsSuccessful();
 
-        $info = $documentEmail->getInfoFromKey($mailsecInfo['key']);
+        $info = $documentEmailSQL->getByKey($mailsecInfo['key']);
         self::assertSame(1, $info['lu']);
     }
 

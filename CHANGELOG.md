@@ -4,6 +4,8 @@
 
 ### Dépréciations
 
+- Classe `DocumentEmail` dépréciée au profit de `DocumentEmailSQL` et des services `DocumentEmailService` et
+  `DocumentEmailReadService` #2610
 - Classe `DocumentEntite` dépréciée au profit de `DocumentEntiteSQL` et des services `DocumentRoleService` et
   `DocumentEntiteService` #2611
 

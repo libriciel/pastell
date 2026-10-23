@@ -10,11 +10,11 @@ class MailsecComputeReadMail extends ConnecteurTypeActionExecutor
      */
     public function go()
     {
-        $documentEmail = $this->objectInstancier->getInstance(DocumentEmail::class);
+        $documentEmailSQL = $this->objectInstancier->getInstance(DocumentEmailSQL::class);
 
         $this->getDonneesFormulaire()->setData(
             $this->getMappingValue(self::READ_MAIL_NUMBER_FIELD),
-            $documentEmail->getNumberOfMailRead($this->id_d)
+            $documentEmailSQL->countRead($this->id_d)
         );
 
         return true;

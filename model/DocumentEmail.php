@@ -2,6 +2,9 @@
 
 use Pastell\Mailer\Mailer;
 
+/**
+ * @deprecated 4.1.25 Use DocumentEmailSQL, DocumentEmailService and DocumentEmailReadService instead
+ */
 class DocumentEmail extends SQL
 {
     public const DESTINATAIRE = 'to';
