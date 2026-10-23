@@ -5,10 +5,10 @@ namespace Pastell\Service\Entite;
 use AnnuaireRoleSQL;
 use AnnuaireSQL;
 use ConnecteurEntiteSQL;
-use DocumentEntite;
 use EntiteSQL;
 use FluxEntiteHeritageSQL;
 use FluxEntiteSQL;
+use Pastell\Service\Document\DocumentEntiteService;
 use Pastell\Service\Notification\NotificationService;
 use UnrecoverableException;
 use UtilisateurSQL;
@@ -18,17 +18,10 @@ use Pastell\Service\Journal\JournalEntryService;
 
 class EntiteDeletionService
 {
-    /**
-     * @var EntiteSQL
-     */
-    private $entiteSQL;
-
-    private JournalEntryService $journalEntryService;
-
     public function __construct(
-        EntiteSQL $entiteSQL,
-        JournalEntryService $journalEntryService,
-        private readonly DocumentEntite $documentEntite,
+        private readonly EntiteSQL $entiteSQL,
+        private readonly JournalEntryService $journalEntryService,
+        private readonly DocumentEntiteService $documentEntiteService,
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
         private readonly FluxEntiteSQL $fluxEntiteSQL,
         private readonly FluxEntiteHeritageSQL $fluxEntiteHeritageSQL,
@@ -37,8 +30,6 @@ class EntiteDeletionService
         private readonly NotificationService $notificationService,
         private readonly AnnuaireRoleSQL $annuaireRoleSQL,
     ) {
-        $this->entiteSQL = $entiteSQL;
-        $this->journalEntryService = $journalEntryService;
     }
 
     /**
@@ -77,7 +68,7 @@ class EntiteDeletionService
      */
     private function canDeleteOrThrow(int $id_e): void
     {
-        if ($this->documentEntite->getNbAll($id_e)) {
+        if ($this->documentEntiteService->countDocuments($id_e)) {
             throw new UnrecoverableException("Suppression impossible : des documents sont définis sur l'entité {id_e=$id_e}");
         }
         if (count($this->entiteSQL->getFille($id_e))) {

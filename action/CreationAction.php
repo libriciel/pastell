@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Document\DocumentRoleService;
+
 class CreationAction extends ActionExecutor
 {
     public const ACTION_ID = 'creation';
@@ -9,7 +11,8 @@ class CreationAction extends ActionExecutor
      */
     public function go()
     {
-        $this->getDocumentEntite()->addRole($this->id_d, $this->id_e, "editeur");
+        $this->objectInstancier->getInstance(DocumentRoleService::class)
+            ->addRole($this->id_d, (int) $this->id_e, DocumentRoleService::EDITEUR);
         $this->setDefaultValue();
         $this->addActionOK("Création du document");
         $this->notify($this->action, $this->type, "Création du document");

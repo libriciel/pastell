@@ -9,7 +9,6 @@ use ActionExecutorFactory;
 use DocumentCreationService;
 use DocumentEmail;
 use DocumentEmailReponseSQL;
-use DocumentEntite;
 use DocumentSQL;
 use DocumentTypeFactory;
 use DonneesFormulaireFactory;
@@ -29,6 +28,7 @@ use MailSecInfo;
 use NotFoundException;
 use NotificationMail;
 use ObjectInstancier;
+use Pastell\Service\Document\DocumentRoleService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Throwable;
@@ -73,9 +73,9 @@ final class MailsecManager
 
         $mailSecInfo->email = $info['email'];
 
-        $mailSecInfo->id_e = $this->objectInstancier->getInstance(DocumentEntite::class)->getEntiteWithRole(
+        $mailSecInfo->id_e = $this->objectInstancier->getInstance(DocumentRoleService::class)->getEntiteIdWithRole(
             $mailSecInfo->id_d,
-            'editeur'
+            DocumentRoleService::EDITEUR
         );
         $mailSecInfo->denomination_entite =
             $this->objectInstancier->getInstance(EntiteSQL::class)->getInfo($mailSecInfo->id_e)['denomination'];
@@ -509,9 +509,9 @@ final class MailsecManager
         $mailSecInfo->reponse = $info['reponse'];
         $mailSecInfo->has_reponse = (bool)$mailSecInfo->reponse;
         $mailSecInfo->email = $info['email'];
-        $mailSecInfo->id_e = $this->objectInstancier->getInstance(DocumentEntite::class)->getEntiteWithRole(
+        $mailSecInfo->id_e = $this->objectInstancier->getInstance(DocumentRoleService::class)->getEntiteIdWithRole(
             $mailSecInfo->id_d,
-            'editeur'
+            DocumentRoleService::EDITEUR
         );
         $mailSecInfo->denomination_entite =
             $this->objectInstancier->getInstance(EntiteSQL::class)->getInfo($mailSecInfo->id_e)['denomination'];
