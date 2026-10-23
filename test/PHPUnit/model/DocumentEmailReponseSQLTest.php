@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Service\Document\DocumentEmailRecipientType;
+use Pastell\Service\Document\DocumentEmailService;
+
 class DocumentEmailReponseSQLTest extends PastellTestCase
 {
     private function getDocumentEmailReponseSQL()
@@ -93,7 +96,8 @@ class DocumentEmailReponseSQLTest extends PastellTestCase
 
         $id_d_mailsec = "MAILSEC";
         $id_d_reponse = "REPONSE";
-        $documentEmail =  $this->getObjectInstancier()->getInstance(DocumentEmail::class);
+        $documentEmailService = $this->getObjectInstancier()->getInstance(DocumentEmailService::class);
+        $documentEmailSQL = $this->getObjectInstancier()->getInstance(DocumentEmailSQL::class);
 
         $document = $this->getObjectInstancier()->getInstance(DocumentSQL::class);
         $document->save($id_d_mailsec, "mailsec");
@@ -103,8 +107,8 @@ class DocumentEmailReponseSQLTest extends PastellTestCase
         $document->setTitre($id_d_reponse, "MON TITRE");
 
 
-        $key = $documentEmail->add($id_d_mailsec, "foo@bar", "to");
-        $info = $documentEmail->getInfoFromKey($key);
+        $key = $documentEmailService->addRecipient($id_d_mailsec, 'foo@bar', DocumentEmailRecipientType::TO);
+        $info = $documentEmailSQL->getByKey($key);
         $this->getDocumentEmailReponseSQL()->addDocumentReponseId($info['id_de'], $id_d_reponse);
         $this->getDocumentEmailReponseSQL()->validateReponse($info['id_de']);
         $this->assertEquals(
@@ -116,8 +120,8 @@ class DocumentEmailReponseSQLTest extends PastellTestCase
             1,
             $this->getDocumentEmailReponseSQL()->getNumberOfAnsweredMail($id_d_mailsec)
         );
-        $key = $documentEmail->add($id_d_mailsec, "foo2@bar", "to");
-        $info = $documentEmail->getInfoFromKey($key);
+        $key = $documentEmailService->addRecipient($id_d_mailsec, 'foo2@bar', DocumentEmailRecipientType::TO);
+        $info = $documentEmailSQL->getByKey($key);
         $this->getDocumentEmailReponseSQL()->addDocumentReponseId($info['id_de'], $id_d_reponse);
         $this->getDocumentEmailReponseSQL()->validateReponse($info['id_de']);
 

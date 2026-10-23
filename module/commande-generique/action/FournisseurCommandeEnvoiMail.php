@@ -1,7 +1,15 @@
 <?php
 
+use Pastell\Service\Document\DocumentEmailRecipientType;
+use Pastell\Service\Document\DocumentEmailService;
+
 class FournisseurCommandeEnvoiMail extends ActionExecutor
 {
+    /**
+     * @throws DonneesFormulaireException
+     * @throws UnrecoverableException
+     * @throws NotFoundException
+     */
     public function go()
     {
         /** @var MailSec $mailsec */
@@ -18,8 +26,11 @@ class FournisseurCommandeEnvoiMail extends ActionExecutor
         );
 
 
-        $documentEmail = $this->objectInstancier->getInstance(DocumentEmail::class);
-        $documentEmail->add($this->id_d, $this->getDonneesFormulaire()->get('mail_fournisseur'), 'to');
+        $this->objectInstancier->getInstance(DocumentEmailService::class)->addRecipient(
+            $this->id_d,
+            $this->getDonneesFormulaire()->get('mail_fournisseur'),
+            DocumentEmailRecipientType::TO
+        );
 
         $mailsec->sendAllMail($this->id_e, $this->id_d);
 

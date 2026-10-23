@@ -17,8 +17,8 @@ class MailSec extends MailsecConnecteur
     private DonneesFormulaire $connecteurConfig;
 
     public function __construct(
-        private readonly DocumentEmail $documentEmail,
         private readonly JournalEntryService $journalEntryService,
+        private readonly DocumentEmailSQL $documentEmailSQL,
         private readonly EntiteSQL $entiteSQL,
         private readonly Mailer $mailer,
         private readonly string $websec_base,
@@ -37,7 +37,7 @@ class MailSec extends MailsecConnecteur
      */
     public function sendAllMail(int $id_e, string $id_d): void
     {
-        foreach ($this->documentEmail->getInfo($id_d) as $email_info) {
+        foreach ($this->documentEmailSQL->getAllByDocument($id_d) as $email_info) {
             $this->sendEmail($id_e, $id_d, $email_info);
         }
     }
@@ -47,7 +47,7 @@ class MailSec extends MailsecConnecteur
      */
     public function resendUnopenedEmails(int $id_e, string $id_d): void
     {
-        foreach ($this->documentEmail->getInfo($id_d) as $email_info) {
+        foreach ($this->documentEmailSQL->getAllByDocument($id_d) as $email_info) {
             if ($email_info['lu'] === 0) {
                 $this->sendEmail($id_e, $id_d, $email_info);
             }
@@ -59,7 +59,7 @@ class MailSec extends MailsecConnecteur
      */
     public function sendOneMail(int $id_e, string $id_d, int $id_de): void
     {
-        $email_info = $this->documentEmail->getInfoFromPK($id_de);
+        $email_info = $this->documentEmailSQL->getById($id_de);
         $this->sendEmail($id_e, $id_d, $email_info);
     }
 
@@ -142,7 +142,7 @@ class MailSec extends MailsecConnecteur
     private function sendEmail($id_e, $id_d, $email_info)
     {
         $this->send($email_info['email'], $email_info['key']);
-        $this->documentEmail->updateRenvoi($email_info['id_de']);
+        $this->documentEmailSQL->incrementResend($email_info['id_de']);
         $this->journalEntryService->addActionAutomatique(
             JournalEventType::SECURE_MAIL,
             $id_e,

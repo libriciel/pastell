@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.26] - 2026-12-07
+
+### Dépréciations
+
+- Classe `DocumentEmail` dépréciée au profit de `DocumentEmailSQL` et des services `DocumentEmailService` et
+  `DocumentEmailReadService` #2610
+
 ## [4.1.25] - 2026-11-02
 
 ### Corrections
