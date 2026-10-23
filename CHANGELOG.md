@@ -4,6 +4,8 @@
 
 ### Sécurité
 
+- Classe `DocumentEmail` dépréciée au profit de `DocumentEmailSQL` et des services `DocumentEmailService` et
+  `DocumentEmailReadService` #2610
 - Faille de contrôle d'accès sur la consultation et le téléchargement des certificats utilisateur
   (CVSS 3.1 - criticité BASSE - CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:L/I:N/A:N) #2617
 
