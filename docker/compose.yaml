@@ -157,7 +157,7 @@ services:
       - ${DATABASE_DATADIR:-database_datadir}:/var/lib/mysql/:rw,noexec,nosuid,nodev
 
   redis:
-    image: 'hubdocker.libriciel.fr/redis:8.10.2-alpine3.23@sha256:3811787313eba226a2ef38658c6ccb91cd5e110edc89c37767de373120a0e5a0'
+    image: 'hubdocker.libriciel.fr/redis:8.10.2-alpine3.23@sha256:0bf6577d7774e592b29d093e3ac9390eb91e13d72c21e506afce736de5e0eeb0'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -168,7 +168,7 @@ services:
       - /data:mode=750,rw,noexec,nosuid,nodev
 
   seda-generator:
-    image: 'registry.libriciel.fr/public/plateforme/seda-generator:1.2.0@sha256:b2e2b8ddf03cf9c1be2f8ff7d86f37d610d6d766bc46a138046784256b446953'
+    image: 'registry.libriciel.fr/public/plateforme/seda-generator:1.2.1@sha256:bd340adbda387fbe69b97a7fb789c24ef865385a6e4cb5d896c8582cea26cb1b'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -204,7 +204,7 @@ services:
       - no-new-privileges:true
 
   pes-viewer:
-    image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.8@sha256:517fe836cf7808f3a1961cbbc8074e5749d56bb74b1db48d46772c93bfd54002'
+    image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.9@sha256:e51544e60a18404be2258f2c6fef3253f374e113c330372239ad1c866604774c'
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -218,7 +218,7 @@ services:
       - ${PES_PJ_PATH:-/data/pastell/pesPJ}:/pesPJ/
 
   cacerts:
-    image: 'registry.libriciel.fr/public/libriciel/ls-docker-cacerts:0.4.0@sha256:209976b9b07ce001403111203f7824bfc57068f033a9c498416a363709690a2d'
+    image: 'registry.libriciel.fr/public/libriciel/ls-docker-cacerts:1.0.2@sha256:f0232b5c86c10fac00ec3c39553f749d648304791dd6b3345bd8f17b6d93caa0'
     cap_drop:
       - ALL
     cap_add:
@@ -264,7 +264,7 @@ services:
       - stack-update-network
 
   libriciel-postfix:
-    image: 'registry.libriciel.fr/public/systeme/libriciel-postfix:1.0.3@sha256:8f5a343131ff6126c50b7c00623f11a2e9e4c783cdc25d0ffea2ea6f111249a3'
+    image: 'registry.libriciel.fr/public/systeme/libriciel-postfix:1.0.4@sha256:f7e4a69058e8d35b7d110fb1c7de0113f90a06c212b2dacb4f74bdc85d3a0d4f'
     restart: unless-stopped
     read_only: true
     cap_drop:
