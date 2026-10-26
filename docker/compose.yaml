@@ -168,7 +168,7 @@ services:
       - /data:mode=750,rw,noexec,nosuid,nodev
 
   seda-generator:
-    image: 'registry.libriciel.fr/public/plateforme/seda-generator:1.2.0@sha256:b2e2b8ddf03cf9c1be2f8ff7d86f37d610d6d766bc46a138046784256b446953'
+    image: 'registry.libriciel.fr/public/plateforme/seda-generator:1.2.1@sha256:bd340adbda387fbe69b97a7fb789c24ef865385a6e4cb5d896c8582cea26cb1b'
     restart: unless-stopped
     read_only: true
     cap_drop:
