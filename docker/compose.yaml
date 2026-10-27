@@ -130,7 +130,7 @@ services:
       - "${HTTPS_PORT:-443}:443"
 
   db:
-    image: 'hubdocker.libriciel.fr/mariadb:11.4.13-noble@sha256:250e1609e93c0e6aecf64bfbab2d84d5e89d2481540fe77447ff6c855c3b1873'
+    image: 'hubdocker.libriciel.fr/mariadb:11.4.13-noble@sha256:836c767286098eb2bb18642d2fecaf72a80e6c391fa82c103ef1216aeda8c38a'
     restart: unless-stopped
     command:
       - "--character-set-server=utf8mb4"
@@ -157,7 +157,7 @@ services:
       - ${DATABASE_DATADIR:-database_datadir}:/var/lib/mysql/:rw,noexec,nosuid,nodev
 
   redis:
-    image: 'hubdocker.libriciel.fr/redis:8.10.2-alpine3.23@sha256:0bf6577d7774e592b29d093e3ac9390eb91e13d72c21e506afce736de5e0eeb0'
+    image: 'hubdocker.libriciel.fr/redis:8.10.2-alpine3.23@sha256:9f8d2d789b9a1d1e3f283f979aa9cbf393373806472e1ccd460e2f9c869b833b'
     restart: unless-stopped
     read_only: true
     cap_drop:
