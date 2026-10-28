@@ -2,16 +2,16 @@
 
 ## [4.1.25] - 2026-11-02
 
+### Corrections
+
+- Les notifications sont supprimées au retrait d'un rôle ou à la modification de ses droits lorsque l'utilisateur n'a plus les droits nécessaires #2575
+
 ### Sécurité
 
 - Faille de contrôle d'accès sur la création de connecteur
   (CVSS 7.2 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H) #2612
 
 ## [4.1.24] - 2026-10-22
-
-### Corrections
-
-- Les notifications sont supprimées au retrait d'un rôle ou à la modification de ses droits lorsque l'utilisateur n'a plus les droits nécessaires #2575
 
 ### Dépréciations
 
