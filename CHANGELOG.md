@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.25] - 2026-11-02
+
+### Sécurité
+
+- Faille de contrôle d'accès sur la création de connecteur
+  (CVSS 7.2 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H) #2612
+
 ## [4.1.24] - 2026-10-22
 
 ### Dépréciations

@@ -125,6 +125,9 @@ class ConnecteurCreationService
      */
     private function checkCreateConnector(int $id_e, int $global): void
     {
+        if ($global !== 0 && $global !== 1) {
+            throw new ConnecteurException("La valeur « $global » n'est pas valide pour un connecteur global");
+        }
         /** @deprecated 4.1.7, to be removed in v5 */
         if (($id_e === 0) && ($global === 0) && !($this->displayConnecteurEntiteRacine->isEnabled())) {
             throw new ConnecteurException(
