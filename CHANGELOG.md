@@ -2,6 +2,10 @@
 
 ## [4.1.25] - 2026-11-02
 
+### Corrections
+
+- Les notifications sont supprimées au retrait d'un rôle ou à la modification de ses droits lorsque l'utilisateur n'a plus les droits nécessaires #2575
+
 ### Sécurité
 
 - Faille de contrôle d'accès sur la création de connecteur
