@@ -9,10 +9,12 @@ use DocumentEntite;
 use EntiteSQL;
 use FluxEntiteHeritageSQL;
 use FluxEntiteSQL;
-use Journal;
 use Pastell\Service\Notification\NotificationService;
 use UnrecoverableException;
 use UtilisateurSQL;
+use JournalAction;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 class EntiteDeletionService
 {
@@ -21,14 +23,11 @@ class EntiteDeletionService
      */
     private $entiteSQL;
 
-    /**
-     * @var Journal
-     */
-    private $journal;
+    private JournalEntryService $journalEntryService;
 
     public function __construct(
         EntiteSQL $entiteSQL,
-        Journal $journal,
+        JournalEntryService $journalEntryService,
         private readonly DocumentEntite $documentEntite,
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
         private readonly FluxEntiteSQL $fluxEntiteSQL,
@@ -39,7 +38,7 @@ class EntiteDeletionService
         private readonly AnnuaireRoleSQL $annuaireRoleSQL,
     ) {
         $this->entiteSQL = $entiteSQL;
-        $this->journal = $journal;
+        $this->journalEntryService = $journalEntryService;
     }
 
     /**
@@ -53,11 +52,11 @@ class EntiteDeletionService
         $this->notificationService->removeAllForEntite($id_e);
         $this->annuaireRoleSQL->deleteByEntite($id_e);
         $this->entiteSQL->removeEntite($id_e);
-        $this->journal->add(
-            Journal::MODIFICATION_ENTITE,
+        $this->journalEntryService->add(
+            JournalEventType::ENTITY_MODIFICATION,
             $id_e,
-            Journal::NO_ID_D,
-            Journal::ACTION_SUPPRIME,
+            JournalEntryService::NO_ID_D,
+            JournalAction::DELETED->value,
             "Suppression de l'entité id_e=$id_e\nInformation : " . json_encode($info)
         );
     }

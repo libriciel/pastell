@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Mailer\Mailer;
+use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\PasswordEntropy;
 use Pastell\Service\Utilisateur\PasswordResetService;
@@ -173,12 +174,14 @@ class ConnexionControler extends PastellControler
     {
         $infoUtilisateur = $this->getUtilisateur()->getInfo($id_u);
         $login = $infoUtilisateur['login'];
-        $this->getJournal()->setId($id_u);
+        $this->getJournalEntryService()->setId($id_u);
+        // To remove along with the deprecated Journal class
+        $this->getInstance(Journal::class)->setId($id_u);
         $nom = $infoUtilisateur['prenom'] . ' ' . $infoUtilisateur['nom'];
-        $this->getJournal()->add(
-            Journal::CONNEXION,
+        $this->getJournalEntryService()->add(
+            JournalEventType::LOGIN,
             $infoUtilisateur['id_e'],
-            0,
+            JournalEntryService::NO_ID_D,
             'Connecté',
             "$nom s'est connecté via $external_system depuis l'adresse " . $_SERVER['REMOTE_ADDR']
         );
@@ -419,13 +422,15 @@ class ConnexionControler extends PastellControler
             $this->redirect($redirect_fail);
         }
 
-        $this->getJournal()->setId($id_u);
+        $this->getJournalEntryService()->setId($id_u);
+        // To remove along with the deprecated Journal class
+        $this->getInstance(Journal::class)->setId($id_u);
         $infoUtilisateur = $this->getUtilisateur()->getInfo($id_u);
         $nom = $infoUtilisateur['prenom'] . ' ' . $infoUtilisateur['nom'];
-        $this->getJournal()->add(
-            Journal::CONNEXION,
+        $this->getJournalEntryService()->add(
+            JournalEventType::LOGIN,
             $infoUtilisateur['id_e'],
-            0,
+            JournalEntryService::NO_ID_D,
             'Connecté',
             "$nom s'est connecté depuis l'adresse " . $_SERVER['REMOTE_ADDR']
         );
@@ -452,12 +457,14 @@ class ConnexionControler extends PastellControler
 
         $utilisateurInfo = $this->getUtilisateur()->getInfo($id_u);
 
-        $this->getJournal()->setId($id_u);
+        $this->getJournalEntryService()->setId($id_u);
+        // To remove along with the deprecated Journal class
+        $this->getInstance(Journal::class)->setId($id_u);
         $nom = $utilisateurInfo['prenom'] . ' ' . $utilisateurInfo['nom'];
-        $this->getJournal()->add(
-            Journal::CONNEXION,
+        $this->getJournalEntryService()->add(
+            JournalEventType::LOGIN,
             $utilisateurInfo['id_e'],
-            0,
+            JournalEntryService::NO_ID_D,
             'Connecté',
             "$nom s'est connecté automatiquement depuis l'adresse " . $_SERVER['REMOTE_ADDR']
         );

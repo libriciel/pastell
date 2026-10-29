@@ -14,7 +14,6 @@ use DocumentSQL;
 use DocumentTypeFactory;
 use DonneesFormulaireFactory;
 use EntiteSQL;
-use Journal;
 use Libriciel\OfficeClients\Exception\ConnectionException;
 use Libriciel\OfficeClients\Fusion\Exception\InvalidTemplateException;
 use Libriciel\OfficeClients\Fusion\Type\ContentType;
@@ -34,6 +33,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Throwable;
 use UnrecoverableException;
+use Journal;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 /**
  * FIXME: This class needs to be deleted and reworked into several services
@@ -309,16 +311,16 @@ final class MailsecManager
 
         $titre = $mailSecInfo->donneesFormulaireReponse->getTitre();
 
-        $this->objectInstancier->getInstance(Journal::class)->add(
-            Journal::MAIL_SECURISE,
+        $this->objectInstancier->getInstance(JournalEntryService::class)->add(
+            JournalEventType::SECURE_MAIL,
             $mailSecInfo->id_e,
             $mailSecInfo->id_d_reponse,
             'Validation',
             \sprintf('%s a validé le document %s (id_de = %s)', $mailSecInfo->email, $titre, $mailSecInfo->id_de)
         );
 
-        $this->objectInstancier->getInstance(Journal::class)->add(
-            Journal::MAIL_SECURISE,
+        $this->objectInstancier->getInstance(JournalEntryService::class)->add(
+            JournalEventType::SECURE_MAIL,
             $mailSecInfo->id_e,
             $mailSecInfo->id_d,
             'Validation',
