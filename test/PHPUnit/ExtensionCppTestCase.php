@@ -78,9 +78,6 @@ class ExtensionCppTestCase extends PastellTestCase
         return $id_ce;
     }
 
-    /**
-     * Crée un connecteur CPP dont le wrapper est mocké pour la synchronisation de la facture
-     */
     protected function createCppConnectorForSynchro(string $fluxId, string $statut_courant): void
     {
         $cppWrapper = $this->getMockBuilder(CPPWrapper::class)

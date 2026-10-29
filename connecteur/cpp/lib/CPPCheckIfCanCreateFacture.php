@@ -4,6 +4,12 @@ use Pastell\Service\ChorusPro\ChorusProImportUtilService;
 
 class CPPCheckIfCanCreateFacture
 {
+    // #2467 : A_RECYCLER conservé pour les factures ayant encore ce statut courant sur Chorus Pro
+    private array $statusBanned = [
+        PortailFactureConnecteur::STATUT_A_RECYCLER,
+        PortailFactureConnecteur::STATUT_SUSPENDUE
+    ];
+
     public function canCreateFacture(array $factureChorus, string $dateLimiteDePriseEnCharge, array $statusCourants): bool
     {
         if (
@@ -43,7 +49,7 @@ class CPPCheckIfCanCreateFacture
     private function isFactureTravauxAndFactureHasBannedStatus(string $typeIntegration, string $statutFacture): bool
     {
         $isFactureTravaux = $typeIntegration === ChorusProImportUtilService::TYPE_INTEGRATION_CPP_TRAVAUX_CLE;
-        $factureHasBannedStatus = $statutFacture === PortailFactureConnecteur::STATUT_SUSPENDUE;
+        $factureHasBannedStatus = in_array($statutFacture, $this->statusBanned, true);
 
         return $isFactureTravaux && $factureHasBannedStatus;
     }
