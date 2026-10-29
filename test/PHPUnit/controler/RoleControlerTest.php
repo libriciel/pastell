@@ -26,6 +26,25 @@ class RoleControlerTest extends ControlerTestCase
         $this->roleControler->detailAction();
     }
 
+    /**
+     * @throws UnrecoverableException
+     * @throws NotFoundException
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    public function testDetailUnknownTypeDossier(): void
+    {
+        $this->roleControler->getRoleSQL()->addDroit('admin', 'type-inexistant:lecture');
+        $this->roleControler->setGetInfo(new Recuperateur(['role' => 'admin']));
+        $this->expectOutputRegex('##');
+        $this->roleControler->detailAction();
+        $droits_type_dossier = $this->roleControler->getViewParameterByKey('droits_type_dossier');
+        self::assertNotEmpty($droits_type_dossier);
+        foreach ($droits_type_dossier as $droits_by_type_dossier) {
+            self::assertArrayNotHasKey('type-inexistant', $droits_by_type_dossier);
+        }
+    }
+
     public function testEditionAction()
     {
         $this->expectOutputRegex("##");
