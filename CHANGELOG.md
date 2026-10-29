@@ -6,6 +6,10 @@
 
 - Les notifications sont supprimées au retrait d'un rôle ou à la modification de ses droits lorsque l'utilisateur n'a plus les droits nécessaires #2575
 
+### Dépréciations
+
+- Classes `EntiteListe` et `UtilisateurListe` dépréciées au profit de `EntiteSQL`, `UtilisateurSQL` et du service `UtilisateurListService` #2601
+
 ### Sécurité
 
 - Faille de contrôle d'accès sur la création de connecteur

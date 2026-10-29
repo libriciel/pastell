@@ -224,18 +224,18 @@ class UtilisateurControler extends PastellControler
     public function certificatAction()
     {
         $recuperateur = new Recuperateur($_GET);
-        $this->setViewParameter('verif_number', $recuperateur->get('verif_number'));
+        $this->setViewParameter('verif_number', (string) $recuperateur->get('verif_number'));
         $this->setViewParameter('offset', $recuperateur->getInt('offset', 0));
 
         $this->setViewParameter('limit', 20);
 
         $this->setViewParameter(
             'count',
-            $this->getUtilisateurListe()->getNbUtilisateurByCertificat($this->getViewParameterByKey('verif_number'))
+            $this->getUtilisateur()->countByCertificat($this->getViewParameterByKey('verif_number'))
         );
         $this->setViewParameter(
             'liste',
-            $this->getUtilisateurListe()->getUtilisateurByCertificat(
+            $this->getUtilisateur()->getAllByCertificat(
                 $this->getViewParameterByKey('verif_number'),
                 $this->getViewParameterByKey('offset'),
                 $this->getViewParameterByKey('limit')
@@ -337,7 +337,6 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('id_current_u', $this->getId_u());
         $this->setViewParameter('certificat', new Certificate($info['certificat']));
         $this->setViewParameter('page_title', 'Utilisateur ' . $info['prenom'] . ' ' . $info['nom']);
-        $this->setViewParameter('entiteListe', $this->getEntiteListe());
         $this->setViewParameter(
             'tabEntite',
             $this->getInstance(UtilisateurEntiteService::class)
@@ -432,8 +431,6 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('certificat', new Certificate($info['certificat']));
 
         $this->setViewParameter('page_title', 'Espace utilisateur : ' . $info['prenom'] . ' ' . $info['nom']);
-
-        $this->setViewParameter('entiteListe', $this->getEntiteListe());
 
         $this->setViewParameter(
             'tabEntite',
@@ -839,11 +836,9 @@ class UtilisateurControler extends PastellControler
     public function getCertificatAction()
     {
         $recuperateur = new Recuperateur($_GET);
-        $verif_number = $recuperateur->get('verif_number');
+        $verif_number = (string) $recuperateur->get('verif_number');
 
-        $utilisateurListe = $this->getUtilisateurListe();
-
-        $liste = $utilisateurListe->getUtilisateurByCertificat($verif_number, 0, 1);
+        $liste = $this->getUtilisateur()->getAllByCertificat($verif_number, 0, 1);
 
         if (count($liste) < 1) {
             header('Location: index.php');

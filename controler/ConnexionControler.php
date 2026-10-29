@@ -123,7 +123,7 @@ class ConnexionControler extends PastellControler
                 )
             );
         }
-        $id_u = $this->getUtilisateurListe()->getUtilisateurByLogin($login);
+        $id_u = $this->getUtilisateur()->getIdFromLogin($login);
         if (!$id_u) {
             throw new Exception(
                 sprintf(
@@ -377,7 +377,7 @@ class ConnexionControler extends PastellControler
             );
             $this->redirect($redirect_fail);
         }
-        $id_u = $this->getUtilisateurListe()->getUtilisateurByLogin($login);
+        $id_u = $this->getUtilisateur()->getIdFromLogin($login);
 
         if (!$id_u) {
             $this->setLastError('Identifiant ou mot de passe incorrect.');
@@ -468,8 +468,7 @@ class ConnexionControler extends PastellControler
 
     private function getId_uFromTokenOrFailed(string $mail_verif_password)
     {
-        $utilisateurListe = $this->getObjectInstancier()->getInstance(UtilisateurListe::class);
-        $id_u = $utilisateurListe->getByVerifPassword(
+        $id_u = $this->getUtilisateur()->getIdByVerifPassword(
             $mail_verif_password,
             self::CHANGE_PASSWORD_TOKEN_TTL_IN_SECONDS
         );
@@ -535,10 +534,9 @@ class ConnexionControler extends PastellControler
     {
         $recuperateur = $this->getPostInfo();
 
-        $login = $recuperateur->get('login');
+        $login = (string) $recuperateur->get('login');
 
-        $utilisateurListe = $this->getObjectInstancier()->getInstance(UtilisateurListe::class);
-        $id_u = $utilisateurListe->getByLoginOrEmail($login, $login);
+        $id_u = $this->getUtilisateur()->getIdByLoginOrEmail($login);
 
         if (!$id_u) {
             $this->setLastError("Aucun compte n'a été trouvé avec ces informations");

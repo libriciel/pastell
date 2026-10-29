@@ -8,6 +8,8 @@ class EntiteSQL extends SQL
     public const ENTITE_RACINE_DENOMINATION = "Entité racine";
     public const ID_E_ENTITE_RACINE = 0;
 
+    public const NB_COLLECTIVITE_DISPLAY = 20;
+
     public function getInfo($id_e)
     {
         $sql = "SELECT * FROM entite WHERE id_e=?";
@@ -445,5 +447,34 @@ EOT;
         }
         $listeEntiteMere[$i] = 'Entité racine';
         return array_reverse($listeEntiteMere);
+    }
+
+    public function getAllByType(string $type): array
+    {
+        $sql = <<<SQL
+SELECT * FROM entite WHERE type=? ORDER BY denomination
+SQL;
+        return $this->query($sql, $type);
+    }
+
+    public function getAllCollectivite(int $offset, string $search, int $limit = self::NB_COLLECTIVITE_DISPLAY): array
+    {
+        $offset = max(0, $offset);
+        $sql = <<<SQL
+SELECT id_e,denomination,siren,type,is_active FROM entite
+WHERE entite_mere=0 AND type != 'fournisseur' AND type != 'citoyen' AND denomination LIKE ?
+ORDER BY is_active DESC,denomination
+LIMIT $offset,$limit
+SQL;
+        return $this->query($sql, "%$search%");
+    }
+
+    public function getNbCollectivite(string $search): int
+    {
+        $sql = <<<SQL
+SELECT count(*) FROM entite
+WHERE entite_mere=0 AND type != 'fournisseur' AND type != 'citoyen' AND denomination LIKE ?
+SQL;
+        return (int) $this->queryOne($sql, "%$search%");
     }
 }

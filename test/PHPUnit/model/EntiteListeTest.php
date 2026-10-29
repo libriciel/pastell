@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated Since 4.1.25, Use EntiteSQLTest instead
+ */
 class EntiteListeTest extends PastellTestCase
 {
     /** @var  EntiteListe */

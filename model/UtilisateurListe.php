@@ -1,8 +1,13 @@
 <?php
 
+use Pastell\Service\Utilisateur\UtilisateurListService;
+
+/**
+ * @deprecated 4.1.25 Use UtilisateurSQL and UtilisateurListService instead
+ */
 class UtilisateurListe extends SQL
 {
-    public const NB_UTILISATEUR_DISPLAY = 50;
+    public const NB_UTILISATEUR_DISPLAY = UtilisateurListService::NB_UTILISATEUR_DISPLAY;
 
     public function getUtilisateurByLogin($login)
     {
