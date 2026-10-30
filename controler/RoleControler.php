@@ -102,7 +102,7 @@ class RoleControler extends PastellControler
         $droits_type_dossier_by_categorie = [];
         foreach ($all_droit_utilisateur as $droit => $enabled) {
             $id_droit = explode(':', $droit, 2)[0];
-            if (isset(self::DROIT_ADMINISTRATION_LIBELLE[$id_droit])) {
+            if (isset(self::DROIT_ADMINISTRATION_LIBELLE[$id_droit]) || !isset($flux_info[$id_droit])) {
                 continue;
             }
             $info = $flux_info[$id_droit];
