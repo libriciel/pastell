@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Document\DocumentEntiteService;
+
 class GlaneurActesTest extends PastellTestCase
 {
     /**
@@ -53,8 +55,8 @@ class GlaneurActesTest extends PastellTestCase
 
         $this->triggerActionOnConnector($id_ce, 'recuperation-test');
 
-        $documentEntite = $this->getObjectInstancier()->getInstance(DocumentEntite::class);
-        $id_d = $documentEntite->getDocument(self::ID_E_COL, "actes-automatique")[0]['id_d'];
+        $documentEntiteService = $this->getObjectInstancier()->getInstance(DocumentEntiteService::class);
+        $id_d = $documentEntiteService->getDocumentsByType(self::ID_E_COL, 'actes-automatique')[0]['id_d'];
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
         $this->assertEquals(
@@ -134,8 +136,8 @@ EOT,
 
 
         $this->triggerActionOnConnector($id_ce, 'recuperation-test');
-        $documentEntite = $this->getObjectInstancier()->getInstance(DocumentEntite::class);
-        $id_d = $documentEntite->getDocument(self::ID_E_COL, "actes-automatique")[0]['id_d'];
+        $documentEntiteService = $this->getObjectInstancier()->getInstance(DocumentEntiteService::class);
+        $id_d = $documentEntiteService->getDocumentsByType(self::ID_E_COL, 'actes-automatique')[0]['id_d'];
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
         $this->assertEquals(

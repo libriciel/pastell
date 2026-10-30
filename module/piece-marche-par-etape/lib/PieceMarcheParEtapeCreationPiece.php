@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Document\DocumentRoleService;
+
 class PieceMarcheParEtapeCreationPiece
 {
     protected $objectInstancier;
@@ -31,7 +33,8 @@ class PieceMarcheParEtapeCreationPiece
         }
         $new_id_d = $this->objectInstancier->getInstance(DocumentSQL::class)->getNewId();
         $this->objectInstancier->getInstance(DocumentSQL::class)->save($new_id_d, $nom_flux_piece);
-        $this->objectInstancier->getInstance(DocumentEntite::class)->addRole($new_id_d, $id_e, "editeur");
+        $this->objectInstancier->getInstance(DocumentRoleService::class)
+            ->addRole($new_id_d, (int) $id_e, DocumentRoleService::EDITEUR);
 
         /** @var DonneesFormulaire $donneesFormulaire */
         $donneesFormulaire = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)->get($new_id_d);

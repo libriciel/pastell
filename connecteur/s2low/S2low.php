@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Document\DocumentEntiteService;
+
 class S2low extends TdtConnecteur
 {
     public const URL_TEST = "/api/test-connexion.php";
@@ -716,8 +718,9 @@ class S2low extends TdtConnecteur
 
         if ($acteDocumentId) {
             $acteDocument = $this->objectInstancier->getInstance(DonneesFormulaireFactory::class)->get($acteDocumentId);
-            $acteEntite = $this->objectInstancier->getInstance(DocumentEntite::class)->getEntite($acteDocumentId);
-            $url = sprintf('/Document/detail?id_d=%s&id_e=%s', $acteDocumentId, $acteEntite[0]['id_e']);
+            $id_e_acte = $this->objectInstancier->getInstance(DocumentEntiteService::class)
+                ->getEntiteId($acteDocumentId);
+            $url = sprintf('/Document/detail?id_d=%s&id_e=%s', $acteDocumentId, $id_e_acte);
             $donneesFormulaire->setData('url_acte', $this->objectInstancier->getInstance('site_base') . $url);
 
             $linksToDocuments = [];
@@ -811,7 +814,7 @@ class S2low extends TdtConnecteur
         $id_e = $connecteur_info['id_e'];
 
         if ($acteDocumentId) {
-            $acteEntite = $this->objectInstancier->getInstance(DocumentEntite::class)->getEntite($acteDocumentId);
+            $acteEntite = $this->objectInstancier->getInstance(DocumentEntiteService::class)->getEntites($acteDocumentId);
             $id_e_acte = $acteEntite[0]['id_e'];
             $id_ce_acte = $this->objectInstancier->getInstance(FluxEntiteSQL::class)->getConnecteurId(
                 $id_e_acte,

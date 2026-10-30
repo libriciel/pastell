@@ -10,6 +10,8 @@
 
 - Classe `Journal` et méthodes `getJournal()` dépréciées au profit de `JournalSQL`, `JournalConsultationService`, `JournalExportService`, `JournalEntryService` et `JournalEventType` #2595
 - Classes `EntiteListe` et `UtilisateurListe` dépréciées au profit de `EntiteSQL`, `UtilisateurSQL` et du service `UtilisateurListService` #2601
+- Classe `DocumentEntite` dépréciée au profit de `DocumentEntiteSQL` et des services `DocumentRoleService` et
+  `DocumentEntiteService` #2611
 
 ### Sécurité
 

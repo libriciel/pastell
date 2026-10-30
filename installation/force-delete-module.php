@@ -2,6 +2,7 @@
 <?php
 
 use Pastell\Service\Journal\JournalEntryService;
+use Pastell\Service\Document\DocumentEntiteService;
 
 /**
  * @deprecated since 4.0.6 use command app:module:force-delete-module instead
@@ -28,7 +29,7 @@ $entite_list = [];
 
 foreach ($result as $document) {
     $id_d = $document['id_d'];
-    $doc_entite = $objectInstancier->getInstance(DocumentEntite::class)->getEntite($id_d);
+    $doc_entite = $objectInstancier->getInstance(DocumentEntiteService::class)->getEntites($id_d);
     foreach ($doc_entite as $entite) {
         $id_e = $entite['id_e'];
 
@@ -67,7 +68,7 @@ if ($entree != 'o') {
 
 foreach ($result as $document) {
     $id_d = $document['id_d'];
-    $doc_entite = $objectInstancier->getInstance(DocumentEntite::class)->getEntite($id_d);
+    $doc_entite = $objectInstancier->getInstance(DocumentEntiteService::class)->getEntites($id_d);
     foreach ($doc_entite as $entite) {
         $id_e = $entite['id_e'];
         $id_job = $objectInstancier->getInstance(JobQueueSQL::class)->getJobIdForDocument($id_e, $id_d);
