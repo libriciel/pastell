@@ -393,6 +393,29 @@ class UtilisateurControlerTest extends ControlerTestCase
         static::assertSame($pageTitle, 'Nouvel utilisateur ');
     }
 
+    /**
+     * @throws ConflictException
+     * @throws LastMessageException
+     * @throws UnrecoverableException
+     */
+    public function testDoEditionCreationWithoutRight(): void
+    {
+        $controller = $this->getUtilisateurControler();
+        $this->authenticateNewUserWithPermission(
+            [DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION)]
+        );
+        $this->setPostInfo([
+            'id_e' => 1,
+            'login' => 'foo',
+            'nom' => 'baz',
+            'prenom' => 'buz',
+            'email' => 'foo@example.invalid',
+        ]);
+        $this->expectException(LastErrorException::class);
+        $this->expectExceptionMessage("Vous n'avez pas les droits nécessaires (1:utilisateur:creation)");
+        $controller->doEditionAction();
+    }
+
     public function testDoEditionActionNoPassword()
     {
         $this->setPostInfo([
