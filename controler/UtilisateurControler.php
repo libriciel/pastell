@@ -243,14 +243,24 @@ class UtilisateurControler extends PastellControler
             )
         );
 
-        if (!$this->getViewParameterByKey('count')) {
+        $this->setViewParameter('liste', array_values(array_filter(
+            $this->getViewParameterByKey('liste'),
+            fn(array $user_info): bool => $this->getDroitService()->hasDroitFor(
+                $this->getId_u(),
+                (int) $user_info['id_e'],
+                DroitService::DROIT_UTILISATEUR,
+                DroitType::LECTURE
+            )
+        )));
+        if (!$this->getViewParameterByKey('liste')) {
             $this->redirect('/index.php');
         }
 
-        $this->setViewParameter(
-            'certificat',
-            new Certificate($this->getViewParameterByKey('liste')[0]['certificat'])
-        );
+        $certificate = new Certificate($this->getViewParameterByKey('liste')[0]['certificat']);
+        if (!$certificate->isValid()) {
+            $this->redirect('/index.php');
+        }
+        $this->setViewParameter('certificat', $certificate);
 
         $this->setViewParameter('page_title', 'Certificat');
         $this->setViewParameter('template_milieu', 'UtilisateurCertificat');
@@ -498,8 +508,10 @@ class UtilisateurControler extends PastellControler
         if ($id_u) {
             $info = $this->getInstance(UtilisateurSQL::class)->getInfo($id_u);
             $this->checkDroitFor($info['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
+            $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
+        } else {
+            $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::CREATION);
         }
-        $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
         try {
             if ($id_u) {
                 $is_api = $this->getInstance(UtilisateurSQL::class)->getInfo($id_u)['is_api'];
@@ -834,6 +846,10 @@ class UtilisateurControler extends PastellControler
         $this->redirectToPageUtilisateur($source, $id_u, $type);
     }
 
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
     public function getCertificatAction()
     {
         $recuperateur = new Recuperateur($_GET);
@@ -845,6 +861,7 @@ class UtilisateurControler extends PastellControler
             header('Location: index.php');
             exit;
         }
+        $this->checkDroitFor($liste[0]['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
 
 
         $certificat = new Certificate($liste[0]['certificat']);
