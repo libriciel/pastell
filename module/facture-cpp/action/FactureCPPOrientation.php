@@ -28,7 +28,6 @@ class FactureCPPOrientation extends ActionExecutor
         if ($envoi_auto) {
             switch ($last_action) {
                 case 'importation':
-                case 'integration-glaneur-pivot':
                     if (! $donneesFormulaire->isValidable()) {
                         $this->notifyAndExit("Impossible de faire avancer le document depuis l'état : $last_action");
                     }
@@ -45,16 +44,6 @@ class FactureCPPOrientation extends ActionExecutor
                     }
                     break;
                 case 'send-iparapheur-annule':
-                    if ($envoi_ged == true) {
-                        $action_cible = 'prepare-ged';
-                    } elseif ($check_mise_a_dispo_gf == true) {
-                        $action_cible = 'prepare-mise-a-dispo-gf';
-                    } elseif ($envoi_sae == true) {
-                        $action_cible = 'preparation-send-sae';
-                    } else {
-                        $action_cible = 'termine';
-                    }
-                    break;
                 case 'cpp-modif-statut-ok':
                     if ($envoi_ged == true) {
                         $action_cible = 'prepare-ged';

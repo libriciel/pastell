@@ -93,6 +93,13 @@
 - Suppression du format `simple` de la route `GET /api/v2/document/count` #2151
     - `DocumentCount::getCountByEntityFormat()`
     - `DocumentEntite::getCountByEntityFormat()`
+- Suppression des dépréciations Chorus de la version 5.0.0 #2598
+    - Les statuts cible "A_RECYCLER" et "SERVICE_FAIT;MANDATEE" sont supprimés, et les fonctions de "consommation" de statut liées aussi
+    - Les Types d'intégration 'Formulaire PIVOT', 'Glaneur PIVOT' et 'Importation Chorus Pro par CSV'
+      du type de dossier `facture-cpp` ne sont plus possibles, seules les factures importées de Chorus Pro sont traitées
+    - Modification du type de dossier `facture-cpp` (suppression de l’élément is_cpp et des actions *-glaneur-pivot)
+    - Le type de dossier `facture-formulaire-pivot` et connecteur `parametrage-flux-facture-pivot` sont supprimés
+    - Le connecteur `chorus-par-csv` est supprimé
 
 ## [5.0.11] - 2026-11-2
 

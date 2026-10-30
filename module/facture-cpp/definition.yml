@@ -1,6 +1,6 @@
 nom: 'Facture Chorus Pro'
 type: 'Finances'
-description: "Le type de dossier Facture Chorus Pro générique fonctionne de la manière suivante :\n- création par l'import via un connecteur CPP ou création d'après facture papier via le type de dossier Facture Formulaire Pivot\n- préparation du document, envoi sur des connecteurs annexes (exemple : GED, parapheur)\n- mise à disposition de la GF\n- changement de statut par la GF\n- fin de vie du document, envoi sur des connecteurs annexes (exemple : SAE)"
+description: "Le type de dossier Facture Chorus Pro générique fonctionne de la manière suivante :\n- création par l'import via un connecteur CPP\n- préparation du document, envoi sur des connecteurs annexes (exemple : GED, parapheur)\n- mise à disposition de la GF\n- changement de statut par la GF\n- fin de vie du document, envoi sur des connecteurs annexes (exemple : SAE)"
 restriction_pack:
     - pack_chorus_pro
 connecteur:
@@ -12,8 +12,6 @@ connecteur:
     - SAE
 formulaire:
     'Statut Chorus Pro':
-        is_cpp:
-            no-show: true
         utilisateur_technique:
             no-show: true
             index: true
@@ -185,9 +183,6 @@ formulaire:
             value:
                 CPP: 'Importation Chorus Pro'
                 CPP_TRAVAUX: 'Importation Chorus Pro Facture de Travaux (MOE/MOA)'
-                CSV: 'Importation Chorus Pro par CSV'
-                PIVOT: 'Formulaire PIVOT'
-                GLANEUR: 'Glaneur PIVOT'
         envoi_visa:
             name: 'Transmission pour validation iparapheur'
             type: checkbox
@@ -332,8 +327,6 @@ action:
             last-action:
                 - creation
                 - modification
-                - importation-glaneur-pivot
-                - integration-glaneur-pivot
                 - prepare-mise-a-dispo-gf
                 - mise-a-dispo-gf
                 - cpp-modif-statut
@@ -400,7 +393,6 @@ action:
         name: 'Statut synchronisé'
         rule:
             content:
-                is_cpp: true
                 is_annule: false
             droit_id_u: 'facture-cpp:edition'
         editable-content:
@@ -818,51 +810,6 @@ action:
         rule:
             role_id_e: no-role
         action-class: CppCreation
-    importation-glaneur-pivot:
-        name: 'Importation du fichier PIVOT via le Glaneur'
-        no-workflow: true
-        rule:
-            role_id_e: no-role
-        editable-content:
-            - statut_cible_liste
-            - motif_maj
-            - numero_mandat
-            - service_destinataire_code
-            - facture_numero_engagement
-            - facture_numero_marche
-            - iparapheur_sous_type
-            - envoi_visa
-            - envoi_ged
-            - check_mise_a_dispo_gf
-            - envoi_sae
-            - envoi_auto
-            - recup_par_gf
-        action-automatique: integration-glaneur-pivot
-    integration-glaneur-pivot:
-        name: 'Intégration du dossier via le fichier PIVOT'
-        rule:
-            last-action:
-                - importation-glaneur-pivot
-        editable-content:
-            - statut_cible_liste
-            - motif_maj
-            - numero_mandat
-            - service_destinataire_code
-            - facture_numero_engagement
-            - facture_numero_marche
-            - iparapheur_sous_type
-            - envoi_visa
-            - envoi_ged
-            - check_mise_a_dispo_gf
-            - envoi_sae
-            - envoi_auto
-            - recup_par_gf
-        action-class: CppIntegrationParGlaneurPivot
-        action-automatique: orientation
-    integration-glaneur-pivot-error:
-        name: "Erreur lors de l'intégration du fichier PIVOT via le Glaneur"
-        rule:
-            role_id_e: no-role
     termine:
         name: 'Traitement terminé'
         rule:

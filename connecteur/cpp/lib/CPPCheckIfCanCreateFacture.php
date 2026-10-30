@@ -49,7 +49,7 @@ class CPPCheckIfCanCreateFacture
     private function isFactureTravauxAndFactureHasBannedStatus(string $typeIntegration, string $statutFacture): bool
     {
         $isFactureTravaux = $typeIntegration === ChorusProImportUtilService::TYPE_INTEGRATION_CPP_TRAVAUX_CLE;
-        $factureHasBannedStatus = in_array($statutFacture, $this->statusBanned);
+        $factureHasBannedStatus = in_array($statutFacture, $this->statusBanned, true);
 
         return $isFactureTravaux && $factureHasBannedStatus;
     }

@@ -2,25 +2,25 @@
 
 abstract class PortailFactureConnecteur extends Connecteur
 {
-    public const STATUT_DEPOSEE = "DEPOSEE";
-    public const STATUT_ACHEMINEMENT = "EN_COURS_ACHEMINEMENT";
-    public const STATUT_MISE_A_DISPOSITION = "MISE_A_DISPOSITION";
+    public const string STATUT_DEPOSEE = 'DEPOSEE';
+    public const string STATUT_ACHEMINEMENT = 'EN_COURS_ACHEMINEMENT';
+    public const string STATUT_MISE_A_DISPOSITION = 'MISE_A_DISPOSITION';
     /**
-     * @deprecated #2467 : n'est plus un statut cible autorisé (réforme 09/2026),
+     * @deprecated #2467 : "A_RECYCLER" n'est plus un statut cible autorisé (réforme 09/2026),
      * conservé pour la lecture des factures ayant encore ce statut courant
      */
-    public const STATUT_A_RECYCLER = "A_RECYCLER";
-    public const STATUT_REJETEE = "REJETEE";
-    public const STATUT_SUSPENDUE = "SUSPENDUE";
-    public const STATUT_SERVICE_FAIT = "SERVICE_FAIT";
-    public const STATUT_MANDATEE = "MANDATEE";
-    public const STATUT_MISE_A_DISPOSITION_COMPTABLE = "MISE_A_DISPOSITION_COMPTABLE";
-    public const STATUT_COMPTABILISEE = "COMPTABILISEE";
-    public const STATUT_MISE_EN_PAIEMENT = "MISE_EN_PAIEMENT";
-    public const STATUT_COMPLETEE = "COMPLETEE";
+    public const string STATUT_A_RECYCLER = 'A_RECYCLER';
+    public const string STATUT_REJETEE = 'REJETEE';
+    public const string STATUT_SUSPENDUE = 'SUSPENDUE';
+    public const string STATUT_SERVICE_FAIT = 'SERVICE_FAIT';
+    public const string STATUT_MANDATEE = 'MANDATEE';
+    public const string STATUT_MISE_A_DISPOSITION_COMPTABLE = 'MISE_A_DISPOSITION_COMPTABLE';
+    public const string STATUT_COMPTABILISEE = 'COMPTABILISEE';
+    public const string STATUT_MISE_EN_PAIEMENT = 'MISE_EN_PAIEMENT';
+    public const string STATUT_COMPLETEE = 'COMPLETEE';
 
-    private const TYPE_INTEGRATION_CPP = "CPP";
-    private const TYPE_INTEGRATION_CPP_TRAVAUX = "CPP_TRAVAUX";
+    private const TYPE_INTEGRATION_CPP = 'CPP';
+    private const TYPE_INTEGRATION_CPP_TRAVAUX = 'CPP_TRAVAUX';
 
     protected $objectInstancier;
 
@@ -37,9 +37,9 @@ abstract class PortailFactureConnecteur extends Connecteur
      * @return mixed
      */
     abstract protected function rechercheFactureParRecipiendaire(
-        string $idFournisseur = "",
-        string $periodeDateHeureEtatCourantDu = "",
-        string $periodeDateHeureEtatCourantAu = ""
+        string $idFournisseur = '',
+        string $periodeDateHeureEtatCourantDu = '',
+        string $periodeDateHeureEtatCourantAu = ''
     );
 
     /**
@@ -48,8 +48,8 @@ abstract class PortailFactureConnecteur extends Connecteur
      * @return mixed
      */
     abstract protected function rechercheFactureTravaux(
-        string $periodeDateHeureEtatCourantDu = "",
-        string $periodeDateHeureEtatCourantAu = ""
+        string $periodeDateHeureEtatCourantDu = '',
+        string $periodeDateHeureEtatCourantAu = ''
     );
 
     /**

@@ -29,7 +29,6 @@ class AttrFactureCPP
     public const ATTR_MOTIF_MAJ = 'motif_maj';
     public const ATTR_TYPE_IDENTIFIANT = 'type_identifiant';
     public const ATTR_FOURNISSEUR_RAISON_SOCIALE = 'fournisseur_raison_sociale';
-    public const ATTR_IS_CPP = 'is_cpp';
     public const ATTR_IS_ANNULE = 'is_annule';
     public const ATTR_NUMERO_MANDAT = 'numero_mandat';
     public const ATTR_TYPE_INTEGRATION = 'type_integration';

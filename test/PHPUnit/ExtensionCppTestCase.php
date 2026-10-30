@@ -9,7 +9,6 @@ class ExtensionCppTestCase extends PastellTestCase
     public const FICHIER_FACTURE_XML = __DIR__ . "/fixtures/fixtures_chorus/Facture-IN_DP_E2_CPP_FACTURE_MIN.xml";
     public const FICHIER_FACTURE_PDF = __DIR__ . "/fixtures/fixtures_chorus/Facture-PDF.pdf";
     public const FICHIER_PIVOT = __DIR__ . "/fixtures/fixtures_chorus/facture-pivot.xml";
-    public const PIVOT_ZIP = __DIR__ . "/fixtures/fixtures_chorus/pivot.zip";
 
     private const DATE_DEPUIS_LE = "2019-01-01";
     private const DATE_DEPOT_FACTURE = "2019-07-11";
@@ -39,7 +38,6 @@ class ExtensionCppTestCase extends PastellTestCase
 
         $flux_id_list = [
             'facture-cpp',
-            'facture-formulaire-pivot',
             'facture-chorus-fournisseur',
             'statut-facture-cpp'
         ];
@@ -78,6 +76,25 @@ class ExtensionCppTestCase extends PastellTestCase
         $this->associateFluxWithConnector($id_ce, $fluxId, 'PortailFacture');
 
         return $id_ce;
+    }
+
+    protected function createCppConnectorForSynchro(string $fluxId, string $statut_courant): void
+    {
+        $cppWrapper = $this->getMockBuilder(CPPWrapper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $cppWrapper->method('telechargerGroupeFacture')
+            ->willReturn(file_get_contents(self::FICHIER_PIVOT));
+        $cppWrapper->method('consulterHistoriqueFacture')
+            ->willReturn($this->getConsulterHistoriqueFacture(date("Y-m-d H:i"), $statut_courant));
+
+        $cppWrapperFactory = $this->getMockBuilder(CPPWrapperFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $cppWrapperFactory->method('newInstance')->willReturn($cppWrapper);
+        $this->getObjectInstancier()->setInstance(CPPWrapperFactory::class, $cppWrapperFactory);
+
+        $this->createCppConnector($fluxId);
     }
 
     /**
