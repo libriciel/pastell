@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Pastell\Service\Document\DocumentSearchCriteria;
+
 class DocumentEntiteSQL extends SQL
 {
     public function insert(string $id_d, int $id_e, string $role): void
@@ -157,5 +159,205 @@ SQL;
 UPDATE document_entite SET last_action = ?, last_action_date = ? WHERE id_d = ? AND id_e = ?
 SQL;
         $this->query($sql, $action, $date, $id_d, $id_e);
+    }
+
+    public function getLastAction(int $id_e, string $id_d): ?string
+    {
+        $sql = <<<SQL
+SELECT last_action FROM document_entite WHERE id_e = ? AND id_d = ?
+SQL;
+        $last_action = $this->queryOne($sql, $id_e, $id_d);
+        return $last_action === false || $last_action === null ? null : (string) $last_action;
+    }
+
+    public function getLastActionDate(int $id_e, string $id_d): ?string
+    {
+        $sql = <<<SQL
+SELECT last_action_date FROM document_entite WHERE id_e = ? AND id_d = ?
+SQL;
+        $last_action_date = $this->queryOne($sql, $id_e, $id_d);
+        return $last_action_date === false || $last_action_date === null ? null : (string) $last_action_date;
+    }
+
+    public function getInfo(int $id_e, string $id_d): ?array
+    {
+        $sql = <<<SQL
+SELECT *, document_entite.last_action AS last_action, document_entite.last_action_date AS last_action_date
+FROM document_entite
+JOIN document ON document_entite.id_d = document.id_d
+WHERE document_entite.id_e = ? AND document.id_d = ?
+SQL;
+        $document_info = $this->queryOne($sql, $id_e, $id_d);
+        return $document_info === false ? null : $document_info;
+    }
+
+    public function getDocumentsByLastAction(int $id_e, string $type, string $last_action): array
+    {
+        $sql = <<<SQL
+SELECT * FROM document_entite
+JOIN document ON document_entite.id_d = document.id_d
+WHERE document_entite.id_e = ? AND document.type = ? AND document_entite.last_action = ?
+SQL;
+        return $this->query($sql, $id_e, $type, $last_action);
+    }
+
+    public function getDocumentsByLastActionUntil(int $id_e, string $type, string $last_action, string $date): array
+    {
+        $sql = <<<SQL
+SELECT * FROM document_entite
+JOIN document ON document_entite.id_d = document.id_d
+WHERE document_entite.id_e = ? AND document.type = ? AND document_entite.last_action = ?
+AND date(document_entite.last_action_date) <= ?
+SQL;
+        return $this->query($sql, $id_e, $type, $last_action, $date);
+    }
+
+    public function getDocumentsThroughActionUntil(int $id_e, string $type, string $action, string $date): array
+    {
+        $sql = <<<SQL
+SELECT * FROM document_entite
+JOIN document ON document_entite.id_d = document.id_d
+JOIN document_action ON document_action.id_d = document.id_d AND document_action.id_e = document_entite.id_e
+WHERE document_entite.id_e = ? AND document.type = ? AND document_action.action = ?
+AND date(document_action.date) <= ?
+SQL;
+        return $this->query($sql, $id_e, $type, $action, $date);
+    }
+
+    public function countDocumentsWithLastActionAfter(int $id_e, string $type, string $date): int
+    {
+        $sql = <<<SQL
+SELECT count(*) FROM document_entite
+JOIN document ON document_entite.id_d = document.id_d
+WHERE document_entite.id_e = ? AND document.type = ? AND document_entite.last_action_date > ?
+SQL;
+        return (int) $this->queryOne($sql, $id_e, $type, $date);
+    }
+
+    public function countBySearch(DocumentSearchCriteria $criteria): int
+    {
+        $params = [];
+        $sql = 'SELECT count(*)' . $this->getSearchFromClause($criteria, $params) . $this->getSearchWhereClause($criteria, $params);
+        return (int) $this->queryOne($sql, $params);
+    }
+
+    public function search(
+        DocumentSearchCriteria $criteria,
+        string $sort,
+        string $direction,
+        int $offset,
+        int $limit,
+    ): array {
+        $direction = in_array($direction, ['ASC', 'DESC'], true) ? $direction : 'DESC';
+        $params = [];
+        $sql = <<<SQL
+SELECT *, document.id_d AS id_d, document_entite.id_e AS id_e, document.type AS type, document_entite.last_action AS last_action,
+    document_entite.last_action_date AS last_action_date, entite.denomination AS entite_base
+SQL;
+        $sql .= $this->getSearchFromClause($criteria, $params);
+        if (array_key_exists($sort, $criteria->index_values)) {
+            $sql .= <<<SQL
+
+LEFT JOIN document_index ON document.id_d = document_index.id_d AND document_index.field_name = ?
+SQL;
+            $params[] = $sort;
+            $order_by = "document_index.field_value $direction";
+        } else {
+            $order_by = match ($sort) {
+                'entite' => "entite.denomination $direction",
+                'titre', 'title' => "document.titre $direction, document.id_d $direction",
+                default => "document_entite.last_action_date $direction",
+            };
+        }
+        $sql .= $this->getSearchWhereClause($criteria, $params);
+        $sql .= <<<SQL
+
+ORDER BY $order_by LIMIT $offset, $limit
+SQL;
+        return $this->query($sql, $params);
+    }
+
+    private function getSearchFromClause(DocumentSearchCriteria $criteria, array &$params): string
+    {
+        $sql = <<<SQL
+
+FROM document_entite
+JOIN document ON document_entite.id_d = document.id_d
+JOIN entite ON document_entite.id_e = entite.id_e
+SQL;
+        if ($criteria->transit_action) {
+            $sql .= <<<SQL
+
+JOIN document_action ON document_action.id_d = document.id_d AND document_action.id_e = entite.id_e
+SQL;
+        }
+        $i = 0;
+        foreach ($criteria->index_values as $field_name => $field_value) {
+            if ($field_value) {
+                $sql .= <<<SQL
+
+JOIN document_index AS document_index_$i ON document.id_d = document_index_$i.id_d
+    AND document_index_$i.field_name = ? AND document_index_$i.field_value LIKE ?
+SQL;
+                $params[] = $field_name;
+                $params[] = "%$field_value%";
+            }
+            $i++;
+        }
+        return $sql;
+    }
+
+    private function getSearchWhereClause(DocumentSearchCriteria $criteria, array &$params): string
+    {
+        $allowed_types = $criteria->allowed_types ?: [''];
+        $sql = "\nWHERE document.type IN (" . $this->getPlaceholders($allowed_types) . ')';
+        array_push($params, ...array_values($allowed_types));
+
+        if ($criteria->id_e) {
+            $sql .= "\nAND document_entite.id_e = ?";
+            $params[] = $criteria->id_e;
+        }
+        if ($criteria->type) {
+            $sql .= "\nAND document.type = ?";
+            $params[] = $criteria->type;
+        }
+        if ($criteria->search) {
+            $sql .= "\nAND document.titre LIKE ?";
+            $params[] = "%{$criteria->search}%";
+        }
+        if ($criteria->last_actions) {
+            $sql .= "\nAND document_entite.last_action IN (" . $this->getPlaceholders($criteria->last_actions) . ')';
+            array_push($params, ...array_values($criteria->last_actions));
+        }
+        if ($criteria->last_action_begin) {
+            $sql .= "\nAND document_entite.last_action_date > ?";
+            $params[] = $criteria->last_action_begin;
+        }
+        if ($criteria->last_action_end) {
+            $sql .= "\nAND document_entite.last_action_date < ?";
+            $params[] = $criteria->last_action_end;
+        }
+        if ($criteria->transit_action) {
+            $sql .= "\nAND document_action.action = ?";
+            $params[] = $criteria->transit_action;
+            if ($criteria->transit_begin) {
+                $sql .= "\nAND document_action.date > ?";
+                $params[] = $criteria->transit_begin;
+            }
+            if ($criteria->transit_end) {
+                $sql .= "\nAND document_action.date < ?";
+                $params[] = $criteria->transit_end;
+            }
+        }
+        if ($criteria->not_transit_action) {
+            $sql .= <<<SQL
+
+AND document_entite.id_d NOT IN (
+    SELECT document_action.id_d FROM document_action WHERE document_action.action = ?
+)
+SQL;
+            $params[] = $criteria->not_transit_action;
+        }
+        return $sql;
     }
 }

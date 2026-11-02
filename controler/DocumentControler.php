@@ -1,8 +1,11 @@
 <?php
 
 use Pastell\File\Chunk\ChunkUploader;
+use Pastell\Service\Document\DocumentEntiteService;
 use Pastell\Service\Document\DocumentEmailRecipientType;
 use Pastell\Service\Document\DocumentRoleService;
+use Pastell\Service\Document\DocumentSearchCriteria;
+use Pastell\Service\Document\DocumentSearchService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
@@ -55,6 +58,7 @@ class DocumentControler extends PastellControler
 
     /**
      * @return DocumentActionEntite
+     * @deprecated 4.1.26 Use DocumentActionEntiteSQL, DocumentEntiteService and DocumentSearchService instead
      */
     protected function getDocumentActionEntite(): DocumentActionEntite
     {
@@ -140,7 +144,7 @@ class DocumentControler extends PastellControler
         $info_document = $this->verifDroitLecture($id_e, $id_d);
 
 
-        $true_last_action = $this->getDocumentActionEntite()->getTrueAction($id_e, $id_d);
+        $true_last_action = $this->getInstance(DocumentEntiteService::class)->getCurrentAction($id_e, $id_d);
         /** @var DocumentType $documentType */
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($info_document['type']);
 
@@ -175,7 +179,7 @@ class DocumentControler extends PastellControler
         /** @var DocumentType $documentType */
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($info_document['type']);
 
-        $true_last_action = $this->getDocumentActionEntite()->getTrueAction($id_e, $id_d);
+        $true_last_action = $this->getInstance(DocumentEntiteService::class)->getCurrentAction($id_e, $id_d);
 
         $action = $documentType->getAction();
         if ($action->getProperties($true_last_action, 'accuse_de_reception_action')) {
@@ -200,7 +204,10 @@ class DocumentControler extends PastellControler
         [$infoDocumentEmail, $reponse_column] = $this->getDocumentEmailForDisplay($id_d);
         $this->setViewParameter('infoDocumentEmail', $infoDocumentEmail);
         $this->setViewParameter('reponse_column', $reponse_column);
-        $this->setViewParameter('documentActionEntite', $this->getDocumentActionEntite());
+        $this->setViewParameter(
+            'document_action_list',
+            $this->getInstance(DocumentActionEntiteSQL::class)->getActions($id_e, $id_d)
+        );
 
         $this->setViewParameter('next_action_automatique', $this->getViewParameterByKey('theAction')->getActionAutomatique($true_last_action));
         $this->setViewParameter('droit_erreur_fatale', $this->getDroitService()->hasDroitFor($this->getId_u(), 0, $info_document['type'], DroitType::EDITION));
@@ -370,7 +377,6 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('ActionPossible', $this->getActionPossible());
         $this->setViewParameter('theAction', $documentType->getAction());
         $this->setViewParameter('my_role', $this->getInstance(DocumentRoleService::class)->getRole((int) $id_e, (string) $id_d));
-        $this->setViewParameter('documentActionEntite', $this->getDocumentActionEntite());
         $this->setViewParameter('action_url', 'Document/doEdition');
         $this->setViewParameter('recuperation_fichier_url', "Document/recuperationFichier?id_d=$id_d&id_e=$id_e");
         $this->setViewParameter('suppression_fichier_url', "Document/supprimerFichier?id_d=$id_d&id_e=$id_e&page=$page&action=$action");
@@ -435,9 +441,15 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('url_tri', false);
 
         if ($id_e) {
-            $listDocument = $this->getDocumentActionEntite()->getListDocumentByEntite($id_e, $liste_type, $offset, $limit, $search);
+            $documentSearchService = $this->getInstance(DocumentSearchService::class);
+            $documentSearchCriteria = new DocumentSearchCriteria(
+                allowed_types: $liste_type,
+                id_e: $id_e,
+                search: $search,
+            );
+            $listDocument = $documentSearchService->search($documentSearchCriteria, $offset, $limit);
             $this->setViewParameter('listDocument', $this->enrichListDocumentForDisplay($listDocument));
-            $this->setViewParameter('count', $this->getDocumentActionEntite()->getNbDocumentByEntite($id_e, $liste_type, $search));
+            $this->setViewParameter('count', $documentSearchService->count($documentSearchCriteria));
             $this->setViewParameter('type_list', $this->getAllType($listDocument));
         }
 
@@ -522,12 +534,12 @@ class DocumentControler extends PastellControler
         }
 
         $this->setViewParameter('page_title', $page_title);
-        $this->setViewParameter('documentActionEntite', $this->getDocumentActionEntite());
         $this->setViewParameter('ActionPossible', $this->getActionPossible());
         $this->setViewParameter('all_action', $documentType->getAction()->getWorkflowAction());
 
+        $documentSearchService = $this->getInstance(DocumentSearchService::class);
         if ($last_id) {
-            $offset = $this->getObjectInstancier()->getInstance(DocumentActionEntite::class)->getOffset($last_id, $id_e, $type, $limit);
+            $offset = $documentSearchService->getOffset($last_id, (int) $id_e, $type, $limit);
         }
 
         if ($this->getActionPossible()->isCreationPossible($id_e, $this->getId_u(), $type)) {
@@ -569,22 +581,20 @@ class DocumentControler extends PastellControler
             $indexedFieldValue[$indexField] = $recuperateur->get($indexField);
         }
 
-        $listDocument = $this->getDocumentActionEntite()->getListBySearch(
-            $id_e,
-            $type,
+        $documentSearchCriteria = new DocumentSearchCriteria(
+            allowed_types: $allDroitEntite,
+            id_e: (int) $id_e,
+            type: $type,
+            search: $search,
+            last_actions: $filtre ? explode(',', $filtre) : [],
+            index_values: $indexedFieldValue,
+        );
+        $this->setViewParameter('count', $documentSearchService->count($documentSearchCriteria));
+        $listDocument = $documentSearchService->search(
+            $documentSearchCriteria,
             $offset,
             $limit,
-            $search,
-            $filtre,
-            false,
-            false,
             $tri,
-            $allDroitEntite,
-            false,
-            false,
-            false,
-            false,
-            $indexedFieldValue,
             $sens_tri
         );
         $this->setViewParameter('listDocument', $this->enrichListDocumentForDisplay($listDocument));
@@ -602,7 +612,7 @@ class DocumentControler extends PastellControler
      * @throws LastErrorException
      * @throws UnrecoverableException
      */
-    public function searchDocument(): void
+    public function searchDocument(): DocumentSearchCriteria
     {
         $recuperateur = new Recuperateur($_REQUEST);
         $id_e = $recuperateur->getInt('id_e', EntiteSQL::ID_E_ENTITE_RACINE);
@@ -673,7 +683,20 @@ class DocumentControler extends PastellControler
         $allDroit = $this->getDroitService()->getUnrestrictedDroits($this->getId_u());
         $this->setViewParameter('listeEtat', $this->getDocumentTypeFactory()->getActionByRole($allDroit));
 
-        $this->setViewParameter('documentActionEntite', $this->getDocumentActionEntite());
+        $documentSearchCriteria = new DocumentSearchCriteria(
+            allowed_types: $allDroitEntite,
+            id_e: $id_e,
+            type: $type,
+            search: $search,
+            last_actions: $lastEtat ? explode(',', $lastEtat) : [],
+            last_action_begin: $last_state_begin_iso,
+            last_action_end: $last_state_end_iso,
+            transit_action: $etatTransit,
+            transit_begin: $state_begin_iso,
+            transit_end: $state_end_iso,
+            not_transit_action: $recuperateur->get('notEtatTransit'),
+            index_values: $indexedFieldValue,
+        );
         $this->setViewParameter('documentTypeFactory', $this->getDocumentTypeFactory());
 
         $this->setViewParameter('my_id_e', $id_e);
@@ -707,6 +730,7 @@ class DocumentControler extends PastellControler
 
         $this->setViewParameter('url_tri', $url_tri);
         $this->setViewParameter('type_list', $this->getAllType($listDocument));
+        return $documentSearchCriteria;
     }
 
     public function exportAction(): void
@@ -748,37 +772,28 @@ class DocumentControler extends PastellControler
             $indexedFieldsList = [];
         }
 
-        $limit = $this->getDocumentActionEntite()->getNbDocumentBySearch(
-            $id_e,
-            $type,
-            $search,
-            $lastEtat,
-            $last_state_begin_iso,
-            $last_state_end_iso,
-            $allDroitEntite,
-            $etatTransit,
-            $state_begin,
-            $state_end,
-            $notEtatTransit,
-            $indexedFieldValue
+        $documentSearchService = $this->getInstance(DocumentSearchService::class);
+        $documentSearchCriteria = new DocumentSearchCriteria(
+            allowed_types: $allDroitEntite,
+            id_e: $id_e,
+            type: $type,
+            search: $search,
+            last_actions: $lastEtat ? explode(',', $lastEtat) : [],
+            last_action_begin: $last_state_begin_iso,
+            last_action_end: $last_state_end_iso,
+            transit_action: $etatTransit,
+            transit_begin: $state_begin,
+            transit_end: $state_end,
+            not_transit_action: $notEtatTransit,
+            index_values: $indexedFieldValue,
         );
-        $listDocument = $this->getDocumentActionEntite()->getListBySearch(
-            $id_e,
-            $type,
+        $limit = $documentSearchService->count($documentSearchCriteria);
+        $listDocument = $documentSearchService->search(
+            $documentSearchCriteria,
             $offset,
             $limit,
-            $search,
-            $lastEtat,
-            $last_state_begin_iso,
-            $last_state_end_iso,
-            $tri,
-            $allDroitEntite,
-            $etatTransit,
-            $state_begin,
-            $state_end,
-            $notEtatTransit,
-            $indexedFieldValue,
-            $sens_tri
+            (string) $tri,
+            (string) $sens_tri
         );
 
         $line = ['ENTITE','ID_D','TYPE','TITRE','DERNIERE ACTION','DATE DERNIERE ACTION'];
@@ -817,7 +832,11 @@ class DocumentControler extends PastellControler
      */
     public function searchAction(): void
     {
-        $this->searchDocument();
+        $documentSearchCriteria = $this->searchDocument();
+        $this->setViewParameter(
+            'count',
+            $this->getInstance(DocumentSearchService::class)->count($documentSearchCriteria)
+        );
         $this->setViewParameter('page_title', 'Recherche avancée de dossiers');
         $this->setViewParameter('template_milieu', 'DocumentSearch');
         $this->renderDefault();
@@ -876,7 +895,7 @@ class DocumentControler extends PastellControler
     {
         $error = '';
         foreach ($documentIds as $documentId) {
-            $infoDocument = $this->getDocumentActionEntite()->getInfo($documentId, $entityId);
+            $infoDocument = $this->getInstance(DocumentEntiteService::class)->getInfo($entityId, $documentId);
             if (($infoDocument['type'] ?? null) !== $type) {
                 $documentTitle = ($infoDocument['titre'] ?? '') ?: $documentId;
                 $error .= "Le document « $documentTitle » n'est pas de type « $type »<br/>";
@@ -1006,7 +1025,7 @@ class DocumentControler extends PastellControler
         $listDocument = [];
 
         foreach ($all_id_d as $id_d) {
-            $infoDocument = $this->getDocumentActionEntite()->getInfo($id_d, $id_e);
+            $infoDocument = $this->getInstance(DocumentEntiteService::class)->getInfo($id_e, $id_d);
             $document_titre = $infoDocument['titre'] ?: $id_d;
             if (!$this->getActionPossible()->isActionPossible($id_e, $this->getId_u(), $id_d, $action_selected)) {
                 $error .= "L'action « $action_libelle » n'est pas possible pour le document « $document_titre »<br/>";
@@ -1052,7 +1071,7 @@ class DocumentControler extends PastellControler
         $error = "";
         $message = "";
         foreach ($all_id_d as $id_d) {
-            $infoDocument = $this->getDocumentActionEntite()->getInfo($id_d, $id_e);
+            $infoDocument = $this->getInstance(DocumentEntiteService::class)->getInfo($id_e, $id_d);
             $document_titre = $infoDocument['titre'] ?: $id_d;
             if (!$this->getActionPossible()->isActionPossible($id_e, $this->getId_u(), $id_d, $action_selected)) {
                 $error .= "L'action « $action_libelle » n'est pas possible pour le document « $document_titre »<br/>";
@@ -1112,7 +1131,7 @@ class DocumentControler extends PastellControler
         $this->checkDocumentsType($all_id_d, $id_e, $type, $url_retour);
 
         foreach ($all_id_d as $id_d) {
-            $infoDocument  = $this->getDocumentActionEntite()->getInfo($id_d, $id_e);
+            $infoDocument  = $this->getInstance(DocumentEntiteService::class)->getInfo($id_e, $id_d);
 
             $tedetis_transaction_id = $this->getDonneesFormulaireFactory()
                 ->get($id_d)
@@ -1253,7 +1272,7 @@ class DocumentControler extends PastellControler
 
     public function bulkModification($id_e, $type, $etat, $field_name, $field_value): int
     {
-        $result = $this->getDocumentActionEntite()->getDocument($id_e, $type, $etat);
+        $result = $this->getInstance(DocumentEntiteService::class)->getDocumentsByLastAction($id_e, $type, $etat);
 
         if (!$result) {
             throw new Exception("Il n'y a pas de document de type $type pour l'id_e $id_e");

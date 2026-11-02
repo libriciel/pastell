@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated 4.1.26 Use DocumentActionEntiteSQL, DocumentEntiteService and DocumentSearchService instead.
+ */
 class DocumentActionEntite extends SQL
 {
     public function add($id_a, $id_e, $id_j)

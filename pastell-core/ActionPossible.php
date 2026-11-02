@@ -11,7 +11,7 @@ class ActionPossible
 
     private $lastBadRule;
 
-    private $documentActionEntite;
+    private DocumentActionEntiteSQL $documentActionEntiteSQL;
     private DocumentRoleService $documentRoleService;
     private UtilisateurRoleService $utilisateurRoleService;
     /** @var DocumentTypeFactory */
@@ -38,7 +38,7 @@ class ActionPossible
     public function __construct(ObjectInstancier $objectInstancier)
     {
         $this->document = $objectInstancier->getInstance(DocumentSQL::class);
-        $this->documentActionEntite = $objectInstancier->getInstance(DocumentActionEntite::class);
+        $this->documentActionEntiteSQL = $objectInstancier->getInstance(DocumentActionEntiteSQL::class);
         $this->documentRoleService = $objectInstancier->getInstance(DocumentRoleService::class);
         $this->utilisateurRoleService = $objectInstancier->getInstance(UtilisateurRoleService::class);
         $this->entiteSQL = $objectInstancier->getInstance(EntiteSQL::class);
@@ -139,13 +139,13 @@ class ActionPossible
      */
     private function buildCache($id_e, $id_u, $id_d, $type_document = false)
     {
-        $this->last_action = $this->documentActionEntite->getLastAction($id_e, $id_d);
+        $this->last_action = $this->documentActionEntiteSQL->getLastAction($id_e, $id_d);
         $this->role_entite = $this->documentRoleService->getRole((int) $id_e, (string) $id_d);
         $this->action_list = array_map(
             function ($a) {
                 return $a['action'];
             },
-            $this->documentActionEntite->getAction($id_e, $id_d)
+            $this->documentActionEntiteSQL->getActions($id_e, $id_d)
         );
         $this->connecteur_entite_info = false;
         $this->utilisateur_droit_list = $this->utilisateurRoleService->getDroitsForEntite($id_u, (int) $id_e);

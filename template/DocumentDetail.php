@@ -9,7 +9,7 @@
  * @var Authentification $authentification
  * @var array $infoDocumentEmail
  * @var array $reponse_column
- * @var DocumentActionEntite $documentActionEntite
+ * @var array $document_action_list
  * @var ActionPossible $actionPossible
  * @var DocumentType $documentType
  * @var array $infoEntite
@@ -231,7 +231,7 @@ if ($infoDocumentEmail) :
             <th>Journal</th>
         </tr>
 
-        <?php foreach ($documentActionEntite->getAction($id_e, $id_d) as $action) : ?>
+        <?php foreach ($document_action_list as $action) : ?>
             <tr>
                 <td><?php hecho($theAction->getActionName($action['action'])); ?></td>
                 <td><?php echo time_iso_to_fr($action['date']); ?></td>

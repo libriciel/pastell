@@ -12,11 +12,11 @@ class ActionCreatorSQLTest extends PastellTestCase
 
         $actionCreatorSQL->addAction(1, 0, "action-test", "test", $id_d);
 
-        $documentActionEntite = $this->getObjectInstancier()->getInstance(DocumentActionEntite::class);
+        $documentActionEntiteSQL = $this->getObjectInstancier()->getInstance(DocumentActionEntiteSQL::class);
 
         $this->assertEquals(
             "action-test",
-            $documentActionEntite->getLastAction(1, $id_d)
+            $documentActionEntiteSQL->getLastAction(1, $id_d)
         );
     }
 }

@@ -11,8 +11,8 @@ class OrientationFluxAutoDoc extends ActionExecutor
     public function go()
     {
 
-        $documentActionEntite = $this->getDocumentActionEntite();
-        $last_action = $documentActionEntite->getLastAction($this->id_e, $this->id_d);
+        $documentActionEntiteSQL = $this->getDocumentActionEntiteSQL();
+        $last_action = $documentActionEntiteSQL->getLastAction($this->id_e, $this->id_d);
         $donneesFormulaire = $this->getDonneesFormulaire();
         $envoi_ged = $donneesFormulaire->get('envoi_ged');
         $envoi_auto = $donneesFormulaire->get('envoi_auto');

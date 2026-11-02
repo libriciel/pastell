@@ -6,6 +6,8 @@
 
 - Classe `DocumentEmail` dépréciée au profit de `DocumentEmailSQL` et des services `DocumentEmailService` et
   `DocumentEmailReadService` #2610
+- Classe `DocumentActionEntite` dépréciée au profit de `DocumentActionEntiteSQL` et des services `DocumentEntiteService`
+  et `DocumentSearchService` #2618
 - Classe `UsersToken` dépréciée au profit de `UserTokenService` #2621
 - Classe `ConnecteurDisponible` dépréciée au profit du service `ConnecteurAvailabilityService` #2622
 

@@ -83,8 +83,8 @@ class DocumentEmail extends SQL
         $sql = "SELECT id_e FROM document_entite WHERE id_d=?";
         $id_e = $this->queryOne($sql, $info['id_d']);
 
-        $documentActionEntite = new DocumentActionEntite($this->sqlQuery);
-        $action = $documentActionEntite->getLastAction($id_e, $info['id_d']);
+        $documentActionEntiteSQL = new DocumentActionEntiteSQL($this->sqlQuery);
+        $action = $documentActionEntiteSQL->getLastAction($id_e, $info['id_d']);
         $next_action = 'erreur';
         if ($action == $next_action) {
             return;
@@ -130,8 +130,8 @@ class DocumentEmail extends SQL
             $next_action = 'reception-partielle';
         }
 
-        $documentActionEntite = new DocumentActionEntite($this->sqlQuery);
-        $action = $documentActionEntite->getLastAction($id_e, $result['id_d']);
+        $documentActionEntiteSQL = new DocumentActionEntiteSQL($this->sqlQuery);
+        $action = $documentActionEntiteSQL->getLastAction($id_e, $result['id_d']);
 
 
         $message_action = ($next_action == 'reception') ? "Tous les destinataires ont consulté le message" : "Un destinataire a consulté le message";

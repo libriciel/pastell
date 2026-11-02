@@ -6,7 +6,7 @@ class ActionChange extends SQL
 {
     public function __construct(
         private readonly DocumentActionSQL $documentActionSQL,
-        private readonly DocumentActionEntite $documentActionEntite,
+        private readonly DocumentActionEntiteSQL $documentActionEntiteSQL,
         private readonly JournalEntryService $journalEntryService,
         private readonly SQLQuery $sqlQuery
     ) {
@@ -17,7 +17,7 @@ class ActionChange extends SQL
     {
         $id_a = $this->documentActionSQL->add($id_d, $id_e, $id_u, $action);
         $id_j = $this->journalEntryService->addSQL(JournalEventType::DOCUMENT_ACTION, $id_e, $id_u, $id_d, $action, $message_journal);
-        $this->documentActionEntite->add($id_a, $id_e, $id_j);
+        $this->documentActionEntiteSQL->add($id_a, $id_e, $id_j);
     }
 
     /**

@@ -484,7 +484,7 @@ iparapheur_retour: Archive',
     {
         $this->assertEquals(
             $expected_action,
-            $this->getObjectInstancier()->getInstance(DocumentActionEntite::class)->getLastAction($id_e, $id_d)
+            $this->getObjectInstancier()->getInstance(DocumentActionEntiteSQL::class)->getLastAction($id_e, $id_d)
         );
     }
 

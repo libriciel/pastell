@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Pastell\Command\Module;
 
-use DocumentActionEntite;
 use Pastell\Configuration\DocumentTypeValidation;
+use Pastell\Service\Document\DocumentEntiteService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -30,7 +30,7 @@ class SetNewStatusDocumentBatchCommand extends Command
 
     public function __construct(
         private readonly \JobManager $jobManager,
-        private readonly DocumentActionEntite $documentActionEntite,
+        private readonly DocumentEntiteService $documentEntiteService,
         private readonly \ActionChange $actionChange,
         private readonly \FluxDefinitionFiles $fluxDefinitionFiles,
         private readonly DocumentTypeValidation $documentTypeValidation,
@@ -139,13 +139,13 @@ class SetNewStatusDocumentBatchCommand extends Command
 
     public function getDocuments(int $id_e, string $type, string $oldStatus, bool $includeSubEntities): array
     {
-        $documents = $this->documentActionEntite->getDocument($id_e, $type, $oldStatus);
+        $documents = $this->documentEntiteService->getDocumentsByLastAction($id_e, $type, $oldStatus);
         if ($includeSubEntities) {
             $subEntities = $this->entiteSQL->getAllChildren($id_e);
             foreach ($subEntities as $entity) {
                 $documents = array_merge(
                     $documents,
-                    $this->documentActionEntite->getDocument($entity['id_e'], $type, $oldStatus)
+                    $this->documentEntiteService->getDocumentsByLastAction((int) $entity['id_e'], $type, $oldStatus)
                 );
             }
         }
