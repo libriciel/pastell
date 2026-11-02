@@ -157,7 +157,7 @@ services:
       - ${DATABASE_DATADIR:-database_datadir}:/var/lib/mysql/:rw,noexec,nosuid,nodev
 
   redis:
-    image: 'hubdocker.libriciel.fr/redis:8.10.2-alpine3.23@sha256:9f8d2d789b9a1d1e3f283f979aa9cbf393373806472e1ccd460e2f9c869b833b'
+    image: 'hubdocker.libriciel.fr/redis:8.10.3-alpine3.23@sha256:21090af93f8324db2f0f0f4f38a7c60369d47d917e000c3423d89d2ae2883537'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -185,7 +185,7 @@ services:
       - /var/lib/nginx/tmp:mode=770,uid=10001,gid=10001,rw,noexec,nosuid,nodev
 
   flow:
-    image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.7.1@sha256:c5fb55c673eb8acc80a3cbfb03a0a5b69c083dd3bb42fb40b07d5f60a7d8a60d'
+    image: 'registry.libriciel.fr/public/libriciel/outils-documentaires/flow:1.7.2@sha256:36c7a9a7929c68bb3e1776127eccd428f8cae29d88d6d07c752ea7ddfffaa3c2'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -204,7 +204,7 @@ services:
       - no-new-privileges:true
 
   pes-viewer:
-    image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.9@sha256:e51544e60a18404be2258f2c6fef3253f374e113c330372239ad1c866604774c'
+    image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.11@sha256:a8645dc6c229cf6f606ba1d69216e5e1db347a1f59800f0d568877e3a5af752d'
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -231,7 +231,7 @@ services:
       - ${LOCAL_CACERTS_PATH:-local_cacerts}:/usr/local/share/ca-certificates:rw,noexec,nosuid,nodev
 
   libriciel-feedback:
-    image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-feedback:2.0.8@sha256:e917a05dca8f51f99061efacdb326bed502ae25a57cfadcd7b24769743d07672'
+    image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-feedback:2.1.0@sha256:ce61a78f5987ea19f50c79469bf7f1aea3215eb6254509988ca50b29bfaf248b'
     restart: unless-stopped
     read_only: true
     cap_drop:
@@ -248,7 +248,7 @@ services:
       VERSION: canary
 
   libriciel-stack-update:
-    image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-stack-update:1.1.3@sha256:65b093c92172cd971ba294707851202b5ab021b13bb5d729bf63e530e3304e59'
+    image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-stack-update:1.1.4@sha256:3c508d85f25ae9c70e0cd71ee2345219a50b05b272f46ea0d2dfb139c0b0a46c'
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
