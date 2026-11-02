@@ -2,11 +2,11 @@
 
 namespace Pastell\Command\Module;
 
-use DocumentEntite;
 use DocumentSQL;
 use DonneesFormulaireFactory;
 use Exception;
 use Pastell\Command\BaseCommand;
+use Pastell\Service\Document\DocumentEntiteService;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -27,10 +27,7 @@ class ActesAddTypePieceFichier extends BaseCommand
      */
     private $documentSQL;
 
-    /**
-     * @var DocumentEntite
-     */
-    private $documentEntite;
+    private DocumentEntiteService $documentEntiteService;
 
     /**
      * @var DonneesFormulaireFactory
@@ -39,11 +36,11 @@ class ActesAddTypePieceFichier extends BaseCommand
 
     public function __construct(
         DocumentSQL $documentSQL,
-        DocumentEntite $documentEntite,
+        DocumentEntiteService $documentEntiteService,
         DonneesFormulaireFactory $donneesFormulaireFactory
     ) {
         $this->documentSQL = $documentSQL;
-        $this->documentEntite = $documentEntite;
+        $this->documentEntiteService = $documentEntiteService;
         $this->donneesFormulaireFactory = $donneesFormulaireFactory;
         parent::__construct();
     }
@@ -101,7 +98,7 @@ class ActesAddTypePieceFichier extends BaseCommand
         $this->getIO()->progressStart($numberOfDocument);
         $errorNumber = 0;
         foreach ($arrayDocuments as $id_d => $arrayTypePiece) {
-            $id_e = $this->documentEntite->getEntite($id_d)[0]['id_e'];
+            $id_e = $this->documentEntiteService->getEntiteId($id_d);
             $this->getIO()->newLine();
             $this->getIO()->writeln(
                 'Build type_piece_fichier for id_d=' . $id_d . '&id_e=' . $id_e . ' with data type_pj = ' . json_encode($arrayTypePiece)

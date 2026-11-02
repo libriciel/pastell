@@ -2,6 +2,7 @@
 
 use Pastell\Service\ChorusPro\ChorusProImportCreationService;
 use Pastell\Service\ChorusPro\ChorusProImportUtilService;
+use Pastell\Service\Document\DocumentEntiteService;
 
 class CPPImporterFactureTest extends ExtensionCppTestCase
 {
@@ -122,9 +123,9 @@ class CPPImporterFactureTest extends ExtensionCppTestCase
         $id_ce = $this->prepareFluxFactureCpp();
         $this->triggerActionOnConnector($id_ce, 'import-facture');
 
-        $documentEntite = $this->getObjectInstancier()->getInstance(DocumentEntite::class);
+        $documentEntiteService = $this->getObjectInstancier()->getInstance(DocumentEntiteService::class);
 
-        $list_facture = $documentEntite->getDocument(1, 'facture-cpp');
+        $list_facture = $documentEntiteService->getDocumentsByType(1, 'facture-cpp');
         $this->assertEquals(1, count($list_facture));
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($list_facture[0]['id_d']);
 
@@ -162,9 +163,9 @@ class CPPImporterFactureTest extends ExtensionCppTestCase
         $id_ce = $this->prepareFluxFactureCpp();
         $this->triggerActionOnConnector($id_ce, 'import-facture');
 
-        $documentEntite = $this->getObjectInstancier()->getInstance(DocumentEntite::class);
+        $documentEntiteService = $this->getObjectInstancier()->getInstance(DocumentEntiteService::class);
 
-        $list_facture = $documentEntite->getDocument(1, 'facture-cpp');
+        $list_facture = $documentEntiteService->getDocumentsByType(1, 'facture-cpp');
         $this->assertEquals(1, count($list_facture));
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($list_facture[0]['id_d']);
 
@@ -192,9 +193,9 @@ class CPPImporterFactureTest extends ExtensionCppTestCase
         $id_ce = $this->prepareFluxFactureCpp();
         $this->triggerActionOnConnector($id_ce, 'import-facture');
 
-        $documentEntite = $this->getObjectInstancier()->getInstance(DocumentEntite::class);
+        $documentEntiteService = $this->getObjectInstancier()->getInstance(DocumentEntiteService::class);
 
-        $list_facture = $documentEntite->getDocument(1, 'facture-cpp');
+        $list_facture = $documentEntiteService->getDocumentsByType(1, 'facture-cpp');
         $this->assertEmpty(count($list_facture));
     }
 
@@ -210,9 +211,9 @@ class CPPImporterFactureTest extends ExtensionCppTestCase
         $id_ce = $this->prepareFluxFactureCpp();
         $this->triggerActionOnConnector($id_ce, 'import-facture');
 
-        $documentEntite = $this->getObjectInstancier()->getInstance(DocumentEntite::class);
+        $documentEntiteService = $this->getObjectInstancier()->getInstance(DocumentEntiteService::class);
 
-        $list_facture = $documentEntite->getDocument(1, 'facture-cpp');
+        $list_facture = $documentEntiteService->getDocumentsByType(1, 'facture-cpp');
         $this->assertEquals(2, count($list_facture));
     }
 

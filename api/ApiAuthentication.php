@@ -100,8 +100,8 @@ class ApiAuthentication
         UtilisateurSQL $utilisateur,
     ): ?int {
         $this->checkRateLimit();
-        $userId = $utilisateurListe->getUtilisateurByLogin($this->server['PHP_AUTH_USER']);
-        if ($userId && $utilisateur->verifPassword($userId, $this->server['PHP_AUTH_PW'])) {
+        $userId = $this->utilisateurSQL->getIdFromLogin($this->server['PHP_AUTH_USER']);
+        if ($userId && $this->utilisateurSQL->verifPassword($userId, $this->server['PHP_AUTH_PW'])) {
             $this->resetRateLimit();
         } else {
             $userId = null;

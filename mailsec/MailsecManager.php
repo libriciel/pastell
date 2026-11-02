@@ -9,12 +9,10 @@ use ActionExecutorFactory;
 use DocumentCreationService;
 use DocumentEmail;
 use DocumentEmailReponseSQL;
-use DocumentEntite;
 use DocumentSQL;
 use DocumentTypeFactory;
 use DonneesFormulaireFactory;
 use EntiteSQL;
-use Journal;
 use Libriciel\OfficeClients\Exception\ConnectionException;
 use Libriciel\OfficeClients\Fusion\Exception\InvalidTemplateException;
 use Libriciel\OfficeClients\Fusion\Type\ContentType;
@@ -30,10 +28,14 @@ use MailSecInfo;
 use NotFoundException;
 use NotificationMail;
 use ObjectInstancier;
+use Pastell\Service\Document\DocumentRoleService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Throwable;
 use UnrecoverableException;
+use Journal;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 /**
  * FIXME: This class needs to be deleted and reworked into several services
@@ -71,9 +73,9 @@ final class MailsecManager
 
         $mailSecInfo->email = $info['email'];
 
-        $mailSecInfo->id_e = $this->objectInstancier->getInstance(DocumentEntite::class)->getEntiteWithRole(
+        $mailSecInfo->id_e = $this->objectInstancier->getInstance(DocumentRoleService::class)->getEntiteIdWithRole(
             $mailSecInfo->id_d,
-            'editeur'
+            DocumentRoleService::EDITEUR
         );
         $mailSecInfo->denomination_entite =
             $this->objectInstancier->getInstance(EntiteSQL::class)->getInfo($mailSecInfo->id_e)['denomination'];
@@ -306,16 +308,16 @@ final class MailsecManager
 
         $titre = $mailSecInfo->donneesFormulaireReponse->getTitre();
 
-        $this->objectInstancier->getInstance(Journal::class)->add(
-            Journal::MAIL_SECURISE,
+        $this->objectInstancier->getInstance(JournalEntryService::class)->add(
+            JournalEventType::SECURE_MAIL,
             $mailSecInfo->id_e,
             $mailSecInfo->id_d_reponse,
             'Validation',
             \sprintf('%s a validé le document %s (id_de = %s)', $mailSecInfo->email, $titre, $mailSecInfo->id_de)
         );
 
-        $this->objectInstancier->getInstance(Journal::class)->add(
-            Journal::MAIL_SECURISE,
+        $this->objectInstancier->getInstance(JournalEntryService::class)->add(
+            JournalEventType::SECURE_MAIL,
             $mailSecInfo->id_e,
             $mailSecInfo->id_d,
             'Validation',
@@ -504,9 +506,9 @@ final class MailsecManager
         $mailSecInfo->reponse = $info['reponse'];
         $mailSecInfo->has_reponse = (bool)$mailSecInfo->reponse;
         $mailSecInfo->email = $info['email'];
-        $mailSecInfo->id_e = $this->objectInstancier->getInstance(DocumentEntite::class)->getEntiteWithRole(
+        $mailSecInfo->id_e = $this->objectInstancier->getInstance(DocumentRoleService::class)->getEntiteIdWithRole(
             $mailSecInfo->id_d,
-            'editeur'
+            DocumentRoleService::EDITEUR
         );
         $mailSecInfo->denomination_entite =
             $this->objectInstancier->getInstance(EntiteSQL::class)->getInfo($mailSecInfo->id_e)['denomination'];

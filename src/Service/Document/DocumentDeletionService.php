@@ -3,22 +3,22 @@
 namespace Pastell\Service\Document;
 
 use DocumentEmailReponseSQL;
-use DocumentEntite;
 use DocumentSQL;
 use DonneesFormulaireFactory;
 use JobManager;
-use Journal;
 use NotificationDigestSQL;
 use NotFoundException;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 class DocumentDeletionService
 {
     public function __construct(
         private readonly DocumentSQL $documentSQL,
         private readonly DonneesFormulaireFactory $donneesFormulaireFactory,
-        private readonly DocumentEntite $documentEntite,
+        private readonly DocumentEntiteService $documentEntiteService,
         private readonly JobManager $jobManager,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journalEntryService,
         private readonly DocumentEmailReponseSQL $documentEmailReponseSQL,
         private readonly NotificationDigestSQL $notificationDigestSQL,
     ) {
@@ -32,7 +32,7 @@ class DocumentDeletionService
      */
     public function delete(string $id_d, ?string $message = null): string
     {
-        $id_e = $this->documentEntite->getEntite($id_d)[0]['id_e'];
+        $id_e = $this->documentEntiteService->getEntiteId($id_d);
         $info = $this->documentSQL->getInfo($id_d);
 
         $reponses = array_merge(
@@ -54,8 +54,8 @@ class DocumentDeletionService
             $id_d,
             ($message) ? ' - ' . $message : '',
         );
-        $this->journal->add(
-            Journal::DOCUMENT_ACTION,
+        $this->journalEntryService->add(
+            JournalEventType::DOCUMENT_ACTION,
             $id_e,
             $id_d,
             'suppression',

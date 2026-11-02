@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Document\DocumentRoleService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
@@ -11,7 +12,7 @@ class ActionPossible
     private $lastBadRule;
 
     private $documentActionEntite;
-    private $documentEntite;
+    private DocumentRoleService $documentRoleService;
     private UtilisateurRoleService $utilisateurRoleService;
     /** @var DocumentTypeFactory */
     private $documentTypeFactory;
@@ -38,7 +39,7 @@ class ActionPossible
     {
         $this->document = $objectInstancier->getInstance(DocumentSQL::class);
         $this->documentActionEntite = $objectInstancier->getInstance(DocumentActionEntite::class);
-        $this->documentEntite = $objectInstancier->getInstance(DocumentEntite::class);
+        $this->documentRoleService = $objectInstancier->getInstance(DocumentRoleService::class);
         $this->utilisateurRoleService = $objectInstancier->getInstance(UtilisateurRoleService::class);
         $this->entiteSQL = $objectInstancier->getInstance(EntiteSQL::class);
         $this->documentTypeFactory = $objectInstancier->getInstance(DocumentTypeFactory::class);
@@ -139,7 +140,7 @@ class ActionPossible
     private function buildCache($id_e, $id_u, $id_d, $type_document = false)
     {
         $this->last_action = $this->documentActionEntite->getLastAction($id_e, $id_d);
-        $this->role_entite = $this->documentEntite->getRole($id_e, $id_d);
+        $this->role_entite = $this->documentRoleService->getRole((int) $id_e, (string) $id_d);
         $this->action_list = array_map(
             function ($a) {
                 return $a['action'];

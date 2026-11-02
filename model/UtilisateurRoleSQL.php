@@ -198,12 +198,41 @@ SQL;
         return $result;
     }
 
+    public function getRoleWithLibelle(array $id_u_list): array
+    {
+        if ($id_u_list === []) {
+            return [];
+        }
+        $placeholders = implode(',', array_fill(0, count($id_u_list), '?'));
+        $sql = <<<SQL
+SELECT utilisateur_role.*,entite.denomination,entite.entite_mere,role.libelle FROM utilisateur_role
+LEFT JOIN entite ON utilisateur_role.id_e = entite.id_e
+LEFT JOIN role ON utilisateur_role.role = role.role
+WHERE id_u IN ($placeholders)
+SQL;
+        return $this->query($sql, array_values($id_u_list));
+    }
+
     public function anybodyHasRole(string $role): int
     {
         $sql = <<<SQL
 SELECT count(*) FROM utilisateur_role WHERE role =?
 SQL;
         return (int) $this->queryOne($sql, $role);
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getSubscribedUsersByRole(string $role): array
+    {
+        $sql = <<<SQL
+SELECT DISTINCT utilisateur_role.id_u
+FROM utilisateur_role
+JOIN notification ON notification.id_u = utilisateur_role.id_u
+WHERE utilisateur_role.role = ?
+SQL;
+        return array_map(intval(...), $this->queryOneCol($sql, $role));
     }
 
     public function getChildrenWithAnyDroit(int $id_e_parent, int $id_u, string $excludedRole): array

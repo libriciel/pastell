@@ -6,10 +6,10 @@ use FluxEntiteSQL;
 use DocumentIndexSQL;
 use ActionExecutorFactory;
 use DocumentTypeFactory;
-use DocumentEntite;
 use CPPException;
 use Exception;
 use NotFoundException;
+use Pastell\Service\Document\DocumentEntiteService;
 use UnrecoverableException;
 use DonneesFormulaireFactory;
 use DocumentCreationService;
@@ -36,10 +36,7 @@ class ChorusProImportCreationService
      */
     private $documentTypeFactory;
 
-    /**
-     * @var DocumentEntite
-     */
-    private $documentEntite;
+    private DocumentEntiteService $documentEntiteService;
 
     /**
      * @var DonneesFormulaireFactory
@@ -70,7 +67,7 @@ class ChorusProImportCreationService
         DocumentIndexSQL $documentIndexSQL,
         ActionExecutorFactory $actionExecutorFactory,
         DocumentTypeFactory $documentTypeFactory,
-        DocumentEntite $documentEntite,
+        DocumentEntiteService $documentEntiteService,
         DonneesFormulaireFactory $donneesFormulaireFactory,
         DocumentCreationService $documentCreationService
     ) {
@@ -78,7 +75,7 @@ class ChorusProImportCreationService
         $this->documentIndexSQL = $documentIndexSQL;
         $this->actionExecutorFactory = $actionExecutorFactory;
         $this->documentTypeFactory = $documentTypeFactory;
-        $this->documentEntite = $documentEntite;
+        $this->documentEntiteService = $documentEntiteService;
         $this->donneesFormulaireFactory = $donneesFormulaireFactory;
         $this->documentCreationService = $documentCreationService;
     }
@@ -97,11 +94,10 @@ class ChorusProImportCreationService
         $result = [];
         if ($id_d) {
             // La facture existe. Il faut charger l'id_e pour le message d'erreur.
-            $donneesEntite = $this->documentEntite->getEntite($id_d);
             $result['id_d'] = $id_d;
             $result['message'] = "ERREUR: La facture " . $facture_a_creer['id_facture_cpp'] .
                 $nommage_csv . ", id_d = " . $id_d . " est déja présente sur l'entité id_e = " .
-                $donneesEntite[0]['id_e'];
+                $this->documentEntiteService->getEntiteId($id_d);
             $result['resultat'] = false;
         } else {
             $result = $this->creerFacture($facture_a_creer, $nommage_csv);

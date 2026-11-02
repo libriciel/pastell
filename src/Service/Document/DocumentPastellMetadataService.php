@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Pastell\Service\Document;
 
 use DocumentActionSQL;
-use DocumentEntite;
 use DocumentSQL;
 
 class DocumentPastellMetadataService
@@ -24,7 +23,7 @@ class DocumentPastellMetadataService
 
     public function __construct(
         private readonly DocumentSQL $documentSQL,
-        private readonly DocumentEntite $documentEntite,
+        private readonly DocumentEntiteService $documentEntiteService,
         private readonly DocumentActionSQL $documentActionSQL,
     ) {
     }
@@ -53,7 +52,7 @@ class DocumentPastellMetadataService
         if ($id_d !== null) {
             $documentInfo = $this->documentSQL->getInfo($id_d);
             $userInfo = $this->documentActionSQL->getCreator($id_d);
-            $entiteInfo = $this->documentEntite->getEntite($id_d)[0] ?? [];
+            $entiteInfo = $this->documentEntiteService->getEntites($id_d)[0] ?? [];
         }
         $metadata[self::PA_DOCUMENT_ID_D] = $id_d ?? '';
         $metadata[self::PA_DOCUMENT_TITRE] = $documentInfo['titre'] ?? '';

@@ -1,25 +1,26 @@
 <?php
 
+use Pastell\Service\Document\DocumentEntiteService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 
 class DocumentCount
 {
     private $utilisateurEntiteService;
-    private $documentEntite;
+    private DocumentEntiteService $documentEntiteService;
     private $entiteSQL;
     private $extensions;
     private $documentTypeFactory;
 
     public function __construct(
         UtilisateurEntiteService $utilisateurEntiteService,
-        DocumentEntite $documentEntite,
+        DocumentEntiteService $documentEntiteService,
         EntiteSQL $entiteSQL,
         Extensions $extensions,
         DocumentTypeFactory $documentTypeFactory
     ) {
         $this->utilisateurEntiteService = $utilisateurEntiteService;
-        $this->documentEntite = $documentEntite;
+        $this->documentEntiteService = $documentEntiteService;
         $this->entiteSQL = $entiteSQL;
         $this->extensions = $extensions;
         $this->documentTypeFactory = $documentTypeFactory;
@@ -35,7 +36,7 @@ class DocumentCount
             $all_type = array_keys($this->documentTypeFactory->clearRestrictedFlux($this->extensions->getAllModule()));
         }
 
-        $all_count = $this->documentEntite->getCountAction($id_e, $type);
+        $all_count = $this->documentEntiteService->countByLastAction($id_e ? (int) $id_e : null, $type ?: null);
 
 
         foreach ($all_count as $info) {
@@ -73,6 +74,6 @@ class DocumentCount
 
     public function getCountByEntityFormat($id_e, $type, $req)
     {
-        return $this->documentEntite->getCountByEntityFormat($id_e, $type, $req);
+        return ['count' => $this->documentEntiteService->countByIndexFilters((int) $id_e, $type, $req)];
     }
 }
