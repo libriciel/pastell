@@ -231,7 +231,7 @@ services:
       - ${LOCAL_CACERTS_PATH:-local_cacerts}:/usr/local/share/ca-certificates:rw,noexec,nosuid,nodev
 
   libriciel-feedback:
-    image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-feedback:2.0.8@sha256:e917a05dca8f51f99061efacdb326bed502ae25a57cfadcd7b24769743d07672'
+    image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-feedback:2.1.0@sha256:ce61a78f5987ea19f50c79469bf7f1aea3215eb6254509988ca50b29bfaf248b'
     restart: unless-stopped
     read_only: true
     cap_drop:
