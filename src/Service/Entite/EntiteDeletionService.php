@@ -5,25 +5,27 @@ namespace Pastell\Service\Entite;
 use AnnuaireRoleSQL;
 use AnnuaireSQL;
 use ConnecteurEntiteSQL;
-use DocumentEntite;
 use EntiteSQL;
 use FluxEntiteHeritageSQL;
 use FluxEntiteSQL;
-use Journal;
+use Pastell\Service\Document\DocumentEntiteService;
 use Pastell\Service\Notification\NotificationService;
 use UnrecoverableException;
-use UtilisateurListe;
+use UtilisateurSQL;
+use JournalAction;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 class EntiteDeletionService
 {
     public function __construct(
         private readonly EntiteSQL $entiteSQL,
-        private readonly Journal $journal,
-        private readonly DocumentEntite $documentEntite,
+        private readonly JournalEntryService $journalEntryService,
+        private readonly DocumentEntiteService $documentEntiteService,
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
         private readonly FluxEntiteSQL $fluxEntiteSQL,
         private readonly FluxEntiteHeritageSQL $fluxEntiteHeritageSQL,
-        private readonly UtilisateurListe $utilisateurListe,
+        private readonly UtilisateurSQL $utilisateurSQL,
         private readonly AnnuaireSQL $annuaireSQL,
         private readonly NotificationService $notificationService,
         private readonly AnnuaireRoleSQL $annuaireRoleSQL,
@@ -42,11 +44,11 @@ class EntiteDeletionService
         $this->notificationService->removeAllForEntite($id_e);
         $this->annuaireRoleSQL->deleteByEntite($id_e);
         $this->entiteSQL->removeEntite($id_e);
-        $this->journal->add(
-            Journal::MODIFICATION_ENTITE,
+        $this->journalEntryService->add(
+            JournalEventType::ENTITY_MODIFICATION,
             $id_e,
-            Journal::NO_ID_D,
-            Journal::ACTION_SUPPRIME,
+            JournalEntryService::NO_ID_D,
+            JournalAction::DELETED->value,
             "Suppression de l'entité id_e=$id_e\nInformation : " . json_encode($info)
         );
     }
@@ -67,7 +69,7 @@ class EntiteDeletionService
      */
     private function canDeleteOrThrow(int $id_e): void
     {
-        if ($this->documentEntite->getNbAll($id_e)) {
+        if ($this->documentEntiteService->countDocuments($id_e)) {
             throw new UnrecoverableException(
                 "Suppression impossible : des documents sont définis sur l'entité {id_e=$id_e}"
             );
@@ -77,12 +79,12 @@ class EntiteDeletionService
                 "Suppression impossible : l'entité {id_e=$id_e} possède des entités filles"
             );
         }
-        if ($this->utilisateurListe->getNbUtilisateurWithEntiteDeBase($id_e)) {
+        if ($this->utilisateurSQL->countByBaseEntite($id_e)) {
             throw new UnrecoverableException(
                 "Suppression impossible : des utilisateurs sont définis sur l'entité {id_e=$id_e}"
             );
         }
-        if ($this->utilisateurListe->getNbUtilisateur($id_e)) {
+        if ($this->utilisateurSQL->countByEntite($id_e)) {
             throw new UnrecoverableException(
                 "Suppression impossible : des utilisateurs sont définis sur l'entité {id_e=$id_e}"
             );

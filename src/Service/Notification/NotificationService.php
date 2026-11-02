@@ -6,11 +6,15 @@ namespace Pastell\Service\Notification;
 
 use NotificationSQL;
 use NotificationSubscription;
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
+use UtilisateurRoleSQL;
 
 class NotificationService
 {
     public function __construct(
         private readonly NotificationSQL $notificationSQL,
+        private readonly UtilisateurRoleSQL $utilisateurRoleSQL,
     ) {
     }
 
@@ -87,6 +91,15 @@ class NotificationService
         return $this->notificationSQL->getMatchingSubscriptions($id_e, $type, $action);
     }
 
+    private function hasDroit(array $droits, string $type): bool
+    {
+        return \in_array(DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE), $droits, true)
+            && (
+                $type === NotificationSubscription::ALL_TYPE
+                || \in_array(DroitService::getDroitFor($type, DroitType::LECTURE), $droits, true)
+            );
+    }
+
     public function removeAllForUser(int $id_u): void
     {
         $this->notificationSQL->deleteByUser($id_u);
@@ -95,5 +108,24 @@ class NotificationService
     public function removeAllForEntite(int $id_e): void
     {
         $this->notificationSQL->deleteByEntite($id_e);
+    }
+
+    public function revokeInvalid(int $id_u): void
+    {
+        $droits = [];
+        foreach ($this->getSubscriptionsByUser($id_u) as $subscription) {
+            $id_e = $subscription['id_e'];
+            $droits[$id_e] ??= $this->utilisateurRoleSQL->getDroitsForEntite($id_u, $id_e);
+            if (!$this->hasDroit($droits[$id_e], $subscription['type'])) {
+                $this->notificationSQL->deleteByUserEntiteType($id_u, $id_e, $subscription['type']);
+            }
+        }
+    }
+
+    public function revokeInvalidForRole(string $role): void
+    {
+        foreach ($this->utilisateurRoleSQL->getSubscribedUsersByRole($role) as $id_u) {
+            $this->revokeInvalid($id_u);
+        }
     }
 }

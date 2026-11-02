@@ -106,6 +106,51 @@ class ConnecteurAPIControllerTest extends PastellTestCase
         );
     }
 
+    public static function invalidGlobalFlagProvider(): iterable
+    {
+        yield 'entity' => [1];
+        yield 'root' => [0];
+    }
+
+    /**
+     * @dataProvider invalidGlobalFlagProvider
+     */
+    public function testCreateWithInvalidGlobalFlag(int $entityId): void
+    {
+        try {
+            $this->getInternalAPI()->post(
+                "/entite/$entityId/connecteur",
+                ['libelle' => 'Purge', 'id_connecteur' => 'purge', 'global' => '2']
+            );
+            static::fail('The connector must not be created');
+        } catch (ConnecteurException $e) {
+            static::assertSame(
+                "La valeur « 2 » n'est pas valide pour un connecteur global",
+                $e->getMessage()
+            );
+        }
+        static::assertSame(
+            0,
+            (int)$this->getSQLQuery()->queryOne(
+                "SELECT count(*) FROM connecteur_entite WHERE id_connecteur = 'purge'"
+            )
+        );
+    }
+
+    public function testCreateWithExplicitGlobalFlag(): void
+    {
+        $info = $this->getInternalAPI()->post(
+            '/entite/1/connecteur',
+            ['libelle' => 'Purge', 'id_connecteur' => 'purge', 'global' => '0']
+        );
+        static::assertSame(0, $info['global']);
+        $info = $this->getInternalAPI()->post(
+            '/entite/0/connecteur',
+            ['libelle' => 'Purge', 'id_connecteur' => 'purge', 'global' => '1']
+        );
+        static::assertSame(1, $info['global']);
+    }
+
     public function testCreateNotExist()
     {
         $this->expectException(Exception::class);

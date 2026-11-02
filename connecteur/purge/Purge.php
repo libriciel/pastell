@@ -1,6 +1,8 @@
 <?php
 
 use Pastell\Service\Document\DocumentDeletionService;
+use Pastell\Service\Document\DocumentEntiteService;
+use Pastell\Service\Journal\JournalEntryService;
 
 use function Clue\StreamFilter\append;
 
@@ -19,12 +21,12 @@ class Purge extends Connecteur
 
     public function __construct(
         private readonly DocumentActionEntite $documentActionEntite,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journalEntryService,
         private readonly JobManager $jobManager,
         private readonly ActionPossible $actionPossible,
         private readonly DocumentTypeFactory $documentTypeFactory,
         private readonly DonneesFormulaireFactory $donneesFormulaireFactory,
-        private readonly DocumentEntite $documentEntite,
+        private readonly DocumentEntiteService $documentEntiteService,
         private readonly DocumentDeletionService $documentDeletionService,
         private readonly EntiteSQL $entiteSQL,
     ) {
@@ -96,19 +98,19 @@ class Purge extends Connecteur
     {
         $nb_days = (int)$this->connecteurConfig->get('nb_days');
         $doc_type = $this->connecteurConfig->get('document_type');
-        $documentList = $this->documentEntite->getDocumentLastActionOlderThanInDays(
+        $documentList = $this->documentEntiteService->getDocumentsWithLastActionOlderThan(
             $nb_days,
-            $doc_type,
-            $this->entityId
+            $doc_type ?: null,
+            $this->entityId ?: null
         );
         if ($this->includeChildren) {
             $children_documents = [];
             foreach ($this->entiteSQL->getAllChildren($this->entityId) as $child) {
                 foreach (
-                    $this->documentEntite->getDocumentLastActionOlderThanInDays(
+                    $this->documentEntiteService->getDocumentsWithLastActionOlderThan(
                         $nb_days,
-                        $doc_type,
-                        $child['id_e']
+                        $doc_type ?: null,
+                        (int) $child['id_e']
                     ) as $document
                 ) {
                     $children_documents[] = $document;
@@ -170,8 +172,8 @@ class Purge extends Connecteur
                 continue;
             }
 
-            $this->journal->add(
-                Journal::DOCUMENT_TRAITEMENT_LOT,
+            $this->journalEntryService->add(
+                JournalEventType::DOCUMENT_BATCH_PROCESSING,
                 $document_info['id_e'],
                 $document_info['id_d'],
                 $etat_cible,

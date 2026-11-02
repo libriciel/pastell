@@ -6,11 +6,11 @@ use AnnuaireGroupeSQL;
 use AnnuaireRoleSQL;
 use AnnuaireSQL;
 use ConnecteurEntiteSQL;
-use DocumentEntite;
 use DocumentSQL;
 use EntiteSQL;
 use FluxEntiteHeritageSQL;
 use FluxEntiteSQL;
+use Pastell\Service\Document\DocumentRoleService;
 use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Notification\NotificationService;
 use PastellTestCase;
@@ -40,7 +40,7 @@ class EntiteDeletionServiceTest extends PastellTestCase
 
         $entiteDeletionService = $this->getObjectInstancier()->getInstance(EntiteDeletionService::class);
         $entiteDeletionService->delete(2);
-        $journal_message = $this->getJournal()->getAll()[0]['message'];
+        $journal_message = $this->getJournalSQL()->getAll()[0]['message'];
         $expected_journal_message = file_get_contents(
             __DIR__ . '/../fixtures/entite_delete_service_journal_message.txt'
         );
@@ -90,7 +90,7 @@ class EntiteDeletionServiceTest extends PastellTestCase
     {
         $id_d = 'IDENTIFIANT-FAKE';
         $this->getObjectInstancier()->getInstance(DocumentSQL::class)->save($id_d, 'type');
-        $this->getObjectInstancier()->getInstance(DocumentEntite::class)->addRole(
+        $this->getObjectInstancier()->getInstance(DocumentRoleService::class)->addRole(
             $id_d,
             $this->entityId,
             'ROLE-FAKE'

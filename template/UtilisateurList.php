@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Utilisateur\UtilisateurListService;
+
 /**
  * @var Gabarit $this
  * @var bool $utilisateur_creation
@@ -75,7 +77,7 @@ $exportUserUrl = sprintf(
     <?php
     $this->suivantPrecedent(
         $offset,
-        UtilisateurListe::NB_UTILISATEUR_DISPLAY,
+        UtilisateurListService::NB_UTILISATEUR_DISPLAY,
         $nb_utilisateur,
         "Entite/utilisateur?id_e=$id_e&page=1&search=$search&descendance=$descendance&role_selected=$role_selected"
     ); ?>
@@ -158,7 +160,7 @@ $exportUserUrl = sprintf(
     <?php
     $this->suivantPrecedent(
         $offset,
-        UtilisateurListe::NB_UTILISATEUR_DISPLAY,
+        UtilisateurListService::NB_UTILISATEUR_DISPLAY,
         $nb_utilisateur,
         "Entite/utilisateur?id_e=$id_e&page=1&search=$search&descendance=$descendance&role_selected=$role_selected"
     ); ?>

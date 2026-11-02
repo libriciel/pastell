@@ -23,7 +23,7 @@ class TypeDossierDeletionServiceTest extends PastellTestCase
         $typeDossierDeletionService->delete($id_t);
         $this->assertFalse($typeDossierSQL->exists($id_t));
 
-        $journal_message = $this->getJournal()->getAll()[0]['message'];
+        $journal_message = $this->getJournalConsultationService()->getList()[0]['message'];
 
         $journal_export_json = '{' . explode('{', $journal_message, 2)[1];
 

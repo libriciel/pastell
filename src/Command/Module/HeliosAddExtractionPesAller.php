@@ -3,11 +3,11 @@
 namespace Pastell\Command\Module;
 
 use ActionExecutorFactory;
-use DocumentEntite;
 use DocumentSQL;
 use DonneesFormulaireFactory;
 use Exception;
 use Pastell\Command\BaseCommand;
+use Pastell\Service\Document\DocumentEntiteService;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -25,10 +25,7 @@ class HeliosAddExtractionPesAller extends BaseCommand
      */
     private $documentSQL;
 
-    /**
-     * @var DocumentEntite
-     */
-    private $documentEntite;
+    private DocumentEntiteService $documentEntiteService;
 
     /**
      * @var DonneesFormulaireFactory
@@ -42,12 +39,12 @@ class HeliosAddExtractionPesAller extends BaseCommand
 
     public function __construct(
         DocumentSQL $documentSQL,
-        DocumentEntite $documentEntite,
+        DocumentEntiteService $documentEntiteService,
         DonneesFormulaireFactory $donneesFormulaireFactory,
         ActionExecutorFactory $actionExecutorFactory
     ) {
         $this->documentSQL = $documentSQL;
-        $this->documentEntite = $documentEntite;
+        $this->documentEntiteService = $documentEntiteService;
         $this->donneesFormulaireFactory = $donneesFormulaireFactory;
         $this->actionExecutorFactory = $actionExecutorFactory;
         parent::__construct();
@@ -131,7 +128,7 @@ class HeliosAddExtractionPesAller extends BaseCommand
 
         $errorNumber = 0;
         foreach ($arrayDocuments as $id_d) {
-            $id_e = $this->documentEntite->getEntite($id_d)[0]['id_e'];
+            $id_e = $this->documentEntiteService->getEntiteId($id_d);
             $this->getIO()->writeln(
                 sprintf("Extract fichier_pes for id_d=%s&id_e=%s", $id_d, $id_e)
             );

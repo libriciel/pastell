@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Journal\JournalEntryService;
+
 class UndeliveredMail extends Connecteur
 {
     public const PASTELL_RETURN_INFO_HEADER = "X-PASTELL-DOCUMENT";
@@ -11,12 +13,12 @@ class UndeliveredMail extends Connecteur
     /** @var DocumentEmail  */
     private $documentEmail;
 
-    private $journal;
+    private JournalEntryService $journalEntryService;
 
-    public function __construct(DocumentEmail $documentEmail, Journal $journal)
+    public function __construct(DocumentEmail $documentEmail, JournalEntryService $journalEntryService)
     {
         $this->documentEmail = $documentEmail;
-        $this->journal = $journal;
+        $this->journalEntryService = $journalEntryService;
     }
 
     public function setConnecteurConfig(DonneesFormulaire $donneesFormulaire)
@@ -69,8 +71,8 @@ class UndeliveredMail extends Connecteur
                 if ($process) {
                     $this->documentEmail->addError($document_email_info['id_de'], $body);
                     $id_e = $this->documentEmail->getId_e($document_email_info['id_d']);
-                    $this->journal->add(
-                        Journal::MAIL_SECURISE,
+                    $this->journalEntryService->add(
+                        JournalEventType::SECURE_MAIL,
                         $id_e,
                         $document_email_info['id_d'],
                         'error-email',

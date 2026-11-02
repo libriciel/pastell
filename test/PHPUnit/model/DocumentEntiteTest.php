@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated 4.1.25 Use DocumentEntiteSQLTest instead (tests DocumentEntiteSQL).
+ */
 class DocumentEntiteTest extends PastellTestCase
 {
     private $id_d;

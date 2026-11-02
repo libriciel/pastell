@@ -4,9 +4,9 @@ namespace Pastell\Tests\Command\Module;
 
 use ActionExecutorFactory;
 use DocumentSQL;
-use DocumentEntite;
 use DonneesFormulaireFactory;
 use Pastell\Command\Module\HeliosAddExtractionPesAller;
+use Pastell\Service\Document\DocumentEntiteService;
 use PastellTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -26,7 +26,7 @@ class HeliosAddExtractionPesAllerTest extends PastellTestCase
 
         $command = new HeliosAddExtractionPesAller(
             $this->getObjectInstancier()->getInstance(DocumentSQL::class),
-            $this->getObjectInstancier()->getInstance(DocumentEntite::class),
+            $this->getObjectInstancier()->getInstance(DocumentEntiteService::class),
             $this->getObjectInstancier()->getInstance(DonneesFormulaireFactory::class),
             $this->getObjectInstancier()->getInstance(ActionExecutorFactory::class)
         );

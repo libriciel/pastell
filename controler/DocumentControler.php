@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\File\Chunk\ChunkUploader;
+use Pastell\Service\Document\DocumentRoleService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
@@ -113,7 +114,7 @@ class DocumentControler extends PastellControler
             $this->redirectToList($id_e, $info['type']);
         }
 
-        $my_role = $this->getDocumentEntite()->getRole($id_e, $id_d);
+        $my_role = $this->getInstance(DocumentRoleService::class)->getRole((int) $id_e, (string) $id_d);
         if (! $my_role) {
             $this->redirectToList($id_e, $info['type']);
         }
@@ -175,7 +176,7 @@ class DocumentControler extends PastellControler
             $this->redirect("/Document/ar?id_e=$id_e&id_d=$id_d");
         }
 
-        $this->getJournal()->addConsultation($id_e, $id_d, $this->getId_u());
+        $this->getJournalEntryService()->addConsultation($id_e, $id_d, $this->getId_u());
 
         $this->setViewParameter('info', $info_document);
         $this->setViewParameter('id_e', $id_e);
@@ -191,8 +192,7 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('actionPossible', $this->getActionPossible());
         $action = $documentType->getAction();
         $this->setViewParameter('theAction', $action);
-        $this->setViewParameter('documentEntite', $this->getDocumentEntite());
-        $this->setViewParameter('my_role', $this->getDocumentEntite()->getRole($id_e, $id_d));
+        $this->setViewParameter('my_role', $this->getInstance(DocumentRoleService::class)->getRole((int) $id_e, (string) $id_d));
         [$infoDocumentEmail, $reponse_column] = $this->getDocumentEmailForDisplay($id_d);
         $this->setViewParameter('infoDocumentEmail', $infoDocumentEmail);
         $this->setViewParameter('reponse_column', $reponse_column);
@@ -269,8 +269,8 @@ class DocumentControler extends PastellControler
                 ->getInstance(DocumentEmailReponseSQL::class)
                 ->setLu($id_d_reponse);
 
-            $this->getJournal()->add(
-                Journal::MAIL_SECURISE,
+            $this->getJournalEntryService()->add(
+                JournalEventType::SECURE_MAIL,
                 $id_e,
                 $id_d,
                 "Lecture d'une réponse",
@@ -363,8 +363,7 @@ class DocumentControler extends PastellControler
         $this->setViewParameter('donneesFormulaire', $donneesFormulaire);
         $this->setViewParameter('ActionPossible', $this->getActionPossible());
         $this->setViewParameter('theAction', $documentType->getAction());
-        $this->setViewParameter('documentEntite', $this->getDocumentEntite());
-        $this->setViewParameter('my_role', $this->getDocumentEntite()->getRole($id_e, $id_d));
+        $this->setViewParameter('my_role', $this->getInstance(DocumentRoleService::class)->getRole((int) $id_e, (string) $id_d));
         $this->setViewParameter('documentActionEntite', $this->getDocumentActionEntite());
         $this->setViewParameter('action_url', 'Document/doEdition');
         $this->setViewParameter('recuperation_fichier_url', "Document/recuperationFichier?id_d=$id_d&id_e=$id_e");
@@ -1214,7 +1213,7 @@ class DocumentControler extends PastellControler
 
         $this->checkDroitFor($id_e, DroitService::DROIT_SYSTEM, DroitType::EDITION, "/Document/detail?id_d=$id_d&id_e=$id_e");
 
-        $role = $this->getDocumentEntite()->getRole($id_e, $id_d);
+        $role = $this->getInstance(DocumentRoleService::class)->getRole((int) $id_e, (string) $id_d);
         if (!$role) {
             $this->setLastError("Le document $id_d n'appartient pas à l'entité $id_e");
             $this->redirect();
@@ -1281,7 +1280,7 @@ class DocumentControler extends PastellControler
 
         $this->checkDroitFor($id_e, $type, DroitType::EDITION, "/Document/detail?id_d=$id_d&id_e=$id_e&page=$page");
 
-        if (!$this->getDocumentEntite()->getRole($id_e, $id_d) || $action === CreationAction::ACTION_ID) {
+        if (!$this->getInstance(DocumentRoleService::class)->getRole((int) $id_e, (string) $id_d) || $action === CreationAction::ACTION_ID) {
             $this->setLastError("L'action « $action » n'est pas permise sur ce dossier");
             $this->redirect("/Document/list?id_e=$id_e");
         }
@@ -1610,8 +1609,8 @@ class DocumentControler extends PastellControler
         $infoUtilisateur = $utilisateur->getInfo($this->getId_u());
         $nom = $infoUtilisateur['prenom'] . ' ' . $infoUtilisateur['nom'];
 
-        $this->getJournal()->add(
-            Journal::DOCUMENT_CONSULTATION,
+        $this->getJournalEntryService()->add(
+            JournalEventType::DOCUMENT_CONSULTATION,
             $id_e,
             $id_d,
             'Consulté',

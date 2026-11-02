@@ -11,7 +11,6 @@ class UtilisateurAPIController extends BaseAPIController
 {
     public function __construct(
         private readonly UtilisateurSQL $utilisateur,
-        private readonly UtilisateurListe $utilisateurListe,
         private readonly UserCreationService $userCreationService,
         private readonly UserUpdateService $userUpdateService,
         private readonly UtilisateurDeletionService $utilisateurDeletionService,
@@ -51,7 +50,7 @@ class UtilisateurAPIController extends BaseAPIController
 
         $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::LECTURE);
 
-        $listUtilisateur = $this->utilisateurListe->getAllUtilisateurSimple($id_e);
+        $listUtilisateur = $this->utilisateur->getAllByBaseEntite((int) $id_e);
         $result = [];
         if ($listUtilisateur) {
             // Création d'un nouveau tableau pour ne retourner que les valeurs retenues

@@ -8,6 +8,7 @@ use ActionExecutorFactory;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Pastell\Client\S2low\S2lowClientFactory;
+use Pastell\Service\Document\DocumentEntiteService;
 use Psr\Http\Client\ClientInterface;
 
 class RecupPesS2lowConnectorTest extends \PastellTestCase
@@ -65,10 +66,10 @@ class RecupPesS2lowConnectorTest extends \PastellTestCase
     public function testFetchPesSkipsDuplicate(): void
     {
         $connectorId = $this->getConnectorId();
-        $documentEntite = $this->getObjectInstancier()->getInstance(\DocumentEntite::class);
+        $documentEntiteService = $this->getObjectInstancier()->getInstance(DocumentEntiteService::class);
         $this->triggerActionOnConnector($connectorId, 'fetch_once');
         $this->triggerActionOnConnector($connectorId, 'fetch_once');
-        self::assertSame(1, $documentEntite->getNbAll(self::ID_E_COL, 'ls-recup-pes-s2low'));
+        self::assertSame(1, $documentEntiteService->countDocuments(self::ID_E_COL, 'ls-recup-pes-s2low'));
         $lastMessage = $this->getObjectInstancier()->getInstance(ActionExecutorFactory::class)->getLastMessage();
         self::assertStringContainsString('déjà importée, ignorée', $lastMessage);
     }

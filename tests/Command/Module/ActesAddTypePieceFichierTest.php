@@ -3,9 +3,9 @@
 namespace Pastell\Tests\Command\Module;
 
 use DocumentSQL;
-use DocumentEntite;
 use DonneesFormulaireFactory;
 use Pastell\Command\Module\ActesAddTypePieceFichier;
+use Pastell\Service\Document\DocumentEntiteService;
 use PastellTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -17,7 +17,7 @@ class ActesAddTypePieceFichierTest extends PastellTestCase
 
         $command = new ActesAddTypePieceFichier(
             $this->getObjectInstancier()->getInstance(DocumentSQL::class),
-            $this->getObjectInstancier()->getInstance(DocumentEntite::class),
+            $this->getObjectInstancier()->getInstance(DocumentEntiteService::class),
             $this->getObjectInstancier()->getInstance(DonneesFormulaireFactory::class)
         );
         $commandTester = new CommandTester($command);

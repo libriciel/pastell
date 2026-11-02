@@ -6,6 +6,25 @@
 
 - Passage à Symfony 7.4 #2606
 
+### Corrections
+
+- Les notifications sont supprimées au retrait d'un rôle ou à la modification de ses droits lorsque l'utilisateur n'a
+  plus les droits nécessaires #2575
+
+### Dépréciations
+
+- Classe `Journal` et méthodes `getJournal()` dépréciées au profit de `JournalSQL`, `JournalConsultationService`,
+  `JournalExportService`, `JournalEntryService` et `JournalEventType` #2595
+- Classes `EntiteListe` et `UtilisateurListe` dépréciées au profit de `EntiteSQL`, `UtilisateurSQL` et du service
+  `UtilisateurListService` #2601
+- Classe `DocumentEntite` dépréciée au profit de `DocumentEntiteSQL` et des services `DocumentRoleService` et
+  `DocumentEntiteService` #2611
+
+### Sécurité
+
+- Faille de contrôle d'accès sur la création de connecteur
+  (CVSS 7.2 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H) #2612
+
 ## [5.0.11] - 2026-10-22
 
 ### Corrections
@@ -470,6 +489,27 @@
   Seules les factures importées de Chorus Pro seront traitées. #1856
 - Connecteur iparapheur soap #2268
 - Connecteur `chorus-par-csv` ChorusPro par CSV #2356
+
+## [4.1.25] - 2026-11-02
+
+### Corrections
+
+- Les notifications sont supprimées au retrait d'un rôle ou à la modification de ses droits lorsque l'utilisateur n'a
+  plus les droits nécessaires #2575
+
+### Dépréciations
+
+- Classe `Journal` et méthodes `getJournal()` dépréciées au profit de `JournalSQL`, `JournalConsultationService`,
+  `JournalExportService`, `JournalEntryService` et `JournalEventType` #2595
+- Classes `EntiteListe` et `UtilisateurListe` dépréciées au profit de `EntiteSQL`, `UtilisateurSQL` et du service
+  `UtilisateurListService` #2601
+- Classe `DocumentEntite` dépréciée au profit de `DocumentEntiteSQL` et des services `DocumentRoleService` et
+  `DocumentEntiteService` #2611
+
+### Sécurité
+
+- Faille de contrôle d'accès sur la création de connecteur
+  (CVSS 7.2 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H) #2612
 
 ## [4.1.24] - 2026-10-22
 

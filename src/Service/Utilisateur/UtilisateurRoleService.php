@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Service\Utilisateur;
 
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Notification\NotificationService;
 use UtilisateurRoleCache;
 use UtilisateurRoleSQL;
 
@@ -13,6 +14,7 @@ final class UtilisateurRoleService
     public function __construct(
         private readonly UtilisateurRoleSQL $utilisateurRoleSQL,
         private readonly UtilisateurRoleCache $utilisateurRoleCache,
+        private readonly NotificationService $notificationService,
     ) {
     }
 
@@ -58,6 +60,7 @@ final class UtilisateurRoleService
             $this->utilisateurRoleSQL->deleteRole($id_u, $role, $id_e);
         }
         $this->utilisateurRoleCache->invalidate($id_u, $id_e);
+        $this->notificationService->revokeInvalid($id_u);
     }
 
     public function removeAllRoles(int $id_u): void
@@ -66,6 +69,7 @@ final class UtilisateurRoleService
         // Incomplete: only id_e=0 and 'all' keys are invalidated,
         // other entities stay stale until TTL (remains from deprecated RoleUtilisateur class #420)
         $this->utilisateurRoleCache->invalidate($id_u, 0);
+        $this->notificationService->removeAllForUser($id_u);
     }
 
     public function removeAllRolesForEntite(int $id_u, int $id_e): void
@@ -73,5 +77,16 @@ final class UtilisateurRoleService
         $this->utilisateurRoleSQL->deleteRolesForEntite($id_u, $id_e);
         $this->utilisateurRoleSQL->insertRole($id_u, DroitService::AUCUN_DROIT, $id_e);
         $this->utilisateurRoleCache->invalidate($id_u, $id_e);
+        $this->notificationService->revokeInvalid($id_u);
+    }
+
+    public function replaceRolesForEntite(int $id_u, int $id_e, array $roles): void
+    {
+        $this->utilisateurRoleSQL->deleteRolesForEntite($id_u, $id_e);
+        foreach (array_unique($roles) as $role) {
+            $this->utilisateurRoleSQL->insertRole($id_u, $role, $id_e);
+        }
+        $this->utilisateurRoleCache->invalidate($id_u, $id_e);
+        $this->notificationService->revokeInvalid($id_u);
     }
 }

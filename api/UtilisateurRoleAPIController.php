@@ -109,6 +109,21 @@ class UtilisateurRoleAPIController extends BaseAPIController
      */
     private function addRoleUtilisateur($id_u, $role, $id_e)
     {
+        $this->checkCanAddRole($id_u, $role, $id_e);
+        if (!$this->utilisateurRoleService->hasRole((int) $id_u, $role, (int) $id_e)) {
+            $this->utilisateurRoleService->addRole((int) $id_u, $role, (int) $id_e);
+        }
+
+        $result['result'] = self::RESULT_OK;
+        return $result;
+    }
+
+    /**
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
+    private function checkCanAddRole($id_u, $role, $id_e): void
+    {
         $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
         $this->verifExists($id_u);
         $this->verifRoleExists($role);
@@ -118,13 +133,6 @@ class UtilisateurRoleAPIController extends BaseAPIController
         ) {
             throw new ForbiddenException("Rôle non délégable par l'utilisateur courant : {role=$role}");
         }
-
-        if (!$this->utilisateurRoleService->hasRole((int) $id_u, $role, (int) $id_e)) {
-            $this->utilisateurRoleService->addRole((int) $id_u, $role, (int) $id_e);
-        }
-
-        $result['result'] = self::RESULT_OK;
-        return $result;
     }
 
     /**
@@ -190,9 +198,14 @@ class UtilisateurRoleAPIController extends BaseAPIController
             return [];
         }
 
-        $deleteRoles = $this->getFromRequest('deleteRoles', false);
-        if ($deleteRoles) {
-            $this->deleteRoleUtilisateur($id_u, self::ALL_ROLES, $id_e);
+        if ($this->getFromRequest('deleteRoles', false)) {
+            $roleList = is_array($roles) ? $roles : [$roles];
+            foreach ($roleList as $role) {
+                $this->checkCanAddRole($id_u, $role, $id_e);
+            }
+            $this->utilisateurRoleService->replaceRolesForEntite((int) $id_u, (int) $id_e, $roleList);
+            $ok = ['result' => self::RESULT_OK];
+            return is_array($roles) ? array_fill(0, count($roles), $ok) : $ok;
         }
 
         if (is_array($roles)) {

@@ -4,6 +4,9 @@ use Aws\S3\Exception\S3Exception;
 use Monolog\Logger;
 use Pastell\Storage\StorageInterface;
 
+/**
+ * @deprecated 4.1.25 Use JournalSQL, JournalEntryService, JournalConsultationService and JournalExportService instead
+ */
 class Journal extends SQL
 {
     public const DOCUMENT_ACTION = 1;

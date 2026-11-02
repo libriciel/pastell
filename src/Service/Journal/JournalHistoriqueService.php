@@ -2,20 +2,20 @@
 
 namespace Pastell\Service\Journal;
 
-use Journal;
 use JournalHistoriqueSQL;
+use JournalEventType;
 
 class JournalHistoriqueService
 {
     private $journalHistoriqueSQL;
-    private $journal;
+    private JournalEntryService $journalEntryService;
 
     public function __construct(
         JournalHistoriqueSQL $journalHistoriqueSQL,
-        Journal $journal
+        JournalEntryService $journalEntryService
     ) {
         $this->journalHistoriqueSQL = $journalHistoriqueSQL;
-        $this->journal = $journal;
+        $this->journalEntryService = $journalEntryService;
     }
 
     public function truncate()
@@ -35,8 +35,8 @@ class JournalHistoriqueService
             $max_date
         );
 
-        $this->journal->addSQL(
-            Journal::JOURNAL,
+        $this->journalEntryService->addSQL(
+            JournalEventType::JOURNAL,
             0,
             0,
             '',

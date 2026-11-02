@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Journal\JournalEntryService;
+
 class CppModifStatut extends ActionExecutor
 {
     private $statut_consomme_liste = '';
@@ -147,9 +149,9 @@ class CppModifStatut extends ActionExecutor
                     $result_synchro = $synchronisationFacture->getSynchroDocumentFacture($this->getDonneesFormulaire(), true);
 
                     $this->objectInstancier
-                        ->getInstance(Journal::class)
+                        ->getInstance(JournalEntryService::class)
                         ->addSQL(
-                            Journal::DOCUMENT_ACTION,
+                            JournalEventType::DOCUMENT_ACTION,
                             $this->id_e,
                             $this->id_u,
                             $this->id_d,
