@@ -248,7 +248,7 @@ services:
       VERSION: canary
 
   libriciel-stack-update:
-    image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-stack-update:1.1.3@sha256:65b093c92172cd971ba294707851202b5ab021b13bb5d729bf63e530e3304e59'
+    image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-stack-update:1.1.4@sha256:3c508d85f25ae9c70e0cd71ee2345219a50b05b272f46ea0d2dfb139c0b0a46c'
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
