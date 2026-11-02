@@ -71,7 +71,7 @@ services:
       - "1080:1080"
 
   node:
-    image: hubdocker.libriciel.fr/node:26.10-alpine3.24
+    image: hubdocker.libriciel.fr/node:26.13-alpine3.24
     working_dir: /app
     user: "node"
     volumes:

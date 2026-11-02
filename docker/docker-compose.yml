@@ -104,7 +104,7 @@ services:
             - ${MARIADB_DATADIR:-mariadb_datadir}:/var/lib/mysql/
 
     redis:
-        image: 'hubdocker.libriciel.fr/redis:7.2.16'
+        image: 'hubdocker.libriciel.fr/redis:7.2.17'
         restart: unless-stopped
 
     seda-generator:
@@ -125,7 +125,7 @@ services:
             - /var/lib/nginx/tmp:mode=770,uid=10001,gid=10001,rw,noexec,nosuid,nodev
 
     flow:
-        image: 'registry.libriciel.fr:443/public/libriciel/outils-documentaires/flow:1.7.1'
+        image: 'registry.libriciel.fr:443/public/libriciel/outils-documentaires/flow:1.7.2'
         restart: unless-stopped
 
     cloudooo:
@@ -133,7 +133,7 @@ services:
         restart: unless-stopped
 
     pes-viewer:
-        image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.8'
+        image: 'registry.libriciel.fr/public/signature/pes-viewer:4.0.11'
         restart: unless-stopped
         deploy:
             resources:
@@ -149,7 +149,7 @@ services:
             - ${LOCAL_CACERTS_PATH:-local_cacerts}:/usr/local/share/ca-certificates
 
     libriciel-feedback:
-        image: 'registry.libriciel.fr:443/public/libriciel/deploiement/libriciel-feedback:2.0.8'
+        image: 'registry.libriciel.fr:443/public/libriciel/deploiement/libriciel-feedback:2.1.0'
         restart: unless-stopped
         user: "10001:10001"
         read_only: true
@@ -162,7 +162,7 @@ services:
             VERSION: canary
 
     libriciel-stack-update:
-        image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-stack-update:1.1.3'
+        image: 'registry.libriciel.fr/public/libriciel/deploiement/libriciel-stack-update:1.1.4'
         restart: unless-stopped
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock:ro

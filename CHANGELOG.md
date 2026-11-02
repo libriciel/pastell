@@ -4,12 +4,15 @@
 
 ### Corrections
 
-- Les notifications sont supprimées au retrait d'un rôle ou à la modification de ses droits lorsque l'utilisateur n'a plus les droits nécessaires #2575
+- Les notifications sont supprimées au retrait d'un rôle ou à la modification de ses droits lorsque l'utilisateur n'a
+  plus les droits nécessaires #2575
 
 ### Dépréciations
 
-- Classe `Journal` et méthodes `getJournal()` dépréciées au profit de `JournalSQL`, `JournalConsultationService`, `JournalExportService`, `JournalEntryService` et `JournalEventType` #2595
-- Classes `EntiteListe` et `UtilisateurListe` dépréciées au profit de `EntiteSQL`, `UtilisateurSQL` et du service `UtilisateurListService` #2601
+- Classe `Journal` et méthodes `getJournal()` dépréciées au profit de `JournalSQL`, `JournalConsultationService`,
+  `JournalExportService`, `JournalEntryService` et `JournalEventType` #2595
+- Classes `EntiteListe` et `UtilisateurListe` dépréciées au profit de `EntiteSQL`, `UtilisateurSQL` et du service
+  `UtilisateurListService` #2601
 - Classe `DocumentEntite` dépréciée au profit de `DocumentEntiteSQL` et des services `DocumentRoleService` et
   `DocumentEntiteService` #2611
 
