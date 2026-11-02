@@ -1,9 +1,9 @@
-FROM hubdocker.libriciel.fr/node:24.22-alpine3.24@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f AS node_modules
+FROM hubdocker.libriciel.fr/node:24.22-alpine3.24@sha256:8a32c8cf649a49915a66e81e7a609223c708d0adabf288ee3f4077d765542f85 AS node_modules
 WORKDIR /app/
 COPY package*.json ./
 RUN npm install
 
-FROM hubdocker.libriciel.fr/httpd:2.4.69-alpine3.24@sha256:435f992d56166d3c3bd16902ca3c4c7a6629a031731a3f95220535a88c8fdb69
+FROM hubdocker.libriciel.fr/httpd:2.4.69-alpine3.24@sha256:070da7661f0be8a05430b2c125c0cde9e53176b4048c813024021969a0e3893c
 
 RUN apk update && apk upgrade --no-cache && \
     apk add --no-cache \

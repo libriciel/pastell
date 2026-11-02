@@ -43,7 +43,7 @@ services:
       - "${DATABASE_PORT:-8306}:3306"
 
   db_test:
-    image: 'hubdocker.libriciel.fr/mariadb:11.4.13-noble@sha256:250e1609e93c0e6aecf64bfbab2d84d5e89d2481540fe77447ff6c855c3b1873'
+    image: hubdocker.libriciel.fr/mariadb:11.4.13-noble@sha256:d1891ede5a559f1086f55053bb8cc1569b0298338c4d72d71725a7f74f6ba620
     command:
       - "--character-set-server=utf8mb4"
       - "--collation-server=utf8mb4_unicode_ci"
@@ -66,7 +66,7 @@ services:
     command: ${SFTP_USER:-sftp}:${SFTP_PASSWORD:-sftp}:${UID:-10001}
 
   mailpit:
-    image: hubdocker.libriciel.fr/axllent/mailpit:v1.31
+    image: hubdocker.libriciel.fr/axllent/mailpit:v1.33
     ports:
       - "${MAILPIT_PORT:-8025}:8025"
 
