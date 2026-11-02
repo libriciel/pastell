@@ -33,7 +33,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Throwable;
 use UnrecoverableException;
-use Journal;
 use JournalEventType;
 use Pastell\Service\Journal\JournalEntryService;
 

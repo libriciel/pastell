@@ -503,8 +503,7 @@ class ConnexionControler extends PastellControler
 
         $login = (string) $recuperateur->get('login');
 
-        $utilisateurListe = $this->getObjectInstancier()->getInstance(UtilisateurListe::class);
-        $id_u = $utilisateurListe->getUtilisateurByLogin($login);
+        $id_u = $this->getUtilisateur()->getIdFromLogin($login);
 
         if (!$id_u) {
             $this->setLastError("Aucun compte n'a été trouvé avec ces informations");

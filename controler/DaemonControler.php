@@ -6,6 +6,7 @@ use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Module\ModuleListService;
+use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\ViewModel\DeleteConfirmation;
 use Symfony\Component\Process\Process;
 
@@ -743,7 +744,7 @@ class DaemonControler extends PastellControler
     public function createAction(): void
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
-        $tree = $this->getRoleUtilisateur()
+        $tree = $this->getInstance(UtilisateurEntiteService::class)
             ->getArbreFilleWithRacine($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
 
         $this->setViewParameter(
