@@ -45,7 +45,7 @@ class JournalManager
 
     private function purge(): void
     {
-        $date = date('Y-m-d H:i:s', strtotime("-$this->journal_max_age_in_months months"));
+        $date = date('Y-m-d H:i:s', strtotime("-$this->journal_max_age_in_days days"));
         do {
             $id_j_list = $this->journalSQL->getIdListOlderThan($date);
             foreach ($id_j_list as $id_j) {
