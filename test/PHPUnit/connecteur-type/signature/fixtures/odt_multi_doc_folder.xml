@@ -35,7 +35,7 @@
             <significantPropertiesType>i_Parapheur_reserved_mainDocument</significantPropertiesType>
             <significantPropertiesValue>true</significantPropertiesValue>
         </significantProperties>
-        <originalName>annexe-1.pdf</originalName>
+        <originalName>multidoc-1.pdf</originalName>
     </object>
     <object xsi:type="file">
         <objectIdentifier>
@@ -46,7 +46,7 @@
             <significantPropertiesType>i_Parapheur_reserved_mainDocument</significantPropertiesType>
             <significantPropertiesValue>true</significantPropertiesValue>
         </significantProperties>
-        <originalName>annexe-2.pdf</originalName>
+        <originalName>multidoc-2.pdf</originalName>
     </object>
     <object xsi:type="file">
         <objectIdentifier>
@@ -57,7 +57,18 @@
             <significantPropertiesType>i_Parapheur_reserved_mainDocument</significantPropertiesType>
             <significantPropertiesValue>true</significantPropertiesValue>
         </significantProperties>
-        <originalName>annexe-3.pdf</originalName>
+        <originalName>multidoc-3.pdf</originalName>
+    </object>
+    <object xsi:type="file">
+        <objectIdentifier>
+            <objectIdentifierType>documentId</objectIdentifierType>
+            <objectIdentifierValue>doc-id-5</objectIdentifierValue>
+        </objectIdentifier>
+        <significantProperties>
+            <significantPropertiesType>i_Parapheur_reserved_mainDocument</significantPropertiesType>
+            <significantPropertiesValue>false</significantPropertiesValue>
+        </significantProperties>
+        <originalName>annexe-1.odt</originalName>
     </object>
     <event>
         <eventIdentifier>

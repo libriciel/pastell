@@ -72,6 +72,21 @@
         "content_type": ""
       },
       {
+        "element_id": "autre_document_a_signer",
+        "name": "Autre(s) document(s) sign\u00e9(s)",
+        "type": "multi_file",
+        "commentaire": "",
+        "requis": "",
+        "champs_affiches": "",
+        "champs_recherche_avancee": "",
+        "titre": "",
+        "select_value": "",
+        "preg_match": "",
+        "default_value": "",
+        "preg_match_error": "",
+        "content_type": ""
+      },
+      {
         "element_id": "annexe",
         "name": "Annexe(s)",
         "type": "multi_file",

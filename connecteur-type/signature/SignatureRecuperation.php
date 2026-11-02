@@ -30,6 +30,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         $document_orignal_element = $this->getMappingValue('document_original');
         $bordereau_element = $this->getMappingValue('bordereau');
         $annexe_element = $this->getMappingValue('autre_document_attache');
+        $autre_document_a_signer_element = $this->getMappingValue('autre_document_a_signer');
         $multi_document_original_element = $this->getMappingValue('multi_document_original');
         $iparapheur_annexe_sortie_element = $this->getMappingValue('iparapheur_annexe_sortie');
         $iparapheur_metadata_sortie_element = $this->getMappingValue('iparapheur_metadata_sortie');
@@ -95,7 +96,8 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                     $document_element,
                     $document_orignal_element,
                     $multi_document_original_element,
-                    $annexe_element
+                    $annexe_element,
+                    $autre_document_a_signer_element
                 );
             }
             return $return;
@@ -173,7 +175,8 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         $document_element,
         $document_orignal_element,
         $multi_document_original_element,
-        $annexe_element
+        $annexe_element,
+        $autre_document_a_signer_element
     ): bool {
 
         /** @var SignatureConnecteur $signature */
@@ -211,7 +214,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                     $signature->getAllDocumentSigne($info),
                     $multi_document_original_element,
                     $document_element,
-                    $annexe_element
+                    $signature->supportsMultiDocument() ? $autre_document_a_signer_element : $annexe_element
                 );
             } else {
                 $this->addMainSignedFile($signature->getSignedFile($info), $document_element);
@@ -319,22 +322,22 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         array $allSignedFiles,
         string $multi_document_original_element,
         string $document_element,
-        string $annexe_element
+        string $multi_document_element
     ): void {
         $donneesFormulaire = $this->getDonneesFormulaire();
-        // Copie des $annexe_element dans $multi_document_original_element
-        if ($donneesFormulaire->get($annexe_element)) {
-            foreach ($donneesFormulaire->get($annexe_element) as $num => $fileName) {
-                $annexe_original_name = $donneesFormulaire->getFileName($annexe_element, $num);
-                $annexe_original_data = $donneesFormulaire->getFileContent($annexe_element, $num);
-                $filename = pathinfo($annexe_original_name, PATHINFO_FILENAME);
-                $extension = pathinfo($annexe_original_name, PATHINFO_EXTENSION);
+        // Copie des $multi_document_element dans $multi_document_original_element
+        if ($donneesFormulaire->get($multi_document_element)) {
+            foreach ($donneesFormulaire->get($multi_document_element) as $num => $fileName) {
+                $multi_document_original_name = $donneesFormulaire->getFileName($multi_document_element, $num);
+                $multi_document_original_data = $donneesFormulaire->getFileContent($multi_document_element, $num);
+                $filename = pathinfo($multi_document_original_name, PATHINFO_FILENAME);
+                $extension = pathinfo($multi_document_original_name, PATHINFO_EXTENSION);
                 $filename_orig = sprintf('%s_orig.%s', $filename, $extension);
                 $filename_orig = $this->getComputedFileName($filename_orig);
                 $donneesFormulaire->addFileFromData(
                     $multi_document_original_element,
                     $filename_orig,
-                    $annexe_original_data,
+                    $multi_document_original_data,
                     $num
                 );
             }
@@ -350,7 +353,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 continue;
             }
             $donneesFormulaire->addFileFromData(
-                $annexe_element,
+                $multi_document_element,
                 $file->filename,
                 $file->content,
                 $i

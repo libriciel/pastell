@@ -32,6 +32,7 @@ class SignatureEnvoie extends ConnecteurTypeActionExecutor
         $has_date_limite = $this->getMappingValue('iparapheur_has_date_limite');
         $iparapheur_date_limite = $this->getMappingValue('iparapheur_date_limite');
         $annexe_element = $this->getMappingValue('autre_document_attache');
+        $autre_document_a_signer_element = $this->getMappingValue('autre_document_a_signer');
         $primo_signature_detachee = $this->getMappingValue('primo_signature_detachee');
         $json_metadata = $this->getMappingValue('json_metadata');
         $iparapheur_dossier_id = $this->getMappingValue('iparapheur_dossier_id');
@@ -43,44 +44,32 @@ class SignatureEnvoie extends ConnecteurTypeActionExecutor
         $fileToSign->sousType = $donneesFormulaire->get($iparapheur_sous_type_element);
         $fileToSign->circuit = $donneesFormulaire->get($fast_parapheur_circuit);
 
-        $fileToSign->circuit_configuration = new Fichier();
-        if ($donneesFormulaire->get($fast_parapheur_circuit_configuration)) {
-            $fileToSign->circuit_configuration->filename =
-                $donneesFormulaire->getFileName($fast_parapheur_circuit_configuration);
-            $fileToSign->circuit_configuration->filepath =
-                $donneesFormulaire->getFilePath($fast_parapheur_circuit_configuration);
-            $fileToSign->circuit_configuration->content =
-                $donneesFormulaire->getFileContent($fast_parapheur_circuit_configuration);
-            $fileToSign->circuit_configuration->contentType =
-                $donneesFormulaire->getContentType($fast_parapheur_circuit_configuration);
-        }
+        $fileToSign->circuit_configuration = $donneesFormulaire->get($fast_parapheur_circuit_configuration)
+            ? $this->createFichier($donneesFormulaire, $fast_parapheur_circuit_configuration)
+            : new Fichier();
         $fileToSign->emailRecipients = $donneesFormulaire->get($fastParapheurEmailRecipients);
         $fileToSign->emailCc = $donneesFormulaire->get($fastParapheurEmailCc);
         $fileToSign->agents = $donneesFormulaire->get($fastParapheurAgents);
 
-        $fileToSign->document = new Fichier();
-        $fileToSign->document->filename = $donneesFormulaire->getFileName($document_element);
-        $fileToSign->document->filepath = $donneesFormulaire->getFilePath($document_element);
-        $fileToSign->document->content = $donneesFormulaire->getFileContent($document_element);
-        $fileToSign->document->contentType = $donneesFormulaire->getContentType($document_element);
+        $fileToSign->document = $this->createFichier($donneesFormulaire, $document_element);
 
-        $fileToSign->visualPdf = new Fichier();
-        if ($donneesFormulaire->get($visuel_pdf_element)) {
-            $fileToSign->visualPdf->filename = $donneesFormulaire->getFileName($visuel_pdf_element);
-            $fileToSign->visualPdf->filepath = $donneesFormulaire->getFilePath($visuel_pdf_element);
-            $fileToSign->visualPdf->content = $donneesFormulaire->getFileContent($visuel_pdf_element);
-            $fileToSign->visualPdf->contentType = $donneesFormulaire->getContentType($visuel_pdf_element);
-        }
+        $fileToSign->visualPdf = $donneesFormulaire->get($visuel_pdf_element)
+            ? $this->createFichier($donneesFormulaire, $visuel_pdf_element)
+            : new Fichier();
 
         if ($donneesFormulaire->get($annexe_element)) {
-            foreach ($donneesFormulaire->get($annexe_element) as $num => $fileName) {
-                $annexe = new Fichier();
-                $annexe->filename = $donneesFormulaire->getFileName($annexe_element, $num);
-                $annexe->filepath = $donneesFormulaire->getFilePath($annexe_element, $num);
-                $annexe->content = $donneesFormulaire->getFileContent($annexe_element, $num);
-                $annexe->contentType = $donneesFormulaire->getContentType($annexe_element, $num);
+            foreach (array_keys($donneesFormulaire->get($annexe_element)) as $num) {
+                $fileToSign->annexes[] = $this->createFichier($donneesFormulaire, $annexe_element, $num);
+            }
+        }
 
-                $fileToSign->annexes[] = $annexe;
+        if ($autre_document_a_signer_element && $donneesFormulaire->get($autre_document_a_signer_element)) {
+            foreach (array_keys($donneesFormulaire->get($autre_document_a_signer_element)) as $num) {
+                $fileToSign->multiDocuments[] = $this->createFichier(
+                    $donneesFormulaire,
+                    $autre_document_a_signer_element,
+                    $num
+                );
             }
         }
 
@@ -107,7 +96,6 @@ class SignatureEnvoie extends ConnecteurTypeActionExecutor
             $fileToSign->date_limite = $donneesFormulaire->get($iparapheur_date_limite);
         }
 
-
         if ($donneesFormulaire->get($iparapheur_annotation_publique)) {
             $fileToSign->annotationPublic = $donneesFormulaire->get($iparapheur_annotation_publique);
         }
@@ -132,5 +120,18 @@ class SignatureEnvoie extends ConnecteurTypeActionExecutor
         $this->addActionOK("Le document a été envoyé au parapheur électronique");
         $this->notify($this->action, $this->type, "Le document a été envoyé au parapheur électronique");
         return true;
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    private function createFichier(DonneesFormulaire $donneesFormulaire, string $element, int $num = 0): Fichier
+    {
+        $fichier = new Fichier();
+        $fichier->filename = $donneesFormulaire->getFileName($element, $num);
+        $fichier->filepath = $donneesFormulaire->getFilePath($element, $num);
+        $fichier->content = $donneesFormulaire->getFileContent($element, $num);
+        $fichier->contentType = $donneesFormulaire->getContentType($element, $num);
+        return $fichier;
     }
 }

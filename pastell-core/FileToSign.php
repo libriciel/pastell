@@ -8,6 +8,11 @@ class FileToSign
     /** @var Fichier[] $annexes */
     public $annexes = [];
 
+    /**
+     * @var Fichier[] $multiDocuments
+     */
+    public array $multiDocuments = [];
+
     /** @var string */
     public $type;
 
