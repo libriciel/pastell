@@ -139,11 +139,9 @@ class SignatureRecupTest extends PastellTestCase
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document_info['id_d']);
 
-        // Le document principal signé revient dans « fichier ».
         $this->assertSame('document.pdf', $donneesFormulaire->getFileName('fichier'));
         $this->assertSame('document_orig.pdf', $donneesFormulaire->getFileName('document_original'));
 
-        // Le multi-document signé revient dans « multidoc » (et non dans les annexes).
         $multidoc_names = [];
         foreach ($donneesFormulaire->get('multidoc') ?: [] as $fileName) {
             $multidoc_names[] = $fileName;
@@ -151,7 +149,6 @@ class SignatureRecupTest extends PastellTestCase
         $this->assertContains('multidoc-1.pdf', $multidoc_names);
         $this->assertSame('signed multi content', $donneesFormulaire->getFileContent('multidoc', 0));
 
-        // La version d'origine (non signée) est conservée dans « multi_document_original ».
         $multi_document_original_names = [];
         foreach ($donneesFormulaire->get('multi_document_original') ?: [] as $fileName) {
             $multi_document_original_names[] = $fileName;
@@ -280,23 +277,18 @@ class SignatureRecupTest extends PastellTestCase
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document_info['id_d']);
 
-        // Le document principal signé revient dans « fichier ».
         $this->assertSame('document.pdf', $donneesFormulaire->getFileName('fichier'));
         $this->assertSame('signed main content', $donneesFormulaire->getFileContent('fichier'));
 
-        // Le multi-document signé revient dans « multidoc ».
         $this->assertSame('multidoc-1.pdf', $donneesFormulaire->getFileName('multidoc', 0));
         $this->assertSame('signed multi content', $donneesFormulaire->getFileContent('multidoc', 0));
 
-        // L'annexe n'est pas un multi-document : elle reste inchangée.
         $this->assertSame(['annexe-1.pdf'], $donneesFormulaire->get('annexe'));
         $this->assertSame('annexe content', $donneesFormulaire->getFileContent('annexe', 0));
 
-        // Seul l'original du multi-document est conservé dans « multi_document_original ».
         $this->assertSame(['multidoc-1_orig.pdf'], $donneesFormulaire->get('multi_document_original'));
         $this->assertSame('multi doc content', $donneesFormulaire->getFileContent('multi_document_original', 0));
 
-        // L'annexe revenue à l'identique n'est pas dupliquée en annexe de sortie.
         $this->assertEmpty($donneesFormulaire->get('iparapheur_annexe_sortie'));
     }
 
