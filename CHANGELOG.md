@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.26] - 2026-12-07
+
+### Sécurité
+
+- Faille de contrôle d'accès sur la consultation et le téléchargement des certificats utilisateur
+  (CVSS 3.1 - criticité BASSE - CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:L/I:N/A:N) #2617
+
 ## [4.1.25] - 2026-11-02
 
 ### Corrections
