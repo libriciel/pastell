@@ -221,6 +221,7 @@ class UtilisateurControler extends PastellControler
      * @throws LastErrorException
      * @throws LastMessageException
      * @throws NotFoundException
+     * @throws UnrecoverableException
      */
     public function certificatAction()
     {
@@ -234,29 +235,30 @@ class UtilisateurControler extends PastellControler
             'count',
             $this->getUtilisateur()->countByCertificat($this->getViewParameterByKey('verif_number'))
         );
-        $this->setViewParameter(
-            'liste',
-            $this->getUtilisateur()->getAllByCertificat(
-                $this->getViewParameterByKey('verif_number'),
-                $this->getViewParameterByKey('offset'),
-                $this->getViewParameterByKey('limit')
-            )
+        $user_list = $this->getUtilisateur()->getAllByCertificat(
+            $this->getViewParameterByKey('verif_number'),
+            $this->getViewParameterByKey('offset'),
+            $this->getViewParameterByKey('limit')
         );
 
-        $this->setViewParameter('liste', array_values(array_filter(
-            $this->getViewParameterByKey('liste'),
-            fn(array $user_info): bool => $this->getDroitService()->hasDroitFor(
+        $readable_user_list = [];
+        foreach ($user_list as $user_info) {
+            $can_read = $this->getDroitService()->hasDroitFor(
                 $this->getId_u(),
                 (int) $user_info['id_e'],
                 DroitService::DROIT_UTILISATEUR,
                 DroitType::LECTURE
-            )
-        )));
-        if (!$this->getViewParameterByKey('liste')) {
+            );
+            if ($can_read) {
+                $readable_user_list[] = $user_info;
+            }
+        }
+        if (!$readable_user_list) {
             $this->redirect('/index.php');
         }
+        $this->setViewParameter('liste', $readable_user_list);
 
-        $certificate = new Certificate($this->getViewParameterByKey('liste')[0]['certificat']);
+        $certificate = new Certificate($readable_user_list[0]['certificat']);
         if (!$certificate->isValid()) {
             $this->redirect('/index.php');
         }
