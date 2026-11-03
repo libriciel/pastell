@@ -6,13 +6,15 @@ namespace Pastell\Service\Utilisateur;
 
 use Pastell\Service\Journal\JournalEntryService;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
-use UsersToken;
+use UserTokenSQL;
 use JournalEventType;
 
 final class UserTokenService
 {
+    private const TOKEN_HASH_ALGORITHM = 'sha256';
+
     public function __construct(
-        private readonly UsersToken $usersToken,
+        private readonly UserTokenSQL $userTokenSQL,
         private readonly JournalEntryService $journalEntryService,
     ) {
     }
@@ -20,7 +22,7 @@ final class UserTokenService
     public function createToken(int $userId, string $name, string $expiration = null): string
     {
         $token = $this->generateToken();
-        $this->usersToken->create($userId, $name, $token, $expiration);
+        $this->userTokenSQL->create($userId, $name, $this->hashToken($token), $expiration);
         $message = "L'utilisateur $userId a créer le token « $name »";
         if ($expiration) {
             $message .= " (date d'expiration : $expiration)";
@@ -38,7 +40,7 @@ final class UserTokenService
     public function getTokens(int $userId): array
     {
         $now = \time();
-        $tokens = $this->usersToken->getTokensOfUser($userId);
+        $tokens = $this->userTokenSQL->getTokensOfUser($userId);
         \array_walk($tokens, static function (&$token) use ($now) {
             if ($token['expired_at'] === null) {
                 $isExpired = false;
@@ -52,12 +54,12 @@ final class UserTokenService
 
     public function getUser(int $tokenId): ?int
     {
-        return $this->usersToken->getUser($tokenId)['id_u'] ?? null;
+        return $this->userTokenSQL->getUser($tokenId)['id_u'] ?? null;
     }
 
     public function getUserFromToken(string $token): ?array
     {
-        $user = $this->usersToken->getUserFromToken($token);
+        $user = $this->userTokenSQL->getUserFromToken($this->hashToken($token));
         if ($user !== null) {
             if ($user['expired_at'] === null) {
                 $isExpired = false;
@@ -71,8 +73,8 @@ final class UserTokenService
 
     public function deleteToken(int $tokenId): void
     {
-        $tokenInfo = $this->usersToken->getTokenInfo($tokenId);
-        $this->usersToken->deleteToken($tokenId);
+        $tokenInfo = $this->userTokenSQL->getInfo($tokenId);
+        $this->userTokenSQL->delete($tokenId);
         $this->journalEntryService->add(
             JournalEventType::USER_MODIFICATION,
             0,
@@ -86,8 +88,8 @@ final class UserTokenService
     public function renewToken(int $tokenId): string
     {
         $token = $this->generateToken();
-        $tokenInfo = $this->usersToken->getTokenInfo($tokenId);
-        $this->usersToken->updateToken($tokenInfo['id'], $token);
+        $tokenInfo = $this->userTokenSQL->getInfo($tokenId);
+        $this->userTokenSQL->updateToken($tokenInfo['id'], $this->hashToken($token));
         $this->journalEntryService->add(
             JournalEventType::USER_MODIFICATION,
             0,
@@ -98,13 +100,18 @@ final class UserTokenService
         return $token;
     }
 
+    public function getTokenInfo(string $token): ?array
+    {
+        return $this->userTokenSQL->getInfoByToken($this->hashToken($token));
+    }
+
     private function generateToken(): string
     {
         return (new UriSafeTokenGenerator())->generateToken();
     }
 
-    public function getTokenInfo(string $token): array
+    private function hashToken(string $token): string
     {
-        return $this->usersToken->getTokenInfoByToken($token);
+        return \hash(self::TOKEN_HASH_ALGORITHM, $token);
     }
 }

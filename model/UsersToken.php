@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+/**
+ * @deprecated 4.1.26 Use UserTokenService instead.
+ */
 final class UsersToken extends SQL
 {
     private const TOKEN_HASH_ALGORITHM = 'sha256';
