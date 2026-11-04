@@ -1,6 +1,8 @@
 <?php
 
+use Pastell\Service\Document\DocumentEmailReadService;
 use Pastell\Service\Notification\NotificationService;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class PDFGeneriqueTest extends PastellTestCase
 {
@@ -60,6 +62,7 @@ class PDFGeneriqueTest extends PastellTestCase
     /**
      * Test qu'un utilisateur abonné à 'reception' sur le flux 'pdf-generique' reçoit bien un mail lorsque le flux passe
      * dans cet état
+     * @throws TransportExceptionInterface
      */
     public function testMailsecNotification()
     {
@@ -80,11 +83,10 @@ class PDFGeneriqueTest extends PastellTestCase
         $action = $this->triggerActionOnDocument($id_d, 'send-mailsec');
         $this->assertTrue($action);
 
-        $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
-        $info = $documentEmail->getInfo($id_d);
+        $info = $this->getObjectInstancier()->getInstance(DocumentEmailSQL::class)->getAllByDocument($id_d);
         $key = $info[0]['key'];
 
-        $documentEmail->consulter($key, $this->getJournal());
+        $this->getObjectInstancier()->getInstance(DocumentEmailReadService::class)->read($key);
 
         $notificationDigestSql = $this->getObjectInstancier()->getInstance(NotificationDigestSQL::class);
 

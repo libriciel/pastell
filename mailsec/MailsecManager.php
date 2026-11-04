@@ -7,7 +7,7 @@ namespace Mailsec;
 use ActionCreatorSQL;
 use ActionExecutorFactory;
 use DocumentCreationService;
-use DocumentEmail;
+use DocumentEmailSQL;
 use DocumentEmailReponseSQL;
 use DocumentSQL;
 use DocumentTypeFactory;
@@ -29,6 +29,7 @@ use NotFoundException;
 use NotificationMail;
 use ObjectInstancier;
 use Pastell\Service\Document\DocumentRoleService;
+use Pastell\Service\Document\DocumentEmailReadService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Throwable;
@@ -56,6 +57,7 @@ final class MailsecManager
      * @throws UnavailableMailException
      * @throws \Exception
      * @throws Throwable
+     * @throws TransportExceptionInterface
      */
     public function getMailsecInfo(string $key, Request $request, bool $checkPassword = true): MailSecInfo
     {
@@ -94,10 +96,7 @@ final class MailsecManager
             $this->validatePassword($mailSecInfo->donneesFormulaire, $mailSecInfo->key, $request);
         }
 
-        $this->objectInstancier->getInstance(DocumentEmail::class)->consulter(
-            $mailSecInfo->key,
-            $this->objectInstancier->getInstance(Journal::class)
-        );
+        $this->objectInstancier->getInstance(DocumentEmailReadService::class)->read($mailSecInfo->key);
 
         $this->objectInstancier->getInstance(ActionExecutorFactory::class)->executeOnDocument(
             $mailSecInfo->id_e,
@@ -168,7 +167,7 @@ final class MailsecManager
      */
     private function getAvailableMailInfo(string $key): array
     {
-        $info = $this->objectInstancier->getInstance(DocumentEmail::class)->getInfoFromKey($key);
+        $info = $this->objectInstancier->getInstance(DocumentEmailSQL::class)->getByKey($key);
         if (!$info) {
             throw new InvalidKeyException('Unable to find key');
         }
@@ -218,7 +217,7 @@ final class MailsecManager
      */
     public function verifyPassword(string $key, string $password): bool
     {
-        $info = $this->objectInstancier->getInstance(DocumentEmail::class)->getInfoFromKey($key);
+        $info = $this->objectInstancier->getInstance(DocumentEmailSQL::class)->getByKey($key);
         if (!$info) {
             throw new InvalidKeyException('Unable to find key');
         }
@@ -291,8 +290,8 @@ final class MailsecManager
                     $data[$fieldLabel] = $mailSecInfo->donneesFormulaireReponse->get($fieldId);
                 }
             }
-            $documentEmail = $this->objectInstancier->getInstance(DocumentEmail::class);
-            $documentEmail->addReponse($mailSecInfo->id_de, \json_encode($data, JSON_THROW_ON_ERROR));
+            $documentEmailSQL = $this->objectInstancier->getInstance(DocumentEmailSQL::class);
+            $documentEmailSQL->setReponse($mailSecInfo->id_de, \json_encode($data, JSON_THROW_ON_ERROR));
         }
         $this->objectInstancier->getInstance(ActionExecutorFactory::class)->executeOnDocument(
             $mailSecInfo->id_e,
@@ -375,10 +374,10 @@ final class MailsecManager
     public function generateReceipt(MailSecInfo $info): string
     {
         $id_d = $info->id_d;
-        $documentEmail = $this->objectInstancier->getInstance(DocumentEmail::class);
+        $documentEmailSQL = $this->objectInstancier->getInstance(DocumentEmailSQL::class);
         $documentEmailReponseSQL = $this->objectInstancier->getInstance(DocumentEmailReponseSQL::class);
         $documentReponse = $documentEmailReponseSQL->getAllReponse($id_d);
-        $recipient_list = $documentEmail->getAllRecipientIds($id_d);
+        $recipient_list = $documentEmailSQL->getAllRecipientIds($id_d);
         $use_template_reponse = false;
         foreach ($recipient_list as $id_de) {
             if ($documentEmailReponseSQL->getInfo($id_de)) {
@@ -448,7 +447,7 @@ final class MailsecManager
 
         $section_destinaires = new IterationType('table_destinataires');
         foreach ($recipient_list as $id_de) {
-            $infoRecipient = $documentEmail->getInfoFromPK($id_de);
+            $infoRecipient = $documentEmailSQL->getById($id_de);
             $part = new PartType();
             $part->addElement(new FieldType('email_destinataire', $infoRecipient['email'], 'text'));
             $part->addElement(new FieldType('type_destinataire', $infoRecipient['type_destinataire'], 'text'));
@@ -495,7 +494,7 @@ final class MailsecManager
     public function updateReceipt(string $id_d): void
     {
         $mailSecInfo = new MailSecInfo();
-        $info = $this->objectInstancier->getInstance(DocumentEmail::class)->getInfo($id_d)[0];
+        $info = $this->objectInstancier->getInstance(DocumentEmailSQL::class)->getAllByDocument($id_d)[0];
         if (!$info) {
             throw new InvalidKeyException('Unable to find document');
         }

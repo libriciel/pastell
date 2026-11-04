@@ -1,15 +1,17 @@
 <?php
 
 use Mailsec\MailsecManager;
+use Pastell\Service\Document\DocumentEmailRecipientType;
+use Pastell\Service\Document\DocumentEmailService;
 
 class MailsecEnvoyer extends ConnecteurTypeActionExecutor
 {
     private const SENT_MAIL_NUMBER_FIELD = 'sent_mail_number';
     private const SEND_MAILSEC_ERROR = 'send-mailsec-error';
 
-    private function getDocumentEmail(): DocumentEmail
+    private function getDocumentEmailService(): DocumentEmailService
     {
-        return $this->objectInstancier->getInstance(DocumentEmail::class);
+        return $this->objectInstancier->getInstance(DocumentEmailService::class);
     }
 
     private function getMailsecManager(): MailsecManager
@@ -36,12 +38,9 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
         return $connector;
     }
 
-    private function add2SendEmail($to, $type)
+    private function add2SendEmail(string $to, DocumentEmailRecipientType $type): void
     {
-        if ($this->getDocumentEmail()->getKey($this->id_d, $to)) {
-            return;
-        }
-        $this->getDocumentEmail()->add($this->id_d, $to, $type);
+        $this->getDocumentEmailService()->addRecipient($this->id_d, $to, $type);
     }
 
     /**
@@ -56,8 +55,8 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
         $numberOfRecipients = 0;
         $uniqueRecipients = [];
 
-        foreach (['to', 'cc', 'bcc'] as $type) {
-            $typeMapped = $this->getMappingValue($type);
+        foreach (DocumentEmailRecipientType::cases() as $type) {
+            $typeMapped = $this->getMappingValue($type->value);
             $mail_to_send = $this->getMailToSend($typeMapped);
 
             foreach ($mail_to_send as $mail) {

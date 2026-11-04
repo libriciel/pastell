@@ -26,7 +26,7 @@ class DocumentAPIController extends BaseAPIController
         private DocumentCreationService $documentCreationService,
         private DocumentModificationService $documentModificationService,
         private DocumentDeletionService $documentDeletionService,
-        private DocumentEmail $documentEmail,
+        private readonly DocumentEmailSQL $documentEmailSQL,
         private DocumentEmailReponseSQL $documentEmailReponseSQL,
         private DocumentEmailService $documentEmailService,
         private readonly ChunkUploader $chunkUploader,
@@ -204,7 +204,7 @@ class DocumentAPIController extends BaseAPIController
 
         $result['data'] = $donneesFormulaire->getRawDataWithoutPassword();
 
-        $email_info_list = $this->documentEmail->getInfo($id_d);
+        $email_info_list = $this->documentEmailSQL->getAllByDocument($id_d);
 
         foreach ($email_info_list as $num_mail => $email_info) {
             unset($email_info['key']);

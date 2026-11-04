@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\File\Chunk\ChunkUploader;
+use Pastell\Service\Document\DocumentEmailRecipientType;
 use Pastell\Service\Document\DocumentRoleService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
@@ -74,12 +75,15 @@ class DocumentControler extends PastellControler
 
     private function getDocumentEmailForDisplay(string $id_d): array
     {
-        $infoDocumentEmail = $this->getInstance(DocumentEmail::class)->getInfo($id_d);
+        $infoDocumentEmail = $this->getInstance(DocumentEmailSQL::class)->getAllByDocument($id_d);
         $reponse_column = [];
         foreach ($infoDocumentEmail as $i => $infoEmail) {
+            $infoDocumentEmail[$i]['type_destinataire_libelle'] =
+                DocumentEmailRecipientType::tryFrom($infoEmail['type_destinataire'])?->label()
+                ?? $infoEmail['type_destinataire'];
             if ($infoEmail['reponse']) {
-                foreach (json_decode($infoEmail['reponse']) as $reponse_key => $reponse_value) {
-                    if (!in_array($reponse_key, $reponse_column)) {
+                foreach (json_decode($infoEmail['reponse']) ?? [] as $reponse_key => $reponse_value) {
+                    if (!in_array($reponse_key, $reponse_column, true)) {
                         $reponse_column[] = $reponse_key;
                     }
                     $infoDocumentEmail[$i][$reponse_key] = $reponse_value;
@@ -257,8 +261,8 @@ class DocumentControler extends PastellControler
 
         $mail_info =
             $this->getObjectInstancier()
-                ->getInstance(DocumentEmail::class)
-                ->getInfoFromPK($reponse_info['id_de']);
+                ->getInstance(DocumentEmailSQL::class)
+                ->getById($reponse_info['id_de']);
 
         if ($mail_info['id_d'] != $id_d) {
             $this->setLastError('Impossible de lire ce document');
@@ -1621,9 +1625,7 @@ class DocumentControler extends PastellControler
         $recuperateur = new Recuperateur($_GET);
         $id_de = $recuperateur->get('id_de');
         $id_e = $recuperateur->get('id_e');
-        /** @var DocumentEmail $documentEmail */
-        $documentEmail = $this->getInstance(DocumentEmail::class);
-        $info = $documentEmail->getInfoFromPK($id_de);
+        $info = $this->getInstance(DocumentEmailSQL::class)->getById((int) $id_de);
 
         $this->verifDroitLecture($id_e, $info['id_d']);
 
@@ -1635,8 +1637,7 @@ class DocumentControler extends PastellControler
     {
         /* mailsec ? */
         $key = $this->getPostOrGetInfo()->get('key');
-        $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
-        $mailsec_info = $documentEmail->getInfoFromKey($key);
+        $mailsec_info = $this->getObjectInstancier()->getInstance(DocumentEmailSQL::class)->getByKey($key);
         if (! $mailsec_info) {
             return false;
         }

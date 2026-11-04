@@ -1,5 +1,8 @@
 <?php
 
+use Pastell\Service\Document\DocumentEmailReadService;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+
 class TypeDossierMailsecEtapeTest extends PastellTestCase
 {
     public const MAILSEC_ONLY = 'mailsec-only';
@@ -49,6 +52,7 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
 
     /**
      * @throws Exception
+     * @throws TransportExceptionInterface
      */
     public function testDepot(): void
     {
@@ -86,9 +90,8 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
         $this->assertMatchesRegularExpression("#Relance programmée le#", $last_message);
         $this->assertMatchesRegularExpression("#Mail défini comme non-reçu le#", $last_message);
 
-        $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
-        $document_email_info = $documentEmail->getInfo($id_d);
-        $documentEmail->consulter($document_email_info[0]['key'], $this->getJournal());
+        $document_email_info = $this->getObjectInstancier()->getInstance(DocumentEmailSQL::class)->getAllByDocument($id_d);
+        $this->getObjectInstancier()->getInstance(DocumentEmailReadService::class)->read($document_email_info[0]['key']);
         $this->assertLastDocumentAction('reception', $id_d);
 
         $this->assertTrue(
@@ -172,8 +175,8 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
         $this->assertLastMessage('Mail défini comme non-reçu.');
         $this->assertLastDocumentAction('non-recu', $id_d);
 
-        $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
-        $this->assertEquals(1, $documentEmail->getInfo($id_d)[0]['non_recu']);
+        $documentEmailSQL = $this->getObjectInstancier()->getInstance(DocumentEmailSQL::class);
+        static::assertEquals(1, $documentEmailSQL->getAllByDocument($id_d)[0]['non_recu']);
     }
 
     /**

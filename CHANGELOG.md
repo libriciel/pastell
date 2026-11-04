@@ -2,6 +2,11 @@
 
 ## [4.1.26] - 2026-12-07
 
+### Dépréciations
+
+- Classe `DocumentEmail` dépréciée au profit de `DocumentEmailSQL` et des services `DocumentEmailService` et
+  `DocumentEmailReadService` #2610
+
 ### Sécurité
 
 - Faille de contrôle d'accès sur la consultation et le téléchargement des certificats utilisateur

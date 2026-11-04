@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+/**
+ * @deprecated 4.1.26 Use DocumentEmailSQLTest instead.
+ */
 final class DocumentEmailTest extends PastellTestCase
 {
     use MailsecTestTrait;
