@@ -6,6 +6,7 @@
 
 - Classe `DocumentEmail` dépréciée au profit de `DocumentEmailSQL` et des services `DocumentEmailService` et
   `DocumentEmailReadService` #2610
+- Classe `UsersToken` dépréciée au profit de `UserTokenService` #2621
 
 ### Sécurité
 
