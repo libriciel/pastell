@@ -1,9 +1,14 @@
 <?php
 
 /**
- * @var ConnecteurFrequence $connecteurFrequence
+ * @var ConnecteurFrequenceData $connecteurFrequenceData
+ * @var array{connecteur: string, instance: string, action: string, expression: string} $connecteur_frequence_label
  * @var Gabarit $this
  */
+
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceActionType;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceData;
+
 ?>
 <a class='btn btn-link' href='<?php $this->url("Daemon/config") ?>'>
     <i class="fa fa-arrow-left"></i>&nbsp;Retour à la liste des fréquences
@@ -13,22 +18,22 @@
     <table class='table table-striped'>
         <tr>
             <th class='w200'>Type</th>
-            <td><?php hecho($connecteurFrequence->type_connecteur ?: 'Tous') ?></td>
+            <td><?php hecho($connecteurFrequenceData->type_connecteur ?: 'Tous') ?></td>
         </tr>
         <tr>
             <th class='w200'>Famille de connecteurs</th>
-            <td><?php hecho($connecteurFrequence->famille_connecteur ?: 'Toutes') ?></td>
+            <td><?php hecho($connecteurFrequenceData->famille_connecteur ?: 'Toutes') ?></td>
         </tr>
         <tr>
             <th class='w200'>Connecteur</th>
-            <td><?php hecho($connecteurFrequence->id_connecteur ?: 'Tous') ?></td>
+            <td><?php hecho($connecteurFrequenceData->id_connecteur ?: 'Tous') ?></td>
         </tr>
         <tr>
             <th class='w200'>Instance de connecteur</th>
             <td>
-                <?php if ($connecteurFrequence->id_ce) : ?>
-                <a href="<?php $this->url("Connecteur/edition?id_ce={$connecteurFrequence->id_ce}")?>">
-                    <?php hecho($connecteurFrequence->getInstanceConnecteurAsString()) ?>
+                <?php if ($connecteurFrequenceData->id_ce) : ?>
+                <a href="<?php $this->url("Connecteur/edition?id_ce={$connecteurFrequenceData->id_ce}")?>">
+                    <?php hecho($connecteur_frequence_label['instance']) ?>
                 </a>
                 <?php else : ?>
                     Toutes
@@ -38,37 +43,37 @@
 
         <tr>
             <th class='w200'>Type d'action</th>
-            <td><?php hecho($connecteurFrequence->action_type ?: 'Tous') ?></td>
+            <td><?php hecho($connecteurFrequenceData->action_type ?: 'Tous') ?></td>
         </tr>
-        <?php if ($connecteurFrequence->action_type == 'document') : ?>
+        <?php if ($connecteurFrequenceData->action_type === ConnecteurFrequenceActionType::DOCUMENT->value) : ?>
         <tr>
             <th class='w200'>Type de dossier</th>
-            <td><?php hecho($connecteurFrequence->type_document ?: 'Tous') ?></td>
+            <td><?php hecho($connecteurFrequenceData->type_document ?: 'Tous') ?></td>
         </tr>
         <?php endif; ?>
         <tr>
             <th class='w200'>Action</th>
-            <td><?php hecho($connecteurFrequence->action ?: 'Toutes') ?></td>
+            <td><?php hecho($connecteurFrequenceData->action ?: 'Toutes') ?></td>
         </tr>
         <tr>
             <th class='w200'>Fréquence</th>
             <td>
-                <?php echo nl2br(get_hecho($connecteurFrequence->getExpressionAsString())) ?>
+                <?php echo nl2br(get_hecho($connecteur_frequence_label['expression'])) ?>
             </td>
         </tr>
         <tr>
             <th class='w200'>Verrou</th>
-            <td><?php hecho($connecteurFrequence->id_verrou) ?></td>
+            <td><?php hecho($connecteurFrequenceData->id_verrou) ?></td>
         </tr>
 
     </table>
     <a class='btn btn-primary'
-       href="<?php $this->url("Daemon/editFrequence?id_cf={$connecteurFrequence->id_cf}") ?>"
+       href="<?php $this->url("Daemon/editFrequence?id_cf={$connecteurFrequenceData->id_cf}") ?>"
     >
         <i class="fa fa-pencil"></i>&nbsp;Modifier
     </a>
     <a class='btn btn-danger'
-       href="<?php $this->url("Daemon/deleteFrequence?id_cf={$connecteurFrequence->id_cf}") ?>"
+       href="<?php $this->url("Daemon/deleteFrequence?id_cf={$connecteurFrequenceData->id_cf}") ?>"
     >
         <i class="fa fa-trash"></i>&nbsp;Supprimer
     </a>

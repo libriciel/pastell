@@ -3,10 +3,13 @@
 namespace Pastell\Tests\Service\Connecteur;
 
 use ConnecteurEntiteSQL;
-use ConnecteurFrequence;
 use ConnecteurFrequenceSQL;
 use Exception;
 use Pastell\Service\Connecteur\ConnecteurDeletionService;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceActionType;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceData;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceService;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceType;
 use PastellTestCase;
 
 final class ConnecteurDeletionServiceTest extends PastellTestCase
@@ -58,13 +61,15 @@ final class ConnecteurDeletionServiceTest extends PastellTestCase
         $id_ce = $testConnectors[0]['id_ce'];
 
         $connecteurFrequenceSQL = $this->getObjectInstancier()->getInstance(ConnecteurFrequenceSQL::class);
-        $connecteurFrequence = new ConnecteurFrequence();
-        $connecteurFrequence->type_connecteur = ConnecteurFrequence::TYPE_ENTITE;
-        $connecteurFrequence->famille_connecteur = 'test';
-        $connecteurFrequence->id_connecteur = 'test';
-        $connecteurFrequence->id_ce = $id_ce;
-        $connecteurFrequence->action_type = ConnecteurFrequence::TYPE_ACTION_CONNECTEUR;
-        $id_cf = $connecteurFrequenceSQL->edit($connecteurFrequence);
+        $id_cf = $this->getObjectInstancier()->getInstance(ConnecteurFrequenceService::class)->save(
+            new ConnecteurFrequenceData(
+                type_connecteur: ConnecteurFrequenceType::ENTITE->value,
+                famille_connecteur: 'test',
+                id_connecteur: 'test',
+                id_ce: (int)$id_ce,
+                action_type: ConnecteurFrequenceActionType::CONNECTEUR->value,
+            )
+        );
 
         $this->connectorDeletionService->deleteConnecteur($id_ce);
 

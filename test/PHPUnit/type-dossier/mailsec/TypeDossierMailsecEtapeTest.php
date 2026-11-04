@@ -1,5 +1,9 @@
 <?php
 
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceActionType;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceData;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceService;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceType;
 use Pastell\Service\Document\DocumentEmailReadService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
@@ -108,16 +112,17 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
      */
     public function testFrequenceRelance(): void
     {
-        $connecteurFrequenceSQL = $this->getObjectInstancier()->getInstance(ConnecteurFrequenceSQL::class);
-        $connecteurFrequence = new ConnecteurFrequence();
-        $connecteurFrequence->type_connecteur = ConnecteurFrequence::TYPE_ENTITE;
-        $connecteurFrequence->famille_connecteur = 'pdf-relance';
-        $connecteurFrequence->action_type = ConnecteurFrequence::TYPE_ACTION_DOCUMENT;
-        $connecteurFrequence->type_document = self::MAILSEC_ONLY;
-        $connecteurFrequence->action = 'mailsec-relance';
-        $connecteurFrequence->id_verrou = 'MAILSEC_RELANCE';
-        $connecteurFrequence->expression = "1440";
-        $connecteurFrequenceSQL->edit($connecteurFrequence);
+        $this->getObjectInstancier()->getInstance(ConnecteurFrequenceService::class)->save(
+            new ConnecteurFrequenceData(
+                type_connecteur: ConnecteurFrequenceType::ENTITE->value,
+                famille_connecteur: 'pdf-relance',
+                action_type: ConnecteurFrequenceActionType::DOCUMENT->value,
+                type_document: self::MAILSEC_ONLY,
+                action: 'mailsec-relance',
+                expression: '1440',
+                id_verrou: 'MAILSEC_RELANCE',
+            )
+        );
 
         $this->typeDossierLoader->createTypeDossierDefinitionFile(self::MAILSEC_ONLY);
         $this->createMailsecConnector(self::MAILSEC_ONLY);
@@ -142,7 +147,7 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
         $this->assertSame('MAILSEC_RELANCE', $job->id_verrou);
         $this->assertSame(
             strtotime($job->next_try) - strtotime($job->last_try),
-            $connecteurFrequence->expression * 60
+            1440 * 60
         );
 
         $last_message = $this->getObjectInstancier()->getInstance(ActionExecutorFactory::class)->getLastMessage();
