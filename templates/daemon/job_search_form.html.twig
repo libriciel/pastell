@@ -55,8 +55,14 @@
                                     <input class="form-check-input mt-0 me-2" type="checkbox" value="1"
                                            id="search-late" name="late"
                                            {{ search.late ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="search-late">
+                                    <label class="form-check-label me-4" for="search-late">
                                         Travaux en retard
+                                    </label>
+                                    <input class="form-check-input mt-0 me-2" type="checkbox" value="1"
+                                           id="search-since-one-hour" name="since_one_hour"
+                                           {{ search.since_one_hour ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="search-since-one-hour">
+                                        Depuis plus d'une heure
                                     </label>
                                 </div>
                             </td>

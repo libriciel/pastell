@@ -30,21 +30,35 @@
         </tr>
         <tr>
             <th>Processus en cours d'exécution</th>
-            <td>{{ nb_worker_actif }}</td>
+            <td>
+                {% if nb_worker_actif %}
+                    <a href="{{ path('app.legacy.daemon_job', {'filtre': 'actif'}) }}">{{ nb_worker_actif }}</a>
+                {% else %}
+                    {{ nb_worker_actif }}
+                {% endif %}
+            </td>
         </tr>
         <tr>
-            <th>Travaux en attente</th>
+            <th>Travaux en retard d'exécution</th>
             <td>
-                {{ job_stat_info.nb_wait }}
+                {% if job_stat_info.nb_wait %}
+                    <a href="{{ path('app.legacy.daemon_job', {'job_status': [job_status_waiting], 'late': 1}) }}">{{ job_stat_info.nb_wait }}</a>
+                {% else %}
+                    {{ job_stat_info.nb_wait }}
+                {% endif %}
             </td>
         </tr>
         <tr>
             <th>Travaux suspendus</th>
             <td>
-                {{ job_stat_info.nb_lock }}
+                {% if job_stat_info.nb_lock %}
+                    <a href="{{ path('app.legacy.daemon_job', {'job_status': job_status_locked}) }}">{{ job_stat_info.nb_lock }}</a>
+                {% else %}
+                    {{ job_stat_info.nb_lock }}
+                {% endif %}
                 {% if (job_stat_info.nb_lock_one_hour and daemon_global_lecture) %}
                     <span class='alert alert-warning'>
-                        <a href="{{ path('app.legacy.daemon_job', {'job_status': job_status_locked}) }}">
+                        <a href="{{ path('app.legacy.daemon_job', {'job_status': job_status_locked, 'since_one_hour': 1}) }}">
                             {{ job_stat_info.nb_lock_one_hour }} depuis plus d'une heure !
                         </a>
                     </span>
@@ -53,7 +67,13 @@
         </tr>
         <tr>
             <th>Nombre total de travaux</th>
-            <td>{{ job_stat_info.nb_job }}</td>
+            <td>
+                {% if job_stat_info.nb_job %}
+                    <a href="{{ path('app.legacy.daemon_job') }}">{{ job_stat_info.nb_job }}</a>
+                {% else %}
+                    {{ job_stat_info.nb_job }}
+                {% endif %}
+            </td>
         </tr>
         <tr>
             <th>Date du système</th>

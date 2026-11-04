@@ -154,7 +154,12 @@ class WorkerSQL extends SQL
 
     public function getNbActif(): int
     {
-        $sql = 'SELECT count(*) FROM worker WHERE termine=0';
+        $sql = <<<SQL
+SELECT count(*)
+FROM worker
+JOIN job_queue ON job_queue.id_job = worker.id_job
+WHERE worker.termine = 0
+SQL;
         return $this->queryOne($sql);
     }
 

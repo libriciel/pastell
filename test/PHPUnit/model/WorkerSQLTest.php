@@ -127,6 +127,13 @@ class WorkerSQLTest extends PastellTestCase
         static::assertSame(1, $this->workerSQL->getNbActif());
     }
 
+    public function testNbActifIgnoresOrphan(): void
+    {
+        $this->launchWorker();
+        $this->workerSQL->create(43);
+        static::assertSame(1, $this->workerSQL->getNbActif());
+    }
+
     public function testGetNbActifForDameon(): void
     {
         $this->launchWorker();
