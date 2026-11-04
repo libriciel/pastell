@@ -15,7 +15,7 @@ use Pastell\Service\Utilisateur\UserCreationService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use UnrecoverableException;
-use UtilisateurListe;
+use UtilisateurSQL;
 use PastellTestCase;
 
 final class ForceDeleteEntityTest extends PastellTestCase
@@ -23,7 +23,7 @@ final class ForceDeleteEntityTest extends PastellTestCase
     private CommandTester $tester;
     private EntiteSQL $entiteSQL;
     private ConnecteurEntiteSQL $connecteurEntiteSQL;
-    private UtilisateurListe $utilisateurListe;
+    private UtilisateurSQL $utilisateurSQL;
     private EntityCreationService $entityCreationService;
     private ConnecteurCreationService $connecteurCreationService;
     private UserCreationService $userCreationService;
@@ -34,7 +34,7 @@ final class ForceDeleteEntityTest extends PastellTestCase
 
         $this->entiteSQL = $this->getObjectInstancier()->getInstance(EntiteSQL::class);
         $this->connecteurEntiteSQL = $this->getObjectInstancier()->getInstance(ConnecteurEntiteSQL::class);
-        $this->utilisateurListe = $this->getObjectInstancier()->getInstance(UtilisateurListe::class);
+        $this->utilisateurSQL = $this->getObjectInstancier()->getInstance(UtilisateurSQL::class);
         $this->entityCreationService = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
         $this->connecteurCreationService = $this->getObjectInstancier()->getInstance(ConnecteurCreationService::class);
         $this->userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
@@ -80,7 +80,7 @@ final class ForceDeleteEntityTest extends PastellTestCase
         $id_u = $this->userCreationService->create('test-user', 'test@libriciel.invalid', 'Test', 'User', $id_e);
 
         $connsBefore = $this->connecteurEntiteSQL->getAll($id_e);
-        $usersBefore = $this->utilisateurListe->getAllUtilisateurSimple($id_e);
+        $usersBefore = $this->utilisateurSQL->getAllByBaseEntite($id_e);
         self::assertContains($id_ce, array_column($connsBefore, 'id_ce'));
         self::assertContains($id_u, array_column($usersBefore, 'id_u'));
 
@@ -89,7 +89,7 @@ final class ForceDeleteEntityTest extends PastellTestCase
         self::assertSame(Command::SUCCESS, $status);
 
         $connsAfter = $this->connecteurEntiteSQL->getAll($id_e);
-        $usersAfter = $this->utilisateurListe->getAllUtilisateurSimple($id_e);
+        $usersAfter = $this->utilisateurSQL->getAllByBaseEntite($id_e);
         self::assertContains($id_ce, array_column($connsAfter, 'id_ce'));
         self::assertContains($id_u, array_column($usersAfter, 'id_u'));
 
@@ -111,7 +111,7 @@ final class ForceDeleteEntityTest extends PastellTestCase
         $id_ce = $this->connecteurCreationService->createConnecteur('test-conn', '', 0, $child_id);
         $id_u = $this->userCreationService->create('test-user', 'test@libriciel.invalid', 'Test', 'User', $child_id);
         $connsBefore = $this->connecteurEntiteSQL->getAll($child_id);
-        $usersBefore = $this->utilisateurListe->getAllUtilisateurSimple($child_id);
+        $usersBefore = $this->utilisateurSQL->getAllByBaseEntite($child_id);
         self::assertContains($id_ce, array_column($connsBefore, 'id_ce'));
         self::assertContains($id_u, array_column($usersBefore, 'id_u'));
 
@@ -121,7 +121,7 @@ final class ForceDeleteEntityTest extends PastellTestCase
         self::assertFalse((bool)$this->entiteSQL->getInfo((string)$child_id));
         $connsAfter = $this->connecteurEntiteSQL->getAll($child_id);
         self::assertNotContains($id_ce, array_column($connsAfter, 'id_ce'));
-        $usersAfter = $this->utilisateurListe->getAllUtilisateurSimple($child_id);
+        $usersAfter = $this->utilisateurSQL->getAllByBaseEntite($child_id);
         self::assertNotContains($id_u, array_column($usersAfter, 'id_u'));
         self::assertStringContainsString('Suppressions effectuées.', $this->tester->getDisplay());
     }
