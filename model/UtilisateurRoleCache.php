@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated 4.1.26 Use UtilisateurRoleCacheService instead
+ */
 class UtilisateurRoleCache
 {
     public function __construct(

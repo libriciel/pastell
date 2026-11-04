@@ -10,6 +10,7 @@
   et `DocumentSearchService` #2618
 - Classe `UsersToken` dépréciée au profit de `UserTokenService` #2621
 - Classe `ConnecteurDisponible` dépréciée au profit du service `ConnecteurAvailabilityService` #2622
+- Classe `UtilisateurRoleCache` dépréciée au profit de `UtilisateurRoleCacheService` #2624
 
 ### Sécurité
 

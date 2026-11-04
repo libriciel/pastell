@@ -5,6 +5,7 @@ use Pastell\Service\TypeDossier\TypeDossierEditionService;
 use Pastell\Service\TypeDossier\TypeDossierExportService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\UtilisateurRoleCacheService;
 
 class TypeDossierControlerTest extends ControlerTestCase
 {
@@ -78,7 +79,7 @@ class TypeDossierControlerTest extends ControlerTestCase
 
         $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('cas-nominal', DroitType::LECTURE));
         $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('cas-nominal', DroitType::EDITION));
-        $this->getObjectInstancier()->getInstance(UtilisateurRoleCache::class)->invalidate(1, 1);
+        $this->getObjectInstancier()->getInstance(UtilisateurRoleCacheService::class)->invalidate(1, 1);
 
         $this->createDocument('cas-nominal');
 
