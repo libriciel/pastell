@@ -9,6 +9,8 @@
   - Ajout d'une recherche avancée 
   - Ajout du tri par dates sur la liste des travaux
   - Possibilité de suspendre/reprendre les travaux correspondants à la recherche
+  - La page d'accueil du gestionnaire de tâches affiche la liste des prochains travaux à exécuter
+    et des liens vers 'Tous les travaux' avec les filtres correspondants
 - iparapheur REST "Multi-documents ET annexes" :
   - **BREAKING** : Suppression de la case 'Appliquer le multi-document' du connecteur iparapheur REST #2593
   - Studio, l'étape « Visa/Signature » dispose d'un nouveau champ « Autre(s) document(s) à signer ».
@@ -74,6 +76,7 @@
   - Suppression des fichiers obsolètes `extensions_graphe.dot` et `extensions_graphe.jpg` du workspace lors de la mise à jour
 - Suppression de la méthode `Gabarit::getPastellTimer()` #2600
 - Suppression de la classe `PastellTimer` #2600
+- Suppression de `JobQueueSQL::getAllJobs()`, remplacée par `JobQueueSQL::getFilteredJobList()` #964
 
 ### Suppressions d'éléments dépréciés
 

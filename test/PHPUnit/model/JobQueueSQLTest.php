@@ -28,12 +28,13 @@ class JobQueueSQLTest extends PastellTestCase
     /**
      * @throws Exception
      */
-    private function getNewJob(): Job
+    private function getNewJob(?string $next_try = null): Job
     {
         $job = new Job();
         $job->type = Job::TYPE_DOCUMENT;
         $job->etat_cible = 'cible';
         $job->etat_source = 'source';
+        $job->next_try = $next_try ?? $job->next_try;
         return $job;
     }
 
@@ -144,20 +145,36 @@ class JobQueueSQLTest extends PastellTestCase
     /**
      * @throws Exception
      */
-    public function testGetAllJobs(): void
+    public function testFilteredJobListPagination(): void
     {
         for ($i = 0; $i < 10; $i++) {
             $job = $this->getNewJob();
+            $job->next_try = sprintf('2030-01-%02d 00:00:00', 10 - $i);
             $this->jobQueueSQL->createJob($job);
         }
-        $job_list = $this->jobQueueSQL->getAllJobs();
+        $job_list = $this->jobQueueSQL->getFilteredJobList();
         static::assertCount(10, $job_list);
-        $job_list = $this->jobQueueSQL->getAllJobs(1);
-        static::assertCount(9, $job_list);
-        $job_list = $this->jobQueueSQL->getAllJobs(0, 3);
-        static::assertCount(3, $job_list);
-        $job_list = $this->jobQueueSQL->getAllJobs(9, 3);
+        static::assertSame('2030-01-01 00:00:00', $job_list[0]->next_try);
+        static::assertCount(9, $this->jobQueueSQL->getFilteredJobList(offset: 1));
+        static::assertCount(3, $this->jobQueueSQL->getFilteredJobList(3));
+        static::assertCount(1, $this->jobQueueSQL->getFilteredJobList(3, 9));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testFilteredJobListByDaemon(): void
+    {
+        $job = $this->getNewJob();
+        $job->id_daemon = DaemonSQL::GLOBAL_DAEMON;
+        $id_job = $this->jobQueueSQL->createJob($job);
+        $job = $this->getNewJob();
+        $job->id_daemon = 2;
+        $this->jobQueueSQL->createJob($job);
+
+        $job_list = $this->jobQueueSQL->getFilteredJobList(id_daemon: DaemonSQL::GLOBAL_DAEMON);
         static::assertCount(1, $job_list);
+        static::assertSame((int)$id_job, (int)$job_list[0]->id_job);
     }
 
     /**
@@ -331,6 +348,34 @@ class JobQueueSQLTest extends PastellTestCase
         $after = new JobAdvancedFilters(late: '1', late_before: '2999-01-01 00:00:00');
         static::assertSame(1, $this->jobQueueSQL->lockAll(null, $after));
         static::assertSame(JobStatus::SUSPENDED_BY_USER, $this->jobQueueSQL->getJob($id_job)->job_status);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testSearchSinceOneHour(): void
+    {
+        $two_hours_ago = date(Date::DATE_ISO, strtotime('-2 hours'));
+        $now = date(Date::DATE_ISO);
+
+        $this->jobQueueSQL->createJob($this->getNewJob($now));
+        $id_job_waiting_old = (int)$this->jobQueueSQL->createJob($this->getNewJob($two_hours_ago));
+        $id_job_locked_recent = (int)$this->jobQueueSQL->createJob($this->getNewJob($two_hours_ago));
+        $this->jobQueueSQL->lock($id_job_locked_recent, JobStatus::SUSPENDED_BY_USER);
+        $id_job_locked_old = (int)$this->jobQueueSQL->createJob($this->getNewJob($now));
+        $this->jobQueueSQL->lock($id_job_locked_old, JobStatus::SUSPENDED_BY_USER);
+        self::getSQLQuery()->query(
+            'UPDATE job_queue SET lock_since = ? WHERE id_job = ?',
+            $two_hours_ago,
+            $id_job_locked_old
+        );
+
+        $job_list = $this->jobQueueSQL->getFilteredJobList(
+            advancedFilters: new JobAdvancedFilters(since_one_hour: '1')
+        );
+        $id_job_list = array_map(static fn (Job $job): int => (int)$job->id_job, $job_list);
+        sort($id_job_list);
+        static::assertSame([$id_job_waiting_old, $id_job_locked_old], $id_job_list);
     }
 
     /**

@@ -21,6 +21,7 @@ final readonly class JobAdvancedFilters
         public array $id_verrou = [],
         public string $late = '',
         public string $late_before = '',
+        public string $since_one_hour = '',
     ) {
     }
 
@@ -34,6 +35,7 @@ final readonly class JobAdvancedFilters
             id_verrou: (array)$recuperateur->get('id_verrou', []),
             late: self::toScalarString($recuperateur->get('late', '')),
             late_before: self::toDateString($recuperateur->get('late_before', '')),
+            since_one_hour: self::toScalarString($recuperateur->get('since_one_hour', '')),
         );
     }
 

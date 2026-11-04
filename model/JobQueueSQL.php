@@ -403,19 +403,6 @@ SQL;
     /**
      * @return Job[]
      */
-    public function getAllJobs(int $offset = 0, int $limit = 20): array
-    {
-        $sql = "SELECT *
-        FROM job_queue jq
-        ORDER BY next_try DESC
-        LIMIT $offset, $limit";
-        $results = $this->query($sql);
-        return $this->mapResultToJobList($results);
-    }
-
-    /**
-     * @return Job[]
-     */
     public function getFilteredJobList(
         int $limit = 20,
         int $offset = 0,
@@ -545,6 +532,13 @@ SQL;
         if ($filters->late !== '') {
             $sql .= ' AND job_queue.next_try < ?';
             $params[] = $filters->late_before !== '' ? $filters->late_before : $this->getNow();
+        }
+
+        if ($filters->since_one_hour !== '') {
+            $sql .= ' AND ((job_queue.job_status = ? AND job_queue.next_try < ?)'
+                . ' OR (job_queue.job_status != ? AND job_queue.lock_since < ?))';
+            $one_hour_ago = date(Date::DATE_ISO, strtotime('-1 hour'));
+            array_push($params, JobStatus::WAITING->value, $one_hour_ago, JobStatus::WAITING->value, $one_hour_ago);
         }
 
         if ($filters->id_e !== '') {
