@@ -9,8 +9,9 @@ use DocumentActionEntite;
 use DocumentEmailSQL;
 use DocumentEntiteSQL;
 use DocumentSQL;
-use Journal;
+use JournalEventType;
 use NotificationMail;
+use Pastell\Service\Journal\JournalEntryService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class DocumentEmailReadService
@@ -24,7 +25,7 @@ class DocumentEmailReadService
         private readonly DocumentActionEntite $documentActionEntite,
         private readonly DocumentSQL $documentSQL,
         private readonly ActionCreatorSQL $actionCreatorSQL,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journalEntryService,
         private readonly NotificationMail $notificationMail,
         private readonly string $site_base,
     ) {
@@ -47,8 +48,8 @@ class DocumentEmailReadService
         $id_d = $info['id_d'];
         $id_e = $this->documentEntiteSQL->getEntiteId($id_d);
 
-        $this->journal->addActionAutomatique(
-            Journal::MAIL_SECURISE,
+        $this->journalEntryService->addActionAutomatique(
+            JournalEventType::SECURE_MAIL,
             $id_e,
             $id_d,
             'Consulté',
