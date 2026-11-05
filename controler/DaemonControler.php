@@ -8,6 +8,7 @@ use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Module\ModuleListService;
+use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\ViewModel\DeleteConfirmation;
 use Symfony\Component\Process\Process;
 
@@ -666,7 +667,7 @@ class DaemonControler extends PastellControler
         $allocatedWorkers = $this->getDaemonSQL()->getNbAllocatedWorkers();
         if ($allocatedWorkers > $nb_workers) {
             $this->setLastError(
-                "Impossible de réduire le nombre de processus à $nb_workers 
+                "Impossible de réduire le nombre de processus à $nb_workers
             car $allocatedWorkers processus sont déjà alloués à des gestionnaires de tâches actifs.
             <br>Veuillez libérer des processus avant de réduire la configuration."
             );

@@ -7,7 +7,6 @@ namespace Pastell\Command\Entity;
 use ConnecteurEntiteSQL;
 use DaemonManager;
 use DaemonSQL;
-use DocumentEntite;
 use DocumentSQL;
 use DonneesFormulaireFactory;
 use EntiteSQL;
@@ -17,7 +16,8 @@ use JobManager;
 use NotFoundException;
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Connecteur\ConnecteurDeletionService;
-use RoleUtilisateur;
+use Pastell\Service\Document\DocumentEntiteService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -26,7 +26,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use UnrecoverableException;
-use UtilisateurListe;
 use UtilisateurSQL;
 
 #[AsCommand(
@@ -45,14 +44,13 @@ class ForceDeleteEntity extends Command
 
     public function __construct(
         private readonly EntiteSQL $entiteSQL,
-        private readonly DocumentEntite $documentEntite,
+        private readonly DocumentEntiteService $documentEntiteService,
         private readonly DocumentSQL $document,
         private readonly DonneesFormulaireFactory $donneesFormulaireFactory,
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
         private readonly FluxEntiteSQL $fluxEntiteSQL,
-        private readonly UtilisateurListe $utilisateurListe,
         private readonly UtilisateurSQL $utilisateur,
-        private readonly RoleUtilisateur $roleUtilisateur,
+        private readonly UtilisateurRoleService $utilisateurRoleService,
         private readonly JobManager $jobManager,
         private readonly ConnecteurDeletionService $connecteurDeletionService,
         private readonly ConnecteurAssociationService $connecteurAssociationService,
@@ -114,7 +112,7 @@ class ForceDeleteEntity extends Command
                 $io->writeln("Suppression du daemon de l'entité {$id_e} : " . ($do ? '[OK]' : '[PASS]'));
             }
 
-            $all_doc = $this->documentEntite->getAll($id_e);
+            $all_doc = $this->documentEntiteService->getDocuments((int)$id_e);
             $id_d_list = array_map(static function ($a) {
                 return $a[self::ID_D];
             }, $all_doc);
@@ -154,14 +152,14 @@ class ForceDeleteEntity extends Command
                 $io->writeln("Suppression du connecteur {$id_ce} : " . ($do ? '[OK]' : '[PASS]'));
             }
 
-            $all_utilisateur = $this->utilisateurListe->getAllUtilisateurSimple((int)$id_e);
+            $all_utilisateur = $this->utilisateur->getAllByBaseEntite((int)$id_e);
             $id_u_list = array_map(static function ($a) {
                 return $a[self::ID_U];
             }, $all_utilisateur);
             $io->note('Utilisateurs à supprimer : ' . (empty($id_u_list) ? '[aucun]' : implode(', ', $id_u_list)));
             foreach ($id_u_list as $id_u) {
                 if ($do) {
-                    $this->roleUtilisateur->removeAllRole($id_u);
+                    $this->utilisateurRoleService->removeAllRoles((int)$id_u);
                     $this->utilisateur->desinscription($id_u);
                 }
                 $io->writeln("Suppression de l'utilisateur {$id_u} : " . ($do ? '[OK]' : '[PASS]'));
