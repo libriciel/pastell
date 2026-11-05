@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Mailer\Mailer;
+use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\PasswordEntropy;
 use Pastell\Service\Utilisateur\PasswordResetService;
@@ -124,7 +126,7 @@ class ConnexionControler extends PastellControler
                 )
             );
         }
-        $id_u = $this->getUtilisateurListe()->getUtilisateurByLogin($login);
+        $id_u = $this->getUtilisateur()->getIdFromLogin($login);
         if (!$id_u) {
             throw new Exception(
                 sprintf(
@@ -174,12 +176,14 @@ class ConnexionControler extends PastellControler
     {
         $infoUtilisateur = $this->getUtilisateur()->getInfo($id_u);
         $login = $infoUtilisateur['login'];
-        $this->getJournal()->setId($id_u);
+        $this->getJournalEntryService()->setId($id_u);
+        // To remove along with the deprecated Journal class
+        $this->getInstance(Journal::class)->setId($id_u);
         $nom = $infoUtilisateur['prenom'] . ' ' . $infoUtilisateur['nom'];
-        $this->getJournal()->add(
-            Journal::CONNEXION,
+        $this->getJournalEntryService()->add(
+            JournalEventType::LOGIN,
             $infoUtilisateur['id_e'],
-            0,
+            JournalEntryService::NO_ID_D,
             'Connecté',
             "$nom s'est connecté via $external_system depuis l'adresse " . $_SERVER['REMOTE_ADDR']
         );
@@ -372,7 +376,7 @@ class ConnexionControler extends PastellControler
             );
             $this->redirect($redirect_fail);
         }
-        $id_u = $this->getUtilisateurListe()->getUtilisateurByLogin($login);
+        $id_u = $this->getUtilisateur()->getIdFromLogin($login);
 
         if (!$id_u) {
             $this->setLastError('Identifiant ou mot de passe incorrect.');
@@ -407,13 +411,15 @@ class ConnexionControler extends PastellControler
         }
         $loginAttemptLimit->resetLoginAttempt($login);
 
-        $this->getJournal()->setId($id_u);
+        $this->getJournalEntryService()->setId($id_u);
+        // To remove along with the deprecated Journal class
+        $this->getInstance(Journal::class)->setId($id_u);
         $infoUtilisateur = $this->getUtilisateur()->getInfo($id_u);
         $nom = $infoUtilisateur['prenom'] . ' ' . $infoUtilisateur['nom'];
-        $this->getJournal()->add(
-            Journal::CONNEXION,
+        $this->getJournalEntryService()->add(
+            JournalEventType::LOGIN,
             $infoUtilisateur['id_e'],
-            0,
+            JournalEntryService::NO_ID_D,
             'Connecté',
             "$nom s'est connecté depuis l'adresse " . $_SERVER['REMOTE_ADDR']
         );
@@ -537,8 +543,7 @@ class ConnexionControler extends PastellControler
 
     private function getId_uFromTokenOrFailed(string $mail_verif_password)
     {
-        $utilisateurListe = $this->getObjectInstancier()->getInstance(UtilisateurListe::class);
-        $id_u = $utilisateurListe->getByVerifPassword(
+        $id_u = $this->getUtilisateur()->getIdByVerifPassword(
             $mail_verif_password,
             self::CHANGE_PASSWORD_TOKEN_TTL_IN_SECONDS
         );
@@ -604,7 +609,7 @@ class ConnexionControler extends PastellControler
     {
         $recuperateur = $this->getPostInfo();
 
-        $login = $recuperateur->get('login');
+        $login = (string) $recuperateur->get('login');
 
         $utilisateurListe = $this->getObjectInstancier()->getInstance(UtilisateurListe::class);
         $id_u = $utilisateurListe->getUtilisateurByLogin($login);

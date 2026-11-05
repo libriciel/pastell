@@ -4,6 +4,7 @@ use Pastell\Mailer\Mailer;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityUtilitiesService;
+use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Notification\NotificationService;
 use Pastell\Service\PasswordEntropy;
@@ -154,10 +155,10 @@ class UtilisateurControler extends PastellControler
             ->getInstance(Mailer::class)
             ->send($templatedEmail);
 
-        $this->getJournal()->add(
-            Journal::MODIFICATION_UTILISATEUR,
+        $this->getJournalEntryService()->add(
+            JournalEventType::USER_MODIFICATION,
             $utilisateur_info['id_e'],
-            0,
+            JournalEntryService::NO_ID_D,
             'change-email',
             "Demande de changement d'email initiée {$utilisateur_info['email']} -> $email"
         );
@@ -299,7 +300,6 @@ class UtilisateurControler extends PastellControler
 
         $this->setViewParameter('id_current_u', $this->getId_u());
         $this->setViewParameter('page_title', 'Utilisateur ' . $info['prenom'] . ' ' . $info['nom']);
-        $this->setViewParameter('entiteListe', $this->getEntiteListe());
         $this->setViewParameter(
             'tabEntite',
             $this->getInstance(UtilisateurEntiteService::class)
@@ -393,8 +393,6 @@ class UtilisateurControler extends PastellControler
         $info = $this->getUtilisateur()->getInfo($id_u);
 
         $this->setViewParameter('page_title', 'Espace utilisateur : ' . $info['prenom'] . ' ' . $info['nom']);
-
-        $this->setViewParameter('entiteListe', $this->getEntiteListe());
 
         $this->setViewParameter(
             'tabEntite',

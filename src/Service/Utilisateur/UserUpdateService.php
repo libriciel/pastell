@@ -5,19 +5,21 @@ declare(strict_types=1);
 namespace Pastell\Service\Utilisateur;
 
 use ConflictException;
-use Journal;
 use NotificationDigestSQL;
 use Pastell\Validator\UserValidator;
 use Pastell\Service\Droit\DroitService;
 use UnrecoverableException;
 use UtilisateurSQL;
+use JournalAction;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 final class UserUpdateService
 {
     public function __construct(
         private readonly UtilisateurSQL $utilisateurSQL,
         private readonly UtilisateurRoleService $utilisateurRoleService,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journalEntryService,
         private readonly UserValidator $userValidator,
         private readonly NotificationDigestSQL $notificationDigestSQL,
     ) {
@@ -74,10 +76,10 @@ final class UserUpdateService
         $info = $this->utilisateurSQL->getInfo($userId);
         $this->utilisateurSQL->enable($userId);
         $message = "L'utilisateur {$info['login']} a été activé";
-        $this->journal->add(
-            Journal::MODIFICATION_UTILISATEUR,
+        $this->journalEntryService->add(
+            JournalEventType::USER_MODIFICATION,
             $info['id_e'],
-            Journal::NO_ID_D,
+            JournalEntryService::NO_ID_D,
             'activation',
             $message,
         );
@@ -89,10 +91,10 @@ final class UserUpdateService
         $info = $this->utilisateurSQL->getInfo($userId);
         $this->utilisateurSQL->disable($userId);
         $message = "L'utilisateur {$info['login']} a été désactivé";
-        $this->journal->add(
-            Journal::MODIFICATION_UTILISATEUR,
+        $this->journalEntryService->add(
+            JournalEventType::USER_MODIFICATION,
             $info['id_e'],
-            Journal::NO_ID_D,
+            JournalEntryService::NO_ID_D,
             'désactivation',
             $message,
         );
@@ -160,11 +162,11 @@ final class UserUpdateService
         }
         $info = implode('; ', $infoChanged);
 
-        $this->journal->add(
-            Journal::MODIFICATION_UTILISATEUR,
+        $this->journalEntryService->add(
+            JournalEventType::USER_MODIFICATION,
             $entityId,
-            0,
-            Journal::ACTION_MODIFFIE,
+            JournalEntryService::NO_ID_D,
+            JournalAction::MODIFIED->value,
             "Modification de l'utilisateur $login ($userId) : $info"
         );
 

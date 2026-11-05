@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Journal\JournalConsultationService;
+
 class SAEEnvoyer extends ConnecteurTypeActionExecutor
 {
     public const ACTION_NAME = 'send-archive';
@@ -110,7 +112,14 @@ class SAEEnvoyer extends ConnecteurTypeActionExecutor
         $date_cloture_journal_iso8601_mapping = $this->getMappingValue('date_cloture_journal_iso8601');
 
 
-        $journal = $this->getJournal()->getAll($this->id_e, false, $this->id_d, 0, 0, 10000);
+        $journal = $this->objectInstancier->getInstance(JournalConsultationService::class)->getList(
+            $this->id_e,
+            false,
+            $this->id_d,
+            0,
+            0,
+            10000
+        );
         foreach ($journal as $i => $journal_item) {
             $journal[$i]['preuve'] = base64_encode($journal[$i]['preuve']);
         }

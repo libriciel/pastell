@@ -39,6 +39,23 @@ abstract class SQL
         return $this->sqlQuery->getPdo()->lastInsertId($name);
     }
 
+    protected function queryStream(string $query, array $param = [], bool $buffered = false): Generator
+    {
+        $max_execution_time = ini_get('max_execution_time');
+        $pdo = $this->sqlQuery->getPdo();
+        $pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, $buffered);
+        try {
+            $statement = $pdo->prepare($query);
+            $statement->execute($param);
+            while (($row = $statement->fetch(PDO::FETCH_ASSOC)) !== false) {
+                ini_set('max_execution_time', $max_execution_time);
+                yield $row;
+            }
+        } finally {
+            $pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+        }
+    }
+
     public function getNow(): string
     {
         return date(Date::DATE_ISO);

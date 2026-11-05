@@ -6,6 +6,7 @@ namespace Pastell\Tests\Service\Utilisateur;
 
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityCreationService;
+use Pastell\Service\Notification\NotificationService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use EntiteSQL;
@@ -93,5 +94,16 @@ class UtilisateurRoleServiceTest extends PastellTestCase
         $this->service->removeAllRoles($id_u);
 
         static::assertSame([], $this->service->getRole($id_u));
+    }
+
+    public function testReplaceRolesKeepsNotifications(): void
+    {
+        $notificationService = $this->getObjectInstancier()->getInstance(NotificationService::class);
+        $notificationService->subscribe(1, 1, 'actes-generique', 'send-tdt', false);
+
+        $this->service->replaceRolesForEntite(1, EntiteSQL::ID_E_ENTITE_RACINE, ['admin']);
+
+        static::assertTrue($this->service->hasRole(1, 'admin', EntiteSQL::ID_E_ENTITE_RACINE));
+        static::assertCount(1, $notificationService->getSubscriptionsByUser(1));
     }
 }

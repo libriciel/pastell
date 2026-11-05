@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Pastell\Command\Module;
 
-use Journal;
+use Pastell\Service\Document\DocumentEntiteService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Pastell\Service\Journal\JournalEntryService;
+use JournalEventType;
 
 #[AsCommand(
     name: 'app:module:force-delete-module',
@@ -25,12 +27,12 @@ class ForceDeleteModuleCommand extends Command
     private const ID_FE = 'id_fe';
 
     public function __construct(
-        private readonly \DocumentEntite $documentEntite,
+        private readonly DocumentEntiteService $documentEntiteService,
         private readonly \JobQueueSQL $jobQueueSQL,
         private readonly \FluxEntiteSQL $fluxEntiteSQL,
         private readonly \DocumentSQL $documentSQL,
         private readonly \DonneesFormulaireFactory $donneesFormulaireFactory,
-        private readonly \Journal $journal,
+        private readonly JournalEntryService $journalEntryService,
     ) {
         parent::__construct();
     }
@@ -56,7 +58,7 @@ class ForceDeleteModuleCommand extends Command
         } else {
             foreach ($documents as $document) {
                 $id_d = $document[self::ID_D];
-                $docEntityInformation = $this->documentEntite->getEntite($id_d);
+                $docEntityInformation = $this->documentEntiteService->getEntites($id_d);
                 foreach ($docEntityInformation as $entite) {
                     $id_e = $entite[self::ID_E];
 
@@ -103,8 +105,7 @@ class ForceDeleteModuleCommand extends Command
 
         foreach ($documents as $document) {
             $id_d = $document[self::ID_D];
-            $docEntityInformation = $this->documentEntite->getEntite($id_d);
-            $id_job = $this->jobQueueSQL->getJobIdForDocument($docEntityInformation[0][self::ID_E], $id_d);
+            $id_job = $this->jobQueueSQL->getJobIdForDocument($this->documentEntiteService->getEntiteId($id_d), $id_d);
             if ($id_job) {
                 $this->jobQueueSQL->deleteJob($id_job);
             }
@@ -118,7 +119,7 @@ class ForceDeleteModuleCommand extends Command
                 $info[self::TITRE],
                 $id_d
             );
-            $this->journal->add(Journal::DOCUMENT_ACTION, 0, $id_d, 'suppression', $message);
+            $this->journalEntryService->add(JournalEventType::DOCUMENT_ACTION, 0, $id_d, 'suppression', $message);
         }
 
         foreach ($associations as $association) {

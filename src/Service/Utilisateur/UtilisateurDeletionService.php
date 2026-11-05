@@ -3,12 +3,14 @@
 namespace Pastell\Service\Utilisateur;
 
 use EntiteSQL;
+use JournalAction;
+use JournalEventType;
 use NotificationDigestSQL;
+use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Service\MagicLink\MagicLinkRevokeService;
 use Pastell\Service\Notification\NotificationService;
 use UtilisateurNewEmailSQL;
 use UtilisateurSQL;
-use Journal;
 use UsersToken;
 
 class UtilisateurDeletionService
@@ -18,17 +20,12 @@ class UtilisateurDeletionService
      */
     private $utilisateurSQL;
 
-    /**
-     * @var Journal
-     */
-    private $journal;
-
     private UtilisateurRoleService $utilisateurRoleService;
 
     public function __construct(
         UtilisateurSQL $utilisateurSQL,
         UtilisateurRoleService $utilisateurRoleService,
-        Journal $journal,
+        private readonly JournalEntryService $journalEntryService,
         private readonly NotificationService $notificationService,
         private readonly UsersToken $usersToken,
         private readonly UtilisateurNewEmailSQL $utilisateurNewEmailSQL,
@@ -36,7 +33,6 @@ class UtilisateurDeletionService
         private readonly MagicLinkRevokeService $magicLinkRevokeService,
     ) {
         $this->utilisateurSQL = $utilisateurSQL;
-        $this->journal = $journal;
         $this->utilisateurRoleService = $utilisateurRoleService;
     }
 
@@ -55,11 +51,11 @@ class UtilisateurDeletionService
         $this->usersToken->deleteAllForUser($id_u);
         $this->utilisateurNewEmailSQL->delete($id_u);
         $this->utilisateurSQL->desinscription($id_u);
-        $this->journal->add(
-            Journal::MODIFICATION_UTILISATEUR,
+        $this->journalEntryService->add(
+            JournalEventType::USER_MODIFICATION,
             EntiteSQL::ID_E_ENTITE_RACINE,
-            Journal::NO_ID_D,
-            Journal::ACTION_SUPPRIME,
+            JournalEntryService::NO_ID_D,
+            JournalAction::DELETED->value,
             "Suppression de l'utilisateur {$userInfo['login']} (id_u=$id_u)"
         );
     }

@@ -2,7 +2,7 @@
 
 use Pastell\Configuration\JobStatus;
 use Symfony\Component\Lock\LockFactory;
-use Symfony\Component\Lock\LockInterface;
+use Symfony\Component\Lock\SharedLockInterface;
 
 class ActionExecutorFactoryTest extends PastellTestCase
 {
@@ -148,7 +148,7 @@ class ActionExecutorFactoryTest extends PastellTestCase
 
     private function mockLockFactory(): void
     {
-        $lockInterface = $this->createMock(LockInterface::class);
+        $lockInterface = $this->createMock(SharedLockInterface::class);
         $lockFactory = $this->createMock(LockFactory::class);
 
         $lockFactory->expects($this->any())

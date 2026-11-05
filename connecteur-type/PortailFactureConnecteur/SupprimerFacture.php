@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Document\DocumentEntiteService;
+
 abstract class SupprimerFacture extends ActionExecutor
 {
     abstract public function doTraitementSuppression($all_id_d, $id_e);
@@ -49,7 +51,8 @@ abstract class SupprimerFacture extends ActionExecutor
         $listeStatutCourant = PortailFactureConnecteur::getListeStatutCourant();
 
         // Chargement de toutes les factures CPP
-        $listDocument = $this->objectInstancier->getInstance(DocumentEntite::class)->getDocument($id_e, $flux);
+        $listDocument = $this->objectInstancier->getInstance(DocumentEntiteService::class)
+            ->getDocumentsByType((int) $id_e, $flux);
 
         // Filtre des factures en fonction du statut cpp et de la date du dernier changement de statut.
         foreach ($listDocument as $document) {
