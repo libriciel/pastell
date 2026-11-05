@@ -108,11 +108,52 @@
     - Le type de dossier `facture-formulaire-pivot` et connecteur `parametrage-flux-facture-pivot` sont supprimés
     - Le connecteur `chorus-par-csv` est supprimé
 
-## [5.0.11] - 2026-11-2
+## [5.0.12] - 2026-11-02
+
+### Évolutions
+
+- Passage à Symfony 7.4 #2606
+
+### Corrections
+
+- Les notifications sont supprimées au retrait d'un rôle ou à la modification de ses droits lorsque l'utilisateur n'a
+  plus les droits nécessaires #2575
+
+### Dépréciations
+
+- Classe `Journal` et méthodes `getJournal()` dépréciées au profit de `JournalSQL`, `JournalConsultationService`,
+  `JournalExportService`, `JournalEntryService` et `JournalEventType` #2595
+- Classes `EntiteListe` et `UtilisateurListe` dépréciées au profit de `EntiteSQL`, `UtilisateurSQL` et du service
+  `UtilisateurListService` #2601
+- Classe `DocumentEntite` dépréciée au profit de `DocumentEntiteSQL` et des services `DocumentRoleService` et
+  `DocumentEntiteService` #2611
+
+### Sécurité
+
+- Faille de contrôle d'accès sur la création de connecteur
+  (CVSS 7.2 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H) #2612
+
+## [5.0.11] - 2026-10-22
 
 ### Corrections
 
 - iparapheur REST : message d'erreur explicite lorsque le fichier signé n'est pas trouvé dans l'archive #2602
+
+### Dépréciations
+
+- Classe `Notification` dépréciée au profit de `NotificationSQL` et des services `NotificationService` et
+  `NotificationSubscription` #2582
+- Classe `RoleUtilisateur` dépréciée au profit de `UtilisateurRoleSQL` et des services `UtilisateurRoleService`,
+  `UtilisateurEntiteService` et `RoleDelegationService` #2594
+- `DroitService::getAllDroitEntite()` et `DroitService::getAllDroit()` dépréciées au profit de
+  `getUnrestrictedDroitsForEntite()` et `getUnrestrictedDroits()` #2596
+
+### Sécurité
+
+- [CVE-2026-109618](https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w) (criticité CRITIQUE)
+  RCE via OOM corruption #2608
+- [CVE-2026-109619](https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp) (criticité CRITIQUE)
+  RCE via stale global state #2608
 
 ## [5.0.10] - 2026-10-05
 
@@ -557,14 +598,44 @@
 - Connecteur iparapheur soap #2268
 - Connecteur `chorus-par-csv` ChorusPro par CSV #2356
 
-## [4.1.24] - 2026-11-02
+## [4.1.25] - 2026-11-02
+
+### Corrections
+
+- Les notifications sont supprimées au retrait d'un rôle ou à la modification de ses droits lorsque l'utilisateur n'a
+  plus les droits nécessaires #2575
 
 ### Dépréciations
 
-- Classe `Notification` dépréciée au profit de `NotificationSQL` et des services `NotificationService` et `NotificationSubscription` #2582
-- Classe `RoleUtilisateur` dépréciée au profit de `UtilisateurRoleSQL` et des services `UtilisateurRoleService`, `UtilisateurEntiteService` et `RoleDelegationService` #2594
-- `DroitService::getAllDroitEntite()` et `DroitService::getAllDroit()` dépréciées au profit de 
+- Classe `Journal` et méthodes `getJournal()` dépréciées au profit de `JournalSQL`, `JournalConsultationService`,
+  `JournalExportService`, `JournalEntryService` et `JournalEventType` #2595
+- Classes `EntiteListe` et `UtilisateurListe` dépréciées au profit de `EntiteSQL`, `UtilisateurSQL` et du service
+  `UtilisateurListService` #2601
+- Classe `DocumentEntite` dépréciée au profit de `DocumentEntiteSQL` et des services `DocumentRoleService` et
+  `DocumentEntiteService` #2611
+
+### Sécurité
+
+- Faille de contrôle d'accès sur la création de connecteur
+  (CVSS 7.2 - criticité HAUTE - CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H) #2612
+
+## [4.1.24] - 2026-10-22
+
+### Dépréciations
+
+- Classe `Notification` dépréciée au profit de `NotificationSQL` et des services `NotificationService` et
+  `NotificationSubscription` #2582
+- Classe `RoleUtilisateur` dépréciée au profit de `UtilisateurRoleSQL` et des services `UtilisateurRoleService`,
+  `UtilisateurEntiteService` et `RoleDelegationService` #2594
+- `DroitService::getAllDroitEntite()` et `DroitService::getAllDroit()` dépréciées au profit de
   `getUnrestrictedDroitsForEntite()` et `getUnrestrictedDroits()` #2596
+
+### Sécurité
+
+- [CVE-2026-109618](https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w) (criticité CRITIQUE)
+  RCE via OOM corruption #2608
+- [CVE-2026-109619](https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp) (criticité CRITIQUE)
+  RCE via stale global state #2608
 
 ## [4.1.23] - 2026-10-05
 

@@ -1,6 +1,7 @@
 <?php
 
 use Mailsec\MailsecManager;
+use Pastell\Service\Document\DocumentRoleService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Utilities\Identifier\IdentifierGeneratorInterface;
@@ -432,9 +433,9 @@ class DocumentControlerTest extends ControlerTestCase
         } catch (LastErrorException $e) {
             static::assertStringContainsString("n'est pas permise sur ce dossier", $e->getMessage());
         }
-        $documentEntite = $this->getObjectInstancier()->getInstance(DocumentEntite::class);
-        static::assertFalse($documentEntite->getRole(PastellTestCase::ID_E_COL, $document['id_d']));
-        static::assertSame('editeur', $documentEntite->getRole(PastellTestCase::ID_E_SERVICE, $document['id_d']));
+        $documentRoleService = $this->getObjectInstancier()->getInstance(DocumentRoleService::class);
+        static::assertNull($documentRoleService->getRole(PastellTestCase::ID_E_COL, $document['id_d']));
+        static::assertSame('editeur', $documentRoleService->getRole(PastellTestCase::ID_E_SERVICE, $document['id_d']));
     }
 
     public function testActionRefusesCreationOnOwnDocument(): void

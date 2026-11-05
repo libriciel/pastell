@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Document\DocumentRoleService;
+
 class CreationFactureCPP
 {
     protected $objectInstancier;

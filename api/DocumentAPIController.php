@@ -3,9 +3,11 @@
 use Pastell\File\Chunk\ChunkRequest;
 use Pastell\File\Chunk\ChunkUploader;
 use Pastell\Service\Document\DocumentDeletionService;
+use Pastell\Service\Document\DocumentRoleService;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Document\DocumentEmailService;
+use Pastell\Service\Journal\JournalEntryService;
 
 class DocumentAPIController extends BaseAPIController
 {
@@ -14,10 +16,10 @@ class DocumentAPIController extends BaseAPIController
         private DocumentSQL $document,
         private DonneesFormulaireFactory $donneesFormulaireFactory,
         private ActionPossible $actionPossible,
-        private DocumentEntite $documentEntite,
+        private DocumentRoleService $documentRoleService,
         private DocumentTypeFactory $documentTypeFactory,
         private ActionExecutorFactory $actionExecutorFactory,
-        private Journal $journal,
+        private JournalEntryService $journalEntryService,
         private UtilisateurSQL $utilisateur,
         private EntiteSQL $entiteSQL,
         private DocumentCount $documentCount,
@@ -378,8 +380,8 @@ class DocumentAPIController extends BaseAPIController
         $infoUtilisateur = $this->utilisateur->getInfo($this->getUtilisateurId());
         $nom = $infoUtilisateur['prenom'] . ' ' . $infoUtilisateur['nom'];
 
-        $this->journal->add(
-            Journal::DOCUMENT_CONSULTATION,
+        $this->journalEntryService->add(
+            JournalEventType::DOCUMENT_CONSULTATION,
             $id_e,
             $id_d,
             'Consulté',
@@ -653,7 +655,7 @@ class DocumentAPIController extends BaseAPIController
             throw new NotFoundException("Le document $id_d n'appartient pas à l'entité $id_e");
         }
 
-        $my_role = $this->documentEntite->getRole($id_e, $id_d);
+        $my_role = $this->documentRoleService->getRole($id_e, $id_d);
         if (!$my_role) {
             throw new NotFoundException("Le document $id_d n'appartient pas à l'entité $id_e");
         }

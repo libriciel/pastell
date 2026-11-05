@@ -31,7 +31,7 @@ return function (array $context) {
         }
         /** @var Pastell\Command\BaseCommand $commandClass */
         $commandClass = ObjectInstancierFactory::getObjetInstancier()->getInstance($commandClassName);
-        $application->add($commandClass);
+        $application->addCommand($commandClass);
     }
     return $application;
 };

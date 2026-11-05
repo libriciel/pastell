@@ -31,7 +31,7 @@ class DocumentDeletionServiceTest extends PastellTestCase
         DocumentSQL::clearCache();
         $this->assertFalse($documentSQL->getInfo($id_d));
 
-        $journal_message = $this->getJournal()->getAll()[0]['message'];
+        $journal_message = $this->getJournalSQL()->getAll()[0]['message'];
         $expected_journal_message = "Le document «  » ($id_d) a été supprimé ";
         $this->assertEquals(
             $expected_journal_message,

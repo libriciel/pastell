@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Tests\Service\Entite;
 
 use EntiteSQL;
-use Journal;
+use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Validator\EntityValidator;
 use PastellTestCase;
@@ -17,7 +17,7 @@ class EntityCreationServiceTest extends PastellTestCase
     {
         return new EntityCreationService(
             $this->getObjectInstancier()->getInstance(EntiteSQL::class),
-            $this->getObjectInstancier()->getInstance(Journal::class),
+            $this->getObjectInstancier()->getInstance(JournalEntryService::class),
             $this->getObjectInstancier()->getInstance(EntityValidator::class),
         );
     }

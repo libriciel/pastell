@@ -6,7 +6,7 @@ namespace Pastell\Tests\Command\Journal;
 
 use CSVoutput;
 use Exception;
-use Journal;
+use JournalEventType;
 use Pastell\Command\Journal\ExportHistory;
 use PastellTestCase;
 use SQLQuery;
@@ -39,7 +39,7 @@ final class ExportHistoryTest extends PastellTestCase
         $this->outFile = $this->tmp_folder . '/pastell-export-' . uniqid('', true) . '.csv';
         @unlink($this->outFile);
 
-        $id_j = $this->getJournal()->add(Journal::TEST, 0, '', '', 'foo');
+        $id_j = $this->getJournalEntryService()->add(JournalEventType::TEST, 0, '', '', 'foo');
         $sql = 'UPDATE journal SET date=? WHERE id_j=?';
         self::getSQLQuery()->query($sql, '2025-03-01', $id_j);
         $sql_insert = 'INSERT INTO journal_historique SELECT * FROM journal WHERE id_j=?';

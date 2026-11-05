@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Journal\JournalEntryService;
+
 class Gabarit
 {
     private array $viewParameter;
@@ -199,9 +201,17 @@ class Gabarit
         return $this->objectInstancier->getInstance(PastellTimer::class);
     }
 
+    /**
+     * @deprecated 4.1.25 Use getJournalEntryService() instead
+     */
     public function getJournal(): Journal
     {
         return $this->objectInstancier->getInstance(Journal::class);
+    }
+
+    public function getJournalEntryService(): JournalEntryService
+    {
+        return $this->objectInstancier->getInstance(JournalEntryService::class);
     }
 
     public function getDocumentIndexSql(): DocumentIndexSQL

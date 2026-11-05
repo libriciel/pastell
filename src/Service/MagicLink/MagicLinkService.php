@@ -10,8 +10,10 @@ use Date;
 use EntiteSQL;
 use Exception;
 use Journal;
+use JournalEventType;
 use MagicLinkSQL;
 use Pastell\Mailer\Mailer;
+use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Service\TokenGenerator;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
@@ -40,7 +42,7 @@ final class MagicLinkService
         private readonly MagicLinkSQL $magicLink,
         private readonly TokenGenerator $tokenGenerator,
         private readonly UuidGenerator $uuidGenerator,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journalEntryService,
         private readonly UserCreationService $userCreationService,
         private readonly RoleUtilisateur $roleUtilisateur,
         private readonly UtilisateurDeletionService $utilisateurDeletionService,
@@ -112,10 +114,10 @@ final class MagicLinkService
             throw $e;
         }
 
-        $this->journal->add(
-            Journal::CONNEXION,
+        $this->journalEntryService->add(
+            JournalEventType::LOGIN,
             0,
-            0,
+            JournalEntryService::NO_ID_D,
             'magic-link',
             "Génération de l'accès temporaire #$magicLinkId (motif : $motif, expiration : $expiresAt)"
         );
@@ -144,10 +146,10 @@ final class MagicLinkService
             $token,
         );
 
-        $this->journal->add(
-            Journal::CONNEXION,
+        $this->journalEntryService->add(
+            JournalEventType::LOGIN,
             0,
-            0,
+            JournalEntryService::NO_ID_D,
             'magic-link',
             "Renvoi de l'accès temporaire #$magicLinkId"
         );
@@ -276,10 +278,10 @@ final class MagicLinkService
             $this->deleteTemporaryUser($link);
         }
 
-        $this->journal->add(
-            Journal::CONNEXION,
+        $this->journalEntryService->add(
+            JournalEventType::LOGIN,
             EntiteSQL::ID_E_ENTITE_RACINE,
-            0,
+            JournalEntryService::NO_ID_D,
             'magic-link',
             "Révocation de l'accès #$magicLinkId"
         );
@@ -292,10 +294,10 @@ final class MagicLinkService
             $magicLinkId = (string)$link['id'];
             $this->magicLink->revoke($magicLinkId);
             $this->deleteTemporaryUser($link);
-            $this->journal->add(
-                Journal::CONNEXION,
+            $this->journalEntryService->add(
+                JournalEventType::LOGIN,
                 EntiteSQL::ID_E_ENTITE_RACINE,
-                Journal::NO_ID_D,
+                JournalEntryService::NO_ID_D,
                 'magic-link',
                 "Nettoyage automatique de l'accès temporaire #$magicLinkId (expiré ou révoqué)"
             );
@@ -312,10 +314,10 @@ final class MagicLinkService
         );
         $count = $this->magicLink->deleteClosedBefore($expirationDate);
         if ($count > 0) {
-            $this->journal->add(
-                Journal::CONNEXION,
+            $this->journalEntryService->add(
+                JournalEventType::LOGIN,
                 EntiteSQL::ID_E_ENTITE_RACINE,
-                Journal::NO_ID_D,
+                JournalEntryService::NO_ID_D,
                 'magic-link',
                 "Purge de l'historique des accès temporaires : "
                 . "$count accès supprimé(s) (clôturés avant le $expirationDate)"

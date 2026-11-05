@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Pastell\Tests\Command\Module;
 
 use Pastell\Command\Module\ForceDeleteModuleCommand;
+use Pastell\Service\Document\DocumentEntiteService;
+use Pastell\Service\Journal\JournalEntryService;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class ForceDeleteModuleCommandTest extends \PastellTestCase
@@ -24,12 +26,12 @@ class ForceDeleteModuleCommandTest extends \PastellTestCase
         $this->documentSQL = $this->getObjectInstancier()->getInstance(\DocumentSQL::class);
         $this->fluxEntiteSQL = $this->getObjectInstancier()->getInstance(\FluxEntiteSQL::class);
         $command = new ForceDeleteModuleCommand(
-            $this->getObjectInstancier()->getInstance(\DocumentEntite::class),
+            $this->getObjectInstancier()->getInstance(DocumentEntiteService::class),
             $this->jobQueueSQL,
             $this->fluxEntiteSQL,
             $this->documentSQL,
             $this->getObjectInstancier()->getInstance(\DonneesFormulaireFactory::class),
-            $this->getObjectInstancier()->getInstance(\Journal::class),
+            $this->getObjectInstancier()->getInstance(JournalEntryService::class),
         );
         $this->commandTester = new CommandTester($command);
     }

@@ -9,6 +9,8 @@ class EntiteSQL extends SQL
     public const ENTITE_RACINE_DENOMINATION = "Entité racine";
     public const ID_E_ENTITE_RACINE = 0;
 
+    public const NB_COLLECTIVITE_DISPLAY = 20;
+
     public function getInfo($id_e)
     {
         $sql = "SELECT * FROM entite WHERE id_e=?";
@@ -453,15 +455,44 @@ EOT;
         return array_reverse($listeEntiteMere);
     }
 
+    public function getAllByType(string $type): array
+    {
+        $sql = <<<SQL
+SELECT * FROM entite WHERE type=? ORDER BY denomination
+SQL;
+        return $this->query($sql, $type);
+    }
+
+    public function getAllCollectivite(int $offset, string $search, int $limit = self::NB_COLLECTIVITE_DISPLAY): array
+    {
+        $offset = max(0, $offset);
+        $sql = <<<SQL
+SELECT id_e,denomination,siren,type,is_active FROM entite
+WHERE entite_mere=0 AND type != 'fournisseur' AND type != 'citoyen' AND denomination LIKE ?
+ORDER BY is_active DESC,denomination
+LIMIT $offset,$limit
+SQL;
+        return $this->query($sql, "%$search%");
+    }
+
+    public function getNbCollectivite(string $search): int
+    {
+        $sql = <<<SQL
+SELECT count(*) FROM entite
+WHERE entite_mere=0 AND type != 'fournisseur' AND type != 'citoyen' AND denomination LIKE ?
+SQL;
+        return (int) $this->queryOne($sql, "%$search%");
+    }
+
     public function getSiblingsWithPermission(int $id_e, int $id_u): array
     {
         $id_e_parent = $this->getEntiteMere($id_e);
         $sql = <<<SQL
-SELECT DISTINCT entite.* FROM entite 
-JOIN entite_ancetre ON entite.id_e=entite_ancetre.id_e 
-JOIN utilisateur_role ON entite_ancetre.id_e_ancetre=utilisateur_role.id_e 
-JOIN utilisateur ON utilisateur_role.id_u = utilisateur.id_u 
-WHERE entite.entite_mere=? AND utilisateur.id_u=? AND utilisateur_role.role NOT LIKE 'aucun droit' 
+SELECT DISTINCT entite.* FROM entite
+JOIN entite_ancetre ON entite.id_e=entite_ancetre.id_e
+JOIN utilisateur_role ON entite_ancetre.id_e_ancetre=utilisateur_role.id_e
+JOIN utilisateur ON utilisateur_role.id_u = utilisateur.id_u
+WHERE entite.entite_mere=? AND utilisateur.id_u=? AND utilisateur_role.role NOT LIKE 'aucun droit'
 AND (entite.is_active=1 OR entite.id_e = ?)
 ORDER BY denomination
 SQL;

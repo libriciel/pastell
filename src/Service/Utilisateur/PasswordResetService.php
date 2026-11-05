@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Pastell\Service\Utilisateur;
 
 use Exception;
-use Journal;
 use Pastell\Service\TokenGenerator;
 use UtilisateurSQL;
+use JournalEventType;
+use Pastell\Service\Journal\JournalEntryService;
 
 final class PasswordResetService
 {
     public function __construct(
         private readonly UtilisateurSQL $utilisateurSQL,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journalEntryService,
         private readonly TokenGenerator $tokenGenerator,
     ) {
     }
@@ -26,10 +27,10 @@ final class PasswordResetService
         $info = $this->utilisateurSQL->getInfo($id_u);
         $this->utilisateurSQL->setPassword($id_u, $password);
         $this->utilisateurSQL->reinitPassword($id_u, $this->tokenGenerator->generate());
-        $this->journal->add(
-            Journal::MODIFICATION_UTILISATEUR,
+        $this->journalEntryService->add(
+            JournalEventType::USER_MODIFICATION,
             $info['id_e'],
-            0,
+            JournalEntryService::NO_ID_D,
             'mot de passe modifié',
             "{$info['login']} ({$info['id_u']}) a modifié son mot de passe",
         );
@@ -43,10 +44,10 @@ final class PasswordResetService
         $info = $this->utilisateurSQL->getInfo($id_u);
         $token = $this->tokenGenerator->generate();
         $this->utilisateurSQL->reinitPassword($id_u, $token);
-        $this->journal->addActionAutomatique(
-            Journal::MODIFICATION_UTILISATEUR,
+        $this->journalEntryService->addActionAutomatique(
+            JournalEventType::USER_MODIFICATION,
             $info['id_e'],
-            0,
+            JournalEntryService::NO_ID_D,
             'mot de passe modifié',
             "Procédure initiée pour {$info['email']}",
         );

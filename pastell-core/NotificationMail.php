@@ -5,13 +5,14 @@ use Pastell\Service\Notification\NotificationService;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mime\Address;
+use Pastell\Service\Journal\JournalEntryService;
 
 class NotificationMail
 {
     public function __construct(
         private readonly NotificationService $notificationService,
         private readonly Mailer $mailer,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journalEntryService,
         private readonly NotificationDigestSQL $notificationDigestSQL,
         private readonly EntiteSQL $entiteSQL,
         private readonly DocumentSQL $documentSQL,
@@ -63,8 +64,8 @@ class NotificationMail
             $templatedEmail->attachFromPath($filepath, $filename);
         }
         $this->mailer->send($templatedEmail);
-        $this->journal->addActionAutomatique(
-            Journal::NOTIFICATION,
+        $this->journalEntryService->addActionAutomatique(
+            JournalEventType::NOTIFICATION,
             $id_e,
             $id_d,
             $action,
@@ -92,11 +93,11 @@ class NotificationMail
                 ->htmlTemplate('notification-daily-digest.html.twig')
                 ->context(['info' => $all_info, 'SITE_BASE' => $this->site_base]);
             $this->mailer->send($templatedEmail);
-            $this->journal->addActionAutomatique(
-                Journal::NOTIFICATION,
+            $this->journalEntryService->addActionAutomatique(
+                JournalEventType::NOTIFICATION,
                 0,
-                0,
-                false,
+                JournalEntryService::NO_ID_D,
+                '',
                 "Résumé des notifications envoyée à $email"
             );
             foreach ($all_info as $info) {

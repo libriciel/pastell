@@ -52,31 +52,31 @@
     "sabre/dav": "^4.3",
     "sentry/sentry": "^4.15",
     "softcreatr/jsonpath": "^0.10",
-    "symfony/asset": "^6.2",
-    "symfony/cache": "^6.2",
-    "symfony/config": "^6.2",
-    "symfony/console": "^6.2",
-    "symfony/dotenv": "^6.2",
-    "symfony/filesystem": "^6.2",
+    "symfony/asset": "^7.4",
+    "symfony/cache": "^7.4",
+    "symfony/config": "^7.4",
+    "symfony/console": "^7.4",
+    "symfony/dotenv": "^7.4",
+    "symfony/filesystem": "^7.4",
     "symfony/flex": "^2.2",
-    "symfony/framework-bundle": "^6.2",
-    "symfony/http-client": "^6.2",
-    "symfony/lock": "^6.2",
-    "symfony/mailer": "^6.2",
-    "symfony/monolog-bridge": "^6.2",
-    "symfony/process": "^6.2",
-    "symfony/property-access": "^6.4",
-    "symfony/property-info": "^6.4",
-    "symfony/rate-limiter": "^6.2",
-    "symfony/routing": "^6.2",
-    "symfony/runtime": "^6.2",
-    "symfony/security-csrf": "^6.2",
-    "symfony/serializer": "^6.4",
-    "symfony/twig-bridge": "^6.2",
-    "symfony/twig-bundle": "^6.2",
-    "symfony/uid": "^6.3",
-    "symfony/validator": "^6.2",
-    "symfony/yaml": "^6.2",
+    "symfony/framework-bundle": "^7.4",
+    "symfony/http-client": "^7.4",
+    "symfony/lock": "^7.4",
+    "symfony/mailer": "^7.4",
+    "symfony/monolog-bridge": "^7.4",
+    "symfony/process": "^7.4",
+    "symfony/property-access": "^7.4",
+    "symfony/property-info": "^7.4",
+    "symfony/rate-limiter": "^7.4",
+    "symfony/routing": "^7.4",
+    "symfony/runtime": "^7.4",
+    "symfony/security-csrf": "^7.4",
+    "symfony/serializer": "^7.4",
+    "symfony/twig-bridge": "^7.4",
+    "symfony/twig-bundle": "^7.4",
+    "symfony/uid": "^7.4",
+    "symfony/validator": "^7.4",
+    "symfony/yaml": "^7.4",
     "twig/twig": "^3.3"
   },
   "require-dev": {
@@ -93,9 +93,9 @@
     "phpunit/phpunit": "^10.5",
     "rector/rector": "^2.1",
     "squizlabs/php_codesniffer": "^4.0",
-    "symfony/debug-bundle": "^6.2",
+    "symfony/debug-bundle": "^7.4",
     "symfony/maker-bundle": "^1.43",
-    "symfony/web-profiler-bundle": "^6.2"
+    "symfony/web-profiler-bundle": "^7.4"
   },
   "config": {
     "sort-packages": true,
@@ -165,7 +165,7 @@
   "extra": {
     "symfony": {
       "docker": false,
-      "require": "6.4.*"
+      "require": "7.4.*"
     }
   }
 }

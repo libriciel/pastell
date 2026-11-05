@@ -2,6 +2,7 @@
 
 use Flow\Request;
 use Pastell\File\Chunk\ChunkUploader;
+use Pastell\Service\Document\DocumentRoleService;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Viewer\ViewerFactory;
@@ -26,7 +27,7 @@ class DonneesFormulaireControler extends PastellControler
                 $id_e,
                 $info['type'],
                 DroitType::EDITION,
-            ) && $this->getDocumentEntite()->getRole($id_e, $info['id_d']);
+            ) && $this->getInstance(DocumentRoleService::class)->getRole((int) $id_e, $info['id_d']);
 
             if (!$isAllowed && !$this->isDocumentEmailChunkUpload()) {
                 echo 'KO';
@@ -78,7 +79,7 @@ class DonneesFormulaireControler extends PastellControler
                 $id_e,
                 $info['type'],
                 DroitType::LECTURE,
-            ) && $this->getDocumentEntite()->getRole($id_e, $info['id_d']);
+            ) && $this->getInstance(DocumentRoleService::class)->getRole((int) $id_e, $info['id_d']);
 
             if (!$isAllowed && !$this->isDocumentEmailChunkUpload()) {
                 echo 'KO';

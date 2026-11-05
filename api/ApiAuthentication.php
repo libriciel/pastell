@@ -14,7 +14,6 @@ class ApiAuthentication
 
     public function __construct(
         private readonly ConnexionControler $connexionControler,
-        private readonly SQLQuery $sqlQuery,
         private readonly LoginAttemptLimit $loginAttemptLimit,
         private readonly UtilisateurSQL $utilisateurSQL,
         private readonly UserTokenService $userTokenService,
@@ -61,14 +60,11 @@ class ApiAuthentication
             $id_u = $this->connexionControler->apiExternalConnexion(null, false);
         }
 
-        $utilisateur = new UtilisateurSQL($this->sqlQuery);
-        $utilisateurListe = new UtilisateurListe($this->sqlQuery);
-
         if (!$id_u) {
             if (!empty($this->server['HTTP_AUTHORIZATION']) && $this->isBearer($this->server['HTTP_AUTHORIZATION'])) {
                 $id_u = $this->authenticateByToken();
             } elseif (!empty($this->server['PHP_AUTH_USER'])) {
-                $id_u = $this->authenticateByPassword($utilisateurListe, $utilisateur);
+                $id_u = $this->authenticateByPassword();
             }
         }
 
@@ -95,13 +91,11 @@ class ApiAuthentication
         return null;
     }
 
-    private function authenticateByPassword(
-        UtilisateurListe $utilisateurListe,
-        UtilisateurSQL $utilisateur,
-    ): ?int {
+    private function authenticateByPassword(): ?int
+    {
         $this->checkRateLimit();
-        $userId = $utilisateurListe->getUtilisateurByLogin($this->server['PHP_AUTH_USER']);
-        if ($userId && $utilisateur->verifPassword($userId, $this->server['PHP_AUTH_PW'])) {
+        $userId = $this->utilisateurSQL->getIdFromLogin($this->server['PHP_AUTH_USER']);
+        if ($userId && $this->utilisateurSQL->verifPassword($userId, $this->server['PHP_AUTH_PW'])) {
             $this->resetRateLimit();
         } else {
             $userId = null;
