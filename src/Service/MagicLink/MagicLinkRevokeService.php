@@ -6,13 +6,15 @@ namespace Pastell\Service\MagicLink;
 
 use EntiteSQL;
 use Journal;
+use JournalEventType;
 use MagicLinkSQL;
+use Pastell\Service\Journal\JournalEntryService;
 
 final class MagicLinkRevokeService
 {
     public function __construct(
         private readonly MagicLinkSQL $magicLink,
-        private readonly Journal $journal,
+        private readonly JournalEntryService $journalEntryService,
     ) {
     }
 
@@ -39,10 +41,10 @@ final class MagicLinkRevokeService
         $this->magicLink->revoke($magicLinkId);
         $this->maskTitulaire($link);
 
-        $this->journal->add(
-            Journal::CONNEXION,
+        $this->journalEntryService->add(
+            JournalEventType::LOGIN,
             EntiteSQL::ID_E_ENTITE_RACINE,
-            Journal::NO_ID_D,
+            JournalEntryService::NO_ID_D,
             'magic-link',
             "Révocation de l'accès temporaire #$magicLinkId (motif : utilisateur supprimé)"
         );

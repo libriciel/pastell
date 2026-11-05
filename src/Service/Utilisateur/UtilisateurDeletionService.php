@@ -8,7 +8,6 @@ use JournalEventType;
 use NotificationDigestSQL;
 use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Service\MagicLink\MagicLinkRevokeService;
-use Pastell\Service\Notification\NotificationService;
 use UtilisateurNewEmailSQL;
 use UtilisateurSQL;
 use UsersToken;
@@ -26,7 +25,6 @@ class UtilisateurDeletionService
         UtilisateurSQL $utilisateurSQL,
         UtilisateurRoleService $utilisateurRoleService,
         private readonly JournalEntryService $journalEntryService,
-        private readonly NotificationService $notificationService,
         private readonly UsersToken $usersToken,
         private readonly UtilisateurNewEmailSQL $utilisateurNewEmailSQL,
         private readonly NotificationDigestSQL $notificationDigestSQL,
@@ -46,7 +44,6 @@ class UtilisateurDeletionService
         $userInfo = $this->utilisateurSQL->getInfo($id_u);
         $this->magicLinkRevokeService->closeForDeletedUser($id_u);
         $this->utilisateurRoleService->removeAllRoles($id_u);
-        $this->notificationService->removeAllForUser($id_u);
         $this->notificationDigestSQL->deleteByEmail($userInfo['email']);
         $this->usersToken->deleteAllForUser($id_u);
         $this->utilisateurNewEmailSQL->delete($id_u);
