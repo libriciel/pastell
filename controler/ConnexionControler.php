@@ -471,11 +471,11 @@ class ConnexionControler extends PastellControler
         if (!$totpOk && !$recoveryOk) {
             $loginAttemptLimit->consumeLoginAttempt($login);
             $userInfo = $this->getUtilisateur()->getInfo($id_u);
-            $this->getJournal()->setId($id_u);
-            $this->getJournal()->add(
-                Journal::CONNEXION,
+            $this->getJournalEntryService()->setId($id_u);
+            $this->getJournalEntryService()->add(
+                JournalEventType::LOGIN,
                 $userInfo['id_e'],
-                Journal::NO_ID_D,
+                JournalEntryService::NO_ID_D,
                 'Échec double authentification',
                 "$login a saisi un code de double authentification invalide depuis l'adresse "
                     . ($_SERVER['REMOTE_ADDR'] ?? '')
@@ -490,11 +490,11 @@ class ConnexionControler extends PastellControler
 
         if ($recoveryOk) {
             $userInfo = $this->getUtilisateur()->getInfo($id_u);
-            $this->getJournal()->setId($id_u);
-            $this->getJournal()->add(
-                Journal::CONNEXION,
+            $this->getJournalEntryService()->setId($id_u);
+            $this->getJournalEntryService()->add(
+                JournalEventType::LOGIN,
                 $userInfo['id_e'],
-                Journal::NO_ID_D,
+                JournalEntryService::NO_ID_D,
                 'Connexion par code de récupération',
                 "$login s'est connecté avec un code de récupération depuis l'adresse "
                     . ($_SERVER['REMOTE_ADDR'] ?? '')

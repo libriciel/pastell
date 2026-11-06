@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\Utilisateur\MfaManagementAction;
 use Pastell\Service\Utilisateur\UserAuthenticationService;
@@ -181,10 +182,10 @@ class MfaControler extends PastellControler
 
         $mfaService->confirm($id_u);
         $userInfo = $this->getUtilisateur()->getInfo($id_u);
-        $this->getJournal()->add(
-            Journal::MODIFICATION_UTILISATEUR,
+        $this->getJournalEntryService()->add(
+            JournalEventType::USER_MODIFICATION,
             $userInfo['id_e'],
-            Journal::NO_ID_D,
+            JournalEntryService::NO_ID_D,
             'double authentification activée',
             "{$userInfo['login']} ($id_u) a activé la double authentification"
         );
@@ -199,10 +200,10 @@ class MfaControler extends PastellControler
     {
         $recoveryCodes = $this->getMfaService()->generateRecoveryCodes($id_u);
         $userInfo = $this->getUtilisateur()->getInfo($id_u);
-        $this->getJournal()->add(
-            Journal::MODIFICATION_UTILISATEUR,
+        $this->getJournalEntryService()->add(
+            JournalEventType::USER_MODIFICATION,
             $userInfo['id_e'],
-            Journal::NO_ID_D,
+            JournalEntryService::NO_ID_D,
             'codes de récupération régénérés',
             "{$userInfo['login']} ($id_u) a régénéré ses codes de récupération"
         );
@@ -218,10 +219,10 @@ class MfaControler extends PastellControler
     {
         $this->getMfaService()->delete($id_u);
         $userInfo = $this->getUtilisateur()->getInfo($id_u);
-        $this->getJournal()->add(
-            Journal::MODIFICATION_UTILISATEUR,
+        $this->getJournalEntryService()->add(
+            JournalEventType::USER_MODIFICATION,
             $userInfo['id_e'],
-            Journal::NO_ID_D,
+            JournalEntryService::NO_ID_D,
             'double authentification désactivée',
             "{$userInfo['login']} ($id_u) a désactivé la double authentification"
         );

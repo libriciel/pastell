@@ -405,10 +405,10 @@ class UtilisateurControler extends PastellControler
         }
 
         $mfaService->delete($id_u);
-        $this->getJournal()->add(
-            Journal::MODIFICATION_UTILISATEUR,
+        $this->getJournalEntryService()->add(
+            JournalEventType::USER_MODIFICATION,
             $info['id_e'],
-            0,
+            JournalEntryService::NO_ID_D,
             'double authentification désactivée',
             "{$info['login']} ($id_u) : double authentification désactivée par un administrateur"
         );
