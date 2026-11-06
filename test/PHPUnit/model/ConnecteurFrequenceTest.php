@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated 4.1.26 Use ConnecteurFrequenceServiceTest instead
+ */
 class ConnecteurFrequenceTest extends PastellTestCase
 {
     public function testConstruct()

@@ -12,6 +12,8 @@
 - Classe `ConnecteurDisponible` dépréciée au profit du service `ConnecteurAvailabilityService` #2622
 - Classe `TableCheck` dépréciée au profit de `SQLQuery::getTablesMarkedAsCrashed()` #2623
 - Classe `UtilisateurRoleCache` dépréciée au profit de `UtilisateurRoleCacheService` #2624
+- Classe `ConnecteurFrequence` et méthodes associées de `ConnecteurFrequenceSQL`, `JobManager` et `DaemonControler`
+  dépréciées au profit de `ConnecteurFrequenceData` et du service `ConnecteurFrequenceService` #2625
 
 ### Sécurité
 
