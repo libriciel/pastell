@@ -61,10 +61,10 @@ final class MfaService
 
     private function getProvisioningUri(string $secret, string $label): string
     {
-        $totp = TOTP::createFromSecret($secret, $this->clock);
-        $totp->setLabel($label);
-        $totp->setIssuer(self::ISSUER);
-        return $totp->getProvisioningUri();
+        return TOTP::createFromSecret($secret, $this->clock)
+            ->withLabel($label)
+            ->withIssuer(self::ISSUER)
+            ->getProvisioningUri();
     }
 
     private function getQrCodeSvg(string $uri): string
