@@ -4,7 +4,6 @@ namespace Pastell\Tests\Service\Connecteur;
 
 use Exception;
 use FluxEntiteSQL;
-use Journal;
 use SQLQuery;
 use Pastell\Service\Connecteur\ConnecteurActionService;
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
@@ -309,8 +308,7 @@ class ConnecteurAssociationServiceTest extends PastellTestCase
         static::assertTrue($this->getMfaService()->isEnabled(self::ID_U_ADMIN));
         static::assertSame(10, $this->getMfaService()->countRemainingRecoveryCodes(self::ID_U_ADMIN));
         static::assertNotEmpty(
-            $this->getObjectInstancier()->getInstance(Journal::class)
-                ->getAll(false, false, false, false, 0, 100, 'double authentification supprimée')
+            $this->getJournalConsultationService()->getList(recherche: 'double authentification supprimée')
         );
     }
 
