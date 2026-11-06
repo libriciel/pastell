@@ -107,6 +107,18 @@
     - Modification du type de dossier `facture-cpp` (suppression de l’élément is_cpp et des actions *-glaneur-pivot)
     - Le type de dossier `facture-formulaire-pivot` et connecteur `parametrage-flux-facture-pivot` sont supprimés
     - Le connecteur `chorus-par-csv` est supprimé
+- Suppression des classes dépréciées #2626 :
+    - `Journal`, `Notification`, `EntiteListe`, `UtilisateurListe`, `DocumentEntite`, `RoleUtilisateur`
+- Suppression des méthodes dépréciées #2626 :
+    - `PastellControler::getRoleUtilisateur()`, `PastellControler::getJournal()`
+      `PastellControler::getUtilisateurListe()`, `PastellControler::getDocumentEntite()`
+      `PastellControler::getEntiteListe()`
+    - `ActionExecutor::getJournal()`, `ActionExecutor::getDocumentEntite()`
+    - `Gabarit::getJournal()`, `Gabarit::getRoleUtilisateur()`
+    - `BaseAPIController::setRoleUtilisateur()`, `BaseAPIController::getRoleUtilisateur()`
+    - `Controler::getViewParameterOrObject()`
+    - `DroitService::getAllDroitEntite()`
+    - `FluxAPIController::listFlux()`
 
 ## [5.0.12] - 2026-11-02
 

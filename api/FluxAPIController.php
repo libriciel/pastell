@@ -35,14 +35,6 @@ class FluxAPIController extends BaseAPIController
         return $this->getFlux($idFlux);
     }
 
-    /**
-     * @deprecated 4.1.24 Use ModuleListService::getModuleListOrderByNom() instead
-     */
-    public function listFlux()
-    {
-        return $this->moduleListService->getModuleListOrderByNom($this->getUtilisateurId(), $this->hasAllDroit());
-    }
-
     public function getFlux(string $idFlux): array
     {
         $documentType = $this->documentTypeFactory->getFluxDocumentType($idFlux);

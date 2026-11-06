@@ -177,8 +177,6 @@ class ConnexionControler extends PastellControler
         $infoUtilisateur = $this->getUtilisateur()->getInfo($id_u);
         $login = $infoUtilisateur['login'];
         $this->getJournalEntryService()->setId($id_u);
-        // To remove along with the deprecated Journal class
-        $this->getInstance(Journal::class)->setId($id_u);
         $nom = $infoUtilisateur['prenom'] . ' ' . $infoUtilisateur['nom'];
         $this->getJournalEntryService()->add(
             JournalEventType::LOGIN,
@@ -412,8 +410,6 @@ class ConnexionControler extends PastellControler
         $loginAttemptLimit->resetLoginAttempt($login);
 
         $this->getJournalEntryService()->setId($id_u);
-        // To remove along with the deprecated Journal class
-        $this->getInstance(Journal::class)->setId($id_u);
         $infoUtilisateur = $this->getUtilisateur()->getInfo($id_u);
         $nom = $infoUtilisateur['prenom'] . ' ' . $infoUtilisateur['nom'];
         $this->getJournalEntryService()->add(
@@ -511,11 +507,11 @@ class ConnexionControler extends PastellControler
 
         $this->getAuthentification()->deconnexion();
 
-        $this->getJournal()->setId($id_u);
-        $this->getJournal()->add(
-            Journal::CONNEXION,
+        $this->getJournalEntryService()->setId($id_u);
+        $this->getJournalEntryService()->add(
+            JournalEventType::LOGIN,
             $infoUtilisateur['id_e'],
-            0,
+            JournalEntryService::NO_ID_D,
             'Connecté',
             "Connexion support via magic link (motif : {$magicLink['motif']}) depuis l'adresse "
                 . $_SERVER['REMOTE_ADDR']

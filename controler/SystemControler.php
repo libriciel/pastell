@@ -13,6 +13,8 @@ use Pastell\Service\FeatureToggle\DisplayFeatureToggleInTestPage;
 use Pastell\Service\FeatureToggleService;
 use Pastell\Service\MagicLink\MagicLinkService;
 use Pastell\Service\Pack\PackService;
+use Pastell\Service\Utilisateur\RoleDelegationService;
+use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\System\HealthCheck;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
@@ -635,13 +637,13 @@ class SystemControler extends PastellControler
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', "Création d'un accès temporaire");
 
-        $roleAuthorized = $this->getRoleUtilisateur()->getAuthorizedRoleToDelegate($this->getId_u());
+        $roleAuthorized = $this->getInstance(RoleDelegationService::class)->getAuthorizedRoleToDelegate($this->getId_u());
         $roleTree = array_map(static fn($r) => ['name' => $r['libelle'], 'value' => $r['role']], $roleAuthorized);
         $this->setViewParameter('role_treeselect_data', \json_encode($roleTree, \JSON_THROW_ON_ERROR));
 
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
         $entity_tree = $entityUtilitiesService->buildEntityTreeselectOptions(
-            $this->getRoleUtilisateur()->getArbreFilleWithRacine(
+            $this->getInstance(UtilisateurEntiteService::class)->getArbreFilleWithRacine(
                 $this->getId_u(),
                 DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION)
             )

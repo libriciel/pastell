@@ -12,13 +12,6 @@ abstract class BaseAPIController
 
     private $caller_type;
 
-
-    /**
-     * @var RoleUtilisateur
-     * @deprecated Since 4.1.24, Use DroitService (getDroitService()) instead
-     */
-    private $roleUtilisateur;
-
     /** @var  DroitService */
     private $droitService;
 
@@ -67,18 +60,6 @@ abstract class BaseAPIController
     public function getFileUploader()
     {
         return $this->fileUploader;
-    }
-
-    /** @deprecated Since 4.1.24, Use setDroitService() instead */
-    public function setRoleUtilisateur(RoleUtilisateur $roleUtilisateur)
-    {
-        $this->roleUtilisateur = $roleUtilisateur;
-    }
-
-    /** @deprecated Since 4.1.24, Use getDroitService() instead */
-    public function getRoleUtilisateur()
-    {
-        return $this->roleUtilisateur;
     }
 
     /**

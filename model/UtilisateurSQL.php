@@ -195,6 +195,16 @@ SQL;
         return $this->query($sql, $id_e);
     }
 
+    public function getAllByBaseEntiteWithDescendants(int $id_e): array
+    {
+        $sql = <<<SQL
+SELECT utilisateur.* FROM utilisateur
+JOIN entite_ancetre ON utilisateur.id_e = entite_ancetre.id_e
+WHERE entite_ancetre.id_e_ancetre = ?
+SQL;
+        return $this->query($sql, $id_e);
+    }
+
     public function countByBaseEntite(int $id_e): int
     {
         $sql = <<<SQL

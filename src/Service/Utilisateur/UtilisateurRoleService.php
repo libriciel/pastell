@@ -67,7 +67,7 @@ final class UtilisateurRoleService
     {
         $this->utilisateurRoleSQL->deleteAllRoles($id_u);
         // Incomplete: only id_e=0 and 'all' keys are invalidated,
-        // other entities stay stale until TTL (remains from deprecated RoleUtilisateur class #420)
+        // other entities stay stale until TTL #420
         $this->utilisateurRoleCache->invalidate($id_u, 0);
         $this->notificationService->removeAllForUser($id_u);
     }

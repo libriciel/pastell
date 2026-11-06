@@ -147,8 +147,6 @@ class HttpApi
         $internalAPI->setCallerType(InternalAPI::CALLER_TYPE_WEBSERVICE);
 
         $this->objectInstancier->getInstance(JournalEntryService::class)->setId($utilisateur_id);
-        // To remove along with the deprecated Journal class
-        $this->objectInstancier->getInstance(Journal::class)->setId($utilisateur_id);
 
         if ($request_method == 'patch' && ! $is_legacy) {
             parse_str(file_get_contents("php://input"), $this->request);

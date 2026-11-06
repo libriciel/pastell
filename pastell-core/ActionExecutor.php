@@ -130,15 +130,6 @@ abstract class ActionExecutor
         return $this->docDonneesFormulaire->getFormulaire();
     }
 
-    /**
-     * @return Journal
-     * @deprecated 4.1.25 Use getJournalEntryService() instead
-     */
-    public function getJournal()
-    {
-        return $this->objectInstancier->getInstance(Journal::class);
-    }
-
     public function getJournalEntryService(): JournalEntryService
     {
         return $this->objectInstancier->getInstance(JournalEntryService::class);
@@ -150,15 +141,6 @@ abstract class ActionExecutor
     public function getDonneesFormulaireFactory()
     {
         return $this->objectInstancier->getInstance(DonneesFormulaireFactory::class);
-    }
-
-    /**
-     * @return DocumentEntite
-     * @deprecated 4.1.25 Use DocumentEntiteSQL, DocumentRoleService and DocumentEntiteService instead
-     */
-    public function getDocumentEntite()
-    {
-        return $this->objectInstancier->getInstance(DocumentEntite::class);
     }
 
     public function getDocument(): DocumentSQL

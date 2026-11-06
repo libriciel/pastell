@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Pastell\Service\Utilisateur\UserCreationService;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+
 class UtilisateurSQLTest extends PastellTestCase
 {
     private UtilisateurSQL $utilisateurSQL;
@@ -27,6 +30,23 @@ class UtilisateurSQLTest extends PastellTestCase
     public function testGetAllBase(): void
     {
         self::assertEqualsCanonicalizing([1, 2], array_column($this->utilisateurSQL->getAllByBaseEntite(0), 'id_u'));
+    }
+
+    /**
+     * @throws ConflictException
+     * @throws TransportExceptionInterface
+     * @throws UnrecoverableException
+     */
+    public function testGetAllBaseWithDescendants(): void
+    {
+        $id_u = $this->getObjectInstancier()->getInstance(UserCreationService::class)
+            ->create('child_user', 'child@example.invalid', 'Child', 'User', 2);
+
+        self::assertSame(
+            [$id_u],
+            array_column($this->utilisateurSQL->getAllByBaseEntiteWithDescendants(1), 'id_u')
+        );
+        self::assertSame([], $this->utilisateurSQL->getAllByBaseEntite(1));
     }
 
     public function testCountDeBase(): void

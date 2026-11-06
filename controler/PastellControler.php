@@ -409,15 +409,6 @@ class PastellControler extends Controler
     }
 
     /**
-     * @return RoleUtilisateur
-     * @deprecated Since 4.1.24, Use UtilisateurRoleService / DroitService / UtilisateurEntiteService instead
-     */
-    public function getRoleUtilisateur(): RoleUtilisateur
-    {
-        return $this->getInstance(RoleUtilisateur::class);
-    }
-
-    /**
      * @return DroitService
      */
     public function getDroitService(): DroitService
@@ -553,14 +544,14 @@ class PastellControler extends Controler
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
         if ($rootEntityId === null) {
             $tree = $entityUtilitiesService->buildEntityTreeselectOptions(
-                $this->getRoleUtilisateur()->getArbreFilleWithRacine(
+                $this->getInstance(UtilisateurEntiteService::class)->getArbreFilleWithRacine(
                     $this->getId_u(),
                     DroitService::getDroitFor(DroitService::DROIT_DAEMON, DroitType::LECTURE)
                 )
             );
         } else {
             $tree = $entityUtilitiesService->buildEntitySubtreeTreeselectOptions(
-                $this->getRoleUtilisateur()->getArbreFille(
+                $this->getInstance(UtilisateurEntiteService::class)->getArbreFille(
                     $this->getId_u(),
                     DroitService::getDroitFor(DroitService::DROIT_DAEMON, DroitType::LECTURE)
                 ),
@@ -616,14 +607,6 @@ class PastellControler extends Controler
         return $this->getInstance(ConfigurationSQL::class);
     }
 
-    /**
-     * @deprecated 4.1.25 Use getJournalEntryService() instead
-     */
-    public function getJournal(): Journal
-    {
-        return $this->getInstance(Journal::class);
-    }
-
     public function getJournalEntryService(): JournalEntryService
     {
         return $this->getInstance(JournalEntryService::class);
@@ -654,14 +637,6 @@ class PastellControler extends Controler
     }
 
     /**
-     * @deprecated 4.1.25 Use getUtilisateur() or UtilisateurListService instead
-     */
-    public function getUtilisateurListe(): UtilisateurListe
-    {
-        return $this->getInstance(UtilisateurListe::class);
-    }
-
-    /**
      * @return ActionExecutorFactory
      */
     public function getActionExecutorFactory(): ActionExecutorFactory
@@ -680,15 +655,6 @@ class PastellControler extends Controler
     public function getDocumentSQL(): DocumentSQL
     {
         return $this->getInstance(DocumentSQL::class);
-    }
-
-    /**
-     * @return DocumentEntite
-     * @deprecated 4.1.25 Use DocumentEntiteSQL, DocumentRoleService and DocumentEntiteService instead
-     */
-    public function getDocumentEntite(): DocumentEntite
-    {
-        return $this->getInstance(DocumentEntite::class);
     }
 
     public function getDocumentEmailService(): DocumentEmailService
@@ -710,14 +676,6 @@ class PastellControler extends Controler
     public function getRoleSQL(): RoleSQL
     {
         return $this->getInstance(RoleSQL::class);
-    }
-
-    /**
-     * @deprecated 4.1.25 Use getEntiteSQL() instead
-     */
-    public function getEntiteListe(): EntiteListe
-    {
-        return $this->getInstance(EntiteListe::class);
     }
 
     /**

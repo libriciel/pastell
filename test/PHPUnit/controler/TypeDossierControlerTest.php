@@ -378,7 +378,7 @@ class TypeDossierControlerTest extends ControlerTestCase
 
         $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "$type_dossier_id:lecture");
         $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "$type_dossier_id:edition");
-        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->deleteCache(self::ID_E_COL, self::ID_U_ADMIN);
+        $this->getObjectInstancier()->getInstance(UtilisateurRoleCache::class)->invalidate(self::ID_U_ADMIN, self::ID_E_COL);
 
         $this->createDocument($type_dossier_id);
 
@@ -417,7 +417,7 @@ class TypeDossierControlerTest extends ControlerTestCase
 
         $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "$type_dossier_id:lecture");
         $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "$type_dossier_id:edition");
-        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->deleteCache(self::ID_E_COL, self::ID_U_ADMIN);
+        $this->getObjectInstancier()->getInstance(UtilisateurRoleCache::class)->invalidate(self::ID_U_ADMIN, self::ID_E_COL);
 
         $this->createDocument($type_dossier_id);
 
@@ -463,7 +463,7 @@ class TypeDossierControlerTest extends ControlerTestCase
 
         $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "$type_dossier_id:lecture");
         $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', "$type_dossier_id:edition");
-        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)->deleteCache(self::ID_E_COL, self::ID_U_ADMIN);
+        $this->getObjectInstancier()->getInstance(UtilisateurRoleCache::class)->invalidate(self::ID_U_ADMIN, self::ID_E_COL);
 
         $this->createDocument($type_dossier_id);
 
