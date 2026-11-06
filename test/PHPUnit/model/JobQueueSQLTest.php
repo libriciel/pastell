@@ -91,6 +91,40 @@ class JobQueueSQLTest extends PastellTestCase
     /**
      * @throws Exception
      */
+    public function testDeleteDocumentClearsWorker(): void
+    {
+        $job = $this->getNewJob();
+        $job->id_e = PastellTestCase::ID_E_COL;
+        $job->id_d = self::ID_D;
+        $id_job = $this->jobQueueSQL->createJob($job);
+        $id_worker = $this->workerSQL->create(1234);
+        $this->workerSQL->attachJob($id_worker, $id_job);
+
+        $this->jobQueueSQL->deleteDocument(PastellTestCase::ID_E_COL, self::ID_D);
+
+        static::assertNull($this->workerSQL->getWorker($id_worker));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testDeleteConnecteurClearsWorker(): void
+    {
+        $job = $this->getNewJob();
+        $job->type = Job::TYPE_CONNECTEUR;
+        $job->id_ce = 42;
+        $id_job = $this->jobQueueSQL->createJob($job);
+        $id_worker = $this->workerSQL->create(1234);
+        $this->workerSQL->attachJob($id_worker, $id_job);
+
+        $this->jobQueueSQL->deleteConnecteur(42);
+
+        static::assertNull($this->workerSQL->getWorker($id_worker));
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testDeleteDocument(): void
     {
         $job = $this->getNewJob();

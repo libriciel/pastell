@@ -70,19 +70,40 @@ class JobQueueSQL extends SQL
         if ($id_ce == 0) {
             return;
         }
-        $sql = "DELETE FROM job_queue WHERE id_ce=?";
+        $sql = <<<SQL
+DELETE FROM worker WHERE id_job IN (SELECT id_job FROM job_queue WHERE id_ce = ?)
+SQL;
+        $this->query($sql, $id_ce);
+
+        $sql = <<<SQL
+DELETE FROM job_queue WHERE id_ce = ?
+SQL;
         $this->query($sql, $id_ce);
     }
 
     public function deleteDocument($id_e, $id_d)
     {
-        $sql = "DELETE FROM job_queue WHERE id_e=? AND id_d=?";
+        $sql = <<<SQL
+DELETE FROM worker WHERE id_job IN (SELECT id_job FROM job_queue WHERE id_e = ? AND id_d = ?)
+SQL;
+        $this->query($sql, $id_e, $id_d);
+
+        $sql = <<<SQL
+DELETE FROM job_queue WHERE id_e = ? AND id_d = ?
+SQL;
         $this->query($sql, $id_e, $id_d);
     }
 
     public function deleteDocumentForAllEntities(string $id_d): void
     {
-        $sql = "DELETE FROM job_queue WHERE id_d=?";
+        $sql = <<<SQL
+DELETE FROM worker WHERE id_job IN (SELECT id_job FROM job_queue WHERE id_d = ?)
+SQL;
+        $this->query($sql, $id_d);
+
+        $sql = <<<SQL
+DELETE FROM job_queue WHERE id_d = ?
+SQL;
         $this->query($sql, $id_d);
     }
 

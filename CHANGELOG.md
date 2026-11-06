@@ -69,6 +69,8 @@
 ### Corrections
 
 - Standardisation du footer selon la charte Libriciel SCOP #2440
+- Gestionnaire de tâches : les processus dont le travail a été supprimé ne sont plus comptés comme en cours d'exécution,
+  et le gestionnaire de tâches supprime ceux qui ne se sont pas terminés correctement #964
 
 ### Suppressions
 

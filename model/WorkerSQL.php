@@ -79,6 +79,24 @@ class WorkerSQL extends SQL
     /**
      * @return WorkerObject[]
      */
+    public function getOrphanRunningWorkers(): array
+    {
+        $sql = <<<SQL
+SELECT worker.*
+FROM worker
+LEFT JOIN job_queue ON job_queue.id_job = worker.id_job
+WHERE worker.termine = 0 AND job_queue.id_job IS NULL
+SQL;
+        $result = [];
+        foreach ($this->query($sql) as $worker_info) {
+            $result[] = $this->mapToWorkerObject($worker_info);
+        }
+        return $result;
+    }
+
+    /**
+     * @return WorkerObject[]
+     */
     public function getRunningWorkersForDaemon(int $id_daemon): array
     {
         $sql = 'SELECT * FROM worker

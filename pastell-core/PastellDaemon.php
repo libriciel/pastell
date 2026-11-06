@@ -36,12 +36,23 @@ class PastellDaemon
         }
 
         while (true) {
+            $this->cleanDeadOrphanWorkers();
             foreach ($this->daemonSQL->getRunningDaemons() as $daemon) {
                 $this->jobMasterOneRun($daemon);
             }
             pcntl_signal_dispatch();
             sleep(1);
             pcntl_signal_dispatch();
+        }
+    }
+
+    public function cleanDeadOrphanWorkers(): void
+    {
+        foreach ($this->workerSQL->getOrphanRunningWorkers() as $workerObject) {
+            if (! posix_getpgid($workerObject->pid)) {
+                $this->workerSQL->success($workerObject->id_worker);
+                $this->logger->alert('Daemon detects and cleans a dead worker whose job no longer exists', $workerObject->toArray());
+            }
         }
     }
 
