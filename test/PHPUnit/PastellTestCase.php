@@ -8,6 +8,7 @@ use Pastell\Process\CommandRunner;
 use Pastell\Process\SymfonyCommandRunner;
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Pack\PackService;
+use Pastell\Service\Utilisateur\UtilisateurRoleCacheService;
 use Pastell\Storage\StorageInterface;
 use Pastell\Storage\StorageInterfaceFake;
 use Pastell\Tests\SymfonyContainerFactory;
@@ -85,8 +86,8 @@ abstract class PastellTestCase extends TestCase
         $this->objectInstancier->setInstance(LockFactory::class, new LockFactory(new InMemoryStore()));
 
         $this->getObjectInstancier()->setInstance(
-            UtilisateurRoleCache::class,
-            new UtilisateurRoleCache(
+            UtilisateurRoleCacheService::class,
+            new UtilisateurRoleCacheService(
                 new UtilisateurRoleSQL($this->getSQLQuery()),
                 new MemoryCacheNone(),
                 0
