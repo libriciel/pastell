@@ -121,19 +121,6 @@ class Controler
         $lastMessage->setLastMessage($message);
     }
 
-    /**
-     * @param $key
-     * @return mixed|object|ObjectInstancier|null
-     * @deprecated Use getInstance() or getViewParameterByKey() instead, to be deleted in 6.0.0
-     */
-    public function getViewParameterOrObject($key)
-    {
-        if ($this->isViewParameter($key)) {
-            return $this->viewParameter[$key];
-        }
-        return $this->objectInstancier->getInstance($key);
-    }
-
     public function getObjectInstancier()
     {
         return $this->objectInstancier;

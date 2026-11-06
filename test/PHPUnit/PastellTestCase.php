@@ -210,14 +210,6 @@ iparapheur_retour: Archive',
         return $this->objectInstancier->getInstance('site_base');
     }
 
-    /**
-     * @deprecated 4.1.25 Use getJournalEntryService(), getJournalConsultationService() or getJournalSQL() instead
-     */
-    protected function getJournal()
-    {
-        return $this->objectInstancier->getInstance(Journal::class);
-    }
-
     protected function getJournalEntryService(): JournalEntryService
     {
         return $this->objectInstancier->getInstance(JournalEntryService::class);

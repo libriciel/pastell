@@ -6,6 +6,7 @@ use Pastell\Mailer\Mailer;
 use Pastell\Service\MagicLink\MagicLinkCodeStatus;
 use Pastell\Service\MagicLink\MagicLinkService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\SentMessage;
@@ -78,8 +79,8 @@ class MagicLinkServiceTest extends PastellTestCase
         static::assertSame('jean.dupont@example.org', $userInfo['email']);
         static::assertSame('1', (string)$userInfo['is_enabled']);
 
-        $roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
-        static::assertSame(1, (int)$roleUtilisateur->hasRole((int)$link['id_u'], 'admin', 0));
+        $utilisateurRoleService = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
+        static::assertTrue($utilisateurRoleService->hasRole((int)$link['id_u'], 'admin', 0));
     }
 
     /**

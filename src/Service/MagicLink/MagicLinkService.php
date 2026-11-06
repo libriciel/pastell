@@ -9,17 +9,17 @@ use ConflictException;
 use Date;
 use EntiteSQL;
 use Exception;
-use Journal;
 use JournalEventType;
 use MagicLinkSQL;
 use Pastell\Mailer\Mailer;
 use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Service\TokenGenerator;
+use Pastell\Service\Utilisateur\RoleDelegationService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Utilities\Identifier\UuidGenerator;
 use Random\RandomException;
-use RoleUtilisateur;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mime\Address;
@@ -44,7 +44,8 @@ final class MagicLinkService
         private readonly UuidGenerator $uuidGenerator,
         private readonly JournalEntryService $journalEntryService,
         private readonly UserCreationService $userCreationService,
-        private readonly RoleUtilisateur $roleUtilisateur,
+        private readonly UtilisateurRoleService $utilisateurRoleService,
+        private readonly RoleDelegationService $roleDelegationService,
         private readonly UtilisateurDeletionService $utilisateurDeletionService,
         private readonly MagicLinkRevokeService $revokeService,
         private readonly Mailer $mailer,
@@ -79,7 +80,7 @@ final class MagicLinkService
             );
         }
 
-        if (!$this->roleUtilisateur->canDelegateRole($createdBy, $role, $entityId)) {
+        if (!$this->roleDelegationService->canDelegateRole($createdBy, $role, $entityId)) {
             throw new UnrecoverableException(
                 'Vous ne pouvez pas créer un accès temporaire avec un rôle contenant des droits '
                 . 'que vous ne possédez pas sur cette entité.'
@@ -201,7 +202,7 @@ final class MagicLinkService
         );
 
         try {
-            $this->roleUtilisateur->addRole($id_u, $role, $entityId);
+            $this->utilisateurRoleService->addRole($id_u, $role, $entityId);
         } catch (\Throwable $e) {
             $this->utilisateurDeletionService->delete($id_u);
             throw $e;

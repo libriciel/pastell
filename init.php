@@ -88,15 +88,11 @@ if ($objectInstancier->getInstance(Authentification::class)->isConnected()) {
     $id_u_journal = $objectInstancier->getInstance(Authentification::class)->getId();
 }
 $objectInstancier->getInstance(JournalEntryService::class)->setId($id_u_journal);
-// To remove along with the deprecated Journal class
-$objectInstancier->getInstance(Journal::class)->setId($id_u_journal);
 
 try {
     $horodateur = $objectInstancier->getInstance(ConnecteurFactory::class)->getGlobalConnecteur('horodateur');
     if ($horodateur) {
         $objectInstancier->getInstance(JournalEntryService::class)->setHorodateur($horodateur);
-        // To remove along with the deprecated Journal class
-        $objectInstancier->getInstance(Journal::class)->setHorodateur($horodateur);
     }
 } catch (Exception $e) {
     /** Nothing to do */
@@ -107,8 +103,6 @@ if (USE_EXTERNAL_STORAGE_FOR_JOURNAL_PROOF) {
         $journalProofStorage = new StorageInterfaceFake();
         $objectInstancier->setInstance(StorageInterface::class, $journalProofStorage);
         $objectInstancier->getInstance(JournalEntryService::class)->setInterfaceStorage($journalProofStorage);
-        // To remove along with the deprecated Journal class
-        $objectInstancier->getInstance(Journal::class)->setInterfaceStorage($journalProofStorage);
     } else {
         $journalProofStorage = new S3Adapter(
             $objectInstancier->getInstance('s3Url'),
@@ -118,8 +112,6 @@ if (USE_EXTERNAL_STORAGE_FOR_JOURNAL_PROOF) {
         );
         $objectInstancier->setInstance(StorageInterface::class, $journalProofStorage);
         $objectInstancier->getInstance(JournalEntryService::class)->setInterfaceStorage($journalProofStorage);
-        // To remove along with the deprecated Journal class
-        $objectInstancier->getInstance(Journal::class)->setInterfaceStorage($journalProofStorage);
     }
 }
 

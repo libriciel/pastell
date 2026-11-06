@@ -4,8 +4,6 @@
  * @var Gabarit $this
  * @var int $id_u
  * @var array $infoUtilisateur
- * @var RoleUtilisateur $roleUtilisateur
- * @var SQLQuery $sqlQuery
  * @var int $id_e
  * @var bool $new_user
  * @var bool $is_api

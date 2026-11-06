@@ -9,9 +9,9 @@ use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Module\ModuleListService;
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use PastellTestCase;
 use RoleSQL;
-use RoleUtilisateur;
 use UnrecoverableException;
 
 final class ModuleListServiceTest extends PastellTestCase
@@ -36,7 +36,7 @@ final class ModuleListServiceTest extends PastellTestCase
         $roleSQL->addDroit('utilisateurRole', DroitService::getDroitFor('pes-marche', DroitType::LECTURE));
         $roleSQL->addDroit('utilisateurRole', DroitService::getDroitFor('ls-actes', DroitType::LECTURE));
         $roleSQL->addDroit('utilisateurRole', DroitService::getDroitFor('actes-preversement-seda', DroitType::LECTURE));
-        $this->getObjectInstancier()->getInstance(RoleUtilisateur::class)
+        $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)
             ->addRole($id_u, 'utilisateurRole', 1);
 
         return $id_u;

@@ -819,7 +819,7 @@ class DaemonControler extends PastellControler
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $entityUtilitiesService = $this->getInstance(EntityUtilitiesService::class);
-        $arbreFille = $this->getRoleUtilisateur()->getArbreFille($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
+        $arbreFille = $this->getInstance(UtilisateurEntiteService::class)->getArbreFille($this->getId_u(), DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
         $entity_tree = $entityUtilitiesService->buildEntityTreeselectOptions($arbreFille);
         $this->setViewParameter('entity_treeselect_data', \json_encode($entity_tree, \JSON_THROW_ON_ERROR));
 

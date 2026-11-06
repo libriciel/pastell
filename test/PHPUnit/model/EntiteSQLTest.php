@@ -2,6 +2,7 @@
 
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class EntiteSQLTest extends PastellTestCase
@@ -9,13 +10,13 @@ class EntiteSQLTest extends PastellTestCase
     /** @var  EntiteSQL */
     private $entiteSQL;
 
-    private RoleUtilisateur $roleUtilisateur;
+    private UtilisateurRoleService $utilisateurRoleService;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->entiteSQL = $this->getObjectInstancier()->getInstance(EntiteSQL::class);
-        $this->roleUtilisateur = $this->getObjectInstancier()->getInstance(RoleUtilisateur::class);
+        $this->utilisateurRoleService = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
     }
 
     public function testGetDemominationEntiteRacine()
@@ -176,8 +177,8 @@ class EntiteSQLTest extends PastellTestCase
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $id_u = $userCreationService->create('test', 'aa@aa.fr', 'user', 'user');
 
-        $this->roleUtilisateur->addRole($id_u, 'admin', $id_e_2);
-        $this->roleUtilisateur->addRole($id_u, 'admin', $id_e_3);
+        $this->utilisateurRoleService->addRole($id_u, 'admin', $id_e_2);
+        $this->utilisateurRoleService->addRole($id_u, 'admin', $id_e_3);
 
         $siblingsWithPermission = $this->entiteSQL->getSiblingsWithPermission($id_e_3, $id_u);
 
@@ -201,9 +202,9 @@ class EntiteSQLTest extends PastellTestCase
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $id_u = $userCreationService->create('test', 'aa@aa.fr', 'user', 'user');
 
-        $this->roleUtilisateur->addRole($id_u, 'admin', $id_e_2);
-        $this->roleUtilisateur->addRole($id_u, 'admin', $id_e_3);
-        $this->roleUtilisateur->addRole($id_u, 'admin', $id_e_4);
+        $this->utilisateurRoleService->addRole($id_u, 'admin', $id_e_2);
+        $this->utilisateurRoleService->addRole($id_u, 'admin', $id_e_3);
+        $this->utilisateurRoleService->addRole($id_u, 'admin', $id_e_4);
 
         $getSiblingsWithPermission = $this->entiteSQL->getSiblingsWithPermission($id_e_2, $id_u);
         static::assertCount(3, $getSiblingsWithPermission);

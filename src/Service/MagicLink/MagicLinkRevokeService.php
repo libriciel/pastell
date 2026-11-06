@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Pastell\Service\MagicLink;
 
 use EntiteSQL;
-use Journal;
 use JournalEventType;
 use MagicLinkSQL;
 use Pastell\Service\Journal\JournalEntryService;

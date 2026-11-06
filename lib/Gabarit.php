@@ -190,23 +190,9 @@ class Gabarit
         return $this->objectInstancier->getInstance(DocumentTypeFactory::class);
     }
 
-    /** @deprecated Since 4.1.24, Use DroitService instead */
-    public function getRoleUtilisateur(): RoleUtilisateur
-    {
-        return $this->objectInstancier->getInstance(RoleUtilisateur::class);
-    }
-
     public function getPastellTimer(): PastellTimer
     {
         return $this->objectInstancier->getInstance(PastellTimer::class);
-    }
-
-    /**
-     * @deprecated 4.1.25 Use getJournalEntryService() instead
-     */
-    public function getJournal(): Journal
-    {
-        return $this->objectInstancier->getInstance(Journal::class);
     }
 
     public function getJournalEntryService(): JournalEntryService
