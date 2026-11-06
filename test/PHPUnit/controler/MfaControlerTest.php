@@ -25,8 +25,7 @@ class MfaControlerTest extends ControlerTestCase
 
     private function assertJournalContains(string $needle): void
     {
-        $lines = $this->getObjectInstancier()->getInstance(Journal::class)
-            ->getAll(false, false, false, false, 0, 100, $needle);
+        $lines = $this->getJournalConsultationService()->getList(recherche: $needle);
         self::assertNotEmpty($lines, "Aucune entrée de journal contenant : $needle");
     }
 

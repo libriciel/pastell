@@ -363,8 +363,7 @@ class ConnexionControlerTest extends ControlerTestCase
         static::assertFalse($authentification->isConnected());
         static::assertNotNull($authentification->getMfaPending());
         static::assertNotEmpty(
-            $this->getObjectInstancier()->getInstance(Journal::class)
-                ->getAll(false, false, false, false, 0, 100, 'Échec double authentification')
+            $this->getJournalConsultationService()->getList(recherche: 'Échec double authentification')
         );
     }
 
