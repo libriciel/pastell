@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Service\Document;
 
 use ActionCreatorSQL;
-use DocumentActionEntite;
+use DocumentActionEntiteSQL;
 use DocumentEmailSQL;
 use DocumentEntiteSQL;
 use DocumentSQL;
@@ -22,7 +22,7 @@ class DocumentEmailReadService
     public function __construct(
         private readonly DocumentEmailSQL $documentEmailSQL,
         private readonly DocumentEntiteSQL $documentEntiteSQL,
-        private readonly DocumentActionEntite $documentActionEntite,
+        private readonly DocumentActionEntiteSQL $documentActionEntiteSQL,
         private readonly DocumentSQL $documentSQL,
         private readonly ActionCreatorSQL $actionCreatorSQL,
         private readonly JournalEntryService $journalEntryService,
@@ -59,7 +59,7 @@ class DocumentEmailReadService
         $allRead = $this->documentEmailSQL->isAllRead($id_d);
         $nextAction = $allRead ? self::ACTION_RECEPTION : self::ACTION_PARTIAL_RECEPTION;
 
-        if ($this->documentActionEntite->getLastAction($id_e, $id_d) !== $nextAction) {
+        if ($this->documentActionEntiteSQL->getLastAction($id_e, $id_d) !== $nextAction) {
             $this->actionCreatorSQL->addAction(
                 $id_e,
                 0,

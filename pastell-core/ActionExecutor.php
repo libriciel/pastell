@@ -181,10 +181,16 @@ abstract class ActionExecutor
 
     /**
      * @return DocumentActionEntite
+     * @deprecated 4.1.26 Use DocumentActionEntiteSQL, DocumentEntiteService and DocumentSearchService instead
      */
     public function getDocumentActionEntite()
     {
         return $this->objectInstancier->getInstance(DocumentActionEntite::class);
+    }
+
+    public function getDocumentActionEntiteSQL(): DocumentActionEntiteSQL
+    {
+        return $this->objectInstancier->getInstance(DocumentActionEntiteSQL::class);
     }
 
     /**

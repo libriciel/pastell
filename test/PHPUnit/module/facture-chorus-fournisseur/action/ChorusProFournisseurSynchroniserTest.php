@@ -106,10 +106,10 @@ class ChorusProFournisseurSynchroniserTest extends ExtensionCppTestCase
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document['id_d']);
 
-        $documentActionEntite = $this->getObjectInstancier()->getInstance(DocumentActionEntite::class);
+        $documentActionEntiteSQL = $this->getObjectInstancier()->getInstance(DocumentActionEntiteSQL::class);
         $this->assertEquals(
             $last_etat_expected,
-            $documentActionEntite->getLastAction(self::ID_E_COL, $document['id_d'])
+            $documentActionEntiteSQL->getLastAction(self::ID_E_COL, $document['id_d'])
         );
 
         $this->assertTrue($actionResult);

@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Document\DocumentEntiteService;
+
 class ParametrageFluxFactureCPPSupprimer extends SupprimerFacture
 {
     /**
@@ -25,7 +27,7 @@ class ParametrageFluxFactureCPPSupprimer extends SupprimerFacture
         $message = "";
 
         foreach ($all_id_d as $id_d) {
-            $infoDocument = $this->objectInstancier->getInstance(DocumentActionEntite::class)->getInfo($id_d, $id_e);
+            $infoDocument = $this->objectInstancier->getInstance(DocumentEntiteService::class)->getInfo($id_e, $id_d);
 
             if ($this->objectInstancier->getInstance(JobManager::class)->hasActionProgramme($id_e, $id_d)) {
                 $error .= "Il y a déjà une action programmée pour le document « {$infoDocument['titre']} »<br/>";

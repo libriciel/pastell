@@ -1,6 +1,7 @@
 <?php
 
 use Mailsec\MailsecManager;
+use Pastell\Service\Document\DocumentEntiteService;
 use Pastell\Service\Document\DocumentRoleService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
@@ -457,8 +458,8 @@ class DocumentControlerTest extends ControlerTestCase
         }
         static::assertSame(
             'creation',
-            $this->getObjectInstancier()->getInstance(DocumentActionEntite::class)
-                ->getInfo($document['id_d'], PastellTestCase::ID_E_COL)['last_action']
+            $this->getObjectInstancier()->getInstance(DocumentEntiteService::class)
+                ->getCurrentAction(PastellTestCase::ID_E_COL, $document['id_d'])
         );
     }
 
@@ -494,8 +495,8 @@ class DocumentControlerTest extends ControlerTestCase
         }
         static::assertSame(
             'creation',
-            $this->getObjectInstancier()->getInstance(DocumentActionEntite::class)
-                ->getInfo($document['id_d'], $document_id_e)['last_action']
+            $this->getObjectInstancier()->getInstance(DocumentEntiteService::class)
+                ->getCurrentAction($document_id_e, $document['id_d'])
         );
     }
 

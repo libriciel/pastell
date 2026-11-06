@@ -19,8 +19,8 @@ class HeliosOrientationFluxAuto extends ActionExecutor
     public function go()
     {
         $action_cible = null;
-        $documentActionEntite = $this->getDocumentActionEntite();
-        $last_action = $documentActionEntite->getLastAction($this->id_e, $this->id_d);
+        $documentActionEntiteSQL = $this->getDocumentActionEntiteSQL();
+        $last_action = $documentActionEntiteSQL->getLastAction($this->id_e, $this->id_d);
         $donneesFormulaire = $this->getDonneesFormulaire();
         $envoi_signature_check = $donneesFormulaire->get('envoi_signature_check');
         $envoi_tdt = $donneesFormulaire->get('envoi_tdt');

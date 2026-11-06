@@ -48,7 +48,7 @@ class ModificationAction extends ActionExecutor
         $this->getDocument()->setTitre($this->id_d, $titre);
 
         if ($this->getDonneesFormulaire()->isModified()) {
-            $action_name = $this->getDocumentActionEntite()->getLastAction($this->id_e, $this->id_d);
+            $action_name = $this->getDocumentActionEntiteSQL()->getLastAction($this->id_e, $this->id_d) ?? '';
             if ($this->needChangeEtatToModification($action_name)) {
                 $this->changeOrUpdateAction(self::ACTION_ID, self::ACTION_MESSAGE, true);
             } else {
@@ -112,7 +112,7 @@ class ModificationAction extends ActionExecutor
         //autre action => on prends editable_content,
         // sinon, rien n'est editable (et on lance une erreur)
         $type_document = $this->getDocument()->getInfo($id_d)['type'];
-        $last_action = $this->getDocumentActionEntite()->getLastActionNotModif($id_e, $id_d);
+        $last_action = $this->getDocumentActionEntiteSQL()->getLastActionNotModif($id_e, $id_d);
         $editable_content = $this->getDocumentTypeFactory()
             ->getFluxDocumentType($type_document)->getAction()->getEditableContent($last_action);
 

@@ -41,6 +41,11 @@ abstract class SQL
         return $this->sqlQuery->getPdo()->lastInsertId($name);
     }
 
+    protected function getPlaceholders(array $values): string
+    {
+        return implode(',', array_fill(0, count($values), '?'));
+    }
+
     protected function queryStream(string $query, array $param = [], bool $buffered = false): Generator
     {
         $max_execution_time = ini_get('max_execution_time');

@@ -3,7 +3,7 @@
 namespace Pastell\Service\Document;
 
 use ActionCreatorSQL;
-use DocumentActionEntite;
+use DocumentActionEntiteSQL;
 use DocumentEmailReponseSQL;
 use DocumentEmailSQL;
 use DocumentEntiteSQL;
@@ -18,7 +18,7 @@ class DocumentEmailService
         private readonly DocumentEmailReponseSQL $documentEmailReponseSQL,
         private readonly DocumentSQL $documentSQL,
         private readonly DocumentEntiteSQL $documentEntiteSQL,
-        private readonly DocumentActionEntite $documentActionEntite,
+        private readonly DocumentActionEntiteSQL $documentActionEntiteSQL,
         private readonly ActionCreatorSQL $actionCreatorSQL,
     ) {
     }
@@ -55,7 +55,7 @@ class DocumentEmailService
             return;
         }
         $id_e = $this->documentEntiteSQL->getEntiteId($id_d);
-        if ($this->documentActionEntite->getLastAction($id_e, $id_d) === self::ACTION_ERROR) {
+        if ($this->documentActionEntiteSQL->getLastAction($id_e, $id_d) === self::ACTION_ERROR) {
             return;
         }
         $this->actionCreatorSQL->addAction($id_e, 0, self::ACTION_ERROR, 'Erreur : aucun email reçu', $id_d);

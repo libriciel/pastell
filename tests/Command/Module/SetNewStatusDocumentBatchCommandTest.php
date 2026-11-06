@@ -23,7 +23,7 @@ class SetNewStatusDocumentBatchCommandTest extends \PastellTestCase
         parent::setUp();
         $command = new SetNewStatusDocumentBatchCommand(
             $this->getObjectInstancier()->getInstance(\JobManager::class),
-            $this->getObjectInstancier()->getInstance(\DocumentActionEntite::class),
+            $this->getObjectInstancier()->getInstance(DocumentEntiteService::class),
             $this->getObjectInstancier()->getInstance(\ActionChange::class),
             $this->getObjectInstancier()->getInstance(\FluxDefinitionFiles::class),
             $this->getObjectInstancier()->getInstance(DocumentTypeValidation::class),

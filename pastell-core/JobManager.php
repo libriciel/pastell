@@ -1,42 +1,25 @@
 <?php
 
+use Monolog\Logger;
+use Pastell\Service\Document\DocumentEntiteService;
+
 class JobManager
 {
     public const DEFAULT_NEXT_TRY_IN_MINUTES = 1;
     public const DEFAULT_ID_VERROU = "DEFAULT_VERROU_ID";
 
-    private $jobQueueSQL;
-    private $document;
-    private $documentActionEntite;
-    private $documentTypeFactory;
-    private $fluxEntiteSQL;
-    private $connecteurEntiteSQL;
-    private $connecteurFrequenceSQL;
-
-    private $disable_job_queue;
-
-    private $logger;
-
     public function __construct(
-        JobQueueSQL $jobQueueSQL,
-        DocumentSQL $document,
-        DocumentActionEntite $documentActionEntite,
-        DocumentTypeFactory $documentTypeFactory,
-        FluxEntiteSQL $fluxEntiteSQL,
-        ConnecteurEntiteSQL $connecteurEntiteSQL,
-        ConnecteurFrequenceSQL $connecteurFrequenceSQL,
-        Monolog\Logger $logger,
-        $disable_job_queue = false
+        private readonly JobQueueSQL $jobQueueSQL,
+        private readonly DocumentSQL $document,
+        private readonly DocumentActionEntiteSQL $documentActionEntiteSQL,
+        private readonly DocumentEntiteService $documentEntiteService,
+        private readonly DocumentTypeFactory $documentTypeFactory,
+        private readonly FluxEntiteSQL $fluxEntiteSQL,
+        private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
+        private readonly ConnecteurFrequenceSQL $connecteurFrequenceSQL,
+        private readonly Logger $logger,
+        private $disable_job_queue = false
     ) {
-        $this->jobQueueSQL = $jobQueueSQL;
-        $this->document = $document;
-        $this->documentActionEntite = $documentActionEntite;
-        $this->documentTypeFactory = $documentTypeFactory;
-        $this->fluxEntiteSQL = $fluxEntiteSQL;
-        $this->connecteurEntiteSQL = $connecteurEntiteSQL;
-        $this->connecteurFrequenceSQL = $connecteurFrequenceSQL;
-        $this->disable_job_queue = $disable_job_queue;
-        $this->logger = $logger;
     }
 
     public function setDisableJobQueue($disable_job_queue)
@@ -58,7 +41,7 @@ class JobManager
         }
 
         $infoDocument = $this->document->getInfo($id_d);
-        $etat_source = $this->documentActionEntite->getLastAction($id_e, $id_d);
+        $etat_source = $this->documentActionEntiteSQL->getLastAction($id_e, $id_d);
         $etat_cible = $this->documentTypeFactory->getFluxDocumentType($infoDocument['type'])->getAction()->getActionAutomatique($etat_source);
         $job = $this->jobQueueSQL->getJob($id_job);
 
@@ -138,7 +121,7 @@ class JobManager
         $job->id_d = $id_d;
         $job->id_u = $id_u;
         $job->last_message = $last_message;
-        $job->etat_source = $this->documentActionEntite->getLastAction($id_e, $id_d);
+        $job->etat_source = $this->documentActionEntiteSQL->getLastAction($id_e, $id_d) ?? '';
         $job->etat_cible = $action;
         $now = date('Y-m-d H:i:s');
         $job->next_try = $now;
@@ -303,7 +286,7 @@ class JobManager
 
     public function setTraitementParLotBulk($id_e, $type, $etat_source, $etat_cible)
     {
-        $document_list = $this->documentActionEntite->getDocument($id_e, $type, $etat_source);
+        $document_list = $this->documentEntiteService->getDocumentsByLastAction($id_e, $type, $etat_source);
         foreach ($document_list as $document_info) {
             $this->logger->info("[BULK ACTION $id_e,$type] {$document_info['id_d']} ({$document_info['titre']}): {$document_info['last_action']} -> $etat_cible");
             $this->setTraitementLot($id_e, $document_info['id_d'], 0, $etat_cible);

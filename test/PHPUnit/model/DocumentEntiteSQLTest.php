@@ -105,4 +105,64 @@ class DocumentEntiteSQLTest extends PastellTestCase
         static::assertSame('action-to', $document['last_action']);
         static::assertSame('2020-01-01 00:00:00', $document['last_action_date']);
     }
+
+    public function testGetLastAction(): void
+    {
+        static::assertSame('action-test', $this->documentEntiteSQL->getLastAction(self::ID_E_COL, $this->id_d));
+        static::assertNull($this->documentEntiteSQL->getLastAction(self::ID_E_SERVICE, $this->id_d));
+    }
+
+    public function testGetInfo(): void
+    {
+        static::assertSame(self::TYPE, $this->documentEntiteSQL->getInfo(self::ID_E_COL, $this->id_d)['type']);
+        static::assertNull($this->documentEntiteSQL->getInfo(self::ID_E_SERVICE, $this->id_d));
+    }
+
+    public function testDocumentsByLastAction(): void
+    {
+        $documents = $this->documentEntiteSQL->getDocumentsByLastAction(self::ID_E_COL, self::TYPE, 'action-test');
+        static::assertSame($this->id_d, $documents[0]['id_d']);
+        static::assertEmpty($this->documentEntiteSQL->getDocumentsByLastAction(self::ID_E_COL, self::TYPE, 'other'));
+    }
+
+    public function testDocumentsLastActionUntil(): void
+    {
+        static::assertCount(
+            1,
+            $this->documentEntiteSQL->getDocumentsByLastActionUntil(self::ID_E_COL, self::TYPE, 'action-test', date('Y-m-d'))
+        );
+        static::assertEmpty(
+            $this->documentEntiteSQL->getDocumentsByLastActionUntil(self::ID_E_COL, self::TYPE, 'action-test', '2000-01-01')
+        );
+    }
+
+    public function testDocumentsThroughActionUntil(): void
+    {
+        $this->getObjectInstancier()->getInstance(DocumentActionSQL::class)
+            ->add($this->id_d, self::ID_E_COL, 1, 'modification');
+        $documents = $this->documentEntiteSQL->getDocumentsThroughActionUntil(
+            self::ID_E_COL,
+            self::TYPE,
+            'action-test',
+            date('Y-m-d')
+        );
+        static::assertSame('modification', $documents[0]['last_action']);
+        static::assertEmpty(
+            $this->documentEntiteSQL->getDocumentsThroughActionUntil(self::ID_E_COL, self::TYPE, 'action-test', '2000-01-01')
+        );
+    }
+
+    public function testCountLastActionAfter(): void
+    {
+        $this->documentEntiteSQL->updateLastAction(self::ID_E_COL, $this->id_d, 'action-test', '2020-01-01 00:00:00');
+        static::assertSame('2020-01-01 00:00:00', $this->documentEntiteSQL->getLastActionDate(self::ID_E_COL, $this->id_d));
+        static::assertSame(
+            1,
+            $this->documentEntiteSQL->countDocumentsWithLastActionAfter(self::ID_E_COL, self::TYPE, '2019-01-01')
+        );
+        static::assertSame(
+            0,
+            $this->documentEntiteSQL->countDocumentsWithLastActionAfter(self::ID_E_COL, self::TYPE, '2020-01-01')
+        );
+    }
 }
