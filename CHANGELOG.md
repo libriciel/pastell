@@ -18,6 +18,7 @@
   `getFilleInfoNavigation()`, `getAncetreNav()`, `getAncetreId()`, `getAllChildren()`, `getTreeEntity()`,
   `updateAncestor()` et `updateAllAncestors()` de `EntiteSQL` dépréciées au profit des services `EntityInfoService`,
   `EntityHierarchyService` et `EntiteDeletionService` #2627
+- Service `EntityUtilitiesService` déprécié au profit de `EntityInfoService::addRootEntityDenomination()` #2627
 
 ### Sécurité
 

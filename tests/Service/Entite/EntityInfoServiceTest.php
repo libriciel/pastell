@@ -91,4 +91,22 @@ final class EntityInfoServiceTest extends PastellTestCase
         $this->expectExceptionMessage("Aucun paramètre permettant la recherche de l'entité n'a été renseigné");
         $this->getEntityInfoService()->getEntityFromData([]);
     }
+
+    public function testAddRootEntityDenomination(): void
+    {
+        $entity_list = $this->getEntityInfoService()->addRootEntityDenomination([
+            ['id_e' => EntiteSQL::ID_E_ENTITE_RACINE, 'denomination' => null],
+            ['id_e' => 1, 'denomination' => 'Bourg-en-Bresse'],
+            ['libelle' => 'without id_e'],
+        ]);
+
+        self::assertSame(
+            [
+                ['id_e' => EntiteSQL::ID_E_ENTITE_RACINE, 'denomination' => EntiteSQL::ENTITE_RACINE_DENOMINATION],
+                ['id_e' => 1, 'denomination' => 'Bourg-en-Bresse'],
+                ['libelle' => 'without id_e'],
+            ],
+            $entity_list
+        );
+    }
 }

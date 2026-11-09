@@ -3,7 +3,7 @@
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Connecteur\ConnecteurAvailabilityService;
 use Pastell\Service\Menu\MenuGaucheService;
-use Pastell\Service\Entite\EntityUtilitiesService;
+use Pastell\Service\Entite\EntityInfoService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 
@@ -35,9 +35,9 @@ class FluxControler extends PastellControler
     {
         return $this->getObjectInstancier()->getInstance(ConnecteurAssociationService::class);
     }
-    private function getEntityUtilitiesService(): EntityUtilitiesService
+    private function getEntityInfoService(): EntityInfoService
     {
-        return $this->getObjectInstancier()->getInstance(EntityUtilitiesService::class);
+        return $this->getObjectInstancier()->getInstance(EntityInfoService::class);
     }
 
     /**
@@ -204,7 +204,7 @@ class FluxControler extends PastellControler
         }
 
         $entite_denomination = $this->getEntiteSQL()->getDenomination($id_e);
-        $connecteur_info = $this->getEntityUtilitiesService()->addDenominationForEntiteRacine(
+        $connecteur_info = $this->getEntityInfoService()->addRootEntityDenomination(
             [$this->getFluxEntiteSQL()->getConnecteur($id_e, $flux, $type_connecteur, $num_same_type)]
         )[0];
         $fluxDocumentType = $this->getDocumentTypeFactory()->getFluxDocumentType($flux);
@@ -297,8 +297,8 @@ class FluxControler extends PastellControler
             $line[DocumentType::NUM_SAME_TYPE] = $connecteur_type_info[DocumentType::NUM_SAME_TYPE];
             $line['inherited_flux'] = false;
             if (isset($all_flux_entite[$id_flux][$connecteur_id][$line[DocumentType::NUM_SAME_TYPE]])) {
-                $line['connecteur_info'] = $this->getEntityUtilitiesService()
-                    ->addDenominationForEntiteRacine(
+                $line['connecteur_info'] = $this->getEntityInfoService()
+                    ->addRootEntityDenomination(
                         [$all_flux_entite[$id_flux][$connecteur_id][$line[DocumentType::NUM_SAME_TYPE]]]
                     )[0];
             } else {

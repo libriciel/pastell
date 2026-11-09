@@ -9,7 +9,7 @@ use NotFoundException;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Entite\EntityHierarchyService;
-use Pastell\Service\Entite\EntityUtilitiesService;
+use Pastell\Service\Entite\EntityInfoService;
 
 final class ConnecteurAvailabilityService
 {
@@ -17,7 +17,7 @@ final class ConnecteurAvailabilityService
         private readonly EntityHierarchyService $entityHierarchyService,
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
         private readonly DroitService $droitService,
-        private readonly EntityUtilitiesService $entityUtilitiesService,
+        private readonly EntityInfoService $entityInfoService,
     ) {
     }
 
@@ -44,7 +44,7 @@ final class ConnecteurAvailabilityService
             ) {
                 $result = array_merge(
                     $result,
-                    $this->entityUtilitiesService->addDenominationForEntiteRacine(
+                    $this->entityInfoService->addRootEntityDenomination(
                         $this->connecteurEntiteSQL->getDisponible($ancestor_id_e, $type, $global)
                     )
                 );

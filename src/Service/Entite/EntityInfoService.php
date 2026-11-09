@@ -76,6 +76,19 @@ final class EntityInfoService
         throw new Exception("Aucun paramètre permettant la recherche de l'entité n'a été renseigné");
     }
 
+    public function addRootEntityDenomination(array $entity_list): array
+    {
+        return array_map(
+            static function (array $entity_info): array {
+                if (isset($entity_info['id_e']) && $entity_info['id_e'] === EntiteSQL::ID_E_ENTITE_RACINE) {
+                    $entity_info['denomination'] = EntiteSQL::ENTITE_RACINE_DENOMINATION;
+                }
+                return $entity_info;
+            },
+            $entity_list
+        );
+    }
+
     private function getInheritedValue(int $id_e, string $column): mixed
     {
         $entity_info = $this->entiteSQL->getInfo($id_e);

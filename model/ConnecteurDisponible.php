@@ -2,7 +2,7 @@
 
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
-use Pastell\Service\Entite\EntityUtilitiesService;
+use Pastell\Service\Entite\EntityInfoService;
 
 /**
  * @deprecated 4.1.26 Use ConnecteurAvailabilityService instead
@@ -13,7 +13,7 @@ class ConnecteurDisponible
         private readonly EntiteSQL $entiteSQL,
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
         private readonly DroitService $droitService,
-        private readonly EntityUtilitiesService $entityUtilitiesService,
+        private readonly EntityInfoService $entityInfoService,
     ) {
     }
 
@@ -39,7 +39,7 @@ class ConnecteurDisponible
 
         foreach ($ancetre as $entite_id_e) {
             if ($this->droitService->hasDroitFor($id_u, $entite_id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION)) {
-                $listDisponible = $this->entityUtilitiesService->addDenominationForEntiteRacine(
+                $listDisponible = $this->entityInfoService->addRootEntityDenomination(
                     $this->connecteurEntiteSQL->getDisponible($entite_id_e, $type, $global)
                 );
                 $result = array_merge($result, $listDisponible);
