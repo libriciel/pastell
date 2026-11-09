@@ -58,7 +58,7 @@ services:
       - "${DATABASE_PORT_TEST:-13306}:3306"
 
   glaneur-sftp:
-    image: hubdocker.libriciel.fr/atmoz/sftp:alpine@sha256:be36d0ace61a0682015a648a05b9259026adf1a582bb6d6f8a68326519499528
+    image: hubdocker.libriciel.fr/atmoz/sftp:alpine@sha256:c5fb9e4beb8b7054a4c0b65c5e11df47cc20da95ad6002e88aecff62bab06372
     volumes:
       - ${PASTELL_GLANEUR:-pastell_glaneur}:/home/${SFTP_USER:-sftp}
     ports:
