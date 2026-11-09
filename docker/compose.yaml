@@ -264,7 +264,7 @@ services:
       - stack-update-network
 
   libriciel-postfix:
-    image: 'registry.libriciel.fr/public/systeme/libriciel-postfix:1.0.4@sha256:f7e4a69058e8d35b7d110fb1c7de0113f90a06c212b2dacb4f74bdc85d3a0d4f'
+    image: 'registry.libriciel.fr/public/systeme/libriciel-postfix:1.0.5@sha256:90f74c594f3b9d6e956f0492177ba060b3608751f4a4b655303e3af8da848231'
     restart: unless-stopped
     read_only: true
     cap_drop:
