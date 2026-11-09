@@ -39,7 +39,7 @@ class FakeTdT extends TdtAdapter
         return file_get_contents($this->getDataDir() . '/_shared/vide.pdf');
     }
 
-    public function getActeTamponne($id_transaction, string $date_affichage = null): ?string
+    public function getActeTamponne($id_transaction, ?string $date_affichage = null): ?string
     {
         return file_get_contents($this->getDataDir() . '/_shared/vide.pdf');
     }

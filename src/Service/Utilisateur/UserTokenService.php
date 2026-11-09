@@ -19,7 +19,7 @@ final class UserTokenService
     ) {
     }
 
-    public function createToken(int $userId, string $name, string $expiration = null): string
+    public function createToken(int $userId, string $name, ?string $expiration = null): string
     {
         $token = $this->generateToken();
         $this->userTokenSQL->create($userId, $name, $this->hashToken($token), $expiration);

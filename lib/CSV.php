@@ -10,7 +10,7 @@ class CSV
         }
 
         $result = [];
-        while (($data = fgetcsv($file, 1000, $delimiter)) !== false) {
+        while (($data = fgetcsv($file, 1000, $delimiter, escape: '')) !== false) {
             $result[] = $data ;
         }
         fclose($file);

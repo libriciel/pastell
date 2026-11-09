@@ -47,7 +47,7 @@ class UpdateFieldService
         string $scope,
         string $field,
         string $twigExpression,
-        string $dryRun = null
+        ?string $dryRun = null
     ): string {
         if ($scope === self::SCOPE_MODULE) {
             $scopeId = 'id_d';

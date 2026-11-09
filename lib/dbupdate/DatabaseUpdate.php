@@ -7,7 +7,7 @@ class DatabaseUpdate
     /** @var DatabaseDiff */
     private $databaseDiff;
 
-    public function __construct($fileContent, SQLQuery $sqlQuery = null)
+    public function __construct($fileContent, ?SQLQuery $sqlQuery = null)
     {
         $this->fileContent = json_decode($fileContent, true);
         if (!$this->fileContent) {

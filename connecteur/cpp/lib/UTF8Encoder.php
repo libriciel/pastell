@@ -31,7 +31,7 @@ class UTF8Encoder
     public function encodeScalar($scalar)
     {
         if (is_string($scalar)) {
-            $scalar = utf8_encode($scalar);
+            $scalar = mb_convert_encoding($scalar, 'UTF-8', 'ISO-8859-1');
         }
         return $scalar;
     }

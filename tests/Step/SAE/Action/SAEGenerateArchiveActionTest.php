@@ -31,7 +31,7 @@ final class SAEGenerateArchiveActionTest extends PastellTestCase
      * @throws NotFoundException
      * @throws \Exception
      */
-    private function getDocument(string $saeCongig = null): string
+    private function getDocument(?string $saeCongig = null): string
     {
         $document = $this->createDocument(self::SAE_ONLY);
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document['id_d']);

@@ -22,7 +22,7 @@ class IParapheurUnitTest extends PastellTestCase
     }
 
 
-    private function getIParapheurConnecteur(SoapClient $soapClient = null): IParapheur
+    private function getIParapheurConnecteur(?SoapClient $soapClient = null): IParapheur
     {
         $soapClientFactory = $this->createMock(SoapClientFactory::class);
 

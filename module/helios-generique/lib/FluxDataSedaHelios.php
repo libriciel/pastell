@@ -52,7 +52,7 @@ class FluxDataSedaHelios extends FluxDataSedaDefault
         if (! $result && $info['is_pj']) {
             $result[] = "PES_PJ";
         }
-        return utf8_encode(implode(", ", $result));
+        return mb_convert_encoding(implode(", ", $result), 'UTF-8', 'ISO-8859-1');
     }
 
     public function get_IdPost()
@@ -161,8 +161,8 @@ class FluxDataSedaHelios extends FluxDataSedaDefault
             }
         }
         $nature = implode(' - ', $result);
-        return utf8_encode("Flux comptable PES_ Aller $nature en date du {$info['DteStr']} - {$info['LibelleColBud']} " .
-            "({$info['CodCol']}{$info['CodBud']})");
+        return mb_convert_encoding("Flux comptable PES_ Aller $nature en date du {$info['DteStr']} - {$info['LibelleColBud']} " .
+            "({$info['CodCol']}{$info['CodBud']})", 'UTF-8', 'ISO-8859-1');
     }
 
     public function get_date_ack_iso_8601()

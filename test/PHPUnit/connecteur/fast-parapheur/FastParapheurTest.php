@@ -20,7 +20,7 @@ class FastParapheurTest extends PastellTestCase
         return $connecteurConfig;
     }
 
-    private function getFastParapheur(DonneesFormulaire $connectorConfig = null): FastParapheur
+    private function getFastParapheur(?DonneesFormulaire $connectorConfig = null): FastParapheur
     {
         $fastParapheur = new FastParapheur(
             $this->getObjectInstancier()->getInstance(SoapClientFactory::class),

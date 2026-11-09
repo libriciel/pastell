@@ -91,7 +91,7 @@ abstract class TdtConnecteur extends Connecteur
 
     abstract public function getBordereau($id_transaction);
 
-    abstract public function getActeTamponne(string $id_transaction, string $date_affichage = null): ?string;
+    abstract public function getActeTamponne(string $id_transaction, ?string $date_affichage = null): ?string;
 
     abstract public function getFichierRetour($transaction_id);
 

@@ -76,7 +76,7 @@ class TdtAdapter extends TdtConnecteur
         throw new Exception("Not implemented");
     }
 
-    public function getActeTamponne(string $id_transaction, string $date_affichage = null): ?string
+    public function getActeTamponne(string $id_transaction, ?string $date_affichage = null): ?string
     {
         throw new Exception("Not implemented");
     }

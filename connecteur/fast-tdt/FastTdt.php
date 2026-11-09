@@ -209,7 +209,7 @@ class FastTdt extends TdtConnecteur
         $regexClassificationFiles = $this->getRegexClassificationFiles();
         foreach ($files as $file) {
             if (preg_match($regexClassificationFiles, $file)) {
-                $currentClassificationFile = utf8_decode($this->webDavWrapper->get($file));
+                $currentClassificationFile = mb_convert_encoding($this->webDavWrapper->get($file), 'ISO-8859-1');
                 $simpleXMLWrapper = new SimpleXMLWrapper();
                 $xmlDocument = $simpleXMLWrapper->loadString($currentClassificationFile);
                 $currentClassificationDate = (string)$xmlDocument->xpath('//actes:DateClassification')[0];
@@ -512,7 +512,7 @@ class FastTdt extends TdtConnecteur
      * @return ?string
      * @throws Exception
      */
-    public function getActeTamponne(string $id_transaction, string $date_affichage = null): ?string
+    public function getActeTamponne(string $id_transaction, ?string $date_affichage = null): ?string
     {
         $pdf_file = null;
         foreach ($this->webDavWrapper->listFolder('') as $doc) {
