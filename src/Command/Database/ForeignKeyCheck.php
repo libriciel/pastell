@@ -8,6 +8,7 @@ use EntiteSQL;
 use Exception;
 use LogicException;
 use Pastell\Command\BaseCommand;
+use Pastell\Service\Entite\EntityHierarchyService;
 use PastellLogger;
 use Pastell\Service\Droit\DroitService;
 use SQLQuery;
@@ -171,7 +172,7 @@ class ForeignKeyCheck extends BaseCommand
 
     public function __construct(
         private readonly SQLQuery $sqlQuery,
-        private readonly EntiteSQL $entiteSQL,
+        private readonly EntityHierarchyService $entityHierarchyService,
         private readonly PastellLogger $pastellLogger,
     ) {
         parent::__construct();
@@ -508,7 +509,7 @@ class ForeignKeyCheck extends BaseCommand
     {
         foreach ($reattached as $orphan) {
             if ($orphan['table'] === 'entite' && $orphan['column'] === 'entite_mere') {
-                $this->entiteSQL->updateAllAncestors();
+                $this->entityHierarchyService->updateAllAncestors();
                 return;
             }
         }

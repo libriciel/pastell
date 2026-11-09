@@ -56,6 +56,33 @@ class EntiteDeletionServiceTest extends PastellTestCase
         );
     }
 
+    /**
+     * @throws UnrecoverableException
+     */
+    public function testDeleteEmptyEntity(): void
+    {
+        $entiteSQL = $this->getObjectInstancier()->getInstance(EntiteSQL::class);
+        $this->entiteDeletionService->deleteEmptyEntity($this->entityId);
+        self::assertFalse($entiteSQL->exists($this->entityId));
+        self::assertSame([], $entiteSQL->getAncetre($this->entityId));
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function testDeleteEmptyEntityWithChild(): void
+    {
+        $this->getObjectInstancier()->getInstance(EntiteSQL::class)->create(
+            'name-fake',
+            'siren-fake',
+            EntiteSQL::TYPE_COLLECTIVITE,
+            $this->entityId
+        );
+        $this->expectException(UnrecoverableException::class);
+        $this->expectExceptionMessage("Suppression impossible : l'entité {id_e=2} possède des entités filles");
+        $this->entiteDeletionService->deleteEmptyEntity($this->entityId);
+    }
+
     public function testCanDelete(): void
     {
         $isSupprimable = $this->entiteDeletionService->canDelete($this->entityId);

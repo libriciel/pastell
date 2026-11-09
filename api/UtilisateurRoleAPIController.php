@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Entite\EntityInfoService;
 use Pastell\Service\Utilisateur\RoleDelegationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
@@ -12,7 +13,7 @@ class UtilisateurRoleAPIController extends BaseAPIController
     public function __construct(
         private readonly UtilisateurSQL $utilisateur,
         private readonly RoleSQL $roleSQL,
-        private readonly EntiteSQL $entiteSQL,
+        private readonly EntityInfoService $entityInfoService,
         private readonly UtilisateurRoleService $utilisateurRoleService,
         private readonly RoleDelegationService $roleDelegationService,
     ) {
@@ -189,7 +190,7 @@ class UtilisateurRoleAPIController extends BaseAPIController
 
         $id_e = $this->getFromRequest('id_e', 0);
         if ($id_e) {
-            $infoEntiteExistante = $this->entiteSQL->getEntiteFromData($data);
+            $infoEntiteExistante = $this->entityInfoService->getEntityFromData($data);
             $id_e = $infoEntiteExistante['id_e'];
         }
 
@@ -230,7 +231,7 @@ class UtilisateurRoleAPIController extends BaseAPIController
         $data = $this->getRequest();
 
         $infoUtilisateurExistant = $this->utilisateur->getUserFromData($data);
-        $infoEntiteExistante = $this->entiteSQL->getEntiteFromData($data);
+        $infoEntiteExistante = $this->entityInfoService->getEntityFromData($data);
 
         $roles = $this->getFromRequest('role');
 

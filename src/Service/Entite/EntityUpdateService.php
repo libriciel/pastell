@@ -17,6 +17,7 @@ final class EntityUpdateService
         private readonly EntiteSQL $entiteSQL,
         private readonly JournalEntryService $journalEntryService,
         private readonly EntityValidator $validator,
+        private readonly EntityHierarchyService $entityHierarchyService,
     ) {
     }
 
@@ -55,6 +56,6 @@ final class EntityUpdateService
             JournalAction::MODIFIED->value,
             "Modification de l'entité $name ($entityId) : $infoChanged"
         );
-        $this->entiteSQL->updateAncestor($entityId, $parent);
+        $this->entityHierarchyService->updateAncestors($entityId, $parent);
     }
 }

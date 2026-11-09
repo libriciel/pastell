@@ -17,6 +17,7 @@ final class EntityCreationService
         private readonly EntiteSQL $entiteSQL,
         private readonly JournalEntryService $journalEntryService,
         private readonly EntityValidator $validator,
+        private readonly EntityHierarchyService $entityHierarchyService,
     ) {
     }
 
@@ -41,7 +42,7 @@ final class EntityCreationService
             JournalAction::CREATED->value,
             "Création de l'entité $name - $siren"
         );
-        $this->entiteSQL->updateAncestor($entityId, $parent);
+        $this->entityHierarchyService->updateAncestors($entityId, $parent);
 
         return $entityId;
     }

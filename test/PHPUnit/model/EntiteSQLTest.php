@@ -154,4 +154,17 @@ class EntiteSQLTest extends PastellTestCase
     {
         static::assertSame(1, $this->entiteSQL->getNbCollectivite('Bourg-en-Bresse'));
     }
+
+    public function testGetActiveChildrenByType(): void
+    {
+        $children = $this->entiteSQL->getActiveChildrenByType(1, [EntiteSQL::TYPE_COLLECTIVITE]);
+        self::assertSame(['CCAS'], array_column($children, 'denomination'));
+        self::assertSame([], $this->entiteSQL->getActiveChildrenByType(1, [EntiteSQL::TYPE_CENTRE_DE_GESTION]));
+    }
+
+    public function testGetByIsActive(): void
+    {
+        self::assertCount(2, $this->entiteSQL->getByIsActive(true));
+        self::assertCount(0, $this->entiteSQL->getByIsActive(false));
+    }
 }

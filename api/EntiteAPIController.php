@@ -4,6 +4,7 @@ use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Entite\EntityCreationService;
+use Pastell\Service\Entite\EntityInfoService;
 use Pastell\Service\Entite\EntityUpdateService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 
@@ -15,6 +16,7 @@ final class EntiteAPIController extends BaseAPIController
         private readonly EntityUpdateService $entityUpdateService,
         private readonly EntiteDeletionService $entiteDeletionService,
         private readonly UtilisateurEntiteService $utilisateurEntiteService,
+        private readonly EntityInfoService $entityInfoService,
     ) {
     }
 
@@ -119,7 +121,7 @@ final class EntiteAPIController extends BaseAPIController
     {
         $data['id_e'] = $this->getFromQueryArgs(0);
         $data['denomination'] = $this->getFromRequest('denomination');
-        $infoEntiteExistante = $this->entiteSQL->getEntiteFromData($data);
+        $infoEntiteExistante = $this->entityInfoService->getEntityFromData($data);
         $id_e = $infoEntiteExistante['id_e'];
 
         $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
@@ -141,7 +143,7 @@ final class EntiteAPIController extends BaseAPIController
         $data = $this->getRequest();
         $data['id_e'] = $this->getFromQueryArgs(0);
 
-        $infoEntiteExistante = $this->entiteSQL->getEntiteFromData($data);
+        $infoEntiteExistante = $this->entityInfoService->getEntityFromData($data);
 
         $id_e = $infoEntiteExistante['id_e'];
 

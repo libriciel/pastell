@@ -5,13 +5,13 @@ namespace Pastell\Command\Module;
 use ConnecteurFactory;
 use DocumentSQL;
 use DonneesFormulaireFactory;
-use EntiteSQL;
 use Exception;
 use FakeGED;
 use GEDConnecteur;
 use NotFoundException;
 use Pastell\Command\BaseCommand;
 use Pastell\Service\Document\DocumentDeletionService;
+use Pastell\Service\Entite\EntityHierarchyService;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -24,7 +24,7 @@ class ForceSendGedAndDelete extends BaseCommand
 
     public function __construct(
         private readonly DocumentSQL $documentSQL,
-        private readonly EntiteSQL $entiteSQL,
+        private readonly EntityHierarchyService $entityHierarchyService,
         private readonly ConnecteurFactory $connecteurFactory,
         private readonly DonneesFormulaireFactory $donneesFormulaireFactory,
         private readonly JournalEntryService $journalEntryService,
@@ -185,7 +185,7 @@ class ForceSendGedAndDelete extends BaseCommand
         $entitiesDocuments = [];
 
         if ($includeSubEntities) {
-            $subEntities = $this->entiteSQL->getAllChildren($entityId);
+            $subEntities = $this->entityHierarchyService->getAllChildren($entityId);
             foreach ($subEntities as $entity) {
                 $entities[] = $entity['id_e'];
             }

@@ -59,6 +59,9 @@ class EntiteSQL extends SQL
         return $this->query($sql, $id_e);
     }
 
+    /**
+     * @deprecated 4.1.26 Use EntityInfoService::getCentreDeGestion() instead
+     */
     public function getCDG($id_e)
     {
         return $this->getHeritedInfo($id_e, self::TYPE_CENTRE_DE_GESTION);
@@ -80,6 +83,9 @@ class EntiteSQL extends SQL
         return false;
     }
 
+    /**
+     * @deprecated 4.1.26 Use EntityInfoService::getExtendedInfo() instead
+     */
     public function getExtendedInfo($id_e)
     {
         $result = $this->getInfo($id_e);
@@ -101,6 +107,9 @@ class EntiteSQL extends SQL
         return $this->query($sql, $id_e);
     }
 
+    /**
+     * @deprecated 4.1.26 Use EntityHierarchyService::getAllChildren() instead
+     */
     public function getAllChildren(int $entityId)
     {
         $children = $this->getFille($entityId);
@@ -116,6 +125,9 @@ class EntiteSQL extends SQL
         return $children;
     }
 
+    /**
+     * @deprecated 4.1.26 Use EntityHierarchyService::getNavigationChildren() instead
+     */
     public function getFilleInfoNavigation($id_e, array $liste_collectivite = [])
     {
         if ($id_e != 0 || ! $liste_collectivite || ($liste_collectivite[0] == 0)) {
@@ -136,6 +148,9 @@ class EntiteSQL extends SQL
     }
 
 
+    /**
+     * @deprecated 4.1.26 Use EntityInfoService::getSiren() instead
+     */
     public function getSiren($id_e)
     {
         return $this->getHeritedInfo($id_e, 'siren');
@@ -148,6 +163,9 @@ class EntiteSQL extends SQL
     }
 
 
+    /**
+     * @deprecated 4.1.26 Use EntityHierarchyService::getAncestorIds() instead
+     */
     public function getAncetreId($id_e)
     {
         $ancetre = $this->getAncetre($id_e);
@@ -173,6 +191,9 @@ class EntiteSQL extends SQL
         return $this->query($sql, $id_e);
     }
 
+    /**
+     * @deprecated 4.1.26 Use EntityHierarchyService::getNavigationAncestors() instead
+     */
     public function getAncetreNav($id_e, $listeCollectivite)
     {
         $all_ancetre = $this->getAncetre($id_e);
@@ -197,10 +218,8 @@ class EntiteSQL extends SQL
         return $all_ancetre;
     }
 
-        // ajout de la methode pour la suppression des entites par API.
-        // Les controles avant suppression sont à completer dans la methode appelante.
     /**
-     * @param $id_e
+     * @deprecated 4.1.26 Use EntiteDeletionService::deleteEmptyEntity() instead
      * @throws UnrecoverableException
      */
     public function removeEntite($id_e)
@@ -277,8 +296,7 @@ class EntiteSQL extends SQL
 
 
     /**
-     * @param array $data Données en vrac dans un tableau contenant ou un id_e ou une dénomination ou un is_active
-     * @return mixed Toutes les informations de la ou les entités trouvées
+     * @deprecated 4.1.26 Use EntityInfoService::getEntityFromData() instead
      * @throws Exception
      */
     public function getEntiteFromData(array $data)
@@ -333,7 +351,7 @@ class EntiteSQL extends SQL
         return $type_nom[$type];
     }
 
-    private function getByIsActive(bool $is_active): array
+    public function getByIsActive(bool $is_active): array
     {
         $sql = "SELECT * FROM entite WHERE is_active = ?";
         return $this->query($sql, $is_active);
@@ -372,6 +390,9 @@ EOT;
         $this->query($query, $name, $siren, $type, $mere, $cdg, $entityId);
     }
 
+    /**
+     * @deprecated 4.1.26 Use EntityHierarchyService::updateAncestors() instead
+     */
     public function updateAncestor(int $entityId, int $ancestor = 0): void
     {
         $deleteQuery = 'DELETE FROM entite_ancetre WHERE id_e=?;';
@@ -387,6 +408,9 @@ EOT;
         $this->query($insertQuery, 0, $entityId, $niveau);
     }
 
+    /**
+     * @deprecated 4.1.26 Use EntityHierarchyService::updateAllAncestors() instead
+     */
     public function updateAllAncestors(): void
     {
         $sql = 'DELETE FROM entite_ancetre;';
@@ -430,6 +454,9 @@ EOT;
         return $info['type'] === self::TYPE_CENTRE_DE_GESTION;
     }
 
+    /**
+     * @deprecated 4.1.26 Use EntityHierarchyService::getAncestorDenominations() instead
+     */
     public function getTreeEntity(?int $id_eMere): array
     {
         $listeEntiteMere = [];
@@ -476,5 +503,40 @@ SELECT count(*) FROM entite
 WHERE entite_mere=0 AND type != 'fournisseur' AND type != 'citoyen' AND denomination LIKE ?
 SQL;
         return (int) $this->queryOne($sql, "%$search%");
+    }
+
+    public function getActiveChildrenByType(int $id_e, array $type_list): array
+    {
+        $placeholders = implode(',', array_fill(0, count($type_list), '?'));
+        $sql = <<<SQL
+SELECT * FROM entite
+WHERE entite_mere = ? AND type IN ($placeholders) AND is_active = 1
+ORDER BY denomination
+SQL;
+        return $this->query($sql, [$id_e, ...$type_list]);
+    }
+
+    public function deleteAncestors(int $id_e): void
+    {
+        $sql = <<<SQL
+DELETE FROM entite_ancetre WHERE id_e = ?
+SQL;
+        $this->query($sql, $id_e);
+    }
+
+    public function deleteAllAncestors(): void
+    {
+        $sql = <<<SQL
+DELETE FROM entite_ancetre
+SQL;
+        $this->query($sql);
+    }
+
+    public function insertAncestor(int $id_e_ancetre, int $id_e, int $niveau): void
+    {
+        $sql = <<<SQL
+INSERT INTO entite_ancetre(id_e_ancetre, id_e, niveau) VALUES (?, ?, ?)
+SQL;
+        $this->query($sql, $id_e_ancetre, $id_e, $niveau);
     }
 }

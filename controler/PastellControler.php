@@ -5,6 +5,7 @@ use Pastell\Security\LibricielFeedbackReader;
 use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\EntityHierarchyService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Module\ModuleListService;
@@ -194,13 +195,14 @@ class PastellControler extends Controler
             return;
         }
 
-        $ancestors = $this->getEntiteSQL()->getAncetreNav($id_e, $listeCollectivite);
+        $entityHierarchyService = $this->getInstance(EntityHierarchyService::class);
+        $ancestors = $entityHierarchyService->getNavigationAncestors((int)$id_e, $listeCollectivite);
         $navigation = [];
         $rootNav = [
             'is_root' => true,
             'id_e' => 0,
             'name' => $this->getEntiteSQL()->getDenomination(0),
-            'children' => $this->getEntiteSQL()->getFilleInfoNavigation(0, $listeCollectivite),
+            'children' => $entityHierarchyService->getNavigationChildren(0, $listeCollectivite),
             'is_last' => true,
         ];
 
@@ -232,7 +234,7 @@ class PastellControler extends Controler
                     $this->getEntiteSQL()->getEntiteMere($id_e) ?: 0,
                     $this->getId_u()
                 ),
-                'children' => $this->getEntiteSQL()->getFilleInfoNavigation($id_e, $listeCollectivite),
+                'children' => $entityHierarchyService->getNavigationChildren((int)$id_e, $listeCollectivite),
                 'has_children' => false,
                 'is_last' => true,
             ];

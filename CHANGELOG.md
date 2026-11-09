@@ -14,6 +14,10 @@
 - Classe `UtilisateurRoleCache` dépréciée au profit de `UtilisateurRoleCacheService` #2624
 - Classe `ConnecteurFrequence` et méthodes associées de `ConnecteurFrequenceSQL`, `JobManager` et `DaemonControler`
   dépréciées au profit de `ConnecteurFrequenceData` et du service `ConnecteurFrequenceService` #2625
+- Méthodes `removeEntite()`, `getEntiteFromData()`, `getCDG()`, `getSiren()`, `getExtendedInfo()`,
+  `getFilleInfoNavigation()`, `getAncetreNav()`, `getAncetreId()`, `getAllChildren()`, `getTreeEntity()`,
+  `updateAncestor()` et `updateAllAncestors()` de `EntiteSQL` dépréciées au profit des services `EntityInfoService`,
+  `EntityHierarchyService` et `EntiteDeletionService` #2627
 
 ### Sécurité
 

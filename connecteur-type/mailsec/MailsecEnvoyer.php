@@ -1,6 +1,7 @@
 <?php
 
 use Mailsec\MailsecManager;
+use Pastell\Service\Entite\EntityHierarchyService;
 use Pastell\Service\Document\DocumentEmailRecipientType;
 use Pastell\Service\Document\DocumentEmailService;
 
@@ -25,6 +26,11 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
     private function getAnnuaireRoleSQL(): AnnuaireRoleSQL
     {
         return $this->objectInstancier->getInstance(AnnuaireRoleSQL::class);
+    }
+
+    private function getEntityHierarchyService(): EntityHierarchyService
+    {
+        return $this->objectInstancier->getInstance(EntityHierarchyService::class);
     }
 
     /**
@@ -153,7 +159,7 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
     private function getEmailFromInheritedGroup($mail)
     {
         $annuaireGroupe = $this->objectInstancier->getInstance(AnnuaireGroupeSQL::class);
-        $all_ancetre = $this->getEntiteSQL()->getAncetreId($this->id_e);
+        $all_ancetre = $this->getEntityHierarchyService()->getAncestorIds((int)$this->id_e);
         $id_g = $annuaireGroupe->getFromNomDenomination($all_ancetre, $mail);
         $utilisateur = $annuaireGroupe->getAllUtilisateur($id_g);
         return $this->getFormattedEmailList($utilisateur);
@@ -161,7 +167,7 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
 
     private function getEmailFromInheritedRole($mail)
     {
-        $all_ancetre = $this->getEntiteSQL()->getAncetreId($this->id_e);
+        $all_ancetre = $this->getEntityHierarchyService()->getAncestorIds((int)$this->id_e);
         $id_r = $this->getAnnuaireRoleSQL()->getFromNomDenomination($all_ancetre, $mail);
         $utilisateur = $this->getAnnuaireRoleSQL()->getUtilisateur($id_r);
         return $this->getFormattedEmailList($utilisateur);

@@ -9,6 +9,7 @@ use Monolog\Logger;
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Connecteur\ConnecteurDeletionService;
 use Pastell\Service\Document\DocumentEntiteService;
+use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
 require_once __DIR__ . '/../init.php';
@@ -40,6 +41,7 @@ $utilisateurRoleService = $objectInstancier->getInstance(UtilisateurRoleService:
 $jobManager = $objectInstancier->getInstance(JobManager::class);
 $connecteurDeletionService = $objectInstancier->getInstance(ConnecteurDeletionService::class);
 $connecteurAssociationService = $objectInstancier->getInstance(ConnecteurAssociationService::class);
+$entiteDeletionService = $objectInstancier->getInstance(EntiteDeletionService::class);
 
 
 $entite_list = $entiteSQL->getFille($id_e);
@@ -112,7 +114,7 @@ foreach ($id_e_list as $id_e) {
     }
 
     if ($do) {
-        $entiteSQL->removeEntite($id_e);
+        $entiteDeletionService->deleteEmptyEntity((int)$id_e);
     }
     $logger->info("Suppression de l'entite $id_e : " . ($do ? "[OK]" : "[PASS]"));
 }

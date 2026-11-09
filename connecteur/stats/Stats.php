@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Document\DocumentSize;
+use Pastell\Service\Entite\EntityHierarchyService;
 
 class Stats extends Connecteur
 {
@@ -48,7 +49,8 @@ class Stats extends Connecteur
         DocumentSQL $documentSQL,
         EntiteSQL $entiteSQL,
         DocumentSize $documentSize,
-        DocumentTypeFactory $documentTypeFactory
+        DocumentTypeFactory $documentTypeFactory,
+        private readonly EntityHierarchyService $entityHierarchyService,
     ) {
         $this->documentSQL = $documentSQL;
         $this->entiteSQL = $entiteSQL;
@@ -94,7 +96,7 @@ class Stats extends Connecteur
         $this->writeEntityUsageToFile($this->entityId, $documentType, $file);
 
         if ($this->includeChildren) {
-            $allChildren = $this->entiteSQL->getAllChildren($this->entityId);
+            $allChildren = $this->entityHierarchyService->getAllChildren($this->entityId);
             foreach ($allChildren as $children) {
                 $this->writeEntityUsageToFile($children['id_e'], $documentType, $file);
             }

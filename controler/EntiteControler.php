@@ -9,6 +9,8 @@ use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Utilisateur\UtilisateurListService;
 use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Entite\EntityCreationService;
+use Pastell\Service\Entite\EntityHierarchyService;
+use Pastell\Service\Entite\EntityInfoService;
 use Pastell\Service\Entite\EntityUpdateService;
 use Pastell\Service\FeatureToggleService;
 use Pastell\Service\ImportExportConfig\ExportConfigService;
@@ -97,7 +99,8 @@ class EntiteControler extends PastellControler
         foreach ($listeUtilisateur as $key => $utilisateur) {
             foreach ($utilisateur['all_role'] as $j => $userRole) {
                 $listeUtilisateur[$key]['all_role'][$j]['ancetre'] =
-                    $this->getEntiteSQL()->getTreeEntity($userRole['entite_mere']);
+                    $this->getInstance(EntityHierarchyService::class)
+                        ->getAncestorDenominations((int)$userRole['entite_mere']);
             }
         }
         $this->setViewParameter('liste_utilisateur', $listeUtilisateur);
@@ -179,7 +182,7 @@ class EntiteControler extends PastellControler
                 DroitType::LECTURE
             )
         );
-        $this->setViewParameter('entiteExtendedInfo', $this->getEntiteSQL()->getExtendedInfo($id_e));
+        $this->setViewParameter('entiteExtendedInfo', $this->getInstance(EntityInfoService::class)->getExtendedInfo($id_e));
         $canDelete = $this->getInstance(EntiteDeletionService::class)->canDelete($id_e);
         $this->setViewParameter('is_supprimable', $canDelete);
 
@@ -329,7 +332,7 @@ class EntiteControler extends PastellControler
 
         if ($id_e) {
             $infoEntite = $this->getEntiteSQL()->getInfo($id_e);
-            $infoEntite['centre_de_gestion'] = $this->getEntiteSQL()->getCDG($id_e);
+            $infoEntite['centre_de_gestion'] = $this->getInstance(EntityInfoService::class)->getCentreDeGestion($id_e);
             $this->setViewParameter('page_title', "Modification de " . $infoEntite['denomination']);
         } else {
             $infoEntite = $this->getEntiteInfoFromLastError();
