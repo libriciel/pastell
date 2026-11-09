@@ -3,7 +3,7 @@ WORKDIR /app/
 COPY package*.json ./
 RUN npm install
 
-FROM hubdocker.libriciel.fr/php:8.4.27-fpm-alpine3.24@sha256:93aa3f61216b73cc6f878235c9772849449f4efc18dfe3d6678eed645076c00d AS base
+FROM hubdocker.libriciel.fr/php:8.4.27-fpm-alpine3.24@sha256:15462d03828e68ae806c552403360edc5269a830d358646a9564dbebe632b787 AS base
 
 ARG UID=10001
 ARG GID=10001
