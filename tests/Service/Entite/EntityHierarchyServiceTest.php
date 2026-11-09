@@ -6,6 +6,8 @@ namespace Pastell\Tests\Service\Entite;
 
 use EntiteSQL;
 use Pastell\Service\Entite\EntityHierarchyService;
+use Pastell\Service\Entite\EntityType;
+use Pastell\Service\Entite\RootEntity;
 use PastellTestCase;
 
 final class EntityHierarchyServiceTest extends PastellTestCase
@@ -22,25 +24,25 @@ final class EntityHierarchyServiceTest extends PastellTestCase
 
     public function testGetAncestorIds(): void
     {
-        self::assertEquals([0, 1], $this->getEntityHierarchyService()->getAncestorIds(2));
-        self::assertEquals([0], $this->getEntityHierarchyService()->getAncestorIds(1));
+        self::assertSame([0, 1], $this->getEntityHierarchyService()->getAncestorIds(2));
+        self::assertSame([0], $this->getEntityHierarchyService()->getAncestorIds(1));
     }
 
     public function testGetAllChildren(): void
     {
-        $children = $this->getEntityHierarchyService()->getAllChildren(EntiteSQL::ID_E_ENTITE_RACINE);
+        $children = $this->getEntityHierarchyService()->getAllChildren(RootEntity::ID_E);
         self::assertSame(['Bourg-en-Bresse', 'CCAS'], array_column($children, 'denomination'));
     }
 
     public function testGetAncestorDenominations(): void
     {
         self::assertSame(
-            [EntiteSQL::ENTITE_RACINE_DENOMINATION, 'Bourg-en-Bresse', 'CCAS'],
+            [RootEntity::DENOMINATION, 'Bourg-en-Bresse', 'CCAS'],
             $this->getEntityHierarchyService()->getAncestorDenominations(2)
         );
         self::assertSame(
-            [EntiteSQL::ENTITE_RACINE_DENOMINATION],
-            $this->getEntityHierarchyService()->getAncestorDenominations(EntiteSQL::ID_E_ENTITE_RACINE)
+            [RootEntity::DENOMINATION],
+            $this->getEntityHierarchyService()->getAncestorDenominations(RootEntity::ID_E)
         );
     }
 
@@ -50,7 +52,7 @@ final class EntityHierarchyServiceTest extends PastellTestCase
         self::assertSame(['Bourg-en-Bresse'], array_column($ancestors, 'denomination'));
     }
 
-    public function testGetNavigationAncestorsUnauthorized(): void
+    public function testNavigationAncestorsRestrictedRights(): void
     {
         self::assertSame([], $this->getEntityHierarchyService()->getNavigationAncestors(2, [2]));
     }
@@ -63,7 +65,7 @@ final class EntityHierarchyServiceTest extends PastellTestCase
         );
     }
 
-    public function testGetNavigationChildrenAuthorized(): void
+    public function testNavigationChildrenFirstLevel(): void
     {
         self::assertSame(
             'Bourg-en-Bresse',
@@ -71,7 +73,7 @@ final class EntityHierarchyServiceTest extends PastellTestCase
         );
     }
 
-    public function testGetNavigationChildrenUnauthorized(): void
+    public function testNavigationChildrenRestrictedRights(): void
     {
         self::assertSame(
             'CCAS',
@@ -81,7 +83,7 @@ final class EntityHierarchyServiceTest extends PastellTestCase
 
     public function testUpdateAncestors(): void
     {
-        $id_e = $this->getEntiteSQL()->create('Child', '', EntiteSQL::TYPE_COLLECTIVITE, 2);
+        $id_e = $this->getEntiteSQL()->create('Child', '', EntityType::COLLECTIVITE->value, 2);
         $this->getEntityHierarchyService()->updateAncestors($id_e, 2);
 
         self::assertSame(
@@ -92,13 +94,13 @@ final class EntityHierarchyServiceTest extends PastellTestCase
 
     public function testUpdateAllAncestors(): void
     {
-        $id_e = $this->getEntiteSQL()->create('Child', '', EntiteSQL::TYPE_COLLECTIVITE, 2);
+        $id_e = $this->getEntiteSQL()->create('Child', '', EntityType::COLLECTIVITE->value, 2);
         $this->getEntityHierarchyService()->updateAllAncestors();
 
         self::assertSame(
             ['Bourg-en-Bresse', 'CCAS', 'Child'],
             array_column($this->getEntiteSQL()->getAncetre($id_e), 'denomination')
         );
-        self::assertEquals([0, 1], $this->getEntityHierarchyService()->getAncestorIds(2));
+        self::assertSame([0, 1], $this->getEntityHierarchyService()->getAncestorIds(2));
     }
 }

@@ -5,6 +5,7 @@ namespace Pastell\Service\Droit;
 use DocumentTypeFactory;
 use EntiteSQL;
 use NotFoundException;
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use UtilisateurSQL;
 
@@ -267,7 +268,7 @@ class DroitService
 
         $droit = self::getDroitFor($droit_id, $droit_type);
 
-        if ($id_e !== EntiteSQL::ID_E_ENTITE_RACINE && !$this->entiteSQL->getInfo($id_e)) {
+        if ($id_e !== RootEntity::ID_E && !$this->entiteSQL->getInfo($id_e)) {
             throw new NotFoundException("L'entité $id_e n'existe pas");
         }
 

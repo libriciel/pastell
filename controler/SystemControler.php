@@ -6,6 +6,7 @@ use Pastell\Mailer\Mailer;
 use Pastell\Service\Connecteur\MissingConnecteurService;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\FeatureToggle\DisplayFeatureToggleInTestPage;
 use Pastell\Service\FeatureToggleService;
@@ -23,7 +24,7 @@ class SystemControler extends PastellControler
     {
         parent::_beforeAction();
         $this->setViewParameter('menu', $this->getInstance(MenuGaucheService::class)->getConfigurationMenu());
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
         $this->setViewParameter('dont_display_breacrumbs', true);
         $this->setMenuGaucheSelect(MenuGaucheService::SYSTEM_INDEX);
     }
@@ -289,7 +290,7 @@ class SystemControler extends PastellControler
      */
     public function mailTestAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
 
         $emails = $this->getPostInfo()->get('email');
         if (! $emails) {
@@ -332,7 +333,7 @@ class SystemControler extends PastellControler
      */
     public function phpinfoAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         phpinfo();
     }
 
@@ -407,7 +408,7 @@ class SystemControler extends PastellControler
      */
     public function doLoginPageConfigurationAction()
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $result = file_put_contents(
             LOGIN_PAGE_CONFIGURATION_LOCATION,
@@ -449,7 +450,7 @@ class SystemControler extends PastellControler
      */
     public function exportAllMissingConnecteurAction()
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $tmpFoder  = new TmpFolder();
         $tmp_folder = $tmpFoder->create();
@@ -470,7 +471,7 @@ class SystemControler extends PastellControler
      */
     public function emptyCacheAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $redisWrapper = $this->getObjectInstancier()->getInstance(RedisWrapper::class);
         $redisWrapper->flushAll();

@@ -27,11 +27,15 @@ class NomemclatureListe extends ChoiceActionExecutor
         $id_e_cdg = $this->objectInstancier->getInstance(EntityInfoService::class)
             ->getCentreDeGestion((int)$this->id_e);
 
-        $donneesFormulaire = $this->objectInstancier->getInstance(ConnecteurFactory::class)->getConnecteurConfigByType(
-            $id_e_cdg,
-            'actes-cdg',
-            'classification-cdg'
-        );
+        $donneesFormulaire = false;
+        if ($id_e_cdg !== null) {
+            $connecteurFactory = $this->objectInstancier->getInstance(ConnecteurFactory::class);
+            $donneesFormulaire = $connecteurFactory->getConnecteurConfigByType(
+                $id_e_cdg,
+                'actes-cdg',
+                'classification-cdg'
+            );
+        }
 
         if (!$donneesFormulaire) {
             throw new Exception(

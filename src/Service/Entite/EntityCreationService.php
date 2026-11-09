@@ -27,10 +27,11 @@ final class EntityCreationService
     public function create(
         string $name,
         string $siren,
-        string $type = EntiteSQL::TYPE_COLLECTIVITE,
+        ?string $type = null,
         int $parent = 0,
         int $cdg = 0,
     ): int {
+        $type ??= EntityType::COLLECTIVITE->value;
         $this->validator->validate($name, $siren, $type, $parent, $cdg);
 
         $entityId = $this->entiteSQL->create($name, $siren, $type, $parent, $cdg);

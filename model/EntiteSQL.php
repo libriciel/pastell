@@ -1,12 +1,27 @@
 <?php
 
+use Pastell\Service\Entite\EntityType;
+use Pastell\Service\Entite\RootEntity;
+
 class EntiteSQL extends SQL
 {
-    public const TYPE_COLLECTIVITE = "collectivite";
-    public const TYPE_CENTRE_DE_GESTION = "centre_de_gestion";
+    /**
+     * @deprecated 4.1.26 Use EntityType::COLLECTIVITE instead
+     */
+    public const TYPE_COLLECTIVITE = 'collectivite';
+    /**
+     * @deprecated 4.1.26 Use EntityType::CENTRE_DE_GESTION instead
+     */
+    public const TYPE_CENTRE_DE_GESTION = 'centre_de_gestion';
 
-    public const ENTITE_RACINE_DENOMINATION = "Entité racine";
-    public const ID_E_ENTITE_RACINE = 0;
+    /**
+     * @deprecated 4.1.26 Use RootEntity::DENOMINATION instead
+     */
+    public const ENTITE_RACINE_DENOMINATION = RootEntity::DENOMINATION;
+    /**
+     * @deprecated 4.1.26 Use RootEntity::ID_E instead
+     */
+    public const ID_E_ENTITE_RACINE = RootEntity::ID_E;
 
     public const NB_COLLECTIVITE_DISPLAY = 20;
 
@@ -35,8 +50,8 @@ class EntiteSQL extends SQL
 
     public function getDenomination($id_e)
     {
-        if ($id_e == 0) {
-            return self::ENTITE_RACINE_DENOMINATION;
+        if ($id_e == RootEntity::ID_E) {
+            return RootEntity::DENOMINATION;
         }
         $info = $this->getInfo($id_e);
         if (! $info) {
@@ -64,7 +79,7 @@ class EntiteSQL extends SQL
      */
     public function getCDG($id_e)
     {
-        return $this->getHeritedInfo($id_e, self::TYPE_CENTRE_DE_GESTION);
+        return $this->getHeritedInfo($id_e, 'centre_de_gestion');
     }
 
     private function getHeritedInfo($id_e, $colname)
@@ -130,10 +145,10 @@ class EntiteSQL extends SQL
      */
     public function getFilleInfoNavigation($id_e, array $liste_collectivite = [])
     {
-        if ($id_e != 0 || ! $liste_collectivite || ($liste_collectivite[0] == 0)) {
+        if ($id_e != RootEntity::ID_E || ! $liste_collectivite || ($liste_collectivite[0] == RootEntity::ID_E)) {
             return $this->getNavigationFilleWithType(
                 $id_e,
-                [self::TYPE_COLLECTIVITE,self::TYPE_CENTRE_DE_GESTION]
+                [EntityType::COLLECTIVITE->value,EntityType::CENTRE_DE_GESTION->value]
             );
         }
         $liste_fille = [];
@@ -337,8 +352,8 @@ class EntiteSQL extends SQL
     public static function getAllType()
     {
         return [
-            self::TYPE_COLLECTIVITE => "Collectivité",
-            self::TYPE_CENTRE_DE_GESTION => "Centre de gestion"
+            EntityType::COLLECTIVITE->value => "Collectivité",
+            EntityType::CENTRE_DE_GESTION->value => "Centre de gestion"
         ];
     }
 
@@ -351,7 +366,7 @@ class EntiteSQL extends SQL
         return $type_nom[$type];
     }
 
-    public function getByIsActive(bool $is_active): array
+    private function getByIsActive(bool $is_active): array
     {
         $sql = "SELECT * FROM entite WHERE is_active = ?";
         return $this->query($sql, $is_active);
@@ -360,10 +375,11 @@ class EntiteSQL extends SQL
     public function create(
         string $name,
         string $siren = '',
-        string $type = self::TYPE_COLLECTIVITE,
+        ?string $type = null,
         int $mere = 0,
         int $cdg = 0,
     ): int {
+        $type ??= EntityType::COLLECTIVITE->value;
         $date = \date(\Date::DATE_ISO);
         $query = <<<EOT
 INSERT INTO entite(denomination,siren,type,entite_mere,date_inscription,centre_de_gestion)
@@ -378,10 +394,11 @@ EOT;
         int $entityId,
         string $name,
         string $siren = '',
-        string $type = self::TYPE_COLLECTIVITE,
+        ?string $type = null,
         int $mere = 0,
         int $cdg = 0,
     ): void {
+        $type ??= EntityType::COLLECTIVITE->value;
         $query = <<<EOT
 UPDATE entite
 SET denomination=?, siren=?, type=?, entite_mere=?, centre_de_gestion=?
@@ -451,7 +468,7 @@ EOT;
             return false;
         }
 
-        return $info['type'] === self::TYPE_CENTRE_DE_GESTION;
+        return $info['type'] === EntityType::CENTRE_DE_GESTION->value;
     }
 
     /**
@@ -472,7 +489,7 @@ EOT;
                 $id_eMere = 0;
             }
         }
-        $listeEntiteMere[$i] = 'Entité racine';
+        $listeEntiteMere[$i] = RootEntity::DENOMINATION;
         return array_reverse($listeEntiteMere);
     }
 
@@ -507,7 +524,10 @@ SQL;
 
     public function getActiveChildrenByType(int $id_e, array $type_list): array
     {
-        $placeholders = implode(',', array_fill(0, count($type_list), '?'));
+        if (!$type_list) {
+            return [];
+        }
+        $placeholders = $this->getPlaceholders($type_list);
         $sql = <<<SQL
 SELECT * FROM entite
 WHERE entite_mere = ? AND type IN ($placeholders) AND is_active = 1
@@ -532,11 +552,11 @@ SQL;
         $this->query($sql);
     }
 
-    public function insertAncestor(int $id_e_ancetre, int $id_e, int $niveau): void
+    public function insertAncestor(int $ancestor_id_e, int $id_e, int $level): void
     {
         $sql = <<<SQL
 INSERT INTO entite_ancetre(id_e_ancetre, id_e, niveau) VALUES (?, ?, ?)
 SQL;
-        $this->query($sql, $id_e_ancetre, $id_e, $niveau);
+        $this->query($sql, $ancestor_id_e, $id_e, $level);
     }
 }

@@ -13,13 +13,10 @@ final class EntityHierarchyService
     ) {
     }
 
-    /**
-     * Root entity first, the entity itself excluded.
-     */
     public function getAncestorIds(int $id_e): array
     {
         $ancestor_list = $this->getStrictAncestors($id_e);
-        $ancestor_ids = [EntiteSQL::ID_E_ENTITE_RACINE];
+        $ancestor_ids = [RootEntity::ID_E];
         foreach ($ancestor_list as $ancestor_info) {
             $ancestor_ids[] = $ancestor_info['id_e'];
         }
@@ -28,25 +25,15 @@ final class EntityHierarchyService
 
     public function getAllChildren(int $id_e): array
     {
-        $children = $this->entiteSQL->getFille($id_e);
-        foreach ($children as $child_info) {
-            $children = array_merge($children, $this->getAllChildren((int)$child_info['id_e']));
-        }
-
-        usort($children, static function (array $a, array $b): int {
-            return strcasecmp($a['denomination'], $b['denomination']);
-        });
-
+        $children = $this->collectChildren($id_e);
+        usort($children, static fn (array $a, array $b): int => strcasecmp($a['denomination'], $b['denomination']));
         return $children;
     }
 
-    /**
-     * Root entity first, down to the given entity.
-     */
     public function getAncestorDenominations(int $id_e): array
     {
         $denomination_list = [];
-        while ($id_e !== EntiteSQL::ID_E_ENTITE_RACINE) {
+        while ($id_e !== RootEntity::ID_E) {
             $entity_info = $this->entiteSQL->getInfo($id_e);
             if (!$entity_info) {
                 break;
@@ -54,18 +41,15 @@ final class EntityHierarchyService
             $denomination_list[] = $entity_info['denomination'];
             $id_e = (int)$entity_info['entite_mere'];
         }
-        $denomination_list[] = EntiteSQL::ENTITE_RACINE_DENOMINATION;
+        $denomination_list[] = RootEntity::DENOMINATION;
         return array_reverse($denomination_list);
     }
 
-    /**
-     * Ancestors displayed in the navigation, starting from the highest one the user has access to.
-     */
     public function getNavigationAncestors(int $id_e, array $allowed_id_e_list): array
     {
         $ancestor_list = $this->getStrictAncestors($id_e);
 
-        if (in_array(EntiteSQL::ID_E_ENTITE_RACINE, $allowed_id_e_list)) {
+        if (in_array(RootEntity::ID_E, $allowed_id_e_list)) {
             return $ancestor_list;
         }
 
@@ -78,13 +62,13 @@ final class EntityHierarchyService
     public function getNavigationChildren(int $id_e, array $allowed_id_e_list = []): array
     {
         if (
-            $id_e !== EntiteSQL::ID_E_ENTITE_RACINE
+            $id_e !== RootEntity::ID_E
             || !$allowed_id_e_list
-            || $allowed_id_e_list[0] == EntiteSQL::ID_E_ENTITE_RACINE
+            || $allowed_id_e_list[0] == RootEntity::ID_E
         ) {
             return $this->entiteSQL->getActiveChildrenByType(
                 $id_e,
-                [EntiteSQL::TYPE_COLLECTIVITE, EntiteSQL::TYPE_CENTRE_DE_GESTION]
+                [EntityType::COLLECTIVITE->value, EntityType::CENTRE_DE_GESTION->value]
             );
         }
 
@@ -98,30 +82,36 @@ final class EntityHierarchyService
         return $children;
     }
 
-    public function updateAncestors(int $id_e, int $parent_id_e = EntiteSQL::ID_E_ENTITE_RACINE): void
+    public function updateAncestors(int $id_e, int $parent_id_e = RootEntity::ID_E): void
     {
         $this->entiteSQL->deleteAncestors($id_e);
-        $niveau = 0;
-        $this->entiteSQL->insertAncestor($id_e, $id_e, $niveau++);
-        while ($parent_id_e !== EntiteSQL::ID_E_ENTITE_RACINE) {
-            $this->entiteSQL->insertAncestor($parent_id_e, $id_e, $niveau++);
+        $level = 0;
+        $this->entiteSQL->insertAncestor($id_e, $id_e, $level++);
+        while ($parent_id_e !== RootEntity::ID_E) {
+            $this->entiteSQL->insertAncestor($parent_id_e, $id_e, $level++);
             $parent_id_e = (int)$this->entiteSQL->getEntiteMere($parent_id_e);
         }
-        $this->entiteSQL->insertAncestor(EntiteSQL::ID_E_ENTITE_RACINE, $id_e, $niveau);
+        $this->entiteSQL->insertAncestor(RootEntity::ID_E, $id_e, $level);
     }
 
     public function updateAllAncestors(): void
     {
         $this->entiteSQL->deleteAllAncestors();
-        $this->entiteSQL->insertAncestor(EntiteSQL::ID_E_ENTITE_RACINE, EntiteSQL::ID_E_ENTITE_RACINE, 0);
+        $this->entiteSQL->insertAncestor(RootEntity::ID_E, RootEntity::ID_E, 0);
         foreach ($this->entiteSQL->getAll() as $entity_info) {
             $this->updateAncestors((int)$entity_info['id_e'], (int)$entity_info['entite_mere']);
         }
     }
 
-    /**
-     * Ancestors from the root, the entity itself excluded.
-     */
+    private function collectChildren(int $id_e): array
+    {
+        $children = $this->entiteSQL->getFille($id_e);
+        foreach ($children as $child_info) {
+            $children = array_merge($children, $this->collectChildren((int)$child_info['id_e']));
+        }
+        return $children;
+    }
+
     private function getStrictAncestors(int $id_e): array
     {
         $ancestor_list = $this->entiteSQL->getAncetre($id_e);

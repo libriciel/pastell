@@ -3,12 +3,12 @@
 namespace Pastell\Service\Connecteur;
 
 use ConnecteurEntiteSQL;
-use EntiteSQL;
 use Exception;
 use FluxDefinitionFiles;
 use FluxEntiteSQL;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Entite\RootEntity;
 use UnrecoverableException;
 
 class ConnecteurAssociationService
@@ -64,7 +64,7 @@ class ConnecteurAssociationService
         }
 
         if ($type_dossier === '') {
-            if ($id_e !== EntiteSQL::ID_E_ENTITE_RACINE) {
+            if ($id_e !== RootEntity::ID_E) {
                 throw new UnrecoverableException("Le type de dossier est manquant.");
             }
         } else {

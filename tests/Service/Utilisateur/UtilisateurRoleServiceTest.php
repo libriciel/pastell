@@ -6,10 +6,10 @@ namespace Pastell\Tests\Service\Utilisateur;
 
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityCreationService;
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Notification\NotificationService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
-use EntiteSQL;
 use PastellTestCase;
 use UtilisateurRoleSQL;
 
@@ -69,7 +69,7 @@ class UtilisateurRoleServiceTest extends PastellTestCase
         $id_e = $this->createEntity();
         $this->service->removeAllRoles($id_u);
         $this->service->addRole($id_u, 'admin', $id_e);
-        $this->service->addRole($id_u, 'admin', EntiteSQL::ID_E_ENTITE_RACINE);
+        $this->service->addRole($id_u, 'admin', RootEntity::ID_E);
 
         $this->service->removeRole($id_u, 'admin', $id_e);
 
@@ -101,9 +101,9 @@ class UtilisateurRoleServiceTest extends PastellTestCase
         $notificationService = $this->getObjectInstancier()->getInstance(NotificationService::class);
         $notificationService->subscribe(1, 1, 'actes-generique', 'send-tdt', false);
 
-        $this->service->replaceRolesForEntite(1, EntiteSQL::ID_E_ENTITE_RACINE, ['admin']);
+        $this->service->replaceRolesForEntite(1, RootEntity::ID_E, ['admin']);
 
-        static::assertTrue($this->service->hasRole(1, 'admin', EntiteSQL::ID_E_ENTITE_RACINE));
+        static::assertTrue($this->service->hasRole(1, 'admin', RootEntity::ID_E));
         static::assertCount(1, $notificationService->getSubscriptionsByUser(1));
     }
 }

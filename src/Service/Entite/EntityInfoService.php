@@ -6,6 +6,7 @@ namespace Pastell\Service\Entite;
 
 use EntiteSQL;
 use Exception;
+use NotFoundException;
 
 final class EntityInfoService
 {
@@ -17,12 +18,10 @@ final class EntityInfoService
     ) {
     }
 
-    /**
-     * Returns 0 when neither the entity nor its ancestors have a centre de gestion.
-     */
-    public function getCentreDeGestion(int $id_e): int
+    public function getCentreDeGestion(int $id_e): ?int
     {
-        return (int)$this->getInheritedValue($id_e, self::COLUMN_CENTRE_DE_GESTION);
+        $cdg_id_e = $this->getInheritedValue($id_e, self::COLUMN_CENTRE_DE_GESTION);
+        return $cdg_id_e === null ? null : (int)$cdg_id_e;
     }
 
     public function getSiren(int $id_e): string
@@ -30,10 +29,17 @@ final class EntityInfoService
         return (string)$this->getInheritedValue($id_e, self::COLUMN_SIREN);
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function getExtendedInfo(int $id_e): array
     {
         $entity_info = $this->entiteSQL->getInfo($id_e);
-        $cdg_id_e = $this->getCentreDeGestion($id_e);
+        if (!$entity_info) {
+            throw new NotFoundException("L'entité {id_e=$id_e} n'existe pas");
+        }
+        $cdg_id_e = $entity_info[self::COLUMN_CENTRE_DE_GESTION]
+            ?: $this->getAncestorValue($id_e, self::COLUMN_CENTRE_DE_GESTION);
         $entity_info['cdg'] = [];
         if ($cdg_id_e) {
             $entity_info['cdg'] = $this->entiteSQL->getInfo($cdg_id_e);
@@ -46,8 +52,6 @@ final class EntityInfoService
     }
 
     /**
-     * Looks up the entity by id_e, then by denomination.
-     *
      * @throws Exception
      */
     public function getEntityFromData(array $data): array
@@ -76,31 +80,22 @@ final class EntityInfoService
         throw new Exception("Aucun paramètre permettant la recherche de l'entité n'a été renseigné");
     }
 
-    public function addRootEntityDenomination(array $entity_list): array
-    {
-        return array_map(
-            static function (array $entity_info): array {
-                if (isset($entity_info['id_e']) && $entity_info['id_e'] === EntiteSQL::ID_E_ENTITE_RACINE) {
-                    $entity_info['denomination'] = EntiteSQL::ENTITE_RACINE_DENOMINATION;
-                }
-                return $entity_info;
-            },
-            $entity_list
-        );
-    }
-
     private function getInheritedValue(int $id_e, string $column): mixed
     {
         $entity_info = $this->entiteSQL->getInfo($id_e);
         if (!empty($entity_info[$column])) {
             return $entity_info[$column];
         }
+        return $this->getAncestorValue($id_e, $column);
+    }
 
+    private function getAncestorValue(int $id_e, string $column): mixed
+    {
         foreach ($this->entiteSQL->getAncetre($id_e) as $ancestor_info) {
             if ($ancestor_info[$column]) {
                 return $ancestor_info[$column];
             }
         }
-        return false;
+        return null;
     }
 }

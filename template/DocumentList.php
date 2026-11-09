@@ -15,9 +15,11 @@
  * @var string $sens_tri
  */
 
+use Pastell\Service\Entite\RootEntity;
+
 ?>
 
-<?php if ($id_e != 0) : ?>
+<?php if ($id_e != RootEntity::ID_E) : ?>
     <div class="box">
 
         <form class="input-group" action='Document/list' method='get'>

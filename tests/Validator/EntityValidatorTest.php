@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Tests\Validator;
 
 use EntiteSQL;
+use Pastell\Service\Entite\EntityType;
 use Pastell\Validator\EntityValidator;
 use PastellTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -23,7 +24,7 @@ class EntityValidatorTest extends PastellTestCase
      */
     public function testValidate(): void
     {
-        static::assertTrue($this->entityValidator()->validate('name', '', EntiteSQL::TYPE_COLLECTIVITE, 0, 0));
+        static::assertTrue($this->entityValidator()->validate('name', '', EntityType::COLLECTIVITE->value, 0, 0));
     }
 
     public static function validationProvider(): \Generator
@@ -57,7 +58,7 @@ class EntityValidatorTest extends PastellTestCase
         $this->expectExceptionMessage(
             sprintf("L'entité id_e=%s est désactivée, il n'est pas possible de créer une entité fille", self::ID_E_COL)
         );
-        $this->entityValidator()->validate('name', '', EntiteSQL::TYPE_COLLECTIVITE, self::ID_E_COL, 0);
+        $this->entityValidator()->validate('name', '', EntityType::COLLECTIVITE->value, self::ID_E_COL, 0);
     }
 
     public function testValidateCDG(): void
@@ -66,7 +67,7 @@ class EntityValidatorTest extends PastellTestCase
         $this->expectExceptionMessage(
             sprintf("L'entité %s ne peut pas être utilisée comme centre de gestion", self::ID_E_COL)
         );
-        $this->entityValidator()->validate('name', '', EntiteSQL::TYPE_COLLECTIVITE, 0, self::ID_E_COL);
+        $this->entityValidator()->validate('name', '', EntityType::COLLECTIVITE->value, 0, self::ID_E_COL);
     }
 
     /**

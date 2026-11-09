@@ -7,6 +7,7 @@ use Pastell\Service\Connecteur\ConnecteurDeletionService;
 use Pastell\Service\Connecteur\ConnecteurModificationService;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Entite\RootEntity;
 
 class ConnecteurAPIController extends BaseAPIController
 {
@@ -86,7 +87,7 @@ class ConnecteurAPIController extends BaseAPIController
      */
     public function listAllConnecteur(): array
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
         $id_connecteur = $this->getFromQueryArgs(1);
         if (!$id_connecteur) {
             $connectors = $this->connecteurEntiteSQL->getAllForPlateform();
@@ -266,7 +267,7 @@ class ConnecteurAPIController extends BaseAPIController
         if ($global !== null) {
             $isGlobalConnecteur = $global;
         } else {
-            $isGlobalConnecteur = ($id_e === 0) ? 1 : 0;
+            $isGlobalConnecteur = ($id_e === RootEntity::ID_E) ? 1 : 0;
         }
 
         $id_ce = $this->getFromQueryArgs(2);

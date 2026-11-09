@@ -1,12 +1,14 @@
 <?php
 
+use Pastell\Service\Entite\RootEntity;
+
 class FluxEntiteSQL extends SQL
 {
     public const FLUX_GLOBAL_NAME = 'global';
 
     private function getFluxName($id_e, $flux)
     {
-        if ($id_e === 0) {
+        if ($id_e === RootEntity::ID_E) {
             $flux = self::FLUX_GLOBAL_NAME;
         }
         return $flux;

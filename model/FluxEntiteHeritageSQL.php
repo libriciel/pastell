@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Entite\RootEntity;
+
 class FluxEntiteHeritageSQL extends SQL
 {
     public const ALL_FLUX = '__all_flux';
@@ -87,7 +89,7 @@ class FluxEntiteHeritageSQL extends SQL
     private function getRealAncetreForFlux($id_e, $flux)
     {
         $id_e_mere = $this->entiteSQL->getEntiteMere($id_e);
-        if ($id_e_mere == 0) {
+        if ($id_e_mere == RootEntity::ID_E) {
             return $id_e;
         }
         if ($this->hasInheritanceAllFlux($id_e)) {

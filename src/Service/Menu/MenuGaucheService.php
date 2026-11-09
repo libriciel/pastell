@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Pastell\Service\Menu;
 
-use EntiteSQL;
 use NotFoundException;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\FeatureToggle\DisplayConnecteurEntiteRacine;
 
 class MenuGaucheService
@@ -123,7 +123,7 @@ class MenuGaucheService
             $administration_options[] = MenuGaucheOption::withParameters('Utilisateurs', self::ENTITE_UTILISATEUR, ['id_e' => $id_e]);
         }
         if ($connecteur_lecture) {
-            if ($id_e === EntiteSQL::ID_E_ENTITE_RACINE) {
+            if ($id_e === RootEntity::ID_E) {
                 if ($isEnableConnecteurEntiteRacine) {
                     $administration_options[] = MenuGaucheOption::withParameters("Connecteurs d'entités", self::ENTITE_CONNECTEUR_LOCAL, ['id_e' => $id_e]);
                 }

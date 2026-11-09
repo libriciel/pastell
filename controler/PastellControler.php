@@ -6,6 +6,7 @@ use Pastell\Service\Document\DocumentEmailService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityHierarchyService;
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Module\ModuleListService;
@@ -172,7 +173,7 @@ class PastellControler extends Controler
     {
         $this->setViewParameter(
             'root_' . $droit_id . '_' . $droit_type->value,
-            $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, $droit_id, $droit_type)
+            $this->hasDroitFor(RootEntity::ID_E, $droit_id, $droit_type)
         );
     }
 
@@ -200,13 +201,13 @@ class PastellControler extends Controler
         $navigation = [];
         $rootNav = [
             'is_root' => true,
-            'id_e' => 0,
-            'name' => $this->getEntiteSQL()->getDenomination(0),
-            'children' => $entityHierarchyService->getNavigationChildren(0, $listeCollectivite),
+            'id_e' => RootEntity::ID_E,
+            'name' => RootEntity::DENOMINATION,
+            'children' => $entityHierarchyService->getNavigationChildren(RootEntity::ID_E, $listeCollectivite),
             'is_last' => true,
         ];
 
-        if ($id_e == 0) {
+        if ($id_e == RootEntity::ID_E) {
             $navigation[] = $rootNav;
         } else {
             $rootNav['is_last'] = false;
@@ -293,7 +294,7 @@ class PastellControler extends Controler
             );
 
             $has_system_lecture = $this->hasDroitFor(
-                EntiteSQL::ID_E_ENTITE_RACINE,
+                RootEntity::ID_E,
                 DroitService::DROIT_SYSTEM,
                 DroitType::LECTURE
             );
@@ -372,8 +373,8 @@ class PastellControler extends Controler
             DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE)
         );
 
-        $this->setViewParameter('display_entite_racine', $this->getViewParameterByKey('id_e_menu') != 0
-        && (count($listeCollectivite) > 1 || (isset($listeCollectivite[0]) && $listeCollectivite[0] == 0)));
+        $this->setViewParameter('display_entite_racine', $this->getViewParameterByKey('id_e_menu') != RootEntity::ID_E
+        && (count($listeCollectivite) > 1 || (isset($listeCollectivite[0]) && $listeCollectivite[0] == RootEntity::ID_E)));
     }
 
     /**

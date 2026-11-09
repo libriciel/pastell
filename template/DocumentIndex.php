@@ -9,7 +9,9 @@
  * @var int $count
  */
 
-if ($id_e != 0) : ?>
+use Pastell\Service\Entite\RootEntity;
+
+if ($id_e != RootEntity::ID_E) : ?>
     <div class="box">
         <form action='Document/index' method='get' class="row">
             <input type='hidden' name='id_e' value='<?php echo $id_e; ?>'/>

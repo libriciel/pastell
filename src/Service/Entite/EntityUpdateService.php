@@ -28,10 +28,11 @@ final class EntityUpdateService
         int $entityId,
         string $name,
         string $siren,
-        string $type = EntiteSQL::TYPE_COLLECTIVITE,
+        ?string $type = null,
         int $parent = 0,
         int $cdg = 0
     ): void {
+        $type ??= EntityType::COLLECTIVITE->value;
         $this->validator->validate($name, $siren, $type, $parent, $cdg);
 
         $oldEntity = $this->entiteSQL->getInfo($entityId);

@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Logger;
+use Pastell\Service\Entite\RootEntity;
 
 abstract class Connecteur
 {
@@ -57,7 +58,7 @@ abstract class Connecteur
      */
     public function isGlobal()
     {
-        return $this->connecteurInfo['id_e'] == 0;
+        return $this->connecteurInfo['id_e'] == RootEntity::ID_E;
     }
 
     public function setLogger(Logger $logger): void

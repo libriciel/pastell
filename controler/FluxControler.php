@@ -3,7 +3,7 @@
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Connecteur\ConnecteurAvailabilityService;
 use Pastell\Service\Menu\MenuGaucheService;
-use Pastell\Service\Entite\EntityInfoService;
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 
@@ -34,10 +34,6 @@ class FluxControler extends PastellControler
     private function getConnecteurAssociationService(): ConnecteurAssociationService
     {
         return $this->getObjectInstancier()->getInstance(ConnecteurAssociationService::class);
-    }
-    private function getEntityInfoService(): EntityInfoService
-    {
-        return $this->getObjectInstancier()->getInstance(EntityInfoService::class);
     }
 
     /**
@@ -143,7 +139,7 @@ class FluxControler extends PastellControler
     public function detailAction(): void
     {
         $id_e = $this->getGetInfo()->getInt('id_e', 0);
-        if ($id_e === 0) {
+        if ($id_e === RootEntity::ID_E) {
             $this->redirect("/Flux/index?id_e=0");
         }
         $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
@@ -196,7 +192,7 @@ class FluxControler extends PastellControler
             $this->getId_u(),
             $id_e,
             $type_connecteur,
-            $id_e === 0
+            $id_e === RootEntity::ID_E
         );
         if ($available_connecteur_list === []) {
             $this->setLastError("Aucun connecteur « $type_connecteur » disponible !");
@@ -204,9 +200,10 @@ class FluxControler extends PastellControler
         }
 
         $entite_denomination = $this->getEntiteSQL()->getDenomination($id_e);
-        $connecteur_info = $this->getEntityInfoService()->addRootEntityDenomination(
-            [$this->getFluxEntiteSQL()->getConnecteur($id_e, $flux, $type_connecteur, $num_same_type)]
-        )[0];
+        $connecteur_info = $this->getFluxEntiteSQL()->getConnecteur($id_e, $flux, $type_connecteur, $num_same_type);
+        if ($connecteur_info) {
+            $connecteur_info = RootEntity::addDenomination([$connecteur_info])[0];
+        }
         $fluxDocumentType = $this->getDocumentTypeFactory()->getFluxDocumentType($flux);
         $flux_name = $flux ? $fluxDocumentType->getName() : 'global';
 
@@ -296,13 +293,10 @@ class FluxControler extends PastellControler
                 $connecteur_type_info[DocumentType::CONNECTEUR_WITH_SAME_TYPE];
             $line[DocumentType::NUM_SAME_TYPE] = $connecteur_type_info[DocumentType::NUM_SAME_TYPE];
             $line['inherited_flux'] = false;
-            if (isset($all_flux_entite[$id_flux][$connecteur_id][$line[DocumentType::NUM_SAME_TYPE]])) {
-                $line['connecteur_info'] = $this->getEntityInfoService()
-                    ->addRootEntityDenomination(
-                        [$all_flux_entite[$id_flux][$connecteur_id][$line[DocumentType::NUM_SAME_TYPE]]]
-                    )[0];
-            } else {
-                $line['connecteur_info'] = false;
+            $line['connecteur_info'] = false;
+            $connecteur_info = $all_flux_entite[$id_flux][$connecteur_id][$line[DocumentType::NUM_SAME_TYPE]] ?? null;
+            if ($connecteur_info !== null) {
+                $line['connecteur_info'] = RootEntity::addDenomination([$connecteur_info])[0];
             }
             if (isset($all_flux_entite[$id_flux]['inherited_flux'])) {
                 $line['inherited_flux'] = $all_flux_entite[$id_flux]['inherited_flux'];

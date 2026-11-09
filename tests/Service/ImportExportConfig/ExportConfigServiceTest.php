@@ -6,6 +6,7 @@ namespace Pastell\Tests\Service\ImportExportConfig;
 
 use EntiteSQL;
 use FakeTdT;
+use Pastell\Service\Entite\EntityType;
 use TransformationGenerique;
 use FluxEntiteHeritageSQL;
 use Pastell\Service\Entite\EntityCreationService;
@@ -36,7 +37,7 @@ class ExportConfigServiceTest extends PastellTestCase
         $id_e_herite = $entityCreationService->create(
             'Entite qui hérite',
             '',
-            EntiteSQL::TYPE_COLLECTIVITE,
+            EntityType::COLLECTIVITE->value,
             self::ID_E_COL
         );
 
@@ -47,7 +48,7 @@ class ExportConfigServiceTest extends PastellTestCase
         $id_e_herite_actes = $entityCreationService->create(
             'Entite qui hérite que de actes',
             '',
-            EntiteSQL::TYPE_COLLECTIVITE,
+            EntityType::COLLECTIVITE->value,
             self::ID_E_COL
         );
         /** @var FluxEntiteHeritageSQL $fluxEntiteHeritageSQL */

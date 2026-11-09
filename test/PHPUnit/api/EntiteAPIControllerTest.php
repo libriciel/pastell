@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Entite\EntityType;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Droit\DroitType;
@@ -111,7 +112,7 @@ class EntiteAPIControllerTest extends PastellTestCase
             self::ID_E_COL,
             'name',
             '',
-            EntiteSQL::TYPE_CENTRE_DE_GESTION
+            EntityType::CENTRE_DE_GESTION->value
         );
         $info = $this->getInternalAPI()->post(
             '/entite',
@@ -165,7 +166,7 @@ class EntiteAPIControllerTest extends PastellTestCase
             "/entite",
             [
                 "denomination" => "toto",
-                'type' => EntiteSQL::TYPE_COLLECTIVITE
+                'type' => EntityType::COLLECTIVITE->value
             ]
         );
         $this->assertSame("", $info['siren']);
@@ -179,7 +180,7 @@ class EntiteAPIControllerTest extends PastellTestCase
             "/entite",
             [
                 "denomination" => "toto",
-                'type' => EntiteSQL::TYPE_COLLECTIVITE,
+                'type' => EntityType::COLLECTIVITE->value,
                 'siren' => '123456789'
             ]
         );

@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Utilisateur\UtilisateurListService;
+use Pastell\Service\Entite\RootEntity;
 
 /**
  * @var Gabarit $this
@@ -133,7 +134,7 @@ $exportUserUrl = sprintf(
                     <?php endif; ?>
                 <?php endif; ?>
                 <a href='Entite/detail?id_e=<?php echo $role['id_e']?>'>
-                    <?php hecho($role['denomination'] ?: 'Entité racine'); ?>
+                    <?php hecho($role['denomination'] ?: RootEntity::DENOMINATION); ?>
                 </a>
                 <br/>
             <?php endforeach;?>
@@ -142,7 +143,7 @@ $exportUserUrl = sprintf(
         <?php if ($descendance) : ?>
             <td>
                 <a href='Entite/detail?id_e=<?php echo $user['id_e']?>'
-                ><?php hecho($user['denomination'] ?: "Entité racine"); ?></a>
+                ><?php hecho($user['denomination'] ?: RootEntity::DENOMINATION); ?></a>
             </td>
         <?php endif;?>
         <td>

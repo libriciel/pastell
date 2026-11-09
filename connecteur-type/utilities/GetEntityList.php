@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 
 class GetEntityList extends ConnecteurTypeChoiceActionExecutor
@@ -16,8 +17,8 @@ class GetEntityList extends ConnecteurTypeChoiceActionExecutor
     public function go()
     {
         $entityId = $this->getRecuperateur()->getInt(self::ENTITY_ID);
-        if ($entityId === EntiteSQL::ID_E_ENTITE_RACINE) {
-            $entityLabel = EntiteSQL::ENTITE_RACINE_DENOMINATION;
+        if ($entityId === RootEntity::ID_E) {
+            $entityLabel = RootEntity::DENOMINATION;
         } else {
             $entityLabel = $this->objectInstancier->getInstance(EntiteSQL::class)->getDenomination($entityId);
         }

@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\RootEntity;
 
 /**
  * @deprecated Since 4.1.24, Use UtilisateurRoleSQL + UtilisateurRoleService / DroitService /
@@ -320,10 +321,10 @@ SQL;
     public function getArbreFilleWithRacine(int $userId, string $permission): array
     {
         $arbre = $this->getArbreFille($userId, $permission);
-        if ($this->hasDroit($userId, $permission, EntiteSQL::ID_E_ENTITE_RACINE)) {
+        if ($this->hasDroit($userId, $permission, RootEntity::ID_E)) {
             array_unshift($arbre, [
-                'id_e' => EntiteSQL::ID_E_ENTITE_RACINE,
-                'denomination' => EntiteSQL::ENTITE_RACINE_DENOMINATION,
+                'id_e' => RootEntity::ID_E,
+                'denomination' => RootEntity::DENOMINATION,
                 'profondeur' => 0,
             ]);
         }

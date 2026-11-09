@@ -6,8 +6,10 @@ namespace Pastell\Tests\Service\Entite;
 
 use EntiteSQL;
 use Exception;
+use NotFoundException;
 use Pastell\Service\Entite\EntityHierarchyService;
 use Pastell\Service\Entite\EntityInfoService;
+use Pastell\Service\Entite\EntityType;
 use PastellTestCase;
 
 final class EntityInfoServiceTest extends PastellTestCase
@@ -24,10 +26,10 @@ final class EntityInfoServiceTest extends PastellTestCase
 
     public function testGetCentreDeGestion(): void
     {
-        self::assertSame(0, $this->getEntityInfoService()->getCentreDeGestion(2));
+        self::assertNull($this->getEntityInfoService()->getCentreDeGestion(2));
 
-        $cdg_id_e = $this->getEntiteSQL()->create('CDG', '', EntiteSQL::TYPE_CENTRE_DE_GESTION);
-        $this->getEntiteSQL()->update(1, 'Bourg-en-Bresse', '000000000', EntiteSQL::TYPE_COLLECTIVITE, 0, $cdg_id_e);
+        $cdg_id_e = $this->getEntiteSQL()->create('CDG', '', EntityType::CENTRE_DE_GESTION->value);
+        $this->getEntiteSQL()->update(1, 'Bourg-en-Bresse', '000000000', EntityType::COLLECTIVITE->value, 0, $cdg_id_e);
 
         self::assertSame($cdg_id_e, $this->getEntityInfoService()->getCentreDeGestion(2));
     }
@@ -39,11 +41,14 @@ final class EntityInfoServiceTest extends PastellTestCase
 
     public function testGetSirenInherited(): void
     {
-        $id_e = $this->getEntiteSQL()->create('Child', '', EntiteSQL::TYPE_COLLECTIVITE, 2);
+        $id_e = $this->getEntiteSQL()->create('Child', '', EntityType::COLLECTIVITE->value, 2);
         $this->getObjectInstancier()->getInstance(EntityHierarchyService::class)->updateAncestors($id_e, 2);
         self::assertSame('000000000', $this->getEntityInfoService()->getSiren($id_e));
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function testGetExtendedInfo(): void
     {
         $extended_info = $this->getEntityInfoService()->getExtendedInfo(1);
@@ -55,12 +60,22 @@ final class EntityInfoServiceTest extends PastellTestCase
     }
 
     /**
+     * @throws NotFoundException
+     */
+    public function testExtendedInfoUnknownEntity(): void
+    {
+        $this->expectException(NotFoundException::class);
+        $this->expectExceptionMessage("L'entité {id_e=42} n'existe pas");
+        $this->getEntityInfoService()->getExtendedInfo(42);
+    }
+
+    /**
      * @throws Exception
      */
     public function testGetEntityFromData(): void
     {
         self::assertSame('Bourg-en-Bresse', $this->getEntityInfoService()->getEntityFromData(['id_e' => 1])['denomination']);
-        self::assertEquals(2, $this->getEntityInfoService()->getEntityFromData(['denomination' => 'CCAS'])['id_e']);
+        self::assertSame(2, $this->getEntityInfoService()->getEntityFromData(['denomination' => 'CCAS'])['id_e']);
     }
 
     public function testFromDataUnknownId(): void
@@ -85,28 +100,17 @@ final class EntityInfoServiceTest extends PastellTestCase
         $this->getEntityInfoService()->getEntityFromData(['denomination' => 'CCAS']);
     }
 
+    public function testFromDataIsActiveOnly(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage("Aucun paramètre permettant la recherche de l'entité n'a été renseigné");
+        $this->getEntityInfoService()->getEntityFromData(['is_active' => true]);
+    }
+
     public function testFromDataEmpty(): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("Aucun paramètre permettant la recherche de l'entité n'a été renseigné");
         $this->getEntityInfoService()->getEntityFromData([]);
-    }
-
-    public function testAddRootEntityDenomination(): void
-    {
-        $entity_list = $this->getEntityInfoService()->addRootEntityDenomination([
-            ['id_e' => EntiteSQL::ID_E_ENTITE_RACINE, 'denomination' => null],
-            ['id_e' => 1, 'denomination' => 'Bourg-en-Bresse'],
-            ['libelle' => 'without id_e'],
-        ]);
-
-        self::assertSame(
-            [
-                ['id_e' => EntiteSQL::ID_E_ENTITE_RACINE, 'denomination' => EntiteSQL::ENTITE_RACINE_DENOMINATION],
-                ['id_e' => 1, 'denomination' => 'Bourg-en-Bresse'],
-                ['libelle' => 'without id_e'],
-            ],
-            $entity_list
-        );
     }
 }

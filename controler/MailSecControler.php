@@ -9,6 +9,7 @@ use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityHierarchyService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\Service\Entite\RootEntity;
 
 class MailSecControler extends PastellControler
 {
@@ -126,7 +127,7 @@ class MailSecControler extends PastellControler
         $this->setViewParameter('listGroupe', $listGroupe);
 
         $infoEntite = $this->getEntiteSQL()->getInfo($id_e);
-        if ($id_e === 0) {
+        if ($id_e === RootEntity::ID_E) {
             $infoEntite = ['denomination' => 'Annuaire global'];
         }
 
@@ -546,7 +547,7 @@ class MailSecControler extends PastellControler
 
         $infoEntite = $this->getEntiteSQL()->getInfo($id_e);
 
-        if ($id_e !== 0) {
+        if ($id_e !== RootEntity::ID_E) {
             $nom = "$role - {$infoEntite['denomination']}";
         } else {
             $nom = "$role - toutes les collectivités";
