@@ -190,11 +190,6 @@ class Gabarit
         return $this->objectInstancier->getInstance(DocumentTypeFactory::class);
     }
 
-    public function getPastellTimer(): PastellTimer
-    {
-        return $this->objectInstancier->getInstance(PastellTimer::class);
-    }
-
     public function getJournalEntryService(): JournalEntryService
     {
         return $this->objectInstancier->getInstance(JournalEntryService::class);

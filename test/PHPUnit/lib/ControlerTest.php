@@ -69,7 +69,6 @@ class ControlerTest extends PHPUnit\Framework\TestCase
         $this->controler->setViewParameter('authentification', $this->createMock(Authentification::class));
         $this->controler->setViewParameter('dont_display_breacrumbs', false);
         $this->controler->setViewParameter('manifest_info', ['version' => '', 'revision' => '',]);
-        $this->controler->setViewParameter('timer', new PastellTimer());
         $this->expectOutputRegex("/Vous n'avez aucun droit sur cette plateforme/");
         $this->controler->renderDefault();
     }

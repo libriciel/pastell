@@ -207,7 +207,6 @@ class PastellControler extends Controler
 
         $this->setViewParameter('manifest_info', $this->getManifestFactory()->getPastellManifest()->getInfo());
 
-        $this->setViewParameter('timer', $this->getInstance(PastellTimer::class));
         $this->setViewParameter('menu_gauche_template', 'MenuGauche');
 
         if (!$this->isViewParameter('menu')) {

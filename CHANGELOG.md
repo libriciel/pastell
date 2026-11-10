@@ -56,6 +56,7 @@
 - Les sélections d'entité, de type de dossier et de rôle sont désormais présentées sous forme d'arbre navigable avec recherche #767
 - Migration de Fork Awesome vers la bibliothèque d'icônes officielle Font Awesome #2462
 - Le bouton `Modifier l'identifiant` des dossiers studio est désormais sur la page `TypeDossier/detail` #2445
+- Mise à jour du footer avec le composant du design system Libriciel #2600
 - Le droit `utilisateur:suppression` est maintenant nécessaire pour supprimer des utilisateurs #1821
 - La page `Role/detail` affiche désormais les droits par catégorie. Une barre de recherche est également ajoutée #2483
 - Centralisation de l'envoi des notifications d'échec aux administrateurs de la plateforme via le service `AdminMailer`
@@ -71,6 +72,8 @@
 
 - Suppression du graphe des dépendances des extensions sur la page `Extension/index` #938
   - Suppression des fichiers obsolètes `extensions_graphe.dot` et `extensions_graphe.jpg` du workspace lors de la mise à jour
+- Suppression de la méthode `Gabarit::getPastellTimer()` #2600
+- Suppression de la classe `PastellTimer` #2600
 
 ### Suppressions d'éléments dépréciés
 

@@ -22,6 +22,7 @@
 
         "img/commun.css",
         'node_modules/@libriciel/ls-bootstrap-5/pa-bootstrap.css',
+        'node_modules/@libriciel/design-system/styles/design-system-tokens.css',
         "img/bs_surcharge.css",
         "css/datepicker.css",
         "img/jquery.autocomplete.css",
@@ -50,6 +51,7 @@
     {% for jsFile in jsFiles %}
         <script type="text/javascript" src="{{ jsFile ~ '?rev=' ~ manifest_info.revision }}"></script>
     {% endfor %}
+    <script type="module" src="{{ 'node_modules/@libriciel/design-system/components/footer/index.js?rev=' ~ manifest_info.revision }}"></script>
 {% endblock %}
 </head>
 
