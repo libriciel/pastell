@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated 4.1.26 Use ConnecteurAvailabilityServiceTest instead
+ */
 class ConnecteurDisponibleTest extends PastellTestCase
 {
     /**

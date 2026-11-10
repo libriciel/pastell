@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class GlaneurConnecteurTest extends PastellTestCase
 {
     /** @var  TmpFolder */
@@ -548,9 +550,9 @@ class GlaneurConnecteurTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider escapingFileNameProvider
      * @throws Exception
      */
+    #[DataProvider('escapingFileNameProvider')]
     public function testGlanerManifestWithAFileNameEscapingTheDirectory(string $escaping_name_pattern): void
     {
         $outside_file = sys_get_temp_dir() . '/pastell_test_outside_' . random_int(0, mt_getrandmax()) . '.pdf';

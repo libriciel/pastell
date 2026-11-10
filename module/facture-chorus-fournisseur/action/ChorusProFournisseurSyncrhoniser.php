@@ -89,7 +89,7 @@ class ChorusProFournisseurSyncrhoniser extends ActionExecutor
         }
 
         $recup_status = $parametrageFluxFactureChorusFournisseur->recupStatutFacture();
-        $en_etat_termine = ($this->getDocumentActionEntite()->getLastAction($this->id_e, $this->id_d) === 'termine');
+        $en_etat_termine = ($this->getDocumentActionEntiteSQL()->getLastAction($this->id_e, $this->id_d) === 'termine');
 
         if (! $recup_status && ! $en_etat_termine) {
             $message = "La facture est en statut $statut_courant : pas de récupération de statut : fin de synchronisation";

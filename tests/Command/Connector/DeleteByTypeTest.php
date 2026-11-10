@@ -6,6 +6,7 @@ use ConnecteurEntiteSQL;
 use Pastell\Command\Connector\DeleteByType;
 use Pastell\Service\Connecteur\ConnecteurDeletionService;
 use PastellTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Console\Tester\CommandTester;
 
 final class DeleteByTypeTest extends PastellTestCase
@@ -44,9 +45,7 @@ final class DeleteByTypeTest extends PastellTestCase
         yield ['test', 'entity', 'yes', 2];
     }
 
-    /**
-     * @dataProvider commandArgumentsProvider
-     */
+    #[DataProvider('commandArgumentsProvider')]
     public function testCommand(string $type, string $scope, string $confirm, int $numberOfConnectors): void
     {
         $this->assertSame(

@@ -12,10 +12,9 @@ class CPPImporterFactureTest extends ExtensionCppTestCase
     /**
      * When the connector is associated with the facture-cpp flux
      *
-     * @test
      * @throws Exception
      */
-    public function whenConnectorAssociatedWithFactureCpp()
+    public function testWhenConnectorAssociatedWithFactureCpp()
     {
         $result = $this->createConnector('cpp', 'CPP');
         $id_ce = $result['id_ce'];
@@ -33,10 +32,9 @@ class CPPImporterFactureTest extends ExtensionCppTestCase
     /**
      * When the connector is associated with the facture-cpp and statut-facture-cpp flux
      *
-     * @test
      * @throws Exception
      */
-    public function whenConnectorAssociatedWithTwoFlux()
+    public function testWhenConnectorAssociatedWithTwoFlux()
     {
         $result = $this->createConnector('cpp', 'CPP');
         $id_ce = $result['id_ce'];
@@ -56,10 +54,9 @@ class CPPImporterFactureTest extends ExtensionCppTestCase
     /**
      * When the connector is associated with the statut-facture-cpp flux
      *
-     * @test
      * @throws Exception
      */
-    public function whenConnectorAssociatedWithStatutFactureCpp()
+    public function testWhenConnectorAssociatedWithStatutFactureCpp()
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage(

@@ -91,7 +91,6 @@ class Stats extends Connecteur
             ['id_e', 'Entité', 'Nombre', 'Taille en octet', 'Taille arrondie', 'État', 'État label'],
             escape: ''
         );
-
         $this->writeEntityUsageToFile($this->entityId, $documentType, $file);
 
         if ($this->includeChildren) {

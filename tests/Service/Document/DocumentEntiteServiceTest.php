@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pastell\Tests\Service\Document;
 
+use DocumentActionSQL;
 use DocumentEntiteSQL;
 use DocumentSQL;
 use Pastell\Service\Document\DocumentEntiteService;
@@ -50,6 +51,33 @@ final class DocumentEntiteServiceTest extends PastellTestCase
         );
         static::assertEmpty(
             $this->documentEntiteService->getDocumentsWithLastActionOlderThan(1, self::TYPE, self::ID_E_COL)
+        );
+    }
+
+    public function testDocumentsLastActionOlder(): void
+    {
+        $this->documentEntiteSQL->insert(self::ID_D, self::ID_E_COL, 'editeur');
+        $this->documentEntiteService->updateLastAction(self::ID_E_COL, self::ID_D, 'creation', date('Y-m-d H:i:s'));
+        static::assertCount(
+            1,
+            $this->documentEntiteService->getDocumentsByLastActionOlderThan(self::ID_E_COL, self::TYPE, 'creation', 0)
+        );
+        static::assertEmpty(
+            $this->documentEntiteService->getDocumentsByLastActionOlderThan(self::ID_E_COL, self::TYPE, 'creation', 1)
+        );
+    }
+
+    public function testDocumentsThroughActionOlder(): void
+    {
+        $this->documentEntiteSQL->insert(self::ID_D, self::ID_E_COL, 'editeur');
+        $this->getObjectInstancier()->getInstance(DocumentActionSQL::class)
+            ->add(self::ID_D, self::ID_E_COL, 1, 'creation');
+        static::assertCount(
+            1,
+            $this->documentEntiteService->getDocumentsThroughActionOlderThan(self::ID_E_COL, self::TYPE, 'creation', 0)
+        );
+        static::assertEmpty(
+            $this->documentEntiteService->getDocumentsThroughActionOlderThan(self::ID_E_COL, self::TYPE, 'creation', 1)
         );
     }
 }

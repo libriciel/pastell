@@ -16,6 +16,7 @@ use Pastell\Seda\Message\SedaMessageBuilder;
 use Pastell\Service\Document\DocumentPastellMetadataService;
 use Pastell\Step\SAE\Enum\SAEActionsEnum;
 use PastellTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use SimpleXMLWrapperException;
 use TmpFolder;
 use TypeDossierLoader;
@@ -161,8 +162,8 @@ abstract class AbstractSedaGeneratorConnectorTestCase extends PastellTestCase
      * @throws NotFoundException
      * @throws UnrecoverableException
      * @throws Exception
-     * @dataProvider caseProvider
      */
+    #[DataProvider('caseProvider')]
     public function testAllCase(string $folder, string $testName): void
     {
         $this->setCurl(function (array $json_data) use ($testName) {

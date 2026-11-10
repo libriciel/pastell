@@ -94,6 +94,16 @@ phpstan:
     - cd /app
     - composer phpstan
 
+rector:
+  stage: static-analysis
+  image : "$CONTAINER_IMAGE_APP"
+  variables:
+    DONT_INIT_DATABASE: "true"
+    DONT_RETRIEVE_VALIDCA: "true"
+  script:
+    - cd /app
+    - vendor/bin/rector process --dry-run --ansi
+
 #Note: il semble que le fichier entrypoint soit exécuté deux fois !
 # https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/issues/1380
 # Ca permet de tester l'idempotence de fichier entrypoint, mais c'est pas super quand même

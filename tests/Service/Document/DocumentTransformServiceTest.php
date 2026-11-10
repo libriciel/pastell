@@ -7,6 +7,7 @@ namespace Pastell\Tests\Service\Document;
 use Pastell\Service\Document\DocumentPastellMetadataService;
 use Pastell\Service\Document\DocumentTransformService;
 use PastellTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use UnrecoverableException;
 
 class DocumentTransformServiceTest extends PastellTestCase
@@ -49,9 +50,9 @@ class DocumentTransformServiceTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider transformationDataProvider
      * @throws UnrecoverableException
      */
+    #[DataProvider('transformationDataProvider')]
     public function testValidateTransformationData(
         array $transformationData,
         bool $expectedResult,

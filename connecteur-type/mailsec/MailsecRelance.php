@@ -19,8 +19,8 @@ class MailsecRelance extends ConnecteurTypeActionExecutor
         /** @var MailSec $connector */
         $connector = $this->getConnecteur(MailsecConnecteur::CONNECTEUR_TYPE_ID);
 
-        $last_action = $this->getDocumentActionEntite()->getLastAction($this->id_e, $this->id_d);
-        $action_list = $this->getDocumentActionEntite()->getAction($this->id_e, $this->id_d);
+        $last_action = $this->getDocumentActionEntiteSQL()->getLastAction($this->id_e, $this->id_d);
+        $action_list = $this->getDocumentActionEntiteSQL()->getActions($this->id_e, $this->id_d);
         $date_last_send = false;
         $date_send_mailsec = false;
         foreach ($action_list as $action_info) {

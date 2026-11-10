@@ -1,5 +1,6 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class SirenTest extends TestCase
@@ -23,8 +24,8 @@ class SirenTest extends TestCase
     /**
      * @param string $siren
      * @param bool $isValid
-     * @dataProvider sirenProvider
      */
+    #[DataProvider('sirenProvider')]
     public function testSiren(string $siren, bool $isValid)
     {
         $this->assertSame($isValid, $this->siren->isValid($siren));

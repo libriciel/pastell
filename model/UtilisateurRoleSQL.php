@@ -203,7 +203,7 @@ SQL;
         if ($id_u_list === []) {
             return [];
         }
-        $placeholders = implode(',', array_fill(0, count($id_u_list), '?'));
+        $placeholders = $this->getPlaceholders($id_u_list);
         $sql = <<<SQL
 SELECT utilisateur_role.*,entite.denomination,entite.entite_mere,role.libelle FROM utilisateur_role
 LEFT JOIN entite ON utilisateur_role.id_e = entite.id_e

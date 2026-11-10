@@ -119,7 +119,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         }
 
         $nb_jour_max = $signature->getNbJourMaxInConnecteur();
-        $lastAction = $this->getDocumentActionEntite()->getLastActionInfo($this->id_e, $this->id_d);
+        $lastAction = $this->getDocumentActionEntiteSQL()->getLastActionInfo($this->id_e, $this->id_d);
         $time_action = strtotime($lastAction['date']);
         if (time() - $time_action > $nb_jour_max * 86400) {
             $erreur = sprintf(

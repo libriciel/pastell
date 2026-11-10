@@ -20,7 +20,7 @@ class Purge extends Connecteur
     private bool $includeChildren;
 
     public function __construct(
-        private readonly DocumentActionEntite $documentActionEntite,
+        private readonly DocumentActionEntiteSQL $documentActionEntiteSQL,
         private readonly JournalEntryService $journalEntryService,
         private readonly JobManager $jobManager,
         private readonly ActionPossible $actionPossible,
@@ -53,21 +53,21 @@ class Purge extends Connecteur
     {
         $connecteur_info  = $this->getConnecteurInfo();
         $etat_source = $this->connecteurConfig->get('document_etat');
-        $type = $this->connecteurConfig->get('document_type');
+        $type = (string) $this->connecteurConfig->get('document_type');
         $nb_days = (int)$this->connecteurConfig->get('nb_days');
         $passer_par_letat = $this->connecteurConfig->get('passer_par_l_etat');
         $exclure_etat = $this->connecteurConfig->get('document_exclure_etat');
         $selection = [];
         if ($etat_source) {
             if ($passer_par_letat === self::GO_TROUGH_STATE) {
-                $selection = $this->documentActionEntite->getDocumentInStateOlderThanDay(
+                $selection = $this->documentEntiteService->getDocumentsThroughActionOlderThan(
                     $connecteur_info['id_e'],
                     $type,
                     $etat_source,
                     $nb_days
                 );
             } else {
-                $selection = $this->documentActionEntite->getDocumentOlderThanDay(
+                $selection = $this->documentEntiteService->getDocumentsByLastActionOlderThan(
                     $connecteur_info['id_e'],
                     $type,
                     $etat_source,
@@ -76,7 +76,7 @@ class Purge extends Connecteur
             }
         }
         if ($exclure_etat !== '') {
-            $selection_exclure = $this->documentActionEntite->getDocumentInStateOlderThanDay(
+            $selection_exclure = $this->documentEntiteService->getDocumentsThroughActionOlderThan(
                 $connecteur_info['id_e'],
                 $type,
                 $exclure_etat,
@@ -203,7 +203,7 @@ class Purge extends Connecteur
      */
     private function modifDocument($id_e, $id_d)
     {
-        $last_action = $this->documentActionEntite->getLastActionNotModif($id_e, $id_d);
+        $last_action = $this->documentActionEntiteSQL->getLastActionNotModif($id_e, $id_d);
         $documentType = $this->documentTypeFactory->getFluxDocumentType($this->connecteurConfig->get('document_type'));
 
         $editable_content = $documentType->getAction()->getEditableContent($last_action);

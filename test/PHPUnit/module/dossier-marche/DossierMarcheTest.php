@@ -1,10 +1,10 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class DossierMarcheTest extends PastellMarcheTestCase
 {
-    /**
-     * @dataProvider getCodeCPVProvide
-     */
+    #[DataProvider('getCodeCPVProvide')]
     public function testCodeCPV($code_cpv, $expected_result)
     {
         $result = $this->getInternalAPI()->post(

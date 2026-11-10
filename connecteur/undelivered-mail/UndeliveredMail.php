@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Journal\JournalEntryService;
+use Pastell\Service\Document\DocumentEmailService;
 
 class UndeliveredMail extends Connecteur
 {
@@ -10,15 +11,12 @@ class UndeliveredMail extends Connecteur
     /** @var  DonneesFormulaire */
     private $connecteurConfig;
 
-    /** @var DocumentEmail  */
-    private $documentEmail;
-
-    private JournalEntryService $journalEntryService;
-
-    public function __construct(DocumentEmail $documentEmail, JournalEntryService $journalEntryService)
-    {
-        $this->documentEmail = $documentEmail;
-        $this->journalEntryService = $journalEntryService;
+    public function __construct(
+        private readonly DocumentEmailSQL $documentEmailSQL,
+        private readonly DocumentEmailService $documentEmailService,
+        private readonly DocumentEntiteSQL $documentEntiteSQL,
+        private readonly JournalEntryService $journalEntryService,
+    ) {
     }
 
     public function setConnecteurConfig(DonneesFormulaire $donneesFormulaire)
@@ -66,11 +64,11 @@ class UndeliveredMail extends Connecteur
             if ($line_result['is_pastell_return']) {
                 $line_result['body'] = $body;
                 $line_result['pastell_header'] = trim($matches[1]);
-                $document_email_info = $this->documentEmail->getInfoFromKey($line_result['pastell_header']);
-                $line_result['id_de'] = $document_email_info['id_de'];
-                if ($process) {
-                    $this->documentEmail->addError($document_email_info['id_de'], $body);
-                    $id_e = $this->documentEmail->getId_e($document_email_info['id_d']);
+                $document_email_info = $this->documentEmailSQL->getByKey($line_result['pastell_header']);
+                $line_result['id_de'] = $document_email_info['id_de'] ?? false;
+                if ($process && $document_email_info !== null) {
+                    $this->documentEmailService->addError($document_email_info['id_de'], $body);
+                    $id_e = $this->documentEntiteSQL->getEntiteId($document_email_info['id_d']);
                     $this->journalEntryService->add(
                         JournalEventType::SECURE_MAIL,
                         $id_e,

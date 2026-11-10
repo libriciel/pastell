@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated 4.1.26 Use DocumentActionEntiteSQLTest instead.
+ */
 class DocumentActionEntiteTest extends PastellTestCase
 {
     /** @var DocumentActionEntite */

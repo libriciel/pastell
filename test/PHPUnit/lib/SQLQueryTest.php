@@ -46,4 +46,9 @@ class SQLQueryTest extends PastellTestCase
     {
         $this->assertCount(1, $this->getSQLQuery()->getTablesCollation());
     }
+
+    public function testGetTablesMarkedAsCrashed(): void
+    {
+        self::assertSame([], $this->getSQLQuery()->getTablesMarkedAsCrashed());
+    }
 }

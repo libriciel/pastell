@@ -2,11 +2,14 @@
 
 namespace Pastell\Tests\Service\Document;
 
+use DocumentEmailSQL;
 use DocumentSQL;
 use JobQueueSQL;
 use NotificationDigestSQL;
 use NotFoundException;
 use Pastell\Service\Document\DocumentDeletionService;
+use Pastell\Service\Document\DocumentEmailRecipientType;
+use Pastell\Service\Document\DocumentEmailService;
 use PastellTestCase;
 
 class DocumentDeletionServiceTest extends PastellTestCase
@@ -75,9 +78,9 @@ class DocumentDeletionServiceTest extends PastellTestCase
     {
         $id_d = $this->createDocument('mailsec-bidir')['id_d'];
 
-        $documentEmail = $this->getObjectInstancier()->getInstance(\DocumentEmail::class);
-        $key = $documentEmail->add($id_d, 'foo@bar.com', 'to');
-        $id_de = $documentEmail->getInfoFromKey($key)['id_de'];
+        $key = $this->getObjectInstancier()->getInstance(DocumentEmailService::class)
+            ->addRecipient($id_d, 'foo@bar.com', DocumentEmailRecipientType::TO);
+        $id_de = $this->getObjectInstancier()->getInstance(DocumentEmailSQL::class)->getByKey($key)['id_de'];
         $id_d_reponse = $this->createDocument('test')['id_d'];
         $documentEmailResponse = $this->getObjectInstancier()->getInstance(\DocumentEmailReponseSQL::class);
         $documentEmailResponse->addDocumentReponseId($id_de, $id_d_reponse);

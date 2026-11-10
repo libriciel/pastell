@@ -32,7 +32,7 @@ class OrientationTypeDossierPersonnalise extends ActionExecutor
 
         $typeDossierDefinition = $this->objectInstancier->getInstance(TypeDossierService::class);
 
-        $last_action = $this->getDocumentActionEntite()->getLastAction($this->id_e, $this->id_d);
+        $last_action = $this->getDocumentActionEntiteSQL()->getLastAction($this->id_e, $this->id_d) ?? '';
 
         $cheminement_list = [];
 

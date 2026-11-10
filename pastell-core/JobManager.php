@@ -1,45 +1,34 @@
 <?php
 
+use Monolog\Logger;
+use Pastell\Service\Document\DocumentEntiteService;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceService;
+
 class JobManager
 {
+    /**
+     * @deprecated 4.1.26 Use ConnecteurFrequenceService::DEFAULT_EXPRESSION instead
+     */
     public const DEFAULT_NEXT_TRY_IN_MINUTES = 1;
+    /**
+     * @deprecated 4.1.26 Use ConnecteurFrequenceService::DEFAULT_ID_VERROU instead
+     */
     public const DEFAULT_ID_VERROU = "DEFAULT_VERROU_ID";
 
-    private JobQueueSQL $jobQueueSQL;
-    private DaemonSQL $daemonSQL;
-    private $document;
-    private $documentActionEntite;
-    private $documentTypeFactory;
-    private $fluxEntiteSQL;
-    private $connecteurEntiteSQL;
-    private $connecteurFrequenceSQL;
-
-    private $disable_job_queue;
-
-    private $logger;
-
     public function __construct(
-        JobQueueSQL $jobQueueSQL,
-        DaemonSQL $daemonSQL,
-        DocumentSQL $document,
-        DocumentActionEntite $documentActionEntite,
-        DocumentTypeFactory $documentTypeFactory,
-        FluxEntiteSQL $fluxEntiteSQL,
-        ConnecteurEntiteSQL $connecteurEntiteSQL,
-        ConnecteurFrequenceSQL $connecteurFrequenceSQL,
-        Monolog\Logger $logger,
-        $disable_job_queue = false
+        private readonly JobQueueSQL $jobQueueSQL,
+        private readonly DaemonSQL $daemonSQL,
+        private readonly DocumentSQL $document,
+        private readonly DocumentActionEntiteSQL $documentActionEntiteSQL,
+        private readonly DocumentEntiteService $documentEntiteService,
+        private readonly DocumentTypeFactory $documentTypeFactory,
+        private readonly FluxEntiteSQL $fluxEntiteSQL,
+        private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
+        private readonly ConnecteurFrequenceSQL $connecteurFrequenceSQL,
+        private readonly ConnecteurFrequenceService $connecteurFrequenceService,
+        private readonly Logger $logger,
+        private $disable_job_queue = false
     ) {
-        $this->jobQueueSQL = $jobQueueSQL;
-        $this->daemonSQL = $daemonSQL;
-        $this->document = $document;
-        $this->documentActionEntite = $documentActionEntite;
-        $this->documentTypeFactory = $documentTypeFactory;
-        $this->fluxEntiteSQL = $fluxEntiteSQL;
-        $this->connecteurEntiteSQL = $connecteurEntiteSQL;
-        $this->connecteurFrequenceSQL = $connecteurFrequenceSQL;
-        $this->disable_job_queue = $disable_job_queue;
-        $this->logger = $logger;
     }
 
     public function setDisableJobQueue($disable_job_queue)
@@ -61,7 +50,7 @@ class JobManager
         }
 
         $infoDocument = $this->document->getInfo($id_d);
-        $etat_source = $this->documentActionEntite->getLastAction($id_e, $id_d);
+        $etat_source = $this->documentActionEntiteSQL->getLastAction($id_e, $id_d);
         $etat_cible = $this->documentTypeFactory->getFluxDocumentType($infoDocument['type'])->getAction()->getActionAutomatique($etat_source);
         $job = $this->jobQueueSQL->getJob($id_job);
 
@@ -140,12 +129,11 @@ class JobManager
         $job->id_d = $id_d;
         $job->id_u = $id_u;
         $job->last_message = $last_message;
-        $job->etat_source = $this->documentActionEntite->getLastAction($id_e, $id_d);
+        $job->etat_source = $this->documentActionEntiteSQL->getLastAction($id_e, $id_d) ?? '';
         $job->etat_cible = $action;
         $now = date('Y-m-d H:i:s');
         $job->next_try = $now;
-        $connecteurFrequence = $this->getConnecteurFrequence($job);
-        $job->id_verrou = $verrou ?: $connecteurFrequence->id_verrou;
+        $job->id_verrou = $verrou ?: $this->connecteurFrequenceService->getForJob($job)->id_verrou;
         $job->id_daemon = $this->daemonSQL->getClosestDaemon($job->id_e);
         $this->deleteDocument($id_e, $id_d);
         return $this->jobQueueSQL->createJob($job);
@@ -162,8 +150,7 @@ class JobManager
         $job->etat_cible = $action_name;
         $now = date('Y-m-d H:i:s');
         $job->next_try = $now;
-        $connecteurFrequence = $this->getConnecteurFrequence($job);
-        $job->id_verrou = $connecteurFrequence->id_verrou;
+        $job->id_verrou = $this->connecteurFrequenceService->getForJob($job)->id_verrou;
         $job->id_daemon = $this->daemonSQL->getClosestDaemon($job->id_e);
         return $this->jobQueueSQL->createJob($job);
     }
@@ -176,18 +163,24 @@ class JobManager
         if ($job->nb_try == 0) {
             $job->first_try = date('Y-m-d H:i:s');
         }
-        $connecteurFrequence = $this->getConnecteurFrequence($job);
+        $connecteurFrequenceData = $this->connecteurFrequenceService->getForJob($job);
         try {
-            $job->next_try = $connecteurFrequence->getNextTry($job->nb_try);
+            $job->next_try = $this->connecteurFrequenceService->getNextTry(
+                $connecteurFrequenceData->expression,
+                (int)$job->nb_try
+            );
         } catch (Exception $e) {
             $this->jobQueueSQL->lock($id_job);
             return;
         }
-        $job->id_verrou = $connecteurFrequence->id_verrou;
+        $job->id_verrou = $connecteurFrequenceData->id_verrou;
         $job->nb_try++;
         $this->jobQueueSQL->updateJob($job);
     }
 
+    /**
+     * @deprecated 4.1.26 Use ConnecteurFrequenceService::getForConnecteur() instead
+     */
     public function getNearestConnecteurFrequence($id_ce)
     {
         $connecteurFrequence = $this->getConnecteurFrequenceByIdCe($id_ce);
@@ -210,6 +203,7 @@ class JobManager
     /**
      * @param $id_ce
      * @return ConnecteurFrequence[]
+     * @deprecated 4.1.26 Use ConnecteurFrequenceService::getForConnecteurByFlux() instead
      */
     public function getNearestConnecteurForDocument($id_ce)
     {
@@ -246,45 +240,6 @@ class JobManager
         return $connecteurResult;
     }
 
-    private function getConnecteurFrequence(Job $job)
-    {
-        $connecteurFrequence = new ConnecteurFrequence();
-        $connecteur_info = $this->getConnecteurEntiteId($job);
-
-        if ($connecteur_info) {
-            $connecteurFrequence->type_connecteur = ($connecteur_info['global']) ?
-                ConnecteurFrequence::TYPE_GLOBAL : ConnecteurFrequence::TYPE_ENTITE;
-            $connecteurFrequence->famille_connecteur = $connecteur_info['type'];
-            $connecteurFrequence->id_connecteur = $connecteur_info['id_connecteur'];
-            $connecteurFrequence->id_ce = $connecteur_info['id_ce'];
-        }
-        $connecteurFrequence->action_type = $job->type === Job::TYPE_CONNECTEUR ?
-            ConnecteurFrequence::TYPE_ACTION_CONNECTEUR : ConnecteurFrequence::TYPE_ACTION_DOCUMENT;
-
-        if ($job->id_d) {
-            $infoDocument = $this->document->getInfo($job->id_d);
-            $connecteurFrequence->type_document = $infoDocument['type'];
-        }
-
-        $connecteurFrequence->action = $job->etat_cible;
-
-        return $this->getNearestConnecteurFromConnecteur($connecteurFrequence);
-    }
-
-    private function getConnecteurEntiteId(Job $job)
-    {
-        if ($job->type == Job::TYPE_CONNECTEUR) {
-            return $this->connecteurEntiteSQL->getInfo($job->id_ce);
-        }
-        $infoDocument = $this->document->getInfo($job->id_d);
-        $connecteur_type = $this->documentTypeFactory->getFluxDocumentType($infoDocument['type'])->getAction()->getProperties($job->etat_cible, 'connecteur-type');
-
-        if (!$connecteur_type) {
-            return false;
-        }
-        return $this->fluxEntiteSQL->getConnecteur($job->id_e, $infoDocument['type'], $connecteur_type);
-    }
-
     public function deleteConnecteur($id_ce)
     {
         $this->jobQueueSQL->deleteConnecteur($id_ce);
@@ -307,7 +262,7 @@ class JobManager
 
     public function setTraitementParLotBulk($id_e, $type, $etat_source, $etat_cible)
     {
-        $document_list = $this->documentActionEntite->getDocument($id_e, $type, $etat_source);
+        $document_list = $this->documentEntiteService->getDocumentsByLastAction($id_e, $type, $etat_source);
         foreach ($document_list as $document_info) {
             $this->logger->info("[BULK ACTION $id_e,$type] {$document_info['id_d']} ({$document_info['titre']}): {$document_info['last_action']} -> $etat_cible");
             $this->setTraitementLot($id_e, $document_info['id_d'], 0, $etat_cible);

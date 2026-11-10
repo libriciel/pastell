@@ -1,11 +1,13 @@
 <?php
 
 use Mailsec\MailsecManager;
+use Pastell\Service\Document\DocumentEntiteService;
 use Pastell\Service\Document\DocumentRoleService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Utilities\Identifier\IdentifierGeneratorInterface;
 use Pastell\Utilities\Identifier\UuidGenerator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
@@ -457,8 +459,8 @@ class DocumentControlerTest extends ControlerTestCase
         }
         static::assertSame(
             'creation',
-            $this->getObjectInstancier()->getInstance(DocumentActionEntite::class)
-                ->getInfo($document['id_d'], PastellTestCase::ID_E_COL)['last_action']
+            $this->getObjectInstancier()->getInstance(DocumentEntiteService::class)
+                ->getCurrentAction(PastellTestCase::ID_E_COL, $document['id_d'])
         );
     }
 
@@ -469,9 +471,9 @@ class DocumentControlerTest extends ControlerTestCase
     }
 
     /**
-     * @dataProvider teletransmissionReturnForeignDocumentProvider
      * @throws Exception
      */
+    #[DataProvider('teletransmissionReturnForeignDocumentProvider')]
     public function testTeletransmissionReturnRefusesForeignDocuments(string $document_type, int $document_id_e): void
     {
         $document = $this->createDocument($document_type, $document_id_e);
@@ -494,8 +496,8 @@ class DocumentControlerTest extends ControlerTestCase
         }
         static::assertSame(
             'creation',
-            $this->getObjectInstancier()->getInstance(DocumentActionEntite::class)
-                ->getInfo($document['id_d'], $document_id_e)['last_action']
+            $this->getObjectInstancier()->getInstance(DocumentEntiteService::class)
+                ->getCurrentAction($document_id_e, $document['id_d'])
         );
     }
 

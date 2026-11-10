@@ -9,7 +9,7 @@
  * @var string $filtre
  * @var int $offset
  * @var string $last_id
- * @var DocumentActionEntite $documentActionEntite
+ * @var int $count
  * @var int $limit
  * @var string $tri
  * @var string $sens_tri
@@ -62,12 +62,6 @@
 
 
     <?php
-    if ($last_id) {
-        $offset = $documentActionEntite->getOffset($last_id, $id_e, $type, $limit);
-    }
-
-    $count = $documentActionEntite->getNbDocument($id_e, $type, $search, $filtre);
-
     $this->suivantPrecedent(
         $offset,
         $limit,

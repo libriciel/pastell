@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class CPPModifStatusTest extends ExtensionCppTestCase
 {
     private const FLUX_FACTURE_CPP = "facture-cpp";
@@ -61,9 +63,8 @@ class CPPModifStatusTest extends ExtensionCppTestCase
      * @param $last_message_expected
      * @param $last_etat_expected
      * @throws NotFoundException
-     *
-     * @dataProvider getStatutCibleDataProvider
      */
+    #[DataProvider('getStatutCibleDataProvider')]
     public function testModifStatut($result_expected, $statut, $statut_cible, $motif, $last_message_expected, $last_etat_expected)
     {
         $cppWrapper = $this->getMockBuilder(CPPWrapper::class)

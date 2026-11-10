@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class LDAPVerificationTest extends PastellTestCase
 {
     public static function getLDAPFilter()
@@ -10,9 +12,9 @@ class LDAPVerificationTest extends PastellTestCase
 
     /**
      * @throws UnrecoverableException
-     * @dataProvider getLDAPFilter
      * @param string $ldap_filter
      */
+    #[DataProvider('getLDAPFilter')]
     public function testGetEntry(string $ldap_filter)
     {
         $this->setLDAPWrapper();
@@ -42,9 +44,9 @@ class LDAPVerificationTest extends PastellTestCase
 
     /**
      * @throws Exception
-     * @dataProvider getLDAPFilter
      * @throws UnrecoverableException
      */
+    #[DataProvider('getLDAPFilter')]
     public function testGetEntryAllAttribute(string $ldap_filter): void
     {
         $this->setLDAPWrapper($ldap_filter);
@@ -134,9 +136,9 @@ class LDAPVerificationTest extends PastellTestCase
 
     /**
      * @throws UnrecoverableException
-     * @dataProvider getLDAPFilter
      * @param string $ldap_filter
      */
+    #[DataProvider('getLDAPFilter')]
     public function testGetEntryMissingUser(string $ldap_filter): void
     {
         $this->setLDAPWrapperMissingUser();

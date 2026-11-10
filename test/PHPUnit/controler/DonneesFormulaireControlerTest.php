@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class DonneesFormulaireControlerTest extends ControlerTestCase
 {
@@ -53,10 +54,10 @@ class DonneesFormulaireControlerTest extends ControlerTestCase
     }
 
     /**
-     * @dataProvider visionneuseProvider
      * @throws DonneesFormulaireException
      * @throws NotFoundException
      */
+    #[DataProvider('visionneuseProvider')]
     public function testVisionneuseAction(array $permission, string $expected_regex_output)
     {
         /** @var DonneesFormulaireControler $donneesFormulaireControler */

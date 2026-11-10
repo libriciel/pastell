@@ -1,10 +1,10 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class ActesGeneriqueCheminementChangeTest extends PastellTestCase
 {
-    /**
-     * @dataProvider changeProvider
-     */
+    #[DataProvider('changeProvider')]
     public function testChange($envoi_tdt, $envoi_ged, $envoi_sae, $has_information_complementaire_expected)
     {
 

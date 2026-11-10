@@ -1,5 +1,10 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
+/**
+ * @deprecated 4.1.26 Use ConnecteurFrequenceServiceTest instead
+ */
 class ConnecteurFrequenceTest extends PastellTestCase
 {
     public function testConstruct()
@@ -173,9 +178,9 @@ class ConnecteurFrequenceTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider frequenceProvider
      * @throws Exception
      */
+    #[DataProvider('frequenceProvider')]
     public function testGetNextTryFrequencePlusLoin($minute_expected, $nb_try): void
     {
         $connecteurFrequence = new ConnecteurFrequence();
@@ -205,9 +210,9 @@ class ConnecteurFrequenceTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider expressionsProvider
      * @throws Exception
      */
+    #[DataProvider('expressionsProvider')]
     public function testNextTry(string $expression, string $relativeDate, string $expectedNextTry): void
     {
         $connecteurFrequence = new ConnecteurFrequence();

@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class FactureCPPEnvoiGEDTest extends ExtensionCppTestCase
 {
     public static function getStatutDataProvider()
@@ -28,9 +30,9 @@ class FactureCPPEnvoiGEDTest extends ExtensionCppTestCase
 
 
     /**
-     * @dataProvider getStatutDataProvider
      * @throws NotFoundException
      */
+    #[DataProvider('getStatutDataProvider')]
     public function testEnvoiGED($statut, $has_send_ged, $last_message_expected, $last_etat_expected)
     {
 
