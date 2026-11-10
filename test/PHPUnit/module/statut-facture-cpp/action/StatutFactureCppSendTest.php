@@ -5,10 +5,9 @@ class StatutFactureCppSendTest extends ExtensionCppTestCase
     /**
      * When the change of the status of the invoice is sent to chorus
      *
-     * @test
      * @throws Exception
      */
-    public function whenTheStatusChangeRequestIsSent()
+    public function testWhenTheStatusChangeRequestIsSent()
     {
         $cppWrapper = $this->getMockBuilder(CPPWrapper::class)
             ->disableOriginalConstructor()

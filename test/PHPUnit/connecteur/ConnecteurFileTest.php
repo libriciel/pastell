@@ -1,13 +1,14 @@
 <?php
 
 use Pastell\Configuration\ConnectorValidation;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ConnecteurFileTest extends PastellTestCase
 {
     /**
-     * @dataProvider filesEntitiesProvider
      * @throws UnrecoverableException
      */
+    #[DataProvider('filesEntitiesProvider')]
     public function testAllConnecteur(string $filePath): void
     {
         $connectorValidation = $this->getObjectInstancier()->getInstance(ConnectorValidation::class);

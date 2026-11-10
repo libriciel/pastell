@@ -47,10 +47,9 @@ class FastParapheurTest extends PastellTestCase
     /**
      * When the connection is ok
      *
-     * @test
      * @throws Exception
      */
-    public function whenConnectionIsOk()
+    public function testWhenConnectionIsOk()
     {
         $this->mockSoapClient(
             function ($soapMethod, $arguments) {
@@ -68,10 +67,9 @@ class FastParapheurTest extends PastellTestCase
     /**
      * When the connection is not ok
      *
-     * @test
      * @throws Exception
      */
-    public function whenConnectionIsNotOk()
+    public function testWhenConnectionIsNotOk()
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage(
@@ -95,10 +93,9 @@ class FastParapheurTest extends PastellTestCase
     /**
      * When getting subtypes
      *
-     * @test
      * @throws UnrecoverableException
      */
-    public function whenGettingSubtypes(): void
+    public function testWhenGettingSubtypes(): void
     {
         $this->mockSoapClient(
             function (string $soapMethod) {
@@ -261,10 +258,8 @@ class FastParapheurTest extends PastellTestCase
 
     /**
      * When getting the history of a document
-     *
-     * @test
      */
-    public function whenGettingTheHistoryOfADocument()
+    public function testWhenGettingTheHistoryOfADocument()
     {
         $this->mockSoapClient(
             function ($soapMethod, $arguments) {
@@ -293,10 +288,8 @@ class FastParapheurTest extends PastellTestCase
 
     /**
      * When we are fetching history of a document that doesn't exist
-     *
-     * @test
      */
-    public function whenGettingHistoryOfADocumentThatDoesNotExist()
+    public function testWhenGettingHistoryOfADocumentThatDoesNotExist()
     {
         $this->mockSoapClient(
             function ($soapMethod, $arguments) {
@@ -314,10 +307,8 @@ class FastParapheurTest extends PastellTestCase
 
     /**
      * When we are not getting history for a document
-     *
-     * @test
      */
-    public function whenNotGettingHistoryForADocument()
+    public function testWhenNotGettingHistoryForADocument()
     {
         $this->mockSoapClient(
             function ($soapMethod, $arguments) {
@@ -408,10 +399,8 @@ class FastParapheurTest extends PastellTestCase
 
     /**
      * When getting the signed document
-     *
-     * @test
      */
-    public function whenGettingTheSignedDocument()
+    public function testWhenGettingTheSignedDocument()
     {
         $this->mockSoapClient(
             function ($soapMethod, $arguments) {
@@ -434,10 +423,8 @@ class FastParapheurTest extends PastellTestCase
 
     /**
      * When getting the signature of a document that doesn't exist
-     *
-     * @test
      */
-    public function whenGettingSignatureOfADocumentThatDoesNotExist()
+    public function testWhenGettingSignatureOfADocumentThatDoesNotExist()
     {
         $this->mockSoapClient(
             function ($soapMethod, $arguments) {
@@ -456,10 +443,8 @@ class FastParapheurTest extends PastellTestCase
 
     /**
      * When the document can't be downloaded
-     *
-     * @test
      */
-    public function whenTheDocumentCannotBeDownloaded()
+    public function testWhenTheDocumentCannotBeDownloaded()
     {
         $this->mockSoapClient(
             function ($soapMethod, $arguments) {
@@ -619,10 +604,7 @@ class FastParapheurTest extends PastellTestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function whenDeletingARejectedFile()
+    public function testWhenDeletingARejectedFile()
     {
         $this->mockSoapClient(
             function ($soapMethod, $arguments) {
@@ -648,10 +630,7 @@ class FastParapheurTest extends PastellTestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function whenDeletingARejectedFileException()
+    public function testWhenDeletingARejectedFileException()
     {
         $this->mockSoapClient(
             function ($soapMethod, $arguments) {

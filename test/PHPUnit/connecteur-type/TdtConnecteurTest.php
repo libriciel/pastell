@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class TdtConnecteurTest extends PastellTestCase
 {
     /**
@@ -27,9 +29,9 @@ class TdtConnecteurTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider getShortenedNatureActeProvider
      * @throws Exception
      */
+    #[DataProvider('getShortenedNatureActeProvider')]
     public function testGetShortenedNatureActe($natureActe, $expectedValue)
     {
         $this->assertSame(
@@ -61,9 +63,9 @@ class TdtConnecteurTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider getIntNatureActeProvider
      * @throws Exception
      */
+    #[DataProvider('getIntNatureActeProvider')]
     public function testGetIntNatureActe($shortenedNatureActe, $expectedValue)
     {
         $this->assertSame(
@@ -100,9 +102,9 @@ class TdtConnecteurTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider getStatusInfoProvider
      * @throws Exception
      */
+    #[DataProvider('getStatusInfoProvider')]
     public function testGetStatusInfo($status, $expectedValue)
     {
         $this->assertSame(
@@ -129,9 +131,9 @@ class TdtConnecteurTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider getStatusStringProvider
      * @throws Exception
      */
+    #[DataProvider('getStatusStringProvider')]
     public function testGetStatusString($status, $expectedValue)
     {
         $this->assertSame(
@@ -152,9 +154,9 @@ class TdtConnecteurTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider getTransactionNameFromNumberProvider
      * @throws Exception
      */
+    #[DataProvider('getTransactionNameFromNumberProvider')]
     public function testGetTransactionNameFromNumber($type_reponse, $expectedValue)
     {
         $this->assertSame(

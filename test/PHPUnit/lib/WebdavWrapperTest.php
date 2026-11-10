@@ -53,10 +53,9 @@ class WebdavWrapperTest extends PHPUnit\Framework\TestCase
 
 
     /**
-     * @test
      * @throws Exception
      */
-    public function whenWebdavConnectionIsOk()
+    public function testWhenWebdavConnectionIsOk()
     {
         $client = $this->createMock(Client::class);
 
@@ -80,10 +79,9 @@ class WebdavWrapperTest extends PHPUnit\Framework\TestCase
     /**
      * When we don't get a webdav header
      *
-     * @test
      * @throws Exception
      */
-    public function whenNoDavHeaderExist()
+    public function testWhenNoDavHeaderExist()
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("Le serveur ne présente pas le header Dav");
@@ -110,10 +108,9 @@ class WebdavWrapperTest extends PHPUnit\Framework\TestCase
     /**
      * When we are not authorized to authenticate to the webdav server
      *
-     * @test
      * @throws Exception
      */
-    public function whenDavAccessIsForbidden()
+    public function testWhenDavAccessIsForbidden()
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("403 : Forbidden");

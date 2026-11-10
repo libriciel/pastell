@@ -9,6 +9,7 @@ use Exception;
 use Pastell\Service\TokenGenerator;
 use Pastell\Validator\UserValidator;
 use PastellTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use UnrecoverableException;
 
 class UserValidatorTest extends PastellTestCase
@@ -98,10 +99,10 @@ class UserValidatorTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider newUserProvider
      * @throws ConflictException
      * @throws UnrecoverableException
      */
+    #[DataProvider('newUserProvider')]
     public function testValidateErrors(
         string $login,
         string $email,

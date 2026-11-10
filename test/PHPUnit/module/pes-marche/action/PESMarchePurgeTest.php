@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class PESMarchePurgeTest extends PastellMarcheTestCase
 {
     public const PES_MARCHE = 'pes-marche';
@@ -61,10 +63,10 @@ class PESMarchePurgeTest extends PastellMarcheTestCase
      * @param $liste_etats
      * @param $expected_true
      * @param $message
-     * @dataProvider getPurgeDataProvider
      * @throws NotFoundException
      * @throws Exception
      */
+    #[DataProvider('getPurgeDataProvider')]
     public function testPurgeDocument($document_type, $document_etat, $passer_par_l_etat, $document_etat_cible, $modification, $liste_etats, $expected_true, $message)
     {
 

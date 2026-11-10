@@ -2,6 +2,7 @@
 
 namespace PHPUnit\lib;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use ProxyNeeded;
 use PHPUnit\Framework\TestCase;
 
@@ -22,8 +23,8 @@ class ProxyNeededTest extends TestCase
      * @param string $no_proxy
      * @param string $url
      * @param bool $expectedResult
-     * @dataProvider dataProvider
      */
+    #[DataProvider('dataProvider')]
     public function testOK(string $http_proxy_url, string $no_proxy, string $url, bool $expectedResult)
     {
         $proxy = new ProxyNeeded($http_proxy_url, $no_proxy);

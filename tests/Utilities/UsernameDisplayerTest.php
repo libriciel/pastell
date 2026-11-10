@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Tests\Utilities;
 
 use Pastell\Helpers\UsernameDisplayer;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class UsernameDisplayerTest extends TestCase
@@ -26,11 +27,11 @@ class UsernameDisplayerTest extends TestCase
     }
 
     /**
-     * @dataProvider getData
      * @param array $userInfo
      * @param string $expected
      * @return void
      */
+    #[DataProvider('getData')]
     public function testDisplayer(array $userInfo, string $expected): void
     {
         $usernameDisplayer = new UsernameDisplayer();

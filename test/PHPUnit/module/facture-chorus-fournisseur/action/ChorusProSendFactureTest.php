@@ -3,10 +3,9 @@
 class ChorusProSendFactureTest extends ExtensionCppTestCase
 {
     /**
-     * @test
      * @throws Exception
      */
-    public function ChorusProSendFacture()
+    public function testChorusProSendFacture()
     {
 
         $soumettreFacure_result =  [

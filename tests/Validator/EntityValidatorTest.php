@@ -7,6 +7,7 @@ namespace Pastell\Tests\Validator;
 use EntiteSQL;
 use Pastell\Validator\EntityValidator;
 use PastellTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Siren;
 use UnrecoverableException;
 
@@ -37,9 +38,7 @@ class EntityValidatorTest extends PastellTestCase
         ];
     }
 
-    /**
-     * @dataProvider validationProvider
-     */
+    #[DataProvider('validationProvider')]
     public function testValidateErrors(
         string $name,
         string $siren,

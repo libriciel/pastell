@@ -7,6 +7,7 @@ namespace Pastell\Tests\Helpers;
 use Generator;
 use Pastell\Helpers\ArrayHelper;
 use PastellTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 final class ArrayHelperTest extends PastellTestCase
 {
@@ -169,9 +170,7 @@ final class ArrayHelperTest extends PastellTestCase
         ];
     }
 
-    /**
-     * @dataProvider buildNestedTreeProvider
-     */
+    #[DataProvider('buildNestedTreeProvider')]
     public function testBuildNestedTree(array $flatList, array $expected): void
     {
         self::assertSame($expected, ArrayHelper::buildNestedTree($flatList));
@@ -233,17 +232,13 @@ final class ArrayHelperTest extends PastellTestCase
         ];
     }
 
-    /**
-     * @dataProvider buildTreeselectOptionsProvider
-     */
+    #[DataProvider('buildTreeselectOptionsProvider')]
     public function testBuildTreeselectOptions(array $flatList, array $expected): void
     {
         self::assertSame($expected, ArrayHelper::buildTreeselectOptions($flatList));
     }
 
-    /**
-     * @dataProvider getExpectedArrayByDepthProvider
-     */
+    #[DataProvider('getExpectedArrayByDepthProvider')]
     public function testGetArrayKeysByDepth(int $depth, array $expectedArray): void
     {
         $browseArray = [

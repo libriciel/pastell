@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class FluxDataSedaActesTest extends PastellTestCase
 {
     public static function getRestrictionAccessDataProvider()
@@ -14,9 +16,7 @@ class FluxDataSedaActesTest extends PastellTestCase
         ];
     }
 
-    /**
-     * @dataProvider getRestrictionAccessDataProvider
-     */
+    #[DataProvider('getRestrictionAccessDataProvider')]
     public function testget_restriction_acces($actes_nature, $classification, $restriction_access_expected)
     {
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
@@ -37,9 +37,9 @@ class FluxDataSedaActesTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider getProducteurDataProvider
      * @throws UnrecoverableException
      */
+    #[DataProvider('getProducteurDataProvider')]
     public function testget_id_producteur($actes_nature, $classification, $producteur_identifier)
     {
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
