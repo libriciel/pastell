@@ -97,12 +97,17 @@ class JobQueueSQLTest extends PastellTestCase
         $job->id_e = PastellTestCase::ID_E_COL;
         $job->id_d = self::ID_D;
         $id_job = $this->jobQueueSQL->createJob($job);
-        $id_worker = $this->workerSQL->create(1234);
-        $this->workerSQL->attachJob($id_worker, $id_job);
+        $id_worker_finished = $this->workerSQL->create(1234);
+        $this->workerSQL->attachJob($id_worker_finished, $id_job);
+        $this->workerSQL->error($id_worker_finished, 'error');
+        $id_worker_running = $this->workerSQL->create(1235);
+        $this->workerSQL->attachJob($id_worker_running, $id_job);
 
         $this->jobQueueSQL->deleteDocument(PastellTestCase::ID_E_COL, self::ID_D);
 
-        static::assertNull($this->workerSQL->getWorker($id_worker));
+        self::assertNull($this->jobQueueSQL->getJob($id_job));
+        self::assertNull($this->workerSQL->getWorker($id_worker_finished));
+        self::assertNotNull($this->workerSQL->getWorker($id_worker_running));
     }
 
     /**
@@ -114,12 +119,17 @@ class JobQueueSQLTest extends PastellTestCase
         $job->type = Job::TYPE_CONNECTEUR;
         $job->id_ce = 42;
         $id_job = $this->jobQueueSQL->createJob($job);
-        $id_worker = $this->workerSQL->create(1234);
-        $this->workerSQL->attachJob($id_worker, $id_job);
+        $id_worker_finished = $this->workerSQL->create(1234);
+        $this->workerSQL->attachJob($id_worker_finished, $id_job);
+        $this->workerSQL->error($id_worker_finished, 'error');
+        $id_worker_running = $this->workerSQL->create(1235);
+        $this->workerSQL->attachJob($id_worker_running, $id_job);
 
         $this->jobQueueSQL->deleteConnecteur(42);
 
-        static::assertNull($this->workerSQL->getWorker($id_worker));
+        self::assertNull($this->jobQueueSQL->getJob($id_job));
+        self::assertNull($this->workerSQL->getWorker($id_worker_finished));
+        self::assertNotNull($this->workerSQL->getWorker($id_worker_running));
     }
 
     /**
@@ -192,6 +202,23 @@ class JobQueueSQLTest extends PastellTestCase
         static::assertCount(9, $this->jobQueueSQL->getFilteredJobList(offset: 1));
         static::assertCount(3, $this->jobQueueSQL->getFilteredJobList(3));
         static::assertCount(1, $this->jobQueueSQL->getFilteredJobList(3, 9));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testFilteredJobListNoDuplicate(): void
+    {
+        $id_job = $this->jobQueueSQL->createJob($this->getNewJob());
+        $id_worker = $this->workerSQL->create(1234);
+        $this->workerSQL->attachJob($id_worker, $id_job);
+        $this->workerSQL->error($id_worker, 'error');
+        $id_worker = $this->workerSQL->create(1235);
+        $this->workerSQL->attachJob($id_worker, $id_job);
+
+        self::assertCount(1, $this->jobQueueSQL->getFilteredJobList());
+        self::assertSame(1, $this->jobQueueSQL->getNbJob(''));
+        self::assertCount(1, $this->jobQueueSQL->getFilteredJobList(filtre: 'actif'));
     }
 
     /**
@@ -382,6 +409,20 @@ class JobQueueSQLTest extends PastellTestCase
         $after = new JobAdvancedFilters(late: '1', late_before: '2999-01-01 00:00:00');
         static::assertSame(1, $this->jobQueueSQL->lockAll(null, $after));
         static::assertSame(JobStatus::SUSPENDED_BY_USER, $this->jobQueueSQL->getJob($id_job)->job_status);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testSinceOneHourFrozen(): void
+    {
+        $this->jobQueueSQL->createJob($this->getNewJob(date(Date::DATE_ISO, strtotime('-2 hours'))));
+
+        $before = new JobAdvancedFilters(since_one_hour: '1', since_one_hour_before: '2000-01-01 00:00:00');
+        self::assertCount(0, $this->jobQueueSQL->getFilteredJobList(advancedFilters: $before));
+
+        $after = new JobAdvancedFilters(since_one_hour: '1', since_one_hour_before: '2999-01-01 00:00:00');
+        self::assertCount(1, $this->jobQueueSQL->getFilteredJobList(advancedFilters: $after));
     }
 
     /**

@@ -1,3 +1,4 @@
+{% import 'daemon/macros.html.twig' as daemon_ui %}
 <div class="box">
     <table class='table' aria-label="Gestionnaire de tâches">
         <tr>
@@ -31,31 +32,19 @@
         <tr>
             <th>Processus en cours d'exécution</th>
             <td>
-                {% if nb_worker_actif %}
-                    <a href="{{ path('app.legacy.daemon_job', {'filtre': 'actif'}) }}">{{ nb_worker_actif }}</a>
-                {% else %}
-                    {{ nb_worker_actif }}
-                {% endif %}
+                {{ daemon_ui.stat_link(nb_worker_actif, path('app.legacy.daemon_job', {'filtre': 'actif'})) }}
             </td>
         </tr>
         <tr>
             <th>Travaux en retard d'exécution</th>
             <td>
-                {% if job_stat_info.nb_wait %}
-                    <a href="{{ path('app.legacy.daemon_job', {'job_status': [job_status_waiting], 'late': 1}) }}">{{ job_stat_info.nb_wait }}</a>
-                {% else %}
-                    {{ job_stat_info.nb_wait }}
-                {% endif %}
+                {{ daemon_ui.stat_link(job_stat_info.nb_wait, path('app.legacy.daemon_job', {'job_status': [job_status_waiting], 'late': 1})) }}
             </td>
         </tr>
         <tr>
             <th>Travaux suspendus</th>
             <td>
-                {% if job_stat_info.nb_lock %}
-                    <a href="{{ path('app.legacy.daemon_job', {'job_status': job_status_locked}) }}">{{ job_stat_info.nb_lock }}</a>
-                {% else %}
-                    {{ job_stat_info.nb_lock }}
-                {% endif %}
+                {{ daemon_ui.stat_link(job_stat_info.nb_lock, path('app.legacy.daemon_job', {'job_status': job_status_locked})) }}
                 {% if (job_stat_info.nb_lock_one_hour and daemon_global_lecture) %}
                     <span class='alert alert-warning'>
                         <a href="{{ path('app.legacy.daemon_job', {'job_status': job_status_locked, 'since_one_hour': 1}) }}">
@@ -68,11 +57,7 @@
         <tr>
             <th>Nombre total de travaux</th>
             <td>
-                {% if job_stat_info.nb_job %}
-                    <a href="{{ path('app.legacy.daemon_job') }}">{{ job_stat_info.nb_job }}</a>
-                {% else %}
-                    {{ job_stat_info.nb_job }}
-                {% endif %}
+                {{ daemon_ui.stat_link(job_stat_info.nb_job, path('app.legacy.daemon_job')) }}
             </td>
         </tr>
         <tr>

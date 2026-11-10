@@ -452,6 +452,9 @@ class PastellControler extends Controler
             if ($advancedFilters->late !== '' && $advancedFilters->late_before === '') {
                 $advancedFilters = $advancedFilters->withLateBefore($this->getJobQueueSQL()->getNow());
             }
+            if ($advancedFilters->since_one_hour !== '' && $advancedFilters->since_one_hour_before === '') {
+                $advancedFilters = $advancedFilters->withSinceOneHourBefore($this->getJobQueueSQL()->getOneHourAgo());
+            }
             $sort = JobSort::fromRecuperateur($recuperateur);
             $this->setViewParameter('search', $advancedFilters);
             $this->setViewParameter('sort', $sort);

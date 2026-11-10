@@ -79,6 +79,7 @@
 - Suppression de la méthode `Gabarit::getPastellTimer()` #2600
 - Suppression de la classe `PastellTimer` #2600
 - Suppression de `JobQueueSQL::getAllJobs()`, remplacée par `JobQueueSQL::getFilteredJobList()` #964
+- Suppression des paramètres `$limit` et `$offset` de `JobQueueSQL::getJobsByDaemon()` #964
 
 ### Suppressions d'éléments dépréciés
 

@@ -22,6 +22,7 @@ final readonly class JobAdvancedFilters
         public string $late = '',
         public string $late_before = '',
         public string $since_one_hour = '',
+        public string $since_one_hour_before = '',
     ) {
     }
 
@@ -36,12 +37,18 @@ final readonly class JobAdvancedFilters
             late: self::toScalarString($recuperateur->get('late', '')),
             late_before: self::toDateString($recuperateur->get('late_before', '')),
             since_one_hour: self::toScalarString($recuperateur->get('since_one_hour', '')),
+            since_one_hour_before: self::toDateString($recuperateur->get('since_one_hour_before', '')),
         );
     }
 
     public function withLateBefore(string $late_before): self
     {
         return new self(...[...get_object_vars($this), 'late_before' => $late_before]);
+    }
+
+    public function withSinceOneHourBefore(string $since_one_hour_before): self
+    {
+        return new self(...[...get_object_vars($this), 'since_one_hour_before' => $since_one_hour_before]);
     }
 
     private static function toDateString(mixed $value): string

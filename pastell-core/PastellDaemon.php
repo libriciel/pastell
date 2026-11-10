@@ -6,6 +6,9 @@ use Symfony\Component\Process\Process;
 
 class PastellDaemon
 {
+    private const string WORKER_COMMAND = 'app:daemon:start-worker';
+    private const int ORPHAN_CLEANING_PERIOD = 60;
+
     public function __construct(
         private readonly WorkerSQL $workerSQL,
         private readonly JobQueueSQL $jobQueueSQL,
@@ -27,16 +30,18 @@ class PastellDaemon
         // terminés correctement suite à un arrêt brutal du serveur
         // (ex: restart apache sans avoir arrêté le daemon avec des worker actifs). (r1992)
         if ($this->unlock_job_error_at_startup) {
-            foreach ($this->workerSQL->getAllRunningWorker() as $worker) {
-                if (! posix_getpgid($worker->pid)) {
-                    $this->workerSQL->success($worker->id_worker); // supprime le worker
-                    $this->logger->alert('Daemon detects and cleans a worker that did not end correctly', $worker->toArray());
-                }
-            }
+            $this->removeDeadWorkers(
+                $this->workerSQL->getAllRunningWorker(),
+                'Daemon detects and cleans a worker that did not end correctly'
+            );
         }
 
+        $loop_count = 0;
         while (true) {
-            $this->cleanDeadOrphanWorkers();
+            if ($loop_count === 0) {
+                $this->cleanDeadOrphanWorkers();
+            }
+            $loop_count = ($loop_count + 1) % self::ORPHAN_CLEANING_PERIOD;
             foreach ($this->daemonSQL->getRunningDaemons() as $daemon) {
                 $this->jobMasterOneRun($daemon);
             }
@@ -48,12 +53,35 @@ class PastellDaemon
 
     public function cleanDeadOrphanWorkers(): void
     {
-        foreach ($this->workerSQL->getOrphanRunningWorkers() as $workerObject) {
-            if (! posix_getpgid($workerObject->pid)) {
+        $this->removeDeadWorkers(
+            $this->workerSQL->getOrphanRunningWorkers(),
+            'Daemon detects and cleans a dead worker whose job no longer exists'
+        );
+    }
+
+    private function removeDeadWorkers(array $worker_list, string $log_message): void
+    {
+        foreach ($worker_list as $workerObject) {
+            if (! $this->isWorkerAlive($workerObject)) {
                 $this->workerSQL->success($workerObject->id_worker);
-                $this->logger->alert('Daemon detects and cleans a dead worker whose job no longer exists', $workerObject->toArray());
+                $this->logger->alert($log_message, $workerObject->toArray());
             }
         }
+    }
+
+    /**
+     * The command line is checked because the PID of a dead worker can be reused by another process.
+     */
+    private function isWorkerAlive(WorkerObject $workerObject): bool
+    {
+        if (! posix_getpgid($workerObject->pid)) {
+            return false;
+        }
+        $command_line = @file_get_contents("/proc/$workerObject->pid/cmdline");
+        if ($command_line === false || $command_line === '') {
+            return true;
+        }
+        return str_contains($command_line, self::WORKER_COMMAND . "\0$workerObject->id_job\0");
     }
 
     /**
@@ -62,7 +90,7 @@ class PastellDaemon
     private function jobMasterOneRun(Daemon $daemon): void
     {
         foreach ($this->workerSQL->getRunningWorkersForDaemon($daemon->id_daemon) as $worker) {
-            if (! posix_getpgid($worker->pid)) {
+            if (! $this->isWorkerAlive($worker)) {
                 if ($worker->termine === 1) {
                     $this->logger->warning("Worker $worker->id_worker has already finished his job, Skipping...", $worker->toArray());
                     continue;
@@ -111,7 +139,7 @@ class PastellDaemon
             \sprintf(
                 'nohup %s %s %s > /dev/null 2>&1 &',
                 PHP_PATH,
-                $this->pastell_path . '/bin/console app:daemon:start-worker',
+                $this->pastell_path . '/bin/console ' . self::WORKER_COMMAND,
                 $job->id_job
             )
         );
