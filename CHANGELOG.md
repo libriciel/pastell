@@ -73,6 +73,7 @@
 - Suppression du graphe des dépendances des extensions sur la page `Extension/index` #938
   - Suppression des fichiers obsolètes `extensions_graphe.dot` et `extensions_graphe.jpg` du workspace lors de la mise à jour
 - Suppression de la méthode `Gabarit::getPastellTimer()` #2600
+- Suppression de la classe `PastellTimer` #2600
 
 ### Suppressions d'éléments dépréciés
 
