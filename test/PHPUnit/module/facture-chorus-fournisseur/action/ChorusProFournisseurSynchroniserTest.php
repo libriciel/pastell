@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class ChorusProFournisseurSynchroniserTest extends ExtensionCppTestCase
 {
     public static function getHistoStatutDataProvider()
@@ -58,10 +60,8 @@ class ChorusProFournisseurSynchroniserTest extends ExtensionCppTestCase
      * Pour contourner:
      * - dans la classe ExtraireDonneesPivot appeler $zip = $this->objectInstancier->getInstance("ZipArchive"); plutôt que $zip = new ZipArchive();
      * pour pouvoir faire un Mock sur $zip->open...
-     *
-     *
-     * @dataProvider getHistoStatutDataProvider
      */
+    #[DataProvider('getHistoStatutDataProvider')]
     public function testSynchroniserFactureDepose($recup_statut, $date_dernier_statut, $dernier_statut, $last_message_expected, $envoi_sae, $last_etat_expected)
     {
 

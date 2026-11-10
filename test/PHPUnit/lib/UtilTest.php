@@ -1,10 +1,11 @@
 <?php
 
-class UtilTest extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+
+class UtilTest extends TestCase
 {
-    /**
-     * @dataProvider number_format_fr_provider
-     */
+    #[DataProvider('number_format_fr_provider')]
     public function test_number_format_fr($number_to_test, $expected_result)
     {
         $this->assertEquals($expected_result, number_format_fr($number_to_test));
@@ -19,9 +20,7 @@ class UtilTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    /**
-     * @dataProvider date_iso_to_fr_provider
-     */
+    #[DataProvider('date_iso_to_fr_provider')]
     public function test_date_iso_to_fr($date_iso, $expected_date_fr)
     {
         $this->assertEquals($expected_date_fr, date_iso_to_fr($date_iso));

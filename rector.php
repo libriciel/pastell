@@ -27,5 +27,6 @@ return RectorConfig::configure()
         \Rector\Php84\Rector\FuncCall\AddEscapeArgumentRector::class,
         \Rector\Php82\Rector\FuncCall\Utf8DecodeEncodeToMbConvertEncodingRector::class,
         \Rector\PHPUnit\PHPUnit100\Rector\Class_\StaticDataProviderClassMethodRector::class,
+        \Rector\PHPUnit\AnnotationsToAttributes\Rector\ClassMethod\DataProviderAnnotationToAttributeRector::class,
     ])
     ;

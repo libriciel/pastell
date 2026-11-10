@@ -5,6 +5,7 @@ namespace Pastell\Tests\Service\TypeDossier;
 use Pastell\Service\TypeDossier\TypeDossierEditionService;
 use Pastell\Service\TypeDossier\TypeDossierManager;
 use PastellTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use TypeDossierException;
 use TypeDossierProperties;
 use TypeDossierTranslator;
@@ -53,9 +54,7 @@ class TypeDossierEditionServiceTest extends PastellTestCase
         ];
     }
 
-    /**
-     * @dataProvider typeDossierIdProvider
-     */
+    #[DataProvider('typeDossierIdProvider')]
     public function testCheckTypeDossierId(string $type_dossier_id, string $exception_message): void
     {
         $typeDossierProperties = new TypeDossierProperties();

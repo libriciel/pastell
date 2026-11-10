@@ -7,6 +7,7 @@ use Pastell\Client\Crypto\Api\Pades;
 use Pastell\Client\Crypto\Api\Version;
 use Pastell\Client\Crypto\Api\Xades;
 use Pastell\Client\Crypto\CryptoClient;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 
@@ -31,9 +32,7 @@ class CryptoClientTest extends TestCase
         yield ['version', Version::class];
     }
 
-    /**
-     * @dataProvider getApiClassesProvider
-     */
+    #[DataProvider('getApiClassesProvider')]
     public function testShouldGetInstanceOfClass(string $apiName, string $classFqn): void
     {
         $this->assertInstanceOf($classFqn, $this->cryptoClient->$apiName());

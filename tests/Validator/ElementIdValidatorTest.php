@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Tests\Validator;
 
 use Pastell\Validator\ElementIdValidator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use UnrecoverableException;
 
@@ -36,9 +37,9 @@ class ElementIdValidatorTest extends TestCase
     }
 
     /**
-     * @dataProvider elementIdProvider
      * @throws UnrecoverableException
      */
+    #[DataProvider('elementIdProvider')]
     public function testValidateElementId(
         string $elementId,
         bool $expectedResult,

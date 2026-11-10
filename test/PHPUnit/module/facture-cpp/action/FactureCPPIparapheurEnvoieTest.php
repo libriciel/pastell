@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class FactureCPPIparapheurEnvoieTest extends ExtensionCppTestCase
 {
     public static function getStatutDataProvider()
@@ -22,9 +24,9 @@ class FactureCPPIparapheurEnvoieTest extends ExtensionCppTestCase
 
 
     /**
-     * @dataProvider getStatutDataProvider
      * @throws NotFoundException
      */
+    #[DataProvider('getStatutDataProvider')]
     public function testEnvoiParapheur($statut, $last_message_expected, $last_etat_expected, $json_metadata_expected)
     {
 

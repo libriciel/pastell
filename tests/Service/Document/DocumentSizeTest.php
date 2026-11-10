@@ -6,6 +6,7 @@ use Exception;
 use NotFoundException;
 use Pastell\Service\Document\DocumentSize;
 use PastellTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class DocumentSizeTest extends PastellTestCase
 {
@@ -46,9 +47,7 @@ class DocumentSizeTest extends PastellTestCase
         yield [3333333333, '3.1GB'];
     }
 
-    /**
-     * @dataProvider humanReadableSizeProvider
-     */
+    #[DataProvider('humanReadableSizeProvider')]
     public function testGetHumanReadableSize(int $size, string $expected): void
     {
         $this->assertSame($expected, $this->documentSize->getHumanReadableSize($size));

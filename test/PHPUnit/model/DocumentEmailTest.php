@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 /**
  * @deprecated 4.1.26 Use DocumentEmailSQLTest instead.
  */
@@ -37,9 +39,7 @@ final class DocumentEmailTest extends PastellTestCase
         yield [MailSecTestHelper::FLUX_MAILSEC, MailSecTestHelper::ACTION_MAILSEC_ENVOI_MAIL];
     }
 
-    /**
-     * @dataProvider fluxActionProvider
-     */
+    #[DataProvider('fluxActionProvider')]
     public function testSupprimerMailSecActionWhenReception(string $flux_name, string $action_envoi)
     {
         $mail_sec_info = $this->createMailSec($flux_name, $action_envoi);
@@ -56,9 +56,7 @@ final class DocumentEmailTest extends PastellTestCase
         $this->assertActionPossible(['supression', 'renvoi'], $id_d);
     }
 
-    /**
-     * @dataProvider fluxActionProvider
-     */
+    #[DataProvider('fluxActionProvider')]
     public function testSupprimerMailSecActionWhenNonRecu(string $flux_name, string $action_envoi)
     {
         $mail_sec_info = $this->createMailSec($flux_name, $action_envoi);

@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class PurgeTest extends PastellTestCase
 {
     public static function getPurgeDataProvider(): iterable
@@ -73,10 +75,10 @@ class PurgeTest extends PastellTestCase
 
 
     /**
-     * @dataProvider getPurgeDataProvider
      * @throws UnrecoverableException
      * @throws NotFoundException
      */
+    #[DataProvider('getPurgeDataProvider')]
     public function testPurgeDocument(
         string $document_type,
         string $document_etat,
@@ -148,9 +150,9 @@ class PurgeTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider purgeLockNameProvider
      * @throws UnrecoverableException
      */
+    #[DataProvider('purgeLockNameProvider')]
     public function testPurge(string $lock, array $additionalConnectorConfig): void
     {
         $result = $this->createDocument('actes-generique');

@@ -7,6 +7,7 @@ use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Utilities\Identifier\IdentifierGeneratorInterface;
 use Pastell\Utilities\Identifier\UuidGenerator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
@@ -470,9 +471,9 @@ class DocumentControlerTest extends ControlerTestCase
     }
 
     /**
-     * @dataProvider teletransmissionReturnForeignDocumentProvider
      * @throws Exception
      */
+    #[DataProvider('teletransmissionReturnForeignDocumentProvider')]
     public function testTeletransmissionReturnRefusesForeignDocuments(string $document_type, int $document_id_e): void
     {
         $document = $this->createDocument($document_type, $document_id_e);

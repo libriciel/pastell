@@ -11,6 +11,7 @@ use NotFoundException;
 use Pastell\Command\ForceUpdateField;
 use Pastell\Service\UpdateFieldService;
 use PastellTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Console\Tester\CommandTester;
 use UnrecoverableException;
 
@@ -82,10 +83,10 @@ final class ForceUpdateFieldTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider commandArgumentsProvider
      * @throws NotFoundException
      * @throws Exception
      */
+    #[DataProvider('commandArgumentsProvider')]
     public function testCommand(
         string $scopeType,
         string $scope,

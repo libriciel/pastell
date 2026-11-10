@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Tests\Process;
 
 use Pastell\Process\SymfonyCommandRunner;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class SymfonyCommandRunnerTest extends TestCase
@@ -56,9 +57,7 @@ class SymfonyCommandRunnerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider commandProvider
-     */
+    #[DataProvider('commandProvider')]
     public function testRun(
         array $command,
         ?int $expectedExitCode,

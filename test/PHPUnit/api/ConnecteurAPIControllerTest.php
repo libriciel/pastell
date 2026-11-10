@@ -5,6 +5,7 @@ use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ConnecteurAPIControllerTest extends PastellTestCase
 {
@@ -112,9 +113,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
         yield 'root' => [0];
     }
 
-    /**
-     * @dataProvider invalidGlobalFlagProvider
-     */
+    #[DataProvider('invalidGlobalFlagProvider')]
     public function testCreateWithInvalidGlobalFlag(int $entityId): void
     {
         try {

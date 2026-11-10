@@ -11,6 +11,7 @@ use NotFoundException;
 use Pastell\Service\SimpleTwigRenderer;
 use Pastell\Service\SimpleTwigRendererExemple;
 use PastellTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Twig\Error\LoaderError;
 use Twig\Error\SyntaxError;
 use UnrecoverableException;
@@ -131,10 +132,10 @@ class SimpleTwigRendererTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider renderDataProvider
      * @throws UnrecoverableException
      * @throws DonneesFormulaireException
      */
+    #[DataProvider('renderDataProvider')]
     public function testRender(string $expected_result, string $template): void
     {
         $simpleTwigRenderer = new SimpleTwigRenderer();
@@ -310,9 +311,9 @@ Message d\'erreur : Unclosed "variable".<br />
     }
 
     /**
-     * @dataProvider exempleProvider
      * @throws UnrecoverableException
      */
+    #[DataProvider('exempleProvider')]
     public function testExemple(string $expression, array $data): void
     {
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
@@ -382,9 +383,9 @@ Message d\'erreur : Unclosed "variable".<br />
     }
 
     /**
-     * @dataProvider forbiddenTemplateDataProvider
      * @throws DonneesFormulaireException
      */
+    #[DataProvider('forbiddenTemplateDataProvider')]
     public function testRenderWithAForbiddenExpression(string $expected_message, string $template): void
     {
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();

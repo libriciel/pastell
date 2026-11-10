@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\TypeDossier\TypeDossierImportService;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class TypeDossierTranslatorTest extends PastellTestCase
 {
@@ -29,9 +30,9 @@ class TypeDossierTranslatorTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider caseProvider
      * @throws Exception
      */
+    #[DataProvider('caseProvider')]
     public function testTranslation(string $case): void
     {
         $this->loadDossierType("$case.json");

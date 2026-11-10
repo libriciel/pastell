@@ -1,5 +1,6 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Sabre\HTTP\ClientHttpException;
 use Pastell\Service\Journal\JournalEntryService;
 
@@ -102,11 +103,11 @@ class FastTdtTest extends PastellTestCase
     /**
      * When the connection is ok
      *
-     * @dataProvider whenTestingConnectionProvider
      * @test
      * @param $url
      * @throws Exception
      */
+    #[DataProvider('whenTestingConnectionProvider')]
     public function whenConnectionIsOk($url)
     {
         $webdavWrapper = $this->createMock(WebdavWrapper::class);
@@ -291,12 +292,12 @@ class FastTdtTest extends PastellTestCase
     /**
      * When successfully sending an act
      *
-     * @dataProvider whenSendingAnActProvider
      * @throws ClientHttpException
      * @throws DonneesFormulaireException
      * @throws FastTdtException
      * @throws UnrecoverableException
      */
+    #[DataProvider('whenSendingAnActProvider')]
     public function testWhenSendingAnAct(int $numberOfAnnexes, string $typePj): void
     {
         $connecteurConfig = $this->getDefaultConnecteurConfig();
@@ -421,13 +422,13 @@ class FastTdtTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider whenGettingStatusProvider
      * @test
      * @param $expectedFilesInDirectory
      * @param $tdtReturnXmlContent
      * @param $expectedStatus
      * @throws ClientHttpException
      */
+    #[DataProvider('whenGettingStatusProvider')]
     public function whenGettingStatus($expectedFilesInDirectory, $tdtReturnXmlContent, $expectedStatus)
     {
         $connecteurConfig = $this->getDefaultConnecteurConfig();
@@ -708,12 +709,12 @@ class FastTdtTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider whenGettingHeliosStatusProvider
      * @test
      * @param $history
      * @param $expectedStatus
      * @throws DocapostParapheurSoapClientException
      */
+    #[DataProvider('whenGettingHeliosStatusProvider')]
     public function whenGettingHeliosStatus($history, $expectedStatus)
     {
         $webdavWrapper = $this->createMock(WebdavWrapper::class);

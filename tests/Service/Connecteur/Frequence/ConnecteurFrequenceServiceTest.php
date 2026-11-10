@@ -13,6 +13,7 @@ use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceData;
 use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceService;
 use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceType;
 use PastellTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use UnrecoverableException;
 
 final class ConnecteurFrequenceServiceTest extends PastellTestCase
@@ -379,9 +380,9 @@ final class ConnecteurFrequenceServiceTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider nextTryProvider
      * @throws UnrecoverableException
      */
+    #[DataProvider('nextTryProvider')]
     public function testNextTry(string $expression, int $nb_try, string $relative_date, string $expected): void
     {
         self::assertSame(
@@ -442,9 +443,7 @@ EOT,
         ];
     }
 
-    /**
-     * @dataProvider connecteurLabelProvider
-     */
+    #[DataProvider('connecteurLabelProvider')]
     public function testConnecteurLabel(ConnecteurFrequenceData $connecteurFrequenceData, string $expected): void
     {
         self::assertSame($expected, $this->connecteurFrequenceService->getConnecteurLabel($connecteurFrequenceData));
@@ -483,9 +482,7 @@ EOT,
         ];
     }
 
-    /**
-     * @dataProvider actionLabelProvider
-     */
+    #[DataProvider('actionLabelProvider')]
     public function testActionLabel(ConnecteurFrequenceData $connecteurFrequenceData, string $expected): void
     {
         self::assertSame($expected, $this->connecteurFrequenceService->getActionLabel($connecteurFrequenceData));
