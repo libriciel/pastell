@@ -469,7 +469,7 @@ class DaemonControler extends PastellControler
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $id_cf = $this->getGetInfo()->getInt('id_cf');
-        $connecteurFrequence = $this->verifConnecteur($id_cf);
+        $connecteurFrequenceData = $this->verifConnecteur($id_cf);
 
         $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_FREQUENCE_CONFIGURATION);
         $this->renderDeleteConfirmation(
@@ -479,9 +479,10 @@ class DaemonControler extends PastellControler
                 "Daemon/connecteurFrequenceDetail?id_cf=$id_cf",
                 [
                     [
-                        'type' => $connecteurFrequence->type_connecteur ?: 'Tous',
-                        'action' => $connecteurFrequence->action ?: 'Toutes',
-                        'frequence' => $connecteurFrequence->getExpressionAsString(),
+                        'type' => $connecteurFrequenceData->type_connecteur ?: 'Tous',
+                        'action' => $connecteurFrequenceData->action ?: 'Toutes',
+                        'frequence' => $this->getInstance(ConnecteurFrequenceService::class)
+                            ->getExpressionLabel($connecteurFrequenceData),
                     ]
                 ],
                 ['id_cf' => $id_cf],
@@ -497,7 +498,7 @@ class DaemonControler extends PastellControler
     public function doDeleteFrequenceAction(): void
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
-        $id_cf = $this->getPostInfo()->get('id_cf');
+        $id_cf = $this->getPostInfo()->getInt('id_cf');
         $this->getInstance(ConnecteurFrequenceService::class)->delete($id_cf);
         $this->setLastMessage('La fréquence a été supprimée');
         $this->redirect('Daemon/frequenceConfiguration');
