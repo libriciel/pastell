@@ -5,6 +5,7 @@ namespace Pastell\Tests\Command\Studio;
 use Exception;
 use Pastell\Service\TypeDossier\TypeDossierExportFileToModuleService;
 use PastellTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use TmpFolder;
@@ -210,10 +211,10 @@ class PastellPackTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider jsonProvider
      * @throws TypeDossierException
      * @throws Exception
      */
+    #[DataProvider('jsonProvider')]
     public function testAllPack(
         string $jsonFilepath,
         string $restrictionPack,

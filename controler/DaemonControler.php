@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceData;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceService;
 use Pastell\Configuration\JobStatus;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityUtilitiesService;
@@ -25,10 +27,12 @@ class DaemonControler extends PastellControler
         $this->setDroitsDaemon(EntiteSQL::ID_E_ENTITE_RACINE);
     }
 
-    /** @return ConnecteurFrequenceSQL */
-    public function getConnecteurFrequenceSQL()
+    /**
+     * @deprecated 4.1.26 Use ConnecteurFrequenceService instead
+     */
+    public function getConnecteurFrequenceSQL(): ConnecteurFrequenceSQL
     {
-        return $this->getObjectInstancier()->getInstance(ConnecteurFrequenceSQL::class);
+        return $this->getInstance(ConnecteurFrequenceSQL::class);
     }
 
     /**
@@ -315,12 +319,19 @@ class DaemonControler extends PastellControler
     public function frequenceConfigurationAction(): void
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
+        $connecteurFrequenceService = $this->getInstance(ConnecteurFrequenceService::class);
+        $connecteur_frequence_list = $connecteurFrequenceService->getAll();
+
+        $this->setViewParameter('connecteur_frequence_list', $connecteur_frequence_list);
+        $this->setViewParameter(
+            'connecteur_frequence_label_list',
+            \array_map($connecteurFrequenceService->getLabels(...), $connecteur_frequence_list)
+        );
 
         $this->setViewParameter('page_title', 'Configuration de la fréquence des connecteurs');
         $this->setViewParameter('template_milieu', 'DaemonFrequenceConfiguration');
         $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_FREQUENCE_CONFIGURATION);
         $this->setViewParameter('nouveau_bouton_url', ['Ajouter' => 'Daemon/editFrequence']);
-        $this->setViewParameter('connecteur_frequence_list', $this->getConnecteurFrequenceSQL()->getAll());
         $this->renderDefault();
     }
 
@@ -333,13 +344,13 @@ class DaemonControler extends PastellControler
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $id_cf = $this->getGetInfo()->getInt('id_cf');
-        $connecteurFrequence = $this->getConnecteurFrequenceSQL()->getConnecteurFrequence(
+        $connecteurFrequenceData = $this->getInstance(ConnecteurFrequenceService::class)->get(
             $id_cf
-        ) ?: new ConnecteurFrequence();
+        ) ?? new ConnecteurFrequenceData();
 
-        $this->setViewParameter('connecteurFrequence', $connecteurFrequence);
+        $this->setViewParameter('connecteurFrequenceData', $connecteurFrequenceData);
 
-        $verbe = $connecteurFrequence->id_cf ? 'Modification' : 'Ajout';
+        $verbe = $connecteurFrequenceData->id_cf !== null ? 'Modification' : 'Ajout';
         $this->setViewParameter('page_title', "$verbe d'une fréquence de connecteur");
         $this->setViewParameter('template_milieu', 'DaemonEditFrequence');
         $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_FREQUENCE_CONFIGURATION);
@@ -408,8 +419,8 @@ class DaemonControler extends PastellControler
     public function doEditFrequenceAction()
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
-        $connecteurFrequence = new ConnecteurFrequence($this->getPostInfo()->getAll());
-        $id_cf = $this->getConnecteurFrequenceSQL()->edit($connecteurFrequence);
+        $connecteurFrequenceData = ConnecteurFrequenceData::fromArray($this->getPostInfo()->getAll());
+        $id_cf = $this->getInstance(ConnecteurFrequenceService::class)->save($connecteurFrequenceData);
         $this->redirect("Daemon/connecteurFrequenceDetail?id_cf=$id_cf");
     }
 
@@ -422,8 +433,12 @@ class DaemonControler extends PastellControler
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $id_cf = $this->getGetInfo()->getInt('id_cf');
-        $connecteurFrequence = $this->verifConnecteur($id_cf);
-        $this->setViewParameter('connecteurFrequence', $connecteurFrequence);
+        $connecteurFrequenceData = $this->verifConnecteur($id_cf);
+        $this->setViewParameter('connecteurFrequenceData', $connecteurFrequenceData);
+        $this->setViewParameter(
+            'connecteur_frequence_label',
+            $this->getInstance(ConnecteurFrequenceService::class)->getLabels($connecteurFrequenceData)
+        );
         $this->setViewParameter('page_title', "Détail sur la fréquence d'un connecteur");
         $this->setViewParameter('template_milieu', 'DaemonFrequenceDetail');
         $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_FREQUENCE_CONFIGURATION);
@@ -434,14 +449,15 @@ class DaemonControler extends PastellControler
      * @throws LastMessageException
      * @throws LastErrorException
      */
-    private function verifConnecteur($id_cf): ConnecteurFrequence
+    private function verifConnecteur(int $id_cf): ConnecteurFrequenceData
     {
-        $connecteurFrequence = $this->getConnecteurFrequenceSQL()->getConnecteurFrequence($id_cf);
-        if (!$connecteurFrequence) {
+        $connecteurFrequenceData = $this->getInstance(ConnecteurFrequenceService::class)->get($id_cf);
+
+        if ($connecteurFrequenceData === null) {
             $this->setLastError("Impossible de trouver le connecteur $id_cf");
             $this->redirect('Daemon/frequenceConfiguration');
         }
-        return $connecteurFrequence;
+        return $connecteurFrequenceData;
     }
 
     /**
@@ -452,7 +468,7 @@ class DaemonControler extends PastellControler
     public function deleteFrequenceAction(): void
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
-        $id_cf = $this->getGetInfo()->get('id_cf');
+        $id_cf = $this->getGetInfo()->getInt('id_cf');
         $connecteurFrequence = $this->verifConnecteur($id_cf);
 
         $this->setMenuGaucheSelect(MenuGaucheService::DAEMON_FREQUENCE_CONFIGURATION);
@@ -482,7 +498,7 @@ class DaemonControler extends PastellControler
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $id_cf = $this->getPostInfo()->get('id_cf');
-        $this->getConnecteurFrequenceSQL()->delete($id_cf);
+        $this->getInstance(ConnecteurFrequenceService::class)->delete($id_cf);
         $this->setLastMessage('La fréquence a été supprimée');
         $this->redirect('Daemon/frequenceConfiguration');
     }

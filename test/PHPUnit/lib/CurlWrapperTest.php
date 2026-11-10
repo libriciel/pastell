@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class CurlWrapperTest extends PHPUnit\Framework\TestCase
 {
     public function testGet()
@@ -197,9 +199,7 @@ class CurlWrapperTest extends PHPUnit\Framework\TestCase
         yield "no_proxy" => ["","","","url"];
     }
 
-    /**
-     * @dataProvider proxyDataProvider
-     */
+    #[DataProvider('proxyDataProvider')]
     public function testWithProxy(string $expected_setopt, string $proxy_value, string $no_proxy, string $url_called)
     {
         $curlFunction = $this->createMock("CurlFunctions");

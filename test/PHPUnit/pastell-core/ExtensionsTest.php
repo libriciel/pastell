@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class ExtensionsTest extends PastellTestCase
 {
     private function getExtensionTestPath()
@@ -158,9 +160,9 @@ class ExtensionsTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider versionProvider
      * @throws Exception
      */
+    #[DataProvider('versionProvider')]
     public function testAcceptedVersion(string $expected_version, bool $expectedResult): void
     {
         $extension_test_path = $this->getExtensionTestPath();

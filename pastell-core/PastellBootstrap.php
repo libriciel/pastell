@@ -1,6 +1,10 @@
 <?php
 
 use Pastell\Service\Connecteur\ConnecteurCreationService;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceActionType;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceData;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceService;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceType;
 
 class PastellBootstrap
 {
@@ -156,16 +160,13 @@ class PastellBootstrap
 
     public function installConnecteurFrequenceDefault()
     {
-        $connecteurFrequenceSQL = $this->objectInstancier->getInstance(ConnecteurFrequenceSQL::class);
+        $connecteurFrequenceService = $this->objectInstancier->getInstance(ConnecteurFrequenceService::class);
 
-        $connecteurFrequence = new ConnecteurFrequence();
-        $nearest = $connecteurFrequenceSQL->getNearestConnecteurFromConnecteur($connecteurFrequence);
         //Si aucune fréquence ne correspond à un connecteur par défaut
-        if (!$nearest) {
+        if (!$connecteurFrequenceService->findNearest(new ConnecteurFrequenceData())) {
             $defaultFrequencies = $this->getDefaultFrequencies();
             foreach ($defaultFrequencies as $name => $frequency) {
-                $connecteurFrequence = new ConnecteurFrequence($frequency);
-                $connecteurFrequenceSQL->edit($connecteurFrequence);
+                $connecteurFrequenceService->save(ConnecteurFrequenceData::fromArray($frequency));
                 $this->pastellLogger->info(
                     sprintf(
                         "Initialisation d'un connecteur `%s` avec la fréquence `%s`",
@@ -201,58 +202,58 @@ class PastellBootstrap
         ];
         yield 'iparapheur' => [
             'expression' => '30',
-            'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
+            'type_connecteur' => ConnecteurFrequenceType::ENTITE->value,
             'famille_connecteur' => 'signature',
             'id_connecteur' => 'iParapheur',
-            'action_type' => ConnecteurFrequence::TYPE_ACTION_DOCUMENT,
+            'action_type' => ConnecteurFrequenceActionType::DOCUMENT->value,
             'id_verrou' => 'IPARAPHEUR',
         ];
         yield 'SAE' => [
             'expression' => "60 X 24\n1440",
-            'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
+            'type_connecteur' => ConnecteurFrequenceType::ENTITE->value,
             'famille_connecteur' => 'SAE',
-            'action_type' => ConnecteurFrequence::TYPE_ACTION_DOCUMENT,
+            'action_type' => ConnecteurFrequenceActionType::DOCUMENT->value,
             'id_verrou' => 'SAE',
         ];
         yield 'mailsec' => [
             'expression' => '1440',
-            'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
+            'type_connecteur' => ConnecteurFrequenceType::ENTITE->value,
             'famille_connecteur' => 'mailsec',
-            'action_type' => ConnecteurFrequence::TYPE_ACTION_DOCUMENT,
+            'action_type' => ConnecteurFrequenceActionType::DOCUMENT->value,
             'id_verrou' => 'MAILSEC_RELANCE',
         ];
         yield 'tdt entité' => [
             'expression' => '30',
-            'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
+            'type_connecteur' => ConnecteurFrequenceType::ENTITE->value,
             'famille_connecteur' => 'TdT',
-            'action_type' => ConnecteurFrequence::TYPE_ACTION_DOCUMENT,
+            'action_type' => ConnecteurFrequenceActionType::DOCUMENT->value,
             'id_verrou' => 'TDT',
         ];
         yield 'cpp entité' => [
             'expression' => '30',
-            'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
+            'type_connecteur' => ConnecteurFrequenceType::ENTITE->value,
             'famille_connecteur' => 'PortailFacture',
             'id_connecteur' => 'cpp',
-            'action_type' => ConnecteurFrequence::TYPE_ACTION_CONNECTEUR,
+            'action_type' => ConnecteurFrequenceActionType::CONNECTEUR->value,
             'id_verrou' => 'CHORUS',
         ];
         yield 'purge' => [
             'expression' => '(0 22 * * *)',
-            'type_connecteur' => ConnecteurFrequence::TYPE_ENTITE,
+            'type_connecteur' => ConnecteurFrequenceType::ENTITE->value,
             'famille_connecteur' => 'Purge',
             'id_connecteur' => 'purge',
-            'action_type' => ConnecteurFrequence::TYPE_ACTION_CONNECTEUR,
+            'action_type' => ConnecteurFrequenceActionType::CONNECTEUR->value,
             'id_verrou' => 'PURGE',
         ];
         yield 'tdt global' => [
             'expression' => '(30 9 * * *)',
-            'type_connecteur' => ConnecteurFrequence::TYPE_GLOBAL,
+            'type_connecteur' => ConnecteurFrequenceType::GLOBAL->value,
             'famille_connecteur' => 'TdT',
             'id_verrou' => 'TDT_GLOBAL',
         ];
         yield 'cpp global' => [
             'expression' => '1440',
-            'type_connecteur' => ConnecteurFrequence::TYPE_GLOBAL,
+            'type_connecteur' => ConnecteurFrequenceType::GLOBAL->value,
             'famille_connecteur' => 'PortailFacture',
             'id_verrou' => 'CHORUS_GLOBAL',
         ];

@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated 4.1.26 Use ConnecteurFrequenceData and ConnecteurFrequenceService instead
+ */
 class ConnecteurFrequence
 {
     public const TYPE_GLOBAL = 'global';

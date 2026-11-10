@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Tests\Helpers;
 
 use Pastell\Helpers\SedaHelper;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use UnrecoverableException;
 
@@ -32,9 +33,9 @@ abstract class SedaHelperTestCase extends TestCase
     }
 
     /**
-     * @dataProvider atrProvider
      * @throws UnrecoverableException
      */
+    #[DataProvider('atrProvider')]
     public function testGetTransfertIdFromAtr(string $filepath, array $expected): void
     {
         $xml = \simplexml_load_string(\file_get_contents($filepath));
@@ -42,9 +43,9 @@ abstract class SedaHelperTestCase extends TestCase
     }
 
     /**
-     * @dataProvider atrProvider
      * @throws UnrecoverableException
      */
+    #[DataProvider('atrProvider')]
     public function testGetAtrID(string $filepath, array $expected): void
     {
         $xml = \simplexml_load_string(\file_get_contents($filepath));
@@ -52,9 +53,9 @@ abstract class SedaHelperTestCase extends TestCase
     }
 
     /**
-     * @dataProvider atrProviderOk
      * @throws UnrecoverableException
      */
+    #[DataProvider('atrProviderOk')]
     public function testGetSAEArchivalIdentifierFromAtr(string $filepath, array $expected): void
     {
         $xml = \simplexml_load_string(\file_get_contents($filepath));
@@ -65,9 +66,9 @@ abstract class SedaHelperTestCase extends TestCase
     }
 
     /**
-     * @dataProvider atrProvider
      * @throws UnrecoverableException
      */
+    #[DataProvider('atrProvider')]
     public function testGetComment(string $filepath, array $expected): void
     {
         $xml = \simplexml_load_string(\file_get_contents($filepath));
@@ -75,9 +76,9 @@ abstract class SedaHelperTestCase extends TestCase
     }
 
     /**
-     * @dataProvider ackProvider
      * @throws UnrecoverableException
      */
+    #[DataProvider('ackProvider')]
     public function testGetTransfertIdFromAck(string $filepath, array $expected): void
     {
         $xml = \simplexml_load_string(\file_get_contents($filepath));
@@ -85,9 +86,9 @@ abstract class SedaHelperTestCase extends TestCase
     }
 
     /**
-     * @dataProvider ackProvider
      * @throws UnrecoverableException
      */
+    #[DataProvider('ackProvider')]
     public function testGetAckID(string $filepath, array $expected): void
     {
         $xml = \simplexml_load_string(\file_get_contents($filepath));

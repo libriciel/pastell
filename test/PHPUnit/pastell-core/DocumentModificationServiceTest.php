@@ -138,8 +138,8 @@ class DocumentModificationServiceTest extends PastellTestCase
             'page' => 0
         ]), new FileUploader());
 
-        $documentActionEntite = $this->getObjectInstancier()->getInstance(DocumentActionEntite::class);
+        $documentActionEntiteSQL = $this->getObjectInstancier()->getInstance(DocumentActionEntiteSQL::class);
 
-        $this->assertCount(2, $documentActionEntite->getAction(1, $id_d));
+        $this->assertCount(2, $documentActionEntiteSQL->getActions(1, $id_d));
     }
 }

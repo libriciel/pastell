@@ -120,6 +120,20 @@ class DocumentType
         }
         return $result;
     }
+
+    public function getConnecteurInfo(string $connecteur_id, int $num_same_type): array
+    {
+        foreach ($this->getConnecteurAllInfo() as $connecteur_info) {
+            if (
+                $connecteur_info[self::CONNECTEUR_ID] === $connecteur_id
+                && $connecteur_info[self::NUM_SAME_TYPE] === $num_same_type
+            ) {
+                return $connecteur_info;
+            }
+        }
+        return [];
+    }
+
     /**
      * Crée un objet de type Formulaire
      * @return Formulaire

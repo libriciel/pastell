@@ -8,6 +8,7 @@ use Exception;
 use Pastell\Service\SimpleTwigRenderer;
 use Pastell\Service\SimpleTwigRenderer\SimpleTwigXpath;
 use Pastell\Service\SimpleTwigRenderer\SimpleTwigXpathCommon;
+use PHPUnit\Framework\Attributes\DataProvider;
 use UnrecoverableException;
 
 class SimpleTwigXpathTest extends \PastellTestCase
@@ -108,9 +109,9 @@ class SimpleTwigXpathTest extends \PastellTestCase
     }
 
     /**
-     * @dataProvider expressionProvider
      * @throws Exception
      */
+    #[DataProvider('expressionProvider')]
     public function testWithNamespaces(string $expression, string $expected): void
     {
         $form = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();

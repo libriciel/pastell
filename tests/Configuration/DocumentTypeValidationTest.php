@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Tests\Configuration;
 
 use Pastell\Configuration\DocumentTypeValidation;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class DocumentTypeValidationTest extends \PastellTestCase
 {
@@ -125,9 +126,7 @@ class DocumentTypeValidationTest extends \PastellTestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testValidationFailed(string $filePath, array $expectedError): void
     {
         $documentTypeValidation =

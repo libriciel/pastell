@@ -8,10 +8,9 @@ class StatutFactureCppCreateTest extends ExtensionCppTestCase
     /**
      * When the supplier cannot be found on chorus
      *
-     * @test
      * @throws Exception
      */
-    public function whenTheSupplierIsNotFound()
+    public function testWhenTheSupplierIsNotFound()
     {
         $cppWrapper = $this->getMockBuilder(CPPWrapper::class)
             ->disableOriginalConstructor()
@@ -49,10 +48,9 @@ class StatutFactureCppCreateTest extends ExtensionCppTestCase
     /**
      * When the invoice cannot be found on chorus
      *
-     * @test
      * @throws Exception
      */
-    public function whenTheInvoiceIsNotFound()
+    public function testWhenTheInvoiceIsNotFound()
     {
         $cppWrapper = $this->getMockBuilder(CPPWrapper::class)
             ->disableOriginalConstructor()
@@ -91,10 +89,9 @@ class StatutFactureCppCreateTest extends ExtensionCppTestCase
     /**
      * When creating a new status change request and everything happens correctly
      *
-     * @test
      * @throws Exception
      */
-    public function whenCreatingTheDocument()
+    public function testWhenCreatingTheDocument()
     {
         $cppWrapper = $this->getMockBuilder(CPPWrapper::class)
             ->disableOriginalConstructor()
@@ -130,10 +127,9 @@ class StatutFactureCppCreateTest extends ExtensionCppTestCase
     /**
      * When the status requested is unknown
      *
-     * @test
      * @throws Exception
      */
-    public function whenTheStatusIsUnknown()
+    public function testWhenTheStatusIsUnknown()
     {
         $cppWrapper = $this->getMockBuilder(CPPWrapper::class)
             ->disableOriginalConstructor()
@@ -171,10 +167,9 @@ class StatutFactureCppCreateTest extends ExtensionCppTestCase
     /**
      * When chorus sends more than one invoice with the same number for the same supplier (unlikely to happen)
      *
-     * @test
      * @throws Exception
      */
-    public function whenMultipleInvoicesAreFound()
+    public function testWhenMultipleInvoicesAreFound()
     {
         $cppWrapper = $this->getMockBuilder(CPPWrapper::class)
             ->disableOriginalConstructor()
@@ -213,10 +208,9 @@ class StatutFactureCppCreateTest extends ExtensionCppTestCase
     /**
      * When the file is not validated against the schema
      *
-     * @test
      * @throws Exception
      */
-    public function whenSchemaIsNotValidated()
+    public function testWhenSchemaIsNotValidated()
     {
         $this->createCppConnector(self::FLUX_STATUT_FACTURE_CPP);
         $document = $this->createDocument(self::FLUX_STATUT_FACTURE_CPP);
@@ -242,10 +236,9 @@ class StatutFactureCppCreateTest extends ExtensionCppTestCase
     /**
      * When the file is validated against the schema but doesn't use the expected element
      *
-     * @test
      * @throws Exception
      */
-    public function whenSchemaIsValidatedWithoutTheExpectedElement()
+    public function testWhenSchemaIsValidatedWithoutTheExpectedElement()
     {
         $this->createCppConnector(self::FLUX_STATUT_FACTURE_CPP);
         $document = $this->createDocument(self::FLUX_STATUT_FACTURE_CPP);

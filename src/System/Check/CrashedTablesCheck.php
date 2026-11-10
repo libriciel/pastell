@@ -4,18 +4,13 @@ namespace Pastell\System\Check;
 
 use Pastell\System\CheckInterface;
 use Pastell\System\HealthCheckItem;
-use TableCheck;
+use SQLQuery;
 
 class CrashedTablesCheck implements CheckInterface
 {
-    /**
-     * @var TableCheck
-     */
-    private $tableCheck;
-
-    public function __construct(TableCheck $tableCheck)
-    {
-        $this->tableCheck = $tableCheck;
+    public function __construct(
+        private readonly SQLQuery $sqlQuery,
+    ) {
     }
 
     public function check(): array
@@ -25,7 +20,7 @@ class CrashedTablesCheck implements CheckInterface
 
     private function checkCrashedTables(): HealthCheckItem
     {
-        $crashedTable = $this->tableCheck->getTablesMarkedAsCrashed();
+        $crashedTable = $this->sqlQuery->getTablesMarkedAsCrashed();
         $crashedTableResult = 'Aucune';
         $success = true;
         $details = [];

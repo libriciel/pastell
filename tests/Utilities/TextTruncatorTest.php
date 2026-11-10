@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Tests\Utilities;
 
 use Pastell\Utilities\TextTruncator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class TextTruncatorTest extends TestCase
@@ -16,9 +17,7 @@ class TextTruncatorTest extends TestCase
         yield ['👋aébècêdë', 12, '👋…dë'];
     }
 
-    /**
-     * @dataProvider truncateProvider
-     */
+    #[DataProvider('truncateProvider')]
     public function testTruncate(string $text, int $bytes, string $expectedResult): void
     {
         $textTruncated = TextTruncator::truncate($text, $bytes);

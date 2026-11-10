@@ -28,7 +28,7 @@ class MailsecEnvoyerTest extends PastellTestCase
             'rôle hérité de Bourg-en-Bresse: "test - toutes les collectivités"'
         );
 
-        $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
+        $documentEmailSQL = $this->getObjectInstancier()->getInstance(DocumentEmailSQL::class);
 
         $this->assertEqualsCanonicalizing(
             [
@@ -42,7 +42,7 @@ class MailsecEnvoyerTest extends PastellTestCase
                 '"poum" <poum@test.com>',
                 'foo@bar.com',
             ],
-            $documentEmail->getAllEmail($id_d)
+            $documentEmailSQL->getAllEmail($id_d)
         );
     }
 
@@ -140,7 +140,7 @@ class MailsecEnvoyerTest extends PastellTestCase
         $this->assertLastMessage(
             "Aucun connecteur de type mailsec n'est associé au type de dossier mailsec"
         );
-        $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
-        self::assertEmpty($documentEmail->getAllEmail($id_d));
+        $documentEmailSQL = $this->getObjectInstancier()->getInstance(DocumentEmailSQL::class);
+        self::assertEmpty($documentEmailSQL->getAllEmail($id_d));
     }
 }

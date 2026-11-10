@@ -70,8 +70,8 @@ class TdTRecupActe extends ConnecteurTypeActionExecutor
         $this->changeAction($acquiter_tdt, "L'acte a été acquitté par le contrôle de légalité");
 
         $infoDocument = $this->getDocument()->getInfo($this->id_d);
-        $documentActionEntite = $this->getDocumentActionEntite();
-        $infoUser = $documentActionEntite->getUserFromAction($this->id_e, $this->id_d, $send_tdt);
+        $documentActionEntiteSQL = $this->getDocumentActionEntiteSQL();
+        $infoUser = $documentActionEntiteSQL->getUserFromAction($this->id_e, $this->id_d, $send_tdt);
         $message = \sprintf(
             "L'acte « %s » télétransmis par %s %s a été acquitté par le contrôle de légalité",
             $infoDocument['titre'],

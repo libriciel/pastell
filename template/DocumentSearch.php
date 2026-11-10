@@ -15,7 +15,7 @@
  * @var string $tri
  * @var string $sens_tri
  * @var array $indexedFieldValue
- * @var DocumentActionEntite $documentActionEntite
+ * @var int $count
  * @var int $offset
  * @var int $limit
  * @var array $allDroitEntite
@@ -113,36 +113,6 @@ if ($type) {
 
 
 if ($go = 'go') {
-    $listDocument = $documentActionEntite->getListBySearch(
-        $id_e,
-        $type,
-        $offset,
-        $limit,
-        $search,
-        $lastEtat,
-        $last_state_begin_iso,
-        $last_state_end_iso,
-        $tri,
-        $allDroitEntite,
-        $etatTransit,
-        $state_begin_iso,
-        $state_end_iso,
-        $notEtatTransit
-    );
-    $count = $documentActionEntite->getNbDocumentBySearch(
-        $id_e,
-        $type,
-        $search,
-        $lastEtat,
-        $last_state_begin_iso,
-        $last_state_end_iso,
-        $allDroitEntite,
-        $etatTransit,
-        $state_begin_iso,
-        $state_end_iso,
-        $notEtatTransit,
-        $indexedFieldValue
-    );
     if ($count) {
         $this->suivantPrecedent($offset, $limit, $count, "Document/search?$url");
         $this->setViewParameter('url', $url);

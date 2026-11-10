@@ -4,10 +4,8 @@ class FastTdtRecupClassificationTest extends PastellTestCase
 {
     /**
      * When no new classification is available
-     *
-     * @test
      */
-    public function whenThereIsNoNewClassification()
+    public function testWhenThereIsNoNewClassification()
     {
         $webdavWrapper = $this->createMock(WebdavWrapper::class);
         $webdavWrapper->method('listFolder')->willReturn([]);
@@ -27,10 +25,8 @@ class FastTdtRecupClassificationTest extends PastellTestCase
 
     /**
      * When getting latest available classification file
-     *
-     * @test
      */
-    public function whenGettingLatestClassification()
+    public function testWhenGettingLatestClassification()
     {
         $webdavWrapper = $this->createMock(WebdavWrapper::class);
         $webdavWrapper
@@ -75,10 +71,8 @@ class FastTdtRecupClassificationTest extends PastellTestCase
 
     /**
      * When getting classification with a connector configures for PES
-     *
-     * @test
      */
-    public function whenTheConnectorIsNotConfiguredForActes()
+    public function testWhenTheConnectorIsNotConfiguredForActes()
     {
         $connector = $this->createConnector('fast-tdt', 'Fast TdT');
         $this->configureConnector($connector['id_ce'], [

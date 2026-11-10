@@ -5,7 +5,7 @@ class FournisseurCommandeAttente extends ActionExecutor
     public function go()
     {
 
-        $last_action = $this->getDocumentActionEntite()->getLastAction($this->id_e, $this->id_d);
+        $last_action = $this->getDocumentActionEntiteSQL()->getLastAction($this->id_e, $this->id_d);
 
         $message = "";
         if ($last_action == 'envoi-mail') {

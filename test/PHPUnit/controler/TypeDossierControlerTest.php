@@ -5,6 +5,7 @@ use Pastell\Service\TypeDossier\TypeDossierEditionService;
 use Pastell\Service\TypeDossier\TypeDossierExportService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\UtilisateurRoleCacheService;
 
 class TypeDossierControlerTest extends ControlerTestCase
 {
@@ -78,7 +79,7 @@ class TypeDossierControlerTest extends ControlerTestCase
 
         $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('cas-nominal', DroitType::LECTURE));
         $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('cas-nominal', DroitType::EDITION));
-        $this->getObjectInstancier()->getInstance(UtilisateurRoleCache::class)->invalidate(1, 1);
+        $this->getObjectInstancier()->getInstance(UtilisateurRoleCacheService::class)->invalidate(1, 1);
 
         $this->createDocument('cas-nominal');
 
@@ -274,7 +275,7 @@ class TypeDossierControlerTest extends ControlerTestCase
         $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('fluxstudio', DroitType::EDITION));
         $this->createDocument('fluxstudio');
         $docInfo = $this->getObjectInstancier()->getInstance(DocumentSQL::class)->getAllIdByType('fluxstudio');
-        $lastActionDoc = $this->getObjectInstancier()->getInstance(DocumentActionEntite::class)->getLastAction($docInfo[0]['id_e'], $docInfo[0]['id_d']);
+        $lastActionDoc = $this->getObjectInstancier()->getInstance(DocumentActionEntiteSQL::class)->getLastAction($docInfo[0]['id_e'], $docInfo[0]['id_d']);
         $this->assertEquals('creation', $lastActionDoc, '');
 
         $this->setPostInfo(['id_type_dossier' => 'fluxstudio']);
@@ -283,7 +284,7 @@ class TypeDossierControlerTest extends ControlerTestCase
         } catch (Exception $e) {
         }
 
-        $lastActionDoc = $this->getObjectInstancier()->getInstance(DocumentActionEntite::class)
+        $lastActionDoc = $this->getObjectInstancier()->getInstance(DocumentActionEntiteSQL::class)
             ->getLastAction($docInfo[0]['id_e'], $docInfo[0]['id_d']);
         $this->assertEquals('fatal-error', $lastActionDoc, '');
     }
@@ -354,7 +355,7 @@ class TypeDossierControlerTest extends ControlerTestCase
 
         static::assertSame(
             'creation',
-            $this->getObjectInstancier()->getInstance(DocumentActionEntite::class)
+            $this->getObjectInstancier()->getInstance(DocumentActionEntiteSQL::class)
                 ->getLastAction(self::ID_E_COL, $document['id_d']),
         );
     }

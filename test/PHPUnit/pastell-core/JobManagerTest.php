@@ -1,6 +1,10 @@
 <?php
 
 use Pastell\Configuration\JobStatus;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceActionType;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceData;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceService;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceType;
 
 class JobManagerTest extends PastellTestCase
 {
@@ -120,15 +124,13 @@ class JobManagerTest extends PastellTestCase
     public function testNoConnecteurFrequence()
     {
         $connecteurFrequenceSQL = $this->getObjectInstancier()->getInstance(ConnecteurFrequenceSQL::class);
-        foreach ($connecteurFrequenceSQL->getAll() as $connecteurFrequence) {
-            $connecteurFrequenceSQL->delete($connecteurFrequence->id_cf);
-        }
+        $connecteurFrequenceSQL->deleteAll();
         $info = $this->getInternalAPI()->post("Entite/1/Document", ['type' => 'test']);
         $id_d = $info['info']['id_d'];
         $this->jobManager->setTraitementLot(1, $id_d, 0, 'ok');
         $id_job = $this->jobQueueSQL->getJobIdForDocument(1, $id_d);
         $job = $this->jobQueueSQL->getJob($id_job);
-        $this->assertEquals($job->id_verrou, JobManager::DEFAULT_ID_VERROU);
+        $this->assertEquals($job->id_verrou, ConnecteurFrequenceService::DEFAULT_ID_VERROU);
     }
 
     public function testDocumentFrequence()
@@ -154,16 +156,17 @@ class JobManagerTest extends PastellTestCase
 
     public function testConnecteurTerminated()
     {
-        $connecteurFrequence = new ConnecteurFrequence();
-        $connecteurFrequence->type_connecteur = ConnecteurFrequence::TYPE_ENTITE;
-        $connecteurFrequence->famille_connecteur = 'test';
-        $connecteurFrequence->action_type = ConnecteurFrequence::TYPE_ACTION_DOCUMENT;
-        $connecteurFrequence->type_document = 'test';
-        $connecteurFrequence->action = 'never-ending-action';
-        $connecteurFrequence->id_verrou = 'TEST_FREQUENCE';
-        $connecteurFrequence->expression = "1 X 1";
-        $connecteurFrequenceSQL = $this->getObjectInstancier()->getInstance(ConnecteurFrequenceSQL::class);
-        $connecteurFrequenceSQL->edit($connecteurFrequence);
+        $this->getObjectInstancier()->getInstance(ConnecteurFrequenceService::class)->save(
+            new ConnecteurFrequenceData(
+                type_connecteur: ConnecteurFrequenceType::ENTITE->value,
+                famille_connecteur: 'test',
+                action_type: ConnecteurFrequenceActionType::DOCUMENT->value,
+                type_document: 'test',
+                action: 'never-ending-action',
+                expression: '1 X 1',
+                id_verrou: 'TEST_FREQUENCE',
+            )
+        );
 
         $info = $this->createDocument('test');
         $id_d = $info['info']['id_d'];
