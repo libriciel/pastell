@@ -6,6 +6,7 @@ use Pastell\Service\TypeDossier\TypeDossierExportService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Utilisateur\UtilisateurRoleCacheService;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class TypeDossierControlerTest extends ControlerTestCase
 {
@@ -369,9 +370,9 @@ class TypeDossierControlerTest extends ControlerTestCase
     }
 
     /**
-     * @dataProvider provideDeleteActionsWithFolder
      * @throws TypeDossierException
      */
+    #[DataProvider('provideDeleteActionsWithFolder')]
     public function testDeleteBlockedWithFolder(string $action): void
     {
         $type_dossier_id = 'test-42';
@@ -408,9 +409,9 @@ class TypeDossierControlerTest extends ControlerTestCase
     }
 
     /**
-     * @dataProvider provideEditionActionsWithFolder
      * @throws TypeDossierException
      */
+    #[DataProvider('provideEditionActionsWithFolder')]
     public function testEditionBlockedWithFolder(string $action): void
     {
         $type_dossier_id = 'test-42';
@@ -454,9 +455,9 @@ class TypeDossierControlerTest extends ControlerTestCase
     }
 
     /**
-     * @dataProvider provideActionsWithActiveFolder
      * @throws TypeDossierException
      */
+    #[DataProvider('provideActionsWithActiveFolder')]
     public function testBlockedWithActiveFolder(string $action): void
     {
         $type_dossier_id = 'test-42';

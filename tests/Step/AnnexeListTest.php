@@ -6,6 +6,7 @@ namespace Pastell\Tests\Step;
 
 use DonneesFormulaire;
 use Pastell\Step\AnnexeList;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class AnnexeListTest extends TestCase
@@ -35,10 +36,10 @@ class AnnexeListTest extends TestCase
     }
 
     /**
-     * @dataProvider mappingProvider
      * @param array<string, mixed> $mapping
      * @param string[] $expected
      */
+    #[DataProvider('mappingProvider')]
     public function testGetElements(array $mapping, array $expected): void
     {
         self::assertSame($expected, AnnexeList::getElements($mapping));
