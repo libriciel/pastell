@@ -76,10 +76,8 @@ class FastTdtTest extends PastellTestCase
 
     /**
      * When building the webdav url
-     *
-     * @test
      */
-    public function whenBuildingTheWebdavUrl()
+    public function testWhenBuildingTheWebdavUrl()
     {
         $connecteurConfig = $this->getDefaultConnecteurConfig();
 
@@ -103,12 +101,11 @@ class FastTdtTest extends PastellTestCase
     /**
      * When the connection is ok
      *
-     * @test
      * @param $url
      * @throws Exception
      */
     #[DataProvider('whenTestingConnectionProvider')]
-    public function whenConnectionIsOk($url)
+    public function testWhenConnectionIsOk($url)
     {
         $webdavWrapper = $this->createMock(WebdavWrapper::class);
         $webdavWrapper->method('isConnected')->willReturn(true);
@@ -135,10 +132,9 @@ class FastTdtTest extends PastellTestCase
     /**
      * When the connection is not ok
      *
-     * @test
      * @throws Exception
      */
-    public function whenConnectionIsNotOk()
+    public function testWhenConnectionIsNotOk()
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("Le serveur ne présente pas le header Dav");
@@ -197,10 +193,9 @@ class FastTdtTest extends PastellTestCase
     /**
      * When removing classification files from the server
      *
-     * @test
      * @throws Exception
      */
-    public function whenPurgingTheClassificationFiles()
+    public function testWhenPurgingTheClassificationFiles()
     {
         $connecteurConfig = $this->getDefaultConnecteurConfig();
 
@@ -240,10 +235,9 @@ class FastTdtTest extends PastellTestCase
     }
 
     /**
-     * @test
      * @throws Exception
      */
-    public function whenTryingToPurgeTheClassificationFiles()
+    public function testWhenTryingToPurgeTheClassificationFiles()
     {
         $this->expectException(FastTdtException::class);
         //phpcs:disable
@@ -422,14 +416,13 @@ class FastTdtTest extends PastellTestCase
     }
 
     /**
-     * @test
      * @param $expectedFilesInDirectory
      * @param $tdtReturnXmlContent
      * @param $expectedStatus
      * @throws ClientHttpException
      */
     #[DataProvider('whenGettingStatusProvider')]
-    public function whenGettingStatus($expectedFilesInDirectory, $tdtReturnXmlContent, $expectedStatus)
+    public function testWhenGettingStatus($expectedFilesInDirectory, $tdtReturnXmlContent, $expectedStatus)
     {
         $connecteurConfig = $this->getDefaultConnecteurConfig();
         $connecteurConfig->addFileFromCopy(
@@ -462,10 +455,9 @@ class FastTdtTest extends PastellTestCase
     }
 
     /**
-     * @test
      * @throws ClientHttpException|DonneesFormulaireException
      */
-    public function whenGettingStatusWithActeNumberWithHypen(): void
+    public function testWhenGettingStatusWithActeNumberWithHypen(): void
     {
         $connecteurConfig = $this->getDefaultConnecteurConfig();
         $connecteurConfig->addFileFromCopy(
@@ -499,10 +491,9 @@ class FastTdtTest extends PastellTestCase
     }
 
     /**
-     * @test
      * @throws ClientHttpException
      */
-    public function whenGettingStatusWithAnError()
+    public function testWhenGettingStatusWithAnError()
     {
         $connecteurConfig = $this->getDefaultConnecteurConfig();
         $connecteurConfig->addFileFromCopy(
@@ -610,10 +601,9 @@ class FastTdtTest extends PastellTestCase
     }
 
     /**
-     * @test
      * @throws DocapostParapheurSoapClientException
      */
-    public function whenDownloadingAcknowledgment()
+    public function testWhenDownloadingAcknowledgment()
     {
         $webdavWrapper = $this->createMock(WebdavWrapper::class);
         $soapClient = $this->createMock(SoapClient::class);
@@ -638,10 +628,9 @@ class FastTdtTest extends PastellTestCase
     }
 
     /**
-     * @test
      * @throws DocapostParapheurSoapClientException
      */
-    public function whenDownloadingAcknowledgmentException()
+    public function testWhenDownloadingAcknowledgmentException()
     {
         $this->expectException(DocapostParapheurSoapClientException::class);
         $this->expectExceptionMessage("Le PES Acquit n'a pas pu être téléchargé");
@@ -709,13 +698,12 @@ class FastTdtTest extends PastellTestCase
     }
 
     /**
-     * @test
      * @param $history
      * @param $expectedStatus
      * @throws DocapostParapheurSoapClientException
      */
     #[DataProvider('whenGettingHeliosStatusProvider')]
-    public function whenGettingHeliosStatus($history, $expectedStatus)
+    public function testWhenGettingHeliosStatus($history, $expectedStatus)
     {
         $webdavWrapper = $this->createMock(WebdavWrapper::class);
         $soapClient = $this->createMock(SoapClient::class);
@@ -744,10 +732,9 @@ class FastTdtTest extends PastellTestCase
     }
 
     /**
-     * @test
      * @throws DocapostParapheurSoapClientException
      */
-    public function whenGettingHeliosStatusException()
+    public function testWhenGettingHeliosStatusException()
     {
         $webdavWrapper = $this->createMock(WebdavWrapper::class);
         $soapClient = $this->createMock(SoapClient::class);
@@ -775,11 +762,10 @@ class FastTdtTest extends PastellTestCase
 
 
     /**
-     * @test
      * @throws ClientHttpException
      * @throws FastTdtException
      */
-    public function whenCancellingAnAct()
+    public function testWhenCancellingAnAct()
     {
         $connecteurConfig = $this->getDefaultConnecteurConfig();
 
