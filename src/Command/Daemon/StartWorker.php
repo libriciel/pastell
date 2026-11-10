@@ -13,11 +13,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:daemon:start-worker',
+    name: self::NAME,
     description: 'Starts a worker and execute a job'
 )]
 final class StartWorker extends Command
 {
+    public const string NAME = 'app:daemon:start-worker';
     private const JOB = 'job';
     private PastellDaemon $daemon;
 

@@ -24,7 +24,7 @@ class WorkerSQLTest extends PastellTestCase
 
     public function testCreate(): void
     {
-        static::assertNotNull($this->workerSQL->create(42));
+        self::assertGreaterThan(0, $this->workerSQL->create(42));
     }
 
     public function testGetInfo(): void
@@ -127,11 +127,18 @@ class WorkerSQLTest extends PastellTestCase
         static::assertSame(1, $this->workerSQL->getNbActif());
     }
 
-    public function testNbActifIgnoresOrphan(): void
+    public function testNbActifCountsOrphan(): void
     {
         $this->launchWorker();
         $this->workerSQL->create(43);
-        static::assertSame(1, $this->workerSQL->getNbActif());
+        self::assertSame(2, $this->workerSQL->getNbActif());
+    }
+
+    public function testCreateWithJob(): void
+    {
+        $id_worker = $this->workerSQL->create(42, 12);
+        $worker = $this->workerSQL->getRunningWorker(12);
+        self::assertSame($id_worker, $worker->id_worker);
     }
 
     /**
@@ -140,13 +147,31 @@ class WorkerSQLTest extends PastellTestCase
     public function testGetOrphanRunningWorkers(): void
     {
         $this->launchWorker();
-        $id_worker = $this->workerSQL->create(43);
-        $this->workerSQL->attachJob($id_worker, 12);
+        $id_worker = $this->workerSQL->create(43, 12);
 
         $workers = $this->workerSQL->getOrphanRunningWorkers();
 
-        static::assertCount(1, $workers);
-        static::assertSame((int)$id_worker, $workers[0]->id_worker);
+        self::assertCount(1, $workers);
+        self::assertSame($id_worker, $workers[0]->id_worker);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testDeleteFinishedOrphanWorkers(): void
+    {
+        $id_job = (int)$this->createJob();
+        $id_worker_finished = $this->workerSQL->create(42, $id_job);
+        $this->workerSQL->error($id_worker_finished, 'error');
+        $id_worker_orphan_running = $this->workerSQL->create(43, 12);
+        $id_worker_orphan_finished = $this->workerSQL->create(44, 12);
+        $this->workerSQL->error($id_worker_orphan_finished, 'error');
+
+        $this->workerSQL->deleteFinishedOrphanWorkers();
+
+        self::assertNotNull($this->workerSQL->getWorker($id_worker_finished));
+        self::assertNotNull($this->workerSQL->getWorker($id_worker_orphan_running));
+        self::assertNull($this->workerSQL->getWorker($id_worker_orphan_finished));
     }
 
     public function testGetNbActifForDameon(): void

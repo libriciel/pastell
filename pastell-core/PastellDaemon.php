@@ -1,13 +1,13 @@
 <?php
 
 use Monolog\Logger;
+use Pastell\Command\Daemon\StartWorker;
 use Pastell\Configuration\JobStatus;
 use Symfony\Component\Process\Process;
 
 class PastellDaemon
 {
-    private const string WORKER_COMMAND = 'app:daemon:start-worker';
-    private const int ORPHAN_CLEANING_PERIOD = 60;
+    private const int ORPHAN_CLEANING_PERIOD_IN_SECONDS = 60;
 
     public function __construct(
         private readonly WorkerSQL $workerSQL,
@@ -30,18 +30,16 @@ class PastellDaemon
         // terminés correctement suite à un arrêt brutal du serveur
         // (ex: restart apache sans avoir arrêté le daemon avec des worker actifs). (r1992)
         if ($this->unlock_job_error_at_startup) {
-            $this->removeDeadWorkers(
-                $this->workerSQL->getAllRunningWorker(),
-                'Daemon detects and cleans a worker that did not end correctly'
-            );
+            $running_workers = $this->workerSQL->getAllRunningWorker();
+            $this->removeDeadWorkers($running_workers, 'Daemon detects and cleans a worker that did not end correctly');
         }
 
-        $loop_count = 0;
+        $next_orphan_cleaning = 0;
         while (true) {
-            if ($loop_count === 0) {
+            if (time() >= $next_orphan_cleaning) {
                 $this->cleanDeadOrphanWorkers();
+                $next_orphan_cleaning = time() + self::ORPHAN_CLEANING_PERIOD_IN_SECONDS;
             }
-            $loop_count = ($loop_count + 1) % self::ORPHAN_CLEANING_PERIOD;
             foreach ($this->daemonSQL->getRunningDaemons() as $daemon) {
                 $this->jobMasterOneRun($daemon);
             }
@@ -53,10 +51,9 @@ class PastellDaemon
 
     public function cleanDeadOrphanWorkers(): void
     {
-        $this->removeDeadWorkers(
-            $this->workerSQL->getOrphanRunningWorkers(),
-            'Daemon detects and cleans a dead worker whose job no longer exists'
-        );
+        $orphan_workers = $this->workerSQL->getOrphanRunningWorkers();
+        $this->removeDeadWorkers($orphan_workers, 'Daemon detects and cleans a dead worker whose job no longer exists');
+        $this->workerSQL->deleteFinishedOrphanWorkers();
     }
 
     private function removeDeadWorkers(array $worker_list, string $log_message): void
@@ -69,19 +66,26 @@ class PastellDaemon
         }
     }
 
-    /**
-     * The command line is checked because the PID of a dead worker can be reused by another process.
-     */
     private function isWorkerAlive(WorkerObject $workerObject): bool
     {
         if (! posix_getpgid($workerObject->pid)) {
             return false;
         }
+        // The PID of a dead worker can be reused by another process
         $command_line = @file_get_contents("/proc/$workerObject->pid/cmdline");
         if ($command_line === false || $command_line === '') {
             return true;
         }
-        return str_contains($command_line, self::WORKER_COMMAND . "\0$workerObject->id_job\0");
+        $arguments = explode("\0", $command_line);
+        $command_position = array_search(StartWorker::NAME, $arguments, true);
+        if ($command_position === false) {
+            return false;
+        }
+        if ($workerObject->id_job === 0) {
+            return true;
+        }
+        $worker_arguments = array_slice($arguments, $command_position + 1);
+        return in_array((string) $workerObject->id_job, $worker_arguments, true);
     }
 
     /**
@@ -139,7 +143,7 @@ class PastellDaemon
             \sprintf(
                 'nohup %s %s %s > /dev/null 2>&1 &',
                 PHP_PATH,
-                $this->pastell_path . '/bin/console ' . self::WORKER_COMMAND,
+                $this->pastell_path . '/bin/console ' . StartWorker::NAME,
                 $job->id_job
             )
         );
@@ -198,8 +202,8 @@ class PastellDaemon
         }
 
         $pid = getmypid();
-        $id_worker = $workerSQL->create($pid);
-        $workerSQL->attachJob($id_worker, $id_job);
+        // Single insert: a worker row without its job would be seen as an orphan by the daemon
+        $id_worker = $workerSQL->create($pid, (int) $id_job);
         $this->jobQueueSQL->unlock($id_job);
 
         if ($job->type === Job::TYPE_DOCUMENT) {
@@ -251,6 +255,7 @@ class PastellDaemon
     {
         $this->logger->info('SIGTERM caught !');
         while (true) {
+            $this->cleanDeadOrphanWorkers();
             $nb_running = count($this->workerSQL->getAllRunningWorker());
             if ($nb_running === 0) {
                 $this->logger->info('No more running worker : exited');

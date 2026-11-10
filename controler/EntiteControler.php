@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Configuration\JobStatus;
+use Pastell\Model\Daemon\JobAdvancedFilters;
 use Pastell\Service\Crypto;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitType;
@@ -914,10 +915,12 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('job_status_waiting', JobStatus::WAITING->value);
         $this->setViewParameter('sub_title', 'Liste des prochains travaux');
         $this->setViewParameter('return_url', "Entite/daemon?id_e=$daemon->id_e");
-        $this->setViewParameter(
-            'job_list',
-            $this->getJobQueueSQL()->getFilteredJobList(id_daemon: $daemon->id_daemon)
+        $waitingJobFilters = JobAdvancedFilters::waitingJobs();
+        $job_list = $this->getJobQueueSQL()->getFilteredJobList(
+            id_daemon: $daemon->id_daemon,
+            advancedFilters: $waitingJobFilters
         );
+        $this->setViewParameter('job_list', $job_list);
         $this->setViewParameter('daemon', $daemon);
     }
 

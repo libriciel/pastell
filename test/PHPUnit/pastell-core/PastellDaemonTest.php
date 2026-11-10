@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
+use Pastell\Command\Daemon\StartWorker;
 use Symfony\Component\Process\Process;
 
 final class PastellDaemonTest extends PastellTestCase
 {
     private const int DEAD_PID = 999999999;
     private const int ID_JOB = 12;
+    private const int PROCESS_START_TIMEOUT_IN_SECONDS = 5;
 
     private WorkerSQL $workerSQL;
     private PastellDaemon $pastellDaemon;
@@ -21,8 +23,7 @@ final class PastellDaemonTest extends PastellTestCase
 
     public function testCleanDeadOrphanWorker(): void
     {
-        $id_worker = $this->workerSQL->create(self::DEAD_PID);
-        $this->workerSQL->attachJob($id_worker, self::ID_JOB);
+        $id_worker = $this->workerSQL->create(self::DEAD_PID, self::ID_JOB);
 
         $this->pastellDaemon->cleanDeadOrphanWorkers();
 
@@ -31,8 +32,17 @@ final class PastellDaemonTest extends PastellTestCase
 
     public function testCleanRecycledPidWorker(): void
     {
-        $id_worker = $this->workerSQL->create(getmypid());
-        $this->workerSQL->attachJob($id_worker, self::ID_JOB);
+        $id_worker = $this->workerSQL->create(getmypid(), self::ID_JOB);
+
+        $this->pastellDaemon->cleanDeadOrphanWorkers();
+
+        self::assertNull($this->workerSQL->getWorker($id_worker));
+    }
+
+    public function testCleanFinishedOrphanWorker(): void
+    {
+        $id_worker = $this->workerSQL->create(self::DEAD_PID, self::ID_JOB);
+        $this->workerSQL->error($id_worker, 'error');
 
         $this->pastellDaemon->cleanDeadOrphanWorkers();
 
@@ -41,21 +51,63 @@ final class PastellDaemonTest extends PastellTestCase
 
     public function testKeepAliveOrphanWorker(): void
     {
-        $process = new Process(
-            [PHP_BINARY, '-r', 'sleep(60);', 'app:daemon:start-worker', (string)self::ID_JOB]
-        );
+        self::assertTrue($this->isKeptAfterCleaning([(string)self::ID_JOB]));
+    }
+
+    public function testKeepWorkerWithOptions(): void
+    {
+        self::assertTrue($this->isKeptAfterCleaning(['--env=prod', (string)self::ID_JOB, '-vvv']));
+    }
+
+    public function testCleanOtherJobWorker(): void
+    {
+        self::assertFalse($this->isKeptAfterCleaning([(string)(self::ID_JOB + 1)]));
+    }
+
+    public function testKeepStartingWorker(): void
+    {
+        $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
+        $job = new Job();
+        $job->type = Job::TYPE_CONNECTEUR;
+        $job->id_ce = 1;
+        $job->etat_source = 'source';
+        $job->etat_cible = 'target';
+        $id_job = (int)$jobQueueSQL->createJob($job);
+        $id_worker = $this->workerSQL->create(self::DEAD_PID, $id_job);
+
+        $this->pastellDaemon->cleanDeadOrphanWorkers();
+
+        self::assertNotNull($this->workerSQL->getWorker($id_worker));
+    }
+
+    private function isPhpStarted(int $pid): bool
+    {
+        $command_line = (string)@file_get_contents("/proc/$pid/cmdline");
+        return str_starts_with($command_line, PHP_BINARY . "\0");
+    }
+
+    /**
+     * @param string[] $worker_arguments
+     */
+    private function isKeptAfterCleaning(array $worker_arguments): bool
+    {
+        $command = [PHP_BINARY, '-r', 'sleep(60);', '--', StartWorker::NAME, ...$worker_arguments];
+        $process = new Process($command);
         $process->start();
         try {
-            $pid = $process->getPid();
-            $process->waitUntil(
-                static fn (): bool => str_starts_with((string)file_get_contents("/proc/$pid/cmdline"), PHP_BINARY . "\0")
-            );
-            $id_worker = $this->workerSQL->create($pid);
-            $this->workerSQL->attachJob($id_worker, self::ID_JOB);
+            $pid = (int)$process->getPid();
+            $deadline = microtime(true) + self::PROCESS_START_TIMEOUT_IN_SECONDS;
+            while (! $this->isPhpStarted($pid)) {
+                if (! $process->isRunning() || microtime(true) > $deadline) {
+                    self::fail('The fake worker process did not start');
+                }
+                usleep(1000);
+            }
+            $id_worker = $this->workerSQL->create($pid, self::ID_JOB);
 
             $this->pastellDaemon->cleanDeadOrphanWorkers();
 
-            self::assertNotNull($this->workerSQL->getWorker($id_worker));
+            return $this->workerSQL->getWorker($id_worker) !== null;
         } finally {
             $process->stop(0);
         }

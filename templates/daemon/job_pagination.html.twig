@@ -15,7 +15,7 @@
     'id_verrou': search.id_verrou,
     'late': search.late,
     'since_one_hour': search.since_one_hour,
-    'since_one_hour_before': search.since_one_hour_before
+    'search_date': search.search_date
 } : {})
     |merge(id_e is defined ? {'id_e': id_e} : {})
     |merge(filtre|default('') ? {'filtre': filtre} : {}) %}

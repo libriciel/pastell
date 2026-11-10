@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceData;
 use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceService;
 use Pastell\Configuration\JobStatus;
+use Pastell\Model\Daemon\JobAdvancedFilters;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Menu\MenuGaucheService;
@@ -94,7 +95,9 @@ class DaemonControler extends PastellControler
         $this->setViewParameter('job_status_waiting', JobStatus::WAITING->value);
         $this->setViewParameter('sub_title', 'Liste des prochains travaux');
         $this->setViewParameter('return_url', 'Daemon/index');
-        $this->setViewParameter('job_list', $this->getJobQueueSQL()->getFilteredJobList());
+        $waitingJobFilters = JobAdvancedFilters::waitingJobs();
+        $job_list = $this->getJobQueueSQL()->getFilteredJobList(advancedFilters: $waitingJobFilters);
+        $this->setViewParameter('job_list', $job_list);
     }
 
     /**

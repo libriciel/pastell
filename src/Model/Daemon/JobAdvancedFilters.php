@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pastell\Model\Daemon;
 
+use Pastell\Configuration\JobStatus;
 use Recuperateur;
 
 final readonly class JobAdvancedFilters
@@ -20,9 +21,8 @@ final readonly class JobAdvancedFilters
         public string $include_children = '',
         public array $id_verrou = [],
         public string $late = '',
-        public string $late_before = '',
         public string $since_one_hour = '',
-        public string $since_one_hour_before = '',
+        public string $search_date = '',
     ) {
     }
 
@@ -35,20 +35,22 @@ final readonly class JobAdvancedFilters
             include_children: self::toScalarString($recuperateur->get('include_children', '')),
             id_verrou: (array)$recuperateur->get('id_verrou', []),
             late: self::toScalarString($recuperateur->get('late', '')),
-            late_before: self::toDateString($recuperateur->get('late_before', '')),
             since_one_hour: self::toScalarString($recuperateur->get('since_one_hour', '')),
-            since_one_hour_before: self::toDateString($recuperateur->get('since_one_hour_before', '')),
+            search_date: self::toDateString($recuperateur->get('search_date', '')),
         );
     }
 
-    public function withLateBefore(string $late_before): self
+    public static function waitingJobs(): self
     {
-        return new self(...[...get_object_vars($this), 'late_before' => $late_before]);
+        return new self(job_status: [(string)JobStatus::WAITING->value]);
     }
 
-    public function withSinceOneHourBefore(string $since_one_hour_before): self
+    public function withSearchDate(string $now): self
     {
-        return new self(...[...get_object_vars($this), 'since_one_hour_before' => $since_one_hour_before]);
+        if ($this->search_date !== '') {
+            return $this;
+        }
+        return new self(...[...get_object_vars($this), 'search_date' => $now]);
     }
 
     private static function toDateString(mixed $value): string

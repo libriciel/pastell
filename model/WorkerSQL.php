@@ -18,11 +18,13 @@ class WorkerSQL extends SQL
         );
     }
 
-    public function create($pid)
+    public function create(int $pid, int $id_job = 0): int
     {
-        $sql = "INSERT INTO worker (pid,date_begin) VALUES (?,?)";
-        $this->query($sql, $pid, $this->getNow());
-        return $this->lastInsertId();
+        $sql = <<<SQL
+INSERT INTO worker (pid, date_begin, id_job) VALUES (?, ?, ?)
+SQL;
+        $this->query($sql, $pid, $this->getNow(), $id_job);
+        return (int) $this->lastInsertId();
     }
 
     public function getWorker($id_worker): ?WorkerObject
@@ -92,6 +94,17 @@ SQL;
             $result[] = $this->mapToWorkerObject($worker_info);
         }
         return $result;
+    }
+
+    public function deleteFinishedOrphanWorkers(): void
+    {
+        $sql = <<<SQL
+DELETE worker
+FROM worker
+LEFT JOIN job_queue ON job_queue.id_job = worker.id_job
+WHERE worker.termine = 1 AND job_queue.id_job IS NULL
+SQL;
+        $this->query($sql);
     }
 
     /**
@@ -173,10 +186,7 @@ SQL;
     public function getNbActif(): int
     {
         $sql = <<<SQL
-SELECT count(*)
-FROM worker
-JOIN job_queue ON job_queue.id_job = worker.id_job
-WHERE worker.termine = 0
+SELECT count(*) FROM worker WHERE termine = 0
 SQL;
         return $this->queryOne($sql);
     }
