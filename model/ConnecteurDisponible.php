@@ -4,6 +4,9 @@ use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Entite\EntityUtilitiesService;
 
+/**
+ * @deprecated 4.1.26 Use ConnecteurAvailabilityService instead
+ */
 class ConnecteurDisponible
 {
     public function __construct(

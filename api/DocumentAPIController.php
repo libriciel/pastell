@@ -4,6 +4,8 @@ use Pastell\File\Chunk\ChunkRequest;
 use Pastell\File\Chunk\ChunkUploader;
 use Pastell\Service\Document\DocumentDeletionService;
 use Pastell\Service\Document\DocumentRoleService;
+use Pastell\Service\Document\DocumentSearchCriteria;
+use Pastell\Service\Document\DocumentSearchService;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Document\DocumentEmailService;
@@ -12,7 +14,8 @@ use Pastell\Service\Journal\JournalEntryService;
 class DocumentAPIController extends BaseAPIController
 {
     public function __construct(
-        private DocumentActionEntite $documentActionEntite,
+        private DocumentActionEntiteSQL $documentActionEntiteSQL,
+        private DocumentSearchService $documentSearchService,
         private DocumentSQL $document,
         private DonneesFormulaireFactory $donneesFormulaireFactory,
         private ActionPossible $actionPossible,
@@ -26,7 +29,7 @@ class DocumentAPIController extends BaseAPIController
         private DocumentCreationService $documentCreationService,
         private DocumentModificationService $documentModificationService,
         private DocumentDeletionService $documentDeletionService,
-        private DocumentEmail $documentEmail,
+        private readonly DocumentEmailSQL $documentEmailSQL,
         private DocumentEmailReponseSQL $documentEmailReponseSQL,
         private DocumentEmailService $documentEmailService,
         private readonly ChunkUploader $chunkUploader,
@@ -112,23 +115,25 @@ class DocumentAPIController extends BaseAPIController
             }
         }
 
-        $documents = $this->documentActionEntite->getListBySearch(
-            $id_e,
-            $type,
+        $documents = $this->documentSearchService->search(
+            new DocumentSearchCriteria(
+                allowed_types: $allDroitEntite,
+                id_e: (int) $id_e,
+                type: $type,
+                search: $search,
+                last_actions: $lastEtat ? explode(',', $lastEtat) : [],
+                last_action_begin: $last_state_begin,
+                last_action_end: $last_state_end,
+                transit_action: $etatTransit,
+                transit_begin: $state_begin,
+                transit_end: $state_end,
+                not_transit_action: $notEtatTransit,
+                index_values: $indexedFieldValue,
+            ),
             $offset,
             $limit,
-            $search,
-            $lastEtat,
-            $last_state_begin,
-            $last_state_end,
-            $tri,
-            $allDroitEntite,
-            $etatTransit,
-            $state_begin,
-            $state_end,
-            $notEtatTransit,
-            $indexedFieldValue,
-            $sens_tri
+            (string) $tri,
+            (string) $sens_tri
         );
 
         foreach ($documents as &$document) {
@@ -204,7 +209,7 @@ class DocumentAPIController extends BaseAPIController
 
         $result['data'] = $donneesFormulaire->getRawDataWithoutPassword();
 
-        $email_info_list = $this->documentEmail->getInfo($id_d);
+        $email_info_list = $this->documentEmailSQL->getAllByDocument($id_d);
 
         foreach ($email_info_list as $num_mail => $email_info) {
             unset($email_info['key']);
@@ -222,7 +227,7 @@ class DocumentAPIController extends BaseAPIController
         /* Ne doit jamais être utilisé en V2 */
         $result['action-possible'] = $result['action_possible'];
 
-        $result['last_action'] = $this->documentActionEntite->getLastActionInfo($id_e, $id_d);
+        $result['last_action'] = $this->documentActionEntiteSQL->getLastActionInfo($id_e, $id_d) ?? false;
 
         return $result;
     }

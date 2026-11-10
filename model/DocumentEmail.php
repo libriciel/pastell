@@ -3,6 +3,9 @@
 use Pastell\Mailer\Mailer;
 use Pastell\Service\Journal\JournalEntryService;
 
+/**
+ * @deprecated 4.1.26 Use DocumentEmailSQL, DocumentEmailService and DocumentEmailReadService instead
+ */
 class DocumentEmail extends SQL
 {
     public const DESTINATAIRE = 'to';
@@ -18,7 +21,7 @@ class DocumentEmail extends SQL
         private readonly SQLQuery $sqlQuery,
         private readonly JournalEntryService $journalEntryService,
         private readonly NotificationMail $notificationMail,
-        private readonly DocumentActionEntite $documentActionEntite,
+        private readonly DocumentActionEntiteSQL $documentActionEntiteSQL,
         private readonly ActionChange $actionChange,
         private readonly string $site_base,
     ) {
@@ -83,7 +86,7 @@ class DocumentEmail extends SQL
         $sql = "SELECT id_e FROM document_entite WHERE id_d=?";
         $id_e = $this->queryOne($sql, $info['id_d']);
 
-        $action = $this->documentActionEntite->getLastAction($id_e, $info['id_d']);
+        $action = $this->documentActionEntiteSQL->getLastAction($id_e, $info['id_d']);
         $next_action = 'erreur';
         if ($action === $next_action) {
             return;
@@ -130,7 +133,7 @@ class DocumentEmail extends SQL
             $message_action = 'Un destinataire a consulté le message';
         }
 
-        $action = $this->documentActionEntite->getLastAction($id_e, $result['id_d']);
+        $action = $this->documentActionEntiteSQL->getLastAction($id_e, $result['id_d']);
 
         if ($action !== $next_action) {
             $this->actionChange->addAction($result['id_d'], $id_e, 0, $next_action, $message_action);
@@ -164,8 +167,8 @@ class DocumentEmail extends SQL
     public function updateRenvoi($id_de): void
     {
         $sql = <<<SQL
-UPDATE document_email 
-SET date_renvoi = ?, nb_renvoi=nb_renvoi+1 
+UPDATE document_email
+SET date_renvoi = ?, nb_renvoi=nb_renvoi+1
 WHERE id_de = ?
 SQL;
         $this->query($sql, $this->getNow(), $id_de);

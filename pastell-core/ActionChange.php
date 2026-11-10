@@ -8,7 +8,7 @@ final readonly class ActionChange
 {
     public function __construct(
         private DocumentActionSQL $documentActionSQL,
-        private DocumentActionEntite $documentActionEntite,
+        private DocumentActionEntiteSQL $documentActionEntiteSQL,
         private JournalEntryService $journalEntryService,
     ) {
     }
@@ -24,7 +24,7 @@ final readonly class ActionChange
             $action,
             $message_journal
         );
-        $this->documentActionEntite->add($id_a, $id_e, $id_j);
+        $this->documentActionEntiteSQL->add($id_a, $id_e, $id_j);
     }
 
     public function addOrUpdateAction(

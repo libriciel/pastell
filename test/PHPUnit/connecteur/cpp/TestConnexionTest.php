@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class TestConnexionTest extends ExtensionCppTestCase
 {
     use CurlUtilitiesTestTrait;
@@ -58,9 +60,9 @@ class TestConnexionTest extends ExtensionCppTestCase
     }
 
     /**
-     * @dataProvider getConnexionProvider
      * @throws Exception
      */
+    #[DataProvider('getConnexionProvider')]
     public function testTestConnexion(
         string $url_piste_get_token,
         string $client_id,

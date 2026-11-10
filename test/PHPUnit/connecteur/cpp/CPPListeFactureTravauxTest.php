@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class CPPListeFactureTravauxTest extends ExtensionCppTestCase
 {
     public static function getFactureTravauxProvider(): array
@@ -32,9 +34,9 @@ class CPPListeFactureTravauxTest extends ExtensionCppTestCase
 
 
     /**
-     * @dataProvider getFactureTravauxProvider
      * @throws Exception
      */
+    #[DataProvider('getFactureTravauxProvider')]
     public function testCPPListeFactureTravaux(string $userRole, string $expectedLastMessage): void
     {
         $cppWrapper = $this->getMockBuilder(CPPWrapper::class)

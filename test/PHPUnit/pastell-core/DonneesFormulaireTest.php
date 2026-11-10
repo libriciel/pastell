@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class DonneesFormulaireTest extends PastellTestCase
 {
     /**
@@ -13,8 +15,8 @@ class DonneesFormulaireTest extends PastellTestCase
 
     /**
      * @throws Exception
-     * @dataProvider getPassword
      */
+    #[DataProvider('getPassword')]
     public function testPassword(string $password)
     {
         $recuperateur = new Recuperateur(['password' => $password]);
@@ -60,9 +62,9 @@ class DonneesFormulaireTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider getProvider
      * @throws NotFoundException
      */
+    #[DataProvider('getProvider')]
     public function testGet(string $field, mixed $value, mixed $expected): void
     {
         $form = $this->getDonneesFormulaireFactory()->get('id_d', 'test');
@@ -352,9 +354,9 @@ class DonneesFormulaireTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider copyFileProvider
      * @throws Exception
      */
+    #[DataProvider('copyFileProvider')]
     public function testCopyFile($filename)
     {
         $tmpFolder = new TmpFolder();
@@ -380,9 +382,9 @@ class DonneesFormulaireTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider copyAllFilesProvider
      * @throws Exception
      */
+    #[DataProvider('copyAllFilesProvider')]
     public function testCopyAllFilesWrongFieldName(array $filenames): void
     {
         $tmpFolder = new TmpFolder();
@@ -400,9 +402,9 @@ class DonneesFormulaireTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider copyAllFilesProvider
      * @throws Exception
      */
+    #[DataProvider('copyAllFilesProvider')]
     public function testCopyAllFiles(array $filenames): void
     {
         $tmpFolder = new TmpFolder();
@@ -430,9 +432,9 @@ class DonneesFormulaireTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider copyAllFilesProviderWithNewFileName
      * @throws Exception
      */
+    #[DataProvider('copyAllFilesProviderWithNewFileName')]
     public function testCopyAllFilesNewFileName(array $filenames, string $newFileName): void
     {
         $tmpFolder = new TmpFolder();
@@ -758,8 +760,8 @@ class DonneesFormulaireTest extends PastellTestCase
      * @param bool $expected_validation
      * @param array $files_list
      * @throws Exception
-     * @dataProvider contentTypeProvider
      */
+    #[DataProvider('contentTypeProvider')]
     public function testContentType(bool $expected_validation, array $files_list)
     {
         $donneesFormulaire = $this->getCustomDonneesFormulaire(__DIR__ . '/fixtures/definition-with-content-type.yml');

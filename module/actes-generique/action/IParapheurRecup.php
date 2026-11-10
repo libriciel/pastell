@@ -113,7 +113,7 @@ class IParapheurRecup extends ActionExecutor
     public function throwError(SignatureConnecteur $signature, $message)
     {
         $nb_jour_max = $signature->getNbJourMaxInConnecteur();
-        $lastAction = $this->getDocumentActionEntite()->getLastActionInfo($this->id_e, $this->id_d);
+        $lastAction = $this->getDocumentActionEntiteSQL()->getLastActionInfo($this->id_e, $this->id_d);
         $time_action = strtotime($lastAction['date']);
 
         if (time() - $time_action > $nb_jour_max * 86400) {
@@ -178,7 +178,7 @@ class IParapheurRecup extends ActionExecutor
             return true;
         }
         $nb_jour_max = $signature->getNbJourMaxInConnecteur();
-        $lastAction = $this->getDocumentActionEntite()->getLastActionInfo($this->id_e, $this->id_d);
+        $lastAction = $this->getDocumentActionEntiteSQL()->getLastActionInfo($this->id_e, $this->id_d);
         $time_action = strtotime($lastAction['date']);
         if (time() - $time_action > $nb_jour_max * 86400) {
             $erreur = "Aucune réponse disponible sur le parapheur depuis $nb_jour_max jours !";
@@ -224,7 +224,7 @@ class IParapheurRecup extends ActionExecutor
         }
 
         $nb_jour_max = $signature->getNbJourMaxInConnecteur();
-        $lastAction = $this->getDocumentActionEntite()->getLastActionInfo($this->id_e, $this->id_d);
+        $lastAction = $this->getDocumentActionEntiteSQL()->getLastActionInfo($this->id_e, $this->id_d);
         $time_action = strtotime($lastAction['date']);
         if (time() - $time_action > $nb_jour_max * 86400) {
             $error = "Aucune réponse disponible sur le parapheur depuis $nb_jour_max jours !";

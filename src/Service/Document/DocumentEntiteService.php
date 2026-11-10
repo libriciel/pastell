@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Pastell\Service\Document;
 
+use DocumentActionEntiteSQL;
 use DocumentEntiteSQL;
 
 final class DocumentEntiteService
 {
     public function __construct(
         private readonly DocumentEntiteSQL $documentEntiteSQL,
+        private readonly DocumentActionEntiteSQL $documentActionEntiteSQL,
     ) {
     }
 
@@ -56,12 +58,55 @@ final class DocumentEntiteService
 
     public function getDocumentsWithLastActionOlderThan(int $nb_days, ?string $type, ?int $id_e): array
     {
-        $date = date('Y-m-d', strtotime("-$nb_days days"));
-        return $this->documentEntiteSQL->getDocumentsWithLastActionUntil($date, $type, $id_e);
+        return $this->documentEntiteSQL->getDocumentsWithLastActionUntil($this->getDateDaysAgo($nb_days), $type, $id_e);
     }
 
     public function updateLastAction(int $id_e, string $id_d, string $action, string $date): void
     {
         $this->documentEntiteSQL->updateLastAction($id_e, $id_d, $action, $date);
+    }
+
+    public function getCurrentAction(int $id_e, string $id_d): ?string
+    {
+        return $this->documentEntiteSQL->getLastAction($id_e, $id_d);
+    }
+
+    public function getInfo(int $id_e, string $id_d): ?array
+    {
+        $document_info = $this->documentEntiteSQL->getInfo($id_e, $id_d);
+        if ($document_info !== null) {
+            $document_info['last_action_display'] = $this->documentActionEntiteSQL->getLastActionByDate($id_e, $id_d);
+        }
+        return $document_info;
+    }
+
+    public function getDocumentsByLastAction(int $id_e, string $type, string $last_action): array
+    {
+        return $this->documentEntiteSQL->getDocumentsByLastAction($id_e, $type, $last_action);
+    }
+
+    public function getDocumentsByLastActionOlderThan(int $id_e, string $type, string $last_action, int $nb_days): array
+    {
+        return $this->documentEntiteSQL->getDocumentsByLastActionUntil(
+            $id_e,
+            $type,
+            $last_action,
+            $this->getDateDaysAgo($nb_days)
+        );
+    }
+
+    public function getDocumentsThroughActionOlderThan(int $id_e, string $type, string $action, int $nb_days): array
+    {
+        return $this->documentEntiteSQL->getDocumentsThroughActionUntil(
+            $id_e,
+            $type,
+            $action,
+            $this->getDateDaysAgo($nb_days)
+        );
+    }
+
+    private function getDateDaysAgo(int $nb_days): string
+    {
+        return date('Y-m-d', strtotime("-$nb_days days"));
     }
 }

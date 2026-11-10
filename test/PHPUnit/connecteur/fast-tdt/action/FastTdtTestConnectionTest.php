@@ -4,9 +4,8 @@ class FastTdtTestConnectionTest extends PastellTestCase
 {
     /**
      * When the connection is successful
-     * @test
      */
-    public function whenTheConnectionIsOk()
+    public function testWhenTheConnectionIsOk()
     {
         $webdavWrapper = $this->createMock(WebdavWrapper::class);
         $webdavWrapper->method('isConnected')->willReturn(true);
@@ -21,9 +20,8 @@ class FastTdtTestConnectionTest extends PastellTestCase
 
     /**
      * When the connection is not successful
-     * @test
      */
-    public function whenTheConnectionIsNotOk()
+    public function testWhenTheConnectionIsNotOk()
     {
         $webdavWrapper = $this->createMock(WebdavWrapper::class);
         $webdavWrapper

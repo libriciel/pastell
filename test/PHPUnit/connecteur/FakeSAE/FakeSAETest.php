@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class FakeSAETest extends PastellTestCase
 {
     private const ACTES_GENERIQUE = "actes-generique";
@@ -25,8 +27,8 @@ class FakeSAETest extends PastellTestCase
      * @param string $last_action_expected
      * @param string $sae_atr_comment_expected
      * @throws NotFoundException
-     * @dataProvider dataProvider
      */
+    #[DataProvider('dataProvider')]
     public function testARI(array $fake_sae_configuration, string $last_action_expected, string $sae_atr_comment_expected)
     {
         $id_ce = $this->createConnector('fakeSAE', "Bouchon SAE")['id_ce'];

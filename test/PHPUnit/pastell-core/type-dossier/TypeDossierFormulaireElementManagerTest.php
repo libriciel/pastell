@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Validator\ElementIdValidator;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class TypeDossierFormulaireElementManagerTest extends \PHPUnit\Framework\TestCase
 {
@@ -49,13 +50,13 @@ class TypeDossierFormulaireElementManagerTest extends \PHPUnit\Framework\TestCas
     }
 
     /**
-     * @dataProvider elementIdProvider
      *
      * @param $element_id
      * @param $expected_result
      * @param $exception_message
      * @throws Exception
      */
+    #[DataProvider('elementIdProvider')]
     public function testElementId($element_id, $expected_result, $exception_message)
     {
         $typeDossierFormulaireElementManager = new TypeDossierFormulaireElementManager();

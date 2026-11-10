@@ -11,6 +11,7 @@ use ParagonIE\Halite\Alerts\InvalidSalt;
 use ParagonIE\Halite\Alerts\InvalidSignature;
 use ParagonIE\Halite\Alerts\InvalidType;
 use Pastell\Service\Crypto;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use UnrecoverableException;
 
@@ -29,7 +30,6 @@ class CryptoTest extends TestCase
     }
 
     /**
-     * @dataProvider messageAndPasswordProvider
      * @throws CannotPerformOperation
      * @throws InvalidDigestLength
      * @throws InvalidKey
@@ -39,6 +39,7 @@ class CryptoTest extends TestCase
      * @throws InvalidType
      * @throws UnrecoverableException
      */
+    #[DataProvider('messageAndPasswordProvider')]
     public function testEncryptDecrypt(string $clearText, string $password): void
     {
         $crypto = new Crypto();

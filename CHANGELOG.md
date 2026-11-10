@@ -490,6 +490,26 @@
 - Connecteur iparapheur soap #2268
 - Connecteur `chorus-par-csv` ChorusPro par CSV #2356
 
+## [4.1.26] - 2026-12-07
+
+### Dépréciations
+
+- Classe `DocumentEmail` dépréciée au profit de `DocumentEmailSQL` et des services `DocumentEmailService` et
+  `DocumentEmailReadService` #2610
+- Classe `DocumentActionEntite` dépréciée au profit de `DocumentActionEntiteSQL` et des services `DocumentEntiteService`
+  et `DocumentSearchService` #2618
+- Classe `UsersToken` dépréciée au profit de `UserTokenService` #2621
+- Classe `ConnecteurDisponible` dépréciée au profit du service `ConnecteurAvailabilityService` #2622
+- Classe `TableCheck` dépréciée au profit de `SQLQuery::getTablesMarkedAsCrashed()` #2623
+- Classe `UtilisateurRoleCache` dépréciée au profit de `UtilisateurRoleCacheService` #2624
+- Classe `ConnecteurFrequence` et méthodes associées de `ConnecteurFrequenceSQL`, `JobManager` et `DaemonControler`
+  dépréciées au profit de `ConnecteurFrequenceData` et du service `ConnecteurFrequenceService` #2625
+
+### Sécurité
+
+- Faille de contrôle d'accès sur la consultation et le téléchargement des certificats utilisateur
+  (CVSS 3.1 - criticité BASSE - CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:L/I:N/A:N) #2617
+
 ## [4.1.25] - 2026-11-02
 
 ### Corrections

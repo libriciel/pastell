@@ -1,10 +1,10 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class PieceMarcheTest extends PastellMarcheTestCase
 {
-    /**
-     * @dataProvider getMontantrovide
-     */
+    #[DataProvider('getMontantrovide')]
     public function testMontant($montant, $expected_result)
     {
 

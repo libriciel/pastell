@@ -449,8 +449,10 @@ class UtilisateurControler extends PastellControler
         if ($id_u) {
             $info = $this->getInstance(UtilisateurSQL::class)->getInfo($id_u);
             $this->checkDroitFor($info['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
+            $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
+        } else {
+            $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::CREATION);
         }
-        $this->checkDroitFor($id_e, DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
         try {
             if ($id_u) {
                 $is_api = $this->getInstance(UtilisateurSQL::class)->getInfo($id_u)['is_api'];

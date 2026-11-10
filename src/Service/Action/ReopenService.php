@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Pastell\Service\Action;
 
-use DocumentActionEntite;
+use DocumentActionEntiteSQL;
 use DocumentActionSQL;
 use DocumentSQL;
 use NotificationMail;
@@ -19,7 +19,7 @@ class ReopenService
 
     public function __construct(
         private readonly DocumentActionSQL $documentActionSQL,
-        private readonly DocumentActionEntite $documentActionEntite,
+        private readonly DocumentActionEntiteSQL $documentActionEntiteSQL,
         private readonly DocumentEntiteService $documentEntiteService,
         private readonly JournalEntryService $journalEntryService,
         private readonly NotificationMail $notificationMail,
@@ -39,7 +39,7 @@ class ReopenService
             );
         }
         $id_a = $this->documentActionSQL->removeLastAction($id_e, $id_d);
-        $this->documentActionEntite->remove($id_a);
+        $this->documentActionEntiteSQL->remove($id_a);
 
         $lastAction = $this->documentActionSQL->getLastActionInfo($id_d, $id_e);
         $this->documentEntiteService->updateLastAction($id_e, $id_d, $lastAction['action'], $lastAction['date']);
