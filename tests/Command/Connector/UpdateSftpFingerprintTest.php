@@ -12,6 +12,7 @@ use GlaneurConnecteur;
 use GlaneurSFTP;
 use Pastell\Command\Connector\UpdateSftpFingerprint;
 use PastellTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class UpdateSftpFingerprintTest extends PastellTestCase
@@ -35,9 +36,9 @@ class UpdateSftpFingerprintTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider sftpConnectorProvider
      * @throws Exception
      */
+    #[DataProvider('sftpConnectorProvider')]
     public function testUpdateSftpFingerprint(
         ?string $connecteurType,
         ?array $connecteurConfig,

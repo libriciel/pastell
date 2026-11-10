@@ -96,12 +96,12 @@ phpstan:
 
 rector:
   stage: static-analysis
-  image: "$CONTAINER_IMAGE"
+  image : "$CONTAINER_IMAGE_APP"
   variables:
     DONT_INIT_DATABASE: "true"
     DONT_RETRIEVE_VALIDCA: "true"
   script:
-    - cd /var/www/pastell
+    - cd /app
     - vendor/bin/rector process --dry-run --ansi
 
 #Note: il semble que le fichier entrypoint soit exécuté deux fois !
