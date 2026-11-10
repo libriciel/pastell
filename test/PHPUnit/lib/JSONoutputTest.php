@@ -18,6 +18,6 @@ class JSONoutputTest extends PHPUnit\Framework\TestCase
     public function testSendJsonISO()
     {
         $jsonOutput = new JSONoutput();
-        $this->assertEquals(null, json_decode($jsonOutput->getJson([utf8_decode('école')])));
+        $this->assertEquals(null, json_decode($jsonOutput->getJson([mb_convert_encoding('école', 'ISO-8859-1')])));
     }
 }

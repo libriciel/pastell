@@ -187,7 +187,7 @@ class AsalaeREST extends SAEConnecteur
      * @return bool|mixed
      * @throws Exception
      */
-    private function getWS(string $url, string $accept = 'application/json', CurlWrapper $curlWrapper = null)
+    private function getWS(string $url, string $accept = 'application/json', ?CurlWrapper $curlWrapper = null)
     {
         if (!$curlWrapper) {
             $curlWrapper = $this->curlWrapperFactory->getInstance();

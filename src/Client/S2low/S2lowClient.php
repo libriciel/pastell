@@ -27,7 +27,7 @@ class S2lowClient
 
     public function __construct(
         private readonly ClientInterface $clientInterface,
-        RequestFactoryInterface $requestFactory = null
+        ?RequestFactoryInterface $requestFactory = null
     ) {
         $this->requestFactory = $requestFactory ?? Psr17FactoryDiscovery::findRequestFactory();
 
@@ -51,7 +51,7 @@ class S2lowClient
      * @throws S2lowClientException
      * @throws ClientExceptionInterface
      */
-    public function get(string $endpoint, object|array $queryData = null, bool $encodeAsUtf8 = true): string
+    public function get(string $endpoint, object|array|null $queryData = null, bool $encodeAsUtf8 = true): string
     {
         if ($queryData !== null) {
             $queryArray = \is_object($queryData) ? get_object_vars($queryData) : $queryData;

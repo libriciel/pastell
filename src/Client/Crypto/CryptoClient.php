@@ -28,7 +28,7 @@ class CryptoClient
 
     public function __construct(
         ClientInterface $clientInterface,
-        RequestFactoryInterface $requestFactory = null
+        ?RequestFactoryInterface $requestFactory = null
     ) {
         $this->httpClient = $clientInterface;
         $this->requestFactory = $requestFactory ?? Psr17FactoryDiscovery::findRequestFactory();

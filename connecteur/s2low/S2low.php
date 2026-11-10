@@ -137,7 +137,7 @@ class S2low extends TdtConnecteur
             throw new S2lowException($error);
         }
         if ($utf_8_encode) {
-            $output = utf8_encode($output);
+            $output = mb_convert_encoding($output, 'UTF-8', 'ISO-8859-1');
         }
         return $output;
     }
@@ -218,7 +218,7 @@ class S2low extends TdtConnecteur
             throw new S2lowException($this->curlWrapper->getLastError());
         }
         if (preg_match("/^KO/", $result)) {
-            throw new S2lowException("S²low a répondu : " . utf8_encode($result));
+            throw new S2lowException("S²low a répondu : " . mb_convert_encoding($result, 'UTF-8', 'ISO-8859-1'));
         }
         return $result;
     }
@@ -337,7 +337,7 @@ class S2low extends TdtConnecteur
         $this->curlWrapper->addPostData('nature_code', $tdtActes->acte_nature);
 
         $this->curlWrapper->addPostData('number', $tdtActes->numero_de_lacte);
-        $this->curlWrapper->addPostData('subject', utf8_decode($tdtActes->objet));
+        $this->curlWrapper->addPostData('subject', mb_convert_encoding($tdtActes->objet, 'ISO-8859-1'));
 
         $this->curlWrapper->addPostData('decision_date', date("Y-m-d", strtotime($tdtActes->date_de_lacte)));
         $this->curlWrapper->addPostData('en_attente', $this->getIsEnAttente());
@@ -431,7 +431,7 @@ class S2low extends TdtConnecteur
         if ($result == 4) {
             array_shift($ligne);
             array_shift($ligne);
-            $this->setArActes(utf8_decode(implode("\n", $ligne)));
+            $this->setArActes(mb_convert_encoding(implode("\n", $ligne), 'ISO-8859-1'));
         }
 
         if ($result == -1) {
@@ -574,7 +574,7 @@ class S2low extends TdtConnecteur
      * @throws JsonException
      * @throws S2lowException
      */
-    public function getActeTamponne($id_transaction, string $date_affichage = null): ?string
+    public function getActeTamponne($id_transaction, ?string $date_affichage = null): ?string
     {
         $file_list = $this->getActeTamponneS2lowFileList($id_transaction);
         return $this->getActeTamponneS2low($file_list, $date_affichage);
