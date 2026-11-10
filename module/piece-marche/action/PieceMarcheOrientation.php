@@ -6,7 +6,7 @@ class PieceMarcheOrientation extends ActionExecutor
 {
     public function go()
     {
-        $last_action = $this->getDocumentActionEntite()->getLastAction($this->id_e, $this->id_d);
+        $last_action = $this->getDocumentActionEntiteSQL()->getLastAction($this->id_e, $this->id_d);
 
         if (! $last_action) {
             throw new Exception("Erreur : la dernière action de ce dossier n'a pas été récupéré");

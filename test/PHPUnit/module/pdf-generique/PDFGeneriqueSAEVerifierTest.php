@@ -56,8 +56,8 @@ class PDFGeneriqueSAEVerifierTest extends PastellTestCase
             $donneesFormulaire->getFilePath('ar_sae')
         );
 
-        $documentActionEntite = $this->getObjectInstancier()->getInstance(DocumentActionEntite::class);
-        $this->assertEquals('ar-recu-sae', $documentActionEntite->getLastAction(1, $documentId));
+        $documentActionEntiteSQL = $this->getObjectInstancier()->getInstance(DocumentActionEntiteSQL::class);
+        $this->assertEquals('ar-recu-sae', $documentActionEntiteSQL->getLastAction(1, $documentId));
     }
 
 
@@ -98,8 +98,8 @@ class PDFGeneriqueSAEVerifierTest extends PastellTestCase
             $this->getObjectInstancier()->getInstance(ActionExecutorFactory::class)->getLastMessage()
         );
 
-        $documentActionEntite = $this->getObjectInstancier()->getInstance(DocumentActionEntite::class);
-        $this->assertEquals('verif-sae-erreur', $documentActionEntite->getLastAction(1, $documentId));
+        $documentActionEntiteSQL = $this->getObjectInstancier()->getInstance(DocumentActionEntiteSQL::class);
+        $this->assertEquals('verif-sae-erreur', $documentActionEntiteSQL->getLastAction(1, $documentId));
     }
 
 
@@ -150,7 +150,7 @@ class PDFGeneriqueSAEVerifierTest extends PastellTestCase
             $this->getObjectInstancier()->getInstance(ActionExecutorFactory::class)->getLastMessage()
         );
 
-        $documentActionEntite = $this->getObjectInstancier()->getInstance(DocumentActionEntite::class);
-        $this->assertEquals('modification', $documentActionEntite->getLastAction(1, $documentId));
+        $documentActionEntiteSQL = $this->getObjectInstancier()->getInstance(DocumentActionEntiteSQL::class);
+        $this->assertEquals('modification', $documentActionEntiteSQL->getLastAction(1, $documentId));
     }
 }

@@ -17,6 +17,7 @@ use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Connecteur\ConnecteurCreationService;
 use Pastell\Service\Connecteur\ConnecteurDeletionService;
 use PastellTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -121,9 +122,7 @@ class MigrateIparapheurSoapRestTest extends PastellTestCase
         ];
     }
 
-    /**
-     * @dataProvider migrationScenariosProvider
-     */
+    #[DataProvider('migrationScenariosProvider')]
     public function testMigrateConnector(
         ?array $tenants,
         ?array $desks,

@@ -7,8 +7,8 @@ use Pastell\Service\Notification\NotificationService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
 use PastellTestCase;
 use UtilisateurNewEmailSQL;
+use UserTokenSQL;
 use UtilisateurSQL;
-use UsersToken;
 
 class UtilisateurDeletionServiceTest extends PastellTestCase
 {
@@ -48,13 +48,13 @@ class UtilisateurDeletionServiceTest extends PastellTestCase
 
     public function testDeleteCleansTokens(): void
     {
-        $usersToken = $this->getObjectInstancier()->getInstance(UsersToken::class);
-        $usersToken->create(2, 'token-test', 'my-token');
-        self::assertNotEmpty($usersToken->getTokensOfUser(2));
+        $userTokenSQL = $this->getObjectInstancier()->getInstance(UserTokenSQL::class);
+        $userTokenSQL->create(2, 'token-test', 'my-token');
+        self::assertNotEmpty($userTokenSQL->getTokensOfUser(2));
 
         $this->getObjectInstancier()->getInstance(UtilisateurDeletionService::class)->delete(2);
 
-        self::assertEmpty($usersToken->getTokensOfUser(2));
+        self::assertEmpty($userTokenSQL->getTokensOfUser(2));
     }
 
     public function testDeleteCleansNewEmail(): void

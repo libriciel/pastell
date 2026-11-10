@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Monolog\Logger;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class CPPWrapperTest extends ExtensionCppTestCase
 {
@@ -415,11 +416,11 @@ class CPPWrapperTest extends ExtensionCppTestCase
     }
 
     /**
-     * @dataProvider getRechercheFactureTravauxProvider
      * @throws CPPException
      * @throws CPPWrapperExceptionRechercheFactureTravaux
      * @throws JsonException
      */
+    #[DataProvider('getRechercheFactureTravauxProvider')]
     public function testRechercheFactureTravaux(string $userRole, array $expected): void
     {
         $returnData = [

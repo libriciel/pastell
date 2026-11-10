@@ -10,6 +10,7 @@ use Pastell\Service\Crypto;
 use Pastell\Service\Connecteur\ConnecteurCreationService;
 use Pastell\Service\Connecteur\ConnecteurActionService;
 use Pastell\Service\Connecteur\ConnecteurModificationService;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
@@ -336,14 +337,6 @@ class ConnecteurControler extends PastellControler
     }
 
     /**
-     * @return JobManager
-     */
-    private function getJobManager(): JobManager
-    {
-        return $this->getObjectInstancier()->getInstance(JobManager::class);
-    }
-
-    /**
      * @throws LastErrorException
      * @throws LastMessageException
      * @throws NotFoundException
@@ -371,10 +364,19 @@ class ConnecteurControler extends PastellControler
         );
         $this->setViewParameter('job_list', $this->getJobQueueSQL()->getJobsForConnector($id_ce));
         $this->setViewParameter('return_url', urlencode("Connecteur/edition?id_ce=$id_ce"));
-        $this->setViewParameter('connecteurFrequence', $this->getJobManager()->getNearestConnecteurFrequence($id_ce));
+        $connecteurFrequenceService = $this->getInstance(ConnecteurFrequenceService::class);
+        $connecteur_entite_info = $this->getViewParameterByKey('connecteur_entite_info');
+        $connecteurFrequenceData = $connecteurFrequenceService->getForConnecteur($connecteur_entite_info);
+        $connecteurFrequenceDataByFlux = $connecteurFrequenceService->getForConnecteurByFlux($connecteur_entite_info);
+        $this->setViewParameter('connecteurFrequenceData', $connecteurFrequenceData);
         $this->setViewParameter(
-            'connecteurFrequenceByFlux',
-            $this->getJobManager()->getNearestConnecteurForDocument($id_ce)
+            'connecteur_frequence_expression',
+            $connecteurFrequenceService->getExpressionLabel($connecteurFrequenceData)
+        );
+        $this->setViewParameter('connecteurFrequenceDataByFlux', $connecteurFrequenceDataByFlux);
+        $this->setViewParameter(
+            'connecteur_frequence_expression_by_flux',
+            \array_map($connecteurFrequenceService->getExpressionLabel(...), $connecteurFrequenceDataByFlux)
         );
         $this->setViewParameter('connecteur_hash', $this->getConnecteurActionService()->getLastHash($id_ce));
         $this->setViewParameter('usage_flux_list', $this->getFluxEntiteSQL()->getFluxAndEntityByConnectorId($id_ce));

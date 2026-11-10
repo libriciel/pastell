@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Tests\Security;
 
 use Pastell\Security\LibricielFeedbackReader;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StaticWrapper;
 use TmpFolder;
@@ -64,9 +65,7 @@ class LibricielFeedbackReaderTest extends TestCase
         yield ['{"version_installe":{"etat":"en_cours"}}', false];
     }
 
-    /**
-     * @dataProvider libricielFeedbackFileProvider
-     */
+    #[DataProvider('libricielFeedbackFileProvider')]
     public function testHasSecurityAlert(string $fileContent, bool $hasAlert): void
     {
         $this->createFeedbackFile($fileContent);

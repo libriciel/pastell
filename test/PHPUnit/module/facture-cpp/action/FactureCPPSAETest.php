@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class FactureCPPSAETest extends ExtensionCppTestCase
 {
     public static function getModuleDataProvider()
@@ -15,9 +17,9 @@ class FactureCPPSAETest extends ExtensionCppTestCase
     }
 
     /**
-     * @dataProvider getModuleDataProvider
      * @throws Exception
      */
+    #[DataProvider('getModuleDataProvider')]
     public function testEtapeSAE($module)
     {
         $info_connecteur = $this->createConnector(SedaNG::CONNECTEUR_ID, "Bordereau SEDA");

@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class IParapheurUnitTest extends PastellTestCase
 {
     public const REPONSE_ARCHIVE_OK = '{"MessageRetour":{"codeRetour":"OK","message":"Dossier 201806111713 TESTA supprim\u00e9 du Parapheur.","severite":"INFO"}}';
@@ -237,11 +239,11 @@ class IParapheurUnitTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider sendDossierProvider
      * @param FileToSign $fileToSign
      * @param array $expectedDataArray
      * @throws Exception
      */
+    #[DataProvider('sendDossierProvider')]
     public function testSendDossier($fileToSign, $expectedDataArray)
     {
         $soapClient = $this->createMock(SoapClient::class);
@@ -261,11 +263,11 @@ class IParapheurUnitTest extends PastellTestCase
     }
 
     /**
-     * @dataProvider sendDossierProvider
      * @param FileToSign $fileToSign
      * @param array $expectedDataArray
      * @throws Exception
      */
+    #[DataProvider('sendDossierProvider')]
     public function testSendDossierWithWrongType(FileToSign $fileToSign, array $expectedDataArray): void
     {
         $soapClient = $this->createMock(SoapClient::class);
@@ -310,9 +312,9 @@ class IParapheurUnitTest extends PastellTestCase
         ];
     }
     /**
-     * @dataProvider sendDossierPJProvider
      * @throws Exception
      */
+    #[DataProvider('sendDossierPJProvider')]
     public function testSendDossierPJ(FileToSign $fileToSign): void
     {
         $soapClient = $this->createMock(SoapClient::class);
@@ -415,9 +417,7 @@ class IParapheurUnitTest extends PastellTestCase
         ];
     }
 
-    /**
-     * @dataProvider isRejectedProvider
-     */
+    #[DataProvider('isRejectedProvider')]
     public function testIsRejected(bool $expected, string $lastState): void
     {
         $iParapheurConnector = $this->getIParapheurConnecteur();

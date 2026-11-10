@@ -162,8 +162,7 @@ class DonneesFormulaireControler extends PastellControler
     {
         /* mailsec ? */
         $key = $this->getPostOrGetInfo()->get('key');
-        $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
-        $mailsec_info = $documentEmail->getInfoFromKey($key);
+        $mailsec_info = $this->getObjectInstancier()->getInstance(DocumentEmailSQL::class)->getByKey($key);
         if (!$mailsec_info) {
             return false;
         }

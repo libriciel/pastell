@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Pastell\Configuration\ElementType;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class FieldDataTest extends PHPUnit\Framework\TestCase
 {
@@ -26,9 +27,7 @@ class FieldDataTest extends PHPUnit\Framework\TestCase
         yield ['http://url.tld?param=1', 'http://url.tld?param=1&field=test&num=0'];
     }
 
-    /**
-     * @dataProvider getUrlProvider
-     */
+    #[DataProvider('getUrlProvider')]
     public function testGetUrl(string $url, string $expected): void
     {
         $field = new Field('test', ['type' => 'file']);
@@ -79,9 +78,7 @@ class FieldDataTest extends PHPUnit\Framework\TestCase
         return $data;
     }
 
-    /**
-     * @dataProvider fieldDataProvider
-     */
+    #[DataProvider('fieldDataProvider')]
     public function testSpecialStringValueForField($fieldType, $fieldValue, $expected): void
     {
         $field = new Field('test', ['type' => $fieldType, 'requis' => true, 'value' => $fieldValue]);

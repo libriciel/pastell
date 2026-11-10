@@ -1,5 +1,12 @@
 <?php
 
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceActionType;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceData;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceService;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceType;
+use Pastell\Service\Document\DocumentEmailReadService;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+
 class TypeDossierMailsecEtapeTest extends PastellTestCase
 {
     public const MAILSEC_ONLY = 'mailsec-only';
@@ -46,6 +53,7 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
 
     /**
      * @throws Exception
+     * @throws TransportExceptionInterface
      */
     public function testDepot(): void
     {
@@ -83,9 +91,8 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
         $this->assertMatchesRegularExpression("#Relance programmée le#", $last_message);
         $this->assertMatchesRegularExpression("#Mail défini comme non-reçu le#", $last_message);
 
-        $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
-        $document_email_info = $documentEmail->getInfo($id_d);
-        $documentEmail->consulter($document_email_info[0]['key']);
+        $document_email_info = $this->getObjectInstancier()->getInstance(DocumentEmailSQL::class)->getAllByDocument($id_d);
+        $this->getObjectInstancier()->getInstance(DocumentEmailReadService::class)->read($document_email_info[0]['key']);
         $this->assertLastDocumentAction('reception', $id_d);
 
         $this->assertTrue(
@@ -102,16 +109,17 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
      */
     public function testFrequenceRelance(): void
     {
-        $connecteurFrequenceSQL = $this->getObjectInstancier()->getInstance(ConnecteurFrequenceSQL::class);
-        $connecteurFrequence = new ConnecteurFrequence();
-        $connecteurFrequence->type_connecteur = ConnecteurFrequence::TYPE_ENTITE;
-        $connecteurFrequence->famille_connecteur = 'mailsec';
-        $connecteurFrequence->action_type = ConnecteurFrequence::TYPE_ACTION_DOCUMENT;
-        $connecteurFrequence->type_document = self::MAILSEC_ONLY;
-        $connecteurFrequence->action = 'mailsec-relance';
-        $connecteurFrequence->id_verrou = 'MAILSEC_RELANCE';
-        $connecteurFrequence->expression = "1440";
-        $connecteurFrequenceSQL->edit($connecteurFrequence);
+        $this->getObjectInstancier()->getInstance(ConnecteurFrequenceService::class)->save(
+            new ConnecteurFrequenceData(
+                type_connecteur: ConnecteurFrequenceType::ENTITE->value,
+                famille_connecteur: 'mailsec',
+                action_type: ConnecteurFrequenceActionType::DOCUMENT->value,
+                type_document: self::MAILSEC_ONLY,
+                action: 'mailsec-relance',
+                expression: '1440',
+                id_verrou: 'MAILSEC_RELANCE',
+            )
+        );
 
         $this->typeDossierLoader->createTypeDossierDefinitionFile(self::MAILSEC_ONLY);
         $this->createMailsecConnector(self::MAILSEC_ONLY);
@@ -136,7 +144,7 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
         $this->assertSame('MAILSEC_RELANCE', $job->id_verrou);
         $this->assertSame(
             strtotime($job->next_try) - strtotime($job->last_try),
-            $connecteurFrequence->expression * 60
+            1440 * 60
         );
 
         $last_message = $this->getObjectInstancier()->getInstance(ActionExecutorFactory::class)->getLastMessage();
@@ -169,8 +177,8 @@ class TypeDossierMailsecEtapeTest extends PastellTestCase
         $this->assertLastMessage('Mail défini comme non-reçu.');
         $this->assertLastDocumentAction('non-recu', $id_d);
 
-        $documentEmail = $this->getObjectInstancier()->getInstance(DocumentEmail::class);
-        $this->assertEquals(1, $documentEmail->getInfo($id_d)[0]['non_recu']);
+        $documentEmailSQL = $this->getObjectInstancier()->getInstance(DocumentEmailSQL::class);
+        static::assertEquals(1, $documentEmailSQL->getAllByDocument($id_d)[0]['non_recu']);
     }
 
     /**

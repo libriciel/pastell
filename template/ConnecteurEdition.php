@@ -2,8 +2,10 @@
 
 /**
  * @var Gabarit $this
- * @var ConnecteurFrequence $connecteurFrequence
- * @var array $connecteurFrequenceByFlux
+ * @var ConnecteurFrequenceData $connecteurFrequenceData
+ * @var ConnecteurFrequenceData[] $connecteurFrequenceDataByFlux
+ * @var string $connecteur_frequence_expression
+ * @var array<string, string> $connecteur_frequence_expression_by_flux
  * @var string $connecteur_hash
  * @var array $usage_flux_list
  * @var array $fieldDataList
@@ -22,6 +24,7 @@
  */
 
 use Pastell\Configuration\JobStatus;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceData;
 
 $listConnectorsUrl = \sprintf(
     'Entite/connecteur?global=%s&id_e=%s',
@@ -109,42 +112,42 @@ $listConnectorsUrl = \sprintf(
         <tr>
             <th>Fréquence (action du connecteur)</th>
             <td>
-                <?php if ($connecteurFrequence->id_cf) : ?>
+                <?php if ($connecteurFrequenceData->id_cf) : ?>
                     <?php if ($daemon_global_lecture) : ?>
-                        <a href="<?php $this->url('Daemon/connecteurFrequenceDetail?id_cf=' . $connecteurFrequence->id_cf) ?>">
-                            <?= $connecteurFrequence->getExpressionAsString() ?>
+                        <a href="<?php $this->url('Daemon/connecteurFrequenceDetail?id_cf=' . $connecteurFrequenceData->id_cf) ?>">
+                            <?= $connecteur_frequence_expression ?>
                         </a>
                     <?php else : ?>
-                        <?= nl2br($connecteurFrequence->getExpressionAsString()) ?>
+                        <?php echo nl2br($connecteur_frequence_expression) ?>
                     <?php endif ?>
                 <?php else : ?>
-                    <?php echo nl2br($connecteurFrequence->getExpressionAsString()) ?>
+                    <?php echo nl2br($connecteur_frequence_expression) ?>
                 <?php endif ?>
             </td>
             <td>
-                <?php hecho($connecteurFrequence->id_verrou) ?>
+                <?php hecho($connecteurFrequenceData->id_verrou) ?>
             </td>
         </tr>
-        <?php foreach ($connecteurFrequenceByFlux as $flux => $connecteur) : ?>
+        <?php foreach ($connecteurFrequenceDataByFlux as $flux => $connecteurFrequenceDataFlux) : ?>
         <tr>
             <th>Fréquence (<?php hecho($flux) ?>)</th>
             <td>
 
-                <?php if ($connecteur->id_cf) : ?>
+                <?php if ($connecteurFrequenceDataFlux->id_cf) : ?>
                     <?php if ($daemon_global_lecture) : ?>
-                        <a href="<?php $this->url('Daemon/connecteurFrequenceDetail?id_cf=' . $connecteur->id_cf) ?>">
-                            <?= nl2br($connecteur->getExpressionAsString()) ?>
+                        <a href="<?php $this->url('Daemon/connecteurFrequenceDetail?id_cf=' . $connecteurFrequenceDataFlux->id_cf) ?>">
+                            <?php echo nl2br($connecteur_frequence_expression_by_flux[$flux]) ?>
                         </a>
                     <?php else : ?>
-                        <?= nl2br($connecteur->getExpressionAsString()) ?>
+                        <?= nl2br($connecteur_frequence_expression_by_flux[$flux]) ?>
                     <?php endif ?>
                 <?php else : ?>
-                    <?php echo nl2br($connecteur->getExpressionAsString()) ?>
+                    <?php echo nl2br($connecteur_frequence_expression_by_flux[$flux]) ?>
                 <?php endif ?>
                 <em>Sauf action particulière</em>
             </td>
             <td>
-                <?php hecho($connecteur->id_verrou) ?>
+                <?php hecho($connecteurFrequenceDataFlux->id_verrou) ?>
             </td>
         </tr>
         <?php endforeach; ?>

@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
+use Pastell\Service\Connecteur\ConnecteurAvailabilityService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Entite\EntityUtilitiesService;
 use Pastell\Service\Droit\DroitType;
@@ -184,49 +185,53 @@ class FluxControler extends PastellControler
     }
 
     /**
+     * @throws LastErrorException
+     * @throws LastMessageException
      * @throws NotFoundException
      */
-    public function editionAction()
+    public function editionAction(): void
     {
         $id_e = $this->getGetInfo()->getInt('id_e', 0);
         $flux = $this->getGetInfo()->get('flux', '');
         $type_connecteur = $this->getGetInfo()->get('type');
         $num_same_type = $this->getGetInfo()->getInt('num_same_type');
 
+        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
+
+        $available_connecteur_list = $this->getInstance(ConnecteurAvailabilityService::class)->getListByType(
+            $this->getId_u(),
+            $id_e,
+            $type_connecteur,
+            $id_e === 0
+        );
+        if ($available_connecteur_list === []) {
+            $this->setLastError("Aucun connecteur « $type_connecteur » disponible !");
+            $this->redirect("/Flux/index?id_e=$id_e");
+        }
+
+        $entite_denomination = $this->getEntiteSQL()->getDenomination($id_e);
+        $connecteur_info = $this->getEntityUtilitiesService()->addDenominationForEntiteRacine(
+            [$this->getFluxEntiteSQL()->getConnecteur($id_e, $flux, $type_connecteur, $num_same_type)]
+        )[0];
+        $fluxDocumentType = $this->getDocumentTypeFactory()->getFluxDocumentType($flux);
+        $flux_name = $flux ? $fluxDocumentType->getName() : 'global';
+
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('flux', $flux);
         $this->setViewParameter('type_connecteur', $type_connecteur);
         $this->setViewParameter('num_same_type', $num_same_type);
-
-        $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
-        $entite_denomination = $this->getEntiteSQL()->getDenomination($id_e);
         $this->setViewParameter('entite_denomination', $entite_denomination);
-        $this->setViewParameter('connecteur_disponible', $this->getConnecteurDispo($id_e, $type_connecteur));
-        $this->setViewParameter('connecteur_info', $this->getEntityUtilitiesService()
-            ->addDenominationForEntiteRacine(
-                [$this->getFluxEntiteSQL()->getConnecteur($id_e, $flux, $type_connecteur, $num_same_type)]
-            )[0]);
-
-        $all_info = $this->getDocumentTypeFactory()->getFluxDocumentType($flux)->getConnecteurAllInfo();
-        $type_connecteur_info = [];
-        foreach ($all_info as $connecteur_info) {
-            if ($connecteur_info['connecteur_id'] === $type_connecteur) {
-                if ($connecteur_info['num_same_type'] === $num_same_type) {
-                    $type_connecteur_info = $connecteur_info;
-                    break;
-                }
-            }
-        }
-        $this->setViewParameter('type_connecteur_info', $type_connecteur_info);
-
-        $flux_name = $flux ? $this->getDocumentTypeFactory()->getFluxDocumentType($flux)->getName() : 'global';
+        $this->setViewParameter('connecteur_disponible', $available_connecteur_list);
+        $this->setViewParameter('connecteur_info', $connecteur_info);
+        $this->setViewParameter(
+            'type_connecteur_info',
+            $fluxDocumentType->getConnecteurInfo($type_connecteur, $num_same_type)
+        );
         $this->setViewParameter('flux_name', $flux_name);
-
         $this->setViewParameter(
             'lien_retour',
             $flux ? "/Flux/detail?id_e=$id_e&flux=$flux" : "/Flux/index?id_e=$id_e"
         );
-
         $this->setViewParameter(
             'page_title',
             sprintf(
@@ -235,29 +240,8 @@ class FluxControler extends PastellControler
                 $flux ? 'au type de dossier ' . $flux_name : 'global'
             )
         );
-
         $this->setViewParameter('template_milieu', 'FluxEdition');
         $this->renderDefault();
-    }
-
-    private function getConnecteurDispo($id_e, $type_connecteur)
-    {
-        /** @var ConnecteurDisponible $connecteurDisponible */
-        $connecteurDisponible = $this->getInstance(ConnecteurDisponible::class);
-
-        $connecteur_disponible = $connecteurDisponible->getListByType(
-            $this->getId_u(),
-            $id_e,
-            $type_connecteur,
-            $id_e === 0
-        );
-
-        if (! $connecteur_disponible) {
-            $this->setLastError("Aucun connecteur « $type_connecteur » disponible !");
-            $this->redirect("/Flux/index?id_e=$id_e");
-        } // @codeCoverageIgnore
-
-        return $connecteur_disponible;
     }
 
     public function doEditionAction()

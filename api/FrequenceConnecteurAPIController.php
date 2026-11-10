@@ -1,12 +1,16 @@
 <?php
 
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceData;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceService;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
 
 class FrequenceConnecteurAPIController extends BaseAPIController
 {
-    public function __construct(private readonly ConnecteurFrequenceSQL $connecteurFrequenceSQL)
-    {
+    public function __construct(
+        private readonly ConnecteurFrequenceSQL $connecteurFrequenceSQL,
+        private readonly ConnecteurFrequenceService $connecteurFrequenceService,
+    ) {
     }
 
     /**
@@ -55,8 +59,7 @@ class FrequenceConnecteurAPIController extends BaseAPIController
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $recuperateur = new Recuperateur($this->getRequest());
-        $connecteurFrequence = new ConnecteurFrequence($recuperateur->getAll());
-        $id_cf = $this->connecteurFrequenceSQL->edit($connecteurFrequence);
+        $id_cf = $this->connecteurFrequenceService->save(ConnecteurFrequenceData::fromArray($recuperateur->getAll()));
         return $this->detail($id_cf);
     }
 
@@ -69,9 +72,9 @@ class FrequenceConnecteurAPIController extends BaseAPIController
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $id_cf = $this->getFromQueryArgs(0);
         $recuperateur = new Recuperateur($this->getRequest());
-        $connecteurFrequence = new ConnecteurFrequence($recuperateur->getAll());
-        $connecteurFrequence->id_cf = $id_cf;
-        $this->connecteurFrequenceSQL->edit($connecteurFrequence);
+        $this->connecteurFrequenceService->save(
+            ConnecteurFrequenceData::fromArray(['id_cf' => $id_cf] + $recuperateur->getAll())
+        );
         return $this->detail($id_cf);
     }
 
@@ -83,7 +86,7 @@ class FrequenceConnecteurAPIController extends BaseAPIController
     {
         $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $id_cf = $this->getFromQueryArgs(0);
-        $this->connecteurFrequenceSQL->delete($id_cf);
+        $this->connecteurFrequenceService->delete((int)$id_cf);
         $result['result'] = BaseAPIController::RESULT_OK;
         return $result;
     }

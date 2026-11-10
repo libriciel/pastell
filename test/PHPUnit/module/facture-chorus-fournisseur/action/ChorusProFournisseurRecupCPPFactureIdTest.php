@@ -3,10 +3,9 @@
 class ChorusProFournisseurRecupCPPFactureIdTest extends ExtensionCppTestCase
 {
     /**
-     * @test
      * @throws Exception
      */
-    public function ChorusProFournisseurRecupCPPFactureId()
+    public function testChorusProFournisseurRecupCPPFactureId()
     {
 
         $consulterCompteRenduImport_result =  [

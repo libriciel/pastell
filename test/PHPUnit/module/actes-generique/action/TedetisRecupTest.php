@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Pastell\Service\Document\DocumentEntiteService;
+
 class TedetisRecupTest extends PastellTestCase
 {
     use CurlUtilitiesTestTrait;
@@ -47,10 +49,10 @@ class TedetisRecupTest extends PastellTestCase
         static::assertTrue($result['result']);
         static::assertSame("L'acquittement du contrôle de légalité a été reçu.", $result['message']);
 
-        $documentActionEntite = $this->getObjectInstancier()->getInstance(DocumentActionEntite::class);
-
-        $info_action = $documentActionEntite->getInfo($id_d, 1);
-        static::assertSame('acquiter-tdt', $info_action['last_action']);
+        static::assertSame(
+            'acquiter-tdt',
+            $this->getObjectInstancier()->getInstance(DocumentEntiteService::class)->getCurrentAction(1, $id_d)
+        );
 
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
 
@@ -159,9 +161,10 @@ class TedetisRecupTest extends PastellTestCase
 
         $this->triggerActionOnDocument($id_d, 'verif-tdt');
 
-        $documentActionEntite = $this->getObjectInstancier()->getInstance(DocumentActionEntite::class);
-        $info_action = $documentActionEntite->getInfo($id_d, 1);
-        static::assertSame('erreur-verif-tdt', $info_action['last_action']);
+        static::assertSame(
+            'erreur-verif-tdt',
+            $this->getObjectInstancier()->getInstance(DocumentEntiteService::class)->getCurrentAction(1, $id_d)
+        );
 
         $this->assertLastMessage(
             "Transaction en erreur sur le TdT : Enveloppe invalide : raison de l'erreur hyper détaillé"

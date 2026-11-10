@@ -7,6 +7,7 @@ namespace Client\S2low;
 use Pastell\Client\S2low\Api\Actes;
 use Pastell\Client\S2low\Api\Connexion;
 use Pastell\Client\S2low\S2lowClient;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 
@@ -25,9 +26,7 @@ class S2lowClientTest extends TestCase
         yield ['actes', Actes::class];
     }
 
-    /**
-     * @dataProvider getApiClassesProvider
-     */
+    #[DataProvider('getApiClassesProvider')]
     public function testShouldGetInstanceOfClass(string $apiName, string $classFqn): void
     {
         static::assertInstanceOf($classFqn, $this->sl2owClient->$apiName());

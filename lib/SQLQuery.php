@@ -207,4 +207,15 @@ class SQLQuery
         }
         return $result;
     }
+
+    /**
+     * @throws Exception
+     */
+    public function getTablesMarkedAsCrashed(): array
+    {
+        $sql = <<<SQL
+            SHOW TABLE STATUS WHERE comment != ''
+            SQL;
+        return $this->query($sql) ?: [];
+    }
 }

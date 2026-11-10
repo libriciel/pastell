@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Tests\Validator;
 
 use Pastell\Validator\UrlValidator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class UrlValidatorTest extends TestCase
@@ -23,9 +24,7 @@ class UrlValidatorTest extends TestCase
         yield [' ', true];
     }
 
-    /**
-     * @dataProvider urlProvider
-     */
+    #[DataProvider('urlProvider')]
     public function testIsValid(string $url, bool $expected): void
     {
         $validator = new UrlValidator();

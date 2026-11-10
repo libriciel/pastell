@@ -163,4 +163,25 @@ class DocumentTypeTest extends PHPUnit\Framework\TestCase
             $connecteur_list
         );
     }
+
+    public function testGetConnecteurInfo(): void
+    {
+        $documentType = $this->getDocumentTypeByFilename(__DIR__ . '/../../../module/test/definition.yml');
+
+        self::assertSame(
+            [
+                DocumentType::CONNECTEUR_ID => 'test',
+                DocumentType::NUM_SAME_TYPE => 1,
+                DocumentType::CONNECTEUR_WITH_SAME_TYPE => true,
+            ],
+            $documentType->getConnecteurInfo('test', 1)
+        );
+    }
+
+    public function testGetConnecteurInfoNotFound(): void
+    {
+        $documentType = $this->getDocumentTypeByFilename(__DIR__ . '/../../../module/test/definition.yml');
+
+        self::assertSame([], $documentType->getConnecteurInfo('test', 2));
+    }
 }
