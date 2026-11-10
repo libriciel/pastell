@@ -24,7 +24,7 @@ final readonly class ActionChange
             $action,
             $message_journal
         );
-        $this->documentActionEntiteSQL->add($id_a, $id_e, $id_j);
+        $this->documentActionEntiteSQL->add((int) $id_a, (int) $id_e, $id_j);
     }
 
     public function addOrUpdateAction(
