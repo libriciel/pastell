@@ -1,3 +1,4 @@
+{% import 'daemon/macros.html.twig' as daemon_ui %}
 <div class="box">
     <table class='table' aria-label="Gestionnaire de tâches">
         <tr>
@@ -27,21 +28,23 @@
         </tr>
         <tr>
             <th>Processus en cours d'exécution</th>
-            <td>{{ nb_worker_actif }}</td>
+            <td>
+                {{ daemon_ui.stat_link(nb_worker_actif, path('app.legacy.entite_job', {'filtre': 'actif', 'id_e': daemon.id_e ?? 0})) }}
+            </td>
         </tr>
         <tr>
-            <th>Travaux en attente</th>
+            <th>Travaux en retard d'exécution</th>
             <td>
-                {{ job_stat_info.nb_wait }}
+                {{ daemon_ui.stat_link(job_stat_info.nb_wait, path('app.legacy.entite_job', {'job_status': [job_status_waiting], 'late': 1, 'id_e': daemon.id_e ?? 0})) }}
             </td>
         </tr>
         <tr>
             <th>Travaux suspendus</th>
             <td>
-                {{ job_stat_info.nb_lock }}
+                {{ daemon_ui.stat_link(job_stat_info.nb_lock, path('app.legacy.entite_job', {'job_status': job_status_locked, 'id_e': daemon.id_e ?? 0})) }}
                 {% if (job_stat_info.nb_lock_one_hour and daemon_global_lecture) %}
                     <span class='alert alert-warning'>
-                        <a href="{{ path('app.legacy.entite_job', {'job_status': job_status_locked, 'id_e': daemon.id_e ?? 0}) }}">
+                        <a href="{{ path('app.legacy.entite_job', {'job_status': job_status_locked, 'since_one_hour': 1, 'id_e': daemon.id_e ?? 0}) }}">
                             {{ job_stat_info.nb_lock_one_hour }} depuis plus d'une heure !
                         </a>
                     </span>
@@ -50,7 +53,9 @@
         </tr>
         <tr>
             <th>Nombre total de travaux</th>
-            <td>{{ job_stat_info.nb_job }}</td>
+            <td>
+                {{ daemon_ui.stat_link(job_stat_info.nb_job, path('app.legacy.entite_job', {'id_e': daemon.id_e ?? 0})) }}
+            </td>
         </tr>
         <tr>
             <th>Date du système</th>

@@ -61,8 +61,7 @@ class ActionExecutorFactoryTest extends PastellTestCase
             "test"
         );
 
-        $id_worker = $this->getWorkerSQL()->create(42);
-        $this->getWorkerSQL()->attachJob($id_worker, $id_job);
+        $id_worker = $this->getWorkerSQL()->create(42, (int)$id_job);
 
         $this->assertFalse(
             $this->getActionExcecutorFactory()->executeOnConnecteur(

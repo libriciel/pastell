@@ -18,11 +18,13 @@ class WorkerSQL extends SQL
         );
     }
 
-    public function create($pid)
+    public function create(int $pid, int $id_job): int
     {
-        $sql = "INSERT INTO worker (pid,date_begin) VALUES (?,?)";
-        $this->query($sql, $pid, $this->getNow());
-        return $this->lastInsertId();
+        $sql = <<<SQL
+INSERT INTO worker (pid, date_begin, id_job) VALUES (?, ?, ?)
+SQL;
+        $this->query($sql, $pid, $this->getNow(), $id_job);
+        return (int) $this->lastInsertId();
     }
 
     public function getWorker($id_worker): ?WorkerObject
@@ -51,12 +53,6 @@ class WorkerSQL extends SQL
         return $this->mapToWorkerObject($info);
     }
 
-    public function attachJob($id_worker, $id_job)
-    {
-        $sql = "UPDATE worker SET id_job=? WHERE id_worker=?";
-        $this->query($sql, $id_job, $id_worker);
-    }
-
     public function success($id_worker)
     {
         $sql = "DELETE FROM worker WHERE id_worker=?";
@@ -74,6 +70,35 @@ class WorkerSQL extends SQL
             $result[] = $this->mapToWorkerObject($info);
         }
         return $result;
+    }
+
+    /**
+     * @return WorkerObject[]
+     */
+    public function getOrphanRunningWorkers(): array
+    {
+        $sql = <<<SQL
+SELECT worker.*
+FROM worker
+LEFT JOIN job_queue ON job_queue.id_job = worker.id_job
+WHERE worker.termine = 0 AND job_queue.id_job IS NULL
+SQL;
+        $result = [];
+        foreach ($this->query($sql) as $worker_info) {
+            $result[] = $this->mapToWorkerObject($worker_info);
+        }
+        return $result;
+    }
+
+    public function deleteFinishedOrphanWorkers(): void
+    {
+        $sql = <<<SQL
+DELETE worker
+FROM worker
+LEFT JOIN job_queue ON job_queue.id_job = worker.id_job
+WHERE worker.termine = 1 AND job_queue.id_job IS NULL
+SQL;
+        $this->query($sql);
     }
 
     /**
@@ -154,7 +179,9 @@ class WorkerSQL extends SQL
 
     public function getNbActif(): int
     {
-        $sql = 'SELECT count(*) FROM worker WHERE termine=0';
+        $sql = <<<SQL
+SELECT count(*) FROM worker WHERE termine = 0
+SQL;
         return $this->queryOne($sql);
     }
 

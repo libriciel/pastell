@@ -24,19 +24,19 @@ class WorkerSQLTest extends PastellTestCase
 
     public function testCreate(): void
     {
-        static::assertNotNull($this->workerSQL->create(42));
+        self::assertGreaterThan(0, $this->workerSQL->create(42, 12));
     }
 
     public function testGetInfo(): void
     {
-        $id_worker = $this->workerSQL->create(42);
+        $id_worker = $this->workerSQL->create(42, 12);
         $worker = $this->workerSQL->getWorker($id_worker);
         static::assertSame(42, $worker->pid);
     }
 
     public function testError(): void
     {
-        $id_worker = $this->workerSQL->create(42);
+        $id_worker = $this->workerSQL->create(42, 12);
         $this->workerSQL->error($id_worker, "Message d'erreur");
         $worker = $this->workerSQL->getWorker($id_worker);
         static::assertSame(1, $worker->termine);
@@ -44,22 +44,21 @@ class WorkerSQLTest extends PastellTestCase
 
     public function testRunningWorkerInfo(): void
     {
-        $id_worker = $this->workerSQL->create(42);
-        $this->workerSQL->attachJob($id_worker, 12);
+        $this->workerSQL->create(42, 12);
         $worker = $this->workerSQL->getRunningWorker(12);
         static::assertSame(12, $worker->id_job);
     }
 
     public function testSuccess(): void
     {
-        $id_worker = $this->workerSQL->create(42);
+        $id_worker = $this->workerSQL->create(42, 12);
         $this->workerSQL->success($id_worker);
         static::assertNull($this->workerSQL->getWorker($id_worker));
     }
 
     public function testGetAllRunningWorker(): void
     {
-        $id_worker = $this->workerSQL->create(42);
+        $id_worker = $this->workerSQL->create(42, 12);
         $workers = $this->workerSQL->getAllRunningWorker();
         static::assertSame((int)$id_worker, $workers[0]->id_worker);
     }
@@ -69,13 +68,11 @@ class WorkerSQLTest extends PastellTestCase
      */
     public function testGetAllRunningWorkerForDaemon(): void
     {
-        $id_worker_1 = $this->workerSQL->create(42);
         $id_job_1 = $this->addJobWithDaemon($this->globalDaemon->id_daemon);
-        $this->workerSQL->attachJob($id_worker_1, $id_job_1);
+        $this->workerSQL->create(42, (int)$id_job_1);
 
-        $id_worker_2 = $this->workerSQL->create(43);
         $id_job_2 = $this->addJobWithDaemon(2);
-        $this->workerSQL->attachJob($id_worker_2, $id_job_2);
+        $this->workerSQL->create(43, (int)$id_job_2);
         $workers = $this->workerSQL->getRunningWorkersForDaemon($this->globalDaemon->id_daemon);
         static::assertCount(1, $workers);
     }
@@ -104,20 +101,17 @@ class WorkerSQLTest extends PastellTestCase
     private function launchWorker(): int
     {
         $id_job = $this->createJob();
-        $id_worker = $this->workerSQL->create(42);
-        $this->workerSQL->attachJob($id_worker, $id_job);
-        return (int)$id_worker;
+        return $this->workerSQL->create(42, (int)$id_job);
     }
 
     public function testGetJobToLauch(): void
     {
         $id_job = $this->createJob();
-        $id_worker = $this->workerSQL->create(42);
 
         $id_job_list = $this->workerSQL->getJobsToLaunch(5, $this->globalDaemon->id_daemon);
         static::assertSame([(int)$id_job], $id_job_list);
 
-        $this->workerSQL->attachJob($id_worker, $id_job);
+        $this->workerSQL->create(42, (int)$id_job);
         static::assertEmpty($this->workerSQL->getJobsToLaunch(5, $this->globalDaemon->id_daemon));
     }
 
@@ -125,6 +119,53 @@ class WorkerSQLTest extends PastellTestCase
     {
         $this->launchWorker();
         static::assertSame(1, $this->workerSQL->getNbActif());
+    }
+
+    public function testNbActifCountsOrphan(): void
+    {
+        $this->launchWorker();
+        $this->workerSQL->create(43, 12);
+        self::assertSame(2, $this->workerSQL->getNbActif());
+    }
+
+    public function testCreateWithJob(): void
+    {
+        $id_worker = $this->workerSQL->create(42, 12);
+        $worker = $this->workerSQL->getRunningWorker(12);
+        self::assertSame($id_worker, $worker->id_worker);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetOrphanRunningWorkers(): void
+    {
+        $this->launchWorker();
+        $id_worker = $this->workerSQL->create(43, 12);
+
+        $workers = $this->workerSQL->getOrphanRunningWorkers();
+
+        self::assertCount(1, $workers);
+        self::assertSame($id_worker, $workers[0]->id_worker);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testDeleteFinishedOrphanWorkers(): void
+    {
+        $id_job = (int)$this->createJob();
+        $id_worker_finished = $this->workerSQL->create(42, $id_job);
+        $this->workerSQL->error($id_worker_finished, 'error');
+        $id_worker_orphan_running = $this->workerSQL->create(43, 12);
+        $id_worker_orphan_finished = $this->workerSQL->create(44, 12);
+        $this->workerSQL->error($id_worker_orphan_finished, 'error');
+
+        $this->workerSQL->deleteFinishedOrphanWorkers();
+
+        self::assertNotNull($this->workerSQL->getWorker($id_worker_finished));
+        self::assertNotNull($this->workerSQL->getWorker($id_worker_orphan_running));
+        self::assertNull($this->workerSQL->getWorker($id_worker_orphan_finished));
     }
 
     public function testGetNbActifForDameon(): void
@@ -223,8 +264,7 @@ class WorkerSQLTest extends PastellTestCase
         $id_job_list = $this->workerSQL->getJobsToLaunch(5, $this->globalDaemon->id_daemon);
         $this->assertSame([(int)$id_job_1], $id_job_list);
 
-        $id_worker = $this->workerSQL->create(42);
-        $this->workerSQL->attachJob($id_worker, $id_job_1);
+        $this->workerSQL->create(42, (int)$id_job_1);
 
         $all_verrou = $this->workerSQL->getVerrou();
         static::assertSame(['VERROU'], $all_verrou);
@@ -344,8 +384,7 @@ class WorkerSQLTest extends PastellTestCase
         $job->next_try = date('Y-M-d', strtotime('yesterday'));
         $job->id_ce = 1;
         $id_job = $this->jobQueueSQL->createJob($job);
-        $id_worker = $this->workerSQL->create(42);
-        $this->workerSQL->attachJob($id_worker, $id_job);
+        $id_worker = $this->workerSQL->create(42, (int)$id_job);
 
         static::assertSame(
             (int)$id_worker,

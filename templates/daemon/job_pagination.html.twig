@@ -13,7 +13,9 @@
     'search_id_e': search.id_e,
     'include_children': search.include_children,
     'id_verrou': search.id_verrou,
-    'late': search.late
+    'late': search.late,
+    'since_one_hour': search.since_one_hour,
+    'search_date': search.search_date
 } : {})
     |merge(id_e is defined ? {'id_e': id_e} : {})
     |merge(filtre|default('') ? {'filtre': filtre} : {}) %}

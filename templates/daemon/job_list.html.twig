@@ -39,7 +39,7 @@
                 <input type="hidden" name="{{ name }}[]" value="{{ value }}">
             {% endfor %}
         {% endfor %}
-        {% for name, value in {'search_id_e': search.id_e, 'include_children': search.include_children, 'late': search.late, 'late_before': search.late_before} %}
+        {% for name, value in {'search_id_e': search.id_e, 'include_children': search.include_children, 'late': search.late, 'since_one_hour': search.since_one_hour, 'search_date': search.search_date} %}
             <input type="hidden" name="{{ name }}" value="{{ value }}">
         {% endfor %}
 

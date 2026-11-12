@@ -9,6 +9,8 @@
   - Ajout d'une recherche avancée 
   - Ajout du tri par dates sur la liste des travaux
   - Possibilité de suspendre/reprendre les travaux correspondants à la recherche
+  - La page d'accueil du gestionnaire de tâches affiche la liste des prochains travaux à exécuter
+    et des liens vers 'Tous les travaux' avec les filtres correspondants
 - iparapheur REST "Multi-documents ET annexes" :
   - **BREAKING** : Suppression de la case 'Appliquer le multi-document' du connecteur iparapheur REST #2593
   - Studio, l'étape « Visa/Signature » dispose d'un nouveau champ « Autre(s) document(s) à signer ».
@@ -67,6 +69,8 @@
 ### Corrections
 
 - Standardisation du footer selon la charte Libriciel SCOP #2440
+- Gestionnaire de tâches : les processus dont le travail a été supprimé et qui ne se sont pas terminés correctement
+  sont supprimés par le gestionnaire de tâches #964
 
 ### Suppressions
 
@@ -74,6 +78,9 @@
   - Suppression des fichiers obsolètes `extensions_graphe.dot` et `extensions_graphe.jpg` du workspace lors de la mise à jour
 - Suppression de la méthode `Gabarit::getPastellTimer()` #2600
 - Suppression de la classe `PastellTimer` #2600
+- Suppression de `JobQueueSQL::getAllJobs()`, remplacée par `JobQueueSQL::getFilteredJobList()` #964
+- Suppression des paramètres `$limit` et `$offset` de `JobQueueSQL::getJobsByDaemon()` #964
+- Suppression de `WorkerSQL::attachJob()`, le paramètre `$id_job` de `WorkerSQL::create()` devient obligatoire #964
 
 ### Suppressions d'éléments dépréciés
 
@@ -122,7 +129,6 @@
     - `Controler::getViewParameterOrObject()`
     - `DroitService::getAllDroitEntite()`
     - `FluxAPIController::listFlux()`
-
 ## [5.0.12] - 2026-11-02
 
 ### Évolutions

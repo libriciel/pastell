@@ -65,38 +65,38 @@ class JobQueueSQL extends SQL
         return $job_list;
     }
 
-    public function deleteConnecteur($id_ce)
+    public function deleteConnecteur(int|string $id_ce): void
     {
         if ($id_ce == 0) {
             return;
         }
-        $sql = "DELETE FROM job_queue WHERE id_ce=?";
-        $this->query($sql, $id_ce);
+        $this->deleteJobsWhere('job_queue.id_ce = ?', $id_ce);
     }
 
-    public function deleteDocument($id_e, $id_d)
+    public function deleteDocument(int|string $id_e, string $id_d): void
     {
-        $sql = "DELETE FROM job_queue WHERE id_e=? AND id_d=?";
-        $this->query($sql, $id_e, $id_d);
+        $this->deleteJobsWhere('job_queue.id_e = ? AND job_queue.id_d = ?', $id_e, $id_d);
     }
 
     public function deleteDocumentForAllEntities(string $id_d): void
     {
-        $sql = "DELETE FROM job_queue WHERE id_d=?";
-        $this->query($sql, $id_d);
+        $this->deleteJobsWhere('job_queue.id_d = ?', $id_d);
     }
 
-    public function deleteJob($id_job): void
+    private function deleteJobsWhere(string $condition, int|string ...$values): void
     {
         $sql = <<<SQL
-DELETE FROM worker WHERE id_job=?;
+DELETE job_queue, worker
+FROM job_queue
+LEFT JOIN worker ON worker.id_job = job_queue.id_job AND worker.termine = 1
+WHERE $condition
 SQL;
-        $this->query($sql, $id_job);
+        $this->query($sql, ...$values);
+    }
 
-        $sql = <<<SQL
-DELETE FROM job_queue WHERE id_job=?;
-SQL;
-        $this->query($sql, $id_job);
+    public function deleteJob(int|string $id_job): void
+    {
+        $this->deleteJobsWhere('job_queue.id_job = ?', (int) $id_job);
     }
 
     public function getJobIdForConnecteur($id_ce, $etat_source)
@@ -271,7 +271,7 @@ SQL;
         $info['nb_lock'] = $this->queryOne($sql);
 
         $sql = <<<SQL
-SELECT count(*) 
+SELECT count(*)
 FROM job_queue
 WHERE next_try < ?
 AND job_status = 0
@@ -286,8 +286,8 @@ SQL;
     public function getStatInfoForDaemon(int $id_daemon): array
     {
         $sql = <<<SQL
-SELECT count(*) 
-FROM job_queue 
+SELECT count(*)
+FROM job_queue
 WHERE id_daemon = ?
 SQL;
         $info['nb_job'] = $this->queryOne($sql, $id_daemon);
@@ -301,8 +301,8 @@ SQL;
         $info['nb_lock'] = $this->queryOne($sql, $id_daemon);
 
         $sql = <<<SQL
-SELECT count(*) 
-FROM job_queue 
+SELECT count(*)
+FROM job_queue
 WHERE next_try < ?
 AND job_status = 0
 AND id_daemon = ?
@@ -312,18 +312,26 @@ SQL;
         return $info;
     }
 
+    private function getOneHourBefore(string $date): string
+    {
+        return date(Date::DATE_ISO, strtotime($date . ' -1 hour'));
+    }
+
     public function getNbLockSinceOneHour(): ?int
     {
-        $last_hour = date("Y-m-d H:i:s", strtotime("-1 hour"));
-        $sql = "SELECT count(*) FROM job_queue WHERE job_status != 0 AND lock_since < ?";
-        return $this->queryOne($sql, $last_hour);
+        $sql = <<<SQL
+SELECT count(*) FROM job_queue WHERE job_status != ? AND lock_since < ?
+SQL;
+        return $this->queryOne($sql, JobStatus::WAITING->value, $this->getOneHourBefore($this->getNow()));
     }
 
     public function getNbLockSinceOneHourForDaemon(int $id_daemon): ?int
     {
-        $last_hour = date('Y-m-d H:i:s', strtotime('-1 hour'));
-        $sql = 'SELECT count(*) FROM job_queue WHERE job_status != 0 AND lock_since < ? AND id_daemon = ?';
-        return $this->queryOne($sql, [$last_hour, $id_daemon]);
+        $sql = <<<SQL
+SELECT count(*) FROM job_queue WHERE job_status != ? AND lock_since < ? AND id_daemon = ?
+SQL;
+        $one_hour_ago = $this->getOneHourBefore($this->getNow());
+        return $this->queryOne($sql, JobStatus::WAITING->value, $one_hour_ago, $id_daemon);
     }
 
     public function getMaxLastTryOneHourLate(int $id_daemon): ?string
@@ -375,16 +383,12 @@ SQL;
     /**
      * @return Job[]
      */
-    public function getJobsByDaemon(int $id_daemon, ?int $limit = null, ?int $offset = null): array
+    public function getJobsByDaemon(int $id_daemon): array
     {
-        $sql = 'SELECT * FROM job_queue WHERE id_daemon = ? ORDER BY next_try DESC';
-
-        if ($limit !== null) {
-            $sql .= ' LIMIT ' . ($offset !== null ? "$offset, $limit" : "$limit");
-        }
-
-        $result = $this->query($sql, $id_daemon);
-        return $this->mapResultToJobList($result);
+        $sql = <<<SQL
+SELECT * FROM job_queue WHERE id_daemon = ? ORDER BY next_try DESC
+SQL;
+        return $this->mapResultToJobList($this->query($sql, $id_daemon));
     }
 
     /**
@@ -403,19 +407,6 @@ SQL;
     /**
      * @return Job[]
      */
-    public function getAllJobs(int $offset = 0, int $limit = 20): array
-    {
-        $sql = "SELECT *
-        FROM job_queue jq
-        ORDER BY next_try DESC
-        LIMIT $offset, $limit";
-        $results = $this->query($sql);
-        return $this->mapResultToJobList($results);
-    }
-
-    /**
-     * @return Job[]
-     */
     public function getFilteredJobList(
         int $limit = 20,
         int $offset = 0,
@@ -426,7 +417,7 @@ SQL;
     ): array {
         $sql = 'SELECT *, job_queue.id_job as id_job
             FROM job_queue
-            LEFT JOIN worker ON job_queue.id_job = worker.id_job
+            LEFT JOIN worker ON job_queue.id_job = worker.id_job AND worker.termine = 0
             WHERE 1=1';
 
         $params = [];
@@ -497,7 +488,7 @@ SQL;
     ): array {
         $sql = <<<SQL
 FROM job_queue
-LEFT JOIN worker ON job_queue.id_job = worker.id_job
+LEFT JOIN worker ON job_queue.id_job = worker.id_job AND worker.termine = 0
 SQL;
         $sql .= $join . ' WHERE 1=1';
 
@@ -542,9 +533,17 @@ SQL;
             }
         }
 
+        $search_date = $filters->search_date !== '' ? $filters->search_date : $this->getNow();
         if ($filters->late !== '') {
             $sql .= ' AND job_queue.next_try < ?';
-            $params[] = $filters->late_before !== '' ? $filters->late_before : $this->getNow();
+            $params[] = $search_date;
+        }
+
+        if ($filters->since_one_hour !== '') {
+            $sql .= ' AND ((job_queue.job_status = ? AND job_queue.next_try < ?)'
+                . ' OR (job_queue.job_status != ? AND job_queue.lock_since < ?))';
+            $one_hour_ago = $this->getOneHourBefore($search_date);
+            array_push($params, JobStatus::WAITING->value, $one_hour_ago, JobStatus::WAITING->value, $one_hour_ago);
         }
 
         if ($filters->id_e !== '') {

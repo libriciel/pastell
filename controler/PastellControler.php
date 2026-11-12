@@ -448,10 +448,8 @@ class PastellControler extends Controler
         } else {
             $this->setMenuGaucheSelect($menu);
             $this->setViewParameter('sub_title', 'Liste de tous les travaux');
-            $advancedFilters = JobAdvancedFilters::fromRecuperateur($recuperateur);
-            if ($advancedFilters->late !== '' && $advancedFilters->late_before === '') {
-                $advancedFilters = $advancedFilters->withLateBefore($this->getJobQueueSQL()->getNow());
-            }
+            $now = $this->getJobQueueSQL()->getNow();
+            $advancedFilters = JobAdvancedFilters::fromRecuperateur($recuperateur)->withSearchDate($now);
             $sort = JobSort::fromRecuperateur($recuperateur);
             $this->setViewParameter('search', $advancedFilters);
             $this->setViewParameter('sort', $sort);
