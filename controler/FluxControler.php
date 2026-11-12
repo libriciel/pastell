@@ -2,6 +2,7 @@
 
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Connecteur\ConnecteurAvailabilityService;
+use Pastell\Service\Connecteur\FluxConnecteurListService;
 use Pastell\Service\Connecteur\FluxInheritanceService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Entite\EntityInfoService;
@@ -38,6 +39,11 @@ class FluxControler extends PastellControler
         return $this->getObjectInstancier()->getInstance(ConnecteurAssociationService::class);
     }
 
+    private function getFluxConnecteurListService(): FluxConnecteurListService
+    {
+        return $this->getObjectInstancier()->getInstance(FluxConnecteurListService::class);
+    }
+
     /**
      * @throws NotFoundException
      */
@@ -53,62 +59,12 @@ class FluxControler extends PastellControler
             $this->setViewParameter('id_e_mere', $this->getEntiteSQL()->getEntiteMere($id_e));
             $this->setViewParameter('all_herited', $fluxEntiteHeritageSQL->hasInheritanceAllFlux($id_e));
 
-            $fluxList = $this->getFluxDefinitionFiles()->getAll();
-            foreach ($fluxList as $fluxId => $fluxInfo) {
-                $fluxList[$fluxId]['nb_connector'] = 0;
-                foreach ($this->getConnectorForFlux($id_e, $fluxId) as $connectorInfo) {
-                    if ($connectorInfo['connecteur_info']) {
-                        $fluxList[$fluxId]['nb_connector']++;
-                        $fluxList[$fluxId]['famille_associe'][$fluxList[$fluxId]['nb_connector']] =
-                            $connectorInfo['connecteur_info']['type'];
-                    }
-                }
-                unset($fluxList[$fluxId]['formulaire'], $fluxList[$fluxId]['action']);
-            }
+            $fluxConnecteurListService = $this->getFluxConnecteurListService();
+            $flux_list = $fluxConnecteurListService->getFluxListWithConnecteur($id_e);
+            $possible_pack_list = $fluxConnecteurListService->getPossiblePackList($this->apiGet('/flux'));
 
-            $possibleFluxList = $this->apiGet('/flux');
-            $possiblePackList = [];
-            foreach ($possibleFluxList as $fluxId => $fluxInfo) {
-                if (!empty($fluxList[$fluxId]['connecteur'])) {
-                    $possiblePackList[$fluxInfo['type']][$fluxId] = $fluxInfo;
-                }
-            }
-            foreach ($fluxList as $fluxId => $fluxInfo) {
-                if ($fluxInfo['nb_connector'] === 0) {
-                    unset($fluxList[$fluxId]);
-                }
-            }
-
-            foreach ($fluxList as $fluxId => $fluxInfo) {
-                $fluxList[$fluxId]['affiche_hover'] = false;
-
-                if (count($fluxInfo['famille_associe']) > 4) {
-                    $fluxList[$fluxId]['affiche_hover'] = true;
-                    $hover = '';
-                    foreach ($fluxInfo['famille_associe'] as $key => $connecteur) {
-                        $hover .= $connecteur;
-                        if ($key !== count($fluxInfo['famille_associe'])) {
-                            $hover .= ', ';
-                        }
-                    }
-                    $fluxList[$fluxId]['hover'] = $hover;
-                }
-
-                $fluxList[$fluxId]['famille_associe_affiche'] = '';
-                foreach ($fluxInfo['famille_associe'] as $key => $connecteur) {
-                    $fluxList[$fluxId]['famille_associe_affiche'] .= $connecteur;
-                    if ($key !== count($fluxInfo['famille_associe'])) {
-                        $fluxList[$fluxId]['famille_associe_affiche'] .= ', ';
-                    }
-                    if ($fluxList[$fluxId]['affiche_hover'] && $key === 4) {
-                        $fluxList[$fluxId]['famille_associe_affiche'] .= '...';
-                        break;
-                    }
-                }
-            }
-
-            $this->setViewParameter('flux_list', $fluxList);
-            $this->setViewParameter('possible_pack_list', $possiblePackList);
+            $this->setViewParameter('flux_list', $flux_list);
+            $this->setViewParameter('possible_pack_list', $possible_pack_list);
             $this->setViewParameter('template_milieu', "FluxList");
         } else {
             $all_connecteur_type = $this->getConnecteurDefinitionFiles()->getAllGlobalType();
@@ -155,7 +111,10 @@ class FluxControler extends PastellControler
         $fluxEntiteHeritageSQL = $this->getInstance(FluxEntiteHeritageSQL::class);
         $this->setViewParameter('id_e_mere', $this->getEntiteSQL()->getEntiteMere($id_e));
         $this->setViewParameter('all_herited', $fluxEntiteHeritageSQL->hasInheritanceAllFlux($id_e));
-        $this->setViewParameter('flux_connecteur_list', $this->getConnectorForFlux($id_e, $flux));
+        $this->setViewParameter(
+            'flux_connecteur_list',
+            $this->getFluxConnecteurListService()->getConnecteurList($id_e, $flux)
+        );
         $this->setViewParameter('template_milieu', "FluxDetail");
         $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $this->setViewParameter('entite_denomination', $this->getInstance(EntityInfoService::class)->getDenomination($id_e));
@@ -277,34 +236,12 @@ class FluxControler extends PastellControler
         }
     }
 
+    /**
+     * @deprecated 4.1.26 Use FluxConnecteurListService::getConnecteurList() instead
+     */
     public function getConnectorForFlux(int $id_e, string $id_flux): array
     {
-        $all_flux_entite = $this->getInstance(FluxInheritanceService::class)->getAllWithSameType($id_e);
-        $result = [];
-        $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($id_flux);
-        foreach ($documentType->getConnecteurAllInfo() as $j => $connecteur_type_info) {
-            $connecteur_id = $connecteur_type_info[DocumentType::CONNECTEUR_ID];
-            $line = [];
-            $line['nb_connecteur'] = count($documentType->getConnecteur());
-            $line['num_connecteur'] = $j;
-            $line['id_flux'] = $id_flux;
-            $line['nom_flux'] = $documentType->getName();
-            $line['connecteur_type'] = $connecteur_id;
-            $line[DocumentType::CONNECTEUR_WITH_SAME_TYPE] =
-                $connecteur_type_info[DocumentType::CONNECTEUR_WITH_SAME_TYPE];
-            $line[DocumentType::NUM_SAME_TYPE] = $connecteur_type_info[DocumentType::NUM_SAME_TYPE];
-            $line['inherited_flux'] = false;
-            $line['connecteur_info'] = false;
-            $connecteur_info = $all_flux_entite[$id_flux][$connecteur_id][$line[DocumentType::NUM_SAME_TYPE]] ?? null;
-            if ($connecteur_info !== null) {
-                $line['connecteur_info'] = RootEntity::addDenomination([$connecteur_info])[0];
-            }
-            if (isset($all_flux_entite[$id_flux]['inherited_flux'])) {
-                $line['inherited_flux'] = $all_flux_entite[$id_flux]['inherited_flux'];
-            }
-            $result[] = $line;
-        }
-        return $result;
+        return $this->getFluxConnecteurListService()->getConnecteurList($id_e, $id_flux);
     }
 
     public function toogleHeritageAction()
