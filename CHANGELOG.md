@@ -24,6 +24,7 @@
 - Méthodes `getAllType()`, `getNom()`, `isActive()` et `isCDG()` de `EntiteSQL` dépréciées au profit de l'enum
   `EntityType` et du service `EntityInfoService` #2627
 - Classe `ActionCreatorSQL` dépréciée au profit de `ActionChange` #2629
+- Méthode `getActionCreator()` de `ActionExecutor` dépréciée au profit de `getActionChange()` #2629
 
 ### Sécurité
 

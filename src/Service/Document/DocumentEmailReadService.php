@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Pastell\Service\Document;
 
-use ActionCreatorSQL;
+use ActionChange;
 use DocumentActionEntiteSQL;
 use DocumentEmailSQL;
 use DocumentEntiteSQL;
@@ -24,7 +24,7 @@ class DocumentEmailReadService
         private readonly DocumentEntiteSQL $documentEntiteSQL,
         private readonly DocumentActionEntiteSQL $documentActionEntiteSQL,
         private readonly DocumentSQL $documentSQL,
-        private readonly ActionCreatorSQL $actionCreatorSQL,
+        private readonly ActionChange $actionChange,
         private readonly JournalEntryService $journalEntryService,
         private readonly NotificationMail $notificationMail,
         private readonly string $site_base,
@@ -60,12 +60,12 @@ class DocumentEmailReadService
         $nextAction = $allRead ? self::ACTION_RECEPTION : self::ACTION_PARTIAL_RECEPTION;
 
         if ($this->documentActionEntiteSQL->getLastAction($id_e, $id_d) !== $nextAction) {
-            $this->actionCreatorSQL->addAction(
+            $this->actionChange->addAction(
+                $id_d,
                 $id_e,
                 0,
                 $nextAction,
                 $allRead ? 'Tous les destinataires ont consulté le message' : 'Un destinataire a consulté le message',
-                $id_d
             );
         }
 

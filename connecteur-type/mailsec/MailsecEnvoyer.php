@@ -89,7 +89,8 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
         );
         $mailsecConnecteur->sendAllMail($this->id_e, $this->id_d);
 
-        $this->getActionCreator()->addAction(
+        $this->getActionChange()->addAction(
+            $this->id_d,
             $this->id_e,
             $this->id_u,
             $this->action,

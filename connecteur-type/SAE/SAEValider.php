@@ -83,7 +83,7 @@ class SAEValider extends ConnecteurTypeActionExecutor
 
     private function addActionAndNotify(string $nextAction, string $message): void
     {
-        $this->getActionCreator()->addAction($this->id_e, $this->id_u, $nextAction, $message);
+        $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, $nextAction, $message);
         $this->notify($nextAction, $this->type, $message);
         $this->setLastMessage($message);
     }

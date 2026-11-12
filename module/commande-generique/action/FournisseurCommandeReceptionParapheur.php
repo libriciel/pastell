@@ -102,7 +102,7 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
         $signature->effacerDossierRejete($dossierID);
 
         $this->notify('rejet-iparapheur', $this->type, "Le document a été rejeté dans le parapheur : $result");
-        $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'rejet-iparapheur', "Le document a été rejeté dans le parapheur : $result");
+        $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, 'rejet-iparapheur', "Le document a été rejeté dans le parapheur : $result");
         return true;
     }
 
@@ -160,7 +160,7 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
 
         $this->setLastMessage("La signature a été récupérée");
 
-        $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'recu-iparapheur', "La signature a été récupérée sur le parapheur électronique");
+        $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, 'recu-iparapheur', 'La signature a été récupérée sur le parapheur électronique');
         return true;
     }
 }

@@ -98,7 +98,7 @@ class CppModifStatut extends ActionExecutor
             }
 
             $message = "La facture est en statut " . $statut_cible;
-            $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'cpp-modif-statut-ok', $message);
+            $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, 'cpp-modif-statut-ok', $message);
             $this->notify('cpp-modif-statut-ok', $this->type, $message);
             return true;
         }
@@ -108,19 +108,19 @@ class CppModifStatut extends ActionExecutor
 
         if ($connPortailFacture->getNoChangeStatutChorus()) {
             $message = "La remontée de la modification de statut sur Chorus Pro est désactivée.";
-            $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'cpp-modif-statut-erreur', $message);
+            $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, 'cpp-modif-statut-erreur', $message);
             return false;
         }
         try {
             $result_modif = $this->metier();
             if (!$result_modif) {
-                $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'cpp-modif-statut-erreur', $this->getLastMessage());
+                $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, 'cpp-modif-statut-erreur', $this->getLastMessage());
                 $this->notify('cpp-modif-statut-erreur', $this->type, $this->getLastMessage());
                 return false;
             } else {
                 if ($result_modif['statut_consomme_array']) {
                     $message = "La facture est déja en statut " . $result_modif['statut'];
-                    $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'cpp-modif-statut-ok', $message);
+                    $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, 'cpp-modif-statut-ok', $message);
                     $this->notify('cpp-modif-statut-ok', $this->type, $message);
                     return true;
                 }
@@ -133,10 +133,10 @@ class CppModifStatut extends ActionExecutor
 
                 if ($statut_cible_liste) {
                     $message = "Demande de modification en statut cible " . $this->getStatutCible($statut_cible_liste);
-                    $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'cpp-modif-statut-demande', $message);
+                    $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, 'cpp-modif-statut-demande', $message);
                 } else {
                     $message = "La facture est en statut " . $statut_cpp;
-                    $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'cpp-modif-statut-ok', $message);
+                    $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, 'cpp-modif-statut-ok', $message);
                     $this->notify('cpp-modif-statut-ok', $this->type, $message);
 
                     /** @var PortailFactureConnecteur $portailFactureConnecteur */

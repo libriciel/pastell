@@ -21,11 +21,11 @@ class TdTRestamp extends ConnecteurTypeActionExecutor
 
         $tedetis_transaction_id = $this->getDonneesFormulaire()->get($tedetis_transaction_id_element);
 
-        $actionCreator = $this->getActionCreator();
+        $actionChange = $this->getActionChange();
         if (! $tedetis_transaction_id) {
             $message = "Une erreur est survenue lors de l'envoi à " . $tdT->getLogicielName() . " (tedetis_transaction_id non disponible)";
             $this->setLastMessage($message);
-            $actionCreator->addAction($this->id_e, 0, $tdt_error, $message);
+            $actionChange->addAction($this->id_d, $this->id_e, 0, $tdt_error, $message);
             $this->notify($tdt_error, $this->type, $message);
             return false;
         }
@@ -54,7 +54,7 @@ class TdTRestamp extends ConnecteurTypeActionExecutor
                     $message = "Une erreur est survenue lors de la récupération des annexes tamponnées de " . $tdT->getLogicielName() .
                         " L'annexe tamponée " . $annexe_tamponnee['filename'] . " ne correspond pas avec " . $annexe_filename_send;
                     $this->setLastMessage($message);
-                    $actionCreator->addAction($this->id_e, 0, $tdt_error, $message);
+                    $actionChange->addAction($this->id_d, $this->id_e, 0, $tdt_error, $message);
                     $this->notify($tdt_error, $this->type, $message);
                     return false;
                 }

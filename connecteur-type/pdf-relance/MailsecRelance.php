@@ -43,13 +43,14 @@ class MailsecRelance extends ConnecteurTypeActionExecutor
         ) {
             $message = "Préparation du renvoi du document";
             $this->setLastMessage($message);
-            $this->getActionCreator()->addAction($this->id_e, $this->id_u, $prepare_renvoi_action, $message);
+            $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, $prepare_renvoi_action, $message);
             return true;
         }
 
         if ($pdfGeneriqueRelanceConnecteur->mustGoToNextState($date_send_mailsec)) {
             $this->setLastMessage("Le document passe en non reçu !");
-            $this->getActionCreator()->addAction(
+            $this->getActionChange()->addAction(
+                $this->id_d,
                 $this->id_e,
                 $this->id_u,
                 $non_recu_action,

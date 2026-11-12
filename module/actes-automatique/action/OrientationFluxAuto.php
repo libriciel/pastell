@@ -84,7 +84,7 @@ class OrientationFluxAuto extends ActionExecutor
                 $this->notifyAndExit("Impossible de faire avancer le document depuis l'état : $last_action");
         }
 
-        $this->getActionCreator()->addAction($this->id_e, $this->id_u, $action_cible, "Préparation de l'envoi suivant");
+        $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, $action_cible, "Préparation de l'envoi suivant");
         $this->setLastMessage("Préparation pour le prochain état : $action_cible");
         return true;
     }
