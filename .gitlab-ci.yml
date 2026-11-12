@@ -8,10 +8,10 @@ include:
 #  - component: $LIBRICIEL_CATALOG_PATH/qlty/code-quality@~latest
 #    inputs:
 #      mode: "changed"
-  - component: $LIBRICIEL_CATALOG_PATH/project-standards/check-libriciel-standards@3.1.0
-  - component: $LIBRICIEL_CATALOG_PATH/renovate-runner/runner@1.6.1
-  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.3.0
-  - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@1.4.0
+  - component: $LIBRICIEL_CATALOG_PATH/project-standards/check-libriciel-standards@3.3.0
+  - component: $LIBRICIEL_CATALOG_PATH/renovate-runner/runner@1.7.0
+  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.4.0
+  - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@2.0.0
     inputs:
       compose_file: "docker/compose.yaml"
       version_placeholder: "canary"
@@ -185,7 +185,7 @@ acceptance_test:
 .security_scan_base:
   stage: test
   image:
-    name: hubdocker.libriciel.fr/aquasec/trivy:0.76.1
+    name: hubdocker.libriciel.fr/aquasec/trivy:0.76.2
     entrypoint: [""]
   services:
     - docker:dind
@@ -238,39 +238,11 @@ publish-container-to-registry:
     - docker build ${DOCKER_BUILD_OPTS} --pull -t ${WEB_IMAGE} -f docker/web/Dockerfile .
     - docker push ${WEB_IMAGE}
 
-deploy_dev:
-  needs: [ "publish-container-to-registry" ]
-  allow_failure: true
-  stage: deploy
-  environment:
-    name: pastell-4-0.dev.libriciel.net
-    url: https://pastell-4-0.dev.libriciel.net
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
-    - if: $CI_COMMIT_TAG != null
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"
-  variables:
-    PAYLOAD: "payload={\"text\": \"[pastell-4-0.dev.libriciel.net](https://pastell-4-0.dev.libriciel.net) a été mis à jour - [build $CI_PIPELINE_ID]($CI_PROJECT_URL/pipelines/$CI_PIPELINE_ID)\"}"
-  script:
-    - eval $(ssh-agent -s)
-    - ssh-add <(echo "$SSH_PRIVATE_KEY")
-    - mkdir -p ~/.ssh
-    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-    - scp ./docker/compose.yaml gitlab@pastell-4-0.dev.libriciel.net:/data/docker-file/docker-compose.yml
-    - echo "$DEV_ENV_FILE_CONTENT" > /tmp/.env
-    - scp /tmp/.env gitlab@pastell-4-0.dev.libriciel.net:/data/docker-file/
-    - ssh -tt gitlab@pastell-4-0.dev.libriciel.net "docker login -u gitlab-ci-token -p '$CI_JOB_TOKEN' $CI_REGISTRY && cd /data/docker-file/ && docker-compose pull && docker-compose up -d"
-    - curl -i -X POST -d "$PAYLOAD" $MATTERMOST_WEBHOOK
-
 generate-sbom-compose:
   needs: [ "publish-container-to-registry"]
 
-package-sbom-compose:
-  needs: [ "generate-sbom-compose" ]
-
 publish-compose:
-  needs: [ "publish-container-to-registry", "package-sbom-compose" ]
+  needs: [ "publish-container-to-registry", "generate-sbom-compose" ]
   variables:
     COMPOSE_FILE_NAME: compose.yaml
   before_script:

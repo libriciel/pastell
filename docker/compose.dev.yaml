@@ -43,7 +43,7 @@ services:
       - "${DATABASE_PORT:-8306}:3306"
 
   db_test:
-    image: hubdocker.libriciel.fr/mariadb:11.4.13-noble@sha256:d1891ede5a559f1086f55053bb8cc1569b0298338c4d72d71725a7f74f6ba620
+    image: 'hubdocker.libriciel.fr/mariadb:11.4.13-noble@sha256:5e73baf8179b29f115101bb102763a47a017361f3e9792daccba6646c3ab1532'
     command:
       - "--character-set-server=utf8mb4"
       - "--collation-server=utf8mb4_unicode_ci"
