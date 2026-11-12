@@ -14,13 +14,15 @@
 - Classe `UtilisateurRoleCache` dépréciée au profit de `UtilisateurRoleCacheService` #2624
 - Classe `ConnecteurFrequence` et méthodes associées de `ConnecteurFrequenceSQL`, `JobManager` et `DaemonControler`
   dépréciées au profit de `ConnecteurFrequenceData` et du service `ConnecteurFrequenceService` #2625
-- Méthodes `removeEntite()`, `getEntiteFromData()`, `getCDG()`, `getSiren()`, `getExtendedInfo()`,
-  `getFilleInfoNavigation()`, `getAncetreNav()`, `getAncetreId()`, `getAllChildren()`, `getTreeEntity()`,
-  `updateAncestor()` et `updateAllAncestors()` de `EntiteSQL` dépréciées au profit des services `EntityInfoService`,
+- Méthodes `removeEntite()`, `getEntiteFromData()`, `getDenomination()`, `getCDG()`, `getSiren()`,
+  `getExtendedInfo()`, `getFilleInfoNavigation()`, `getAncetreNav()`, `getAncetreId()`, `getAllChildren()`,
+  `getTreeEntity()`, `updateAncestor()` et `updateAllAncestors()` de `EntiteSQL` dépréciées au profit des services `EntityInfoService`,
   `EntityHierarchyService` et `EntiteDeletionService` #2627
 - Service `EntityUtilitiesService` déprécié au profit de `RootEntity::addDenomination()` #2627
 - Constantes `TYPE_COLLECTIVITE`, `TYPE_CENTRE_DE_GESTION`, `ENTITE_RACINE_DENOMINATION` et `ID_E_ENTITE_RACINE` de
   `EntiteSQL` dépréciées au profit de l'enum `EntityType` et de la classe `RootEntity` #2627
+- Méthodes `getAllType()`, `getNom()`, `isActive()` et `isCDG()` de `EntiteSQL` dépréciées au profit de l'enum
+  `EntityType` et du service `EntityInfoService` #2627
 
 ### Sécurité
 

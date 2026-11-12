@@ -12,16 +12,45 @@ final class EntityInfoService
 {
     private const COLUMN_CENTRE_DE_GESTION = 'centre_de_gestion';
     private const COLUMN_SIREN = 'siren';
+    private const COLUMN_IS_ACTIVE = 'is_active';
+    private const COLUMN_TYPE = 'type';
 
     public function __construct(
         private readonly EntiteSQL $entiteSQL,
     ) {
     }
 
+    public function getDenomination(int $id_e): string
+    {
+        if ($id_e === RootEntity::ID_E) {
+            return RootEntity::DENOMINATION;
+        }
+        $entity_info = $this->entiteSQL->getInfo($id_e);
+        return $entity_info ? $entity_info['denomination'] : '';
+    }
+
     public function getCentreDeGestion(int $id_e): ?int
     {
         $cdg_id_e = $this->getInheritedValue($id_e, self::COLUMN_CENTRE_DE_GESTION);
         return $cdg_id_e === null ? null : (int)$cdg_id_e;
+    }
+
+    public function isActive(int $id_e): bool
+    {
+        if ($id_e === RootEntity::ID_E) {
+            return true;
+        }
+        $entity_info = $this->entiteSQL->getInfo($id_e);
+        return $entity_info && $entity_info[self::COLUMN_IS_ACTIVE];
+    }
+
+    public function isCentreDeGestion(int $id_e): bool
+    {
+        if ($id_e === RootEntity::ID_E) {
+            return true;
+        }
+        $entity_info = $this->entiteSQL->getInfo($id_e);
+        return $entity_info && $entity_info[self::COLUMN_TYPE] === EntityType::CENTRE_DE_GESTION->value;
     }
 
     public function getSiren(int $id_e): string

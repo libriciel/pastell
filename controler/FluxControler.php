@@ -3,6 +3,7 @@
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Connecteur\ConnecteurAvailabilityService;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\Service\Entite\EntityInfoService;
 use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
@@ -130,7 +131,7 @@ class FluxControler extends PastellControler
             $this->setViewParameter('template_milieu', "FluxGlobalList");
         }
         $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
-        $this->setViewParameter('entite_denomination', $this->getEntiteSQL()->getDenomination($this->getViewParameterByKey('id_e')));
+        $this->setViewParameter('entite_denomination', $this->getInstance(EntityInfoService::class)->getDenomination($id_e));
         $this->setViewParameter('page_title', "{$this->getViewParameterByKey('entite_denomination')} : " . ($id_e ? 'Liste des types de dossier' : 'Associations connecteurs globaux'));
 
         $this->renderDefault();
@@ -156,7 +157,7 @@ class FluxControler extends PastellControler
         $this->setViewParameter('flux_connecteur_list', $this->getConnectorForFlux($id_e, $flux));
         $this->setViewParameter('template_milieu', "FluxDetail");
         $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
-        $this->setViewParameter('entite_denomination', $this->getEntiteSQL()->getDenomination($id_e));
+        $this->setViewParameter('entite_denomination', $this->getInstance(EntityInfoService::class)->getDenomination($id_e));
 
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($flux);
 
@@ -199,7 +200,7 @@ class FluxControler extends PastellControler
             $this->redirect("/Flux/index?id_e=$id_e");
         }
 
-        $entite_denomination = $this->getEntiteSQL()->getDenomination($id_e);
+        $entite_denomination = $this->getInstance(EntityInfoService::class)->getDenomination($id_e);
         $connecteur_info = $this->getFluxEntiteSQL()->getConnecteur($id_e, $flux, $type_connecteur, $num_same_type);
         if ($connecteur_info) {
             $connecteur_info = RootEntity::addDenomination([$connecteur_info])[0];

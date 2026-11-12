@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Pastell\Configuration\Validators;
 
-use EntiteSQL;
 use Pastell\Configuration\ActionElement;
 use Pastell\Configuration\DocumentTypeValidation;
+use Pastell\Service\Entite\EntityType;
 
 class RuleTypeIdEValidator implements ValidatorInterface
 {
@@ -29,7 +29,7 @@ class RuleTypeIdEValidator implements ValidatorInterface
             );
         }
         foreach ($allType as $type) {
-            if (! array_key_exists($type, EntiteSQL::getAllType())) {
+            if (EntityType::tryFrom($type) === null) {
                 $this->errors[] = "action:*:rule:type_id_e:<b>$type</b> n'est pas un type d'entité du système";
             }
         }

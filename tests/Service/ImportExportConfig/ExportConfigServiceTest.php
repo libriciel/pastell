@@ -6,6 +6,7 @@ namespace Pastell\Tests\Service\ImportExportConfig;
 
 use EntiteSQL;
 use FakeTdT;
+use Pastell\Service\Entite\EntityInfoService;
 use Pastell\Service\Entite\EntityType;
 use TransformationGenerique;
 use FluxEntiteHeritageSQL;
@@ -272,13 +273,14 @@ class ExportConfigServiceTest extends PastellTestCase
         );
 
         $entiteSQL = $this->getObjectInstancier()->getInstance(EntiteSQL::class);
+        $entityInfoService = $this->getObjectInstancier()->getInstance(EntityInfoService::class);
 
         self::assertSame(
             'Carcassonne (id_e 3) est fille de Entité racine (id_e 0)',
             sprintf(
                 'Carcassonne (id_e %d) est fille de %s (id_e %d)',
                 $entiteSQL->getIdByDenomination('Carcassonne'),
-                $entiteSQL->getDenomination($entiteSQL->getEntiteMere($entiteSQL->getIdByDenomination('Carcassonne'))),
+                $entityInfoService->getDenomination((int)$entiteSQL->getEntiteMere($entiteSQL->getIdByDenomination('Carcassonne'))),
                 $entiteSQL->getEntiteMere($entiteSQL->getIdByDenomination('Carcassonne'))
             )
         );
@@ -287,7 +289,7 @@ class ExportConfigServiceTest extends PastellTestCase
             sprintf(
                 'Biarritz (id_e %d) est fille de %s (id_e %d)',
                 $entiteSQL->getIdByDenomination('Biarritz'),
-                $entiteSQL->getDenomination($entiteSQL->getEntiteMere($entiteSQL->getIdByDenomination('Biarritz'))),
+                $entityInfoService->getDenomination((int)$entiteSQL->getEntiteMere($entiteSQL->getIdByDenomination('Biarritz'))),
                 $entiteSQL->getEntiteMere($entiteSQL->getIdByDenomination('Biarritz'))
             )
         );
@@ -296,7 +298,7 @@ class ExportConfigServiceTest extends PastellTestCase
             sprintf(
                 'Arcachon (id_e %d) est fille de %s (id_e %d)',
                 $entiteSQL->getIdByDenomination('Arcachon'),
-                $entiteSQL->getDenomination($entiteSQL->getEntiteMere($entiteSQL->getIdByDenomination('Arcachon'))),
+                $entityInfoService->getDenomination((int)$entiteSQL->getEntiteMere($entiteSQL->getIdByDenomination('Arcachon'))),
                 $entiteSQL->getEntiteMere($entiteSQL->getIdByDenomination('Arcachon'))
             )
         );

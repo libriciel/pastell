@@ -98,11 +98,11 @@ class EntiteControler extends PastellControler
         );
         $listeUtilisateur = $this->getInstance(UtilisateurListService::class)
             ->getAllWithRoles($id_e, (bool) $descendance, $role, $search, $offset);
+        $entityHierarchyService = $this->getInstance(EntityHierarchyService::class);
         foreach ($listeUtilisateur as $key => $utilisateur) {
             foreach ($utilisateur['all_role'] as $j => $userRole) {
                 $listeUtilisateur[$key]['all_role'][$j]['ancetre'] =
-                    $this->getInstance(EntityHierarchyService::class)
-                        ->getAncestorDenominations((int)$userRole['entite_mere']);
+                    $entityHierarchyService->getAncestorDenominations((int)$userRole['entite_mere']);
             }
         }
         $this->setViewParameter('liste_utilisateur', $listeUtilisateur);

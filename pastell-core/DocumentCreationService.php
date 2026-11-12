@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Entite\EntityInfoService;
 
 class DocumentCreationService
 {
@@ -10,7 +11,7 @@ class DocumentCreationService
     private $droitService;
 
     public function __construct(
-        private readonly EntiteSQL $entiteSQL,
+        private readonly EntityInfoService $entityInfoService,
         DocumentSQL $documentSQL,
         ActionExecutorFactory $actionExecutorFactory,
         DroitService $droitService
@@ -31,7 +32,7 @@ class DocumentCreationService
      */
     public function createDocument(int $id_e, int $id_u, string $type): string
     {
-        if (!$this->entiteSQL->isActive($id_e)) {
+        if (!$this->entityInfoService->isActive($id_e)) {
             throw new ForbiddenException("L'entité $id_e est désactivée");
         }
         $droit = DroitService::getDroitFor($type, DroitType::EDITION);

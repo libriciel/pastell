@@ -48,6 +48,9 @@ class EntiteSQL extends SQL
         return $this->queryOne($sql, $denomination);
     }
 
+    /**
+     * @deprecated 4.1.26 Use EntityInfoService::getDenomination() instead
+     */
     public function getDenomination($id_e)
     {
         if ($id_e == RootEntity::ID_E) {
@@ -349,6 +352,9 @@ class EntiteSQL extends SQL
         throw new Exception("Aucun paramètre permettant la recherche de l'entité n'a été renseigné");
     }
 
+    /**
+     * @deprecated 4.1.26 Use EntityType instead
+     */
     public static function getAllType()
     {
         return [
@@ -357,6 +363,9 @@ class EntiteSQL extends SQL
         ];
     }
 
+    /**
+     * @deprecated 4.1.26 Use EntityType::getLabel() instead
+     */
     public static function getNom($type)
     {
         $type_nom = self::getAllType();
@@ -443,6 +452,9 @@ EOT;
         }
     }
 
+    /**
+     * @deprecated 4.1.26 Use EntityInfoService::isActive() instead
+     */
     public function isActive(int $entityId): bool
     {
         if ($entityId === 0) {
@@ -457,6 +469,9 @@ EOT;
         return (bool)$info['is_active'];
     }
 
+    /**
+     * @deprecated 4.1.26 Use EntityInfoService::isCentreDeGestion() instead
+     */
     public function isCDG(int $entityId): bool
     {
         if ($entityId === 0) {

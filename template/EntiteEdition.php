@@ -31,10 +31,10 @@ use Pastell\Service\Entite\EntityType;
         <th class='w300'>Type d'entité</th>
 
     <td><select name='type' class="form-select col-md-4">
-        <?php foreach (array_column(EntityType::cases(), 'value') as $type) :?>
+        <?php foreach (EntityType::values() as $type) :?>
         <option value='<?php echo $type?>'
              <?php echo $infoEntite['type'] == $type ? 'selected="selected"' : ''?>> 
-            <?php echo EntiteSQL::getNom($type) ?> </option>   
+            <?php echo EntityType::getLabel($type) ?> </option>   
         <?php endforeach;?>
 
     </select></td>

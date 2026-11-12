@@ -8,6 +8,9 @@
  * @var bool $is_supprimable
  * @var bool $cdg_feature
  */
+
+use Pastell\Service\Entite\EntityType;
+
 $id_e = $entiteExtendedInfo['id_e'];
 ?>
 <?php if (! $entiteExtendedInfo['is_active']) : ?>
@@ -20,7 +23,7 @@ $id_e = $entiteExtendedInfo['id_e'];
     <?php if ($cdg_feature) : ?>
     <tr>
         <th class='w200'>Type</th>
-        <td><?php echo EntiteSQL::getNom($entiteExtendedInfo['type']) ?></td>
+        <td><?php echo EntityType::getLabel($entiteExtendedInfo['type']) ?></td>
     </tr>
     <?php endif; ?>
 

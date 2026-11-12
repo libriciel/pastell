@@ -10,6 +10,7 @@ use NotFoundException;
 use Pastell\Service\Entite\EntityHierarchyService;
 use Pastell\Service\Entite\EntityInfoService;
 use Pastell\Service\Entite\EntityType;
+use Pastell\Service\Entite\RootEntity;
 use PastellTestCase;
 
 final class EntityInfoServiceTest extends PastellTestCase
@@ -22,6 +23,21 @@ final class EntityInfoServiceTest extends PastellTestCase
     private function getEntiteSQL(): EntiteSQL
     {
         return $this->getObjectInstancier()->getInstance(EntiteSQL::class);
+    }
+
+    public function testGetDenomination(): void
+    {
+        self::assertSame('Bourg-en-Bresse', $this->getEntityInfoService()->getDenomination(1));
+    }
+
+    public function testGetDenominationRootEntity(): void
+    {
+        self::assertSame(RootEntity::DENOMINATION, $this->getEntityInfoService()->getDenomination(RootEntity::ID_E));
+    }
+
+    public function testGetDenominationUnknownEntity(): void
+    {
+        self::assertSame('', $this->getEntityInfoService()->getDenomination(42));
     }
 
     public function testGetCentreDeGestion(): void
@@ -112,5 +128,47 @@ final class EntityInfoServiceTest extends PastellTestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("Aucun paramètre permettant la recherche de l'entité n'a été renseigné");
         $this->getEntityInfoService()->getEntityFromData([]);
+    }
+
+    public function testIsActive(): void
+    {
+        self::assertTrue($this->getEntityInfoService()->isActive(self::ID_E_COL));
+    }
+
+    public function testIsActiveRootEntity(): void
+    {
+        self::assertTrue($this->getEntityInfoService()->isActive(RootEntity::ID_E));
+    }
+
+    public function testIsActiveDisabledEntity(): void
+    {
+        $this->getEntiteSQL()->setActive(self::ID_E_COL, false);
+        self::assertFalse($this->getEntityInfoService()->isActive(self::ID_E_COL));
+    }
+
+    public function testIsActiveUnknownEntity(): void
+    {
+        self::assertFalse($this->getEntityInfoService()->isActive(42));
+    }
+
+    public function testIsCentreDeGestion(): void
+    {
+        $cdg_id_e = $this->getEntiteSQL()->create('CDG', '', EntityType::CENTRE_DE_GESTION->value);
+        self::assertTrue($this->getEntityInfoService()->isCentreDeGestion($cdg_id_e));
+    }
+
+    public function testIsCentreDeGestionRootEntity(): void
+    {
+        self::assertTrue($this->getEntityInfoService()->isCentreDeGestion(RootEntity::ID_E));
+    }
+
+    public function testIsCentreDeGestionCollectivite(): void
+    {
+        self::assertFalse($this->getEntityInfoService()->isCentreDeGestion(self::ID_E_COL));
+    }
+
+    public function testIsCentreDeGestionUnknownEntity(): void
+    {
+        self::assertFalse($this->getEntityInfoService()->isCentreDeGestion(42));
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pastell\Tests\Validator;
 
 use EntiteSQL;
+use Pastell\Service\Entite\EntityInfoService;
 use Pastell\Service\Entite\EntityType;
 use Pastell\Validator\EntityValidator;
 use PastellTestCase;
@@ -16,7 +17,10 @@ class EntityValidatorTest extends PastellTestCase
 {
     private function entityValidator(): EntityValidator
     {
-        return new EntityValidator($this->getObjectInstancier()->getInstance(EntiteSQL::class), new Siren());
+        return new EntityValidator(
+            $this->getObjectInstancier()->getInstance(EntityInfoService::class),
+            new Siren(),
+        );
     }
 
     /**
