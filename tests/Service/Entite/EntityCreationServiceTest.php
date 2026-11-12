@@ -7,6 +7,7 @@ namespace Pastell\Tests\Service\Entite;
 use EntiteSQL;
 use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Service\Entite\EntityCreationService;
+use Pastell\Service\Entite\EntityHierarchyService;
 use Pastell\Validator\EntityValidator;
 use PastellTestCase;
 use UnrecoverableException;
@@ -19,6 +20,7 @@ class EntityCreationServiceTest extends PastellTestCase
             $this->getObjectInstancier()->getInstance(EntiteSQL::class),
             $this->getObjectInstancier()->getInstance(JournalEntryService::class),
             $this->getObjectInstancier()->getInstance(EntityValidator::class),
+            $this->getObjectInstancier()->getInstance(EntityHierarchyService::class),
         );
     }
 

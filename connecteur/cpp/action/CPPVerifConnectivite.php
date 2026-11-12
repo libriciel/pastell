@@ -2,6 +2,7 @@
 
 use Pastell\Mailer\Mailer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Pastell\Service\Entite\RootEntity;
 
 class CPPVerifConnectivite extends ActionExecutor
 {
@@ -67,7 +68,7 @@ class CPPVerifConnectivite extends ActionExecutor
 
         foreach ($all_connecteur as $connecteur) {
             $result = '';
-            if ($connecteur['id_e'] == 0) {
+            if ($connecteur['id_e'] == RootEntity::ID_E) {
                 continue;
             }
 
@@ -122,7 +123,7 @@ class CPPVerifConnectivite extends ActionExecutor
 
             $list_login_pass = [];
 
-            if ($connecteur['id_e'] == 0) {
+            if ($connecteur['id_e'] == RootEntity::ID_E) {
                 continue;
             }
 

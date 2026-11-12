@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\EntityInfoService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 
 class GetEntityList extends ConnecteurTypeChoiceActionExecutor
@@ -16,11 +17,7 @@ class GetEntityList extends ConnecteurTypeChoiceActionExecutor
     public function go()
     {
         $entityId = $this->getRecuperateur()->getInt(self::ENTITY_ID);
-        if ($entityId === EntiteSQL::ID_E_ENTITE_RACINE) {
-            $entityLabel = EntiteSQL::ENTITE_RACINE_DENOMINATION;
-        } else {
-            $entityLabel = $this->objectInstancier->getInstance(EntiteSQL::class)->getDenomination($entityId);
-        }
+        $entityLabel = $this->objectInstancier->getInstance(EntityInfoService::class)->getDenomination($entityId);
         $this->getConnecteurProperties()->setData($this->getMappingValue(self::ENTITY_LABEL), $entityLabel);
         $this->getConnecteurProperties()->setData($this->getMappingValue(self::ENTITY_ID), $entityId);
         return true;

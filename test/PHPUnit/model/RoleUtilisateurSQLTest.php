@@ -2,6 +2,7 @@
 
 use Pastell\Helpers\ArrayHelper;
 use Pastell\Service\Entite\EntityCreationService;
+use Pastell\Service\Entite\EntityType;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
@@ -178,16 +179,16 @@ class RoleUtilisateurSQLTest extends PastellTestCase
          */
         $entityCreationService = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
         $entity1 = $entityCreationService->create('Entité 1', '000000000');
-        $entity11 = $entityCreationService->create('Entité 11', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $entity1);
-        $entity111 = $entityCreationService->create('Entité 111', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $entity11);
-        $entity12 = $entityCreationService->create('Entité 12', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $entity1);
-        $entity121 = $entityCreationService->create('Entité 121', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $entity12);
+        $entity11 = $entityCreationService->create('Entité 11', '000000000', EntityType::COLLECTIVITE->value, $entity1);
+        $entity111 = $entityCreationService->create('Entité 111', '000000000', EntityType::COLLECTIVITE->value, $entity11);
+        $entity12 = $entityCreationService->create('Entité 12', '000000000', EntityType::COLLECTIVITE->value, $entity1);
+        $entity121 = $entityCreationService->create('Entité 121', '000000000', EntityType::COLLECTIVITE->value, $entity12);
         $entity2 = $entityCreationService->create('Entité 2', '000000000');
         $entity3 = $entityCreationService->create('Entité 3', '000000000');
-        $entity31 = $entityCreationService->create('Entité 31', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $entity3);
-        $entity311 = $entityCreationService->create('Entité 311', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $entity31);
-        $entity32 = $entityCreationService->create('Entité 32', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $entity3);
-        $entity321 = $entityCreationService->create('Entité 321', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $entity32);
+        $entity31 = $entityCreationService->create('Entité 31', '000000000', EntityType::COLLECTIVITE->value, $entity3);
+        $entity311 = $entityCreationService->create('Entité 311', '000000000', EntityType::COLLECTIVITE->value, $entity31);
+        $entity32 = $entityCreationService->create('Entité 32', '000000000', EntityType::COLLECTIVITE->value, $entity3);
+        $entity321 = $entityCreationService->create('Entité 321', '000000000', EntityType::COLLECTIVITE->value, $entity32);
 
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $id_u = $userCreationService->create('test_get_arbre_fille', 'aa@aa.fr', 'user', 'user');
@@ -328,7 +329,7 @@ class RoleUtilisateurSQLTest extends PastellTestCase
         $entityCreationService = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
         $id_e_1 = $entityCreationService->create('Entité 1', '000000000');
         $id_e_2 = $entityCreationService->create('Entité 2', '000000000');
-        $id_e_3 = $entityCreationService->create('Entité 3', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_2);
+        $id_e_3 = $entityCreationService->create('Entité 3', '000000000', EntityType::COLLECTIVITE->value, $id_e_2);
 
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $id_u = $userCreationService->create('test_get_arbre_fille', 'aa@aa.fr', 'user', 'user');
@@ -417,7 +418,7 @@ class RoleUtilisateurSQLTest extends PastellTestCase
     {
         $entityCreationService = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
         $id_e_2 = $entityCreationService->create('Entité 2', '000000000');
-        $id_e_3 = $entityCreationService->create('Entité 3', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_2);
+        $id_e_3 = $entityCreationService->create('Entité 3', '000000000', EntityType::COLLECTIVITE->value, $id_e_2);
 
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $id_u = $userCreationService->create('test', 'aa@aa.fr', 'user', 'user');
@@ -440,17 +441,17 @@ class RoleUtilisateurSQLTest extends PastellTestCase
         $entityCreationService = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
 
         $id_e_1 = $entityCreationService->create('Entité 1', '000000000');
-        $id_e_1_1 = $entityCreationService->create('Entité 1-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_1);
-        $entityCreationService->create('Entité 1-1-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_1_1);
-        $id_e_1_2 = $entityCreationService->create('Entité 1-2', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_1);
-        $entityCreationService->create('Entité 1-2-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_1_2);
+        $id_e_1_1 = $entityCreationService->create('Entité 1-1', '000000000', EntityType::COLLECTIVITE->value, $id_e_1);
+        $entityCreationService->create('Entité 1-1-1', '000000000', EntityType::COLLECTIVITE->value, $id_e_1_1);
+        $id_e_1_2 = $entityCreationService->create('Entité 1-2', '000000000', EntityType::COLLECTIVITE->value, $id_e_1);
+        $entityCreationService->create('Entité 1-2-1', '000000000', EntityType::COLLECTIVITE->value, $id_e_1_2);
         $entityCreationService->create('Entité 2', '000000000');
 
         $id_e_3 = $entityCreationService->create('Entité 3', '000000000');
-        $id_e_3_1 = $entityCreationService->create('Entité 3-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_3);
-        $id_e_3_1_1 = $entityCreationService->create('Entité 3-1-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_3_1);
-        $id_e_3_2 = $entityCreationService->create('Entité 3-2', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_3);
-        $entityCreationService->create('Entité 3-2-1', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_3_2);
+        $id_e_3_1 = $entityCreationService->create('Entité 3-1', '000000000', EntityType::COLLECTIVITE->value, $id_e_3);
+        $id_e_3_1_1 = $entityCreationService->create('Entité 3-1-1', '000000000', EntityType::COLLECTIVITE->value, $id_e_3_1);
+        $id_e_3_2 = $entityCreationService->create('Entité 3-2', '000000000', EntityType::COLLECTIVITE->value, $id_e_3);
+        $entityCreationService->create('Entité 3-2-1', '000000000', EntityType::COLLECTIVITE->value, $id_e_3_2);
 
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $id_u = $userCreationService->create('test_bug', 'test@test.fr', 'user', 'user');

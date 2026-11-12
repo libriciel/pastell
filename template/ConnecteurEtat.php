@@ -8,6 +8,9 @@
  * @var int $limit
  * @var int $count
 */
+
+use Pastell\Service\Entite\RootEntity;
+
 ?>
 
 <a class='btn btn-link' href='Connecteur/edition?id_ce=<?php echo $id_ce?>'>
@@ -38,8 +41,8 @@
                     <?php endif;?>
                 </td>
                 <td>
-                    <?php if ($action['id_e'] == 0) : ?>
-                        Entité racine
+                    <?php if ($action['id_e'] == RootEntity::ID_E) : ?>
+                        <?php hecho(RootEntity::DENOMINATION); ?>
                     <?php else : ?>
                         <a href='Entite/detail?id_e=<?php echo $action['id_e']?>'><?php hecho($action['denomination']); ?></a>
                     <?php endif;?>

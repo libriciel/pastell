@@ -18,6 +18,7 @@ use Pastell\Service\Utilisateur\UtilisateurDeletionService;
 use Pastell\Utilities\Certificate;
 use Pastell\ViewModel\DeleteConfirmation;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Pastell\Service\Entite\RootEntity;
 
 class UtilisateurControler extends PastellControler
 {
@@ -104,7 +105,7 @@ class UtilisateurControler extends PastellControler
     public function modifEmailAction()
     {
         $this->setViewParameter('utilisateur_info', $this->getUtilisateur()->getInfo($this->getId_u()));
-        if ($this->getViewParameterByKey('utilisateur_info')['id_e'] == 0) {
+        if ($this->getViewParameterByKey('utilisateur_info')['id_e'] == RootEntity::ID_E) {
             $this->setLastError(
                 "Les utilisateurs de l'entité racine ne peuvent pas utiliser cette procédure"
             );

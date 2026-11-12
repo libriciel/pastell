@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Entite\RootEntity;
 
 class ExtensionAPIController extends BaseAPIController
 {
@@ -17,7 +18,7 @@ class ExtensionAPIController extends BaseAPIController
      */
     public function get(): array
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
         $id_extension = $this->getFromQueryArgs(0);
         if ($id_extension) {
             if (! $this->extensionSQL->getInfo($id_extension)) {
@@ -40,7 +41,7 @@ class ExtensionAPIController extends BaseAPIController
      */
     public function post(): array
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $path = $this->getFromRequest('path');
         if (! file_exists($path)) {
             throw new Exception("Le chemin « $path » n'existe pas sur le système de fichier");
@@ -65,7 +66,7 @@ class ExtensionAPIController extends BaseAPIController
      */
     public function patch()
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_extension = $this->getFromQueryArgs(0);
         if (! $id_extension || ! $this->extensionSQL->getInfo($id_extension)) {
             throw new NotFoundException("Extension #$id_extension non trouvée");
@@ -95,7 +96,7 @@ class ExtensionAPIController extends BaseAPIController
      */
     public function delete()
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_extension = $this->getFromQueryArgs(0);
         if (! $id_extension || ! $this->extensionSQL->getInfo($id_extension)) {
             throw new NotFoundException("Extension #$id_extension non trouvée");
@@ -113,7 +114,7 @@ class ExtensionAPIController extends BaseAPIController
      */
     public function compatV1Edition()
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $id_extension = $this->getFromRequest('id_extension');
         $path = $this->getFromRequest('path');

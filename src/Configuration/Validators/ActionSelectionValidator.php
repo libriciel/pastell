@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Pastell\Configuration\Validators;
 
-use EntiteSQL;
 use Pastell\Configuration\ActionElement;
 use Pastell\Configuration\ModuleElement;
+use Pastell\Service\Entite\EntityType;
 
 class ActionSelectionValidator implements ValidatorInterface
 {
@@ -20,7 +20,7 @@ class ActionSelectionValidator implements ValidatorInterface
             if (empty($action[ActionElement::ACTION_SELECTION->value])) {
                 continue;
             }
-            if (!array_key_exists($action[ActionElement::ACTION_SELECTION->value], EntiteSQL::getAllType())) {
+            if (EntityType::tryFrom($action[ActionElement::ACTION_SELECTION->value]) === null) {
                 $this->errors[] = "action:$actionName:action-selection:<b>{$action['action-selection']}</b> "
                     . "n'est pas un type d'entité du système";
             }

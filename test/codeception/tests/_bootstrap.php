@@ -5,6 +5,7 @@
  */
 
 use Pastell\Bootstrap\Bootstrap;
+use Pastell\Service\Entite\EntityType;
 
 require_once __DIR__ . '/../../../docker/define-from-environnement.php';
 
@@ -35,7 +36,7 @@ $internalAPI->setUtilisateurId(1);
 $info = $internalAPI->post(
     "/Entite",
     [
-        "type" => EntiteSQL::TYPE_COLLECTIVITE,
+        "type" => EntityType::COLLECTIVITE->value,
         "denomination" => "Bourg-en-Bresse",
         "siren" => '000000000'
     ]

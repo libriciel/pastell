@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Entite\RootEntity;
+
 class FastTdtRecupClassificationGlobal extends ActionExecutor
 {
     public function go()
@@ -9,7 +11,7 @@ class FastTdtRecupClassificationGlobal extends ActionExecutor
 
         $summary = [];
         foreach ($fastTdtConnectors as $connector) {
-            if ($connector['id_e'] === 0) {
+            if ($connector['id_e'] === RootEntity::ID_E) {
                 continue;
             }
             $denomination = $connector['denomination'];

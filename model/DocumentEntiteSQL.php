@@ -91,6 +91,15 @@ SQL;
         return (int) $this->queryOne($sql, $id_e);
     }
 
+    public function countByEntity(int $id_e): int
+    {
+        $sql = <<<SQL
+SELECT count(*) FROM document_entite
+WHERE id_e = ?
+SQL;
+        return (int) $this->queryOne($sql, $id_e);
+    }
+
     public function countDocumentsByType(int $id_e, string $type): int
     {
         $sql = <<<SQL

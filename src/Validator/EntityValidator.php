@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Pastell\Validator;
 
-use EntiteSQL;
+use Pastell\Service\Entite\EntityInfoService;
+use Pastell\Service\Entite\EntityType;
 use Siren;
 use UnrecoverableException;
 
 final class EntityValidator
 {
     public function __construct(
-        private readonly EntiteSQL $entiteSQL,
+        private readonly EntityInfoService $entityInfoService,
         private readonly Siren $siren,
     ) {
     }
@@ -30,19 +31,19 @@ final class EntityValidator
             throw new UnrecoverableException("Le siren « $siren » ne semble pas valide");
         }
 
-        if (!\array_key_exists($type, EntiteSQL::getAllType())) {
+        if (EntityType::tryFrom($type) === null) {
             throw new UnrecoverableException(
                 "Le type d'entité doit être renseigné. Les valeurs possibles sont collectivite ou centre_de_gestion."
             );
         }
 
-        if (!$this->entiteSQL->isActive($parent)) {
+        if (!$this->entityInfoService->isActive($parent)) {
             throw new UnrecoverableException(
                 "L'entité id_e=$parent est désactivée, il n'est pas possible de créer une entité fille"
             );
         }
 
-        if (!$this->entiteSQL->isCDG($cdg)) {
+        if (!$this->entityInfoService->isCentreDeGestion($cdg)) {
             throw new UnrecoverableException("L'entité $cdg ne peut pas être utilisée comme centre de gestion");
         }
 

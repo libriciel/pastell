@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityCreationService;
+use Pastell\Service\Entite\EntityType;
 use Pastell\Service\Utilisateur\UserCreationService;
 
 class UtilisateurRoleSQLTest extends PastellTestCase
@@ -42,7 +43,7 @@ class UtilisateurRoleSQLTest extends PastellTestCase
     {
         $entity = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
         $id_e_2 = $entity->create('Entité 2', '000000000');
-        $id_e_3 = $entity->create('Entité 3', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_2);
+        $id_e_3 = $entity->create('Entité 3', '000000000', EntityType::COLLECTIVITE->value, $id_e_2);
 
         $id_u = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create('test', 'aa@aa.fr', 'user', 'user');

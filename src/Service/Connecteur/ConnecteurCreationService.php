@@ -8,6 +8,7 @@ use ConnecteurFactory;
 use DonneesFormulaireFactory;
 use Exception;
 use Pastell\Service\FeatureToggle\DisplayConnecteurEntiteRacine;
+use Pastell\Service\Entite\RootEntity;
 
 class ConnecteurCreationService
 {
@@ -129,12 +130,12 @@ class ConnecteurCreationService
             throw new ConnecteurException("La valeur « $global » n'est pas valide pour un connecteur global");
         }
         /** @deprecated 4.1.7, to be removed in v5 */
-        if (($id_e === 0) && ($global === 0) && !($this->displayConnecteurEntiteRacine->isEnabled())) {
+        if (($id_e === RootEntity::ID_E) && ($global === 0) && !($this->displayConnecteurEntiteRacine->isEnabled())) {
             throw new ConnecteurException(
                 "Il n'est pas possible de créer un connecteur d'entité au niveau de l'entité racine"
             );
         }
-        if (($id_e !== 0) && ($global === 1)) {
+        if (($id_e !== RootEntity::ID_E) && ($global === 1)) {
             throw new ConnecteurException(
                 "Il n'est pas possible de créer un connecteur global au niveau d'une entité"
             );

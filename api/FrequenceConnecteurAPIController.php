@@ -4,6 +4,7 @@ use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceData;
 use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceService;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Entite\RootEntity;
 
 class FrequenceConnecteurAPIController extends BaseAPIController
 {
@@ -19,7 +20,7 @@ class FrequenceConnecteurAPIController extends BaseAPIController
      */
     public function get(): array
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
 
         $id_cf = $this->getFromQueryArgs(0);
         if ($id_cf) {
@@ -41,7 +42,7 @@ class FrequenceConnecteurAPIController extends BaseAPIController
      */
     public function detail($id_cf): array
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
         $result = $this->connecteurFrequenceSQL->getInfo($id_cf);
         if (!$result) {
             throw new NotFoundException("Cette fréquence de connecteur n'existe pas");
@@ -57,7 +58,7 @@ class FrequenceConnecteurAPIController extends BaseAPIController
      */
     public function post(): array
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $recuperateur = new Recuperateur($this->getRequest());
         $id_cf = $this->connecteurFrequenceService->save(ConnecteurFrequenceData::fromArray($recuperateur->getAll()));
         return $this->detail($id_cf);
@@ -69,7 +70,7 @@ class FrequenceConnecteurAPIController extends BaseAPIController
      */
     public function patch(): array
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_cf = $this->getFromQueryArgs(0);
         $recuperateur = new Recuperateur($this->getRequest());
         $this->connecteurFrequenceService->save(
@@ -84,7 +85,7 @@ class FrequenceConnecteurAPIController extends BaseAPIController
      */
     public function delete(): array
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_cf = $this->getFromQueryArgs(0);
         $this->connecteurFrequenceService->delete((int)$id_cf);
         $result['result'] = BaseAPIController::RESULT_OK;

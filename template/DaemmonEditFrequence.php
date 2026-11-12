@@ -8,6 +8,7 @@
 use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceActionType;
 use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceData;
 use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceType;
+use Pastell\Service\Entite\RootEntity;
 
 ?>
 
@@ -163,6 +164,9 @@ use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceType;
 <script type="text/javascript">
 $(document).ready(function() {
 
+    var root_entity_id_e = "<?php echo RootEntity::ID_E; ?>";
+    var root_entity_denomination = <?php echo json_encode(RootEntity::DENOMINATION, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+
     var type_connecteur = $("#type_connecteur");
 
     var action_type = $("#action_type");
@@ -241,14 +245,14 @@ $(document).ready(function() {
             }));
 
             $.each($.parseJSON(data),function(index,value){
-                if (value.id_e !== "0" && getGlobalType() === "1"){
+                if (value.id_e !== root_entity_id_e && getGlobalType() === "1"){
                     return;
                 }
-                if (value.id_e === "0" && getGlobalType() !== '1'){
+                if (value.id_e === root_entity_id_e && getGlobalType() !== '1'){
                     return;
                 }
                 if (value.denomination === null){
-                    value.denomination = 'Entité racine';
+                    value.denomination = root_entity_denomination;
                 }
                 $("#id_ce").append($("<option>",{
                     value: value.id_ce,

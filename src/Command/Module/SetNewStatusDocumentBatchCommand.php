@@ -6,6 +6,7 @@ namespace Pastell\Command\Module;
 
 use Pastell\Configuration\DocumentTypeValidation;
 use Pastell\Service\Document\DocumentEntiteService;
+use Pastell\Service\Entite\EntityHierarchyService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -34,7 +35,7 @@ class SetNewStatusDocumentBatchCommand extends Command
         private readonly \ActionChange $actionChange,
         private readonly \FluxDefinitionFiles $fluxDefinitionFiles,
         private readonly DocumentTypeValidation $documentTypeValidation,
-        private readonly \EntiteSQL $entiteSQL,
+        private readonly EntityHierarchyService $entityHierarchyService,
     ) {
         parent::__construct();
     }
@@ -141,7 +142,7 @@ class SetNewStatusDocumentBatchCommand extends Command
     {
         $documents = $this->documentEntiteService->getDocumentsByLastAction($id_e, $type, $oldStatus);
         if ($includeSubEntities) {
-            $subEntities = $this->entiteSQL->getAllChildren($id_e);
+            $subEntities = $this->entityHierarchyService->getAllChildren($id_e);
             foreach ($subEntities as $entity) {
                 $documents = array_merge(
                     $documents,

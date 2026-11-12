@@ -9,6 +9,10 @@ use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Utilisateur\UtilisateurListService;
 use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Entite\EntityCreationService;
+use Pastell\Service\Entite\EntityHierarchyService;
+use Pastell\Service\Entite\EntityInfoService;
+use Pastell\Service\Entite\EntityType;
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Entite\EntityUpdateService;
 use Pastell\Service\FeatureToggleService;
 use Pastell\Service\ImportExportConfig\ExportConfigService;
@@ -22,7 +26,7 @@ class EntiteControler extends PastellControler
     {
         parent::_beforeAction();
         $id_e = $this->getPostOrGetInfo()->getInt('id_e', 0);
-        if ($id_e != 0) {
+        if ($id_e != RootEntity::ID_E) {
             $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::LECTURE);
         }
         $this->setNavigationInfo($id_e, 'Entite/detail');
@@ -94,10 +98,11 @@ class EntiteControler extends PastellControler
         );
         $listeUtilisateur = $this->getInstance(UtilisateurListService::class)
             ->getAllWithRoles($id_e, (bool) $descendance, $role, $search, $offset);
+        $entityHierarchyService = $this->getInstance(EntityHierarchyService::class);
         foreach ($listeUtilisateur as $key => $utilisateur) {
             foreach ($utilisateur['all_role'] as $j => $userRole) {
                 $listeUtilisateur[$key]['all_role'][$j]['ancetre'] =
-                    $this->getEntiteSQL()->getTreeEntity($userRole['entite_mere']);
+                    $entityHierarchyService->getAncestorDenominations((int)$userRole['entite_mere']);
             }
         }
         $this->setViewParameter('liste_utilisateur', $listeUtilisateur);
@@ -132,7 +137,7 @@ class EntiteControler extends PastellControler
         foreach ($allUtilisateur as $i => $user) {
             $r = [];
             foreach ($user['all_role'] as $role) {
-                $r[] = ($role['libelle'] ?: "Aucun droit") . " - " . ($role['denomination'] ?: 'Entite racine');
+                $r[] = ($role['libelle'] ?: "Aucun droit") . " - " . ($role['denomination'] ?: RootEntity::DENOMINATION);
             }
             $user['all_role'] = implode(",", $r);
             $result[] = [
@@ -141,7 +146,7 @@ class EntiteControler extends PastellControler
                 $user['prenom'],
                 $user['nom'],
                 $user['email'],
-                $user['denomination'] ?: "Entité racine",
+                $user['denomination'] ?: RootEntity::DENOMINATION,
                 $user['id_e'],
                 $user['all_role']
             ];
@@ -179,7 +184,7 @@ class EntiteControler extends PastellControler
                 DroitType::LECTURE
             )
         );
-        $this->setViewParameter('entiteExtendedInfo', $this->getEntiteSQL()->getExtendedInfo($id_e));
+        $this->setViewParameter('entiteExtendedInfo', $this->getInstance(EntityInfoService::class)->getExtendedInfo($id_e));
         $canDelete = $this->getInstance(EntiteDeletionService::class)->canDelete($id_e);
         $this->setViewParameter('is_supprimable', $canDelete);
 
@@ -198,7 +203,7 @@ class EntiteControler extends PastellControler
         );
         $nbCollectivite = count($liste_collectivite);
         if ($nbCollectivite == 1) {
-            return ($liste_collectivite[0]['id_e'] == 0);
+            return ($liste_collectivite[0]['id_e'] == RootEntity::ID_E);
         }
         return true;
     }
@@ -220,10 +225,10 @@ class EntiteControler extends PastellControler
         );
         $nbCollectivite = count($liste_collectivite);
 
-        if ($nbCollectivite === 1 && $liste_collectivite[0]['id_e'] != 0) {
+        if ($nbCollectivite === 1 && $liste_collectivite[0]['id_e'] != RootEntity::ID_E) {
             $this->redirect("/Entite/detail?id_e=" . $liste_collectivite[0]['id_e']);
         }
-        if ($nbCollectivite >= 1 && $liste_collectivite[0]['id_e'] == 0) {
+        if ($nbCollectivite >= 1 && $liste_collectivite[0]['id_e'] == RootEntity::ID_E) {
             $liste_collectivite = $this->getEntiteSQL()->getAllCollectivite($offset, $search);
             $nbCollectivite = $this->getEntiteSQL()->getNbCollectivite($search);
         }
@@ -291,12 +296,12 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('page_title', "Importer (fichier CSV)");
 
         if ($onglet === "collectivités") {
-            $this->setViewParameter('allCDG', $this->getEntiteSQL()->getAllByType(EntiteSQL::TYPE_CENTRE_DE_GESTION));
+            $this->setViewParameter('allCDG', $this->getEntiteSQL()->getAllByType(EntityType::CENTRE_DE_GESTION->value));
             $this->setViewParameter('cdg_selected', false);
         }
 
         $onglet_content["collectivités"] = "EntiteImportCollectivite";
-        if ($this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ENTITE, DroitType::EDITION)) {
+        if ($this->hasDroitFor(RootEntity::ID_E, DroitService::DROIT_ENTITE, DroitType::EDITION)) {
             $onglet_content["agents"] = "EntiteImportAgent";
             $onglet_content["grades"] = "EntiteImportGrade";
         }
@@ -323,13 +328,13 @@ class EntiteControler extends PastellControler
         if ($id_e) {
             $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
         }
-        if ($entite_mere === 0 && $id_e === 0) {
-            $this->checkDroitFor(0, DroitService::DROIT_ENTITE, DroitType::EDITION);
+        if ($entite_mere === RootEntity::ID_E && $id_e === RootEntity::ID_E) {
+            $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_ENTITE, DroitType::EDITION);
         }
 
         if ($id_e) {
             $infoEntite = $this->getEntiteSQL()->getInfo($id_e);
-            $infoEntite['centre_de_gestion'] = $this->getEntiteSQL()->getCDG($id_e);
+            $infoEntite['centre_de_gestion'] = $this->getInstance(EntityInfoService::class)->getCentreDeGestion($id_e);
             $this->setViewParameter('page_title', "Modification de " . $infoEntite['denomination']);
         } else {
             $infoEntite = $this->getEntiteInfoFromLastError();
@@ -345,7 +350,7 @@ class EntiteControler extends PastellControler
         }
         $this->setViewParameter('infoEntite', $infoEntite);
         $this->setViewParameter('cdg_selected', $infoEntite['centre_de_gestion']);
-        $this->setViewParameter('allCDG', $this->getEntiteSQL()->getAllByType(EntiteSQL::TYPE_CENTRE_DE_GESTION));
+        $this->setViewParameter('allCDG', $this->getEntiteSQL()->getAllByType(EntityType::CENTRE_DE_GESTION->value));
         $this->setViewParameter('template_milieu', "EntiteEdition");
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('entite_mere', $entite_mere);
@@ -384,7 +389,7 @@ class EntiteControler extends PastellControler
         $this->setViewParameter('id_d', $recuperateur->get('id_d'));
         $this->setViewParameter('id_e', $recuperateur->get('id_e'));
         $this->setViewParameter('action', $recuperateur->get('action'));
-        $this->setViewParameter('type', (string) $recuperateur->get('type', EntiteSQL::TYPE_COLLECTIVITE));
+        $this->setViewParameter('type', (string) $recuperateur->get('type', EntityType::COLLECTIVITE->value));
         $this->setViewParameter('liste', $this->getEntiteSQL()->getAllByType($this->getViewParameterByKey('type')));
 
         if (!$this->getViewParameterByKey('liste')) {
@@ -412,7 +417,7 @@ class EntiteControler extends PastellControler
         $name = $recuperateur->get('denomination');
         $siren = $recuperateur->get('siren');
         $entite_mere = $recuperateur->getInt('entite_mere', 0);
-        $type = EntiteSQL::TYPE_COLLECTIVITE;
+        $type = EntityType::COLLECTIVITE->value;
         $cdg = 0;
 
         if ($this->getViewParameterByKey('cdg_feature')) {
@@ -498,7 +503,7 @@ class EntiteControler extends PastellControler
         $recuperateur = $this->getGetInfo();
         $id_e = $recuperateur->getInt('id_e', 0);
         $global = $recuperateur->getInt('global', 0);
-        if ($id_e === EntiteSQL::ID_E_ENTITE_RACINE && !$this->getInstance(DisplayConnecteurEntiteRacine::class)->isEnabled()) {
+        if ($id_e === RootEntity::ID_E && !$this->getInstance(DisplayConnecteurEntiteRacine::class)->isEnabled()) {
             $global = 1;
         }
         $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::LECTURE);
@@ -553,7 +558,7 @@ class EntiteControler extends PastellControler
         $active = $recuperateur->getInt('active', 0);
         $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
-        $this->getEntiteSQL()->setActive($id_e, $active);
+        $this->getEntiteSQL()->setActive($id_e, (bool)$active);
         $info = $this->getEntiteSQL()->getInfo($id_e);
         if ($active) {
             $message = "L'entite «{$info['denomination']}» est désormais " . ($info['is_active'] ? 'active' : 'inactive');
@@ -575,7 +580,7 @@ class EntiteControler extends PastellControler
 
         $delete_all = $recuperateur->get('delete_all');
 
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ENTITE, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
         $fileUploader = new FileUploader();
         $file_path = $fileUploader->getFilePath('csv_agent');
@@ -641,7 +646,7 @@ class EntiteControler extends PastellControler
             $this->getInstance(EntityCreationService::class)->create(
                 $col[0],
                 $col[1] ?? '',
-                EntiteSQL::TYPE_COLLECTIVITE,
+                EntityType::COLLECTIVITE->value,
                 $id_e,
                 $centre_de_gestion,
             );
@@ -660,7 +665,7 @@ class EntiteControler extends PastellControler
      */
     public function importGradeAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ENTITE, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
         $fileUploader = new FileUploader();
         $file_path = $fileUploader->getFilePath('csv_grade');

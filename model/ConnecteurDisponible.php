@@ -2,7 +2,8 @@
 
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
-use Pastell\Service\Entite\EntityUtilitiesService;
+use Pastell\Service\Entite\EntityHierarchyService;
+use Pastell\Service\Entite\RootEntity;
 
 /**
  * @deprecated 4.1.26 Use ConnecteurAvailabilityService instead
@@ -10,10 +11,9 @@ use Pastell\Service\Entite\EntityUtilitiesService;
 class ConnecteurDisponible
 {
     public function __construct(
-        private readonly EntiteSQL $entiteSQL,
+        private readonly EntityHierarchyService $entityHierarchyService,
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
         private readonly DroitService $droitService,
-        private readonly EntityUtilitiesService $entityUtilitiesService,
     ) {
     }
 
@@ -29,8 +29,8 @@ class ConnecteurDisponible
      */
     public function getListByType(int $id_u, int $id_e, string $type, bool $global = false): array
     {
-        $ancetre = $this->entiteSQL->getAncetreId($id_e);
-        if ($id_e === 0) {
+        $ancetre = $this->entityHierarchyService->getAncestorIds($id_e);
+        if ($id_e === RootEntity::ID_E) {
             array_shift($ancetre);
         }
         $ancetre[] = $id_e;
@@ -39,7 +39,7 @@ class ConnecteurDisponible
 
         foreach ($ancetre as $entite_id_e) {
             if ($this->droitService->hasDroitFor($id_u, $entite_id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION)) {
-                $listDisponible = $this->entityUtilitiesService->addDenominationForEntiteRacine(
+                $listDisponible = RootEntity::addDenomination(
                     $this->connecteurEntiteSQL->getDisponible($entite_id_e, $type, $global)
                 );
                 $result = array_merge($result, $listDisponible);

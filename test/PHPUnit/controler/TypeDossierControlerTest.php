@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\TypeDossier\TypeDossierActionService;
 use Pastell\Service\TypeDossier\TypeDossierEditionService;
 use Pastell\Service\TypeDossier\TypeDossierExportService;
@@ -343,7 +344,7 @@ class TypeDossierControlerTest extends ControlerTestCase
                 DroitService::getDroitFor($studioFlux, DroitType::LECTURE),
                 DroitService::getDroitFor($studioFlux, DroitType::EDITION),
             ],
-            EntiteSQL::ID_E_ENTITE_RACINE,
+            RootEntity::ID_E,
         );
 
         $this->setPostInfo(['id_type_dossier' => $studioFlux]);

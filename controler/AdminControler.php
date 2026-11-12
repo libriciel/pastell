@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Entite\EntityHierarchyService;
 use Pastell\Service\TokenGenerator;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
@@ -21,11 +22,6 @@ class AdminControler extends Controler
     private function getUtilisateur(): UtilisateurSQL
     {
         return $this->getInstance(UtilisateurSQL::class);
-    }
-
-    private function getEntiteSQL(): EntiteSQL
-    {
-        return $this->getInstance(EntiteSQL::class);
     }
 
     public function createAdmin(string $login, string $password, string $email): bool
@@ -57,7 +53,7 @@ class AdminControler extends Controler
                 $this->getRoleSQL()->addDroit('admin', $droit);
             }
         }
-        $this->getEntiteSQL()->updateAllAncestors();
+        $this->getInstance(EntityHierarchyService::class)->updateAllAncestors();
     }
 
     public function createOrUpdateAdmin(string $login, string $email): void
