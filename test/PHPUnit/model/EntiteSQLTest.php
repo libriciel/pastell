@@ -87,7 +87,7 @@ class EntiteSQLTest extends PastellTestCase
         $data['is_active'] = 0;
         $this->assertCount(0, $this->entiteSQL->getEntiteFromData($data));
 
-        $this->entiteSQL->setActive(self::ID_E_COL, 0);
+        $this->entiteSQL->setActive(self::ID_E_COL, false);
         $data['is_active'] = 1;
         $this->assertCount(1, $this->entiteSQL->getEntiteFromData($data));
         $data['is_active'] = 0;

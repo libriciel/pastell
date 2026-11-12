@@ -25,77 +25,90 @@ class EntiteSQL extends SQL
 
     public const NB_COLLECTIVITE_DISPLAY = 20;
 
-    public function getInfo($id_e)
+    /**
+     * Untyped parameter: legacy callers may pass null or a non-numeric string coming from the request.
+     */
+    public function getInfo($id_e): array|false
     {
-        $sql = "SELECT * FROM entite WHERE id_e=?";
+        $sql = <<<SQL
+SELECT * FROM entite WHERE id_e = ?
+SQL;
         return $this->queryOne($sql, $id_e);
     }
 
-    public function exists($id_e)
+    public function exists(int $id_e): bool
     {
-        return (bool) $this->getInfo($id_e);
+        return (bool)$this->getInfo($id_e);
     }
 
-    public function getBySiren($siren)
+    public function getBySiren(string $siren): int|false
     {
-        $sql = "SELECT id_e FROM entite WHERE siren=?";
+        $sql = <<<SQL
+SELECT id_e FROM entite WHERE siren = ?
+SQL;
         return $this->queryOne($sql, $siren);
     }
 
-    public function getIdByDenomination($denomination)
+    public function getIdByDenomination(string $denomination): int|false
     {
-        $sql = "SELECT id_e FROM entite WHERE denomination=?";
+        $sql = <<<SQL
+SELECT id_e FROM entite WHERE denomination = ?
+SQL;
         return $this->queryOne($sql, $denomination);
     }
 
     /**
      * @deprecated 4.1.26 Use EntityInfoService::getDenomination() instead
      */
-    public function getDenomination($id_e)
+    public function getDenomination(int $id_e): string
     {
-        if ($id_e == RootEntity::ID_E) {
+        if ($id_e === RootEntity::ID_E) {
             return RootEntity::DENOMINATION;
         }
-        $info = $this->getInfo($id_e);
-        if (! $info) {
-            return "";
+        $entity_info = $this->getInfo($id_e);
+        if (!$entity_info) {
+            return '';
         }
-        return $info['denomination'];
+        return $entity_info['denomination'];
     }
 
-    public function getEntiteMere($id_e)
+    public function getEntiteMere(int $id_e): int|false
     {
-        $sql = "SELECT entite_mere FROM entite WHERE id_e=?";
+        $sql = <<<SQL
+SELECT entite_mere FROM entite WHERE id_e = ?
+SQL;
         return $this->queryOne($sql, $id_e);
     }
 
-    public function getAncetre($id_e)
+    public function getAncetre(int $id_e): array
     {
-        $sql = "SELECT * FROM entite_ancetre " .
-                " JOIN entite ON entite_ancetre.id_e_ancetre=entite.id_e " .
-                " WHERE entite_ancetre.id_e=? ORDER BY niveau DESC";
+        $sql = <<<SQL
+SELECT * FROM entite_ancetre
+JOIN entite ON entite_ancetre.id_e_ancetre = entite.id_e
+WHERE entite_ancetre.id_e = ?
+ORDER BY niveau DESC
+SQL;
         return $this->query($sql, $id_e);
     }
 
     /**
      * @deprecated 4.1.26 Use EntityInfoService::getCentreDeGestion() instead
      */
-    public function getCDG($id_e)
+    public function getCDG(int $id_e): mixed
     {
-        return $this->getHeritedInfo($id_e, 'centre_de_gestion');
+        return $this->getInheritedInfo($id_e, 'centre_de_gestion');
     }
 
-    private function getHeritedInfo($id_e, $colname)
+    private function getInheritedInfo(int $id_e, string $column): mixed
     {
-        $info = $this->getInfo($id_e);
-        if ($info[$colname]) {
-            return $info[$colname];
+        $entity_info = $this->getInfo($id_e);
+        if ($entity_info[$column]) {
+            return $entity_info[$column];
         }
 
-        $ancetre = $this->getAncetre($id_e);
-        foreach ($ancetre as $id => $info) {
-            if ($info[$colname]) {
-                return $info[$colname];
+        foreach ($this->getAncetre($id_e) as $ancestor_info) {
+            if ($ancestor_info[$column]) {
+                return $ancestor_info[$column];
             }
         }
         return false;
@@ -104,39 +117,40 @@ class EntiteSQL extends SQL
     /**
      * @deprecated 4.1.26 Use EntityInfoService::getExtendedInfo() instead
      */
-    public function getExtendedInfo($id_e)
+    public function getExtendedInfo(int $id_e): array
     {
-        $result = $this->getInfo($id_e);
+        $entity_info = $this->getInfo($id_e);
         $cdg_id_e = $this->getCDG($id_e);
-        $result['cdg'] = [];
+        $entity_info['cdg'] = [];
         if ($cdg_id_e) {
-            $result['cdg'] = $this->getInfo($cdg_id_e) ;
+            $entity_info['cdg'] = $this->getInfo($cdg_id_e);
         }
-        if ($result['entite_mere']) {
-            $result['entite_mere'] = $this->getInfo($result['entite_mere']) ;
+        if ($entity_info['entite_mere']) {
+            $entity_info['entite_mere'] = $this->getInfo($entity_info['entite_mere']);
         }
-        $result['filles'] = $this->getFille($id_e);
-        return $result;
+        $entity_info['filles'] = $this->getFille($id_e);
+        return $entity_info;
     }
 
-    public function getFille($id_e)
+    public function getFille(int $id_e): array
     {
-        $sql = "SELECT * FROM entite WHERE entite_mere=? ORDER BY denomination";
+        $sql = <<<SQL
+SELECT * FROM entite WHERE entite_mere = ? ORDER BY denomination
+SQL;
         return $this->query($sql, $id_e);
     }
 
     /**
      * @deprecated 4.1.26 Use EntityHierarchyService::getAllChildren() instead
      */
-    public function getAllChildren(int $entityId)
+    public function getAllChildren(int $entityId): array
     {
         $children = $this->getFille($entityId);
         foreach ($children as $child) {
-            $newChildren = $this->getAllChildren($child['id_e']);
-            $children = array_merge($children, $newChildren);
+            $children = array_merge($children, $this->getAllChildren($child['id_e']));
         }
 
-        usort($children, static function ($a, $b) {
+        usort($children, static function (array $a, array $b): int {
             return strcasecmp($a['denomination'], $b['denomination']);
         });
 
@@ -146,207 +160,193 @@ class EntiteSQL extends SQL
     /**
      * @deprecated 4.1.26 Use EntityHierarchyService::getNavigationChildren() instead
      */
-    public function getFilleInfoNavigation($id_e, array $liste_collectivite = [])
+    public function getFilleInfoNavigation(int $id_e, array $liste_collectivite = []): array
     {
-        if ($id_e != RootEntity::ID_E || ! $liste_collectivite || ($liste_collectivite[0] == RootEntity::ID_E)) {
-            return $this->getNavigationFilleWithType(
+        if (
+            $id_e !== RootEntity::ID_E
+            || !$liste_collectivite
+            || $liste_collectivite[0] == RootEntity::ID_E
+        ) {
+            return $this->getActiveChildrenByType(
                 $id_e,
-                [EntityType::COLLECTIVITE->value,EntityType::CENTRE_DE_GESTION->value]
+                [EntityType::COLLECTIVITE->value, EntityType::CENTRE_DE_GESTION->value]
             );
         }
-        $liste_fille = [];
 
-        foreach ($liste_collectivite as $id_e_fille) {
-            $info_fille = $this->getInfo($id_e_fille);
-            if ($info_fille['is_active']) {
-                $liste_fille[] = $info_fille;
+        $children = [];
+        foreach ($liste_collectivite as $child_id_e) {
+            $child_info = $this->getInfo($child_id_e);
+            if ($child_info['is_active']) {
+                $children[] = $child_info;
             }
         }
-        return $liste_fille;
+        return $children;
     }
-
 
     /**
      * @deprecated 4.1.26 Use EntityInfoService::getSiren() instead
      */
-    public function getSiren($id_e)
+    public function getSiren(int $id_e): mixed
     {
-        return $this->getHeritedInfo($id_e, 'siren');
+        return $this->getInheritedInfo($id_e, 'siren');
     }
 
-    public function getAll()
+    public function getAll(): array
     {
-        $sql = "SELECT * FROM entite";
+        $sql = <<<SQL
+SELECT * FROM entite
+SQL;
         return $this->query($sql);
     }
-
 
     /**
      * @deprecated 4.1.26 Use EntityHierarchyService::getAncestorIds() instead
      */
-    public function getAncetreId($id_e)
+    public function getAncetreId(int $id_e): array
     {
-        $ancetre = $this->getAncetre($id_e);
-        array_pop($ancetre);
-        $result = [0];
-        foreach ($ancetre as $entite) {
-            $result[] = $entite['id_e'];
+        $ancestor_list = $this->getAncetre($id_e);
+        array_pop($ancestor_list);
+        $ancestor_id_list = [RootEntity::ID_E];
+        foreach ($ancestor_list as $ancestor_info) {
+            $ancestor_id_list[] = $ancestor_info['id_e'];
         }
-        return $result;
-    }
-
-    private function getNavigationFilleWithType($id_e, array $type): array
-    {
-        foreach ($type as $i => $t) {
-            $type[$i] = "'$t'";
-        }
-        $sql = "SELECT * FROM entite " .
-                " WHERE entite_mere=? " .
-                " AND type IN (" . implode(",", $type) . ")" .
-                " AND is_active = 1 " .
-                " ORDER BY denomination";
-
-        return $this->query($sql, $id_e);
+        return $ancestor_id_list;
     }
 
     /**
      * @deprecated 4.1.26 Use EntityHierarchyService::getNavigationAncestors() instead
      */
-    public function getAncetreNav($id_e, $listeCollectivite)
+    public function getAncetreNav(int $id_e, array $liste_collectivite): array
     {
-        $all_ancetre = $this->getAncetre($id_e);
+        $ancestor_list = $this->getAncetre($id_e);
+        array_pop($ancestor_list);
 
-        array_pop($all_ancetre);
-
-        if (in_array(0, $listeCollectivite)) {
-            return $all_ancetre;
+        if (in_array(RootEntity::ID_E, $liste_collectivite)) {
+            return $ancestor_list;
         }
 
-        $allmere = [];
-        foreach ($all_ancetre as $mere) {
-            $allmere[] = $mere['id_e'];
-        }
-        foreach ($allmere as $mere_id_e) {
-            if (! in_array($mere_id_e, $listeCollectivite)) {
-                array_shift($all_ancetre);
-            } else {
-                return $all_ancetre;
+        $ancestor_id_list = array_column($ancestor_list, 'id_e');
+        foreach ($ancestor_id_list as $ancestor_id_e) {
+            if (in_array($ancestor_id_e, $liste_collectivite)) {
+                return $ancestor_list;
             }
+            array_shift($ancestor_list);
         }
-        return $all_ancetre;
+        return $ancestor_list;
     }
 
     /**
      * @deprecated 4.1.26 Use EntiteDeletionService::deleteEmptyEntity() instead
      * @throws UnrecoverableException
      */
-    public function removeEntite($id_e)
+    public function removeEntite(int $id_e): void
     {
-
-        // L'entite possède-t-elle des filles
-        $entiteFille = $this->getFille($id_e);
-        if ($entiteFille) {
-            throw new UnrecoverableException("Suppression impossible : l'entité {id_e=$id_e} possède des entités filles");
+        if ($this->getFille($id_e)) {
+            throw new UnrecoverableException(
+                "Suppression impossible : l'entité {id_e=$id_e} possède des entités filles"
+            );
         }
 
-        // Des documents sont-ils définis sur l'entité
-        $sql = "SELECT id_e FROM document_entite where id_e=?";
-        $documentSurEntite = $this->queryOne($sql, $id_e);
-        if ($documentSurEntite) {
-            throw new UnrecoverableException("Suppression impossible : des documents sont définis sur l'entité {id_e=$id_e}");
+        $sql = <<<SQL
+SELECT id_e FROM document_entite WHERE id_e = ?
+SQL;
+        if ($this->queryOne($sql, $id_e)) {
+            throw new UnrecoverableException(
+                "Suppression impossible : des documents sont définis sur l'entité {id_e=$id_e}"
+            );
         }
 
-        // Des utilisateurs sont-ils définis sur l'entité
-        $sql = "SELECT id_e FROM utilisateur where id_e=?";
-        $utilisateurSurEntite = $this->queryOne($sql, $id_e);
-        if ($utilisateurSurEntite) {
-            throw new UnrecoverableException("Suppression impossible : des utilisateurs sont définis sur l'entité {id_e=$id_e}");
+        $sql = <<<SQL
+SELECT id_e FROM utilisateur WHERE id_e = ?
+SQL;
+        if ($this->queryOne($sql, $id_e)) {
+            throw new UnrecoverableException(
+                "Suppression impossible : des utilisateurs sont définis sur l'entité {id_e=$id_e}"
+            );
         }
 
-        // Des connecteurs sont-ils définis sur l'entité
-        $sql = "SELECT id_e FROM connecteur_entite where id_e=?";
-        $connecteurSurEntite = $this->queryOne($sql, $id_e);
-        if ($connecteurSurEntite) {
-            throw new UnrecoverableException("Suppression impossible : des connecteurs sont définis sur l'entité {id_e=$id_e}");
+        $sql = <<<SQL
+SELECT id_e FROM connecteur_entite WHERE id_e = ?
+SQL;
+        if ($this->queryOne($sql, $id_e)) {
+            throw new UnrecoverableException(
+                "Suppression impossible : des connecteurs sont définis sur l'entité {id_e=$id_e}"
+            );
         }
 
-        $this->deleteEntite($id_e);
+        $this->delete($id_e);
     }
 
-    private function deleteEntite($id_e)
+    public function delete(int $id_e): void
     {
-        // Suppression de l'ancetre entité
-        $sql = "DELETE FROM entite_ancetre where id_e=?";
+        $this->deleteAncestors($id_e);
+        $sql = <<<SQL
+DELETE FROM entite WHERE id_e = ?
+SQL;
         $this->query($sql, $id_e);
-        // Suppression de l'entité
-        $sql = "DELETE FROM entite WHERE id_e=?";
-        $this->query($sql, $id_e);
     }
 
-    public function delete($id_e)
+    public function updateEntiteMere(int $id_e, int $id_entite_mere): void
     {
-        $this->deleteEntite($id_e);
+        $sql = <<<SQL
+UPDATE entite SET entite_mere = ? WHERE id_e = ?
+SQL;
+        $this->query($sql, $id_entite_mere, $id_e);
     }
 
-    public function updateEntiteMere($id_e, $id_entite_mere)
+    public function setActive(int $id_e, bool $active): void
     {
-        $sql = "UPDATE entite SET entite_mere = ? WHERE id_e = ?";
-        return $this->query($sql, $id_entite_mere, $id_e);
+        $sql = <<<SQL
+UPDATE entite SET is_active = ? WHERE id_e = ?
+SQL;
+        $this->query($sql, (int)$active, $id_e);
     }
 
-    public function setActive($id_e, $active)
+    public function getInfoByDenomination(string $denomination): array|false
     {
-        $sql = "UPDATE entite SET is_active=? WHERE id_e=?";
-        $this->query($sql, $active, $id_e);
-    }
-
-    public function getInfoByDenomination($denomination)
-    {
-        $sql = "SELECT * FROM entite WHERE denomination=?";
+        $sql = <<<SQL
+SELECT * FROM entite WHERE denomination = ?
+SQL;
         return $this->queryOne($sql, $denomination);
     }
 
-    public function getNumberOfEntiteWithName($denomination)
+    public function getNumberOfEntiteWithName(string $denomination): int
     {
-        $sql = "SELECT count(*) FROM entite WHERE denomination=?";
-        return $this->queryOne($sql, $denomination);
+        $sql = <<<SQL
+SELECT count(*) FROM entite WHERE denomination = ?
+SQL;
+        return (int)$this->queryOne($sql, $denomination);
     }
-
 
     /**
      * @deprecated 4.1.26 Use EntityInfoService::getEntityFromData() instead
      * @throws Exception
      */
-    public function getEntiteFromData(array $data)
+    public function getEntiteFromData(array $data): array
     {
-
-        if (! empty($data['id_e'])) {
+        if (!empty($data['id_e'])) {
             $id_e = $data['id_e'];
-            $infoEntiteExistante = $this->getInfo($id_e);
-            if (! $infoEntiteExistante) {
+            $entity_info = $this->getInfo($id_e);
+            if (!$entity_info) {
                 throw new Exception("L'identifiant de l'entite n'existe pas : {id_e=$id_e}");
             }
-            return $infoEntiteExistante;
+            return $entity_info;
         }
 
-        if (! empty($data['denomination'])) {
+        if (!empty($data['denomination'])) {
             $denomination = $data['denomination'];
-
-            $numberOfEntite = $this->getNumberOfEntiteWithName($denomination);
-
-            if ($numberOfEntite == 0) {
+            $nb_entity = $this->getNumberOfEntiteWithName($denomination);
+            if ($nb_entity === 0) {
                 throw new Exception("La dénomination de l'entité n'existe pas : {denomination=$denomination}");
             }
-
-            if ($numberOfEntite > 1) {
-                throw new Exception("Plusieurs entités portent le même nom, préférez utiliser son identifiant");
+            if ($nb_entity > 1) {
+                throw new Exception('Plusieurs entités portent le même nom, préférez utiliser son identifiant');
             }
-
             return $this->getInfoByDenomination($denomination);
         }
 
         if (isset($data['is_active'])) {
-            return $this->getByIsActive($data['is_active']);
+            return $this->getByIsActive((bool)$data['is_active']);
         }
 
         throw new Exception("Aucun paramètre permettant la recherche de l'entité n'a été renseigné");
@@ -355,30 +355,28 @@ class EntiteSQL extends SQL
     /**
      * @deprecated 4.1.26 Use EntityType instead
      */
-    public static function getAllType()
+    public static function getAllType(): array
     {
         return [
-            EntityType::COLLECTIVITE->value => "Collectivité",
-            EntityType::CENTRE_DE_GESTION->value => "Centre de gestion"
+            EntityType::COLLECTIVITE->value => EntityType::COLLECTIVITE->label(),
+            EntityType::CENTRE_DE_GESTION->value => EntityType::CENTRE_DE_GESTION->label(),
         ];
     }
 
     /**
      * @deprecated 4.1.26 Use EntityType::getLabel() instead
      */
-    public static function getNom($type)
+    public static function getNom(string $type): string
     {
-        $type_nom = self::getAllType();
-        if (empty($type_nom[$type])) {
-            return $type;
-        }
-        return $type_nom[$type];
+        return EntityType::getLabel($type);
     }
 
     private function getByIsActive(bool $is_active): array
     {
-        $sql = "SELECT * FROM entite WHERE is_active = ?";
-        return $this->query($sql, $is_active);
+        $sql = <<<SQL
+SELECT * FROM entite WHERE is_active = ?
+SQL;
+        return $this->query($sql, (int)$is_active);
     }
 
     public function create(
@@ -390,12 +388,11 @@ class EntiteSQL extends SQL
     ): int {
         $type ??= EntityType::COLLECTIVITE->value;
         $date = \date(\Date::DATE_ISO);
-        $query = <<<EOT
-INSERT INTO entite(denomination,siren,type,entite_mere,date_inscription,centre_de_gestion)
-VALUES (?,?,?,?,?,?);
-EOT;
-
-        $this->query($query, $name, $siren, $type, $mere, $date, $cdg);
+        $sql = <<<SQL
+INSERT INTO entite(denomination, siren, type, entite_mere, date_inscription, centre_de_gestion)
+VALUES (?, ?, ?, ?, ?, ?)
+SQL;
+        $this->query($sql, $name, $siren, $type, $mere, $date, $cdg);
         return (int)$this->lastInsertId();
     }
 
@@ -408,12 +405,12 @@ EOT;
         int $cdg = 0,
     ): void {
         $type ??= EntityType::COLLECTIVITE->value;
-        $query = <<<EOT
+        $sql = <<<SQL
 UPDATE entite
-SET denomination=?, siren=?, type=?, entite_mere=?, centre_de_gestion=?
-WHERE id_e=?;
-EOT;
-        $this->query($query, $name, $siren, $type, $mere, $cdg, $entityId);
+SET denomination = ?, siren = ?, type = ?, entite_mere = ?, centre_de_gestion = ?
+WHERE id_e = ?
+SQL;
+        $this->query($sql, $name, $siren, $type, $mere, $cdg, $entityId);
     }
 
     /**
@@ -421,17 +418,14 @@ EOT;
      */
     public function updateAncestor(int $entityId, int $ancestor = 0): void
     {
-        $deleteQuery = 'DELETE FROM entite_ancetre WHERE id_e=?;';
-        $this->query($deleteQuery, $entityId);
-        $insertQuery = 'INSERT INTO entite_ancetre(id_e_ancetre,id_e,niveau) VALUES (?,?,?);';
-        $selectQuery = 'SELECT entite_mere FROM entite WHERE id_e=?;';
-        $niveau = 0;
-        $this->query($insertQuery, $entityId, $entityId, $niveau++);
-        while ($ancestor !== 0) {
-            $this->query($insertQuery, $ancestor, $entityId, $niveau++);
-            $ancestor = (int)$this->queryOne($selectQuery, $ancestor);
+        $this->deleteAncestors($entityId);
+        $level = 0;
+        $this->insertAncestor($entityId, $entityId, $level++);
+        while ($ancestor !== RootEntity::ID_E) {
+            $this->insertAncestor($ancestor, $entityId, $level++);
+            $ancestor = (int)$this->getEntiteMere($ancestor);
         }
-        $this->query($insertQuery, 0, $entityId, $niveau);
+        $this->insertAncestor(RootEntity::ID_E, $entityId, $level);
     }
 
     /**
@@ -439,16 +433,14 @@ EOT;
      */
     public function updateAllAncestors(): void
     {
-        $sql = 'DELETE FROM entite_ancetre;';
-        $this->query($sql);
+        $this->deleteAllAncestors();
+        $this->insertAncestor(RootEntity::ID_E, RootEntity::ID_E, 0);
 
-        $sql = 'INSERT INTO entite_ancetre(id_e_ancetre,id_e,niveau) VALUES (0,0,0);';
-        $this->query($sql);
-
-        $sql = 'SELECT entite_mere,id_e FROM entite;';
-        $allEntite = $this->query($sql);
-        foreach ($allEntite as $entite) {
-            $this->updateAncestor($entite['id_e'], $entite['entite_mere']);
+        $sql = <<<SQL
+SELECT entite_mere, id_e FROM entite
+SQL;
+        foreach ($this->query($sql) as $entity_info) {
+            $this->updateAncestor($entity_info['id_e'], $entity_info['entite_mere']);
         }
     }
 
@@ -457,16 +449,16 @@ EOT;
      */
     public function isActive(int $entityId): bool
     {
-        if ($entityId === 0) {
+        if ($entityId === RootEntity::ID_E) {
             return true;
         }
 
-        $info = $this->getInfo($entityId);
-        if ($info === false) {
+        $entity_info = $this->getInfo($entityId);
+        if ($entity_info === false) {
             return false;
         }
 
-        return (bool)$info['is_active'];
+        return (bool)$entity_info['is_active'];
     }
 
     /**
@@ -474,16 +466,16 @@ EOT;
      */
     public function isCDG(int $entityId): bool
     {
-        if ($entityId === 0) {
+        if ($entityId === RootEntity::ID_E) {
             return true;
         }
 
-        $info = $this->getInfo($entityId);
-        if ($info === false) {
+        $entity_info = $this->getInfo($entityId);
+        if ($entity_info === false) {
             return false;
         }
 
-        return $info['type'] === EntityType::CENTRE_DE_GESTION->value;
+        return $entity_info['type'] === EntityType::CENTRE_DE_GESTION->value;
     }
 
     /**
@@ -491,27 +483,26 @@ EOT;
      */
     public function getTreeEntity(?int $id_eMere): array
     {
-        $listeEntiteMere = [];
-        $i = 0;
-        while ($id_eMere !== 0) {
-            $sql = 'SELECT denomination, entite_mere FROM entite WHERE id_e = ?';
-            $mere = $this->query($sql, $id_eMere);
-            if (isset($mere[0])) {
-                $listeEntiteMere[] = $mere[0]['denomination'];
-                $id_eMere = $mere[0]['entite_mere'];
-                $i++;
-            } else {
-                $id_eMere = 0;
+        $sql = <<<SQL
+SELECT denomination, entite_mere FROM entite WHERE id_e = ?
+SQL;
+        $denomination_list = [];
+        while ($id_eMere !== RootEntity::ID_E) {
+            $parent_info = $this->queryOne($sql, $id_eMere);
+            if (!$parent_info) {
+                break;
             }
+            $denomination_list[] = $parent_info['denomination'];
+            $id_eMere = $parent_info['entite_mere'];
         }
-        $listeEntiteMere[$i] = RootEntity::DENOMINATION;
-        return array_reverse($listeEntiteMere);
+        $denomination_list[] = RootEntity::DENOMINATION;
+        return array_reverse($denomination_list);
     }
 
     public function getAllByType(string $type): array
     {
         $sql = <<<SQL
-SELECT * FROM entite WHERE type=? ORDER BY denomination
+SELECT * FROM entite WHERE type = ? ORDER BY denomination
 SQL;
         return $this->query($sql, $type);
     }
@@ -519,11 +510,12 @@ SQL;
     public function getAllCollectivite(int $offset, string $search, int $limit = self::NB_COLLECTIVITE_DISPLAY): array
     {
         $offset = max(0, $offset);
+        // LIMIT cannot be bound: emulated prepared statements would quote the values.
         $sql = <<<SQL
-SELECT id_e,denomination,siren,type,is_active FROM entite
-WHERE entite_mere=0 AND type != 'fournisseur' AND type != 'citoyen' AND denomination LIKE ?
-ORDER BY is_active DESC,denomination
-LIMIT $offset,$limit
+SELECT id_e, denomination, siren, type, is_active FROM entite
+WHERE entite_mere = 0 AND type != 'fournisseur' AND type != 'citoyen' AND denomination LIKE ?
+ORDER BY is_active DESC, denomination
+LIMIT $offset, $limit
 SQL;
         return $this->query($sql, "%$search%");
     }
@@ -532,9 +524,9 @@ SQL;
     {
         $sql = <<<SQL
 SELECT count(*) FROM entite
-WHERE entite_mere=0 AND type != 'fournisseur' AND type != 'citoyen' AND denomination LIKE ?
+WHERE entite_mere = 0 AND type != 'fournisseur' AND type != 'citoyen' AND denomination LIKE ?
 SQL;
-        return (int) $this->queryOne($sql, "%$search%");
+        return (int)$this->queryOne($sql, "%$search%");
     }
 
     public function getActiveChildrenByType(int $id_e, array $type_list): array

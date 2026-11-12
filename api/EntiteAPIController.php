@@ -92,9 +92,9 @@ final class EntiteAPIController extends BaseAPIController
         if ($id_e !== false && $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION)) {
             $action = $this->getFromQueryArgs(1);
             if ($action === 'activate') {
-                $this->entiteSQL->setActive($id_e, 1);
+                $this->entiteSQL->setActive($id_e, true);
             } elseif ($action === 'deactivate') {
-                $this->entiteSQL->setActive($id_e, 0);
+                $this->entiteSQL->setActive($id_e, false);
             } else {
                 throw new UnrecoverableException('Cette action n\'existe pas.');
             }

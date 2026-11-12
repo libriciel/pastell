@@ -558,7 +558,7 @@ class EntiteControler extends PastellControler
         $active = $recuperateur->getInt('active', 0);
         $this->checkDroitFor($id_e, DroitService::DROIT_ENTITE, DroitType::EDITION);
 
-        $this->getEntiteSQL()->setActive($id_e, $active);
+        $this->getEntiteSQL()->setActive($id_e, (bool)$active);
         $info = $this->getEntiteSQL()->getInfo($id_e);
         if ($active) {
             $message = "L'entite «{$info['denomination']}» est désormais " . ($info['is_active'] ? 'active' : 'inactive');
