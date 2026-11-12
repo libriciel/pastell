@@ -1,8 +1,7 @@
 <?php
 
 /**
- * Class ActionCreatorSQL
- * @deprecated Use ActionChange instead
+ * @deprecated 4.1.26 Use ActionChange instead
  */
 class ActionCreatorSQL extends SQL
 {
