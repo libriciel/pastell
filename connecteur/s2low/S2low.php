@@ -337,7 +337,7 @@ class S2low extends TdtConnecteur
         $this->curlWrapper->addPostData('nature_code', $tdtActes->acte_nature);
 
         $this->curlWrapper->addPostData('number', $tdtActes->numero_de_lacte);
-        $this->curlWrapper->addPostData('subject', mb_convert_encoding($tdtActes->objet, 'ISO-8859-1'));
+        $this->curlWrapper->addPostData('subject', $this->toLatin1($tdtActes->objet));
 
         $this->curlWrapper->addPostData('decision_date', date("Y-m-d", strtotime($tdtActes->date_de_lacte)));
         $this->curlWrapper->addPostData('en_attente', $this->getIsEnAttente());
@@ -1038,6 +1038,31 @@ class S2low extends TdtConnecteur
     public function getFilenameTransformation(string $filename): string
     {
         return preg_replace("#[^a-zA-Z0-9._ ]#", "_", $filename);
+    }
+
+    private function toLatin1(string $text): string
+    {
+        $text = strtr($text, [
+            '’' => "'",
+            '‘' => "'",
+            '‚' => "'",
+            '‹' => "'",
+            '›' => "'",
+            '“' => '"',
+            '”' => '"',
+            '„' => '"',
+            '–' => '-',
+            '—' => '-',
+            '…' => '...',
+            '•' => '-',
+            'œ' => 'oe',
+            'Œ' => 'OE',
+            'Ÿ' => 'Y',
+            '€' => 'EUR',
+            '™' => 'TM',
+            "\u{202F}" => ' ',
+        ]);
+        return mb_convert_encoding($text, 'ISO-8859-1', 'UTF-8');
     }
 }
 

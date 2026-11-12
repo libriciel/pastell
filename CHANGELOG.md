@@ -2,6 +2,11 @@
 
 ## [4.1.26] - 2026-12-07
 
+### Corrections
+
+- Translittération des caractères typographiques (apostrophe courbe, tirets…) de l'objet des actes envoyés à S²low
+  au lieu de leur remplacement par « ? » #2630
+
 ### Dépréciations
 
 - Classe `DocumentEmail` dépréciée au profit de `DocumentEmailSQL` et des services `DocumentEmailService` et

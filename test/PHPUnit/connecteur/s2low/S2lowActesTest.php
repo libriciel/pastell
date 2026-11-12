@@ -12,6 +12,44 @@ class S2lowActesTest extends PastellTestCase
      */
     public function testPostActesOK(): void
     {
+        $addPostDataCall = $this->sendActes('TEST');
+
+        static::assertSame(
+            [
+                'api' => 1,
+                'nature_code' => '3',
+                'number' => '201903251130',
+                'subject' => 'TEST',
+                'decision_date' => '2019-03-25',
+                'en_attente' => 0,
+                'document_papier' => 0,
+                'classif1' => '2',
+                'classif2' => '1',
+            ],
+            $addPostDataCall
+        );
+    }
+
+    /**
+     * @throws DonneesFormulaireException
+     * @throws S2lowException
+     */
+    public function testSubjectTransliterated(): void
+    {
+        $addPostDataCall = $this->sendActes('L’objet – œuvre… 10 €');
+
+        static::assertSame(
+            mb_convert_encoding("L'objet - oeuvre... 10 EUR", 'ISO-8859-1', 'UTF-8'),
+            $addPostDataCall['subject']
+        );
+    }
+
+    /**
+     * @throws DonneesFormulaireException
+     * @throws S2lowException
+     */
+    private function sendActes(string $objet): array
+    {
         $curlWrapper = $this->mockCurl([
             '/modules/actes/actes_classification_fetch.php?api=1' =>
                 file_get_contents(__DIR__ . '/fixtures/classification-exemple.xml'),
@@ -40,7 +78,7 @@ class S2lowActesTest extends PastellTestCase
         $acte = new TdtActes();
         $acte->acte_nature = '3';
         $acte->numero_de_lacte = '201903251130';
-        $acte->objet = 'TEST';
+        $acte->objet = $objet;
         $acte->date_de_lacte = '2019-03-25';
         $acte->classification = '2.1';
         $acte->arrete = new Fichier();
@@ -55,19 +93,6 @@ class S2lowActesTest extends PastellTestCase
 
         static::assertSame('666', $s2low->sendActes($acte));
 
-        static::assertSame(
-            [
-                'api' => 1,
-                'nature_code' => '3',
-                'number' => '201903251130',
-                'subject' => 'TEST',
-                'decision_date' => '2019-03-25',
-                'en_attente' => 0,
-                'document_papier' => 0,
-                'classif1' => '2',
-                'classif2' => '1',
-            ],
-            $addPostDataCall
-        );
+        return $addPostDataCall;
     }
 }
