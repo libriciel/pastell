@@ -1,5 +1,25 @@
 # Changelog
 
+## [5.0.13] - 2026-11-12
+
+### Dépréciations
+
+- Classe `DocumentEmail` dépréciée au profit de `DocumentEmailSQL` et des services `DocumentEmailService` et
+  `DocumentEmailReadService` #2610
+- Classe `DocumentActionEntite` dépréciée au profit de `DocumentActionEntiteSQL` et des services `DocumentEntiteService`
+  et `DocumentSearchService` #2618
+- Classe `UsersToken` dépréciée au profit de `UserTokenService` #2621
+- Classe `ConnecteurDisponible` dépréciée au profit du service `ConnecteurAvailabilityService` #2622
+- Classe `TableCheck` dépréciée au profit de `SQLQuery::getTablesMarkedAsCrashed()` #2623
+- Classe `UtilisateurRoleCache` dépréciée au profit de `UtilisateurRoleCacheService` #2624
+- Classe `ConnecteurFrequence` et méthodes associées de `ConnecteurFrequenceSQL`, `JobManager` et `DaemonControler`
+  dépréciées au profit de `ConnecteurFrequenceData` et du service `ConnecteurFrequenceService` #2625
+
+### Sécurité
+
+- [CVE-2026-119618](https://www.cve.org/CVERecord?id=CVE-2026-119618) (criticité CRITIQUE)
+  Apache HTTP Server: mod_http2: heap corruption and RCE in assign_headers #2631
+
 ## [5.0.12] - 2026-11-02
 
 ### Évolutions
