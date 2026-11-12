@@ -77,7 +77,8 @@ SQL;
         $sql = <<<SQL
 SELECT entite_mere FROM entite WHERE id_e = ?
 SQL;
-        return $this->queryOne($sql, $id_e);
+        $entite_mere = $this->queryOne($sql, $id_e);
+        return $entite_mere === false ? false : (int)$entite_mere;
     }
 
     public function getAncetre(int $id_e): array

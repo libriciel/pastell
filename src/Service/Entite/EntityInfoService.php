@@ -96,7 +96,7 @@ final class EntityInfoService
 
         if (!empty($data['denomination'])) {
             $denomination = $data['denomination'];
-            $nb_entity = (int)$this->entiteSQL->getNumberOfEntiteWithName($denomination);
+            $nb_entity = $this->entiteSQL->getNumberOfEntiteWithName($denomination);
             if ($nb_entity === 0) {
                 throw new Exception("La dénomination de l'entité n'existe pas : {denomination=$denomination}");
             }
