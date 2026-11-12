@@ -10,6 +10,7 @@ use Pastell\Service\Entite\EntityInfoService;
 use Pastell\Service\Entite\EntityType;
 use TransformationGenerique;
 use FluxEntiteHeritageSQL;
+use Pastell\Service\Connecteur\FluxInheritanceService;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\ImportExportConfig\ExportConfigService;
 use Pastell\Service\ImportExportConfig\ImportConfigService;
@@ -42,9 +43,8 @@ class ExportConfigServiceTest extends PastellTestCase
             self::ID_E_COL
         );
 
-        /** @var FluxEntiteHeritageSQL $fluxEntiteHeritageSQL */
-        $fluxEntiteHeritageSQL = $this->getObjectInstancier()->getInstance(FluxEntiteHeritageSQL::class);
-        $fluxEntiteHeritageSQL->setInheritanceAllFlux($id_e_herite);
+        $fluxInheritanceService = $this->getObjectInstancier()->getInstance(FluxInheritanceService::class);
+        $fluxInheritanceService->setInheritanceAllFlux($id_e_herite);
 
         $id_e_herite_actes = $entityCreationService->create(
             'Entite qui hérite que de actes',
@@ -52,9 +52,7 @@ class ExportConfigServiceTest extends PastellTestCase
             EntityType::COLLECTIVITE->value,
             self::ID_E_COL
         );
-        /** @var FluxEntiteHeritageSQL $fluxEntiteHeritageSQL */
-        $fluxEntiteHeritageSQL = $this->getObjectInstancier()->getInstance(FluxEntiteHeritageSQL::class);
-        $fluxEntiteHeritageSQL->setInheritance($id_e_herite_actes, 'actes_generique');
+        $fluxInheritanceService->setInheritance($id_e_herite_actes, 'actes_generique');
 
         /** @var ExportConfigService $exportConfigService */
         $exportConfigService = $this->getObjectInstancier()->getInstance(ExportConfigService::class);
@@ -97,6 +95,7 @@ class ExportConfigServiceTest extends PastellTestCase
         $connector = $this->getConnecteurFactory()
             ->getConnecteurByType($petiteFille[0]['id_e'], 'actes-generique', 'Tdt');
         self::assertInstanceOf(FakeTdT::class, $connector);
+        $fluxEntiteHeritageSQL = $this->getObjectInstancier()->getInstance(FluxEntiteHeritageSQL::class);
         self::assertTrue($fluxEntiteHeritageSQL->hasInheritanceAllFlux($petiteFille[1]['id_e']));
         self::assertTrue($fluxEntiteHeritageSQL->hasInheritance($petiteFille[2]['id_e'], 'actes_generique'));
     }

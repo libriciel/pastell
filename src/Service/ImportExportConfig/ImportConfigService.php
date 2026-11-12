@@ -5,9 +5,9 @@ namespace Pastell\Service\ImportExportConfig;
 use ConnecteurFactory;
 use DonneesFormulaireException;
 use Exception;
-use FluxEntiteHeritageSQL;
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Connecteur\ConnecteurCreationService;
+use Pastell\Service\Connecteur\FluxInheritanceService;
 use Pastell\Service\Entite\EntityCreationService;
 use UnrecoverableException;
 use Pastell\Service\Entite\RootEntity;
@@ -22,7 +22,7 @@ final class ImportConfigService
     public function __construct(
         private readonly EntityCreationService $entityCreationService,
         private readonly ConnecteurFactory $connecteurFactory,
-        private readonly FluxEntiteHeritageSQL $fluxEntiteHeritageSQL,
+        private readonly FluxInheritanceService $fluxInheritanceService,
         private readonly ConnecteurCreationService $connecteurCreationService,
         private readonly ConnecteurAssociationService $connecteurAssociationService,
     ) {
@@ -249,7 +249,7 @@ final class ImportConfigService
                 $id_e_mapping[$id_e] = $id_e_root;
             }
             foreach ($heritage_list as $flux) {
-                $this->fluxEntiteHeritageSQL->setInheritance($id_e_mapping[$id_e], $flux);
+                $this->fluxInheritanceService->setInheritance((int)$id_e_mapping[$id_e], $flux);
             }
         }
     }

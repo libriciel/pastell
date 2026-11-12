@@ -2,6 +2,7 @@
 
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Connecteur\ConnecteurAvailabilityService;
+use Pastell\Service\Connecteur\FluxInheritanceService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Entite\EntityInfoService;
 use Pastell\Service\Entite\RootEntity;
@@ -278,8 +279,7 @@ class FluxControler extends PastellControler
 
     public function getConnectorForFlux(int $id_e, string $id_flux): array
     {
-        $fluxEntiteHeritageSQL = $this->getObjectInstancier()->getInstance(FluxEntiteHeritageSQL::class);
-        $all_flux_entite = $fluxEntiteHeritageSQL->getAllWithSameType($id_e);
+        $all_flux_entite = $this->getInstance(FluxInheritanceService::class)->getAllWithSameType($id_e);
         $result = [];
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($id_flux);
         foreach ($documentType->getConnecteurAllInfo() as $j => $connecteur_type_info) {
@@ -309,13 +309,10 @@ class FluxControler extends PastellControler
 
     public function toogleHeritageAction()
     {
-        /** @var FluxEntiteHeritageSQL $fluxEntiteHeritageSQL */
-        $fluxEntiteHeritageSQL = $this->getInstance(FluxEntiteHeritageSQL::class);
-
         $id_e = $this->getPostInfo()->getInt('id_e');
         $flux = $this->getPostInfo()->get('flux');
         $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
-        $fluxEntiteHeritageSQL->toogleInheritance($id_e, $flux);
+        $this->getInstance(FluxInheritanceService::class)->toggleInheritance($id_e, (string)$flux);
         $this->setLastMessage("L'héritage a été modifié");
         if ($flux === FluxEntiteHeritageSQL::ALL_FLUX) {
             $this->redirect("/Flux/index?id_e=$id_e");
