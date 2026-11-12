@@ -80,6 +80,7 @@
 - Suppression de la classe `PastellTimer` #2600
 - Suppression de `JobQueueSQL::getAllJobs()`, remplacée par `JobQueueSQL::getFilteredJobList()` #964
 - Suppression des paramètres `$limit` et `$offset` de `JobQueueSQL::getJobsByDaemon()` #964
+- Suppression de `WorkerSQL::attachJob()`, le paramètre `$id_job` de `WorkerSQL::create()` devient obligatoire #964
 
 ### Suppressions d'éléments dépréciés
 
@@ -128,7 +129,6 @@
     - `Controler::getViewParameterOrObject()`
     - `DroitService::getAllDroitEntite()`
     - `FluxAPIController::listFlux()`
-
 ## [5.0.12] - 2026-11-02
 
 ### Évolutions

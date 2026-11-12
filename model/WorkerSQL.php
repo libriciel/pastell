@@ -18,7 +18,7 @@ class WorkerSQL extends SQL
         );
     }
 
-    public function create(int $pid, int $id_job = 0): int
+    public function create(int $pid, int $id_job): int
     {
         $sql = <<<SQL
 INSERT INTO worker (pid, date_begin, id_job) VALUES (?, ?, ?)
@@ -51,12 +51,6 @@ SQL;
             return null;
         }
         return $this->mapToWorkerObject($info);
-    }
-
-    public function attachJob($id_worker, $id_job)
-    {
-        $sql = "UPDATE worker SET id_job=? WHERE id_worker=?";
-        $this->query($sql, $id_job, $id_worker);
     }
 
     public function success($id_worker)

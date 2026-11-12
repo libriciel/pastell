@@ -299,8 +299,7 @@ class JobQueueSQLTest extends PastellTestCase
     public function testBulkRunningJobs(): void
     {
         $id_job = (int)$this->jobQueueSQL->createJob($this->getNewJob());
-        $id_worker = $this->workerSQL->create(1234);
-        $this->workerSQL->attachJob($id_worker, $id_job);
+        $id_worker = $this->workerSQL->create(1234, $id_job);
 
         static::assertSame(0, $this->jobQueueSQL->lockAll(null, new JobAdvancedFilters()));
         static::assertSame(
@@ -339,8 +338,7 @@ class JobQueueSQLTest extends PastellTestCase
     public function testBulkUnlockLaunchingJobWithRunningWorker(): void
     {
         $id_job = (int)$this->jobQueueSQL->createJob($this->getNewJob());
-        $id_worker = $this->workerSQL->create(1234);
-        $this->workerSQL->attachJob($id_worker, $id_job);
+        $this->workerSQL->create(1234, $id_job);
         $this->jobQueueSQL->lock($id_job, JobStatus::LAUNCHING);
 
         static::assertSame(
@@ -359,8 +357,7 @@ class JobQueueSQLTest extends PastellTestCase
     {
         $id_job = (int)$this->jobQueueSQL->createJob($this->getNewJob());
         for ($i = 0; $i < 3; $i++) {
-            $id_worker = $this->workerSQL->create(1234 + $i);
-            $this->workerSQL->attachJob($id_worker, $id_job);
+            $id_worker = $this->workerSQL->create(1234 + $i, $id_job);
             $this->workerSQL->success($id_worker);
         }
         $this->jobQueueSQL->lock($id_job, JobStatus::ERROR_ACTION);
@@ -378,8 +375,7 @@ class JobQueueSQLTest extends PastellTestCase
     public function testBulkUnlockOrphanWorkerJobs(): void
     {
         $id_job = (int)$this->jobQueueSQL->createJob($this->getNewJob());
-        $id_worker = $this->workerSQL->create(1234);
-        $this->workerSQL->attachJob($id_worker, $id_job);
+        $this->workerSQL->create(1234, $id_job);
         $this->jobQueueSQL->lock($id_job, JobStatus::ERROR_DAEMON);
 
         static::assertSame(
@@ -524,8 +520,7 @@ class JobQueueSQLTest extends PastellTestCase
     public function testGetWorkerFromJob(): void
     {
         $job_id = $this->jobQueueSQL->createJob($this->getNewJob());
-        $worker_id = $this->workerSQL->create(0);
-        $this->workerSQL->attachJob($worker_id, $job_id);
+        $worker_id = $this->workerSQL->create(0, (int)$job_id);
 
         $worker = $this->workerSQL->getWorker($worker_id);
         $job_result = $this->jobQueueSQL->getJob($job_id);

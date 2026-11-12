@@ -226,8 +226,7 @@ class DaemonControlerTest extends ControlerTestCase
         $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
         $id_job = $jobQueueSQL->getJobIdForConnecteur(13, 'une_action_auto');
         $workerSQL = $this->getObjectInstancier()->getInstance(WorkerSQL::class);
-        $id_worker = $workerSQL->create(1234);
-        $workerSQL->attachJob($id_worker, $id_job);
+        $id_worker = $workerSQL->create(1234, (int)$id_job);
         $this->getSQLQuery()->query('UPDATE worker SET termine = 1 WHERE id_worker = ?', $id_worker);
 
         $daemonControler = $this->getControlerInstance(DaemonControler::class);
