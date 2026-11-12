@@ -14,7 +14,7 @@ class FactureCPPDispoGF extends ActionExecutor
         if ($donneesFormulaire->get('has_mise_a_dispo_gf') == true) {
             $message = 'La facture est déja passée dans l\'état "Mise à disposition GF"';
             $this->setLastMessage($message);
-            $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'modification', $message);
+            $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, 'modification', $message);
             return false;
         }
 

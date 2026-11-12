@@ -20,11 +20,11 @@ class TdTRecupHelios extends ConnecteurTypeActionExecutor
 
         $tedetis_transaction_id = $this->getDonneesFormulaire()->get($this->getMappingValue('pes_tedetis_transaction_id'));
 
-        $actionCreator = $this->getActionCreator();
+        $actionChange = $this->getActionChange();
         if (! $tedetis_transaction_id) {
             $message = "Une erreur est survenue lors de l'envoi à " . $tdT->getLogicielName();
             $this->setLastMessage($message);
-            $actionCreator->addAction($this->id_e, 0, $tdt_error, $message);
+            $actionChange->addAction($this->id_d, $this->id_e, 0, $tdt_error, $message);
             $this->notify($tdt_error, $this->type, $message);
             return false;
         }
@@ -55,7 +55,7 @@ class TdTRecupHelios extends ConnecteurTypeActionExecutor
             $ack_filename = $fichier_pes_filename . "_ACK.xml";
 
             $this->getDonneesFormulaire()->addFileFromData($fichier_reponse_element, $ack_filename, $retour);
-            $actionCreator->addAction($this->id_e, 0, $next_action, $next_message);
+            $actionChange->addAction($this->id_d, $this->id_e, 0, $next_action, $next_message);
             $this->notify($next_action, $this->type, $next_message);
             $this->recupPESAcquitInfo();
         }
@@ -79,7 +79,7 @@ class TdTRecupHelios extends ConnecteurTypeActionExecutor
             }
         }
         $this->setLastMessage($message);
-        $this->getActionCreator()->addAction($this->id_e, $this->id_u, $tdt_error, $message);
+        $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, $tdt_error, $message);
         $this->notify($tdt_error, $this->type, $message);
         return false;
     }

@@ -17,13 +17,13 @@ final class HeliosAutomatiqueImportationTest extends PastellTestCase
         );
 
         $this->getObjectInstancier()
-            ->getInstance(ActionCreatorSQL::class)
+            ->getInstance(ActionChange::class)
             ->addAction(
+                $document['id_d'],
                 self::ID_E_COL,
                 0,
                 'importation',
                 'message',
-                $document['id_d']
             );
 
         $this->triggerActionOnDocument($document['id_d'], 'orientation');

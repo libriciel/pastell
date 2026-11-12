@@ -79,7 +79,8 @@ class SignatureLocale extends ChoiceActionExecutor
         $actes->setData('signature_link', 'La signature a été recupérée');
         $actes->addFileFromData('signature', $filename, $signedFile->signature);
 
-        $this->getActionCreator()->addAction(
+        $this->getActionChange()->addAction(
+            $this->id_d,
             $this->id_e,
             $this->id_u,
             'recu-iparapheur',
