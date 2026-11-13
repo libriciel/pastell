@@ -5,7 +5,7 @@ class UtilisateurRoleSQL extends SQL
     public function insertRole(int $id_u, string $role, int $id_e): void
     {
         $sql = <<<SQL
-INSERT INTO utilisateur_role(id_u,role,id_e) VALUES (?,?,?)
+INSERT INTO utilisateur_role(id_u, role, id_e) VALUES (?, ?, ?)
 SQL;
         $this->query($sql, $id_u, $role, $id_e);
     }
@@ -13,33 +13,33 @@ SQL;
     public function deleteRole(int $id_u, string $role, int $id_e): void
     {
         $sql = <<<SQL
-DELETE FROM utilisateur_role WHERE id_u=? AND role=? AND id_e=?
+DELETE FROM utilisateur_role WHERE id_u = ? AND role = ? AND id_e = ?
 SQL;
         $this->query($sql, $id_u, $role, $id_e);
     }
 
-    public function replaceRole(int $id_u, string $role, int $id_e, string $newRole): void
+    public function replaceRole(int $id_u, string $role, int $id_e, string $new_role): void
     {
         $sql = <<<SQL
-UPDATE utilisateur_role SET role=? WHERE id_u=? AND role=? AND id_e=?
+UPDATE utilisateur_role SET role = ? WHERE id_u = ? AND role = ? AND id_e = ?
 SQL;
-        $this->query($sql, $newRole, $id_u, $role, $id_e);
+        $this->query($sql, $new_role, $id_u, $role, $id_e);
     }
 
     public function countRoles(int $id_u): int
     {
         $sql = <<<SQL
-SELECT count(*) FROM utilisateur_role WHERE id_u=?
+SELECT count(*) FROM utilisateur_role WHERE id_u = ?
 SQL;
-        return (int) $this->queryOne($sql, $id_u);
+        return (int)$this->queryOne($sql, $id_u);
     }
 
     public function hasRole(int $id_u, string $role, int $id_e): int
     {
         $sql = <<<SQL
-SELECT count(*) FROM utilisateur_role WHERE id_u=? AND role=? AND id_e=?
+SELECT count(*) FROM utilisateur_role WHERE id_u = ? AND role = ? AND id_e = ?
 SQL;
-        return (int) $this->queryOne($sql, $id_u, $role, $id_e);
+        return (int)$this->queryOne($sql, $id_u, $role, $id_e);
     }
 
     public function deleteAllRoles(int $id_u): void
@@ -63,60 +63,62 @@ SQL;
         $sql = <<<SQL
 SELECT droit FROM entite_ancetre
 JOIN utilisateur_role ON entite_ancetre.id_e_ancetre = utilisateur_role.id_e
-JOIN role_droit ON utilisateur_role.role=role_droit.role
-WHERE entite_ancetre.id_e=? AND utilisateur_role.id_u=?
+JOIN role_droit ON utilisateur_role.role = role_droit.role
+WHERE entite_ancetre.id_e = ? AND utilisateur_role.id_u = ?
 SQL;
-        $result = [];
-        foreach ($this->query($sql, $id_e, $id_u) as $line) {
-            $result[] = $line['droit'];
-        }
-        return $result;
+        return $this->queryOneCol($sql, $id_e, $id_u);
     }
 
     public function getAllDroit(int $id_u): array
     {
         $sql = <<<SQL
 SELECT droit FROM utilisateur_role
-JOIN role_droit ON utilisateur_role.role=role_droit.role
-WHERE utilisateur_role.id_u=?
+JOIN role_droit ON utilisateur_role.role = role_droit.role
+WHERE utilisateur_role.id_u = ?
 SQL;
-        $result = [];
-        foreach ($this->query($sql, $id_u) as $line) {
-            $result[] = $line['droit'];
-        }
-        return $result;
+        return $this->queryOneCol($sql, $id_u);
     }
 
     public function getRole(int $id_u): array
     {
         $sql = <<<SQL
-SELECT utilisateur_role.*,denomination,siren,type FROM utilisateur_role
-LEFT JOIN entite ON utilisateur_role.id_e=entite.id_e
+SELECT utilisateur_role.*, denomination, siren, type FROM utilisateur_role
+LEFT JOIN entite ON utilisateur_role.id_e = entite.id_e
 WHERE id_u = ?
 SQL;
         return $this->query($sql, $id_u);
     }
 
+    /**
+     * Untyped parameter: legacy callers may pass false, null or a string coming from the request.
+     */
     public function getEntiteDroitList(int $id_u, $id_e = false): array
     {
+        $data = [$id_u];
+        $entity_clause = '';
+        if ($id_e) {
+            $entity_clause = 'AND entite.id_e = ?';
+            $data[] = $id_e;
+        }
         $sql = <<<SQL
 SELECT entite.id_e, droit FROM entite_ancetre
 JOIN utilisateur_role ON entite_ancetre.id_e_ancetre = utilisateur_role.id_e
-JOIN role_droit ON utilisateur_role.role=role_droit.role
-JOIN entite ON entite_ancetre.id_e=entite.id_e
-WHERE utilisateur_role.id_u=?
+JOIN role_droit ON utilisateur_role.role = role_droit.role
+JOIN entite ON entite_ancetre.id_e = entite.id_e
+WHERE utilisateur_role.id_u = ? $entity_clause
+ORDER BY entite.id_e, droit
 SQL;
-        $data[] = $id_u;
-        if ($id_e) {
-            $sql .= ' AND entite.id_e=?';
-            $data[] = $id_e;
-        }
-        $sql .= ' ORDER BY entite.id_e,droit';
         return $this->query($sql, $data);
     }
 
     public function getAllEntiteWithFille(int $id_u, string $droit, ?string $active): array
     {
+        $data = [$id_u, $droit];
+        $active_clause = '';
+        if ($active !== null) {
+            $active_clause = 'AND entite.is_active = ?';
+            $data[] = filter_var($active, FILTER_VALIDATE_BOOL);
+        }
         $sql = <<<SQL
 SELECT DISTINCT entite.id_e,
                 entite.denomination,
@@ -127,30 +129,24 @@ SELECT DISTINCT entite.id_e,
                 entite.is_active
 FROM entite_ancetre
 JOIN utilisateur_role ON entite_ancetre.id_e_ancetre = utilisateur_role.id_e
-JOIN role_droit ON utilisateur_role.role=role_droit.role
-JOIN entite ON entite_ancetre.id_e=entite.id_e
-WHERE utilisateur_role.id_u=? AND droit=?
+JOIN role_droit ON utilisateur_role.role = role_droit.role
+JOIN entite ON entite_ancetre.id_e = entite.id_e
+WHERE utilisateur_role.id_u = ? AND droit = ? $active_clause
+ORDER BY entite.id_e, droit
 SQL;
-        $data[] = $id_u;
-        $data[] = $droit;
-        if ($active !== null) {
-            $sql .= ' AND entite.is_active=?';
-            $data[] = filter_var($active, FILTER_VALIDATE_BOOL);
-        }
-        $sql .= ' ORDER BY entite.id_e,droit;';
         return $this->query($sql, $data);
     }
 
     public function getArbreFille(int $id_u, string $droit): array
     {
         $sql = <<<SQL
-SELECT DISTINCT entite.id_e,entite.denomination,entite.entite_mere
+SELECT DISTINCT entite.id_e, entite.denomination, entite.entite_mere
 FROM entite_ancetre
-    JOIN utilisateur_role ON entite_ancetre.id_e_ancetre = utilisateur_role.id_e
-    JOIN role_droit ON utilisateur_role.role=role_droit.role
-    JOIN entite ON entite_ancetre.id_e=entite.id_e
-WHERE utilisateur_role.id_u=? AND droit=?
-ORDER BY CAST(entite_mere AS UNSIGNED), denomination;
+JOIN utilisateur_role ON entite_ancetre.id_e_ancetre = utilisateur_role.id_e
+JOIN role_droit ON utilisateur_role.role = role_droit.role
+JOIN entite ON entite_ancetre.id_e = entite.id_e
+WHERE utilisateur_role.id_u = ? AND droit = ?
+ORDER BY CAST(entite_mere AS UNSIGNED), denomination
 SQL;
         return $this->query($sql, $id_u, $droit);
     }
@@ -158,10 +154,11 @@ SQL;
     public function getEntiteWithDenomination(int $id_u, string $droit): array
     {
         $sql = <<<SQL
-SELECT DISTINCT entite.id_e,denomination,siren,type, is_active
+SELECT DISTINCT entite.id_e, denomination, siren, type, is_active
 FROM utilisateur_role
-JOIN role_droit ON utilisateur_role.role=role_droit.role
-LEFT JOIN entite ON utilisateur_role.id_e=entite.id_e WHERE id_u = ?  AND droit=?
+JOIN role_droit ON utilisateur_role.role = role_droit.role
+LEFT JOIN entite ON utilisateur_role.id_e = entite.id_e
+WHERE id_u = ? AND droit = ?
 SQL;
         return $this->query($sql, $id_u, $droit);
     }
@@ -171,15 +168,11 @@ SQL;
         $sql = <<<SQL
 SELECT DISTINCT utilisateur_role.id_e
 FROM utilisateur_role
-JOIN role_droit ON utilisateur_role.role=role_droit.role
-LEFT JOIN entite ON utilisateur_role.id_e=entite.id_e
-WHERE id_u = ?  AND droit=?
+JOIN role_droit ON utilisateur_role.role = role_droit.role
+LEFT JOIN entite ON utilisateur_role.id_e = entite.id_e
+WHERE id_u = ? AND droit = ?
 SQL;
-        $result = [];
-        foreach ($this->query($sql, $id_u, $droit) as $line) {
-            $result[] = $line['id_e'];
-        }
-        return $result;
+        return $this->queryOneCol($sql, $id_u, $droit);
     }
 
     public function getEntiteWithAnyDroit(int $id_u): array
@@ -187,15 +180,11 @@ SQL;
         $sql = <<<SQL
 SELECT DISTINCT utilisateur_role.id_e
 FROM utilisateur_role
-JOIN role_droit ON utilisateur_role.role=role_droit.role
-LEFT JOIN entite ON utilisateur_role.id_e=entite.id_e
+JOIN role_droit ON utilisateur_role.role = role_droit.role
+LEFT JOIN entite ON utilisateur_role.id_e = entite.id_e
 WHERE id_u = ?
 SQL;
-        $result = [];
-        foreach ($this->query($sql, $id_u) as $line) {
-            $result[] = $line['id_e'];
-        }
-        return $result;
+        return $this->queryOneCol($sql, $id_u);
     }
 
     public function getRoleWithLibelle(array $id_u_list): array
@@ -205,7 +194,7 @@ SQL;
         }
         $placeholders = $this->getPlaceholders($id_u_list);
         $sql = <<<SQL
-SELECT utilisateur_role.*,entite.denomination,entite.entite_mere,role.libelle FROM utilisateur_role
+SELECT utilisateur_role.*, entite.denomination, entite.entite_mere, role.libelle FROM utilisateur_role
 LEFT JOIN entite ON utilisateur_role.id_e = entite.id_e
 LEFT JOIN role ON utilisateur_role.role = role.role
 WHERE id_u IN ($placeholders)
@@ -216,14 +205,11 @@ SQL;
     public function anybodyHasRole(string $role): int
     {
         $sql = <<<SQL
-SELECT count(*) FROM utilisateur_role WHERE role =?
+SELECT count(*) FROM utilisateur_role WHERE role = ?
 SQL;
-        return (int) $this->queryOne($sql, $role);
+        return (int)$this->queryOne($sql, $role);
     }
 
-    /**
-     * @return int[]
-     */
     public function getSubscribedUsersByRole(string $role): array
     {
         $sql = <<<SQL
@@ -235,16 +221,16 @@ SQL;
         return array_map(intval(...), $this->queryOneCol($sql, $role));
     }
 
-    public function getChildrenWithAnyDroit(int $id_e_parent, int $id_u, string $excludedRole): array
+    public function getChildrenWithAnyDroit(int $id_e_parent, int $id_u, string $excluded_role): array
     {
         $sql = <<<SQL
 SELECT DISTINCT entite.* FROM entite
-JOIN entite_ancetre ON entite.id_e=entite_ancetre.id_e
-JOIN utilisateur_role ON entite_ancetre.id_e_ancetre=utilisateur_role.id_e
+JOIN entite_ancetre ON entite.id_e = entite_ancetre.id_e
+JOIN utilisateur_role ON entite_ancetre.id_e_ancetre = utilisateur_role.id_e
 JOIN utilisateur ON utilisateur_role.id_u = utilisateur.id_u
-WHERE entite.entite_mere=? AND utilisateur.id_u=? AND utilisateur_role.role <> ?
+WHERE entite.entite_mere = ? AND utilisateur.id_u = ? AND utilisateur_role.role <> ?
 ORDER BY denomination
 SQL;
-        return $this->query($sql, $id_e_parent, $id_u, $excludedRole);
+        return $this->query($sql, $id_e_parent, $id_u, $excluded_role);
     }
 }
