@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Pastell\Service\LoginAttemptLimit;
+use Pastell\Service\Utilisateur\UserPasswordService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Symfony\Component\RateLimiter\Exception\RateLimitExceededException;
 
@@ -18,6 +19,7 @@ class ApiAuthentication
         private readonly LoginAttemptLimit $loginAttemptLimit,
         private readonly UtilisateurSQL $utilisateurSQL,
         private readonly UserTokenService $userTokenService,
+        private readonly UserPasswordService $userPasswordService,
         private readonly string $rateLimiterVariable,
     ) {
     }
@@ -102,7 +104,8 @@ class ApiAuthentication
     {
         $this->checkRateLimit();
         $userId = $this->utilisateurSQL->getIdFromLogin($this->server['PHP_AUTH_USER']);
-        if ($userId && $this->utilisateurSQL->verifPassword($userId, $this->server['PHP_AUTH_PW'])) {
+        $password = $this->server['PHP_AUTH_PW'] ?? '';
+        if ($userId && $this->userPasswordService->verifyPassword((int)$userId, $password)) {
             $this->resetRateLimit();
         } else {
             $userId = null;

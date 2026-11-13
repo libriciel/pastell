@@ -21,6 +21,9 @@ class UtilisateurSQL extends SQL
         return (bool) $this->getInfo($id_u);
     }
 
+    /**
+     * @deprecated 4.1.26 no longer used, to be deleted in 6.0.0
+     */
     public function validMail($id_u, $password)
     {
         $sql = "SELECT id_u FROM utilisateur " .
@@ -39,6 +42,9 @@ class UtilisateurSQL extends SQL
         $this->query($sql, $id_u);
     }
 
+    /**
+     * @deprecated 4.1.26 Use UserPasswordService::verifyPassword() instead
+     */
     public function verifPassword($id_u, $password)
     {
         $info = $this->getInfo($id_u);
@@ -51,6 +57,9 @@ class UtilisateurSQL extends SQL
         $this->query($sql, $id_u);
     }
 
+    /**
+     * @deprecated 4.1.26 Use UserPasswordService::setPassword() instead
+     */
     public function setPassword($id_u, $password)
     {
         $sql = "UPDATE utilisateur SET password = ? WHERE id_u = ?";
@@ -80,6 +89,9 @@ class UtilisateurSQL extends SQL
         $this->updateCertificat($id_u, "", "");
     }
 
+    /**
+     * @deprecated 4.1.26 Use UserCertificateService::setCertificate() instead
+     */
     public function setCertificat($id_u, Certificate $certificat)
     {
 
@@ -94,9 +106,11 @@ class UtilisateurSQL extends SQL
         return true;
     }
 
-    private function updateCertificat($id_u, $content, $verif_number)
+    public function updateCertificat(int $id_u, string $content, string $verif_number): void
     {
-        $sql = "UPDATE utilisateur SET certificat = ?, certificat_verif_number=? WHERE id_u = ?";
+        $sql = <<<SQL
+UPDATE utilisateur SET certificat = ?, certificat_verif_number = ? WHERE id_u = ?
+SQL;
         $this->query($sql, $content, $verif_number, $id_u);
     }
 
@@ -113,6 +127,9 @@ class UtilisateurSQL extends SQL
         return $this->queryOne($sql, $login);
     }
 
+    /**
+     * @deprecated 4.1.26 Use UserCreationService::createAccount() instead
+     */
     public function create($login, $password, $email, $password_validation)
     {
         $sql = "INSERT INTO utilisateur(login,email,mail_verif_password,date_inscription) " .
@@ -129,6 +146,9 @@ class UtilisateurSQL extends SQL
         return $this->queryOne($sql, $login);
     }
 
+    /**
+     * @deprecated 4.1.26 Use UserInfoService::getUserFromData() instead
+     */
     public function getUserFromData($data)
     {
         if (! empty($data['id_u'])) {
@@ -294,5 +314,22 @@ ORDER BY nom,prenom
 $limitClause
 SQL;
         return $this->query($sql, $data);
+    }
+
+    public function updatePasswordHash(int $id_u, string $password_hash): void
+    {
+        $sql = <<<SQL
+UPDATE utilisateur SET password = ? WHERE id_u = ?
+SQL;
+        $this->query($sql, $password_hash, $id_u);
+    }
+
+    public function insert(string $login, string $email, string $mail_verif_password): int
+    {
+        $sql = <<<SQL
+INSERT INTO utilisateur(login, email, mail_verif_password, date_inscription) VALUES (?, ?, ?, now())
+SQL;
+        $this->query($sql, $login, $email, $mail_verif_password);
+        return (int)$this->lastInsertId();
     }
 }

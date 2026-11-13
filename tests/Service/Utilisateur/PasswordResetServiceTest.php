@@ -6,6 +6,7 @@ namespace Pastell\Tests\Service\Utilisateur;
 
 use Exception;
 use Pastell\Service\Utilisateur\PasswordResetService;
+use Pastell\Service\Utilisateur\UserPasswordService;
 use PastellTestCase;
 use UtilisateurSQL;
 
@@ -27,7 +28,8 @@ class PasswordResetServiceTest extends PastellTestCase
 
         $this->getService()->changePassword(1, 'N3w-P@ssw0rd-Str0ng!');
 
-        static::assertTrue($this->getUtilisateurSQL()->verifPassword(1, 'N3w-P@ssw0rd-Str0ng!'));
+        $userPasswordService = $this->getObjectInstancier()->getInstance(UserPasswordService::class);
+        static::assertTrue($userPasswordService->verifyPassword(1, 'N3w-P@ssw0rd-Str0ng!'));
         static::assertNotSame('old-token', $this->getUtilisateurSQL()->getInfo(1)['mail_verif_password']);
     }
 
