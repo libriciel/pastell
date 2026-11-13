@@ -924,7 +924,7 @@ class UtilisateurControler extends PastellControler
     public function supprimerCertificatAction()
     {
         $recuperateur = new Recuperateur($_GET);
-        $id_u = $recuperateur->get('id_u');
+        $id_u = $recuperateur->getInt('id_u');
 
         $info = $this->getUtilisateur()->getInfo($id_u);
 
