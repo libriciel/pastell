@@ -185,7 +185,7 @@ acceptance_test:
 .security_scan_base:
   stage: test
   image:
-    name: hubdocker.libriciel.fr/aquasec/trivy:0.76.1@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c
+    name: hubdocker.libriciel.fr/aquasec/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb
     entrypoint: [""]
   services:
     - docker:dind@sha256:08a98015fce594af7c382883bea080ea206de74402a95da9dc52b6428c8cd121
