@@ -32,6 +32,26 @@ class ApiAuthenticationTest extends PastellTestCase
         $httpApi->dispatch();
     }
 
+    public function testWithoutPassword(): void
+    {
+        $loginAttemptLimit = $this->createMock(LoginAttemptLimit::class);
+        $loginAttemptLimit->method('getRateLimit')
+            ->willReturn(new RateLimit(5, new \DateTimeImmutable(), true, 5));
+        $loginAttemptLimit->expects(static::once())
+            ->method('consumeLoginAttempt')
+            ->with('127.0.0.1');
+        $this->getObjectInstancier()->setInstance(LoginAttemptLimit::class, $loginAttemptLimit);
+        $httpApi = $this->getObjectInstancier()->getInstance(HttpApi::class);
+        $httpApi->setServerArray([
+            'REQUEST_METHOD' => 'get',
+            'PHP_AUTH_USER' => 'admin',
+            'REMOTE_ADDR' => '127.0.0.1',
+        ]);
+        $httpApi->setGetArray(['api_function' => 'v2/version']);
+        $this->expectOutputRegex('/401 Unauthorized/');
+        $httpApi->dispatch();
+    }
+
     public function testTokenAuthentication(): void
     {
         $loginAttemptLimit = $this->createMock(LoginAttemptLimit::class);

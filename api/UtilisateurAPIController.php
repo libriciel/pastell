@@ -3,6 +3,7 @@
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UserInfoService;
 use Pastell\Service\Utilisateur\UserUpdateService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
 use Pastell\Service\Utilisateur\UserTokenService;
@@ -15,6 +16,7 @@ class UtilisateurAPIController extends BaseAPIController
         private readonly UserUpdateService $userUpdateService,
         private readonly UtilisateurDeletionService $utilisateurDeletionService,
         private readonly UserTokenService $userTokenService,
+        private readonly UserInfoService $userInfoService,
     ) {
     }
 
@@ -184,7 +186,7 @@ class UtilisateurAPIController extends BaseAPIController
         $data = $this->getRequest();
         $data['id_u'] = $this->getFromQueryArgs(0);
 
-        $infoUtilisateurExistant = $this->utilisateur->getUserFromData($data);
+        $infoUtilisateurExistant = $this->userInfoService->getUserFromData($data);
 
         $currentEntityId = (int)$infoUtilisateurExistant['id_e'];
         $this->checkDroitFor($currentEntityId, DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
@@ -252,7 +254,7 @@ class UtilisateurAPIController extends BaseAPIController
         $data['id_u'] = $id_u;
         $data['login'] = $this->getFromRequest('login');
 
-        $infoUtilisateur = $this->utilisateur->getUserFromData($data);
+        $infoUtilisateur = $this->userInfoService->getUserFromData($data);
 
         $this->checkDroitFor($infoUtilisateur['id_e'], DroitService::DROIT_UTILISATEUR, DroitType::EDITION);
 

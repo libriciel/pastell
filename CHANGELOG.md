@@ -23,6 +23,10 @@
   `EntiteSQL` dépréciées au profit de l'enum `EntityType` et de la classe `RootEntity` #2627
 - Méthodes `getAllType()`, `getNom()`, `isActive()` et `isCDG()` de `EntiteSQL` dépréciées au profit de l'enum
   `EntityType` et du service `EntityInfoService` #2627
+- Méthodes `setPassword()`, `verifPassword()`, `create()`, `setCertificat()` et `getUserFromData()` de `UtilisateurSQL`
+  dépréciées au profit des services `UserPasswordService`, `UserCreationService`, `UserCertificateService` et
+  `UserInfoService` #2632
+- Méthode `validMail()` de `UtilisateurSQL` dépréciée car inutilisée #2632
 
 ### Sécurité
 

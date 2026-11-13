@@ -12,6 +12,7 @@ use Pastell\Service\Utilisateur\RoleDelegationService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UserPasswordService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Utilisateur\UserUpdateService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
@@ -125,7 +126,7 @@ class UtilisateurControler extends PastellControler
     {
         $recuperateur = new Recuperateur($_POST);
         $password = $recuperateur->get('password');
-        if (!$this->getUtilisateur()->verifPassword($this->getId_u(), $password)) {
+        if (!$this->getInstance(UserPasswordService::class)->verifyPassword($this->getId_u(), $password)) {
             $this->setLastError('Le mot de passe est incorrect.');
             $this->redirect('/Utilisateur/modifEmail');
         }
@@ -896,7 +897,7 @@ class UtilisateurControler extends PastellControler
         }
 
 
-        if (!$this->getUtilisateur()->verifPassword($this->getId_u(), $oldpassword)) {
+        if (!$this->getInstance(UserPasswordService::class)->verifyPassword($this->getId_u(), $oldpassword)) {
             $this->setLastError('Votre ancien mot de passe est incorrecte');
             $this->redirect('Utilisateur/modifPassword');
         }
@@ -910,7 +911,7 @@ class UtilisateurControler extends PastellControler
             $this->redirect('Utilisateur/modifPassword');
         }
 
-        $this->getUtilisateur()->setPassword($this->getId_u(), $password);
+        $this->getInstance(UserPasswordService::class)->setPassword($this->getId_u(), $password);
 
         $this->setLastMessage('Votre mot de passe a été modifié');
         $this->redirect('/Utilisateur/moi');
