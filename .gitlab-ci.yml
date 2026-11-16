@@ -140,7 +140,7 @@ quality:
     - if: $CI_COMMIT_TAG != null
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"
   image:
-    name: hubdocker.libriciel.fr/sonarsource/sonar-scanner-cli:12.3@sha256:47956b669bf486bdad919e1cbd0533223515aa0b6d1d31763e5a3754942df6d7
+    name: hubdocker.libriciel.fr/sonarsource/sonar-scanner-cli:12.4@sha256:6e6eca4d552695a98fb7dab84f0c1bd0885ebbfe272654d1552e24bd7f452d51
     entrypoint: [ "/bin/sh", "-c" ]
   script:
     - sonar-scanner -Dsonar.token=$SONAR_LOGIN -Dsonar.host.url=$SONAR_HOST_URL
