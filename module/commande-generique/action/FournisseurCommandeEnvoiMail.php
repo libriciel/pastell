@@ -9,11 +9,13 @@ class FournisseurCommandeEnvoiMail extends ActionExecutor
      * @throws DonneesFormulaireException
      * @throws UnrecoverableException
      * @throws NotFoundException
+     * @throws Throwable
+     * @throws Exception
      */
     public function go()
     {
-        /** @var MailSec $mailsec */
-        $mailsec = $this->getConnecteur('mailsec');
+        /** @var MailsecConnecteur $mailsecConnecteur */
+        $mailsecConnecteur = $this->getConnecteur(MailsecConnecteur::CONNECTEUR_TYPE_ID);
         $this->getDonneesFormulaire()->setData('has_message', true);
         $this->getDonneesFormulaire()->setData('objet', $this->getDonneesFormulaire()->get('libelle'));
         $this->getDonneesFormulaire()->setData('to', $this->getDonneesFormulaire()->get('mail_fournisseur'));
@@ -32,7 +34,7 @@ class FournisseurCommandeEnvoiMail extends ActionExecutor
             DocumentEmailRecipientType::TO
         );
 
-        $mailsec->sendAllMail($this->id_e, $this->id_d);
+        $mailsecConnecteur->sendAllMail($this->id_e, $this->id_d);
 
         $this->addActionOK("Le document a été envoyé au fournisseur");
         return true;

@@ -1,5 +1,7 @@
 <?php
 
+use Mailsec\Exception\UnavailableMailException;
+use Mailsec\MailsecManager;
 use Pastell\Mailer\Mailer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
@@ -25,6 +27,7 @@ class MailSec extends MailsecConnecteur
         private readonly string $websec_base,
         private readonly ConnecteurFactory $connecteurFactory,
         private readonly string $plateforme_mail,
+        private readonly MailsecManager $mailsecManager,
     ) {
     }
 
@@ -62,6 +65,21 @@ class MailSec extends MailsecConnecteur
     {
         $email_info = $this->documentEmailSQL->getById($id_de);
         $this->sendEmail($id_e, $id_d, $email_info);
+    }
+
+    public function updateStatus(int $id_e, string $id_d): void
+    {
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws Throwable
+     * @throws NotFoundException
+     * @throws UnavailableMailException
+     */
+    public function updateReceipt(string $id_d): void
+    {
+        $this->mailsecManager->updateReceipt($id_d);
     }
 
     /**
@@ -226,22 +244,22 @@ class MailSec extends MailsecConnecteur
         return $mailsec_reply_to;
     }
 
-    public function mustRelance($first_mail_date): bool
+    public function mustRelance(string $first_mail_date): bool
     {
         return time() > $this->geTimeRelance($first_mail_date);
     }
 
-    public function mustGoToNextState($first_mail_date): bool
+    public function mustGoToNextState(string $first_mail_date): bool
     {
         return time() > $this->geTimeNextState($first_mail_date);
     }
 
-    public function getDateRelance($first_mail_date): string
+    public function getDateRelance(string $first_mail_date): string
     {
         return date('Y-m-d H:i:s', $this->geTimeRelance($first_mail_date));
     }
 
-    public function getDateNextState($first_mail_date): string
+    public function getDateNextState(string $first_mail_date): string
     {
         return date('Y-m-d H:i:s', $this->geTimeNextState($first_mail_date));
     }

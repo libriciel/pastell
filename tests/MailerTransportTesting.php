@@ -12,7 +12,7 @@ class MailerTransportTesting extends AbstractTransport
     /**
      * @var SentMessage[]
      */
-    private array $messages;
+    private array $messages = [];
 
     protected function doSend(SentMessage $message): void
     {

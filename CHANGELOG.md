@@ -65,6 +65,9 @@
   et la nouvelle exception `NotificationException` #2546
 - Amélioration de la navigation sur les pages d'administration de l'annuaire #2367
 - Studio, l'édition d'étape présente les champs multi-fichiers multiples sous forme de liste de sélection #2547
+- Découplage du type de connecteur mail sécurisé : les actions et modules utilisent désormais `MailsecConnecteur` et non plus `MailSec` #1295
+    - **BREAKING** : `MailsecConnecteur` déclare les méthodes abstraites `sendAllMail`, `sendOneMail`, `resendUnopenedEmails`,
+      `updateStatus`, `updateReceipt`, `mustRelance`, `mustGoToNextState`, `getDateRelance` et `getDateNextState`
 
 ### Corrections
 

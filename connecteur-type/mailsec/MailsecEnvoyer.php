@@ -1,6 +1,5 @@
 <?php
 
-use Mailsec\MailsecManager;
 use Pastell\Service\Entite\EntityHierarchyService;
 use Pastell\Service\Document\DocumentEmailRecipientType;
 use Pastell\Service\Document\DocumentEmailService;
@@ -13,11 +12,6 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
     private function getDocumentEmailService(): DocumentEmailService
     {
         return $this->objectInstancier->getInstance(DocumentEmailService::class);
-    }
-
-    private function getMailsecManager(): MailsecManager
-    {
-        return $this->objectInstancier->getInstance(MailsecManager::class);
     }
 
     /**
@@ -37,9 +31,9 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
      * @throws NotFoundException
      * @throws UnrecoverableException
      */
-    private function getMailSecConnecteur(): MailSec
+    private function getMailSecConnecteur(): MailsecConnecteur
     {
-        /** @var MailSec $connector */
+        /** @var MailsecConnecteur $connector */
         $connector = $this->getConnecteur(MailsecConnecteur::CONNECTEUR_TYPE_ID);
         return $connector;
     }
@@ -91,7 +85,7 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
 
         $this->changeAction($this->action, 'Le document a été envoyé');
         $this->setLastMessage('Le document a été envoyé au(x) destinataire(s)');
-        $this->getMailsecManager()->updateReceipt($this->id_d);
+        $mailsecConnecteur->updateReceipt($this->id_d);
         return true;
     }
 

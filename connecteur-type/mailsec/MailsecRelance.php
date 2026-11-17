@@ -7,6 +7,7 @@ class MailsecRelance extends ConnecteurTypeActionExecutor
     /**
      * @return bool
      * @throws Exception
+     * @throws Throwable
      */
     public function go(): bool
     {
@@ -16,8 +17,9 @@ class MailsecRelance extends ConnecteurTypeActionExecutor
         $prepare_renvoi_action = $this->getMappingValue('prepare-renvoi');
         $non_recu_action = $this->getMappingValue('non-recu');
 
-        /** @var MailSec $connector */
+        /** @var MailsecConnecteur $connector */
         $connector = $this->getConnecteur(MailsecConnecteur::CONNECTEUR_TYPE_ID);
+        $connector->updateStatus($this->id_e, $this->id_d);
 
         $last_action = $this->getDocumentActionEntiteSQL()->getLastAction($this->id_e, $this->id_d);
         $action_list = $this->getDocumentActionEntiteSQL()->getActions($this->id_e, $this->id_d);

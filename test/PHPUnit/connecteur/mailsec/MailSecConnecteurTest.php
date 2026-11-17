@@ -112,7 +112,7 @@ class MailSecConnecteurTest extends PastellTestCase
      */
     public function testSendOneMail()
     {
-        $documentId = '1';
+        $documentId = $this->createDocument('test')['id_d'];
         $key = $this->getDocumentEmailService()->addRecipient($documentId, self::EMAIL, DocumentEmailRecipientType::TO);
         $document_email_info = $this->getDocumentEmailSQL()->getByKey($key);
 
@@ -130,10 +130,20 @@ class MailSecConnecteurTest extends PastellTestCase
      */
     public function testSendAllMail()
     {
-        $documentId = '1';
+        $documentId = $this->createDocument('test')['id_d'];
         $this->getDocumentEmailService()->addRecipient($documentId, self::EMAIL, DocumentEmailRecipientType::TO);
         $this->getMailSec()->sendAllMail(1, $documentId);
         $this->assertMailEqualsFile(__DIR__ . '/fixtures/mail-text-output.txt');
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function testSendWithoutRecipient(): void
+    {
+        $documentId = $this->createDocument('test')['id_d'];
+        $this->getMailSec()->sendAllMail(1, $documentId);
+        self::assertCount(0, $this->getMailerTransport()->getAllSentMessages());
     }
 
     /**
@@ -172,7 +182,7 @@ class MailSecConnecteurTest extends PastellTestCase
 
         $mailsec = $this->getMailSec();
 
-        $documentId = '1';
+        $documentId = $this->createDocument('test')['id_d'];
         $key = $this->getDocumentEmailService()->addRecipient($documentId, self::EMAIL, DocumentEmailRecipientType::TO);
 
         $document_email_info = $this->getDocumentEmailSQL()->getByKey($key);
@@ -192,7 +202,7 @@ class MailSecConnecteurTest extends PastellTestCase
 
         $mailsec = $this->getMailSec();
 
-        $documentId = '1';
+        $documentId = $this->createDocument('test')['id_d'];
         $key = $this->getDocumentEmailService()->addRecipient($documentId, self::EMAIL, DocumentEmailRecipientType::TO);
 
         $document_email_info = $this->getDocumentEmailSQL()->getByKey($key);
@@ -212,7 +222,7 @@ class MailSecConnecteurTest extends PastellTestCase
 
         $mailsec = $this->getMailSec();
 
-        $documentId = '1';
+        $documentId = $this->createDocument('test')['id_d'];
         $key = $this->getDocumentEmailService()->addRecipient($documentId, self::EMAIL, DocumentEmailRecipientType::TO);
 
         $document_email_info = $this->getDocumentEmailSQL()->getByKey($key);
@@ -233,7 +243,7 @@ class MailSecConnecteurTest extends PastellTestCase
 
         $mailsec = $this->getMailSec();
 
-        $documentId = '1';
+        $documentId = $this->createDocument('test')['id_d'];
         $key = $this->getDocumentEmailService()->addRecipient($documentId, 'eric.pommateau@adullact-projet.com', DocumentEmailRecipientType::TO);
 
         $document_email_info = $this->getDocumentEmailSQL()->getByKey($key);
@@ -257,7 +267,7 @@ class MailSecConnecteurTest extends PastellTestCase
             "Un lien ici : %LINK%. C'était mon lien"
         );
 
-        $documentId = '1';
+        $documentId = $this->createDocument('test')['id_d'];
         $key = $this->getDocumentEmailService()->addRecipient($documentId, 'eric.pommateau@adullact-projet.com', DocumentEmailRecipientType::TO);
         $document_email_info = $this->getDocumentEmailSQL()->getByKey($key);
 
@@ -274,7 +284,7 @@ class MailSecConnecteurTest extends PastellTestCase
         $this->addContentHTML(__DIR__ . '/fixtures/mail-exemple.html');
         $mailsec = $this->getMailSec();
 
-        $documentId = '1';
+        $documentId = $this->createDocument('test')['id_d'];
         $this->getDocumentEmailService()->addRecipient($documentId, 'jdoe@example.org', DocumentEmailRecipientType::TO);
         $this->getDocumentEmailService()->addRecipient($documentId, 'john.doe@example.org', DocumentEmailRecipientType::TO);
 
@@ -307,7 +317,7 @@ class MailSecConnecteurTest extends PastellTestCase
             UndeliveredMail::CONNECTOR_TYPE
         );
 
-        $documentId = '1';
+        $documentId = $this->createDocument('test')['id_d'];
         $key = $this->getDocumentEmailService()->addRecipient($documentId, self::EMAIL, DocumentEmailRecipientType::TO);
         $document_email_info = $this->getDocumentEmailSQL()->getByKey($key);
 

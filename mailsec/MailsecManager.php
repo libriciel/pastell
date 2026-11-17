@@ -485,18 +485,17 @@ final class MailsecManager
     /**
      * @throws UnrecoverableException
      * @throws Throwable
-     * @throws InvalidKeyException
      * @throws NotFoundException
      * @throws UnavailableMailException
-     * @throws MissingPasswordException
      */
     public function updateReceipt(string $id_d): void
     {
-        $mailSecInfo = new MailSecInfo();
-        $info = $this->objectInstancier->getInstance(DocumentEmailSQL::class)->getAllByDocument($id_d)[0];
-        if (!$info) {
-            throw new InvalidKeyException('Unable to find document');
+        $document_email_list = $this->objectInstancier->getInstance(DocumentEmailSQL::class)->getAllByDocument($id_d);
+        if ($document_email_list === []) {
+            return;
         }
+        $info = $document_email_list[0];
+        $mailSecInfo = new MailSecInfo();
         if ($info['non_recu']) {
             throw new UnavailableMailException('Email no longer available');
         }
