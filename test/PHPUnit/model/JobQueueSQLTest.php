@@ -70,7 +70,7 @@ class JobQueueSQLTest extends PastellTestCase
 
         $workerSQL = new WorkerSQL(self::getSQLQuery());
         $id_worker = $workerSQL->create(1234);
-        $workerSQL->attachJob($id_worker, $id_job);
+        $workerSQL->attachJob($id_worker, (int)$id_job);
 
         $this->jobQueueSQL->deleteJob($id_job);
 
