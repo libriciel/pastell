@@ -163,6 +163,9 @@ SQL;
         return $result;
     }
 
+    /**
+     * @deprecated 4.1.26 Use AnnuaireGroupeService::getInheritedGroupLabel() instead
+     */
     public function getChaineHerited(array $info): string
     {
         if ($info['denomination']) {
@@ -174,6 +177,9 @@ SQL;
         return $debut . ': "' . $info['nom'] . '"';
     }
 
+    /**
+     * @deprecated 4.1.26 Use AnnuaireGroupeService::findInheritedGroupId() instead
+     */
     public function getFromNomDenomination(array $all_ancetre, string $chaine): mixed
     {
         foreach ($this->getGroupeHerite($all_ancetre) as $info) {

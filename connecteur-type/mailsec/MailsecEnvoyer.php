@@ -1,6 +1,7 @@
 <?php
 
 use Mailsec\MailsecManager;
+use Pastell\Service\Annuaire\AnnuaireGroupeService;
 use Pastell\Service\Annuaire\AnnuaireRoleService;
 use Pastell\Service\Entite\EntityHierarchyService;
 use Pastell\Service\Document\DocumentEmailRecipientType;
@@ -27,6 +28,11 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
     private function getAnnuaireRoleSQL(): AnnuaireRoleSQL
     {
         return $this->objectInstancier->getInstance(AnnuaireRoleSQL::class);
+    }
+
+    private function getAnnuaireGroupeService(): AnnuaireGroupeService
+    {
+        return $this->objectInstancier->getInstance(AnnuaireGroupeService::class);
     }
 
     private function getAnnuaireRoleService(): AnnuaireRoleService
@@ -151,6 +157,9 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
     {
         $annuaireGroupe = $this->objectInstancier->getInstance(AnnuaireGroupeSQL::class);
         $id_g = $annuaireGroupe->getFromNom($this->id_e, $groupe_name);
+        if ($id_g === false) {
+            return [];
+        }
         $utilisateur = $annuaireGroupe->getAllUtilisateur($id_g);
         return $this->getFormattedEmailList($utilisateur);
     }
@@ -158,6 +167,9 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
     private function getEmailFromRole($role_name)
     {
         $id_r = $this->getAnnuaireRoleSQL()->getFromNom($this->id_e, $role_name);
+        if ($id_r === false) {
+            return [];
+        }
         $utilisateur = $this->getAnnuaireRoleSQL()->getUtilisateur($id_r);
         return $this->getFormattedEmailList($utilisateur);
     }
@@ -166,7 +178,10 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
     {
         $annuaireGroupe = $this->objectInstancier->getInstance(AnnuaireGroupeSQL::class);
         $all_ancetre = $this->getEntityHierarchyService()->getAncestorIds((int)$this->id_e);
-        $id_g = $annuaireGroupe->getFromNomDenomination($all_ancetre, $mail);
+        $id_g = $this->getAnnuaireGroupeService()->findInheritedGroupId($all_ancetre, $mail);
+        if ($id_g === null) {
+            return [];
+        }
         $utilisateur = $annuaireGroupe->getAllUtilisateur($id_g);
         return $this->getFormattedEmailList($utilisateur);
     }

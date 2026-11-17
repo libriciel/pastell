@@ -629,6 +629,7 @@ class MailSecControler extends PastellControler
         $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::LECTURE);
 
         $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
+        $annuaireGroupeService = $this->getInstance(AnnuaireGroupeService::class);
         $annuaireRoleService = $this->getInstance(AnnuaireRoleService::class);
 
         $result = [];
@@ -646,7 +647,7 @@ class MailSecControler extends PastellControler
                 $result[] = "role: \"" . $item['nom'] . "\"\n";
             }
             foreach ($groupe_herited as $item) {
-                $result[] = $annuaireGroupe->getChaineHerited($item) . "\n";
+                $result[] = $annuaireGroupeService->getInheritedGroupLabel($item) . "\n";
             }
             foreach ($role_herited as $item) {
                 $result[] = $annuaireRoleService->getInheritedRoleLabel($item) . "\n";
