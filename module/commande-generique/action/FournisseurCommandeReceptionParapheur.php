@@ -158,9 +158,8 @@ class FournisseurCommandeReceptionParapheur extends ActionExecutor
             );
         }
 
-        $this->setLastMessage("La signature a été récupérée");
-
-        $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, 'recu-iparapheur', 'La signature a été récupérée sur le parapheur électronique');
+        $this->changeAction('recu-iparapheur', 'La signature a été récupérée sur le parapheur électronique');
+        $this->setLastMessage('La signature a été récupérée');
         return true;
     }
 }

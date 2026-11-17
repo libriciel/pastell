@@ -277,8 +277,9 @@ class PurgeTest extends PastellTestCase
     {
         $info_document = $this->createDocument('actes-generique');
 
-        $actionChange = $this->getObjectInstancier()->getInstance(ActionChange::class);
-        $actionChange->addAction($info_document['id_d'], 1, 0, 'acquiter-tdt', 'test');
+        $this->getObjectInstancier()
+            ->getInstance(ActionChange::class)
+            ->addAction($info_document['id_d'], 1, 0, 'acquiter-tdt', 'test');
 
         $connecteurConfig = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
         $connecteurConfig->setTabData([
@@ -319,8 +320,9 @@ class PurgeTest extends PastellTestCase
     {
         $info_document = $this->createDocument('actes-generique');
 
-        $actionChange = $this->getObjectInstancier()->getInstance(ActionChange::class);
-        $actionChange->addAction($info_document['id_d'], 1, 0, 'send-tdt', 'test');
+        $this->getObjectInstancier()
+            ->getInstance(ActionChange::class)
+            ->addAction($info_document['id_d'], 1, 0, 'send-tdt', 'test');
 
         $connecteurConfig = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
         $connecteurConfig->setTabData([
@@ -361,8 +363,9 @@ class PurgeTest extends PastellTestCase
     {
         $info_document = $this->createDocument('actes-generique');
 
-        $actionChange = $this->getObjectInstancier()->getInstance(ActionChange::class);
-        $actionChange->addAction($info_document['id_d'], 1, 0, 'modification', 'test');
+        $this->getObjectInstancier()
+            ->getInstance(ActionChange::class)
+            ->addAction($info_document['id_d'], 1, 0, 'modification', 'test');
 
         $connecteurConfig = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
         $connecteurConfig->setTabData([
@@ -399,9 +402,9 @@ class PurgeTest extends PastellTestCase
     public function testPurgeGlobale()
     {
         $info_document = $this->createDocument('actes-generique');
-        $actionChange = $this->getObjectInstancier()->getInstance(ActionChange::class);
-
-        $actionChange->addAction($info_document['id_d'], 1, 0, 'modification', 'test');
+        $this->getObjectInstancier()
+            ->getInstance(ActionChange::class)
+            ->addAction($info_document['id_d'], 1, 0, 'modification', 'test');
         $sql = "UPDATE document_entite SET  last_action_date='2000-01-01' WHERE id_d = ?";
         $this->getSQLQuery()->query($sql, $info_document['id_d']);
 

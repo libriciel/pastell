@@ -55,7 +55,7 @@ class GlaneurDocumentCreator
             $glaneurLocalDocumentInfo->id_e,
             0,
             Action::MODIFICATION,
-            "[glaneur] Import du document",
+            '[glaneur] Import du document'
         );
 
         if (! $glaneurLocalDocumentInfo->action_ok) {
@@ -79,7 +79,7 @@ class GlaneurDocumentCreator
             $glaneurLocalDocumentInfo->id_e,
             0,
             $next_state,
-            $message,
+            $message
         );
         $this->notificationMail->notify(
             $glaneurLocalDocumentInfo->id_e,

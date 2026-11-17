@@ -17,9 +17,8 @@ class CppCreation extends ActionExecutor
         $this->objectInstancier->getInstance(CreationFactureCPP::class)->alimenter($this->id_d, $factureCPP);
 
         // Journalisation et changement d état
-        $actionChange = $this->getActionChange();
-        $actionChange->addAction($this->id_d, $this->id_e, $this->id_u, Action::CREATION, 'Création du document [Succes]');
-        $actionChange->addAction($this->id_d, $this->id_e, $this->id_u, Action::MODIFICATION, 'Modification du document');
+        $this->changeAction(Action::CREATION, 'Création du document [Succes]');
+        $this->changeAction(Action::MODIFICATION, 'Modification du document');
 
         /** @var PortailFactureConnecteur $portailFactureConnecteur */
         $portailFactureConnecteur = $this->getConnecteur('PortailFacture');
@@ -96,9 +95,9 @@ class CppCreation extends ActionExecutor
             throw new Exception('Une erreur est survenue lors de la création du document ' . $this->id_d . ' : ' . $donneesFormulaire->getLastError());
         }
 
-        $this->setLastMessage('Création du document');
         // Valorisation de l'état suivant
-        $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, 'importation', 'Traitement du document');
+        $this->changeAction('importation', 'Traitement du document');
+        $this->setLastMessage('Création du document');
         $this->objectInstancier->getInstance(ActionExecutorFactory::class)->executeOnDocument(
             $this->id_e,
             $this->id_u,

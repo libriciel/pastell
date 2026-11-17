@@ -513,10 +513,21 @@ class S2low extends TdtConnecteur
 
         $donneesFormulaire->addFileFromData("fichier_pes", $nom_pes, $fic_pes);
 
-        $actionChange = $this->objectInstancier->getInstance(ActionChange::class);
-        $actionChange->addAction($new_id_d, $id_e, 0, Action::CREATION, 'Importation du PES Retour avec succès');
+        $this->objectInstancier->getInstance(ActionChange::class)->addAction(
+            $new_id_d,
+            $id_e,
+            0,
+            Action::CREATION,
+            'Importation du PES Retour avec succès'
+        );
 
-        $this->objectInstancier->getInstance(NotificationMail::class)->notify($id_e, $new_id_d, Action::CREATION, self::FLUX_PES_RETOUR, 'Importation du PES Retour avec succès');
+        $this->objectInstancier->getInstance(NotificationMail::class)->notify(
+            $id_e,
+            $new_id_d,
+            Action::CREATION,
+            self::FLUX_PES_RETOUR,
+            'Importation du PES Retour avec succès'
+        );
 
         //passage à l'etat lu
         $this->exec(self::URL_HELIOS_PES_RETOUR_UPDATE . "?id=" . $pes['id']);
