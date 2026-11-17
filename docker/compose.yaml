@@ -218,7 +218,7 @@ services:
       - ${PES_PJ_PATH:-/data/pastell/pesPJ}:/pesPJ/
 
   cacerts:
-    image: 'registry.libriciel.fr/public/libriciel/ls-docker-cacerts:1.0.2@sha256:f0232b5c86c10fac00ec3c39553f749d648304791dd6b3345bd8f17b6d93caa0'
+    image: 'registry.libriciel.fr/public/libriciel/ls-docker-cacerts:1.1.0@sha256:9bceb9a159dfea285754043cbe2baf234363663be97f0f3e9108497b57aebee0'
     cap_drop:
       - ALL
     cap_add:
