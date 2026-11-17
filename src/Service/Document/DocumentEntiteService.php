@@ -43,6 +43,11 @@ final class DocumentEntiteService
         return $this->documentEntiteSQL->countDocumentsByType($id_e, $type);
     }
 
+    public function countDocumentLinks(int $id_e): int
+    {
+        return $this->documentEntiteSQL->countByEntity($id_e);
+    }
+
     public function countByLastAction(?int $id_e, ?string $type): array
     {
         return $this->documentEntiteSQL->countByLastAction($id_e, $type);

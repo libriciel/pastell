@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Utilisateur\RoleService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Menu\MenuGaucheService;
@@ -23,9 +24,9 @@ class RoleControler extends PastellControler
      */
     public function indexAction()
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::LECTURE);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_ROLE, DroitType::LECTURE);
         $this->setViewParameter('allRole', $this->getRoleSQL()->getAllRole());
-        if ($this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION)) {
+        if ($this->hasDroitFor(RootEntity::ID_E, DroitService::DROIT_ROLE, DroitType::EDITION)) {
             $this->setViewParameter('nouveau_bouton_url', ["Ajouter" => "Role/edition"]);
         }
         $this->setViewParameter('page_title', "Rôles");
@@ -40,7 +41,7 @@ class RoleControler extends PastellControler
      */
     public function detailAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::LECTURE);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_ROLE, DroitType::LECTURE);
         $role_id = $this->getGetInfo()->get('role');
         $this->setViewParameter('role', $role_id);
         $this->setRootDroitViewParameter(DroitService::DROIT_ROLE, DroitType::EDITION);
@@ -131,7 +132,7 @@ class RoleControler extends PastellControler
      */
     public function editionAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_ROLE, DroitType::EDITION);
         $role = $this->getGetInfo()->get('role');
 
         if ($role) {
@@ -159,7 +160,7 @@ class RoleControler extends PastellControler
      */
     public function doEditionAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_ROLE, DroitType::EDITION);
         $role = $this->getPostInfo()->get('role');
         $role = preg_replace('/\s+/', '_', $role);
         $libelle = $this->getPostInfo()->get('libelle');
@@ -206,7 +207,7 @@ class RoleControler extends PastellControler
      */
     public function doDeleteAction()
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_ROLE, DroitType::EDITION);
         $role = $this->getPostInfo()->get('role');
 
         if ($this->getInstance(UtilisateurRoleService::class)->anybodyHasRole($role)) {
@@ -230,7 +231,7 @@ class RoleControler extends PastellControler
      */
     public function doDetailAction()
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_ROLE, DroitType::EDITION);
         $role = $this->getPostInfo()->get('role');
         $droit = $this->getPostInfo()->get('droit', []);
 

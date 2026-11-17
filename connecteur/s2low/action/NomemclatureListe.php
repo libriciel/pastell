@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Entite\EntityInfoService;
+
 class NomemclatureListe extends ChoiceActionExecutor
 {
     public function go()
@@ -22,13 +24,18 @@ class NomemclatureListe extends ChoiceActionExecutor
      */
     public function display()
     {
-        $id_e_cdg = $this->objectInstancier->getInstance(EntiteSQL::class)->getCDG($this->id_e);
+        $id_e_cdg = $this->objectInstancier->getInstance(EntityInfoService::class)
+            ->getCentreDeGestion((int)$this->id_e);
 
-        $donneesFormulaire = $this->objectInstancier->getInstance(ConnecteurFactory::class)->getConnecteurConfigByType(
-            $id_e_cdg,
-            'actes-cdg',
-            'classification-cdg'
-        );
+        $donneesFormulaire = false;
+        if ($id_e_cdg !== null) {
+            $connecteurFactory = $this->objectInstancier->getInstance(ConnecteurFactory::class);
+            $donneesFormulaire = $connecteurFactory->getConnecteurConfigByType(
+                $id_e_cdg,
+                'actes-cdg',
+                'classification-cdg'
+            );
+        }
 
         if (!$donneesFormulaire) {
             throw new Exception(

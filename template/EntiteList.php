@@ -11,6 +11,8 @@
  * @var bool $root_entite_edition
  */
 
+use Pastell\Service\Entite\EntityType;
+
 $search = get_hecho($search);
 ?>
 <div class="box">
@@ -62,7 +64,7 @@ $search = get_hecho($search);
                 <td><?php echo $info['siren'] ?></td>
                 <?php if ($cdg_feature) : ?>
                     <td>
-                        <?php echo EntiteSQL::getNom($info['type']) ?>
+                        <?php echo EntityType::getLabel($info['type']) ?>
                     </td>
                 <?php endif; ?>
                 <td>

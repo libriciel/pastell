@@ -1,6 +1,8 @@
 <?php
 
 use Pastell\Service\Document\DocumentSize;
+use Pastell\Service\Entite\EntityHierarchyService;
+use Pastell\Service\Entite\EntityInfoService;
 
 class Stats extends Connecteur
 {
@@ -16,10 +18,6 @@ class Stats extends Connecteur
      * @var DocumentSQL
      */
     private $documentSQL;
-    /**
-     * @var EntiteSQL
-     */
-    private $entiteSQL;
     /**
      * @var DocumentSize
      */
@@ -46,12 +44,12 @@ class Stats extends Connecteur
 
     public function __construct(
         DocumentSQL $documentSQL,
-        EntiteSQL $entiteSQL,
         DocumentSize $documentSize,
-        DocumentTypeFactory $documentTypeFactory
+        DocumentTypeFactory $documentTypeFactory,
+        private readonly EntityHierarchyService $entityHierarchyService,
+        private readonly EntityInfoService $entityInfoService,
     ) {
         $this->documentSQL = $documentSQL;
-        $this->entiteSQL = $entiteSQL;
         $this->documentSize = $documentSize;
         $this->documentTypeFactory = $documentTypeFactory;
     }
@@ -75,7 +73,7 @@ class Stats extends Connecteur
         $this->connecteurConfig->setData(self::CSV_GENERATION_DATE_FIELD, date('Y-m-d'));
         $filename = sprintf(
             '%s_%s_%s-%s.csv',
-            $this->entiteSQL->getDenomination($this->entityId),
+            $this->entityInfoService->getDenomination($this->entityId),
             $this->moduleType,
             $this->startDate,
             $this->endDate
@@ -94,7 +92,7 @@ class Stats extends Connecteur
         $this->writeEntityUsageToFile($this->entityId, $documentType, $file);
 
         if ($this->includeChildren) {
-            $allChildren = $this->entiteSQL->getAllChildren($this->entityId);
+            $allChildren = $this->entityHierarchyService->getAllChildren($this->entityId);
             foreach ($allChildren as $children) {
                 $this->writeEntityUsageToFile($children['id_e'], $documentType, $file);
             }
@@ -136,7 +134,7 @@ class Stats extends Connecteur
     {
         $entity = [
             'id_e' => $entityId,
-            'denomination' => $this->entiteSQL->getDenomination($entityId),
+            'denomination' => $this->entityInfoService->getDenomination($entityId),
             'documentsInfo' => [],
         ];
         foreach ($documents as $document) {

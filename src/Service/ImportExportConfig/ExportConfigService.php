@@ -8,6 +8,7 @@ use EntiteSQL;
 use Exception;
 use FluxEntiteHeritageSQL;
 use FluxEntiteSQL;
+use Pastell\Service\Entite\EntityHierarchyService;
 
 class ExportConfigService
 {
@@ -24,6 +25,7 @@ class ExportConfigService
 
     public function __construct(
         private readonly EntiteSQL $entiteSQL,
+        private readonly EntityHierarchyService $entityHierarchyService,
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
         private readonly ConnecteurFactory $connecteurFactory,
         private readonly FluxEntiteSQL $fluxEntiteSQL,
@@ -57,7 +59,7 @@ class ExportConfigService
             $entityList[] = $id_e;
         }
         if ($options[self::INCLUDE_CHILD]) {
-            $result[self::ENTITY_CHILD] = $this->entiteSQL->getAllChildren($id_e);
+            $result[self::ENTITY_CHILD] = $this->entityHierarchyService->getAllChildren($id_e);
             foreach ($result[self::ENTITY_CHILD] as $entityInfo) {
                 $entityList[] = $entityInfo['id_e'];
             }

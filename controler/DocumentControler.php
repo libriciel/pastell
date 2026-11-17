@@ -8,6 +8,7 @@ use Pastell\Service\Document\DocumentSearchCriteria;
 use Pastell\Service\Document\DocumentSearchService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Menu\MenuGaucheOption;
 use Pastell\Service\Menu\MenuGaucheService;
@@ -53,7 +54,7 @@ class DocumentControler extends PastellControler
         $this->setViewParameter(
             'show_choice_entity_message',
             ! $this->getPostOrGetInfo()->getInt('id_e')
-            && $this->getViewParameterByKey('id_e') === 0
+            && $this->getViewParameterByKey('id_e') === RootEntity::ID_E
         );
         parent::renderDefault();
     }
@@ -503,7 +504,7 @@ class DocumentControler extends PastellControler
             $this->redirect("/Document/index?id_e=$id_e");
         }
 
-        if ($id_e == '0') {
+        if ($id_e == RootEntity::ID_E) {
             $this->redirect("/Document/index?id_e=$id_e&type=$type");
         }
 
@@ -615,7 +616,7 @@ class DocumentControler extends PastellControler
     public function searchDocument(): DocumentSearchCriteria
     {
         $recuperateur = new Recuperateur($_REQUEST);
-        $id_e = $recuperateur->getInt('id_e', EntiteSQL::ID_E_ENTITE_RACINE);
+        $id_e = $recuperateur->getInt('id_e', RootEntity::ID_E);
         $type = $recuperateur->get('type');
         $lastEtat = $recuperateur->get('lastetat');
         $last_state_begin = $recuperateur->get('last_state_begin');
@@ -918,7 +919,7 @@ class DocumentControler extends PastellControler
     private function validTraitementParLot($input): void
     {
         $recuperateur = new Recuperateur($input);
-        $id_e = $recuperateur->getInt('id_e', EntiteSQL::ID_E_ENTITE_RACINE);
+        $id_e = $recuperateur->getInt('id_e', RootEntity::ID_E);
         $type = $recuperateur->get('type');
 
         if (!$type) {
@@ -953,7 +954,7 @@ class DocumentControler extends PastellControler
         $this->validTraitementParLot($_GET);
 
         $recuperateur = new Recuperateur($_GET);
-        $id_e = $recuperateur->getInt('id_e', EntiteSQL::ID_E_ENTITE_RACINE);
+        $id_e = $recuperateur->getInt('id_e', RootEntity::ID_E);
         $type = $recuperateur->get('type');
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($type);
         $document_name = $documentType->getName();
@@ -992,7 +993,7 @@ class DocumentControler extends PastellControler
     {
         $recuperateur = $this->getGetInfo();
         $this->validTraitementParLot($recuperateur->getAll());
-        $id_e = $recuperateur->getInt('id_e', EntiteSQL::ID_E_ENTITE_RACINE);
+        $id_e = $recuperateur->getInt('id_e', RootEntity::ID_E);
         $type = $recuperateur->get('type');
         $search = $recuperateur->get('search');
         $filtre = $recuperateur->get('filtre');
@@ -1059,7 +1060,7 @@ class DocumentControler extends PastellControler
     {
         $recuperateur = $this->getPostInfo();
         $this->validTraitementParLot($recuperateur->getAll());
-        $id_e = $recuperateur->getInt('id_e', EntiteSQL::ID_E_ENTITE_RACINE);
+        $id_e = $recuperateur->getInt('id_e', RootEntity::ID_E);
         $type = $recuperateur->get('type');
         $search = $recuperateur->get('search');
         $filtre = $recuperateur->get('filtre');

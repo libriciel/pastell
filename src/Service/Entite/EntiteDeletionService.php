@@ -34,7 +34,6 @@ class EntiteDeletionService
     }
 
     /**
-     * @param int $id_e
      * @throws UnrecoverableException
      */
     public function delete(int $id_e): void
@@ -43,7 +42,7 @@ class EntiteDeletionService
         $info = $this->entiteSQL->getInfo($id_e);
         $this->notificationService->removeAllForEntite($id_e);
         $this->annuaireRoleSQL->deleteByEntite($id_e);
-        $this->entiteSQL->removeEntite($id_e);
+        $this->entiteSQL->delete($id_e);
         $this->journalEntryService->add(
             JournalEventType::ENTITY_MODIFICATION,
             $id_e,
@@ -51,6 +50,15 @@ class EntiteDeletionService
             JournalAction::DELETED->value,
             "Suppression de l'entité id_e=$id_e\nInformation : " . json_encode($info)
         );
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function deleteEmptyEntity(int $id_e): void
+    {
+        $this->checkEmptyOrThrow($id_e);
+        $this->entiteSQL->delete($id_e);
     }
 
     public function canDelete(int $id_e): bool
@@ -69,29 +77,10 @@ class EntiteDeletionService
      */
     private function canDeleteOrThrow(int $id_e): void
     {
-        if ($this->documentEntiteService->countDocuments($id_e)) {
-            throw new UnrecoverableException(
-                "Suppression impossible : des documents sont définis sur l'entité {id_e=$id_e}"
-            );
-        }
-        if (count($this->entiteSQL->getFille($id_e))) {
-            throw new UnrecoverableException(
-                "Suppression impossible : l'entité {id_e=$id_e} possède des entités filles"
-            );
-        }
-        if ($this->utilisateurSQL->countByBaseEntite($id_e)) {
-            throw new UnrecoverableException(
-                "Suppression impossible : des utilisateurs sont définis sur l'entité {id_e=$id_e}"
-            );
-        }
+        $this->checkEmptyOrThrow($id_e);
         if ($this->utilisateurSQL->countByEntite($id_e)) {
             throw new UnrecoverableException(
                 "Suppression impossible : des utilisateurs sont définis sur l'entité {id_e=$id_e}"
-            );
-        }
-        if ($this->connecteurEntiteSQL->getAll($id_e)) {
-            throw new UnrecoverableException(
-                "Suppression impossible : des connecteurs sont définis sur l'entité {id_e=$id_e}"
             );
         }
         if (count($this->fluxEntiteSQL->getAllFluxEntite($id_e)) > 0) {
@@ -118,6 +107,25 @@ class EntiteDeletionService
             throw new UnrecoverableException(
                 "Suppression impossible : un démon est défini sur l'entité {id_e=$id_e}"
             );
+        }
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    private function checkEmptyOrThrow(int $id_e): void
+    {
+        if ($this->documentEntiteService->countDocumentLinks($id_e)) {
+            throw new UnrecoverableException("Suppression impossible : des documents sont définis sur l'entité {id_e=$id_e}");
+        }
+        if ($this->entiteSQL->getFille($id_e)) {
+            throw new UnrecoverableException("Suppression impossible : l'entité {id_e=$id_e} possède des entités filles");
+        }
+        if ($this->utilisateurSQL->countByBaseEntite($id_e)) {
+            throw new UnrecoverableException("Suppression impossible : des utilisateurs sont définis sur l'entité {id_e=$id_e}");
+        }
+        if ($this->connecteurEntiteSQL->getAll($id_e)) {
+            throw new UnrecoverableException("Suppression impossible : des connecteurs sont définis sur l'entité {id_e=$id_e}");
         }
     }
 }

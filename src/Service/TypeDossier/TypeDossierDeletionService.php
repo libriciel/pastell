@@ -2,9 +2,9 @@
 
 namespace Pastell\Service\TypeDossier;
 
+use Pastell\Service\Entite\RootEntity;
 use TypeDossierSQL;
 use TypeDossierPersonnaliseDirectoryManager;
-use EntiteSQL;
 use TypeDossierException;
 use JournalAction;
 use JournalEventType;
@@ -54,7 +54,7 @@ class TypeDossierDeletionService
 
         $this->journalEntryService->add(
             JournalEventType::DOCUMENT_TYPE_EDITION,
-            EntiteSQL::ID_E_ENTITE_RACINE,
+            RootEntity::ID_E,
             JournalEntryService::NO_ID_D,
             JournalAction::DELETED->value,
             "Suppression du type de dossier id_t=$id_t. JSON contenant l'export de la definition du type de dossier : " . $export

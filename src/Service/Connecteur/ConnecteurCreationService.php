@@ -7,6 +7,7 @@ use ConnecteurException;
 use ConnecteurFactory;
 use DonneesFormulaireFactory;
 use Exception;
+use Pastell\Service\Entite\RootEntity;
 
 class ConnecteurCreationService
 {
@@ -127,7 +128,7 @@ class ConnecteurCreationService
             throw new ConnecteurException("La valeur « $global » n'est pas valide pour un connecteur global");
         }
 
-        if (($id_e !== 0) && ($global === 1)) {
+        if (($id_e !== RootEntity::ID_E) && ($global === 1)) {
             throw new ConnecteurException(
                 "Il n'est pas possible de créer un connecteur global au niveau d'une entité"
             );
