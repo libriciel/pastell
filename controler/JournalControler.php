@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Journal\JournalConsultationService;
 use Pastell\Service\Journal\JournalExportService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
@@ -47,7 +48,7 @@ class JournalControler extends PastellControler
     {
 
         $recuperateur = new Recuperateur($_REQUEST);
-        $id_e = $recuperateur->getInt('id_e', EntiteSQL::ID_E_ENTITE_RACINE);
+        $id_e = $recuperateur->getInt('id_e', RootEntity::ID_E);
         $this->setViewParameter('id_e', $id_e);
         $this->setViewParameter('type', $recuperateur->get('type'));
         $this->setViewParameter('id_d', $recuperateur->get('id_d'));

@@ -2,10 +2,10 @@
 
 namespace Pastell\Service\Utilisateur;
 
-use EntiteSQL;
 use JournalAction;
 use JournalEventType;
 use NotificationDigestSQL;
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Journal\JournalEntryService;
 use UtilisateurNewEmailSQL;
 use UserTokenSQL;
@@ -47,7 +47,7 @@ class UtilisateurDeletionService
         $this->utilisateurSQL->desinscription($id_u);
         $this->journalEntryService->add(
             JournalEventType::USER_MODIFICATION,
-            EntiteSQL::ID_E_ENTITE_RACINE,
+            RootEntity::ID_E,
             JournalEntryService::NO_ID_D,
             JournalAction::DELETED->value,
             "Suppression de l'utilisateur id_u=$id_u"

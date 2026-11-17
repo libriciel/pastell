@@ -12,6 +12,7 @@ use FluxEntiteHeritageSQL;
 use FluxEntiteSQL;
 use Pastell\Service\Document\DocumentRoleService;
 use Pastell\Service\Entite\EntiteDeletionService;
+use Pastell\Service\Entite\EntityType;
 use Pastell\Service\Notification\NotificationService;
 use PastellTestCase;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
@@ -56,6 +57,56 @@ class EntiteDeletionServiceTest extends PastellTestCase
         );
     }
 
+    /**
+     * @throws UnrecoverableException
+     */
+    public function testDeleteEmptyEntity(): void
+    {
+        $entiteSQL = $this->getObjectInstancier()->getInstance(EntiteSQL::class);
+        $this->entiteDeletionService->deleteEmptyEntity($this->entityId);
+        self::assertFalse($entiteSQL->exists($this->entityId));
+        self::assertSame([], $entiteSQL->getAncetre($this->entityId));
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function testDeleteEmptyWithChild(): void
+    {
+        $this->getObjectInstancier()->getInstance(EntiteSQL::class)->create(
+            'name-fake',
+            'siren-fake',
+            EntityType::COLLECTIVITE->value,
+            $this->entityId
+        );
+        $this->expectException(UnrecoverableException::class);
+        $this->expectExceptionMessage("Suppression impossible : l'entité {id_e=2} possède des entités filles");
+        $this->entiteDeletionService->deleteEmptyEntity($this->entityId);
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    public function testDeleteEmptyWithOrphanLink(): void
+    {
+        $id_d = 'IDENTIFIANT-FAKE';
+        $this->getObjectInstancier()->getInstance(DocumentSQL::class)->save($id_d, 'type');
+        $this->getObjectInstancier()->getInstance(DocumentRoleService::class)->addRole(
+            $id_d,
+            $this->entityId,
+            'ROLE-FAKE'
+        );
+        $this->getObjectInstancier()->getInstance(SQLQuery::class)->query(
+            'DELETE FROM document WHERE id_d = ?',
+            $id_d
+        );
+        $this->expectException(UnrecoverableException::class);
+        $this->expectExceptionMessage(
+            "Suppression impossible : des documents sont définis sur l'entité {id_e=2}"
+        );
+        $this->entiteDeletionService->deleteEmptyEntity($this->entityId);
+    }
+
     public function testCanDelete(): void
     {
         $isSupprimable = $this->entiteDeletionService->canDelete($this->entityId);
@@ -67,7 +118,7 @@ class EntiteDeletionServiceTest extends PastellTestCase
         $this->getObjectInstancier()->getInstance(EntiteSQL::class)->create(
             'name-fake',
             'siren-fake',
-            EntiteSQL::TYPE_COLLECTIVITE,
+            EntityType::COLLECTIVITE->value,
             $this->entityId
         );
 

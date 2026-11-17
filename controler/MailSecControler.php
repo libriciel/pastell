@@ -6,8 +6,10 @@ use Pastell\Service\Annuaire\AnnuaireGroupeService;
 use Pastell\Service\Annuaire\AnnuaireImportService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\EntityHierarchyService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Menu\MenuGaucheService;
+use Pastell\Service\Entite\RootEntity;
 
 class MailSecControler extends PastellControler
 {
@@ -41,6 +43,11 @@ class MailSecControler extends PastellControler
     private function getAnnuaireRoleSQL()
     {
         return $this->getInstance(AnnuaireRoleSQL::class);
+    }
+
+    private function getEntityHierarchyService(): EntityHierarchyService
+    {
+        return $this->getInstance(EntityHierarchyService::class);
     }
 
     /**
@@ -121,11 +128,11 @@ class MailSecControler extends PastellControler
         $this->setViewParameter('listGroupe', $listGroupe);
 
         $infoEntite = $this->getEntiteSQL()->getInfo($id_e);
-        if ($id_e === 0) {
+        if ($id_e === RootEntity::ID_E) {
             $infoEntite = ['denomination' => 'Annuaire global'];
         }
 
-        $all_ancetre = $this->getEntiteSQL()->getAncetreId($id_e);
+        $all_ancetre = $this->getEntityHierarchyService()->getAncestorIds((int)$id_e);
         $groupe_herited = $annuaireGroupe->getGroupeHerite($all_ancetre);
         foreach ($groupe_herited as $key => $groupe) {
             $groupe_herited[$key]['contactsInfo'] = $this->getContactsInfo($annuaireGroupe, $groupe);
@@ -240,7 +247,7 @@ class MailSecControler extends PastellControler
             $this->setViewParameter('infoEntite', ["denomination" => "Annuaire global"]);
         }
 
-        $all_ancetre = $this->getEntiteSQL()->getAncetreId($id_e);
+        $all_ancetre = $this->getEntityHierarchyService()->getAncestorIds((int)$id_e);
         $this->setViewParameter(
             'groupe_herited',
             $this->withUtilisateur($annuaireRoleSQL->getGroupeHerite($all_ancetre), $annuaireRoleSQL)
@@ -541,7 +548,7 @@ class MailSecControler extends PastellControler
 
         $infoEntite = $this->getEntiteSQL()->getInfo($id_e);
 
-        if ($id_e !== 0) {
+        if ($id_e !== RootEntity::ID_E) {
             $nom = "$role - {$infoEntite['denomination']}";
         } else {
             $nom = "$role - toutes les collectivités";
@@ -625,7 +632,7 @@ class MailSecControler extends PastellControler
 
         $result = [];
 
-        $all_ancetre = $this->getEntiteSQL()->getAncetreId($id_e);
+        $all_ancetre = $this->getEntityHierarchyService()->getAncestorIds((int)$id_e);
 
         $groupe_herited = $annuaireGroupe->getGroupeHerite($all_ancetre, $q);
         $role_herited = $this->getAnnuaireRoleSQL()->getGroupeHerite($all_ancetre, $q);

@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Entite\EntityType;
+
 /**
  * @deprecated 4.1.25 Use EntiteSQL instead
  */
@@ -34,7 +36,7 @@ class EntiteListe extends SQL
     public function countCollectivite()
     {
         $sql = "SELECT count(*) FROM entite WHERE type=? OR type=?" ;
-        return $this->queryOne($sql, EntiteSQL::TYPE_COLLECTIVITE, EntiteSQL::TYPE_CENTRE_DE_GESTION);
+        return $this->queryOne($sql, EntityType::COLLECTIVITE->value, EntityType::CENTRE_DE_GESTION->value);
     }
 
     public function getAllCollectivite($offset, $denomination)

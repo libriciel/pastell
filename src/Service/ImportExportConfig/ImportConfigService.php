@@ -10,6 +10,7 @@ use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Connecteur\ConnecteurCreationService;
 use Pastell\Service\Entite\EntityCreationService;
 use UnrecoverableException;
+use Pastell\Service\Entite\RootEntity;
 
 final class ImportConfigService
 {
@@ -111,8 +112,8 @@ final class ImportConfigService
             return $connectorMapping;
         }
         foreach ($exportedData[ExportConfigService::CONNECTOR_INFO] as $connecteurInfo) {
-            if ($connecteurInfo['id_e'] !== 0 && empty($id_e_mapping[$connecteurInfo['id_e']])) {
-                if ($id_e_root === 0) {
+            if ($connecteurInfo['id_e'] !== RootEntity::ID_E && empty($id_e_mapping[$connecteurInfo['id_e']])) {
+                if ($id_e_root === RootEntity::ID_E) {
                     $this->lastErrors[] = sprintf(
                         "Le connecteur %s est attaché à une entité inconnue : il n'a pas été importé.",
                         $connecteurInfo['libelle']
@@ -127,9 +128,9 @@ final class ImportConfigService
                 $id_e_mapping[$connecteurInfo['id_e']] = $id_e_root;
             }
 
-            $isGlobalConnecteur = $connecteurInfo['global'] ?? (($connecteurInfo['id_e'] === 0) ? 1 : 0);
+            $isGlobalConnecteur = $connecteurInfo['global'] ?? (int)($connecteurInfo['id_e'] === RootEntity::ID_E);
             $new_id_e_connecteur = $id_e_mapping[$connecteurInfo['id_e']];
-            if ($id_e_root !== 0) {
+            if ($id_e_root !== RootEntity::ID_E) {
                 if ($isGlobalConnecteur) {
                     $this->lastErrors[] = sprintf(
                         "Le connecteur global %s ne peut pas être importé sur une entité fille : il n'a pas été importé.",
@@ -137,7 +138,7 @@ final class ImportConfigService
                     );
                     continue;
                 }
-                if ($connecteurInfo['id_e'] === 0) {
+                if ($connecteurInfo['id_e'] === RootEntity::ID_E) {
                     $new_id_e_connecteur = $id_e_root;
                 }
             }
@@ -163,8 +164,8 @@ final class ImportConfigService
             return;
         }
         foreach ($exportedData[ExportConfigService::ASSOCIATION_INFO] as $id_e => $fluxInfo) {
-            if ($id_e !== 0 && empty($id_e_mapping[$id_e])) {
-                if ($id_e_root === 0) {
+            if ($id_e !== RootEntity::ID_E && empty($id_e_mapping[$id_e])) {
+                if ($id_e_root === RootEntity::ID_E) {
                     $this->lastErrors[] = "L'entité du fichier d'import id_e=$id_e n'est pas présente : ces associations n'ont pas été importées.";
                     continue;
                 }
@@ -199,7 +200,7 @@ final class ImportConfigService
             return;
         }
         try {
-            if ($id_e === 0 && $flux_name === 'global') {
+            if ($id_e === RootEntity::ID_E && $flux_name === 'global') {
                 $this->connecteurAssociationService->addConnecteurAssociation(
                     $id_e,
                     $connectorMapping[$theConnectorInfo['id_ce']],
@@ -231,7 +232,7 @@ final class ImportConfigService
         }
         foreach ($exportedData[ExportConfigService::ASSOCIATION_HERITAGE_INFO] as $id_e => $heritage_list) {
             if (!isset($id_e_mapping[$id_e])) {
-                if ($id_e_root === 0) {
+                if ($id_e_root === RootEntity::ID_E) {
                     $this->lastErrors[] = \sprintf(
                         "L'entité du fichier d'import id_e=%s n'est pas présente : " .
                         "les héritages d'associations n'ont pas été importées.",

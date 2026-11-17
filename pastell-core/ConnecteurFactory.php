@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Logger;
+use Pastell\Service\Entite\RootEntity;
 
 class ConnecteurFactory
 {
@@ -139,7 +140,7 @@ class ConnecteurFactory
      */
     public function controleRestriction(array $connecteur_info): bool
     {
-        if ($connecteur_info['id_e'] == 0) {
+        if ($connecteur_info['id_e'] == RootEntity::ID_E) {
             if ($this->isRestrictedConnecteur($connecteur_info['id_connecteur'], true)) {
                 throw new Exception("Action impossible: Le connecteur " . $connecteur_info['id_connecteur'] . " est restreint sur cette plateforme.");
             }

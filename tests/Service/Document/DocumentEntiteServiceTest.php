@@ -9,6 +9,7 @@ use DocumentEntiteSQL;
 use DocumentSQL;
 use Pastell\Service\Document\DocumentEntiteService;
 use PastellTestCase;
+use SQLQuery;
 
 final class DocumentEntiteServiceTest extends PastellTestCase
 {
@@ -39,6 +40,18 @@ final class DocumentEntiteServiceTest extends PastellTestCase
         static::assertSame(1, $this->documentEntiteService->countDocuments(self::ID_E_COL));
         static::assertSame(1, $this->documentEntiteService->countDocuments(self::ID_E_COL, self::TYPE));
         static::assertSame(0, $this->documentEntiteService->countDocuments(self::ID_E_COL, 'other'));
+    }
+
+    public function testCountDocumentLinks(): void
+    {
+        static::assertSame(0, $this->documentEntiteService->countDocumentLinks(self::ID_E_COL));
+        $this->documentEntiteSQL->insert(self::ID_D, self::ID_E_COL, 'editeur');
+        $this->getObjectInstancier()->getInstance(SQLQuery::class)->query(
+            'DELETE FROM document WHERE id_d = ?',
+            self::ID_D
+        );
+        static::assertSame(0, $this->documentEntiteService->countDocuments(self::ID_E_COL));
+        static::assertSame(1, $this->documentEntiteService->countDocumentLinks(self::ID_E_COL));
     }
 
     public function testGetDocumentsOlderThan(): void

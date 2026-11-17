@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Entite\RootEntity;
+
 /**
 * @var array $connecteur_manquant_list
  */
@@ -20,7 +22,7 @@
             <tr>
                 <td>
                     <a href="<?php $this->url("/Entite/detail?id_e={$connecteur_info['id_e']}"); ?>">
-                        <?php hecho($connecteur_info['denomination'] ?: 'Entité racine'); ?>
+                        <?php hecho($connecteur_info['denomination'] ?: RootEntity::DENOMINATION); ?>
                     </a>
                 </td>
                 <td>

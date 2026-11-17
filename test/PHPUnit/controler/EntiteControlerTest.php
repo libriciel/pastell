@@ -68,6 +68,7 @@ class EntiteControlerTest extends ControlerTestCase
         $result = ob_get_contents();
         ob_end_clean();
         $this->assertMatchesRegularExpression('/3,other,,,other@other.other/', $result);
+        self::assertStringContainsString('"autre rôle - Entité racine"', $result);
 
         $this->setGetInfo([
             'id_e' => 0,

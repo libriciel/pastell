@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Entite\RootEntity;
+
 class RecupClassificationAll extends ActionExecutor
 {
     public function go()
@@ -10,7 +12,7 @@ class RecupClassificationAll extends ActionExecutor
 
         $summary = [];
         foreach ($s2lowTdtConnectors as $connector) {
-            if ($connector['id_e'] === 0) {
+            if ($connector['id_e'] === RootEntity::ID_E) {
                 continue;
             }
             $denomination = $connector['denomination'];

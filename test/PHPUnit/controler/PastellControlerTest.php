@@ -3,6 +3,7 @@
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\EntityType;
 
 class PastellControlerTest extends ControlerTestCase
 {
@@ -77,12 +78,12 @@ class PastellControlerTest extends ControlerTestCase
     public function testSetNavigationWhenUserHasNoRightOnSecondLevel(): void
     {
         $entityCreationService = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
-        $id_e_fille = $entityCreationService->create('Nouvelle entité', '000000000', EntiteSQL::TYPE_COLLECTIVITE, 2);
+        $id_e_fille = $entityCreationService->create('Nouvelle entité', '000000000', EntityType::COLLECTIVITE->value, 2);
 
         $id_e_fille2 = $entityCreationService->create(
             'Nouvelle entité 2',
             '000000000',
-            EntiteSQL::TYPE_COLLECTIVITE,
+            EntityType::COLLECTIVITE->value,
             2
         );
 

@@ -9,6 +9,7 @@ use EntiteSQL;
 use NotFoundException;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Entite\RootEntity;
 
 class MenuGaucheService
 {
@@ -137,7 +138,7 @@ class MenuGaucheService
             $administration_options[] = MenuGaucheOption::withParameters('Utilisateurs', self::ENTITE_UTILISATEUR, ['id_e' => $id_e]);
         }
         if ($connecteur_lecture) {
-            $entite_racine = $id_e === EntiteSQL::ID_E_ENTITE_RACINE;
+            $entite_racine = $id_e === RootEntity::ID_E;
             $administration_options[] = MenuGaucheOption::withParameters(
                 $entite_racine ? "Connecteurs d'entités" : 'Connecteurs',
                 self::ENTITE_CONNECTEUR_LOCAL,
