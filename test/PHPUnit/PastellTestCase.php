@@ -129,6 +129,7 @@ abstract class PastellTestCase extends TestCase
         $this->objectInstancier->setInstance('libricielFeedbackDirectory', '/data/libriciel_feedback');
 
         $this->objectInstancier->setInstance('unlock_job_error_at_startup', false);
+        $this->objectInstancier->setInstance('nb_job_par_verrou', 1);
 
         $symfonyContainer = SymfonyContainerFactory::getSymfonyContainer();
         $environment = $symfonyContainer->get('twig');

@@ -13,7 +13,7 @@ class WorkerSQLTest extends PastellTestCase
 
     public function testCreate()
     {
-        $this->assertNotNull($this->workerSQL->create(42));
+        self::assertGreaterThan(0, $this->workerSQL->create(42));
     }
 
     public function testGetInfo()
@@ -142,12 +142,12 @@ class WorkerSQLTest extends PastellTestCase
 
     public function testGetJobListWithWorkerForDocument()
     {
-        $this->assertEmpty($this->workerSQL->getJobListWithWorkerForDocument(42, 8));
+        self::assertEmpty($this->workerSQL->getJobListWithWorkerForDocument(42, '8'));
     }
 
     public function testGetActionEnCours()
     {
-        $this->assertEmpty($this->workerSQL->getActionEnCours(42, 8));
+        self::assertEmpty($this->workerSQL->getActionEnCours(42, '8'));
     }
 
     public function testNoLaunchWithIdVerrou()
@@ -167,7 +167,7 @@ class WorkerSQLTest extends PastellTestCase
         $this->assertEquals([$id_job_1], $id_job_list);
 
         $id_worker = $this->workerSQL->create(42);
-        $this->workerSQL->attachJob($id_worker, $id_job_1);
+        $this->workerSQL->attachJob($id_worker, (int)$id_job_1);
 
         $all_verrou = $this->workerSQL->getVerrou();
         $this->assertEquals(["VERROU"], $all_verrou);
@@ -198,7 +198,7 @@ class WorkerSQLTest extends PastellTestCase
         $this->assertEquals([$id_job_1], $id_job_list);
     }
 
-    private function addJobWithVerrou()
+    private function addJobWithVerrou(): int
     {
         $jobQueueSQL = new JobQueueSQL($this->getSQLQuery());
         $job = new Job();
@@ -209,7 +209,7 @@ class WorkerSQLTest extends PastellTestCase
         $job->id_e = 1;
         $job->id_verrou = "VERROU";
         $job->next_try = date("Y-M-d", strtotime("yesterday"));
-        $jobQueueSQL->createJob($job);
+        return (int)$jobQueueSQL->createJob($job);
     }
 
     public function testGetAllVerrou()
@@ -245,11 +245,39 @@ class WorkerSQLTest extends PastellTestCase
         $job->id_ce = 1;
         $id_job = $jobQueueSQL->createJob($job);
         $id_worker = $this->workerSQL->create(42);
-        $this->workerSQL->attachJob($id_worker, $id_job);
+        $this->workerSQL->attachJob($id_worker, (int)$id_job);
 
         $this->assertEquals(
             $id_worker,
             $this->workerSQL->getActionEnCoursForConnecteur(1, "cible")
         );
+    }
+
+    public function testUnlockedJobsToLaunch(): void
+    {
+        $id_job = (int)$this->createJob();
+        $this->addJobWithVerrou();
+
+        $job_list = $this->workerSQL->getUnlockedJobsToLaunch(5);
+        self::assertSame([$id_job], array_column($job_list, 'id_job'));
+    }
+
+    public function testCountRunningByLock(): void
+    {
+        $id_job = $this->addJobWithVerrou();
+        self::assertSame(0, $this->workerSQL->countRunningJobsByLock('VERROU'));
+
+        $id_worker = $this->workerSQL->create(42);
+        $this->workerSQL->attachJob($id_worker, $id_job);
+        self::assertSame(1, $this->workerSQL->countRunningJobsByLock('VERROU'));
+    }
+
+    public function testPendingJobsByLock(): void
+    {
+        $id_job = $this->addJobWithVerrou();
+
+        $job_list = $this->workerSQL->getPendingJobsByLock('VERROU', 1);
+        self::assertSame([$id_job], array_column($job_list, 'id_job'));
+        self::assertSame([], $this->workerSQL->getPendingJobsByLock('OTHER', 1));
     }
 }
