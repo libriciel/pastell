@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Pastell\Tests\Command\Database;
 
-use EntiteSQL;
 use Exception;
 use Pastell\Command\Database\ForeignKeyCheck;
+use Pastell\Service\Entite\EntityHierarchyService;
 use PastellLogger;
 use PastellTestCase;
 use Pastell\Service\Droit\DroitService;
@@ -22,7 +22,7 @@ class ForeignKeyCheckTest extends PastellTestCase
         parent::setUp();
         $command = new ForeignKeyCheck(
             $this->getObjectInstancier()->getInstance(SQLQuery::class),
-            $this->getObjectInstancier()->getInstance(EntiteSQL::class),
+            $this->getObjectInstancier()->getInstance(EntityHierarchyService::class),
             $this->getObjectInstancier()->getInstance(PastellLogger::class)
         );
         $this->commandTester = new CommandTester($command);

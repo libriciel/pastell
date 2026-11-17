@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\TypeDossier\TypeDossierDeletionService;
 use Pastell\Service\TypeDossier\TypeDossierEditionService;
 use Pastell\Service\TypeDossier\TypeDossierExportService;
@@ -19,7 +20,7 @@ class TypeDossierControler extends PastellControler
         parent::_beforeAction();
         $this->setViewParameter('menu', $this->getInstance(MenuGaucheService::class)->getConfigurationMenu());
         $this->setMenuGaucheSelect(MenuGaucheService::TYPE_DOSSIER_LIST);
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
         $this->setViewParameter('dont_display_breacrumbs', true);
     }
 
@@ -29,7 +30,7 @@ class TypeDossierControler extends PastellControler
      */
     private function commonEdition(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('id_t', $this->getPostOrGetInfo()->getInt('id_t'));
         $this->setViewParameter('type_de_dossier_info', $this->getTypeDossierSQL()->getInfo($this->getViewParameterByKey('id_t')));
         $this->setViewParameter('type_dossier_hash', $this->getTypeDossierActionService()->getLastHash($this->getViewParameterByKey('id_t')));
@@ -114,7 +115,7 @@ class TypeDossierControler extends PastellControler
      */
     public function editionAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $info = $this->getTypeDossierSQL()->getInfo($this->getPostOrGetInfo()->getInt('id_t'));
         if ($info) {
             $this->verifyTypeDossierHasNoFolder($info['id_type_dossier']);
@@ -135,7 +136,7 @@ class TypeDossierControler extends PastellControler
      */
     public function doEditionAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $target_type_dossier_id = $this->getPostOrGetInfo()->get('id_type_dossier');
         $id_t = $this->getPostOrGetInfo()->getInt('id_t');
@@ -292,7 +293,7 @@ class TypeDossierControler extends PastellControler
      */
     public function etatAction()
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('id_t', $this->getPostOrGetInfo()->getInt('id_t'));
         $this->setViewParameter(
             'page_title',
@@ -608,7 +609,7 @@ class TypeDossierControler extends PastellControler
      */
     public function importAction()
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', "Import d'un type de dossier personnalisé");
         $this->setViewParameter('template_milieu', "TypeDossierImport");
         $this->renderDefault();
@@ -620,7 +621,7 @@ class TypeDossierControler extends PastellControler
      */
     public function doImportAction()
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $fileUploader  = $this->getObjectInstancier()->getInstance(FileUploader::class);
         $file_content = $fileUploader->getFileContent("json_type_dossier");
 
@@ -730,7 +731,7 @@ class TypeDossierControler extends PastellControler
         $this->setLastError(
             "La modification n'est pas possible. Le type de dossier {$id_type_dossier} est utilisé par des dossiers qui
                 ne sont pas dans l'état <i>terminé</i> ou <i>erreur fatale</i>: $content<br/>
-                
+
                 <a href='TypeDossier/putInFatalError?id_t=$id_t&id_type_dossier={$id_type_dossier}' class='btn btn-danger'>
                     <i class='fas fa-folder'></i>&nbsp;Mettre tous les dossiers en erreur fatale
                 </a><br>"
@@ -764,7 +765,7 @@ class TypeDossierControler extends PastellControler
      */
     public function doPutInFatalErrorAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_type_dossier = $this->getPostInfo()->get('id_type_dossier');
 
         $dossierFetched = $this->getObjectInstancier()->getInstance(TypeDossierSQL::class)

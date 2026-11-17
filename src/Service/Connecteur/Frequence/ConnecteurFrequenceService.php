@@ -14,6 +14,7 @@ use FluxEntiteSQL;
 use InvalidArgumentException;
 use Job;
 use UnrecoverableException;
+use Pastell\Service\Entite\RootEntity;
 
 final class ConnecteurFrequenceService
 {
@@ -237,7 +238,7 @@ final class ConnecteurFrequenceService
         if ($connecteurFrequenceData->id_ce === null) {
             return '';
         }
-        $denomination = $connecteurFrequenceData->denomination ?: 'Entité racine';
+        $denomination = $connecteurFrequenceData->denomination ?: RootEntity::DENOMINATION;
         return "$connecteurFrequenceData->libelle [$denomination]";
     }
 

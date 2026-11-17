@@ -5,10 +5,10 @@ namespace Pastell\Tests\Command\Module;
 use ConnecteurFactory;
 use DocumentSQL;
 use DonneesFormulaireFactory;
-use EntiteSQL;
 use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Command\Module\ForceSendGedAndDelete;
 use Pastell\Service\Document\DocumentDeletionService;
+use Pastell\Service\Entite\EntityHierarchyService;
 use PastellTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -24,7 +24,7 @@ final class ForceSendGedAndDeleteTest extends PastellTestCase
         parent::setUp();
         $command = new ForceSendGedAndDelete(
             $this->getObjectInstancier()->getInstance(DocumentSQL::class),
-            $this->getObjectInstancier()->getInstance(entiteSQL::class),
+            $this->getObjectInstancier()->getInstance(EntityHierarchyService::class),
             $this->getObjectInstancier()->getInstance(ConnecteurFactory::class),
             $this->getObjectInstancier()->getInstance(DonneesFormulaireFactory::class),
             $this->getObjectInstancier()->getInstance(JournalEntryService::class),

@@ -16,6 +16,7 @@ use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\ViewModel\DeleteConfirmation;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
+use Pastell\Service\Entite\RootEntity;
 
 class ConnecteurControler extends PastellControler
 {
@@ -248,7 +249,7 @@ class ConnecteurControler extends PastellControler
         $this->setViewParameter('my_role', '');
 
         if (! $id_e) {
-            $entite_info['denomination'] = 'Entité racine';
+            $entite_info['denomination'] = RootEntity::DENOMINATION;
         }
 
         $this->setViewParameter('entite_info', $entite_info);
@@ -413,7 +414,7 @@ class ConnecteurControler extends PastellControler
         $id_e = $connecteur_entite_info['id_e'];
         $entite_info = $this->getEntiteSQL()->getInfo($id_e) ?: [];
         if (!$id_e) {
-            $entite_info['denomination'] = 'Entité racine';
+            $entite_info['denomination'] = RootEntity::DENOMINATION;
         }
         $this->setViewParameter('page_title', "États du connecteur « {$connecteur_entite_info['libelle']} » 
             pour « {$entite_info['denomination']} »");

@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Entite\RootEntity;
+
 /**
  * @deprecated 4.1.26 Use ConnecteurFrequenceData and ConnecteurFrequenceService instead
  */
@@ -198,7 +200,7 @@ class ConnecteurFrequence
         if (! $this->id_ce) {
             return "";
         }
-        $denomination = $this->denomination ?: "Entité racine";
+        $denomination = $this->denomination ?: RootEntity::DENOMINATION;
         return "{$this->libelle} [{$denomination}]";
     }
 }

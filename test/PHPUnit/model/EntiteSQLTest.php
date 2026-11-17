@@ -1,6 +1,8 @@
 <?php
 
 use Pastell\Service\Entite\EntityCreationService;
+use Pastell\Service\Entite\EntityType;
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
@@ -22,7 +24,7 @@ class EntiteSQLTest extends PastellTestCase
     public function testGetDemominationEntiteRacine()
     {
         $this->assertEquals(
-            EntiteSQL::ENTITE_RACINE_DENOMINATION,
+            RootEntity::DENOMINATION,
             $this->entiteSQL->getDenomination(0)
         );
     }
@@ -92,7 +94,7 @@ class EntiteSQLTest extends PastellTestCase
         $data['is_active'] = 0;
         $this->assertCount(0, $this->entiteSQL->getEntiteFromData($data));
 
-        $this->entiteSQL->setActive(self::ID_E_COL, 0);
+        $this->entiteSQL->setActive(self::ID_E_COL, false);
         $data['is_active'] = 1;
         $this->assertCount(1, $this->entiteSQL->getEntiteFromData($data));
         $data['is_active'] = 0;
@@ -142,14 +144,14 @@ class EntiteSQLTest extends PastellTestCase
 
     public function testGetAllChildren(): void
     {
-        $this->assertCount(2, $this->entiteSQL->getAllChildren(EntiteSQL::ID_E_ENTITE_RACINE));
+        $this->assertCount(2, $this->entiteSQL->getAllChildren(RootEntity::ID_E));
     }
 
     public function testGetAllByType(): void
     {
         static::assertSame(
             'Bourg-en-Bresse',
-            $this->entiteSQL->getAllByType(EntiteSQL::TYPE_COLLECTIVITE)[0]['denomination']
+            $this->entiteSQL->getAllByType(EntityType::COLLECTIVITE->value)[0]['denomination']
         );
     }
 
@@ -161,6 +163,13 @@ class EntiteSQLTest extends PastellTestCase
     public function testGetNbCollectivite(): void
     {
         static::assertSame(1, $this->entiteSQL->getNbCollectivite('Bourg-en-Bresse'));
+    }
+
+    public function testGetActiveChildren(): void
+    {
+        $children = $this->entiteSQL->getActiveChildrenByType(1, [EntityType::COLLECTIVITE->value]);
+        self::assertSame(['CCAS'], array_column($children, 'denomination'));
+        self::assertSame([], $this->entiteSQL->getActiveChildrenByType(1, [EntityType::CENTRE_DE_GESTION->value]));
     }
 
     /**

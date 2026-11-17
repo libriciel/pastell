@@ -80,7 +80,7 @@ class ForceDeleteEntity extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $id_e = (string)$input->getArgument(self::ID_E);
+        $id_e = (int)$input->getArgument(self::ID_E);
         $do = (bool)$input->getOption('do');
 
         if (!$this->entiteSQL->getInfo($id_e)) {
@@ -88,7 +88,7 @@ class ForceDeleteEntity extends Command
             return Command::FAILURE;
         }
 
-        $entite_list = $this->entiteSQL->getFille($id_e) ?? [];
+        $entite_list = $this->entiteSQL->getFille($id_e);
         $id_e_list = array_reverse(array_map(static function ($a) {
             return $a[self::ID_E];
         }, $entite_list));

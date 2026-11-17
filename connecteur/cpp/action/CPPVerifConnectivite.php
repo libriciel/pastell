@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Mailer\AdminMailer;
+use Pastell\Service\Entite\RootEntity;
 
 class CPPVerifConnectivite extends ActionExecutor
 {
@@ -55,7 +56,7 @@ class CPPVerifConnectivite extends ActionExecutor
 
         foreach ($all_connecteur as $connecteur) {
             $result = '';
-            if ($connecteur['id_e'] == 0) {
+            if ($connecteur['id_e'] == RootEntity::ID_E) {
                 continue;
             }
 

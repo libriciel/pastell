@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Pastell\Service\Utilisateur;
 
-use EntiteSQL;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Entite\RootEntity;
 use UtilisateurRoleSQL;
 
 final class UtilisateurEntiteService
@@ -31,11 +31,11 @@ final class UtilisateurEntiteService
     public function getArbreFilleWithRacine(int $id_u, string $droit): array
     {
         $arbre = $this->getArbreFille($id_u, $droit);
-        $droitsRacine = $this->utilisateurRoleService->getDroitsForEntite($id_u, EntiteSQL::ID_E_ENTITE_RACINE);
+        $droitsRacine = $this->utilisateurRoleService->getDroitsForEntite($id_u, RootEntity::ID_E);
         if (in_array($droit, $droitsRacine, true)) {
             array_unshift($arbre, [
-                'id_e' => EntiteSQL::ID_E_ENTITE_RACINE,
-                'denomination' => EntiteSQL::ENTITE_RACINE_DENOMINATION,
+                'id_e' => RootEntity::ID_E,
+                'denomination' => RootEntity::DENOMINATION,
                 'profondeur' => 0,
             ]);
         }

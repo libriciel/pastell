@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Entite\RootEntity;
 
 class FamilleConnecteurAPIController extends BaseAPIController
 {
@@ -18,7 +19,7 @@ class FamilleConnecteurAPIController extends BaseAPIController
      */
     public function get()
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
 
         $famille_connecteur = $this->getFromQueryArgs(0);
         if ($famille_connecteur) {

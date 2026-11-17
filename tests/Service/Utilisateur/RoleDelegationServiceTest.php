@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Pastell\Tests\Service\Utilisateur;
 
-use EntiteSQL;
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Utilisateur\RoleDelegationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use PastellTestCase;
@@ -30,7 +30,7 @@ class RoleDelegationServiceTest extends PastellTestCase
     public function testAdminCanDelegate(): void
     {
         static::assertTrue(
-            $this->service->canDelegateRole(self::ADMIN_USER_ID, 'admin', EntiteSQL::ID_E_ENTITE_RACINE)
+            $this->service->canDelegateRole(self::ADMIN_USER_ID, 'admin', RootEntity::ID_E)
         );
     }
 
@@ -39,7 +39,7 @@ class RoleDelegationServiceTest extends PastellTestCase
         $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)->removeAllRoles(2);
 
         static::assertFalse(
-            $this->service->canDelegateRole(2, 'admin', EntiteSQL::ID_E_ENTITE_RACINE)
+            $this->service->canDelegateRole(2, 'admin', RootEntity::ID_E)
         );
     }
 }

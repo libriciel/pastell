@@ -9,6 +9,7 @@ use EntiteSQL;
 use Pastell\Service\PasswordEntropy;
 use UnrecoverableException;
 use UtilisateurSQL;
+use Pastell\Service\Entite\RootEntity;
 
 final class UserValidator
 {
@@ -151,7 +152,7 @@ final class UserValidator
         if ($firstname === '') {
             throw new UnrecoverableException('Le prénom est obligatoire');
         }
-        if ($id_e !== 0 && !$this->entiteSQL->exists($id_e)) {
+        if ($id_e !== RootEntity::ID_E && !$this->entiteSQL->exists($id_e)) {
             throw new UnrecoverableException("L'entité $id_e n'existe pas");
         }
     }

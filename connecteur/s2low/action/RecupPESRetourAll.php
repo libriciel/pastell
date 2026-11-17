@@ -1,13 +1,15 @@
 <?php
 
+use Pastell\Service\Entite\EntityType;
+
 class RecupPESRetourAll extends ActionExecutor
 {
     public function go()
     {
         $entiteSQL = $this->objectInstancier->getInstance(EntiteSQL::class);
 
-        $all_col = $entiteSQL->getAllByType(EntiteSQL::TYPE_COLLECTIVITE);
-        $all_col = array_merge($all_col, $entiteSQL->getAllByType(EntiteSQL::TYPE_CENTRE_DE_GESTION));
+        $all_col = $entiteSQL->getAllByType(EntityType::COLLECTIVITE->value);
+        $all_col = array_merge($all_col, $entiteSQL->getAllByType(EntityType::CENTRE_DE_GESTION->value));
 
         $envoye = [];
         foreach ($all_col as $infoCollectivite) {

@@ -8,6 +8,7 @@ use Pastell\Configuration\JobStatus;
 use Pastell\Model\Daemon\JobAdvancedFilters;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityUtilitiesService;
+use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Module\ModuleListService;
@@ -56,7 +57,7 @@ class DaemonControler extends PastellControler
      */
     public function verrouAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::LECTURE);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_DAEMON, DroitType::LECTURE);
         $this->setViewParameter('job_queue_info_list', $this->getJobQueueSQL()->getCountJobByVerrouAndEtat());
         $this->setViewParameter('template_milieu', 'DaemonVerrou');
         $this->setViewParameter('page_title', "Gestionnaire de tâches : Files d'attente");
@@ -85,7 +86,7 @@ class DaemonControler extends PastellControler
      */
     private function indexData(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::LECTURE);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_DAEMON, DroitType::LECTURE);
         $this->setDroitsDaemon(EntiteSQL::ID_E_ENTITE_RACINE);
         $this->setViewParameter('nb_worker_actif', $this->getWorkerSQL()->getNbActif());
         $this->setViewParameter('nb_workers', $this->getDaemonSQL()->getNbWorkers());
@@ -106,7 +107,7 @@ class DaemonControler extends PastellControler
      */
     public function globalDaemonStartAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_DAEMON, DroitType::EDITION);
         try {
             $this->getDaemonManager()->start();
             $this->getLogger()->info('Daemon start manually');
@@ -133,7 +134,7 @@ class DaemonControler extends PastellControler
      */
     public function globalDaemonStopAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $this->getDaemonManager()->stop();
         if ($this->getDaemonManager()->status() === DaemonManager::IS_STOPPED) {
             $this->setLastMessage('Les gestionnaires de tâches ont été arrêtés');
@@ -275,7 +276,7 @@ class DaemonControler extends PastellControler
      */
     public function jobAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::LECTURE);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_DAEMON, DroitType::LECTURE);
         $this->setViewParameter('page_title', 'Gestionnaire de tâches');
         $this->setViewParameter('unlock_all_action', 'app.legacy.daemon_unlockAll');
         $this->setViewParameter('lock_all_action', 'app.legacy.daemon_lockAll');
@@ -322,7 +323,7 @@ class DaemonControler extends PastellControler
      */
     public function frequenceConfigurationAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $connecteurFrequenceService = $this->getInstance(ConnecteurFrequenceService::class);
         $connecteur_frequence_list = $connecteurFrequenceService->getAll();
 
@@ -346,7 +347,7 @@ class DaemonControler extends PastellControler
      */
     public function editFrequenceAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $id_cf = $this->getGetInfo()->getInt('id_cf');
         $connecteurFrequenceData = $this->getInstance(ConnecteurFrequenceService::class)->get(
             $id_cf
@@ -422,7 +423,7 @@ class DaemonControler extends PastellControler
      */
     public function doEditFrequenceAction()
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $connecteurFrequenceData = ConnecteurFrequenceData::fromArray($this->getPostInfo()->getAll());
         $id_cf = $this->getInstance(ConnecteurFrequenceService::class)->save($connecteurFrequenceData);
         $this->redirect("Daemon/connecteurFrequenceDetail?id_cf=$id_cf");
@@ -435,7 +436,7 @@ class DaemonControler extends PastellControler
      */
     public function connecteurFrequenceDetailAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $id_cf = $this->getGetInfo()->getInt('id_cf');
         $connecteurFrequenceData = $this->verifConnecteur($id_cf);
         $this->setViewParameter('connecteurFrequenceData', $connecteurFrequenceData);
@@ -471,7 +472,7 @@ class DaemonControler extends PastellControler
      */
     public function deleteFrequenceAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $id_cf = $this->getGetInfo()->getInt('id_cf');
         $connecteurFrequenceData = $this->verifConnecteur($id_cf);
 
