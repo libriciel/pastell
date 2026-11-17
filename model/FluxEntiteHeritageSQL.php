@@ -17,83 +17,88 @@ class FluxEntiteHeritageSQL extends SQL
     /**
      * @deprecated 4.1.26 Use FluxInheritanceService::getAllWithSameType() instead
      */
-    public function getAllWithSameType(int $id_e): array
+    public function getAllWithSameType($id_e)
     {
         if ($this->hasInheritanceAllFlux($id_e)) {
-            return $this->getAllWithSameType((int)$this->entiteSQL->getEntiteMere($id_e));
+            $id_e_mere = $this->entiteSQL->getEntiteMere($id_e);
+            return $this->getAllWithSameType($id_e_mere);
         }
 
-        $association_list = $this->fluxEntiteSQL->getAllWithSameType($id_e);
-        foreach ($association_list as $flux => $flux_association_list) {
-            $association_list[$flux]['inherited_flux'] = false;
+        $result = $this->fluxEntiteSQL->getAllWithSameType($id_e);
+
+        foreach ($result as $flux => $def) {
+            $result[$flux]['inherited_flux'] = false;
+        }
+        $inherited_flux = $this->getInheritance($id_e);
+
+        if ($inherited_flux) {
+            $id_e_mere = $this->entiteSQL->getEntiteMere($id_e);
+            $all_inherited = $this->getAllWithSameType($id_e_mere);
+            foreach ($inherited_flux as $flux) {
+                if (isset($all_inherited[$flux])) {
+                    $result[$flux] = $all_inherited[$flux];
+                } else {
+                    $result[$flux] = [];
+                }
+                $result[$flux]['inherited_flux'] = true;
+            }
         }
 
-        $inherited_flux_list = $this->getInheritance($id_e);
-        if (!$inherited_flux_list) {
-            return $association_list;
-        }
-
-        $parent_association_list = $this->getAllWithSameType((int)$this->entiteSQL->getEntiteMere($id_e));
-        foreach ($inherited_flux_list as $flux) {
-            $association_list[$flux] = $parent_association_list[$flux] ?? [];
-            $association_list[$flux]['inherited_flux'] = true;
-        }
-        return $association_list;
+        return $result;
     }
 
     /**
      * @deprecated 3.0 Use FluxInheritanceService::getAllWithSameType() instead
      */
-    public function getAll(int $id_e): array
+    public function getAll($id_e)
     {
         if ($this->hasInheritanceAllFlux($id_e)) {
-            return $this->getAll((int)$this->entiteSQL->getEntiteMere($id_e));
+            $id_e_mere = $this->entiteSQL->getEntiteMere($id_e);
+            return $this->getAll($id_e_mere);
         }
 
-        $association_list = $this->fluxEntiteSQL->getAll($id_e);
-        foreach ($association_list as $flux => $flux_association_list) {
-            $association_list[$flux]['inherited_flux'] = false;
+        $result = $this->fluxEntiteSQL->getAll($id_e);
+        foreach ($result as $flux => $def) {
+            $result[$flux]['inherited_flux'] = false;
+        }
+        $inherited_flux = $this->getInheritance($id_e);
+
+        if ($inherited_flux) {
+            $id_e_mere = $this->entiteSQL->getEntiteMere($id_e);
+            $all_inherited = $this->getAll($id_e_mere);
+            foreach ($inherited_flux as $flux) {
+                if (isset($all_inherited[$flux])) {
+                    $result[$flux] = $all_inherited[$flux];
+                } else {
+                    $result[$flux] = [];
+                }
+                $result[$flux]['inherited_flux'] = true;
+            }
         }
 
-        $inherited_flux_list = $this->getInheritance($id_e);
-        if (!$inherited_flux_list) {
-            return $association_list;
-        }
-
-        $parent_association_list = $this->getAll((int)$this->entiteSQL->getEntiteMere($id_e));
-        foreach ($inherited_flux_list as $flux) {
-            $association_list[$flux] = $parent_association_list[$flux] ?? [];
-            $association_list[$flux]['inherited_flux'] = true;
-        }
-        return $association_list;
+        return $result;
     }
 
     /**
      * @deprecated 4.1.26 Use FluxInheritanceService::getConnecteurId() instead
      */
-    public function getConnecteurId(
-        int $id_e,
-        string $flux,
-        string $connecteur_type,
-        int $num_same_type = 0
-    ): int|false {
-        $id_ce = $this->fluxEntiteSQL->getConnecteurId(
-            $this->getRealAncetreForFlux($id_e, $flux),
-            $flux,
-            $connecteur_type,
-            $num_same_type
-        );
-        return $id_ce === false ? false : (int)$id_ce;
+    public function getConnecteurId($id_e, $flux, $connecteur_type, $num_same_type = 0)
+    {
+        $id_e = $this->getRealAncetreForFlux($id_e, $flux);
+        return $this->fluxEntiteSQL->getConnecteurId($id_e, $flux, $connecteur_type, $num_same_type);
     }
 
-    private function getRealAncetreForFlux(int $id_e, string $flux): int
+    private function getRealAncetreForFlux($id_e, $flux)
     {
-        $parent_id_e = (int)$this->entiteSQL->getEntiteMere($id_e);
-        if ($parent_id_e === RootEntity::ID_E) {
+        $id_e_mere = $this->entiteSQL->getEntiteMere($id_e);
+        if ($id_e_mere == RootEntity::ID_E) {
             return $id_e;
         }
-        if ($this->hasInheritanceAllFlux($id_e) || $this->hasInheritance($id_e, $flux)) {
-            return $this->getRealAncetreForFlux($parent_id_e, $flux);
+        if ($this->hasInheritanceAllFlux($id_e)) {
+            return $this->getRealAncetreForFlux($id_e_mere, $flux);
+        }
+        if ($this->hasInheritance($id_e, $flux)) {
+            return $this->getRealAncetreForFlux($id_e_mere, $flux);
         }
         return $id_e;
     }
@@ -101,13 +106,15 @@ class FluxEntiteHeritageSQL extends SQL
     /**
      * @deprecated 4.1.26 Use FluxInheritanceService::setInheritance() instead
      */
-    public function setInheritance(int $id_e, string $flux): void
+    public function setInheritance($id_e, $flux)
     {
-        if (!$this->entiteSQL->getEntiteMere($id_e)) {
+        $id_e_mere = $this->entiteSQL->getEntiteMere($id_e);
+        if (! $id_e_mere) {
             return;
         }
         $this->deleteInheritance($id_e, $flux);
-        $this->addInheritance($id_e, $flux);
+        $sql = "INSERT INTO flux_entite_heritage(id_e,flux) VALUES (?,?)";
+        $this->query($sql, $id_e, $flux);
     }
 
     public function addInheritance(int $id_e, string $flux): void
@@ -118,7 +125,7 @@ SQL;
         $this->query($sql, $id_e, $flux);
     }
 
-    public function deleteInheritance(int $id_e, string $flux): void
+    public function deleteInheritance($id_e, $flux)
     {
         $sql = <<<SQL
 DELETE FROM flux_entite_heritage WHERE id_e = ? AND flux = ?
@@ -126,7 +133,7 @@ SQL;
         $this->query($sql, $id_e, $flux);
     }
 
-    public function getInheritance(int $id_e): array
+    public function getInheritance($id_e)
     {
         $sql = <<<SQL
 SELECT flux FROM flux_entite_heritage WHERE id_e = ?
@@ -134,7 +141,7 @@ SQL;
         return $this->queryOneCol($sql, $id_e);
     }
 
-    public function hasInheritance(int $id_e, string $flux): bool
+    public function hasInheritance($id_e, $flux): bool
     {
         $sql = <<<SQL
 SELECT count(*) FROM flux_entite_heritage WHERE id_e = ? AND flux = ?
@@ -145,17 +152,17 @@ SQL;
     /**
      * @deprecated 4.1.26 Use FluxInheritanceService::setInheritanceAllFlux() instead
      */
-    public function setInheritanceAllFlux(int $id_e): void
+    public function setInheritanceAllFlux($id_e)
     {
         $this->setInheritance($id_e, self::ALL_FLUX);
     }
 
-    public function hasInheritanceAllFlux(int $id_e): bool
+    public function hasInheritanceAllFlux($id_e)
     {
         return $this->hasInheritance($id_e, self::ALL_FLUX);
     }
 
-    public function deleteInheritanceAllFlux(int $id_e): void
+    public function deleteInheritanceAllFlux($id_e)
     {
         $this->deleteInheritance($id_e, self::ALL_FLUX);
     }
@@ -163,12 +170,12 @@ SQL;
     /**
      * @deprecated 4.1.26 Use FluxInheritanceService::toggleInheritance() instead
      */
-    public function toogleInheritance(int $id_e, string $flux): void
+    public function toogleInheritance($id_e, $flux)
     {
         if ($this->hasInheritance($id_e, $flux)) {
             $this->deleteInheritance($id_e, $flux);
-            return;
+        } else {
+            $this->setInheritance($id_e, $flux);
         }
-        $this->setInheritance($id_e, $flux);
     }
 }
