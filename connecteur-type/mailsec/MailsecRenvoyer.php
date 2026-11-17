@@ -1,23 +1,16 @@
 <?php
 
-use Mailsec\MailsecManager;
-
 class MailsecRenvoyer extends ConnecteurTypeActionExecutor
 {
     /**
      * @throws NotFoundException
      * @throws UnrecoverableException
      */
-    private function getMailSecConnecteur(): MailSec
+    private function getMailSecConnecteur(): MailsecConnecteur
     {
-        /** @var MailSec $connector */
+        /** @var MailsecConnecteur $connector */
         $connector = $this->getConnecteur(MailsecConnecteur::CONNECTEUR_TYPE_ID);
         return $connector;
-    }
-
-    private function getMailsecManager(): MailsecManager
-    {
-        return $this->objectInstancier->getInstance(MailsecManager::class);
     }
 
     /**
@@ -31,15 +24,16 @@ class MailsecRenvoyer extends ConnecteurTypeActionExecutor
     {
         $recuperateur = new Recuperateur($_POST);
         $id_de = $recuperateur->getInt('id_de');
+        $mailsecConnecteur = $this->getMailSecConnecteur();
 
         if ($id_de) {
             $this->setLastMessage("Un email a été renvoyé au destinataire");
-            $this->getMailSecConnecteur()->sendOneMail($this->id_e, $this->id_d, $id_de);
+            $mailsecConnecteur->sendOneMail($this->id_e, $this->id_d, $id_de);
         } else {
-            $this->getMailSecConnecteur()->resendUnopenedEmails($this->id_e, $this->id_d);
+            $mailsecConnecteur->resendUnopenedEmails($this->id_e, $this->id_d);
             $this->addActionOK("Un email a été renvoyé à tous les destinataires n'ayant pas ouvert le précédent");
         }
-        $this->getMailsecManager()->updateReceipt($this->id_d);
+        $mailsecConnecteur->updateReceipt($this->id_d);
         return true;
     }
 }

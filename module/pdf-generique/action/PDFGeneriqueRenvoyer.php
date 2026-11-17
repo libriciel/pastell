@@ -2,14 +2,21 @@
 
 class PDFGeneriqueRenvoyer extends ActionExecutor
 {
-    private function getMailSecConnecteur(): MailSec
+    /**
+     * @throws UnrecoverableException
+     * @throws NotFoundException
+     */
+    private function getMailSecConnecteur(): MailsecConnecteur
     {
-        /** @var MailSec $connector */
+        /** @var MailsecConnecteur $connector */
         $connector = $this->getConnecteur(MailsecConnecteur::CONNECTEUR_TYPE_ID);
         return $connector;
     }
 
     /**
+     * @throws UnrecoverableException
+     * @throws NotFoundException
+     * @throws Throwable
      * @throws Exception
      */
     public function go()

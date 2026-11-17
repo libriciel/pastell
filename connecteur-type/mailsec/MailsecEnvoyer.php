@@ -22,6 +22,9 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
         return $this->objectInstancier->getInstance(MailsecManager::class);
     }
 
+    /**
+     * @return AnnuaireRoleSQL
+     */
     private function getAnnuaireRoleSQL(): AnnuaireRoleSQL
     {
         return $this->objectInstancier->getInstance(AnnuaireRoleSQL::class);
@@ -51,9 +54,9 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
      * @throws NotFoundException
      * @throws UnrecoverableException
      */
-    private function getMailSecConnecteur(): MailSec
+    private function getMailSecConnecteur(): MailsecConnecteur
     {
-        /** @var MailSec $connector */
+        /** @var MailsecConnecteur $connector */
         $connector = $this->getConnecteur(MailsecConnecteur::CONNECTEUR_TYPE_ID);
         return $connector;
     }
@@ -105,7 +108,7 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
 
         $this->changeAction($this->action, 'Le document a été envoyé');
         $this->setLastMessage('Le document a été envoyé au(x) destinataire(s)');
-        $this->getMailsecManager()->updateReceipt($this->id_d);
+        $mailsecConnecteur->updateReceipt($this->id_d);
         return true;
     }
 
