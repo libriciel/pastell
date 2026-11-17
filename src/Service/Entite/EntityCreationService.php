@@ -17,6 +17,7 @@ final class EntityCreationService
         private readonly EntiteSQL $entiteSQL,
         private readonly JournalEntryService $journalEntryService,
         private readonly EntityValidator $validator,
+        private readonly EntityHierarchyService $entityHierarchyService,
     ) {
     }
 
@@ -26,10 +27,11 @@ final class EntityCreationService
     public function create(
         string $name,
         string $siren,
-        string $type = EntiteSQL::TYPE_COLLECTIVITE,
+        ?string $type = null,
         int $parent = 0,
         int $cdg = 0,
     ): int {
+        $type ??= EntityType::COLLECTIVITE->value;
         $this->validator->validate($name, $siren, $type, $parent, $cdg);
 
         $entityId = $this->entiteSQL->create($name, $siren, $type, $parent, $cdg);
@@ -41,7 +43,7 @@ final class EntityCreationService
             JournalAction::CREATED->value,
             "Création de l'entité $name - $siren"
         );
-        $this->entiteSQL->updateAncestor($entityId, $parent);
+        $this->entityHierarchyService->updateAncestors($entityId, $parent);
 
         return $entityId;
     }

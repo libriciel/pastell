@@ -2,6 +2,7 @@
 
 use Pastell\Service\Document\DocumentDeletionService;
 use Pastell\Service\Document\DocumentEntiteService;
+use Pastell\Service\Entite\EntityHierarchyService;
 use Pastell\Service\Journal\JournalEntryService;
 
 use function Clue\StreamFilter\append;
@@ -28,7 +29,7 @@ class Purge extends Connecteur
         private readonly DonneesFormulaireFactory $donneesFormulaireFactory,
         private readonly DocumentEntiteService $documentEntiteService,
         private readonly DocumentDeletionService $documentDeletionService,
-        private readonly EntiteSQL $entiteSQL,
+        private readonly EntityHierarchyService $entityHierarchyService,
     ) {
     }
 
@@ -105,7 +106,7 @@ class Purge extends Connecteur
         );
         if ($this->includeChildren) {
             $children_documents = [];
-            foreach ($this->entiteSQL->getAllChildren($this->entityId) as $child) {
+            foreach ($this->entityHierarchyService->getAllChildren($this->entityId) as $child) {
                 foreach (
                     $this->documentEntiteService->getDocumentsWithLastActionOlderThan(
                         $nb_days,

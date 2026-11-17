@@ -11,6 +11,8 @@
  * @var array $listAgent
  */
 
+use Pastell\Service\Entite\RootEntity;
+
 ?>
 <div class="box">
 
@@ -42,7 +44,7 @@
             <th>Nom</th>
             <th>Prénom</th>
             <th>Grade</th>
-            <?php if ($id_e == 0) : ?>
+            <?php if ($id_e == RootEntity::ID_E) : ?>
                 <th>Collectivité</th>
             <?php endif; ?>
         </tr>
@@ -54,7 +56,7 @@
                 <td>
                     <label for="label_agent_<?php echo $i; ?>"><?php hecho($agent['emploi_grade_libelle']); ?></label>
                 </td>
-                <?php if ($id_e == 0) : ?>
+                <?php if ($id_e == RootEntity::ID_E) : ?>
                     <td>
                         <a href='Entite/detail?id_e=<?php echo $agent['id_e'] ?>&page=2'
                         ><?php hecho($agent['denomination']); ?></a>

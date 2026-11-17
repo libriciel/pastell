@@ -17,6 +17,7 @@ final class EntityUpdateService
         private readonly EntiteSQL $entiteSQL,
         private readonly JournalEntryService $journalEntryService,
         private readonly EntityValidator $validator,
+        private readonly EntityHierarchyService $entityHierarchyService,
     ) {
     }
 
@@ -27,10 +28,11 @@ final class EntityUpdateService
         int $entityId,
         string $name,
         string $siren,
-        string $type = EntiteSQL::TYPE_COLLECTIVITE,
+        ?string $type = null,
         int $parent = 0,
         int $cdg = 0
     ): void {
+        $type ??= EntityType::COLLECTIVITE->value;
         $this->validator->validate($name, $siren, $type, $parent, $cdg);
 
         $oldEntity = $this->entiteSQL->getInfo($entityId);
@@ -55,6 +57,6 @@ final class EntityUpdateService
             JournalAction::MODIFIED->value,
             "Modification de l'entité $name ($entityId) : $infoChanged"
         );
-        $this->entiteSQL->updateAncestor($entityId, $parent);
+        $this->entityHierarchyService->updateAncestors($entityId, $parent);
     }
 }

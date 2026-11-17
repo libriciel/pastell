@@ -19,6 +19,7 @@
  */
 
 use Pastell\Utilities\Certificate;
+use Pastell\Service\Entite\RootEntity;
 
 ?>
 
@@ -79,7 +80,7 @@ use Pastell\Utilities\Certificate;
                 <?php if ($info['id_e']) : ?>
                     <?php hecho($denominationEntiteDeBase); ?>
                 <?php else : ?>
-                    Entité racine
+                    <?php hecho(RootEntity::DENOMINATION); ?>
                 <?php endif; ?>
                 </a>
             </td>
