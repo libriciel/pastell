@@ -121,24 +121,24 @@ SQL;
     /**
      * @deprecated 4.1.26 Use AnnuaireRoleService::getInheritedRoleLabel() instead
      */
-    public function getChaineHerited($info)
+    public function getChaineHerited(array $info): string
     {
         if ($info['denomination']) {
-            $debut = "rôle hérité de {$info['denomination']}";
+            $debut = 'rôle hérité de ' . $info['denomination'];
         } else {
-            $debut = "rôle global";
+            $debut = 'rôle global';
         }
 
-        return "$debut: \"" . $info['nom'] . "\"";
+        return $debut . ': "' . $info['nom'] . '"';
     }
 
     /**
      * @deprecated 4.1.26 Use AnnuaireRoleService::findInheritedRoleId() instead
      */
-    public function getFromNomDenomination($all_ancetre, $chaine)
+    public function getFromNomDenomination(array $all_ancetre, string $chaine): mixed
     {
         foreach ($this->getGroupeHerite($all_ancetre) as $info) {
-            if ($chaine == $this->getChaineHerited($info)) {
+            if ($chaine === $this->getChaineHerited($info)) {
                 return $info['id_r'];
             }
         }

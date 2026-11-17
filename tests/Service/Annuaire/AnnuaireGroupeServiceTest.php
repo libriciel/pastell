@@ -195,11 +195,14 @@ final class AnnuaireGroupeServiceTest extends PastellTestCase
 
         self::assertSame(
             $id_g,
-            $this->getService()->findInheritedGroupId([self::ID_E, self::ID_E_EMPTY], 'groupe hérité de Bourg-en-Bresse: "Groupe"')
+            $this->getService()->findInheritedGroupId(
+                [self::ID_E, self::ID_E_EMPTY],
+                'groupe hérité de Bourg-en-Bresse: "Groupe"'
+            )
         );
     }
 
-    public function testFindNotSharedGroupId(): void
+    public function testFindUnsharedGroupId(): void
     {
         $this->getObjectInstancier()->getInstance(AnnuaireGroupeSQL::class)->add(self::ID_E, 'Groupe');
 

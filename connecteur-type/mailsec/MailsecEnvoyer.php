@@ -22,12 +22,14 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
         return $this->objectInstancier->getInstance(MailsecManager::class);
     }
 
-    /**
-     * @return AnnuaireRoleSQL
-     */
     private function getAnnuaireRoleSQL(): AnnuaireRoleSQL
     {
         return $this->objectInstancier->getInstance(AnnuaireRoleSQL::class);
+    }
+
+    private function getAnnuaireGroupeSQL(): AnnuaireGroupeSQL
+    {
+        return $this->objectInstancier->getInstance(AnnuaireGroupeSQL::class);
     }
 
     private function getAnnuaireGroupeService(): AnnuaireGroupeService
@@ -153,18 +155,17 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
         return $mail_to_send;
     }
 
-    private function getEmailFromGroupe($groupe_name)
+    private function getEmailFromGroupe(string $groupe_name): array
     {
-        $annuaireGroupe = $this->objectInstancier->getInstance(AnnuaireGroupeSQL::class);
-        $id_g = $annuaireGroupe->getFromNom($this->id_e, $groupe_name);
+        $id_g = $this->getAnnuaireGroupeSQL()->getFromNom($this->id_e, $groupe_name);
         if ($id_g === false) {
             return [];
         }
-        $utilisateur = $annuaireGroupe->getAllUtilisateur($id_g);
+        $utilisateur = $this->getAnnuaireGroupeSQL()->getAllUtilisateur($id_g);
         return $this->getFormattedEmailList($utilisateur);
     }
 
-    private function getEmailFromRole($role_name)
+    private function getEmailFromRole(string $role_name): array
     {
         $id_r = $this->getAnnuaireRoleSQL()->getFromNom($this->id_e, $role_name);
         if ($id_r === false) {
@@ -174,19 +175,18 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
         return $this->getFormattedEmailList($utilisateur);
     }
 
-    private function getEmailFromInheritedGroup($mail)
+    private function getEmailFromInheritedGroup(string $mail): array
     {
-        $annuaireGroupe = $this->objectInstancier->getInstance(AnnuaireGroupeSQL::class);
         $all_ancetre = $this->getEntityHierarchyService()->getAncestorIds((int)$this->id_e);
         $id_g = $this->getAnnuaireGroupeService()->findInheritedGroupId($all_ancetre, $mail);
         if ($id_g === null) {
             return [];
         }
-        $utilisateur = $annuaireGroupe->getAllUtilisateur($id_g);
+        $utilisateur = $this->getAnnuaireGroupeSQL()->getAllUtilisateur($id_g);
         return $this->getFormattedEmailList($utilisateur);
     }
 
-    private function getEmailFromInheritedRole($mail)
+    private function getEmailFromInheritedRole(string $mail): array
     {
         $all_ancetre = $this->getEntityHierarchyService()->getAncestorIds((int)$this->id_e);
         $id_r = $this->getAnnuaireRoleService()->findInheritedRoleId($all_ancetre, $mail);
