@@ -1,6 +1,7 @@
 <?php
 
 use Mailsec\MailsecManager;
+use Pastell\Service\Annuaire\AnnuaireRoleService;
 use Pastell\Service\Entite\EntityHierarchyService;
 use Pastell\Service\Document\DocumentEmailRecipientType;
 use Pastell\Service\Document\DocumentEmailService;
@@ -26,6 +27,11 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
     private function getAnnuaireRoleSQL(): AnnuaireRoleSQL
     {
         return $this->objectInstancier->getInstance(AnnuaireRoleSQL::class);
+    }
+
+    private function getAnnuaireRoleService(): AnnuaireRoleService
+    {
+        return $this->objectInstancier->getInstance(AnnuaireRoleService::class);
     }
 
     private function getEntityHierarchyService(): EntityHierarchyService
@@ -168,7 +174,10 @@ class MailsecEnvoyer extends ConnecteurTypeActionExecutor
     private function getEmailFromInheritedRole($mail)
     {
         $all_ancetre = $this->getEntityHierarchyService()->getAncestorIds((int)$this->id_e);
-        $id_r = $this->getAnnuaireRoleSQL()->getFromNomDenomination($all_ancetre, $mail);
+        $id_r = $this->getAnnuaireRoleService()->findInheritedRoleId($all_ancetre, $mail);
+        if ($id_r === null) {
+            return [];
+        }
         $utilisateur = $this->getAnnuaireRoleSQL()->getUtilisateur($id_r);
         return $this->getFormattedEmailList($utilisateur);
     }

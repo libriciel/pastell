@@ -4,6 +4,7 @@ use Pastell\Service\Annuaire\AnnuaireContactService;
 use Pastell\Service\Annuaire\AnnuaireExportService;
 use Pastell\Service\Annuaire\AnnuaireGroupeService;
 use Pastell\Service\Annuaire\AnnuaireImportService;
+use Pastell\Service\Annuaire\AnnuaireRoleService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityHierarchyService;
@@ -628,6 +629,7 @@ class MailSecControler extends PastellControler
         $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::LECTURE);
 
         $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
+        $annuaireRoleService = $this->getInstance(AnnuaireRoleService::class);
 
         $result = [];
 
@@ -647,7 +649,7 @@ class MailSecControler extends PastellControler
                 $result[] = $annuaireGroupe->getChaineHerited($item) . "\n";
             }
             foreach ($role_herited as $item) {
-                $result[] = $this->getAnnuaireRoleSQL()->getChaineHerited($item) . "\n";
+                $result[] = $annuaireRoleService->getInheritedRoleLabel($item) . "\n";
             }
         }
 
@@ -676,6 +678,7 @@ class MailSecControler extends PastellControler
         $submit = $recuperateur->get('submit');
 
         foreach ($all_id_r as $id_r) {
+            $id_r = (int)$id_r;
             $info = $this->getAnnuaireRoleSQL()->getInfo($id_r);
 
             if ($this->hasDroitFor($info['id_e_owner'], DroitService::DROIT_ANNUAIRE, DroitType::EDITION)) {
