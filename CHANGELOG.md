@@ -26,6 +26,8 @@
 - Méthodes `getAllWithSameType()`, `getConnecteurId()`, `setInheritance()`, `setInheritanceAllFlux()` et
   `toogleInheritance()` de `FluxEntiteHeritageSQL` dépréciées au profit du service `FluxInheritanceService` #2628
 - Méthode `getConnectorForFlux()` de `FluxControler` dépréciée au profit du service `FluxConnecteurListService` #2628
+- Méthodes `getChaineHerited()` et `getFromNomDenomination()` de `AnnuaireRoleSQL` et `AnnuaireGroupeSQL` dépréciées
+  au profit des services `AnnuaireRoleService` et `AnnuaireGroupeService` #2634
 
 ### Sécurité
 
