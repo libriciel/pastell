@@ -38,6 +38,8 @@
   dépréciées au profit des services `UserPasswordService`, `UserCreationService`, `UserCertificateService` et
   `UserInfoService` #2632
 - Méthode `validMail()` de `UtilisateurSQL` dépréciée car inutilisée #2632
+- Méthodes `edit()`, `getDroit()`, `getAuthorizedRoleToDelegate()` et `getRoleLibelle()` de `RoleSQL` dépréciées au
+  profit des services `RoleService` et `RoleDelegationService` #2635
 
 ### Sécurité
 

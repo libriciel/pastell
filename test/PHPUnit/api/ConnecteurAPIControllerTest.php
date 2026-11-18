@@ -612,7 +612,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
     public function testPostWithReadPermission(): void
     {
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
-        $roleSql->edit('readonly', 'readonly');
+        $roleSql->insert('readonly', 'readonly');
         $roleSql->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $userId = $userCreationService->create('readonly', 'readonly@example.org', 'user', 'user');
@@ -634,7 +634,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
     public function testPostFileWithReadPermission(): void
     {
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
-        $roleSql->edit('readonly', 'readonly');
+        $roleSql->insert('readonly', 'readonly');
         $roleSql->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $userId = $userCreationService->create('readonly', 'readonly@example.org', 'user', 'user');
@@ -703,7 +703,7 @@ class ConnecteurAPIControllerTest extends PastellTestCase
         static::assertEquals('ok', $result['result']);
 
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
-        $roleSql->edit('readonly', 'readonly');
+        $roleSql->insert('readonly', 'readonly');
         $roleSql->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $userId = $userCreationService->create('readonly', 'readonly@example.org', 'user', 'user');

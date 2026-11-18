@@ -201,9 +201,9 @@ class EntiteAPIControllerTest extends PastellTestCase
         $user = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create('tester', 'tester@example.org', 'tester', 'tester');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->edit(DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE), 'entiteLectureEdition');
+            ->insert(DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE), 'entiteLectureEdition');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->edit(DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION), 'entiteLectureEdition');
+            ->insert(DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION), 'entiteLectureEdition');
         $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)
             ->addRole(3, 'entiteLectureEdition', 1);
         $this->expectException(ForbiddenException::class);

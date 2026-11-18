@@ -368,7 +368,7 @@ class UtilisateurControlerTest extends ControlerTestCase
         $user = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create('tester', 'tester@example.org', 'tester', 'tester');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->edit('entiteLectureEdition', 'Droit utilisateur');
+            ->insert('entiteLectureEdition', 'Droit utilisateur');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
             ->addDroit('entiteLectureEdition', DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION));
         $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)

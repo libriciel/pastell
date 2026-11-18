@@ -6,6 +6,7 @@ namespace Pastell\Updater\Major4\Minor0;
 
 use Exception;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\RoleService;
 use Pastell\Updater\Version;
 use PastellLogger;
 use RoleDroit;
@@ -16,6 +17,7 @@ final class AddConnectorPermission implements Version
     public function __construct(
         private readonly RoleSQL $roleSQL,
         private readonly RoleDroit $roleDroit,
+        private readonly RoleService $roleService,
         private readonly ?PastellLogger $logger = null,
     ) {
     }
@@ -32,7 +34,7 @@ final class AddConnectorPermission implements Version
         $roleDroitConnecteur = [];
         $roleDroitEntite = [];
         foreach ($this->roleSQL->getAllRole() as $role) {
-            $droit = $this->roleSQL->getDroit($this->roleDroit->getAllDroit(), $role['role']);
+            $droit = $this->roleService->getDroitMap($this->roleDroit->getAllDroit(), $role['role']);
             $this->roleDroitFilter($role['role'], $droit, DroitService::DROIT_CONNECTEUR, $roleDroitConnecteur);
             $this->roleDroitFilter($role['role'], $droit, DroitService::DROIT_ENTITE, $roleDroitEntite);
         }

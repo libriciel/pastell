@@ -2,6 +2,7 @@
 
 use Pastell\Service\Entite\EntityHierarchyService;
 use Pastell\Service\TokenGenerator;
+use Pastell\Service\Utilisateur\RoleService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
@@ -46,7 +47,7 @@ class AdminControler extends Controler
 
     public function fixDroit()
     {
-        $this->getRoleSQL()->edit('admin', 'Administrateur');
+        $this->getInstance(RoleService::class)->saveRole('admin', 'Administrateur');
 
         foreach ($this->getRoleDroit()->getAllDroit() as $droit) {
             if (!str_contains($droit, '-destinataire:') && !str_contains($droit, '-reponse:')) {

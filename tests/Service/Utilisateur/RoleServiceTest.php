@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Pastell\Tests\Service\Utilisateur;
 
+use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Notification\NotificationService;
 use Pastell\Service\Utilisateur\RoleService;
 use PastellTestCase;
@@ -39,5 +41,51 @@ class RoleServiceTest extends PastellTestCase
         $this->roleService->updateDroit('admin', ['entite:lecture']);
 
         static::assertCount(1, $this->notificationService->getSubscriptionsByUser(1));
+    }
+
+    public function testSaveRoleInsert(): void
+    {
+        $this->roleService->saveRole('role1', 'Rôle 1');
+
+        $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+        static::assertSame('Rôle 1', $roleSQL->getInfo('role1')['libelle']);
+        static::assertSame([], $roleSQL->getDroitList('role1'));
+    }
+
+    public function testSaveRoleUpdate(): void
+    {
+        $this->roleService->saveRole('admin', 'Super administrateur');
+
+        $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+        static::assertSame('Super administrateur', $roleSQL->getInfo('admin')['libelle']);
+        static::assertNotEmpty($roleSQL->getDroitList('admin'));
+    }
+
+    public function testCreateRoleAddsDefaultDroits(): void
+    {
+        $this->roleService->createRole('role1', 'Rôle 1');
+
+        static::assertSame(
+            [
+                DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
+                DroitService::getDroitFor(DroitService::DROIT_JOURNAL, DroitType::LECTURE),
+            ],
+            $this->getObjectInstancier()->getInstance(RoleSQL::class)->getDroitList('role1')
+        );
+    }
+
+    public function testGetDroitMap(): void
+    {
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)
+            ->updateDroit('autre', ['entite:lecture', 'flux-inexistant:lecture']);
+
+        static::assertSame(
+            [
+                'entite:lecture' => true,
+                'entite:edition' => false,
+                'flux-inexistant:lecture' => true,
+            ],
+            $this->roleService->getDroitMap(['entite:lecture', 'entite:edition'], 'autre')
+        );
     }
 }

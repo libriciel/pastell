@@ -5,43 +5,56 @@ use Pastell\Service\Droit\DroitService;
 
 class RoleSQLTest extends PastellTestCase
 {
-    /** @var  RoleSQL */
-    private $roleSQL;
-
-    private $role_droit = [];
+    private RoleSQL $roleSQL;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->roleSQL = new RoleSQL($this->getSQLQuery());
-        $this->createRole('role1', 'Rôle 1', [
-            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION),
+    }
+
+    public function testInsert(): void
+    {
+        $this->roleSQL->insert('role1', 'Rôle 1');
+
+        static::assertTrue($this->roleSQL->exists('role1'));
+        static::assertSame('Rôle 1', $this->roleSQL->getInfo('role1')['libelle']);
+    }
+
+    public function testExistsUnknownRole(): void
+    {
+        static::assertFalse($this->roleSQL->exists('role-inexistant'));
+    }
+
+    public function testUpdateLibelle(): void
+    {
+        $this->roleSQL->updateLibelle('autre', 'Autre libellé');
+
+        static::assertSame('Autre libellé', $this->roleSQL->getInfo('autre')['libelle']);
+    }
+
+    public function testGetDroitList(): void
+    {
+        $droit_list = [
             DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
-            DroitService::getDroitFor('test', DroitType::LECTURE),
-            DroitService::getDroitFor('test', DroitType::EDITION),
-        ]);
-        $this->createRole('role2', 'Rôle 2', [
             DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION),
-            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
-        ]);
+        ];
+        $this->roleSQL->updateDroit('autre', $droit_list);
+
+        static::assertSame(
+            [
+                DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION),
+                DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
+            ],
+            $this->roleSQL->getDroitList('autre')
+        );
     }
 
-    private function createRole($id, $libelle, array $droit_list)
+    public function testGetAllRoleDroit(): void
     {
-        $this->roleSQL->edit($id, $libelle);
-        $this->role_droit[$id] = $droit_list;
-        $this->roleSQL->updateDroit($id, $droit_list);
-    }
+        $droit = DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE);
+        $this->roleSQL->updateDroit('autre', [$droit]);
 
-    public function testGetRoleWithDroitRoleInferieur()
-    {
-        $this->assertContains('role2', $this->roleSQL->getAuthorizedRoleToDelegate($this->role_droit['role2']));
-        $this->assertNotContains('role1', $this->roleSQL->getAuthorizedRoleToDelegate($this->role_droit['role2']));
-    }
-
-    public function testGetRoleWithDroitRoleSuperieur()
-    {
-        $this->assertContains('role2', $this->roleSQL->getAuthorizedRoleToDelegate($this->role_droit['role1']));
-        $this->assertContains('role1', $this->roleSQL->getAuthorizedRoleToDelegate($this->role_droit['role1']));
+        static::assertContains(['role' => 'autre', 'droit' => $droit], $this->roleSQL->getAllRoleDroit());
     }
 }

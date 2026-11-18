@@ -322,7 +322,7 @@ class UtilisateurAPIControllerTest extends PastellTestCase
         $user = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create('tester', 'tester@example.org', 'tester', 'tester');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->edit('utilisateurLectureEdition', 'Droit utilisateur');
+            ->insert('utilisateurLectureEdition', 'Droit utilisateur');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
             ->addDroit('utilisateurLectureEdition', DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION));
         $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)
@@ -352,7 +352,7 @@ class UtilisateurAPIControllerTest extends PastellTestCase
         $user = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create('tester', 'tester@example.invalid', 'tester', 'tester');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->edit('utilisateurEdition', 'User');
+            ->insert('utilisateurEdition', 'User');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
             ->addDroit(
                 'utilisateurEdition',

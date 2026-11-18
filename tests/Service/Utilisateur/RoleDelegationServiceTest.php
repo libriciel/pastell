@@ -8,6 +8,7 @@ use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Utilisateur\RoleDelegationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use PastellTestCase;
+use RoleSQL;
 
 class RoleDelegationServiceTest extends PastellTestCase
 {
@@ -40,6 +41,37 @@ class RoleDelegationServiceTest extends PastellTestCase
 
         static::assertFalse(
             $this->service->canDelegateRole(2, 'admin', RootEntity::ID_E)
+        );
+    }
+
+    public function testDelegableRolesIncludesSubset(): void
+    {
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->updateDroit('autre', ['entite:lecture']);
+
+        $role_list = $this->service->getDelegableRoles(['entite:lecture', 'entite:edition']);
+
+        static::assertContains(['role' => 'autre', 'libelle' => 'autre rôle'], $role_list);
+        static::assertNotContains('admin', array_column($role_list, 'role'));
+    }
+
+    public function testDelegableRolesExcludesSuperset(): void
+    {
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)
+            ->updateDroit('autre', ['entite:lecture', 'entite:edition']);
+
+        $role_list = $this->service->getDelegableRoles(['entite:lecture']);
+
+        static::assertNotContains('autre', array_column($role_list, 'role'));
+    }
+
+    public function testDelegableRolesOrderedByLibelle(): void
+    {
+        static::assertSame(
+            [
+                ['role' => 'autre', 'libelle' => 'autre rôle'],
+                ['role' => 'utilisateur', 'libelle' => 'utilisateur sans rôle'],
+            ],
+            $this->service->getDelegableRoles([])
         );
     }
 }

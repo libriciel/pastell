@@ -88,10 +88,7 @@ class RoleControlerTest extends ControlerTestCase
             /** Nothing to do */
         }
 
-        static::assertEquals(
-            [$validDroit => true],
-            $this->roleControler->getRoleSQL()->getDroit([$validDroit], 'test')
-        );
+        static::assertSame([$validDroit], $this->roleControler->getRoleSQL()->getDroitList('test'));
     }
 
     public function testDoEditionActionNewRole(): void
@@ -110,13 +107,27 @@ class RoleControlerTest extends ControlerTestCase
             /** Nothing to do */
         }
 
-        $this->assertEquals(
+        static::assertSame(
             [
-                DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE) => 1,
-                DroitService::getDroitFor(DroitService::DROIT_JOURNAL, DroitType::LECTURE) => 1,
+                DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
+                DroitService::getDroitFor(DroitService::DROIT_JOURNAL, DroitType::LECTURE),
             ],
-            $this->roleControler->getRoleSQL()->getDroit([], 'test')
+            $this->roleControler->getRoleSQL()->getDroitList('test')
         );
+    }
+
+    public function testDoEditionActionUpdatesLibelle(): void
+    {
+        $this->setPostInfo(['role' => 'autre', 'libelle' => 'Autre libellé']);
+
+        try {
+            $this->roleControler->doEditionAction();
+        } catch (LastMessageException) {
+            /** Nothing to do */
+        }
+
+        static::assertSame('Autre libellé', $this->roleControler->getRoleSQL()->getInfo('autre')['libelle']);
+        static::assertSame([], $this->roleControler->getRoleSQL()->getDroitList('autre'));
     }
 
     public function testEditionActionNoInput(): void

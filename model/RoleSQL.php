@@ -4,17 +4,47 @@ class RoleSQL extends SQL
 {
     public function getInfo($role)
     {
-        $sql = "SELECT * FROM role WHERE role=?";
+        $sql = <<<SQL
+SELECT * FROM role WHERE role = ?
+SQL;
         return $this->queryOne($sql, $role);
     }
 
     public function getAllRole()
     {
-        $sql = "SELECT * FROM role ORDER by libelle";
-        $result = $this->query($sql);
-        return $result;
+        $sql = <<<SQL
+SELECT * FROM role ORDER BY libelle
+SQL;
+        return $this->query($sql);
     }
 
+    public function exists(string $role): bool
+    {
+        $sql = <<<SQL
+SELECT count(*) FROM role WHERE role = ?
+SQL;
+        return $this->queryOne($sql, $role) > 0;
+    }
+
+    public function insert(string $role, string $libelle): void
+    {
+        $sql = <<<SQL
+INSERT INTO role (role, libelle) VALUES (?, ?)
+SQL;
+        $this->query($sql, $role, $libelle);
+    }
+
+    public function updateLibelle(string $role, string $libelle): void
+    {
+        $sql = <<<SQL
+UPDATE role SET libelle = ? WHERE role = ?
+SQL;
+        $this->query($sql, $libelle, $role);
+    }
+
+    /**
+     * @deprecated 4.1.26 Use RoleService::saveRole() instead
+     */
     public function edit($role, $libelle)
     {
         $sql = "SELECT count(*) FROM role WHERE role=?";
@@ -27,6 +57,9 @@ class RoleSQL extends SQL
         }
     }
 
+    /**
+     * @deprecated 4.1.26 Use RoleService::getDroitMap() instead
+     */
     public function getDroit(array $allDroit, $role)
     {
         $result = array_fill_keys($allDroit, false);
@@ -37,9 +70,27 @@ class RoleSQL extends SQL
         return $result;
     }
 
+    public function getDroitList(string $role): array
+    {
+        $sql = <<<SQL
+SELECT droit FROM role_droit WHERE role = ? ORDER BY droit
+SQL;
+        return $this->queryOneCol($sql, $role);
+    }
+
+    public function getAllRoleDroit(): array
+    {
+        $sql = <<<SQL
+SELECT role, droit FROM role_droit
+SQL;
+        return $this->query($sql);
+    }
+
     public function updateDroit($role, array $lesDroits)
     {
-        $sql = "DELETE FROM role_droit WHERE role=?";
+        $sql = <<<SQL
+DELETE FROM role_droit WHERE role = ?
+SQL;
         $this->query($sql, $role);
         foreach ($lesDroits as $droit) {
             $this->insertDroit($role, $droit);
@@ -48,13 +99,17 @@ class RoleSQL extends SQL
 
     private function insertDroit($role, $droit)
     {
-        $sql = "INSERT INTO role_droit(role,droit) VALUES (?,?)";
+        $sql = <<<SQL
+INSERT INTO role_droit (role, droit) VALUES (?, ?)
+SQL;
         $this->query($sql, $role, $droit);
     }
 
     public function addDroit($role, $droit)
     {
-        $sql = "SELECT count(*) FROM role_droit WHERE role=? AND droit=?";
+        $sql = <<<SQL
+SELECT count(*) FROM role_droit WHERE role = ? AND droit = ?
+SQL;
         if ($this->queryOne($sql, $role, $droit)) {
             return;
         }
@@ -63,12 +118,19 @@ class RoleSQL extends SQL
 
     public function delete($role)
     {
-        $sql = "DELETE FROM role_droit WHERE role=?";
+        $sql = <<<SQL
+DELETE FROM role_droit WHERE role = ?
+SQL;
         $this->query($sql, $role);
-        $sql = "DELETE FROM role WHERE role=?";
+        $sql = <<<SQL
+DELETE FROM role WHERE role = ?
+SQL;
         $this->query($sql, $role);
     }
 
+    /**
+     * @deprecated 4.1.26 Use RoleDelegationService::getDelegableRoles() instead
+     */
     public function getAuthorizedRoleToDelegate(array $droit_list)
     {
         $sql = "SELECT role FROM role";
@@ -82,6 +144,9 @@ class RoleSQL extends SQL
         return array_values(array_filter(array_flip($role_list)));
     }
 
+    /**
+     * @deprecated 4.1.26 Use RoleDelegationService::getDelegableRoles() instead
+     */
     public function getRoleLibelle(array $role_id)
     {
         $result = [];
@@ -95,7 +160,9 @@ class RoleSQL extends SQL
 
     public function getRoleByDroit($droit)
     {
-        $sql = "SELECT role FROM role_droit WHERE droit=? ORDER BY role";
+        $sql = <<<SQL
+SELECT role FROM role_droit WHERE droit = ? ORDER BY role
+SQL;
         return $this->queryOneCol($sql, $droit);
     }
 }

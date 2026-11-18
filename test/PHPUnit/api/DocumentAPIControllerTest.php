@@ -370,7 +370,7 @@ class DocumentAPIControllerTest extends PastellTestCase
         $this->expectException(ForbiddenException::class);
         $this->expectExceptionMessage('Acces interdit id_e=1, droit=test:edition,id_u=3');
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
-        $roleSql->edit('readonly', 'readonly');
+        $roleSql->insert('readonly', 'readonly');
         $roleSql->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $roleSql->addDroit('readonly', DroitService::getDroitFor('test', DroitType::LECTURE));
         $userId = $this->getObjectInstancier()->getInstance(UserCreationService::class)
@@ -490,7 +490,7 @@ class DocumentAPIControllerTest extends PastellTestCase
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
 
         //userAvecDroit mailsec-bidir:lecture
-        $roleSql->edit('lecteur_mail', 'lecteur_mail');
+        $roleSql->insert('lecteur_mail', 'lecteur_mail');
         $roleSql->addDroit('lecteur_mail', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $roleSql->addDroit('lecteur_mail', DroitService::getDroitFor('mailsec-bidir', DroitType::LECTURE));
         $userAvecDroit = $userCreationService->create('lecteur_mail', 'lecteur_mail@example.org', 'user', 'user');
@@ -501,7 +501,7 @@ class DocumentAPIControllerTest extends PastellTestCase
         static::assertSame($id_d_reponse, $infoReponse['info']['id_d']);
 
         //userSansDroit mailsec-bidir:lecture (avec mailsec-bidir-reponse:lecture)
-        $roleSql->edit('lecteur_reponse', 'lecteur_reponse');
+        $roleSql->insert('lecteur_reponse', 'lecteur_reponse');
         $roleSql->addDroit('lecteur_reponse', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $roleSql->addDroit('lecteur_reponse', DroitService::getDroitFor('mailsec-bidir-reponse', DroitType::LECTURE));
         $userSansDroit = $userCreationService->create('lecteur_reponse', 'lecteur_reponse@example.org', 'user', 'user');
@@ -692,7 +692,7 @@ class DocumentAPIControllerTest extends PastellTestCase
     public function testGetDocumentWithOnlyReadPermission(): void
     {
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
-        $roleSql->edit('readonly', 'readonly');
+        $roleSql->insert('readonly', 'readonly');
         $roleSql->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $roleSql->addDroit('readonly', DroitService::getDroitFor('test', DroitType::LECTURE));
         $userId = $this->getObjectInstancier()->getInstance(UserCreationService::class)
