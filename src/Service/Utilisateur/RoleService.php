@@ -16,6 +16,7 @@ final class RoleService
         private readonly RoleSQL $roleSQL,
         private readonly RoleDroit $roleDroit,
         private readonly NotificationService $notificationService,
+        private readonly DroitService $droitService,
     ) {
     }
 
@@ -47,6 +48,17 @@ final class RoleService
         $result = array_fill_keys($all_droit, false);
         foreach ($this->roleSQL->getDroitList($role) as $droit) {
             $result[$droit] = true;
+        }
+        return $result;
+    }
+
+    public function getUnrestrictedDroitList(string $role): array
+    {
+        $result = [];
+        foreach ($this->roleSQL->getDroitList($role) as $droit) {
+            if (!$this->droitService->isRestrictedDroit($droit)) {
+                $result[] = $droit;
+            }
         }
         return $result;
     }

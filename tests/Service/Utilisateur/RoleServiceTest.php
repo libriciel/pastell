@@ -92,6 +92,16 @@ class RoleServiceTest extends PastellTestCase
         );
     }
 
+    public function testGetUnrestrictedDroitList(): void
+    {
+        $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+        $roleSQL->insertDroit('autre', 'entite:lecture');
+        $roleSQL->insertDroit('autre', 'test:lecture');
+        $this->setListPack(['suppl_test' => false]);
+
+        static::assertSame(['entite:lecture'], $this->roleService->getUnrestrictedDroitList('autre'));
+    }
+
     public function testAddDroitTwice(): void
     {
         $this->roleService->addDroit('autre', 'entite:lecture');
