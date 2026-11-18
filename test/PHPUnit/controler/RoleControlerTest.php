@@ -88,7 +88,7 @@ class RoleControlerTest extends ControlerTestCase
             /** Nothing to do */
         }
 
-        static::assertSame([$validDroit], $this->roleControler->getRoleSQL()->getDroitList('test'));
+        self::assertSame([$validDroit], $this->roleControler->getRoleSQL()->getDroitList('test'));
     }
 
     public function testDoEditionActionNewRole(): void
@@ -107,7 +107,7 @@ class RoleControlerTest extends ControlerTestCase
             /** Nothing to do */
         }
 
-        static::assertSame(
+        self::assertSame(
             [
                 DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
                 DroitService::getDroitFor(DroitService::DROIT_JOURNAL, DroitType::LECTURE),
@@ -116,7 +116,7 @@ class RoleControlerTest extends ControlerTestCase
         );
     }
 
-    public function testDoEditionActionUpdatesLibelle(): void
+    public function testEditionUpdatesLibelle(): void
     {
         $this->setPostInfo(['role' => 'autre', 'libelle' => 'Autre libellé']);
 
@@ -126,8 +126,8 @@ class RoleControlerTest extends ControlerTestCase
             /** Nothing to do */
         }
 
-        static::assertSame('Autre libellé', $this->roleControler->getRoleSQL()->getInfo('autre')['libelle']);
-        static::assertSame([], $this->roleControler->getRoleSQL()->getDroitList('autre'));
+        self::assertSame('Autre libellé', $this->roleControler->getRoleSQL()->getInfo('autre')['libelle']);
+        self::assertSame([], $this->roleControler->getRoleSQL()->getDroitList('autre'));
     }
 
     public function testEditionActionNoInput(): void

@@ -50,8 +50,8 @@ class RoleServiceTest extends PastellTestCase
         $this->roleService->saveRole('role1', 'Rôle 1');
 
         $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
-        static::assertSame('Rôle 1', $roleSQL->getInfo('role1')['libelle']);
-        static::assertSame([], $roleSQL->getDroitList('role1'));
+        self::assertSame('Rôle 1', $roleSQL->getInfo('role1')['libelle']);
+        self::assertSame([], $roleSQL->getDroitList('role1'));
     }
 
     public function testSaveRoleUpdate(): void
@@ -59,15 +59,15 @@ class RoleServiceTest extends PastellTestCase
         $this->roleService->saveRole('admin', 'Super administrateur');
 
         $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
-        static::assertSame('Super administrateur', $roleSQL->getInfo('admin')['libelle']);
-        static::assertNotEmpty($roleSQL->getDroitList('admin'));
+        self::assertSame('Super administrateur', $roleSQL->getInfo('admin')['libelle']);
+        self::assertNotEmpty($roleSQL->getDroitList('admin'));
     }
 
-    public function testCreateRoleAddsDefaultDroits(): void
+    public function testCreateRoleDefaultDroits(): void
     {
         $this->roleService->createRole('role1', 'Rôle 1');
 
-        static::assertSame(
+        self::assertSame(
             [
                 DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
                 DroitService::getDroitFor(DroitService::DROIT_JOURNAL, DroitType::LECTURE),
@@ -82,7 +82,7 @@ class RoleServiceTest extends PastellTestCase
         $roleSQL->insertDroit('autre', 'entite:lecture');
         $roleSQL->insertDroit('autre', 'flux-inexistant:lecture');
 
-        static::assertSame(
+        self::assertSame(
             [
                 'entite:lecture' => true,
                 'entite:edition' => false,
@@ -99,7 +99,7 @@ class RoleServiceTest extends PastellTestCase
         $roleSQL->insertDroit('autre', 'test:lecture');
         $this->setListPack(['suppl_test' => false]);
 
-        static::assertSame(['entite:lecture'], $this->roleService->getUnrestrictedDroitList('autre'));
+        self::assertSame(['entite:lecture'], $this->roleService->getUnrestrictedDroitList('autre'));
     }
 
     public function testAddDroitTwice(): void
@@ -107,7 +107,7 @@ class RoleServiceTest extends PastellTestCase
         $this->roleService->addDroit('autre', 'entite:lecture');
         $this->roleService->addDroit('autre', 'entite:lecture');
 
-        static::assertSame(
+        self::assertSame(
             ['entite:lecture'],
             $this->getObjectInstancier()->getInstance(RoleSQL::class)->getDroitList('autre')
         );

@@ -50,8 +50,8 @@ class RoleDelegationServiceTest extends PastellTestCase
 
         $role_list = $this->service->getDelegableRoles(['entite:lecture', 'entite:edition']);
 
-        static::assertContains(['role' => 'autre', 'libelle' => 'autre rôle'], $role_list);
-        static::assertNotContains('admin', array_column($role_list, 'role'));
+        self::assertContains(['role' => 'autre', 'libelle' => 'autre rôle'], $role_list);
+        self::assertNotContains('admin', array_column($role_list, 'role'));
     }
 
     public function testDelegableRolesExcludesSuperset(): void
@@ -62,12 +62,12 @@ class RoleDelegationServiceTest extends PastellTestCase
 
         $role_list = $this->service->getDelegableRoles(['entite:lecture']);
 
-        static::assertNotContains('autre', array_column($role_list, 'role'));
+        self::assertNotContains('autre', array_column($role_list, 'role'));
     }
 
-    public function testDelegableRolesOrderedByLibelle(): void
+    public function testDelegableRolesOrder(): void
     {
-        static::assertSame(
+        self::assertSame(
             [
                 ['role' => 'autre', 'libelle' => 'autre rôle'],
                 ['role' => 'utilisateur', 'libelle' => 'utilisateur sans rôle'],

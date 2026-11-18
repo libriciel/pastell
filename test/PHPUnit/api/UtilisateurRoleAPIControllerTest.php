@@ -20,8 +20,8 @@ class UtilisateurRoleAPIControllerTest extends PastellTestCase
         $list = $this->getInternalAPI()->get('/utilisateur/2/role?id_e=1');
 
         $role_droit_list = array_column($list, 'droits', 'role');
-        static::assertSame(['entite:lecture'], $role_droit_list['autre']);
-        static::assertContains('actes-generique:lecture', $role_droit_list['admin']);
+        self::assertSame(['entite:lecture'], $role_droit_list['autre']);
+        self::assertContains('actes-generique:lecture', $role_droit_list['admin']);
     }
 
     public function testAdd(): void

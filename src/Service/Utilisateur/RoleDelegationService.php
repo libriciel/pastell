@@ -32,9 +32,10 @@ final class RoleDelegationService
 
     public function getDelegableRoles(array $droit_list): array
     {
+        $droit_set = array_flip($droit_list);
         $forbidden_role_list = [];
         foreach ($this->roleSQL->getAllRoleDroit() as $role_droit) {
-            if (!\in_array($role_droit['droit'], $droit_list, true)) {
+            if (!isset($droit_set[$role_droit['droit']])) {
                 $forbidden_role_list[$role_droit['role']] = true;
             }
         }

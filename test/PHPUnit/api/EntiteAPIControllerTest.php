@@ -1,10 +1,9 @@
 <?php
 
 use Pastell\Service\Entite\EntityType;
+use Pastell\Service\Utilisateur\RoleService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
-use Pastell\Service\Droit\DroitType;
-use Pastell\Service\Droit\DroitService;
 
 class EntiteAPIControllerTest extends PastellTestCase
 {
@@ -200,14 +199,12 @@ class EntiteAPIControllerTest extends PastellTestCase
     {
         $user = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create('tester', 'tester@example.org', 'tester', 'tester');
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->insert(DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE), 'entiteLectureEdition');
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->insert(DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION), 'entiteLectureEdition');
+        $this->getObjectInstancier()->getInstance(RoleService::class)
+            ->createRole('entiteLecture', 'Lecture entité');
         $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)
-            ->addRole(3, 'entiteLectureEdition', 1);
+            ->addRole($user, 'entiteLecture', 1);
         $this->expectException(ForbiddenException::class);
-        $this->expectExceptionMessage('Acces interdit id_e=1, droit=entite:edition,id_u=3');
+        $this->expectExceptionMessage("Acces interdit id_e=1, droit=entite:edition,id_u=$user");
         $this->getInternalAPIAsUser($user)->post('/entite/1/deactivate');
     }
 }
