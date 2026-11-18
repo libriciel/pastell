@@ -2,6 +2,10 @@
 
 ## [4.1.26] - 2026-12-07
 
+### Corrections
+
+- Envoi d'un acte à S²low : les caractères typographiques de l'objet ne sont plus remplacés par « ? » #2630
+
 ### Dépréciations
 
 - Classe `DocumentEmail` dépréciée au profit de `DocumentEmailSQL` et des services `DocumentEmailService` et
