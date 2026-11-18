@@ -5,6 +5,8 @@
 ### Corrections
 
 - Envoi d'un acte à S²low : les caractères typographiques de l'objet ne sont plus remplacés par « ? » #2630
+- L'API de consultation des rôles d'un utilisateur renvoyait dans le champ `droits` l'ensemble des droits de
+  l'utilisateur au lieu des seuls droits du rôle #2635
 
 ### Dépréciations
 
@@ -38,6 +40,8 @@
   dépréciées au profit des services `UserPasswordService`, `UserCreationService`, `UserCertificateService` et
   `UserInfoService` #2632
 - Méthode `validMail()` de `UtilisateurSQL` dépréciée car inutilisée #2632
+- Méthodes `edit()`, `getDroit()`, `updateDroit()`, `addDroit()`, `getAuthorizedRoleToDelegate()` et
+  `getRoleLibelle()` de `RoleSQL` dépréciées au profit des services `RoleService` et `RoleDelegationService` #2635
 
 ### Sécurité
 

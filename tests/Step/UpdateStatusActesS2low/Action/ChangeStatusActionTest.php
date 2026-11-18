@@ -12,8 +12,8 @@ use PastellTestCase;
 use Psr\Http\Client\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use RoleSQL;
 use RuntimeException;
+use Pastell\Service\Utilisateur\RoleService;
 
 final class ChangeStatusActionTest extends PastellTestCase
 {
@@ -65,10 +65,9 @@ final class ChangeStatusActionTest extends PastellTestCase
     {
         $this->getConnector();
 
-        /** @var RoleSQL $roleSQL */
-        $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
-        $roleSQL->addDroit('admin', DroitService::getDroitFor(self::FLUX_RECUP_ACTES_S2LOW, DroitType::LECTURE));
-        $roleSQL->addDroit('admin', DroitService::getDroitFor(self::FLUX_RECUP_ACTES_S2LOW, DroitType::EDITION));
+        $roleService = $this->getObjectInstancier()->getInstance(RoleService::class);
+        $roleService->addDroit('admin', DroitService::getDroitFor(self::FLUX_RECUP_ACTES_S2LOW, DroitType::LECTURE));
+        $roleService->addDroit('admin', DroitService::getDroitFor(self::FLUX_RECUP_ACTES_S2LOW, DroitType::EDITION));
 
         $documentId = $this->createDocument(self::FLUX_RECUP_ACTES_S2LOW)['id_d'];
         $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($documentId);

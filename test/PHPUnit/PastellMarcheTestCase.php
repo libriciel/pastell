@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\RoleService;
 
 class PastellMarcheTestCase extends PastellTestCase
 {
@@ -9,8 +10,7 @@ class PastellMarcheTestCase extends PastellTestCase
     {
         parent::reinitDatabase();
 
-        /** @var RoleSQL $roleSQL */
-        $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+        $roleService = $this->getObjectInstancier()->getInstance(RoleService::class);
 
         $flux_id_list = [
             'pes-marche',
@@ -20,8 +20,8 @@ class PastellMarcheTestCase extends PastellTestCase
         ];
 
         foreach ($flux_id_list as $id_flux) {
-            $roleSQL->addDroit('admin', DroitService::getDroitFor($id_flux, DroitType::LECTURE));
-            $roleSQL->addDroit('admin', DroitService::getDroitFor($id_flux, DroitType::EDITION));
+            $roleService->addDroit('admin', DroitService::getDroitFor($id_flux, DroitType::LECTURE));
+            $roleService->addDroit('admin', DroitService::getDroitFor($id_flux, DroitType::EDITION));
         }
     }
 }

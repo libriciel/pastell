@@ -2,6 +2,7 @@
 
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\RoleService;
 
 class OrientationTypeDossierPersonaliseTest extends PastellTestCase
 {
@@ -62,10 +63,10 @@ class OrientationTypeDossierPersonaliseTest extends PastellTestCase
     {
         $this->getObjectInstancier()->getInstance(ExtensionLoader::class)->loadExtension([__DIR__ . "/fixtures/"]);
 
-        $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+        $roleService = $this->getObjectInstancier()->getInstance(RoleService::class);
 
-        $roleSQL->addDroit('admin', DroitService::getDroitFor('test-simple', DroitType::LECTURE));
-        $roleSQL->addDroit('admin', DroitService::getDroitFor('test-simple', DroitType::EDITION));
+        $roleService->addDroit('admin', DroitService::getDroitFor('test-simple', DroitType::LECTURE));
+        $roleService->addDroit('admin', DroitService::getDroitFor('test-simple', DroitType::EDITION));
 
         $id_d = $this->createDocument("test-simple")['id_d'];
 
@@ -79,10 +80,10 @@ class OrientationTypeDossierPersonaliseTest extends PastellTestCase
     {
         $this->getObjectInstancier()->getInstance(ExtensionLoader::class)->loadExtension([__DIR__ . "/fixtures/"]);
 
-        $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+        $roleService = $this->getObjectInstancier()->getInstance(RoleService::class);
 
-        $roleSQL->addDroit('admin', DroitService::getDroitFor('test-failed', DroitType::LECTURE));
-        $roleSQL->addDroit('admin', DroitService::getDroitFor('test-failed', DroitType::EDITION));
+        $roleService->addDroit('admin', DroitService::getDroitFor('test-failed', DroitType::LECTURE));
+        $roleService->addDroit('admin', DroitService::getDroitFor('test-failed', DroitType::EDITION));
 
         $id_d = $this->createDocument("test-failed")['id_d'];
 

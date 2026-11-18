@@ -4,6 +4,7 @@ use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Entite\EntityInfoService;
 use Pastell\Service\Utilisateur\RoleDelegationService;
+use Pastell\Service\Utilisateur\RoleService;
 use Pastell\Service\Utilisateur\UserInfoService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
@@ -17,6 +18,7 @@ class UtilisateurRoleAPIController extends BaseAPIController
         private readonly EntityInfoService $entityInfoService,
         private readonly UtilisateurRoleService $utilisateurRoleService,
         private readonly RoleDelegationService $roleDelegationService,
+        private readonly RoleService $roleService,
         private readonly UserInfoService $userInfoService,
     ) {
     }
@@ -60,7 +62,6 @@ class UtilisateurRoleAPIController extends BaseAPIController
         $this->verifExists($id_u);
 
         $role_list = $this->utilisateurRoleService->getRole((int) $id_u);
-        $all_droit_utilisateur = $this->getDroitService()->getUnrestrictedDroitsForEntite($id_u, $id_e);
 
         // Construction du tableau de retour
         $result = [];
@@ -69,7 +70,7 @@ class UtilisateurRoleAPIController extends BaseAPIController
                 'id_u' => (string)$role_info['id_u'],
                 'role' => $role_info['role'],
                 'id_e' => (string)$role_info['id_e'],
-                'droits' => array_keys($this->roleSQL->getDroit($all_droit_utilisateur, $role_info['role']))
+                'droits' => $this->roleService->getUnrestrictedDroitList($role_info['role']),
             ];
         }
 

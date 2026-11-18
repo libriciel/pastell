@@ -7,6 +7,7 @@ use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\RoleService;
 
 class UtilisateurAPIControllerTest extends PastellTestCase
 {
@@ -322,8 +323,8 @@ class UtilisateurAPIControllerTest extends PastellTestCase
         $user = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create('tester', 'tester@example.org', 'tester', 'tester');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->edit('utilisateurLectureEdition', 'Droit utilisateur');
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)
+            ->insert('utilisateurLectureEdition', 'Droit utilisateur');
+        $this->getObjectInstancier()->getInstance(RoleService::class)
             ->addDroit('utilisateurLectureEdition', DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION));
         $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)
             ->addRole(3, 'utilisateurLectureEdition', 1);
@@ -352,8 +353,8 @@ class UtilisateurAPIControllerTest extends PastellTestCase
         $user = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create('tester', 'tester@example.invalid', 'tester', 'tester');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->edit('utilisateurEdition', 'User');
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)
+            ->insert('utilisateurEdition', 'User');
+        $this->getObjectInstancier()->getInstance(RoleService::class)
             ->addDroit(
                 'utilisateurEdition',
                 DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION)

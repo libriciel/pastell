@@ -49,7 +49,10 @@ class RoleControler extends PastellControler
         $roleDroit = $this->getInstance(RoleDroit::class);
 
         $all_droit = $roleDroit->getAllDroit();
-        $all_droit_sql = $this->getRoleSQL()->getDroit($all_droit, $this->getViewParameterByKey('role'));
+        $all_droit_sql = $this->getInstance(RoleService::class)->getDroitMap(
+            $all_droit,
+            (string)$this->getViewParameterByKey('role')
+        );
         $this->setViewParameter('all_droit_utilisateur', $this->getObjectInstancier()->getInstance(DroitService::class)->clearRestrictedDroit($all_droit_sql));
 
         $this->setViewParameter('page_title', "Gestion du rôle {$this->getViewParameterByKey('role')} et des droits associés");
@@ -98,10 +101,11 @@ class RoleControler extends PastellControler
             $this->redirect("/Role/edition");
         }
 
-        $this->getRoleSQL()->edit($role, $libelle);
+        $roleService = $this->getInstance(RoleService::class);
         if ($this->getPostInfo()->get('nouveau')) {
-            $this->getRoleSQL()->addDroit($role, DroitService::getDroitFor(DroitService::DROIT_JOURNAL, DroitType::LECTURE));
-            $this->getRoleSQL()->addDroit($role, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+            $roleService->createRole((string)$role, (string)$libelle);
+        } else {
+            $roleService->saveRole((string)$role, (string)$libelle);
         }
         $this->redirect("/Role/detail?role=$role");
     }
