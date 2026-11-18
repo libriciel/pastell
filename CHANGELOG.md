@@ -4,8 +4,7 @@
 
 ### Corrections
 
-- Translittération des caractères typographiques (apostrophe courbe, tirets…) de l'objet des actes envoyés à S²low
-  au lieu de leur remplacement par « ? » #2630
+- Envoi d'un acte à S²low : les caractères typographiques de l'objet ne sont plus remplacés par « ? » #2630
 
 ### Dépréciations
 
