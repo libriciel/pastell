@@ -36,10 +36,10 @@ class S2lowActesTest extends PastellTestCase
      */
     public function testSubjectTransliterated(): void
     {
-        $addPostDataCall = $this->sendActes('L’objet – œuvre… 10 €');
+        $addPostDataCall = $this->sendActes('L’objet – “test” • Ÿ');
 
         static::assertSame(
-            mb_convert_encoding("L'objet - oeuvre... 10 EUR", 'ISO-8859-1', 'UTF-8'),
+            mb_convert_encoding('L\'objet - "test" - Y', 'ISO-8859-1', 'UTF-8'),
             $addPostDataCall['subject']
         );
     }

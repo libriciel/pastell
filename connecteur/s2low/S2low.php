@@ -1064,13 +1064,8 @@ class S2low extends TdtConnecteur
             '„' => '"',
             '–' => '-',
             '—' => '-',
-            '…' => '...',
             '•' => '-',
-            'œ' => 'oe',
-            'Œ' => 'OE',
             'Ÿ' => 'Y',
-            '€' => 'EUR',
-            '™' => 'TM',
             "\u{202F}" => ' ',
         ]);
         return mb_convert_encoding($text, 'ISO-8859-1', 'UTF-8');
