@@ -14,7 +14,6 @@ class PESMarcheOrientation extends ActionExecutor
 
         $message = "Changement d'état : {$last_action} -> {$next_action}";
         $this->changeAction($next_action, $message);
-
         $this->notify($next_action, $this->type, $message);
         return true;
     }

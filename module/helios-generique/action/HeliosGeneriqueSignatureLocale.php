@@ -53,10 +53,7 @@ class HeliosGeneriqueSignatureLocale extends ChoiceActionExecutor
         );
         $this->getDonneesFormulaire()->setData('signature_link', 'La signature a été recupérée');
 
-        $this->getActionChange()->addAction(
-            $this->id_d,
-            $this->id_e,
-            $this->id_u,
+        $this->changeAction(
             'recu-iparapheur',
             "La signature a été récupérée depuis l'applet de signature"
         );

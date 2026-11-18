@@ -137,7 +137,9 @@ class IParapheurRejetTest extends PastellTestCase
         $this->triggerActionOnDocument($id_d, 'verif-iparapheur');
 
         $this->assertLastDocumentAction('rejet-iparapheur', $id_d);
-        $this->assertLastMessage('23/02/2024 16:22:30 : [RejetCachet] test rejet cachet');
+        $this->assertLastMessage(
+            'Le document a été rejeté dans le parapheur : 23/02/2024 16:22:30 : [RejetCachet] test rejet cachet'
+        );
 
         $donnesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
         static::assertSame(

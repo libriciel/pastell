@@ -14,7 +14,7 @@ class CPPModifStatusTest extends ExtensionCppTestCase
                 PortailFactureConnecteur::STATUT_MISE_A_DISPOSITION,
                 PortailFactureConnecteur::STATUT_MISE_A_DISPOSITION,
                 "",
-                "",
+                'La facture est déja en statut MISE_A_DISPOSITION',
                 "cpp-modif-statut-ok",
             ],
             'CibleNotExist' => [

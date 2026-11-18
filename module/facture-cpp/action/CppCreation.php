@@ -97,13 +97,13 @@ class CppCreation extends ActionExecutor
 
         // Valorisation de l'état suivant
         $this->changeAction('importation', 'Traitement du document');
-        $this->setLastMessage('Création du document');
         $this->objectInstancier->getInstance(ActionExecutorFactory::class)->executeOnDocument(
             $this->id_e,
             $this->id_u,
             $this->id_d,
             'orientation'
         );
+        $this->setLastMessage('Création du document');
 
         return true;
     }

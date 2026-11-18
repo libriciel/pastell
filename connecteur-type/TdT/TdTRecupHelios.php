@@ -78,8 +78,7 @@ class TdTRecupHelios extends ConnecteurTypeActionExecutor
                 /** Nothing to do */
             }
         }
-        $this->setLastMessage($message);
-        $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, $tdt_error, $message);
+        $this->changeAction($tdt_error, $message);
         $this->notify($tdt_error, $this->type, $message);
         return false;
     }

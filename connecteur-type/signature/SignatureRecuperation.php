@@ -167,13 +167,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         $signature->effacerDossierRejete($dossierID);
 
         $message = 'Le document a été rejeté dans le parapheur : ' . $lastState;
-        $this->getActionChange()->addAction(
-            $this->id_d,
-            $this->id_e,
-            $this->id_u,
-            $this->getMappingValue(self::ACTION_NAME_REJET),
-            $message
-        );
+        $this->changeAction($this->getMappingValue(self::ACTION_NAME_REJET), $message);
         $this->notify($this->getMappingValue(self::ACTION_NAME_REJET), $this->type, $message);
         $this->action_name = self::ACTION_NAME_REJET;
 

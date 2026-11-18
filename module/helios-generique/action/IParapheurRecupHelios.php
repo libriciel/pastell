@@ -127,7 +127,7 @@ class IParapheurRecupHelios extends ActionExecutor
         $signature->effacerDossierRejete($dossierID);
 
         $this->notify('rejet-iparapheur', $this->type, "Le document a été rejeté dans le parapheur : $result");
-        $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, 'rejet-iparapheur', "Le document a été rejeté dans le parapheur : $result");
+        $this->changeAction('rejet-iparapheur', "Le document a été rejeté dans le parapheur : $result");
 
         return true;
     }
@@ -202,7 +202,7 @@ class IParapheurRecupHelios extends ActionExecutor
         } elseif ($signature->isRejected($lastDocumentHistory)) {
             $signature->effacerDossierRejete($documentId);
             $this->notify('rejet-iparapheur', $this->type, "Le document a été rejeté dans le parapheur");
-            $this->getActionChange()->addAction($this->id_d, $this->id_e, $this->id_u, 'rejet-iparapheur', 'Le document a été rejeté dans le parapheur');
+            $this->changeAction('rejet-iparapheur', 'Le document a été rejeté dans le parapheur');
         } else {
             $this->verifNbJour($signature, $lastDocumentHistory);
             $this->setLastMessage($lastDocumentHistory);
