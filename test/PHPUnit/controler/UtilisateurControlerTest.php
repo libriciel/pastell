@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UserPasswordService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Entite\EntityCreationService;
@@ -38,7 +39,9 @@ class UtilisateurControlerTest extends ControlerTestCase
         $utilisateurSQL = $this->getObjectInstancier()->getInstance(UtilisateurSQL::class);
         static::assertEquals('boz@byz.fr', $utilisateurSQL->getInfo(3)['email']);
         // Password cannot be set with web controller
-        static::assertFalse($utilisateurSQL->verifPassword(3, $password));
+        static::assertFalse(
+            $this->getObjectInstancier()->getInstance(UserPasswordService::class)->verifyPassword(3, $password)
+        );
     }
 
     /**

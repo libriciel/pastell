@@ -6,21 +6,28 @@ class UtilisateurSQL extends SQL
 {
     public function setNomPrenom($id_u, $nom, $prenom)
     {
-        $sql = "UPDATE utilisateur SET nom = ? , prenom = ? WHERE id_u = ?";
-        $this->query($sql, [$nom,$prenom,$id_u]);
+        $sql = <<<SQL
+UPDATE utilisateur SET nom = ?, prenom = ? WHERE id_u = ?
+SQL;
+        $this->query($sql, $nom, $prenom, $id_u);
     }
 
     public function getInfo($id_u)
     {
-        $sql = "SELECT * FROM utilisateur WHERE id_u = ?";
+        $sql = <<<SQL
+SELECT * FROM utilisateur WHERE id_u = ?
+SQL;
         return $this->queryOne($sql, $id_u);
     }
 
     public function exists(int $id_u): bool
     {
-        return (bool) $this->getInfo($id_u);
+        return (bool)$this->getInfo($id_u);
     }
 
+    /**
+     * @deprecated 4.1.26 no longer used, to be deleted in 6.0.0
+     */
     public function validMail($id_u, $password)
     {
         $sql = "SELECT id_u FROM utilisateur " .
@@ -35,10 +42,15 @@ class UtilisateurSQL extends SQL
 
     public function validMailAuto($id_u)
     {
-        $sql = "UPDATE utilisateur SET mail_verifie=1 WHERE id_u=?";
+        $sql = <<<SQL
+UPDATE utilisateur SET mail_verifie = 1 WHERE id_u = ?
+SQL;
         $this->query($sql, $id_u);
     }
 
+    /**
+     * @deprecated 4.1.26 Use UserPasswordService::verifyPassword() instead
+     */
     public function verifPassword($id_u, $password)
     {
         $info = $this->getInfo($id_u);
@@ -47,10 +59,15 @@ class UtilisateurSQL extends SQL
 
     public function desinscription($id_u)
     {
-        $sql = "DELETE FROM utilisateur WHERE id_u=?";
+        $sql = <<<SQL
+DELETE FROM utilisateur WHERE id_u = ?
+SQL;
         $this->query($sql, $id_u);
     }
 
+    /**
+     * @deprecated 4.1.26 Use UserPasswordService::setPassword() instead
+     */
     public function setPassword($id_u, $password)
     {
         $sql = "UPDATE utilisateur SET password = ? WHERE id_u = ?";
@@ -59,27 +76,36 @@ class UtilisateurSQL extends SQL
 
     public function setEmail($id_u, $email)
     {
-        $sql = "UPDATE utilisateur SET email = ? WHERE id_u = ?";
+        $sql = <<<SQL
+UPDATE utilisateur SET email = ? WHERE id_u = ?
+SQL;
         $this->query($sql, $email, $id_u);
     }
 
     public function setLogin($id_u, $login)
     {
-        $sql = "UPDATE utilisateur SET login = ? WHERE id_u = ?";
+        $sql = <<<SQL
+UPDATE utilisateur SET login = ? WHERE id_u = ?
+SQL;
         $this->query($sql, $login, $id_u);
     }
 
     public function setColBase($id_u, $id_e)
     {
-        $sql = "UPDATE utilisateur SET id_e = ? WHERE id_u = ?";
+        $sql = <<<SQL
+UPDATE utilisateur SET id_e = ? WHERE id_u = ?
+SQL;
         $this->query($sql, $id_e, $id_u);
     }
 
     public function removeCertificat($id_u)
     {
-        $this->updateCertificat($id_u, "", "");
+        $this->updateCertificat($id_u, '', '');
     }
 
+    /**
+     * @deprecated 4.1.26 Use UserCertificateService::setCertificate() instead
+     */
     public function setCertificat($id_u, Certificate $certificat)
     {
 
@@ -94,25 +120,33 @@ class UtilisateurSQL extends SQL
         return true;
     }
 
-    private function updateCertificat($id_u, $content, $verif_number)
+    public function updateCertificat(int $id_u, string $content, string $verif_number): void
     {
-        $sql = "UPDATE utilisateur SET certificat = ?, certificat_verif_number=? WHERE id_u = ?";
+        $sql = <<<SQL
+UPDATE utilisateur SET certificat = ?, certificat_verif_number = ? WHERE id_u = ?
+SQL;
         $this->query($sql, $content, $verif_number, $id_u);
     }
 
     public function reinitPassword($id_u, $mailVerifPassword)
     {
-        $now = date("c");
-        $sql = "UPDATE utilisateur SET mail_verif_password=?, password_reset_requested_at=? WHERE id_u=?";
-        $this->query($sql, $mailVerifPassword, $now, $id_u);
+        $sql = <<<SQL
+UPDATE utilisateur SET mail_verif_password = ?, password_reset_requested_at = ? WHERE id_u = ?
+SQL;
+        $this->query($sql, $mailVerifPassword, date('c'), $id_u);
     }
 
     public function getIdFromLogin($login)
     {
-        $sql = "SELECT id_u FROM utilisateur WHERE login = ?";
+        $sql = <<<SQL
+SELECT id_u FROM utilisateur WHERE login = ?
+SQL;
         return $this->queryOne($sql, $login);
     }
 
+    /**
+     * @deprecated 4.1.26 Use UserCreationService::createAccount() instead
+     */
     public function create($login, $password, $email, $password_validation)
     {
         $sql = "INSERT INTO utilisateur(login,email,mail_verif_password,date_inscription) " .
@@ -125,10 +159,17 @@ class UtilisateurSQL extends SQL
 
     public function getInfoByLogin($login)
     {
-        $sql = "SELECT * FROM utilisateur WHERE login = ?";
+        $sql = <<<SQL
+SELECT * FROM utilisateur WHERE login = ?
+SQL;
         return $this->queryOne($sql, $login);
     }
 
+    /**
+     * @deprecated 4.1.26 Use UserInfoService::getUserFromData() instead
+     * @throws NotFoundException
+     * @throws Exception
+     */
     public function getUserFromData($data)
     {
         if (! empty($data['id_u'])) {
@@ -150,25 +191,33 @@ class UtilisateurSQL extends SQL
 
     public function enable(int $id_u): void
     {
-        $sql = 'UPDATE utilisateur SET is_enabled = ? WHERE id_u = ?';
+        $sql = <<<SQL
+UPDATE utilisateur SET is_enabled = ? WHERE id_u = ?
+SQL;
         $this->query($sql, true, $id_u);
     }
 
     public function disable(int $id_u): void
     {
-        $sql = 'UPDATE utilisateur SET is_enabled = ? WHERE id_u = ?';
+        $sql = <<<SQL
+UPDATE utilisateur SET is_enabled = ? WHERE id_u = ?
+SQL;
         $this->query($sql, false, $id_u);
     }
 
     public function isEnabled(int $id_u): bool
     {
-        $sql = 'SELECT is_enabled FROM utilisateur WHERE id_u = ?';
+        $sql = <<<SQL
+SELECT is_enabled FROM utilisateur WHERE id_u = ?
+SQL;
         return $this->queryOne($sql, $id_u);
     }
 
     public function setIsAPI(int $id_u, bool $is_api): void
     {
-        $sql = 'UPDATE utilisateur SET is_api = ? WHERE id_u = ?';
+        $sql = <<<SQL
+UPDATE utilisateur SET is_api = ? WHERE id_u = ?
+SQL;
         $this->query($sql, $is_api, $id_u);
     }
 
@@ -177,8 +226,8 @@ class UtilisateurSQL extends SQL
         $offset = max(0, $offset);
         $sql = <<<SQL
 SELECT * FROM utilisateur WHERE certificat_verif_number = ?
-ORDER BY nom,prenom,login
-LIMIT $offset,$limit
+ORDER BY nom, prenom, login
+LIMIT $offset, $limit
 SQL;
         return $this->query($sql, $verif_number);
     }
@@ -188,7 +237,7 @@ SQL;
         $sql = <<<SQL
 SELECT count(*) FROM utilisateur WHERE certificat_verif_number = ?
 SQL;
-        return (int) $this->queryOne($sql, $verif_number);
+        return (int)$this->queryOne($sql, $verif_number);
     }
 
     public function getIdByLoginOrEmail(string $loginOrEmail): ?int
@@ -197,7 +246,7 @@ SQL;
 SELECT id_u FROM utilisateur WHERE (login = ? OR email = ?) AND mail_verifie = 1
 SQL;
         $id_u = $this->queryOne($sql, $loginOrEmail, $loginOrEmail);
-        return $id_u === false ? null : (int) $id_u;
+        return $id_u === false ? null : (int)$id_u;
     }
 
     public function getIdByVerifPassword(string $mail_verif_password, int $token_ttl_in_second = 1800): ?int
@@ -211,7 +260,7 @@ WHERE mail_verif_password = ? AND mail_verifie = 1
 AND TIMESTAMPDIFF(SECOND, password_reset_requested_at, ?) < ?
 SQL;
         $id_u = $this->queryOne($sql, $mail_verif_password, date('c'), $token_ttl_in_second);
-        return $id_u === false ? null : (int) $id_u;
+        return $id_u === false ? null : (int)$id_u;
     }
 
     public function getAllByBaseEntite(int $id_e): array
@@ -227,7 +276,7 @@ SQL;
         $sql = <<<SQL
 SELECT count(*) FROM utilisateur WHERE id_e = ?
 SQL;
-        return (int) $this->queryOne($sql, $id_e);
+        return (int)$this->queryOne($sql, $id_e);
     }
 
     public function countByEntite(int $id_e, bool $with_fille = false, string $role = '', string $search = ''): int
@@ -253,7 +302,7 @@ JOIN utilisateur_role ON utilisateur.id_u = utilisateur_role.id_u
 $join
 WHERE $where
 SQL;
-        return (int) $this->queryOne($sql, $data);
+        return (int)$this->queryOne($sql, $data);
     }
 
     public function getAllByEntite(
@@ -280,19 +329,36 @@ SQL;
             array_push($data, "%$search%", "%$search%", "%$search%");
         }
         $offset = max(0, $offset);
-        $limitClause = $limit === null ? '' : "LIMIT $offset,$limit";
+        $limit_clause = $limit === null ? '' : "LIMIT $offset, $limit";
         $sql = <<<SQL
-SELECT utilisateur.id_u,nom,prenom,login,email,utilisateur.id_e,
-    entite.denomination,utilisateur.is_enabled
+SELECT utilisateur.id_u, nom, prenom, login, email, utilisateur.id_e,
+    entite.denomination, utilisateur.is_enabled
 FROM utilisateur
 LEFT JOIN entite ON entite.id_e = utilisateur.id_e
 JOIN utilisateur_role ON utilisateur.id_u = utilisateur_role.id_u
 $join
 WHERE $where
 GROUP BY utilisateur.id_u
-ORDER BY nom,prenom
-$limitClause
+ORDER BY nom, prenom
+$limit_clause
 SQL;
         return $this->query($sql, $data);
+    }
+
+    public function updatePasswordHash(int $id_u, string $password_hash): void
+    {
+        $sql = <<<SQL
+UPDATE utilisateur SET password = ? WHERE id_u = ?
+SQL;
+        $this->query($sql, $password_hash, $id_u);
+    }
+
+    public function insert(string $login, string $email, string $mail_verif_password): int
+    {
+        $sql = <<<SQL
+INSERT INTO utilisateur(login, email, mail_verif_password, date_inscription) VALUES (?, ?, ?, now())
+SQL;
+        $this->query($sql, $login, $email, $mail_verif_password);
+        return (int)$this->lastInsertId();
     }
 }

@@ -34,6 +34,10 @@
 - Méthode `getActionCreator()` de `ActionExecutor` dépréciée au profit de `getActionChange()` #2629
 - Méthodes `getChaineHerited()` et `getFromNomDenomination()` de `AnnuaireRoleSQL` et `AnnuaireGroupeSQL` dépréciées
   au profit des services `AnnuaireRoleService` et `AnnuaireGroupeService` #2634
+- Méthodes `setPassword()`, `verifPassword()`, `create()`, `setCertificat()` et `getUserFromData()` de `UtilisateurSQL`
+  dépréciées au profit des services `UserPasswordService`, `UserCreationService`, `UserCertificateService` et
+  `UserInfoService` #2632
+- Méthode `validMail()` de `UtilisateurSQL` dépréciée car inutilisée #2632
 
 ### Sécurité
 

@@ -276,6 +276,13 @@ class UtilisateurAPIControllerTest extends PastellTestCase
         $this->getInternalAPI()->get('/utilisateur/1');
     }
 
+    public function testDeleteWithoutIdentifier(): void
+    {
+        $this->expectException(NotFoundException::class);
+        $this->expectExceptionMessage("Le login de l'utilisateur n'existe pas : {login=}");
+        $this->getInternalAPI()->delete('/utilisateur');
+    }
+
     public function testPostActivateDeactivate(): void
     {
         $utilisateurActivated = $this->getInternalAPI()->get('utilisateur/2');
