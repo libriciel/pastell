@@ -4,9 +4,9 @@ namespace Pastell\Tests\Service;
 
 use NotificationDigestSQL;
 use Pastell\Service\Notification\NotificationService;
+use Pastell\Service\Utilisateur\UserEmailChangeService;
 use Pastell\Service\Utilisateur\UtilisateurDeletionService;
 use PastellTestCase;
-use UtilisateurNewEmailSQL;
 use UserTokenSQL;
 use UtilisateurSQL;
 
@@ -59,13 +59,13 @@ class UtilisateurDeletionServiceTest extends PastellTestCase
 
     public function testDeleteCleansNewEmail(): void
     {
-        $utilisateurNewEmailSQL = $this->getObjectInstancier()->getInstance(UtilisateurNewEmailSQL::class);
-        $password = $utilisateurNewEmailSQL->add(2, 'newemail@test.fr');
-        self::assertNotEmpty($utilisateurNewEmailSQL->confirm($password));
+        $userEmailChangeService = $this->getObjectInstancier()->getInstance(UserEmailChangeService::class);
+        $password = $userEmailChangeService->createRequest(2, 'newemail@example.invalid');
+        self::assertNotEmpty($userEmailChangeService->getValidRequest($password));
 
         $this->getObjectInstancier()->getInstance(UtilisateurDeletionService::class)->delete(2);
 
-        self::assertEmpty($utilisateurNewEmailSQL->confirm($password));
+        self::assertNull($userEmailChangeService->getValidRequest($password));
     }
 
     public function testDeleteCleansNotificationDigest(): void
