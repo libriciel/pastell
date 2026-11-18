@@ -13,6 +13,58 @@ class RoleSQLTest extends PastellTestCase
         $this->roleSQL = new RoleSQL($this->getSQLQuery());
     }
 
+    private function createRole(string $role, string $libelle, array $droit_list): void
+    {
+        $this->roleSQL->insert($role, $libelle);
+        foreach ($droit_list as $droit) {
+            $this->roleSQL->insertDroit($role, $droit);
+        }
+    }
+
+    private function getEntiteDroitList(): array
+    {
+        return [
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION),
+            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
+        ];
+    }
+
+    private function getRole1DroitList(): array
+    {
+        return array_merge($this->getEntiteDroitList(), [
+            DroitService::getDroitFor('test', DroitType::LECTURE),
+            DroitService::getDroitFor('test', DroitType::EDITION),
+        ]);
+    }
+
+    /**
+     * @deprecated 4.1.26
+     */
+    public function testDelegateWithFewerDroits(): void
+    {
+        $this->createRole('role1', 'Rôle 1', $this->getRole1DroitList());
+        $this->createRole('role2', 'Rôle 2', $this->getEntiteDroitList());
+
+        $role_list = $this->roleSQL->getAuthorizedRoleToDelegate($this->getEntiteDroitList());
+
+        self::assertContains('role2', $role_list);
+        self::assertNotContains('role1', $role_list);
+    }
+
+    /**
+     * @deprecated 4.1.26
+     */
+    public function testDelegateWithMoreDroits(): void
+    {
+        $this->createRole('role1', 'Rôle 1', $this->getRole1DroitList());
+        $this->createRole('role2', 'Rôle 2', $this->getEntiteDroitList());
+
+        $role_list = $this->roleSQL->getAuthorizedRoleToDelegate($this->getRole1DroitList());
+
+        self::assertContains('role2', $role_list);
+        self::assertContains('role1', $role_list);
+    }
+
     public function testInsert(): void
     {
         $this->roleSQL->insert('role1', 'Rôle 1');
