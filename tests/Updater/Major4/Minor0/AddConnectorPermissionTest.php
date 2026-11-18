@@ -9,7 +9,6 @@ use Pastell\Service\Utilisateur\RoleService;
 use Pastell\Updater\Major4\Minor0\AddConnectorPermission;
 use PastellTestCase;
 use RoleDroit;
-use RoleSQL;
 
 class AddConnectorPermissionTest extends PastellTestCase
 {
@@ -18,7 +17,6 @@ class AddConnectorPermissionTest extends PastellTestCase
      */
     public function testAddConnectorPermission()
     {
-        $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
         $roleDroit = $this->getObjectInstancier()->getInstance(RoleDroit::class);
         $roleService = $this->getObjectInstancier()->getInstance(RoleService::class);
 
@@ -31,7 +29,7 @@ class AddConnectorPermissionTest extends PastellTestCase
 
         unset($droit[$connecteur_lecture]);
         unset($droit[$connecteur_edition]);
-        $roleSQL->updateDroit('admin', array_keys($droit, true));
+        $roleService->updateDroit('admin', array_keys($droit, true));
 
         $droit = $roleService->getDroitMap($roleDroit->getAllDroit(), 'admin');
         static::assertFalse($droit[$connecteur_lecture]);

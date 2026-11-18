@@ -31,8 +31,15 @@ final class RoleService
     public function createRole(string $role, string $libelle): void
     {
         $this->saveRole($role, $libelle);
-        $this->roleSQL->addDroit($role, DroitService::getDroitFor(DroitService::DROIT_JOURNAL, DroitType::LECTURE));
-        $this->roleSQL->addDroit($role, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+        $this->addDroit($role, DroitService::getDroitFor(DroitService::DROIT_JOURNAL, DroitType::LECTURE));
+        $this->addDroit($role, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+    }
+
+    public function addDroit(string $role, string $droit): void
+    {
+        if (!$this->roleSQL->hasDroit($role, $droit)) {
+            $this->roleSQL->insertDroit($role, $droit);
+        }
     }
 
     public function getDroitMap(array $all_droit, string $role): array
@@ -48,7 +55,10 @@ final class RoleService
     {
         $droit = $this->roleDroit->filterExistingRolesDroits($droit);
         $oldDroit = $this->roleDroit->filterExistingRolesDroits($this->roleSQL->getDroitList($role));
-        $this->roleSQL->updateDroit($role, $droit);
+        $this->roleSQL->deleteAllDroit($role);
+        foreach ($droit as $droit_name) {
+            $this->roleSQL->insertDroit($role, $droit_name);
+        }
         if (array_diff($oldDroit, $droit)) {
             $this->notificationService->revokeInvalidForRole($role);
         }

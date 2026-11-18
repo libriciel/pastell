@@ -6,6 +6,7 @@ use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Pastell\Service\Utilisateur\RoleService;
 
 class ConnecteurAPIControllerTest extends PastellTestCase
 {
@@ -612,8 +613,9 @@ class ConnecteurAPIControllerTest extends PastellTestCase
     public function testPostWithReadPermission(): void
     {
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+        $roleService = $this->getObjectInstancier()->getInstance(RoleService::class);
         $roleSql->insert('readonly', 'readonly');
-        $roleSql->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+        $roleService->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $userId = $userCreationService->create('readonly', 'readonly@example.org', 'user', 'user');
         $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)->addRole($userId, 'readonly', self::ID_E_COL);
@@ -634,8 +636,9 @@ class ConnecteurAPIControllerTest extends PastellTestCase
     public function testPostFileWithReadPermission(): void
     {
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+        $roleService = $this->getObjectInstancier()->getInstance(RoleService::class);
         $roleSql->insert('readonly', 'readonly');
-        $roleSql->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+        $roleService->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $userId = $userCreationService->create('readonly', 'readonly@example.org', 'user', 'user');
         $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)->addRole($userId, 'readonly', self::ID_E_COL);
@@ -703,8 +706,9 @@ class ConnecteurAPIControllerTest extends PastellTestCase
         static::assertEquals('ok', $result['result']);
 
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+        $roleService = $this->getObjectInstancier()->getInstance(RoleService::class);
         $roleSql->insert('readonly', 'readonly');
-        $roleSql->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+        $roleService->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $userId = $userCreationService->create('readonly', 'readonly@example.org', 'user', 'user');
         $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)->addRole($userId, 'readonly', self::ID_E_COL);

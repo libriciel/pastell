@@ -14,12 +14,6 @@ class AdminControler extends Controler
         return $this->getInstance(RoleDroit::class);
     }
 
-    /** @return RoleSQL */
-    private function getRoleSQL()
-    {
-        return $this->getInstance(RoleSQL::class);
-    }
-
     private function getUtilisateur(): UtilisateurSQL
     {
         return $this->getInstance(UtilisateurSQL::class);
@@ -47,11 +41,12 @@ class AdminControler extends Controler
 
     public function fixDroit()
     {
-        $this->getInstance(RoleService::class)->saveRole('admin', 'Administrateur');
+        $roleService = $this->getInstance(RoleService::class);
+        $roleService->saveRole('admin', 'Administrateur');
 
         foreach ($this->getRoleDroit()->getAllDroit() as $droit) {
             if (!str_contains($droit, '-destinataire:') && !str_contains($droit, '-reponse:')) {
-                $this->getRoleSQL()->addDroit('admin', $droit);
+                $roleService->addDroit('admin', $droit);
             }
         }
         $this->getInstance(EntityHierarchyService::class)->updateAllAncestors();

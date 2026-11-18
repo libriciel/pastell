@@ -35,11 +35,8 @@ class RoleSQLTest extends PastellTestCase
 
     public function testGetDroitList(): void
     {
-        $droit_list = [
-            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE),
-            DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION),
-        ];
-        $this->roleSQL->updateDroit('autre', $droit_list);
+        $this->roleSQL->insertDroit('autre', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+        $this->roleSQL->insertDroit('autre', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::EDITION));
 
         static::assertSame(
             [
@@ -53,8 +50,23 @@ class RoleSQLTest extends PastellTestCase
     public function testGetAllRoleDroit(): void
     {
         $droit = DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE);
-        $this->roleSQL->updateDroit('autre', [$droit]);
+        $this->roleSQL->insertDroit('autre', $droit);
 
         static::assertContains(['role' => 'autre', 'droit' => $droit], $this->roleSQL->getAllRoleDroit());
+    }
+
+    public function testHasDroit(): void
+    {
+        $this->roleSQL->insertDroit('autre', 'entite:lecture');
+
+        static::assertTrue($this->roleSQL->hasDroit('autre', 'entite:lecture'));
+        static::assertFalse($this->roleSQL->hasDroit('autre', 'entite:edition'));
+    }
+
+    public function testDeleteAllDroit(): void
+    {
+        $this->roleSQL->deleteAllDroit('admin');
+
+        static::assertSame([], $this->roleSQL->getDroitList('admin'));
     }
 }

@@ -59,7 +59,7 @@ final class AddConnectorPermission implements Version
         foreach ($roleDroitEntite as $role => $droitEntite) {
             foreach ($droitEntite as $droit) {
                 list(, $type) = explode(":", $droit);
-                $this->roleSQL->addDroit($role, DroitService::DROIT_CONNECTEUR . ":" . $type);
+                $this->roleService->addDroit((string)$role, DroitService::DROIT_CONNECTEUR . ':' . $type);
                 $this->logger?->info(
                     sprintf(
                         "Add  %s:%s for %s",

@@ -34,8 +34,10 @@ class RoleServiceTest extends PastellTestCase
 
     public function testIgnoresUnknownDroit(): void
     {
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->updateDroit('admin', ['entite:lecture', 'flux-inexistant:lecture']);
+        $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+        $roleSQL->deleteAllDroit('admin');
+        $roleSQL->insertDroit('admin', 'entite:lecture');
+        $roleSQL->insertDroit('admin', 'flux-inexistant:lecture');
         $this->notificationService->subscribe(1, 1, 'actes-generique', 'send-tdt', false);
 
         $this->roleService->updateDroit('admin', ['entite:lecture']);
@@ -76,8 +78,9 @@ class RoleServiceTest extends PastellTestCase
 
     public function testGetDroitMap(): void
     {
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->updateDroit('autre', ['entite:lecture', 'flux-inexistant:lecture']);
+        $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+        $roleSQL->insertDroit('autre', 'entite:lecture');
+        $roleSQL->insertDroit('autre', 'flux-inexistant:lecture');
 
         static::assertSame(
             [
@@ -86,6 +89,17 @@ class RoleServiceTest extends PastellTestCase
                 'flux-inexistant:lecture' => true,
             ],
             $this->roleService->getDroitMap(['entite:lecture', 'entite:edition'], 'autre')
+        );
+    }
+
+    public function testAddDroitTwice(): void
+    {
+        $this->roleService->addDroit('autre', 'entite:lecture');
+        $this->roleService->addDroit('autre', 'entite:lecture');
+
+        static::assertSame(
+            ['entite:lecture'],
+            $this->getObjectInstancier()->getInstance(RoleSQL::class)->getDroitList('autre')
         );
     }
 }

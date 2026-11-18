@@ -86,18 +86,27 @@ SQL;
         return $this->query($sql);
     }
 
+    /**
+     * @deprecated 4.1.26 Use RoleService::updateDroit() instead
+     */
     public function updateDroit($role, array $lesDroits)
     {
-        $sql = <<<SQL
-DELETE FROM role_droit WHERE role = ?
-SQL;
+        $sql = "DELETE FROM role_droit WHERE role=?";
         $this->query($sql, $role);
         foreach ($lesDroits as $droit) {
             $this->insertDroit($role, $droit);
         }
     }
 
-    private function insertDroit($role, $droit)
+    public function hasDroit(string $role, string $droit): bool
+    {
+        $sql = <<<SQL
+SELECT count(*) FROM role_droit WHERE role = ? AND droit = ?
+SQL;
+        return $this->queryOne($sql, $role, $droit) > 0;
+    }
+
+    public function insertDroit(string $role, string $droit): void
     {
         $sql = <<<SQL
 INSERT INTO role_droit (role, droit) VALUES (?, ?)
@@ -105,11 +114,20 @@ SQL;
         $this->query($sql, $role, $droit);
     }
 
-    public function addDroit($role, $droit)
+    public function deleteAllDroit(string $role): void
     {
         $sql = <<<SQL
-SELECT count(*) FROM role_droit WHERE role = ? AND droit = ?
+DELETE FROM role_droit WHERE role = ?
 SQL;
+        $this->query($sql, $role);
+    }
+
+    /**
+     * @deprecated 4.1.26 Use RoleService::addDroit() instead
+     */
+    public function addDroit($role, $droit)
+    {
+        $sql = "SELECT count(*) FROM role_droit WHERE role=? AND droit=?";
         if ($this->queryOne($sql, $role, $droit)) {
             return;
         }

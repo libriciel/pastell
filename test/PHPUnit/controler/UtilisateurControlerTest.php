@@ -7,6 +7,7 @@ use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\RoleService;
 
 class UtilisateurControlerTest extends ControlerTestCase
 {
@@ -369,7 +370,7 @@ class UtilisateurControlerTest extends ControlerTestCase
             ->create('tester', 'tester@example.org', 'tester', 'tester');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
             ->insert('entiteLectureEdition', 'Droit utilisateur');
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)
+        $this->getObjectInstancier()->getInstance(RoleService::class)
             ->addDroit('entiteLectureEdition', DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION));
         $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)
             ->addRole(3, 'entiteLectureEdition', 1);

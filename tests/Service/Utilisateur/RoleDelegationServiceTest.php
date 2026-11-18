@@ -46,7 +46,7 @@ class RoleDelegationServiceTest extends PastellTestCase
 
     public function testDelegableRolesIncludesSubset(): void
     {
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->updateDroit('autre', ['entite:lecture']);
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->insertDroit('autre', 'entite:lecture');
 
         $role_list = $this->service->getDelegableRoles(['entite:lecture', 'entite:edition']);
 
@@ -56,8 +56,9 @@ class RoleDelegationServiceTest extends PastellTestCase
 
     public function testDelegableRolesExcludesSuperset(): void
     {
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->updateDroit('autre', ['entite:lecture', 'entite:edition']);
+        $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+        $roleSQL->insertDroit('autre', 'entite:lecture');
+        $roleSQL->insertDroit('autre', 'entite:edition');
 
         $role_list = $this->service->getDelegableRoles(['entite:lecture']);
 
