@@ -55,7 +55,7 @@ final class AnnuaireRoleServiceTest extends PastellTestCase
      */
     public function testFindRole(): void
     {
-        $id_r = $this->getAnnuaireRoleSQL()->add('admin - Bourg-en-Bresse', self::ID_E, self::ID_E, 'admin');
+        $id_r = (int)$this->getAnnuaireRoleSQL()->add('admin - Bourg-en-Bresse', self::ID_E, self::ID_E, 'admin');
 
         self::assertSame('admin - Bourg-en-Bresse', $this->getAnnuaireRoleService()->findRole($id_r)['nom']);
     }
@@ -68,7 +68,7 @@ final class AnnuaireRoleServiceTest extends PastellTestCase
 
     public function testDeleteRole(): void
     {
-        $id_r = $this->getAnnuaireRoleSQL()->add('admin - Bourg-en-Bresse', self::ID_E, self::ID_E, 'admin');
+        $id_r = (int)$this->getAnnuaireRoleSQL()->add('admin - Bourg-en-Bresse', self::ID_E, self::ID_E, 'admin');
 
         $this->getAnnuaireRoleService()->deleteRole($id_r);
 
@@ -80,7 +80,7 @@ final class AnnuaireRoleServiceTest extends PastellTestCase
      */
     public function testShareRole(): void
     {
-        $id_r = $this->getAnnuaireRoleSQL()->add('admin - Bourg-en-Bresse', self::ID_E, self::ID_E, 'admin');
+        $id_r = (int)$this->getAnnuaireRoleSQL()->add('admin - Bourg-en-Bresse', self::ID_E, self::ID_E, 'admin');
 
         $this->getAnnuaireRoleService()->shareRole($id_r);
 
@@ -92,7 +92,7 @@ final class AnnuaireRoleServiceTest extends PastellTestCase
      */
     public function testUnshareRole(): void
     {
-        $id_r = $this->getAnnuaireRoleSQL()->add('admin - Bourg-en-Bresse', self::ID_E, self::ID_E, 'admin');
+        $id_r = (int)$this->getAnnuaireRoleSQL()->add('admin - Bourg-en-Bresse', self::ID_E, self::ID_E, 'admin');
         $this->getAnnuaireRoleSQL()->partage($id_r);
 
         $this->getAnnuaireRoleService()->unshareRole($id_r);
@@ -120,7 +120,7 @@ final class AnnuaireRoleServiceTest extends PastellTestCase
 
     public function testFindInheritedRoleId(): void
     {
-        $id_r = $this->getAnnuaireRoleSQL()->add('admin - Bourg-en-Bresse', self::ID_E, self::ID_E, 'admin');
+        $id_r = (int)$this->getAnnuaireRoleSQL()->add('admin - Bourg-en-Bresse', self::ID_E, self::ID_E, 'admin');
         $this->getAnnuaireRoleSQL()->partage($id_r);
 
         self::assertSame(
@@ -146,7 +146,7 @@ final class AnnuaireRoleServiceTest extends PastellTestCase
 
     public function testFindGlobalRoleId(): void
     {
-        $id_r = $this->getAnnuaireRoleSQL()->add('admin - toutes les collectivités', 0, 0, 'admin');
+        $id_r = (int)$this->getAnnuaireRoleSQL()->add('admin - toutes les collectivités', 0, 0, 'admin');
         $this->getAnnuaireRoleSQL()->partage($id_r);
 
         self::assertSame(

@@ -2,7 +2,7 @@
 
 class AnnuaireRoleSQL extends SQL
 {
-    public function getAll(int $id_e): array
+    public function getAll($id_e)
     {
         $sql = <<<SQL
 SELECT * FROM annuaire_role WHERE id_e_owner = ? ORDER BY nom ASC
@@ -10,16 +10,16 @@ SQL;
         return $this->query($sql, $id_e);
     }
 
-    public function add(string $nom, int $id_e_owner, int $id_e, string $role): int
+    public function add($nom, $id_e_owner, $id_e, $role)
     {
         $sql = <<<SQL
 INSERT INTO annuaire_role (nom, id_e_owner, id_e, role) VALUES (?, ?, ?, ?)
 SQL;
         $this->query($sql, $nom, $id_e_owner, $id_e, $role);
-        return (int)$this->lastInsertId();
+        return $this->lastInsertId();
     }
 
-    public function getUtilisateur(int $id_r): array
+    public function getUtilisateur($id_r)
     {
         $sql = <<<SQL
 SELECT entite_ancetre.*, utilisateur_role.*, utilisateur.*
@@ -32,7 +32,7 @@ SQL;
         return $this->query($sql, $id_r);
     }
 
-    public function getInfo(int $id_r): array|false
+    public function getInfo($id_r)
     {
         $sql = <<<SQL
 SELECT * FROM annuaire_role WHERE id_r = ?
@@ -40,7 +40,7 @@ SQL;
         return $this->queryOne($sql, $id_r);
     }
 
-    public function delete(int $id_r): void
+    public function delete($id_r)
     {
         $sql = <<<SQL
 DELETE FROM annuaire_role WHERE id_r = ?
@@ -64,7 +64,7 @@ SQL;
         $this->query($sql, $id_e, $id_e);
     }
 
-    public function getList(int $id_e, string $debut): array
+    public function getList($id_e, $debut)
     {
         $sql = <<<SQL
 SELECT nom FROM annuaire_role WHERE id_e_owner = ? AND nom LIKE ?
@@ -72,7 +72,7 @@ SQL;
         return $this->query($sql, $id_e, "$debut%");
     }
 
-    public function getFromNom(int $id_e, string $nom): int|false
+    public function getFromNom($id_e, $nom)
     {
         $sql = <<<SQL
 SELECT id_r FROM annuaire_role WHERE id_e_owner = ? AND nom = ?
@@ -80,7 +80,7 @@ SQL;
         return $this->queryOne($sql, $id_e, $nom);
     }
 
-    public function partage(int $id_r): void
+    public function partage($id_r)
     {
         $sql = <<<SQL
 UPDATE annuaire_role SET partage = 1 WHERE id_r = ?
@@ -88,7 +88,7 @@ SQL;
         $this->query($sql, $id_r);
     }
 
-    public function unpartage(int $id_r): void
+    public function unpartage($id_r)
     {
         $sql = <<<SQL
 UPDATE annuaire_role SET partage = 0 WHERE id_r = ?
@@ -96,7 +96,7 @@ SQL;
         $this->query($sql, $id_r);
     }
 
-    public function getGroupeHerite(array $all_ancetre, string $debut = ''): array
+    public function getGroupeHerite($all_ancetre, $debut = '')
     {
         $result = [];
         foreach ($all_ancetre as $id_e) {
@@ -121,7 +121,7 @@ SQL;
     /**
      * @deprecated 4.1.26 Use AnnuaireRoleService::getInheritedRoleLabel() instead
      */
-    public function getChaineHerited(array $info): string
+    public function getChaineHerited($info)
     {
         if ($info['denomination']) {
             $debut = 'rôle hérité de ' . $info['denomination'];
@@ -135,7 +135,7 @@ SQL;
     /**
      * @deprecated 4.1.26 Use AnnuaireRoleService::findInheritedRoleId() instead
      */
-    public function getFromNomDenomination(array $all_ancetre, string $chaine): mixed
+    public function getFromNomDenomination($all_ancetre, $chaine)
     {
         foreach ($this->getGroupeHerite($all_ancetre) as $info) {
             if ($chaine === $this->getChaineHerited($info)) {
