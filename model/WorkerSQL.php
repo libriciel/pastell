@@ -2,16 +2,16 @@
 
 class WorkerSQL extends SQL
 {
-    public function create(int $pid): int
+    public function create($pid)
     {
         $sql = <<<SQL
 INSERT INTO worker (pid, date_begin) VALUES (?, now())
 SQL;
         $this->query($sql, $pid);
-        return (int)$this->lastInsertId();
+        return $this->lastInsertId();
     }
 
-    public function getInfo(int $id_worker): array|false
+    public function getInfo($id_worker)
     {
         $sql = <<<SQL
 SELECT * FROM worker WHERE id_worker = ?
@@ -19,7 +19,7 @@ SQL;
         return $this->queryOne($sql, $id_worker);
     }
 
-    public function error(int $id_worker, string $message): void
+    public function error($id_worker, $message)
     {
         $sql = <<<SQL
 UPDATE worker SET message = ?, date_end = now(), termine = 1 WHERE id_worker = ?
@@ -27,7 +27,7 @@ SQL;
         $this->query($sql, $message, $id_worker);
     }
 
-    public function getRunningWorkerInfo(int $id_job): array|false
+    public function getRunningWorkerInfo($id_job)
     {
         $sql = <<<SQL
 SELECT * FROM worker WHERE id_job = ? AND termine = 0
@@ -35,7 +35,7 @@ SQL;
         return $this->queryOne($sql, $id_job);
     }
 
-    public function attachJob(int $id_worker, int $id_job): void
+    public function attachJob($id_worker, $id_job)
     {
         $sql = <<<SQL
 UPDATE worker SET id_job = ? WHERE id_worker = ?
@@ -43,7 +43,7 @@ SQL;
         $this->query($sql, $id_job, $id_worker);
     }
 
-    public function success(int $id_worker): void
+    public function success($id_worker)
     {
         $sql = <<<SQL
 DELETE FROM worker WHERE id_worker = ?
@@ -51,7 +51,7 @@ SQL;
         $this->query($sql, $id_worker);
     }
 
-    public function getAllRunningWorker(): array
+    public function getAllRunningWorker()
     {
         $sql = <<<SQL
 SELECT * FROM worker WHERE termine = 0
@@ -116,7 +116,7 @@ SQL;
         return $this->query($sql, $verrou_id);
     }
 
-    public function getAllVerrou(): array
+    public function getAllVerrou()
     {
         $sql = <<<SQL
 SELECT DISTINCT id_verrou FROM job_queue WHERE id_verrou != ''
@@ -124,7 +124,7 @@ SQL;
         return $this->queryOneCol($sql);
     }
 
-    public function getVerrou(): array
+    public function getVerrou()
     {
         $sql = <<<SQL
 SELECT id_verrou FROM job_queue
@@ -134,16 +134,18 @@ SQL;
         return $this->queryOneCol($sql);
     }
 
-    public function getNbActif(): int
+    public function getNbActif()
     {
         $sql = <<<SQL
 SELECT count(*) FROM worker WHERE termine = 0
 SQL;
-        return (int)$this->queryOne($sql);
+        return $this->queryOne($sql);
     }
 
-    public function getActif(int $offset = 0, int $limit = 20): array
+    public function getActif($offset = 0, $limit = 20)
     {
+        $offset = (int)$offset;
+        $limit = (int)$limit;
         $sql = <<<SQL
 SELECT * FROM worker
 LEFT JOIN job_queue ON job_queue.id_job = worker.id_job
@@ -154,7 +156,7 @@ SQL;
         return $this->query($sql);
     }
 
-    public function getJobListWithWorker(int $offset = 0, int $limit = 20, string $filtre = ''): array
+    public function getJobListWithWorker($offset = 0, $limit = 20, $filtre = '')
     {
         $filter_condition = $this->getJobFilterCondition($filtre);
         $sql = <<<SQL
@@ -171,7 +173,7 @@ SQL;
         return $job_list;
     }
 
-    public function menage(int $id_job): void
+    public function menage($id_job)
     {
         $sql = <<<SQL
 DELETE FROM worker WHERE id_job = ? AND termine = 1
@@ -179,7 +181,7 @@ SQL;
         $this->query($sql, $id_job);
     }
 
-    public function menageAll(): void
+    public function menageAll()
     {
         $sql = <<<SQL
 DELETE FROM worker WHERE termine = 1
@@ -187,7 +189,7 @@ SQL;
         $this->query($sql);
     }
 
-    public function getNbJob(string $filtre): int
+    public function getNbJob($filtre)
     {
         $filter_condition = $this->getJobFilterCondition($filtre);
         $sql = <<<SQL
@@ -195,10 +197,10 @@ SELECT count(*) FROM job_queue
 LEFT JOIN worker ON job_queue.id_job = worker.id_job
 WHERE 1 = 1 $filter_condition
 SQL;
-        return (int)$this->queryOne($sql);
+        return $this->queryOne($sql);
     }
 
-    public function getJobListWithWorkerForConnecteur(int $id_ce): array
+    public function getJobListWithWorkerForConnecteur($id_ce)
     {
         $sql = <<<SQL
 SELECT *, job_queue.id_job AS id_job FROM job_queue
@@ -208,7 +210,7 @@ SQL;
         return $this->query($sql, $id_ce);
     }
 
-    public function getJobListWithWorkerForDocument(int $id_e, string $id_d): array
+    public function getJobListWithWorkerForDocument($id_e, $id_d)
     {
         $sql = <<<SQL
 SELECT *, job_queue.id_job AS id_job FROM job_queue
@@ -218,7 +220,7 @@ SQL;
         return $this->query($sql, $id_e, $id_d);
     }
 
-    public function getActionEnCours(int $id_e, string $id_d): int|false
+    public function getActionEnCours($id_e, $id_d)
     {
         $sql = <<<SQL
 SELECT id_worker FROM job_queue
@@ -228,7 +230,7 @@ SQL;
         return $this->queryOne($sql, $id_e, $id_d);
     }
 
-    public function getActionEnCoursForConnecteur(int $id_ce, string $action_name): int|false
+    public function getActionEnCoursForConnecteur($id_ce, $action_name)
     {
         $sql = <<<SQL
 SELECT id_worker FROM job_queue
@@ -278,7 +280,7 @@ SQL;
         return $this->query($sql, $id_verrou);
     }
 
-    private function getJobFilterCondition(string $filtre): string
+    private function getJobFilterCondition($filtre): string
     {
         return match ($filtre) {
             'lock' => 'AND is_lock = 1',

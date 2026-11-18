@@ -13,7 +13,7 @@ class WorkerSQLTest extends PastellTestCase
 
     public function testCreate()
     {
-        self::assertGreaterThan(0, $this->workerSQL->create(42));
+        self::assertNotNull($this->workerSQL->create(42));
     }
 
     public function testGetInfo()
@@ -142,12 +142,12 @@ class WorkerSQLTest extends PastellTestCase
 
     public function testGetJobListWithWorkerForDocument()
     {
-        self::assertEmpty($this->workerSQL->getJobListWithWorkerForDocument(42, '8'));
+        self::assertEmpty($this->workerSQL->getJobListWithWorkerForDocument(42, 8));
     }
 
     public function testGetActionEnCours()
     {
-        self::assertEmpty($this->workerSQL->getActionEnCours(42, '8'));
+        self::assertEmpty($this->workerSQL->getActionEnCours(42, 8));
     }
 
     public function testNoLaunchWithIdVerrou()
@@ -167,7 +167,7 @@ class WorkerSQLTest extends PastellTestCase
         $this->assertEquals([$id_job_1], $id_job_list);
 
         $id_worker = $this->workerSQL->create(42);
-        $this->workerSQL->attachJob($id_worker, (int)$id_job_1);
+        $this->workerSQL->attachJob($id_worker, $id_job_1);
 
         $all_verrou = $this->workerSQL->getVerrou();
         $this->assertEquals(["VERROU"], $all_verrou);
@@ -245,7 +245,7 @@ class WorkerSQLTest extends PastellTestCase
         $job->id_ce = 1;
         $id_job = $jobQueueSQL->createJob($job);
         $id_worker = $this->workerSQL->create(42);
-        $this->workerSQL->attachJob($id_worker, (int)$id_job);
+        $this->workerSQL->attachJob($id_worker, $id_job);
 
         $this->assertEquals(
             $id_worker,
