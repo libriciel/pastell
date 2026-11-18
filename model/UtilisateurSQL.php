@@ -30,10 +30,10 @@ SQL;
      */
     public function validMail($id_u, $password)
     {
-        $sql = <<<SQL
-SELECT id_u FROM utilisateur WHERE id_u = ? AND mail_verif_password = ?
-SQL;
-        if (!$this->queryOne($sql, $id_u, $password)) {
+        $sql = "SELECT id_u FROM utilisateur " .
+                " WHERE id_u =? AND mail_verif_password= ? ";
+        $result = $this->queryOne($sql, $id_u, $password);
+        if (! $result) {
             return false;
         }
         $this->validMailAuto($id_u);
@@ -53,8 +53,8 @@ SQL;
      */
     public function verifPassword($id_u, $password)
     {
-        $user_info = $this->getInfo($id_u);
-        return password_verify($password, $user_info['password']);
+        $info = $this->getInfo($id_u);
+        return password_verify($password, $info['password']);
     }
 
     public function desinscription($id_u)
@@ -70,7 +70,8 @@ SQL;
      */
     public function setPassword($id_u, $password)
     {
-        $this->updatePasswordHash($id_u, password_hash($password, PASSWORD_DEFAULT));
+        $sql = "UPDATE utilisateur SET password = ? WHERE id_u = ?";
+        $this->query($sql, password_hash($password, PASSWORD_DEFAULT), $id_u);
     }
 
     public function setEmail($id_u, $email)
@@ -107,10 +108,15 @@ SQL;
      */
     public function setCertificat($id_u, Certificate $certificat)
     {
-        if (!$certificat->isValid()) {
+
+        if (! $certificat->isValid()) {
             return false;
         }
-        $this->updateCertificat($id_u, $certificat->getContent(), $certificat->getMD5());
+
+        $certificatContent = $certificat->getContent();
+        $certificatVerifNumber = $certificat->getMD5();
+
+        $this->updateCertificat($id_u, $certificatContent, $certificatVerifNumber);
         return true;
     }
 
@@ -143,11 +149,10 @@ SQL;
      */
     public function create($login, $password, $email, $password_validation)
     {
-        $sql = <<<SQL
-INSERT INTO utilisateur(login, email, mail_verif_password, date_inscription) VALUES (?, ?, ?, now())
-SQL;
+        $sql = "INSERT INTO utilisateur(login,email,mail_verif_password,date_inscription) " .
+                " VALUES (?,?,?,now())";
         $this->query($sql, $login, $email, $password_validation);
-        $id_u = $this->getIdFromLogin($login);
+        $id_u =  $this->getIdFromLogin($login);
         $this->setPassword($id_u, $password);
         return $id_u;
     }
@@ -167,19 +172,19 @@ SQL;
      */
     public function getUserFromData($data)
     {
-        if (!empty($data['id_u'])) {
-            $user_info = $this->getInfo($data['id_u']);
-            if (!$user_info) {
+        if (! empty($data['id_u'])) {
+            $infoUtilisateurExistant = $this->getInfo($data['id_u']);
+            if (!$infoUtilisateurExistant) {
                 throw new NotFoundException("L'identifiant de l'utilisateur n'existe pas : {id_u={$data['id_u']}}");
             }
-            return $user_info;
+            return $infoUtilisateurExistant;
         }
         if (isset($data['login'])) {
-            $user_info = $this->getInfoByLogin($data['login']);
-            if (!$user_info) {
+            $infoUtilisateurExistant = $this->getInfoByLogin($data['login']);
+            if (!$infoUtilisateurExistant) {
                 throw new NotFoundException("Le login de l'utilisateur n'existe pas : {login={$data['login']}}");
             }
-            return $user_info;
+            return $infoUtilisateurExistant;
         }
         throw new Exception("Aucun paramètre permettant la recherche de l'utilisateur n'a été renseigné");
     }

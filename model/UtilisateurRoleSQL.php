@@ -208,6 +208,9 @@ SQL;
         return (int)$this->queryOne($sql, $role);
     }
 
+    /**
+     * @return list<int>
+     */
     public function getSubscribedUsersByRole(string $role): array
     {
         $sql = <<<SQL
