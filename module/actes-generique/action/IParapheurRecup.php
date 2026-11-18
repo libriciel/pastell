@@ -56,7 +56,7 @@ class IParapheurRecup extends ActionExecutor
         $signature->effacerDossierRejete($dossierID);
 
         $this->notify('rejet-iparapheur', $this->type, "Le document a été rejeté dans le parapheur : $result");
-        $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'rejet-iparapheur', "Le document a été rejeté dans le parapheur : $result");
+        $this->changeAction('rejet-iparapheur', "Le document a été rejeté dans le parapheur : $result");
         return true;
     }
 
@@ -103,9 +103,9 @@ class IParapheurRecup extends ActionExecutor
             );
         }
 
-        $this->setLastMessage("La signature a été récupérée");
-        $this->notify('recu-iparapheur', $this->type, "La signature a été récupérée");
-        $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'recu-iparapheur', "La signature a été récupérée sur le parapheur électronique");
+        $this->notify('recu-iparapheur', $this->type, 'La signature a été récupérée');
+        $this->changeAction('recu-iparapheur', 'La signature a été récupérée sur le parapheur électronique');
+        $this->setLastMessage('La signature a été récupérée');
         return true;
     }
 
@@ -214,7 +214,7 @@ class IParapheurRecup extends ActionExecutor
         if ($signature->isRejected($lastDocumentHistory)) {
             $signature->effacerDossierRejete($documentId);
             $this->notify('rejet-iparapheur', $this->type, "Le document a été rejeté dans le parapheur");
-            $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'rejet-iparapheur', "Le document a été rejeté dans le parapheur");
+            $this->changeAction('rejet-iparapheur', 'Le document a été rejeté dans le parapheur');
         }
 
         $nb_jour_max = $signature->getNbJourMaxInConnecteur();
@@ -253,9 +253,9 @@ class IParapheurRecup extends ActionExecutor
         $acte->setData('has_signature', true);
         $acte->addFileFromData('signature', $acte->getFileName('arrete'), $signedFile);
         $acte->setData('is_pades', true);
-        $this->setLastMessage("La signature a été récupérée");
-        $this->notify('recu-iparapheur', $this->type, "La signature a été récupérée");
-        $this->getActionCreator()->addAction($this->id_e, $this->id_u, 'recu-iparapheur', "La signature a été récupérée sur le parapheur électronique");
+        $this->notify('recu-iparapheur', $this->type, 'La signature a été récupérée');
+        $this->changeAction('recu-iparapheur', 'La signature a été récupérée sur le parapheur électronique');
+        $this->setLastMessage('La signature a été récupérée');
         return true;
     }
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Mailsec;
 
-use ActionCreatorSQL;
+use ActionChange;
 use ActionExecutorFactory;
 use DocumentCreationService;
 use DocumentEmailSQL;
@@ -300,12 +300,12 @@ final class MailsecManager
             'compute_answered_mail'
         );
 
-        $this->objectInstancier->getInstance(ActionCreatorSQL::class)->addAction(
+        $this->objectInstancier->getInstance(ActionChange::class)->addAction(
+            $mailSecInfo->id_d_reponse,
             $mailSecInfo->id_e,
             0,
             'validation',
             'Validation du document par ' . $mailSecInfo->email,
-            $mailSecInfo->id_d_reponse
         );
 
         $titre = $mailSecInfo->donneesFormulaireReponse->getTitre();

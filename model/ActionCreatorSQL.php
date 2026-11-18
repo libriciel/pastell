@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated 4.1.26 Use ActionChange instead
+ */
 class ActionCreatorSQL extends SQL
 {
     private $journal;

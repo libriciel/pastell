@@ -110,7 +110,8 @@ class ActesPreversementSEDACreate extends ActionExecutor
         }
 
         $message = "[actes-preversement-seda] Passage en importation";
-        $this->getActionCreator($new_id_d)->addAction(
+        $this->getActionChange()->addAction(
+            $new_id_d,
             $this->id_e,
             0,
             'importation',

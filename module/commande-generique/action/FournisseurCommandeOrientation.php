@@ -19,10 +19,9 @@ class FournisseurCommandeOrientation extends ActionExecutor
             $message = "Conservation de l'état : {$last_action} -> {$next_action}";
         }
 
-        $this->getActionCreator()->addAction($this->id_e, $this->id_u, $next_action, "$message");
+        $this->changeAction($next_action, $message);
 
         $this->notify($next_action, $this->type, $message);
-        $this->setLastMessage($message);
         return true;
     }
 

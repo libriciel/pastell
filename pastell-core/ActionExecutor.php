@@ -113,7 +113,7 @@ abstract class ActionExecutor
     }
 
     /**
-     * @return ActionCreator
+     * @deprecated 4.1.26 Use getActionChange instead
      */
     public function getActionCreator($id_d = false)
     {
@@ -373,6 +373,10 @@ abstract class ActionExecutor
         return $this->getConnecteurFactory()->getGlobalConnecteur($type);
     }
 
+    public function getActionChange(): ActionChange
+    {
+        return $this->objectInstancier->getInstance(ActionChange::class);
+    }
 
     /***** Fonction utilitaire *****/
 
@@ -383,7 +387,7 @@ abstract class ActionExecutor
 
     public function changeAction($action, $message)
     {
-        $this->objectInstancier->getInstance(ActionChange::class)->addAction(
+        $this->getActionChange()->addAction(
             $this->id_d,
             $this->id_e,
             $this->id_u,
@@ -398,7 +402,7 @@ abstract class ActionExecutor
         string $message,
         bool $updateDate = false,
     ): void {
-        $this->objectInstancier->getInstance(ActionChange::class)->addOrUpdateAction(
+        $this->getActionChange()->addOrUpdateAction(
             $this->id_d,
             $this->id_e,
             $this->id_u,

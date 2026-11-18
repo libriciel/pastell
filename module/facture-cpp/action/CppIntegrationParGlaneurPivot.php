@@ -20,7 +20,7 @@ class CppIntegrationParGlaneurPivot extends ActionExecutor
         } catch (Exception $e) {
             $message = "Le fichier FacturePivot est incorrect: " . $e->getMessage();
             $this->setLastMessage($message);
-            $this->getActionCreator()->addAction($this->id_e, 0, 'integration-glaneur-pivot-error', $message);
+            $this->getActionChange()->addAction($this->id_d, $this->id_e, 0, 'integration-glaneur-pivot-error', $message);
             $this->notify('integration-glaneur-pivot-error', $this->type, $message);
             return false;
         }
