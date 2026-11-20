@@ -34,7 +34,7 @@ final class ExceptionListener implements EventSubscriberInterface
                 new RedirectResponse(
                     $this->router->generate(
                         'mailsec_recipient_password',
-                        ['key' => $event->getRequest()->query->get('key')],
+                        ['key' => $event->getRequest()->attributes->get('key')],
                     ),
                 )
             );
@@ -58,7 +58,7 @@ final class ExceptionListener implements EventSubscriberInterface
                 new RedirectResponse(
                     $this->router->generate(
                         'mailsec_recipient_index',
-                        ['key' => $event->getRequest()->query->get('key')],
+                        ['key' => $event->getRequest()->attributes->get('key')],
                     ),
                 )
             );
