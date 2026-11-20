@@ -17,6 +17,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use UnrecoverableException;
 use UtilisateurSQL;
 use PastellTestCase;
+use Pastell\Service\Entite\EntityType;
 
 final class ForceDeleteEntityTest extends PastellTestCase
 {
@@ -105,7 +106,7 @@ final class ForceDeleteEntityTest extends PastellTestCase
     public function testDeleteEntity(): void
     {
         $id_e = $this->entityCreationService->create('test', '',);
-        $child_id = $this->entityCreationService->create('test-child', '', EntiteSQL::TYPE_COLLECTIVITE, $id_e);
+        $child_id = $this->entityCreationService->create('test-child', '', EntityType::COLLECTIVITE->value, $id_e);
         self::assertNotFalse($this->entiteSQL->getInfo((string)$child_id));
 
         $id_ce = $this->connecteurCreationService->createConnecteur('test-conn', '', 0, $child_id);

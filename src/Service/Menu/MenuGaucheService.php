@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Pastell\Service\Menu;
 
 use DaemonSQL;
-use EntiteSQL;
 use NotFoundException;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
@@ -89,7 +88,7 @@ class MenuGaucheService
 
     public function getDaemonMenu(int $id_u): array
     {
-        $daemon_edition = $this->droitService->hasDroitFor($id_u, EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_DAEMON, DroitType::EDITION);
+        $daemon_edition = $this->droitService->hasDroitFor($id_u, RootEntity::ID_E, DroitService::DROIT_DAEMON, DroitType::EDITION);
         $configuration_options = [];
         if ($daemon_edition) {
             $configuration_options = [
@@ -162,7 +161,7 @@ class MenuGaucheService
         }
 
         $daemon_options = [];
-        if (($daemon_exists || $id_e === EntiteSQL::ID_E_ENTITE_RACINE) && $daemon_lecture) {
+        if (($daemon_exists || $id_e === RootEntity::ID_E) && $daemon_lecture) {
             $daemon_options = [
                 MenuGaucheOption::withParameters('Gestionnaire de tâches', self::ENTITE_DAEMON, ['id_e' => $id_e]),
                 MenuGaucheOption::withParameters('Tous les travaux', self::ENTITE_JOB, ['id_e' => $id_e]),

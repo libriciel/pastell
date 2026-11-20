@@ -529,7 +529,7 @@ class EntiteControler extends PastellControler
             $this->setViewParameter(
                 'all_connecteur_definition',
                 $this->getObjectInstancier()->getInstance(ConnecteurDefinitionFiles::class)->getAllConnecteursEntite(
-                    $id_e === EntiteSQL::ID_E_ENTITE_RACINE
+                    $id_e === RootEntity::ID_E
                 )
             );
         }
@@ -1044,7 +1044,7 @@ class EntiteControler extends PastellControler
 
     private function resolveDaemonForEntity(int $id_e): Daemon
     {
-        $daemon = $id_e === EntiteSQL::ID_E_ENTITE_RACINE ?
+        $daemon = $id_e === RootEntity::ID_E ?
             $this->getDaemonSQL()->getGlobalDaemon() :
             $this->getDaemonSQL()->getDaemonByEntity($id_e);
         if ($daemon === null) {

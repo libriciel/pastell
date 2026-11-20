@@ -185,7 +185,7 @@ class RoleControler extends PastellControler
 
     public function deleteAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_ROLE, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_ROLE, DroitType::EDITION);
         $role = $this->getGetInfo()->get('role');
         $role_info = $this->getRoleSQL()->getInfo($role) ?: [];
 

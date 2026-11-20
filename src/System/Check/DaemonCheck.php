@@ -7,8 +7,8 @@ namespace Pastell\System\Check;
 use Daemon;
 use DaemonManager;
 use DaemonSQL;
-use EntiteSQL;
 use JobQueueSQL;
+use Pastell\Service\Entite\EntityInfoService;
 use Pastell\System\CheckInterface;
 use Pastell\System\HealthCheckItem;
 use UnrecoverableException;
@@ -18,7 +18,7 @@ class DaemonCheck implements CheckInterface
     public function __construct(
         private readonly JobQueueSQL $jobQueueSQL,
         private readonly DaemonSQL $daemonSQL,
-        private readonly EntiteSQL $entiteSQL
+        private readonly EntityInfoService $entityInfoService
     ) {
     }
 
@@ -71,7 +71,7 @@ class DaemonCheck implements CheckInterface
             $daemon_context = $daemon->toArray();
             $daemon_context['denomination_entite'] = $daemon->id_daemon === DaemonSQL::GLOBAL_DAEMON ?
                 'Gestionnaire global' :
-                $this->entiteSQL->getDenomination($daemon->id_e);
+                $this->entityInfoService->getDenomination($daemon->id_e);
 
             $item = new HealthCheckItem((string)$daemon->id_daemon, $message)
                 ->setSuccess($success)

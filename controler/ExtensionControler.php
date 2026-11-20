@@ -130,7 +130,7 @@ class ExtensionControler extends PastellControler
 
     public function deleteAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $id_extension = $this->getGetInfo()->get('id_extension');
         try {
             $extension_info = $this->getExtensions()->getInfo($id_extension);
@@ -153,7 +153,7 @@ class ExtensionControler extends PastellControler
 
     public function doDeleteAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         try {
             $id_extension = $this->getPostInfo()->getInt('id_extension');
             $this->apiDelete("/extension/{$id_extension}");

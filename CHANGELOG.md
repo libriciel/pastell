@@ -129,6 +129,28 @@
     - `Controler::getViewParameterOrObject()`
     - `DroitService::getAllDroitEntite()`
     - `FluxAPIController::listFlux()`
+- Suppression des éléments dépréciés #2639 :
+    - `DocumentEmail` #2610
+    - `DocumentActionEntite` #2618
+    - `UsersToken` #2621
+    - `ConnecteurDisponible` #2622
+    - `TableCheck` #2623
+    - `UtilisateurRoleCache` #2624
+    - `ConnecteurFrequence` #2625
+    - `DocumentControler::getDocumentActionEntite()` #2618
+    - `ActionExecutor::getDocumentActionEntite()` #2618
+    - `ConnecteurFrequenceSQL::edit()`, `cleanAttributeList()`, `getAll()`, `getConnecteurFrequence()`,
+      `getNearestConnecteurFromConnecteur()` #2625
+    - `JobManager::getNearestConnecteurFrequence()`, `getNearestConnecteurForDocument()` #2625
+    - `JobManager::DEFAULT_NEXT_TRY_IN_MINUTES`, `DEFAULT_ID_VERROU` #2625
+    - `DaemonControler::getConnecteurFrequenceSQL()` #2625
+    - `EntiteSQL::removeEntite()`, `getEntiteFromData()`, `getDenomination()`, `getCDG()`, `getSiren()`,
+      `getExtendedInfo()`, `getFilleInfoNavigation()`, `getAncetreNav()`, `getAncetreId()`, `getAllChildren()`,
+      `getTreeEntity()`, `updateAncestor()`, `updateAllAncestors()`, `getAllType()`, `getNom()`, `isActive()`,
+      `isCDG()` #2627
+    - `EntiteSQL::TYPE_COLLECTIVITE`, `TYPE_CENTRE_DE_GESTION`, `ENTITE_RACINE_DENOMINATION`,
+      `ID_E_ENTITE_RACINE` #2627
+    - `EntityUtilitiesService::addDenominationForEntiteRacine()` #2627
 
 ## [5.0.13] - 2026-11-12
 

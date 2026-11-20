@@ -7,7 +7,6 @@ namespace Pastell\Service\MagicLink;
 use ConfigurationSQL;
 use ConflictException;
 use Date;
-use EntiteSQL;
 use Exception;
 use JournalEventType;
 use MagicLinkSQL;
@@ -24,6 +23,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mime\Address;
 use UnrecoverableException;
+use Pastell\Service\Entite\RootEntity;
 
 final class MagicLinkService
 {
@@ -69,7 +69,7 @@ final class MagicLinkService
         string $prenom,
         string $email,
         string $role = self::DEFAULT_TEMP_USER_ROLE,
-        int $entityId = EntiteSQL::ID_E_ENTITE_RACINE,
+        int $entityId = RootEntity::ID_E,
     ): void {
         if ($durationInHours < 1 || $durationInHours > self::MAX_DURATION_IN_HOURS) {
             throw new UnrecoverableException(
@@ -281,7 +281,7 @@ final class MagicLinkService
 
         $this->journalEntryService->add(
             JournalEventType::LOGIN,
-            EntiteSQL::ID_E_ENTITE_RACINE,
+            RootEntity::ID_E,
             JournalEntryService::NO_ID_D,
             'magic-link',
             "Révocation de l'accès #$magicLinkId"
@@ -297,7 +297,7 @@ final class MagicLinkService
             $this->deleteTemporaryUser($link);
             $this->journalEntryService->add(
                 JournalEventType::LOGIN,
-                EntiteSQL::ID_E_ENTITE_RACINE,
+                RootEntity::ID_E,
                 JournalEntryService::NO_ID_D,
                 'magic-link',
                 "Nettoyage automatique de l'accès temporaire #$magicLinkId (expiré ou révoqué)"
@@ -317,7 +317,7 @@ final class MagicLinkService
         if ($count > 0) {
             $this->journalEntryService->add(
                 JournalEventType::LOGIN,
-                EntiteSQL::ID_E_ENTITE_RACINE,
+                RootEntity::ID_E,
                 JournalEntryService::NO_ID_D,
                 'magic-link',
                 "Purge de l'historique des accès temporaires : "

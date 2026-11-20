@@ -7,15 +7,6 @@ use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceService;
 
 class JobManager
 {
-    /**
-     * @deprecated 4.1.26 Use ConnecteurFrequenceService::DEFAULT_EXPRESSION instead
-     */
-    public const DEFAULT_NEXT_TRY_IN_MINUTES = 1;
-    /**
-     * @deprecated 4.1.26 Use ConnecteurFrequenceService::DEFAULT_ID_VERROU instead
-     */
-    public const DEFAULT_ID_VERROU = "DEFAULT_VERROU_ID";
-
     public function __construct(
         private readonly JobQueueSQL $jobQueueSQL,
         private readonly DaemonSQL $daemonSQL,
@@ -23,9 +14,7 @@ class JobManager
         private readonly DocumentActionEntiteSQL $documentActionEntiteSQL,
         private readonly DocumentEntiteService $documentEntiteService,
         private readonly DocumentTypeFactory $documentTypeFactory,
-        private readonly FluxEntiteSQL $fluxEntiteSQL,
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
-        private readonly ConnecteurFrequenceSQL $connecteurFrequenceSQL,
         private readonly ConnecteurFrequenceService $connecteurFrequenceService,
         private readonly Logger $logger,
         private $disable_job_queue = false
@@ -177,68 +166,6 @@ class JobManager
         $job->id_verrou = $connecteurFrequenceData->id_verrou;
         $job->nb_try++;
         $this->jobQueueSQL->updateJob($job);
-    }
-
-    /**
-     * @deprecated 4.1.26 Use ConnecteurFrequenceService::getForConnecteur() instead
-     */
-    public function getNearestConnecteurFrequence($id_ce)
-    {
-        $connecteurFrequence = $this->getConnecteurFrequenceByIdCe($id_ce);
-        return $this->getNearestConnecteurFromConnecteur($connecteurFrequence);
-    }
-
-    private function getConnecteurFrequenceByIdCe($id_ce)
-    {
-        $connecteur_info = $this->connecteurEntiteSQL->getInfo($id_ce);
-        $connecteurFrequence = new ConnecteurFrequence();
-        $connecteurFrequence->type_connecteur = ($connecteur_info['global']) ?
-            ConnecteurFrequence::TYPE_GLOBAL : ConnecteurFrequence::TYPE_ENTITE;
-        $connecteurFrequence->famille_connecteur = $connecteur_info['type'];
-        $connecteurFrequence->id_connecteur = $connecteur_info['id_connecteur'];
-        $connecteurFrequence->id_ce = $connecteur_info['id_ce'];
-        $connecteurFrequence->action_type = ConnecteurFrequence::TYPE_ACTION_CONNECTEUR;
-        return $connecteurFrequence;
-    }
-
-    /**
-     * @param $id_ce
-     * @return ConnecteurFrequence[]
-     * @deprecated 4.1.26 Use ConnecteurFrequenceService::getForConnecteurByFlux() instead
-     */
-    public function getNearestConnecteurForDocument($id_ce)
-    {
-        $connecteur_info = $this->connecteurEntiteSQL->getInfo($id_ce);
-        $all_flux = $this->fluxEntiteSQL->getFluxByConnecteur($connecteur_info['id_ce']);
-        $connecteurFrequence = $this->getConnecteurFrequenceByIdCe($id_ce);
-
-        $connecteurFrequenceByFlux = [];
-
-        if ($connecteurFrequence->type_connecteur === ConnecteurFrequence::TYPE_ENTITE) {
-            foreach ($all_flux as $flux) {
-                $connecteurFrequence->action_type = ConnecteurFrequence::TYPE_ACTION_DOCUMENT;
-                $connecteurFrequence->type_document = $flux;
-                $connecteurFrequenceByFlux[$flux] =
-                    $this->connecteurFrequenceSQL->getNearestConnecteurFromConnecteur($connecteurFrequence);
-                if (!$connecteurFrequenceByFlux[$flux]) {
-                    $connecteurFrequence->id_verrou = self::DEFAULT_ID_VERROU;
-                    $connecteurFrequence->expression = self::DEFAULT_NEXT_TRY_IN_MINUTES;
-                    $connecteurFrequenceByFlux[$flux] = $connecteurFrequence;
-                }
-            }
-        }
-        return $connecteurFrequenceByFlux;
-    }
-
-    private function getNearestConnecteurFromConnecteur(ConnecteurFrequence $connecteurFrequence)
-    {
-        $connecteurResult = $this->connecteurFrequenceSQL->getNearestConnecteurFromConnecteur($connecteurFrequence);
-        if (!$connecteurResult) {
-            $connecteurFrequence->id_verrou = self::DEFAULT_ID_VERROU;
-            $connecteurFrequence->expression = self::DEFAULT_NEXT_TRY_IN_MINUTES;
-            $connecteurResult = $connecteurFrequence;
-        }
-        return $connecteurResult;
     }
 
     public function deleteConnecteur($id_ce)

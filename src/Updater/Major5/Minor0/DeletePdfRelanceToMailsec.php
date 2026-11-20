@@ -6,10 +6,11 @@ namespace Pastell\Updater\Major5\Minor0;
 
 use ConnecteurEntiteSQL;
 use ConnecteurFactory;
-use ConnecteurFrequenceSQL;
 use Exception;
 use FluxEntiteSQL;
 use Pastell\Service\Connecteur\ConnecteurDeletionService;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceData;
+use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceService;
 use Pastell\Updater\Version;
 use PastellLogger;
 
@@ -25,7 +26,7 @@ final class DeletePdfRelanceToMailsec implements Version
         private readonly ConnecteurFactory $connecteurFactory,
         private readonly FluxEntiteSQL $fluxEntiteSQL,
         private readonly ConnecteurDeletionService $connecteurDeletionService,
-        private readonly ConnecteurFrequenceSQL $connecteurFrequenceSQL,
+        private readonly ConnecteurFrequenceService $connecteurFrequenceService,
         private readonly ?PastellLogger $logger = null,
     ) {
     }
@@ -95,12 +96,22 @@ final class DeletePdfRelanceToMailsec implements Version
             );
         }
         //MAJ Frequence
-        $allFrequencies = $this->connecteurFrequenceSQL->getAll();
-        foreach ($allFrequencies as $frequency) {
-            if ($frequency->famille_connecteur === self::PDF_RELANCE_CONNECTOR) {
-                $frequency->famille_connecteur = self::MAILSEC_CONNECTOR;
-                $frequency->id_connecteur = self::MAILSEC_CONNECTOR;
-                $this->connecteurFrequenceSQL->edit($frequency);
+        foreach ($this->connecteurFrequenceService->getAll() as $connecteurFrequenceData) {
+            if ($connecteurFrequenceData->famille_connecteur === self::PDF_RELANCE_CONNECTOR) {
+                $this->connecteurFrequenceService->save(
+                    new ConnecteurFrequenceData(
+                        id_cf: $connecteurFrequenceData->id_cf,
+                        type_connecteur: $connecteurFrequenceData->type_connecteur,
+                        famille_connecteur: self::MAILSEC_CONNECTOR,
+                        id_connecteur: self::MAILSEC_CONNECTOR,
+                        id_ce: $connecteurFrequenceData->id_ce,
+                        action_type: $connecteurFrequenceData->action_type,
+                        type_document: $connecteurFrequenceData->type_document,
+                        action: $connecteurFrequenceData->action,
+                        expression: $connecteurFrequenceData->expression,
+                        id_verrou: $connecteurFrequenceData->id_verrou,
+                    )
+                );
                 $this->logger?->info('Update frequence mailsec with values pdf-relance');
             }
         }
