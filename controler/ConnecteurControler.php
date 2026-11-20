@@ -450,7 +450,7 @@ class ConnecteurControler extends PastellControler
 
         $all_connecteur_dispo = $global ?
             $this->getConnecteurDefinitionFile()->getAllConnecteursGlobaux() :
-            $this->getConnecteurDefinitionFile()->getAllConnecteursEntite($id_e === EntiteSQL::ID_E_ENTITE_RACINE);
+            $this->getConnecteurDefinitionFile()->getAllConnecteursEntite($id_e === RootEntity::ID_E);
 
         $this->setViewParameter('all_connecteur_dispo', $all_connecteur_dispo);
         $this->setViewParameter('page_title', "Ajout d'un connecteur");
@@ -480,7 +480,7 @@ class ConnecteurControler extends PastellControler
             }
             if (
                 !$global &&
-                $id_e === EntiteSQL::ID_E_ENTITE_RACINE &&
+                $id_e === RootEntity::ID_E &&
                 !$this->getConnecteurDefinitionFile()->isAllowedOnEntiteRacine($connecteur_info)
             ) {
                 throw new RuntimeException(

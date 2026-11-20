@@ -17,6 +17,7 @@ use NotFoundException;
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Connecteur\ConnecteurDeletionService;
 use Pastell\Service\Document\DocumentEntiteService;
+use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -56,6 +57,7 @@ class ForceDeleteEntity extends Command
         private readonly ConnecteurAssociationService $connecteurAssociationService,
         private readonly DaemonManager $daemonManager,
         private readonly DaemonSQL $daemonSQL,
+        private readonly EntiteDeletionService $entiteDeletionService,
     ) {
         parent::__construct();
     }
@@ -166,7 +168,7 @@ class ForceDeleteEntity extends Command
             }
 
             if ($do) {
-                $this->entiteSQL->removeEntite($id_e);
+                $this->entiteDeletionService->deleteEmptyEntity($id_e);
             }
             $io->writeln("Suppression de l'entité {$id_e} : " . ($do ? '[OK]' : '[PASS]'));
             $io->newLine();

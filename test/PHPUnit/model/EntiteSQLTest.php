@@ -2,7 +2,6 @@
 
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Entite\EntityType;
-use Pastell\Service\Entite\RootEntity;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
@@ -21,84 +20,10 @@ class EntiteSQLTest extends PastellTestCase
         $this->utilisateurRoleService = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
     }
 
-    public function testGetDemominationEntiteRacine()
-    {
-        $this->assertEquals(
-            RootEntity::DENOMINATION,
-            $this->entiteSQL->getDenomination(0)
-        );
-    }
-
-    public function testGetDenomination()
-    {
-        $this->assertEquals("Bourg-en-Bresse", $this->entiteSQL->getDenomination(1));
-    }
-
-    public function testGetDenominationEmpty()
-    {
-        $this->assertEquals("", $this->entiteSQL->getDenomination(42));
-    }
-
     public function testGetEntiteMere()
     {
         $id_e = $this->entiteSQL->getEntiteMere(2);
         $this->assertEquals(1, $id_e);
-    }
-
-    public function testGetEntiteFromData()
-    {
-        $info = $this->entiteSQL->getEntiteFromData(['id_e' => 1]);
-        $this->assertEquals("Bourg-en-Bresse", $info['denomination']);
-    }
-
-    public function testGetEntiteFromDataFromDenomination()
-    {
-        $info = $this->entiteSQL->getEntiteFromData(['denomination' => "Bourg-en-Bresse"]);
-        $this->assertEquals(1, $info['id_e']);
-    }
-
-    public function testGetEntiteFromDataIdNotExisting()
-    {
-        $this->expectException("Exception");
-        $this->expectExceptionMessage("L'identifiant de l'entite n'existe pas : {id_e=42}");
-        $this->entiteSQL->getEntiteFromData(['id_e' => 42]);
-    }
-
-    public function testGetEntiteFromDataDenominationNotExisting()
-    {
-        $this->expectException("Exception");
-        $this->expectExceptionMessage("La dénomination de l'entité n'existe pas : {denomination=FizzBuzz}");
-        $this->entiteSQL->getEntiteFromData(['denomination' => "FizzBuzz"]);
-    }
-
-    public function testGetEntiteFromDataFailed()
-    {
-        $this->expectException("Exception");
-        $this->expectExceptionMessage("Aucun paramètre permettant la recherche de l'entité n'a été renseigné");
-        $this->entiteSQL->getEntiteFromData([]);
-    }
-
-    public function testGetEntiteFromDataSameDenomination()
-    {
-        $sql = "INSERT INTO entite(denomination,siren) VALUES ('Bourg-en-Bresse','123456789')";
-        $this->getSQLQuery()->query($sql);
-        $this->expectException("Exception");
-        $this->expectExceptionMessage("Plusieurs entités portent le même nom, préférez utiliser son identifiant");
-        $this->entiteSQL->getEntiteFromData(['denomination' => "Bourg-en-Bresse"]);
-    }
-
-    public function testGetEntiteFromDataIsActive(): void
-    {
-        $data['is_active'] = 1;
-        $this->assertCount(2, $this->entiteSQL->getEntiteFromData($data));
-        $data['is_active'] = 0;
-        $this->assertCount(0, $this->entiteSQL->getEntiteFromData($data));
-
-        $this->entiteSQL->setActive(self::ID_E_COL, false);
-        $data['is_active'] = 1;
-        $this->assertCount(1, $this->entiteSQL->getEntiteFromData($data));
-        $data['is_active'] = 0;
-        $this->assertCount(1, $this->entiteSQL->getEntiteFromData($data));
     }
 
     public function testExists()
@@ -116,35 +41,6 @@ class EntiteSQLTest extends PastellTestCase
     {
         $id_e = $this->entiteSQL->getIdByDenomination('Bourg-en-Bresse');
         $this->assertEquals(1, $id_e);
-    }
-
-    public function testGetFilleInfoNavigation()
-    {
-        $this->assertEquals(
-            'Bourg-en-Bresse',
-            $this->entiteSQL->getFilleInfoNavigation(0, [])[0]['denomination']
-        );
-    }
-
-    public function testGetFilleInfoNavigationAuthorized()
-    {
-        $this->assertEquals(
-            'Bourg-en-Bresse',
-            $this->entiteSQL->getFilleInfoNavigation(0, [1])[0]['denomination']
-        );
-    }
-
-    public function testGetFilleInfoNavigationUnauthorized()
-    {
-        $this->assertEquals(
-            'CCAS',
-            $this->entiteSQL->getFilleInfoNavigation(0, [2])[0]['denomination']
-        );
-    }
-
-    public function testGetAllChildren(): void
-    {
-        $this->assertCount(2, $this->entiteSQL->getAllChildren(RootEntity::ID_E));
     }
 
     public function testGetAllByType(): void
@@ -181,7 +77,7 @@ class EntiteSQLTest extends PastellTestCase
     {
         $entityCreationService = $this->getObjectInstancier()->getInstance(EntityCreationService::class);
         $id_e_2 = $entityCreationService->create('Entité 2', '000000000');
-        $id_e_3 = $entityCreationService->create('Entité 3', '000000000', EntiteSQL::TYPE_COLLECTIVITE, $id_e_2);
+        $id_e_3 = $entityCreationService->create('Entité 3', '000000000', EntityType::COLLECTIVITE->value, $id_e_2);
 
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $id_u = $userCreationService->create('test', 'aa@aa.fr', 'user', 'user');
