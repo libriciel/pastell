@@ -5,15 +5,18 @@ include:
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
-  - template: Security/Container-Scanning.gitlab-ci.yml
   # FIXME: disabled because the qlty code-quality job uses too much memory, gets OOM-killed
   # by the runner and blocks the other jobs of the pipeline.
 #  - component: $LIBRICIEL_CATALOG_PATH/qlty/code-quality@~latest
 #    inputs:
 #      mode: "changed"
+  - component: $LIBRICIEL_CATALOG_PATH/vulnerability-scan/container@2.0.0
+    inputs:
+      image: "${CONTAINER_IMAGE}"
+      needs: [ "build" ]
   - component: $LIBRICIEL_CATALOG_PATH/project-standards/check-libriciel-standards@3.1.0
-  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.2.1
-  - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@1.4.0
+  - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.4.0
+  - component: $LIBRICIEL_CATALOG_PATH/sbom-manager/build@2.0.0
     inputs:
       compose_file: "docker/docker-compose.yml"
       version_placeholder: "canary"
@@ -153,45 +156,9 @@ acceptance_test:
             - $CI_PROJECT_DIR
         expire_in: 1h
 
-security-check:
-  stage: test
-  allow_failure: true
-  image:
-    name: hubdocker.libriciel.fr/aquasec/trivy:0.76.1
-    entrypoint: [ "" ]
-  services:
-    - docker:dind
-  before_script:
-    - cp .trivyignore /
-  script:
-    - apk add --no-cache curl docker-cli
-    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - trivy image --no-progress --skip-dirs "/app/documentation/data-exemple" --output scanning-report.txt $CONTAINER_IMAGE
-    - trivy image --exit-code 1 --no-progress --skip-dirs "/app/documentation/data-exemple" --severity HIGH,CRITICAL $CONTAINER_IMAGE
-  artifacts:
-    reports:
-      container_scanning: scanning-report.txt
-    expire_in: 1 week
-
-deploy_dev:
-    stage: staging
-    environment:
-        name: pastell-4-0.dev.libriciel.net
-        url: https://pastell-4-0.dev.libriciel.net
-    only:
-        - master
-    variables:
-        PAYLOAD: "payload={\"text\": \"[pastell-4-0.dev.libriciel.net](https://pastell-4-0.dev.libriciel.net) a été mis à jour - [build $CI_PIPELINE_ID]($CI_PROJECT_URL/pipelines/$CI_PIPELINE_ID)\"}"
-    script:
-        - eval $(ssh-agent -s)
-        - ssh-add <(echo "$SSH_PRIVATE_KEY")
-        - mkdir -p ~/.ssh
-        - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-        - scp ./docker/docker-compose.yml gitlab@pastell-4-0.dev.libriciel.net:/data/docker-file/docker-compose.yml
-        - echo "$DEV_ENV_FILE_CONTENT" > /tmp/.env
-        - scp /tmp/.env gitlab@pastell-4-0.dev.libriciel.net:/data/docker-file/
-        - ssh -tt gitlab@pastell-4-0.dev.libriciel.net "docker login -u gitlab-ci-token -p '$CI_JOB_TOKEN' $CI_REGISTRY && cd /data/docker-file/ && docker-compose pull && docker-compose up -d"
-        - curl -i -X POST -d "$PAYLOAD" $MATTERMOST_WEBHOOK
+container-scan:
+  allow_failure:
+    exit_codes: [3]
 
 publish-container-to-registry:
   before_script:
@@ -203,14 +170,7 @@ publish-container-to-registry:
 generate-sbom-compose:
   needs: [ "publish-container-to-registry"]
 
-package-sbom-compose:
-  needs: [ "generate-sbom-compose" ]
-
 publish-compose:
-  needs: [ "publish-container-to-registry", "package-sbom-compose" ]
+  needs: [ "publish-container-to-registry", "generate-sbom-compose" ]
   before_script:
     - sed -i "s/canary/${CI_COMMIT_REF_NAME}/" docker/docker-compose.yml
-
-container_scanning:
-  variables:
-    CS_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH
