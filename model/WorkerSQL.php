@@ -280,7 +280,7 @@ SQL;
         return $this->query($sql, $id_verrou);
     }
 
-    private function getJobFilterCondition($filtre): string
+    private function getJobFilterCondition(string $filtre): string
     {
         return match ($filtre) {
             'lock' => 'AND is_lock = 1',
