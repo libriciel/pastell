@@ -134,16 +134,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.404.0",
+            "version": "3.404.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "5b975ca9aca4c1708bc9106c90399460ee04346c"
+                "reference": "3f0279897d3f0f15971498793ca40ffa43ca385c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/5b975ca9aca4c1708bc9106c90399460ee04346c",
-                "reference": "5b975ca9aca4c1708bc9106c90399460ee04346c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3f0279897d3f0f15971498793ca40ffa43ca385c",
+                "reference": "3f0279897d3f0f15971498793ca40ffa43ca385c",
                 "shasum": ""
             },
             "require": {
@@ -225,10 +225,10 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.404.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.404.1"
             },
-            "time": "2026-11-16T19:30:56+00:00",
-            "published-time": "2026-11-16T19:38:45+00:00"
+            "time": "2026-11-17T19:12:26+00:00",
+            "published-time": "2026-11-17T19:19:58+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -1352,16 +1352,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "2.13.3",
+            "version": "2.13.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "6d3cd8285a97eaa352956a4ada92fa03ecce1c4e"
+                "reference": "2bd3dccf56e99cdacf74b1ad5e06a08a5a7739f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/6d3cd8285a97eaa352956a4ada92fa03ecce1c4e",
-                "reference": "6d3cd8285a97eaa352956a4ada92fa03ecce1c4e",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/2bd3dccf56e99cdacf74b1ad5e06a08a5a7739f2",
+                "reference": "2bd3dccf56e99cdacf74b1ad5e06a08a5a7739f2",
                 "shasum": ""
             },
             "require": {
@@ -1451,7 +1451,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.13.3"
+                "source": "https://github.com/guzzle/psr7/tree/2.13.6"
             },
             "funding": [
                 {
@@ -1467,8 +1467,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-12T15:57:42+00:00",
-            "published-time": "2026-11-12T15:58:42+00:00"
+            "time": "2026-11-21T23:48:40+00:00",
+            "published-time": "2026-11-21T23:49:39+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",
@@ -3317,16 +3317,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.58",
+            "version": "3.0.59",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "91f3a6436bb84040ac0cf49e761977f17d16a39b"
+                "reference": "527959f6f26591d532c07cf1c426585ef7279fa9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/91f3a6436bb84040ac0cf49e761977f17d16a39b",
-                "reference": "91f3a6436bb84040ac0cf49e761977f17d16a39b",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/527959f6f26591d532c07cf1c426585ef7279fa9",
+                "reference": "527959f6f26591d532c07cf1c426585ef7279fa9",
                 "shasum": ""
             },
             "require": {
@@ -3407,7 +3407,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.58"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.59"
             },
             "funding": [
                 {
@@ -3423,7 +3423,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-02T10:45:48+00:00"
+            "time": "2026-11-20T07:39:42+00:00",
+            "published-time": "2026-11-20T07:45:20+00:00"
         },
         {
             "name": "phpstan/phpdoc-parser",
@@ -4389,16 +4390,16 @@
         },
         {
             "name": "sentry/sentry",
-            "version": "4.37.0",
+            "version": "4.37.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getsentry/sentry-php.git",
-                "reference": "635a94908528ca5c4f0804640a0ec578e51639b3"
+                "reference": "e91d17a16a2f007c01a68b0a6140a46bb3c1f90d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getsentry/sentry-php/zipball/635a94908528ca5c4f0804640a0ec578e51639b3",
-                "reference": "635a94908528ca5c4f0804640a0ec578e51639b3",
+                "url": "https://api.github.com/repos/getsentry/sentry-php/zipball/e91d17a16a2f007c01a68b0a6140a46bb3c1f90d",
+                "reference": "e91d17a16a2f007c01a68b0a6140a46bb3c1f90d",
                 "shasum": ""
             },
             "require": {
@@ -4470,7 +4471,7 @@
             ],
             "support": {
                 "issues": "https://github.com/getsentry/sentry-php/issues",
-                "source": "https://github.com/getsentry/sentry-php/tree/4.37.0"
+                "source": "https://github.com/getsentry/sentry-php/tree/4.37.1"
             },
             "funding": [
                 {
@@ -4482,8 +4483,8 @@
                     "type": "custom"
                 }
             ],
-            "time": "2026-11-11T15:29:22+00:00",
-            "published-time": "2026-11-11T15:35:52+00:00"
+            "time": "2026-11-17T17:03:08+00:00",
+            "published-time": "2026-11-17T17:09:45+00:00"
         },
         {
             "name": "softcreatr/jsonpath",
@@ -11102,11 +11103,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.3.6",
+            "version": "2.3.7",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/00cedebb76cc82c1592414fa4f616cefdccda16f",
-                "reference": "00cedebb76cc82c1592414fa4f616cefdccda16f",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/90c91c2498849ab8cc4e873864bbf1cb2bf6ea12",
+                "reference": "90c91c2498849ab8cc4e873864bbf1cb2bf6ea12",
                 "shasum": ""
             },
             "require": {
@@ -11162,8 +11163,8 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-11-15T19:58:26+00:00",
-            "published-time": "2026-11-15T19:58:39+00:00"
+            "time": "2026-11-19T10:31:11+00:00",
+            "published-time": "2026-11-19T10:31:27+00:00"
         },
         {
             "name": "phpstan/phpstan-symfony",
