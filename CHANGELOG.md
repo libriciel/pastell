@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.0.14] - 2026-12-07
+
+### Corrections
+
+- Correction d'une erreur fatale lors de la consultation d'un mail sécurisé avec mot de passe #2640
+
 ## [5.0.13] - 2026-11-12
 
 ### Dépréciations
