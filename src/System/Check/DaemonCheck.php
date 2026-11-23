@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Pastell\System\Check;
 
 use Daemon;
-use DaemonManager;
 use DaemonSQL;
 use JobQueueSQL;
 use Pastell\Service\Entite\EntityInfoService;

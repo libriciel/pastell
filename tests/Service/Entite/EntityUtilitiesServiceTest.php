@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Pastell\Tests\Service\Entite;
 
-use EntiteSQL;
 use Pastell\Service\Entite\EntityUtilitiesService;
 use PastellTestCase;
 

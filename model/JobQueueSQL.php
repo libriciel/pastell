@@ -3,7 +3,7 @@
 use Pastell\Configuration\JobStatus;
 use Pastell\Model\Daemon\JobAdvancedFilters;
 use Pastell\Model\Daemon\JobSort;
-use Pastell\Service\Entite\RootEntity;
+use Pastell\Service\Entite\EntityInfoService;
 
 class JobQueueSQL extends SQL
 {
@@ -15,7 +15,7 @@ class JobQueueSQL extends SQL
         private readonly WorkerSQL $workerSQL,
         private readonly DaemonSQL $daemonSQL,
         private readonly DocumentSQL $documentSQL,
-        private readonly EntiteSQL $entiteSQL,
+        private readonly EntityInfoService $entityInfoService,
         private readonly ConnecteurEntiteSQL $connecteurSQL
     ) {
         parent::__construct($sqlQuery);
@@ -42,9 +42,7 @@ class JobQueueSQL extends SQL
         $job->id_daemon = $info['id_daemon'];
         $job->daemon = $this->daemonSQL->getDaemon($job->id_daemon);
         $job->worker = $this->workerSQL->getRunningWorker($job->id_job);
-        $job->entite_denomination = (int)$job->id_e === RootEntity::ID_E ?
-            RootEntity::DENOMINATION :
-            ($this->entiteSQL->getInfo($job->id_e)['denomination'] ?? '');
+        $job->entite_denomination = $this->entityInfoService->getDenomination((int)$job->id_e);
         if ($job->type === Job::TYPE_DOCUMENT) {
             $document_info = $this->documentSQL->getInfo($job->id_d);
             if ($document_info) {
