@@ -8,21 +8,29 @@ use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
+use JournalEventType;
+use NotFoundException;
 use OTPHP\TOTP;
+use Pastell\Service\Journal\JournalEntryService;
 use Psr\Clock\ClockInterface;
 use Random\RandomException;
+use UnrecoverableException;
 use UtilisateurMfaRecoveryCodeSQL;
 use UtilisateurMfaSQL;
+use UtilisateurSQL;
 
 final class MfaService
 {
     private const string ISSUER = 'Pastell';
     private const int RECOVERY_CODE_COUNT = 10;
+    private const int RECOVERY_CODE_WARNING_THRESHOLD = 3;
 
     public function __construct(
         private readonly UtilisateurMfaSQL $utilisateurMfaSQL,
         private readonly UtilisateurMfaRecoveryCodeSQL $recoveryCodeSQL,
         private readonly ClockInterface $clock,
+        private readonly UtilisateurSQL $utilisateurSQL,
+        private readonly JournalEntryService $journalEntryService,
     ) {
     }
 
@@ -73,18 +81,17 @@ final class MfaService
         return $writer->writeString($uri);
     }
 
-    public function verifyForUser(int $id_u, string $code): bool
+    private function verifyForUser(int $id_u, string $code): bool
     {
         $info = $this->utilisateurMfaSQL->getInfo($id_u);
         if (empty($info['secret'])) {
             return false;
         }
         $counter = $this->getMatchingCounter($info['secret'], $code);
-        if ($counter === null || $counter <= (int)($info['last_used_counter'] ?? -1)) {
+        if ($counter === null) {
             return false;
         }
-        $this->utilisateurMfaSQL->updateLastUsedCounter($id_u, $counter);
-        return true;
+        return $this->utilisateurMfaSQL->updateLastUsedCounter($id_u, $counter);
     }
 
     private function getMatchingCounter(string $secret, string $code): ?int
@@ -106,9 +113,135 @@ final class MfaService
         $this->utilisateurMfaSQL->enroll($id_u, TOTP::generate($this->clock)->getSecret());
     }
 
-    public function confirm(int $id_u): void
+    private function confirm(int $id_u): void
     {
         $this->utilisateurMfaSQL->confirm($id_u);
+    }
+
+    /**
+     * @return string[]
+     * @throws UnrecoverableException
+     * @throws RandomException
+     */
+    public function activate(int $id_u, string $code): array
+    {
+        if ($this->isEnabled($id_u)) {
+            throw new UnrecoverableException('La double authentification est déjà activée.');
+        }
+        if (!$this->verifyForUser($id_u, $code)) {
+            throw new UnrecoverableException('Le code saisi est invalide.');
+        }
+        $this->confirm($id_u);
+        $user_info = $this->utilisateurSQL->getInfo($id_u);
+        $this->addJournalEntry(
+            $user_info,
+            $id_u,
+            'double authentification activée',
+            "{$user_info['login']} ($id_u) a activé la double authentification"
+        );
+        return $this->generateRecoveryCodes($id_u);
+    }
+
+    /**
+     * @return string[]
+     * @throws RandomException
+     * @throws UnrecoverableException
+     */
+    public function regenerateRecoveryCodes(int $id_u): array
+    {
+        $this->assertEnabled($id_u);
+        $recovery_codes = $this->generateRecoveryCodes($id_u);
+        $user_info = $this->utilisateurSQL->getInfo($id_u);
+        $this->addJournalEntry(
+            $user_info,
+            $id_u,
+            'codes de récupération régénérés',
+            "{$user_info['login']} ($id_u) a régénéré ses codes de récupération"
+        );
+        return $recovery_codes;
+    }
+
+    /**
+     * @throws NotFoundException
+     * @throws UnrecoverableException
+     */
+    public function disable(int $id_u, ?int $admin_id_u = null): void
+    {
+        $user_info = $this->utilisateurSQL->getInfo($id_u);
+        if (!$user_info) {
+            throw new NotFoundException("Utilisateur $id_u inconnu");
+        }
+        $this->assertEnabled($id_u);
+        $this->delete($id_u);
+        $this->addJournalEntry(
+            $user_info,
+            $admin_id_u ?? $id_u,
+            'double authentification désactivée',
+            $admin_id_u === null
+                ? "{$user_info['login']} ($id_u) a désactivé la double authentification"
+                : "{$user_info['login']} ($id_u) : double authentification désactivée par un administrateur"
+        );
+    }
+
+    public function verifyLoginCode(int $id_u, string $code, string $remote_address): MfaLoginResult
+    {
+        $user_info = $this->utilisateurSQL->getInfo($id_u);
+        if (!$user_info || !$this->isEnabled($id_u)) {
+            return MfaLoginResult::INVALID;
+        }
+        if ($this->verifyForUser($id_u, $code)) {
+            return MfaLoginResult::TOTP;
+        }
+        if ($this->verifyRecoveryCode($id_u, $code)) {
+            $this->addJournalEntry(
+                $user_info,
+                $id_u,
+                'Connexion par code de récupération',
+                "{$user_info['login']} s'est connecté avec un code de récupération depuis l'adresse $remote_address",
+                JournalEventType::LOGIN
+            );
+            return MfaLoginResult::RECOVERY_CODE;
+        }
+        $this->addJournalEntry(
+            $user_info,
+            $id_u,
+            'Échec double authentification',
+            "{$user_info['login']} a saisi un code de double authentification invalide depuis l'adresse $remote_address",
+            JournalEventType::LOGIN
+        );
+        return MfaLoginResult::INVALID;
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
+    private function assertEnabled(int $id_u): void
+    {
+        if (!$this->isEnabled($id_u)) {
+            throw new UnrecoverableException("La double authentification n'est pas activée.");
+        }
+    }
+
+    public function isRecoveryCodeCountLow(int $remaining_count): bool
+    {
+        return $remaining_count <= self::RECOVERY_CODE_WARNING_THRESHOLD;
+    }
+
+    private function addJournalEntry(
+        array $user_info,
+        int $author_id_u,
+        string $action,
+        string $message,
+        JournalEventType $journalEventType = JournalEventType::USER_MODIFICATION,
+    ): void {
+        $this->journalEntryService->addSQL(
+            $journalEventType,
+            (int)$user_info['id_e'],
+            $author_id_u,
+            JournalEntryService::NO_ID_D,
+            $action,
+            $message
+        );
     }
 
     public function delete(int $id_u): void
@@ -124,10 +257,10 @@ final class MfaService
     }
 
     /**
-     * @return string[] Les codes en clair, à afficher une seule fois.
+     * @return string[]
      * @throws RandomException
      */
-    public function generateRecoveryCodes(int $id_u): array
+    private function generateRecoveryCodes(int $id_u): array
     {
         $displayCodes = [];
         $hashes = [];
@@ -140,7 +273,7 @@ final class MfaService
         return $displayCodes;
     }
 
-    public function verifyRecoveryCode(int $id_u, string $code): bool
+    private function verifyRecoveryCode(int $id_u, string $code): bool
     {
         $normalized = strtolower((string)preg_replace('/[^a-zA-Z0-9]/', '', $code));
         if ($normalized === '') {

@@ -38,12 +38,13 @@ SQL;
         $this->query($sql, $this->getNow(), $id_u);
     }
 
-    public function updateLastUsedCounter(int $id_u, int $counter): void
+    public function updateLastUsedCounter(int $id_u, int $counter): bool
     {
         $sql = <<<SQL
-UPDATE utilisateur_mfa SET last_used_counter = ? WHERE id_u = ?;
+UPDATE utilisateur_mfa SET last_used_counter = ?
+WHERE id_u = ? AND (last_used_counter IS NULL OR last_used_counter < ?);
 SQL;
-        $this->query($sql, $counter, $id_u);
+        return $this->execute($sql, $counter, $id_u, $counter) > 0;
     }
 
     public function delete(int $id_u): void

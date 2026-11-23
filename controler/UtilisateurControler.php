@@ -9,6 +9,7 @@ use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Notification\NotificationService;
 use Pastell\Service\PasswordEntropy;
 use Pastell\Service\Module\ModuleListService;
+use Pastell\Service\Utilisateur\MfaManagementAction;
 use Pastell\Service\Utilisateur\RoleDelegationService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
@@ -372,7 +373,7 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('mfa_enabled', $this->getMfaService()->isEnabled((int) $id_u));
         $this->setViewParameter(
             'root_system_edition',
-            $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION)
+            $this->hasDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION)
         );
 
         $this->setViewParameter('template_milieu', 'UtilisateurDetail');
@@ -385,35 +386,25 @@ class UtilisateurControler extends PastellControler
      */
     public function disableMfaAction(): void
     {
+        $this->checkPostRequest('/Utilisateur/index');
         $id_u = (int) $this->getPostInfo()->get('id_u');
         if ($id_u === (int) $this->getId_u()) {
-            $this->redirect('/Mfa/authRequired?action=disable');
+            $this->redirect('/Mfa/authRequired?action=' . MfaManagementAction::DISABLE->value);
         }
 
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $redirect = "/Utilisateur/detail?id_u=$id_u";
 
-        $info = $this->getUtilisateur()->getInfo($id_u);
-        if (!$info) {
-            $this->setLastError("Utilisateur $id_u inconnu");
+        try {
+            $this->getMfaService()->disable($id_u, (int) $this->getId_u());
+        } catch (NotFoundException $e) {
+            $this->setLastError($e->getMessage());
             $this->redirect('/Utilisateur/index');
-        }
-
-        $mfaService = $this->getMfaService();
-        if (!$mfaService->isEnabled($id_u)) {
-            $this->setLastError("La double authentification n'est pas activée pour cet utilisateur.");
+        } catch (UnrecoverableException $e) {
+            $this->setLastError($e->getMessage());
             $this->redirect($redirect);
         }
-
-        $mfaService->delete($id_u);
-        $this->getJournalEntryService()->add(
-            JournalEventType::USER_MODIFICATION,
-            $info['id_e'],
-            JournalEntryService::NO_ID_D,
-            'double authentification désactivée',
-            "{$info['login']} ($id_u) : double authentification désactivée par un administrateur"
-        );
 
         $this->setLastMessage('La double authentification a été désactivée.');
         $this->redirect($redirect);

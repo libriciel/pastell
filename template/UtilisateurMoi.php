@@ -94,12 +94,9 @@ declare(strict_types=1);
             Un code temporaire, généré par une application mobile (Google Authenticator, Aegis, FreeOTP, etc.),
             vous sera demandé à chaque connexion.
         </p>
-        <form action='Mfa/startEnrolement' method='post' class='d-inline'>
-            <?php $this->displayCSRFInput(); ?>
-            <button type='submit' class='btn btn-primary'>
-                <i class="fas fa-shield-alt"></i>&nbsp;Activer la double authentification
-            </button>
-        </form>
+        <a href='Mfa/authRequired?action=enable' class='btn btn-primary'>
+            <i class="fas fa-shield-alt"></i>&nbsp;Activer la double authentification
+        </a>
     <?php endif; ?>
 </div>
 <?php endif; ?>

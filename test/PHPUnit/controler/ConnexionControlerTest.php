@@ -181,7 +181,7 @@ class ConnexionControlerTest extends ControlerTestCase
         ['link' => $link, 'token' => $token, 'code' => $code] = $this->createMagicLinkAndGetToken();
 
         $this->setPostInfo(['token' => $token, 'code' => $code]);
-        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        $this->connexionControler->setServerInfo(['REMOTE_ADDR' => '127.0.0.1']);
 
         try {
             $this->connexionControler->doMagicLinkCodeAction();
@@ -208,7 +208,7 @@ class ConnexionControlerTest extends ControlerTestCase
         static::assertSame(1, (int)$authentification->getId());
 
         $this->setPostInfo(['token' => $token, 'code' => $code]);
-        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        $this->connexionControler->setServerInfo(['REMOTE_ADDR' => '127.0.0.1']);
 
         try {
             $this->connexionControler->doMagicLinkCodeAction();
@@ -285,15 +285,6 @@ class ConnexionControlerTest extends ControlerTestCase
         }
     }
 
-    private function enableMfaForAdmin(): string
-    {
-        $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
-        $mfaService->enroll(1);
-        $secret = $mfaService->getEnrolment(1, 'admin')->secret;
-        $mfaService->confirm(1);
-        return $secret;
-    }
-
     private function mockLoginAttemptLimit(int $remainingTokens = 5): void
     {
         $loginAttemptLimit = $this->createMock(LoginAttemptLimit::class);
@@ -306,10 +297,10 @@ class ConnexionControlerTest extends ControlerTestCase
     {
         $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
         $authentification->deconnexion();
-        $this->enableMfaForAdmin();
+        $this->enableMfa(1);
         $this->mockLoginAttemptLimit();
         $this->setPostInfo(['login' => 'admin', 'password' => 'admin', 'request_uri' => '/']);
-        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        $this->connexionControler->setServerInfo(['REMOTE_ADDR' => '127.0.0.1']);
 
         try {
             $this->connexionControler->doConnexionAction();
@@ -326,11 +317,11 @@ class ConnexionControlerTest extends ControlerTestCase
     {
         $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
         $authentification->deconnexion();
-        $secret = $this->enableMfaForAdmin();
+        $secret = $this->enableMfa(1);
         $this->mockLoginAttemptLimit();
         $authentification->setMfaPending(1, 'admin', '/');
         $this->setPostInfo(['code' => TOTP::createFromSecret($secret, new Clock())->now()]);
-        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        $this->connexionControler->setServerInfo(['REMOTE_ADDR' => '127.0.0.1', 'REQUEST_METHOD' => 'POST']);
 
         try {
             $this->connexionControler->doMfaAction();
@@ -347,11 +338,12 @@ class ConnexionControlerTest extends ControlerTestCase
     {
         $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
         $authentification->deconnexion();
-        $secret = $this->enableMfaForAdmin();
+        $secret = $this->enableMfa(1);
         $this->mockLoginAttemptLimit();
         $authentification->setMfaPending(1, 'admin', '/');
         $valid = TOTP::createFromSecret($secret, new Clock())->now();
         $this->setPostInfo(['code' => $this->differentCode($valid)]);
+        $this->connexionControler->setServerInfo(['REQUEST_METHOD' => 'POST']);
 
         try {
             $this->connexionControler->doMfaAction();
@@ -367,6 +359,24 @@ class ConnexionControlerTest extends ControlerTestCase
         );
     }
 
+    public function testMfaPendingExpires(): void
+    {
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->setMfaPending(1, 'admin', '/');
+        $_SESSION['mfa_pending']['created_at'] = time() - 301;
+
+        static::assertNull($authentification->getMfaPending());
+    }
+
+    public function testDeconnexionClearsMfaPending(): void
+    {
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->setMfaPending(1, 'admin', '/');
+        $authentification->deconnexion();
+
+        static::assertNull($authentification->getMfaPending());
+    }
+
     /**
      * @throws LastErrorException
      */
@@ -375,13 +385,12 @@ class ConnexionControlerTest extends ControlerTestCase
         $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
         $authentification->deconnexion();
         $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
-        $mfaService->enroll(1);
-        $mfaService->confirm(1);
-        $recoveryCodes = $mfaService->generateRecoveryCodes(1);
+        $this->enableMfa(1);
+        $recoveryCodes = $mfaService->regenerateRecoveryCodes(1);
         $this->mockLoginAttemptLimit();
         $authentification->setMfaPending(1, 'admin', '/');
         $this->setPostInfo(['code' => $recoveryCodes[0]]);
-        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        $this->connexionControler->setServerInfo(['REMOTE_ADDR' => '127.0.0.1', 'REQUEST_METHOD' => 'POST']);
 
         try {
             $this->connexionControler->doMfaAction();
@@ -414,12 +423,12 @@ class ConnexionControlerTest extends ControlerTestCase
             : $verifLogin->willReturn($result);
         $connecteurFactory = $this->createMock(ConnecteurFactory::class);
         $connecteurFactory->method('getGlobalConnecteur')
-            ->willReturnCallback(static fn(string $type) => $type === 'Vérification' ? $ldapVerification : false);
+            ->willReturnCallback(static fn(string $type) => $type === LDAPVerification::CONNECTEUR_TYPE_ID ? $ldapVerification : false);
         $this->getObjectInstancier()->setInstance(ConnecteurFactory::class, $connecteurFactory);
         $this->getObjectInstancier()->getInstance(Authentification::class)->deconnexion();
         $this->mockLoginAttemptLimit();
         $this->setPostInfo(['login' => 'eric', 'password' => 'ldap-password', 'request_uri' => '/']);
-        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        $this->connexionControler->setServerInfo(['REMOTE_ADDR' => '127.0.0.1']);
         $this->connexionControler->doConnexionAction();
     }
 

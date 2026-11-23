@@ -198,20 +198,14 @@ class UtilisateurControlerTest extends ControlerTestCase
         self::assertTrue($utilisateurSQL->isEnabled(1));
     }
 
-    private function enableMfaFor(int $id_u): void
-    {
-        $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
-        $mfaService->enroll($id_u);
-        $mfaService->confirm($id_u);
-    }
-
     public function testDisableMfaByAdmin(): void
     {
         $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
-        $this->enableMfaFor(2);
+        $this->enableMfa(2);
 
         $this->setPostInfo(['id_u' => 2]);
         $controler = $this->getUtilisateurControler();
+        $controler->setServerInfo(['REQUEST_METHOD' => 'POST']);
         try {
             $controler->disableMfaAction();
         } catch (Exception) {
@@ -224,11 +218,25 @@ class UtilisateurControlerTest extends ControlerTestCase
     {
         $this->setPostInfo(['id_u' => 2]);
         $controler = $this->getUtilisateurControler();
+        $controler->setServerInfo(['REQUEST_METHOD' => 'POST']);
         try {
             $controler->disableMfaAction();
             self::fail('Une redirection était attendue');
         } catch (LastErrorException $e) {
             self::assertStringContainsString("n'est pas activée", $e->getMessage());
+        }
+    }
+
+    public function testDisableMfaUnknownUser(): void
+    {
+        $this->setPostInfo(['id_u' => 999]);
+        $controler = $this->getUtilisateurControler();
+        $controler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        try {
+            $controler->disableMfaAction();
+            self::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            self::assertStringContainsString('Utilisateur 999 inconnu', $e->getMessage());
         }
     }
 
@@ -240,11 +248,12 @@ class UtilisateurControlerTest extends ControlerTestCase
     public function testDisableMfaNoRights(): void
     {
         $this->setUpRemoteToken();
-        $this->enableMfaFor($this->api_user_id);
+        $this->enableMfa($this->api_user_id);
         $userController = $this->getUtilisateurControler();
         $userController->getAuthentification()->connexion('admin_inferieur', $this->admin_inf);
 
         $this->setPostInfo(['id_u' => $this->api_user_id]);
+        $userController->setServerInfo(['REQUEST_METHOD' => 'POST']);
         try {
             $userController->disableMfaAction();
             self::fail('Une LastErrorException était attendue');
@@ -258,10 +267,11 @@ class UtilisateurControlerTest extends ControlerTestCase
     public function testDisableMfaSelfRedirects(): void
     {
         $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
-        $this->enableMfaFor(self::ID_U_ADMIN);
+        $this->enableMfa(self::ID_U_ADMIN);
 
         $this->setPostInfo(['id_u' => self::ID_U_ADMIN]);
         $controler = $this->getUtilisateurControler();
+        $controler->setServerInfo(['REQUEST_METHOD' => 'POST']);
         try {
             $controler->disableMfaAction();
             self::fail('Une redirection était attendue');
@@ -816,7 +826,7 @@ class UtilisateurControlerTest extends ControlerTestCase
         $connecteurFactory = $this->createMock(ConnecteurFactory::class);
         $connecteurFactory->method('getGlobalConnecteur')
             ->willReturnCallback(
-                fn(string $type) => $type === 'Authentification'
+                fn(string $type) => $type === AuthenticationConnecteur::CONNECTEUR_TYPE_ID
                     ? $this->createMock(AuthenticationConnecteur::class)
                     : false
             );

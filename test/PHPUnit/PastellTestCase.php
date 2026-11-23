@@ -8,6 +8,7 @@ use Pastell\Process\CommandRunner;
 use Pastell\Process\SymfonyCommandRunner;
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Pack\PackService;
+use Pastell\Service\Utilisateur\MfaService;
 use Pastell\Service\Utilisateur\UtilisateurRoleCacheService;
 use Pastell\Storage\StorageInterface;
 use Pastell\Storage\StorageInterfaceFake;
@@ -424,6 +425,15 @@ iparapheur_retour: Archive',
             $id_d,
             $action
         );
+    }
+
+    protected function enableMfa(int $id_u): string
+    {
+        $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
+        $mfaService->enroll($id_u);
+        $secret = $mfaService->getEnrolment($id_u, 'test')->secret;
+        $this->getObjectInstancier()->getInstance(UtilisateurMfaSQL::class)->confirm($id_u);
+        return $secret;
     }
 
     /**

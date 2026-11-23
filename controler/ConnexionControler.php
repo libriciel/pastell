@@ -4,8 +4,8 @@ use Pastell\Mailer\Mailer;
 use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\PasswordEntropy;
+use Pastell\Service\Utilisateur\MfaLoginResult;
 use Pastell\Service\Utilisateur\PasswordResetService;
-use Pastell\Service\Utilisateur\UserPasswordService;
 use Pastell\Service\Utilisateur\UserAuthenticationService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Twig\Error\LoaderError;
@@ -36,7 +36,7 @@ class ConnexionControler extends PastellControler
         }
         try {
             /** @var AuthenticationConnecteur $authenticationConnecteur */
-            $authenticationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur('Authentification');
+            $authenticationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur(AuthenticationConnecteur::CONNECTEUR_TYPE_ID);
             $id_u = $this->apiExternalConnexion();
             if ($id_u) {
                 $this->setConnexion($id_u, $authenticationConnecteur->getExternalSystemName());
@@ -98,7 +98,7 @@ class ConnexionControler extends PastellControler
         bool $redirect = true
     ) {
         if (is_null($authenticationConnecteur)) {
-            $authenticationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur('Authentification');
+            $authenticationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur(AuthenticationConnecteur::CONNECTEUR_TYPE_ID);
         }
         if (!$authenticationConnecteur) {
             return false;
@@ -139,7 +139,7 @@ class ConnexionControler extends PastellControler
             );
         }
 
-        $verificationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur('Vérification');
+        $verificationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur(LDAPVerification::CONNECTEUR_TYPE_ID);
 
         if (!$verificationConnecteur) {
             return $id_u;
@@ -185,7 +185,7 @@ class ConnexionControler extends PastellControler
             $infoUtilisateur['id_e'],
             JournalEntryService::NO_ID_D,
             'Connecté',
-            "$nom s'est connecté via $external_system depuis l'adresse " . $_SERVER['REMOTE_ADDR']
+            "$nom s'est connecté via $external_system depuis l'adresse " . $this->getRemoteAddress()
         );
         $this->setSessionInfo($login, $id_u);
     }
@@ -220,7 +220,7 @@ class ConnexionControler extends PastellControler
      */
     public function connexionAction(): void
     {
-        $authentificationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur('Authentification');
+        $authentificationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur(AuthenticationConnecteur::CONNECTEUR_TYPE_ID);
 
         if ($authentificationConnecteur) {
             /** @var AuthenticationConnecteur $authentificationConnecteur */
@@ -246,7 +246,7 @@ class ConnexionControler extends PastellControler
     public function oidcAction(): void
     {
         /** @var AuthenticationConnecteur|false $authentificationConnecteur */
-        $authentificationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur('Authentification');
+        $authentificationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur(AuthenticationConnecteur::CONNECTEUR_TYPE_ID);
         if ($authentificationConnecteur && $this->externalConnexion($authentificationConnecteur)) {
             $this->setLastError('');
             $redirect = '/';
@@ -312,7 +312,7 @@ class ConnexionControler extends PastellControler
      */
     public function externalErrorAction()
     {
-        $authenticationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur('Authentification');
+        $authenticationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur(AuthenticationConnecteur::CONNECTEUR_TYPE_ID);
 
         $this->setViewParameter('page_title', "Erreur lors de l'authentification");
         $this->setViewParameter('template_milieu', 'ExternalError');
@@ -336,7 +336,7 @@ class ConnexionControler extends PastellControler
         $csrfToken = $this->getInstance(CSRFToken::class);
         $csrfToken->deleteToken();
 
-        $authentificationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur('Authentification');
+        $authentificationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur(AuthenticationConnecteur::CONNECTEUR_TYPE_ID);
         if ($authentificationConnecteur) {
             /** @var AuthenticationConnecteur $authentificationConnecteur */
             $authentificationConnecteur->logout($authentificationConnecteur->getLogoutRedirectUrl());
@@ -363,8 +363,9 @@ class ConnexionControler extends PastellControler
         $recuperateur = $this->getPostInfo();
         $login = $recuperateur->get('login');
         $password = $recuperateur->get('password');
+        $this->getAuthentification()->clearMfaPending();
 
-        $authenticationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur('Authentification');
+        $authenticationConnecteur = $this->getConnecteurFactory()->getGlobalConnecteur(AuthenticationConnecteur::CONNECTEUR_TYPE_ID);
 
         if ($authenticationConnecteur && $login != 'admin') {
             /** @var AuthenticationConnecteur $authenticationConnecteur */
@@ -424,7 +425,7 @@ class ConnexionControler extends PastellControler
             $infoUtilisateur['id_e'],
             JournalEntryService::NO_ID_D,
             'Connecté',
-            "$nom s'est connecté depuis l'adresse " . $_SERVER['REMOTE_ADDR']
+            "$nom s'est connecté depuis l'adresse " . $this->getRemoteAddress()
         );
         $this->setSessionInfo($login, $id_u);
     }
@@ -450,6 +451,7 @@ class ConnexionControler extends PastellControler
      */
     public function doMfaAction(): void
     {
+        $this->checkPostRequest('/Connexion/mfa');
         $pending = $this->getAuthentification()->getMfaPending();
         if (empty($pending)) {
             $this->redirect('/Connexion/connexion');
@@ -466,21 +468,9 @@ class ConnexionControler extends PastellControler
         }
 
         $mfaService = $this->getMfaService();
-        $totpOk = $mfaService->verifyForUser($id_u, $code);
-        $recoveryOk = !$totpOk && $mfaService->verifyRecoveryCode($id_u, $code);
-
-        if (!$totpOk && !$recoveryOk) {
+        $mfaLoginResult = $mfaService->verifyLoginCode($id_u, $code, $this->getRemoteAddress());
+        if ($mfaLoginResult === MfaLoginResult::INVALID) {
             $loginAttemptLimit->consumeLoginAttempt($login);
-            $userInfo = $this->getUtilisateur()->getInfo($id_u);
-            $this->getJournalEntryService()->setId($id_u);
-            $this->getJournalEntryService()->add(
-                JournalEventType::LOGIN,
-                $userInfo['id_e'],
-                JournalEntryService::NO_ID_D,
-                'Échec double authentification',
-                "$login a saisi un code de double authentification invalide depuis l'adresse "
-                    . ($_SERVER['REMOTE_ADDR'] ?? '')
-            );
             $this->setLastError('Le code saisi est invalide.');
             $this->redirect('/Connexion/mfa');
         }
@@ -489,19 +479,9 @@ class ConnexionControler extends PastellControler
         $request_uri = (string)($pending['request_uri'] ?? '/');
         $this->getAuthentification()->clearMfaPending();
 
-        if ($recoveryOk) {
-            $userInfo = $this->getUtilisateur()->getInfo($id_u);
-            $this->getJournalEntryService()->setId($id_u);
-            $this->getJournalEntryService()->add(
-                JournalEventType::LOGIN,
-                $userInfo['id_e'],
-                JournalEntryService::NO_ID_D,
-                'Connexion par code de récupération',
-                "$login s'est connecté avec un code de récupération depuis l'adresse "
-                    . ($_SERVER['REMOTE_ADDR'] ?? '')
-            );
+        if ($mfaLoginResult === MfaLoginResult::RECOVERY_CODE) {
             $remaining = $mfaService->countRemainingRecoveryCodes($id_u);
-            if ($remaining <= 3) {
+            if ($mfaService->isRecoveryCodeCountLow($remaining)) {
                 $this->setLastMessage(
                     "Il vous reste $remaining code(s) de récupération. Pensez à les régénérer depuis votre espace."
                 );
@@ -616,7 +596,7 @@ class ConnexionControler extends PastellControler
             JournalEntryService::NO_ID_D,
             'Connecté',
             "Connexion support via magic link (motif : {$magicLink['motif']}) depuis l'adresse "
-                . $_SERVER['REMOTE_ADDR']
+                . $this->getRemoteAddress()
         );
 
         $this->setSessionInfo($infoUtilisateur['login'], $id_u);
@@ -723,5 +703,10 @@ class ConnexionControler extends PastellControler
     public function indexAction(): void
     {
         $this->connexionAction();
+    }
+
+    private function getRemoteAddress(): string
+    {
+        return (string)$this->getServerInfo('REMOTE_ADDR');
     }
 }

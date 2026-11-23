@@ -83,9 +83,8 @@ class UtilisateurDeletionServiceTest extends PastellTestCase
     public function testDeleteCleansMfa(): void
     {
         $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
-        $mfaService->enroll(2);
-        $mfaService->confirm(2);
-        $mfaService->generateRecoveryCodes(2);
+        $this->enableMfa(2);
+        $mfaService->regenerateRecoveryCodes(2);
         self::assertTrue($mfaService->isEnabled(2));
         self::assertSame(10, $mfaService->countRemainingRecoveryCodes(2));
 

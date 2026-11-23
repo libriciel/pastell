@@ -36,7 +36,7 @@ class UserAuthenticationServiceTest extends PastellTestCase
     {
         $ldapVerification = $this->createMock(LDAPVerification::class);
         $ldapVerification->method('verifLogin')->with('eric', 'ldap-password')->willReturn($passwordValid);
-        $this->mockGlobalConnecteurs(['Vérification' => $ldapVerification]);
+        $this->mockGlobalConnecteurs([LDAPVerification::CONNECTEUR_TYPE_ID => $ldapVerification]);
     }
 
     /**
@@ -82,7 +82,7 @@ class UserAuthenticationServiceTest extends PastellTestCase
 
     public function testIsExternal(): void
     {
-        $this->mockGlobalConnecteurs(['Authentification' => $this->createMock(AuthenticationConnecteur::class)]);
+        $this->mockGlobalConnecteurs([AuthenticationConnecteur::CONNECTEUR_TYPE_ID => $this->createMock(AuthenticationConnecteur::class)]);
         static::assertTrue($this->getService()->isExternal(self::ID_U_ERIC));
         static::assertFalse($this->getService()->isExternal(self::ID_U_ADMIN));
     }

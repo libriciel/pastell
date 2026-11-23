@@ -2,6 +2,7 @@
 
 namespace Pastell\Service\Connecteur;
 
+use AuthenticationConnecteur;
 use ConnecteurEntiteSQL;
 use Exception;
 use FluxDefinitionFiles;
@@ -96,11 +97,12 @@ class ConnecteurAssociationService
             $message
         );
 
-        if ($id_e === RootEntity::ID_E && $type_connecteur === 'Authentification') {
+        if ($id_e === RootEntity::ID_E && $type_connecteur === AuthenticationConnecteur::CONNECTEUR_TYPE_ID) {
             $this->mfaService->deleteAllExceptAdmin();
-            $this->journalEntryService->add(
+            $this->journalEntryService->addSQL(
                 JournalEventType::USER_MODIFICATION,
                 RootEntity::ID_E,
+                $id_u,
                 JournalEntryService::NO_ID_D,
                 'double authentification supprimée',
                 'Double authentification supprimée pour tous les utilisateurs sauf admin : '

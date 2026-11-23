@@ -9,13 +9,6 @@ use Symfony\Component\RateLimiter\RateLimit;
 
 class ApiAuthenticationTest extends PastellTestCase
 {
-    private function enableMfaForAdmin(): void
-    {
-        $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
-        $mfaService->enroll(self::ID_U_ADMIN);
-        $mfaService->confirm(self::ID_U_ADMIN);
-    }
-
     public function testOk(): void
     {
         $loginAttemptLimit = $this->createMock(LoginAttemptLimit::class);
@@ -98,7 +91,7 @@ class ApiAuthenticationTest extends PastellTestCase
 
     public function testPasswordWorksWithMfa(): void
     {
-        $this->enableMfaForAdmin();
+        $this->enableMfa(self::ID_U_ADMIN);
         $loginAttemptLimit = $this->createMock(LoginAttemptLimit::class);
         $this->getObjectInstancier()->setInstance(LoginAttemptLimit::class, $loginAttemptLimit);
         $httpApi = $this->getObjectInstancier()->getInstance(HttpApi::class);
@@ -110,7 +103,7 @@ class ApiAuthenticationTest extends PastellTestCase
 
     public function testTokenWorksWithMfa(): void
     {
-        $this->enableMfaForAdmin();
+        $this->enableMfa(self::ID_U_ADMIN);
         $loginAttemptLimit = $this->createMock(LoginAttemptLimit::class);
         $this->getObjectInstancier()->setInstance(LoginAttemptLimit::class, $loginAttemptLimit);
         $token = $this->getObjectInstancier()->getInstance(UserTokenService::class)

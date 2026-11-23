@@ -4,6 +4,8 @@ use LDAP\Connection;
 
 class LDAPVerification extends Connecteur
 {
+    public const string CONNECTEUR_TYPE_ID = 'Vérification';
+
     private const DEFAULT_HOST = "localhost";
     private const DEFAULT_PORT = 389;
 

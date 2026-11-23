@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\Utilisateur\MfaManagementAction;
 use Pastell\Service\Utilisateur\UserAuthenticationService;
@@ -38,7 +37,7 @@ class MfaControler extends PastellControler
         if ($action === null) {
             $this->redirect('/Utilisateur/moi');
         }
-        if (!$this->getMfaService()->isEnabled($this->getId_u())) {
+        if ($this->getMfaService()->isEnabled($this->getId_u()) !== $action->requiresEnabledMfa()) {
             $this->redirect('/Utilisateur/moi');
         }
 
@@ -59,16 +58,16 @@ class MfaControler extends PastellControler
      */
     public function doAuthRequiredAction(): void
     {
+        $this->checkPostRequest('/Utilisateur/moi');
         $action = MfaManagementAction::tryFromParam($this->getPostInfo()->get('action'));
         if ($action === null) {
             $this->redirect('/Utilisateur/moi');
         }
 
         $id_u = $this->getId_u();
-        if (!$this->getMfaService()->isEnabled($id_u)) {
+        if ($this->getMfaService()->isEnabled($id_u) !== $action->requiresEnabledMfa()) {
             $this->redirect('/Utilisateur/moi');
         }
-
         $login = $this->getAuthentification()->getLogin();
         $loginAttemptLimit = $this->getObjectInstancier()->getInstance(LoginAttemptLimit::class);
         if ($loginAttemptLimit->getRateLimit($login)->getRemainingTokens() <= 0) {
@@ -90,33 +89,43 @@ class MfaControler extends PastellControler
         }
         $loginAttemptLimit->resetLoginAttempt($login);
 
-        match ($action) {
-            MfaManagementAction::REGENERATE => $this->doRegenerateRecoveryCodes($id_u),
-            MfaManagementAction::DISABLE => $this->doDisable($id_u),
-        };
+        try {
+            match ($action) {
+                MfaManagementAction::ENABLE => $this->startEnrolement($id_u),
+                MfaManagementAction::REGENERATE => $this->renderRecoveryCodes(
+                    $this->getMfaService()->regenerateRecoveryCodes($id_u)
+                ),
+                MfaManagementAction::DISABLE => $this->disable($id_u),
+            };
+        } catch (UnrecoverableException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect('/Utilisateur/moi');
+        }
     }
 
     /**
      * @throws LastMessageException
      * @throws LastErrorException
      */
-    public function startEnrolementAction(): void
+    private function startEnrolement(int $id_u): void
     {
-        if ($this->getServerInfo('REQUEST_METHOD') !== 'POST') {
-            $this->redirect('/Utilisateur/moi');
-        }
-        $id_u = $this->getId_u();
         $mfaService = $this->getMfaService();
-
-        if ($mfaService->isEnabled($id_u)) {
-            $this->setLastMessage('La double authentification est déjà activée.');
-            $this->redirect('/Utilisateur/moi');
-        }
-
         if (!$mfaService->isPending($id_u)) {
             $mfaService->enroll($id_u);
         }
+        $this->getAuthentification()->authoriseMfaEnrolment();
         $this->redirect('/Mfa/enrolement');
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
+     */
+    private function redirectIfEnrolmentNotAuthorised(): void
+    {
+        if (!$this->getAuthentification()->isMfaEnrolmentAuthorised()) {
+            $this->redirect('/Mfa/authRequired?action=' . MfaManagementAction::ENABLE->value);
+        }
     }
 
     /**
@@ -128,11 +137,8 @@ class MfaControler extends PastellControler
     {
         $id_u = $this->getId_u();
         $mfaService = $this->getMfaService();
-
-        if ($mfaService->isEnabled($id_u)) {
-            $this->setLastMessage('La double authentification est déjà activée.');
-            $this->redirect('/Utilisateur/moi');
-        }
+        $this->redirectIfEnabled($id_u);
+        $this->redirectIfEnrolmentNotAuthorised();
 
         $enrolment = $mfaService->getEnrolment($id_u, $this->getUtilisateur()->getInfo($id_u)['login']);
         if ($enrolment === null) {
@@ -150,82 +156,62 @@ class MfaControler extends PastellControler
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @throws NotFoundException
+     * @throws RandomException
+     */
+    public function doEnrolementAction(): void
+    {
+        $this->checkPostRequest('/Utilisateur/moi');
+        $id_u = $this->getId_u();
+        $code = (string)$this->getPostInfo()->get('code');
+        $this->redirectIfEnrolmentNotAuthorised();
+
+        try {
+            $recovery_codes = $this->getMfaService()->activate($id_u, $code);
+        } catch (UnrecoverableException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect('/Mfa/enrolement');
+        }
+        $this->getAuthentification()->clearMfaEnrolmentAuthorisation();
+        $this->renderRecoveryCodes($recovery_codes);
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws LastErrorException
      */
     public function cancelEnrolementAction(): void
     {
-        if ($this->getServerInfo('REQUEST_METHOD') !== 'POST') {
-            $this->redirect('/Utilisateur/moi');
-        }
+        $this->checkPostRequest('/Utilisateur/moi');
         $id_u = $this->getId_u();
         if ($this->getMfaService()->isPending($id_u)) {
             $this->getMfaService()->delete($id_u);
         }
+        $this->getAuthentification()->clearMfaEnrolmentAuthorisation();
         $this->redirect('/Utilisateur/moi');
     }
 
     /**
      * @throws LastMessageException
      * @throws LastErrorException
-     * @throws NotFoundException
-     * @throws RandomException
      */
-    public function doEnrolementAction(): void
+    private function redirectIfEnabled(int $id_u): void
     {
-        $id_u = $this->getId_u();
-        $mfaService = $this->getMfaService();
-        $code = $this->getPostInfo()->get('code');
-
-        if (!$mfaService->verifyForUser($id_u, $code)) {
-            $this->setLastError('Le code saisi est invalide.');
-            $this->redirect('/Mfa/enrolement');
+        if ($this->getMfaService()->isEnabled($id_u)) {
+            $this->setLastMessage('La double authentification est déjà activée.');
+            $this->redirect('/Utilisateur/moi');
         }
-
-        $mfaService->confirm($id_u);
-        $userInfo = $this->getUtilisateur()->getInfo($id_u);
-        $this->getJournalEntryService()->add(
-            JournalEventType::USER_MODIFICATION,
-            $userInfo['id_e'],
-            JournalEntryService::NO_ID_D,
-            'double authentification activée',
-            "{$userInfo['login']} ($id_u) a activé la double authentification"
-        );
-        $this->renderRecoveryCodes($mfaService->generateRecoveryCodes($id_u));
-    }
-
-    /**
-     * @throws NotFoundException
-     * @throws RandomException
-     */
-    private function doRegenerateRecoveryCodes(int $id_u): void
-    {
-        $recoveryCodes = $this->getMfaService()->generateRecoveryCodes($id_u);
-        $userInfo = $this->getUtilisateur()->getInfo($id_u);
-        $this->getJournalEntryService()->add(
-            JournalEventType::USER_MODIFICATION,
-            $userInfo['id_e'],
-            JournalEntryService::NO_ID_D,
-            'codes de récupération régénérés',
-            "{$userInfo['login']} ($id_u) a régénéré ses codes de récupération"
-        );
-
-        $this->renderRecoveryCodes($recoveryCodes);
     }
 
     /**
      * @throws LastMessageException
      * @throws LastErrorException
+     * @throws NotFoundException
+     * @throws UnrecoverableException
      */
-    private function doDisable(int $id_u): void
+    private function disable(int $id_u): void
     {
-        $this->getMfaService()->delete($id_u);
-        $userInfo = $this->getUtilisateur()->getInfo($id_u);
-        $this->getJournalEntryService()->add(
-            JournalEventType::USER_MODIFICATION,
-            $userInfo['id_e'],
-            JournalEntryService::NO_ID_D,
-            'double authentification désactivée',
-            "{$userInfo['login']} ($id_u) a désactivé la double authentification"
-        );
+        $this->getMfaService()->disable($id_u);
         $this->setLastMessage('La double authentification est désactivée.');
         $this->redirect('/Utilisateur/moi');
     }

@@ -2,8 +2,10 @@
 
 namespace Pastell\Tests\Service\Connecteur;
 
+use AuthenticationConnecteur;
 use Exception;
 use FluxEntiteSQL;
+use LDAPVerification;
 use SQLQuery;
 use Pastell\Service\Connecteur\ConnecteurActionService;
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
@@ -283,12 +285,12 @@ class ConnecteurAssociationServiceTest extends PastellTestCase
 
     /**
      * @throws RandomException
+     * @throws UnrecoverableException
      */
-    private function enableMfa(int $id_u): void
+    private function enableMfaWithRecoveryCodes(int $id_u): void
     {
-        $this->getMfaService()->enroll($id_u);
-        $this->getMfaService()->confirm($id_u);
-        $this->getMfaService()->generateRecoveryCodes($id_u);
+        $this->enableMfa($id_u);
+        $this->getMfaService()->regenerateRecoveryCodes($id_u);
     }
 
     /**
@@ -297,11 +299,11 @@ class ConnecteurAssociationServiceTest extends PastellTestCase
      */
     public function testAuthenticationDeletesMfa(): void
     {
-        $this->enableMfa(self::ID_U_ADMIN);
-        $this->enableMfa(self::ID_U_ERIC);
+        $this->enableMfaWithRecoveryCodes(self::ID_U_ADMIN);
+        $this->enableMfaWithRecoveryCodes(self::ID_U_ERIC);
         $id_ce = $this->createConnector('cas-authentication', 'CAS', 0)['id_ce'];
 
-        $this->getConnecteurAssociationService()->addConnecteurAssociation(0, $id_ce, 'Authentification');
+        $this->getConnecteurAssociationService()->addConnecteurAssociation(0, $id_ce, AuthenticationConnecteur::CONNECTEUR_TYPE_ID);
 
         static::assertFalse($this->getMfaService()->isEnabled(self::ID_U_ERIC));
         static::assertSame(0, $this->getMfaService()->countRemainingRecoveryCodes(self::ID_U_ERIC));
@@ -318,10 +320,10 @@ class ConnecteurAssociationServiceTest extends PastellTestCase
      */
     public function testOtherTypeKeepsMfa(): void
     {
-        $this->enableMfa(self::ID_U_ERIC);
+        $this->enableMfaWithRecoveryCodes(self::ID_U_ERIC);
         $id_ce = $this->createConnector('ldap-verification', 'LDAP', 0)['id_ce'];
 
-        $this->getConnecteurAssociationService()->addConnecteurAssociation(0, $id_ce, 'Vérification');
+        $this->getConnecteurAssociationService()->addConnecteurAssociation(0, $id_ce, LDAPVerification::CONNECTEUR_TYPE_ID);
 
         static::assertTrue($this->getMfaService()->isEnabled(self::ID_U_ERIC));
     }
