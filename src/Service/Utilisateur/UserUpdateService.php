@@ -23,7 +23,6 @@ final class UserUpdateService
         private readonly UserValidator $userValidator,
         private readonly NotificationDigestSQL $notificationDigestSQL,
         private readonly UserPasswordService $userPasswordService,
-        private readonly UserCertificateService $userCertificateService,
     ) {
     }
 

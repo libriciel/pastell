@@ -262,14 +262,4 @@ LIMIT $limit
 SQL;
         return $this->query($sql, $id_verrou);
     }
-
-    private function getJobFilterCondition(string $filtre): string
-    {
-        return match ($filtre) {
-            'lock' => 'AND is_lock = 1',
-            'wait' => 'AND next_try < now()',
-            'actif' => 'AND worker.termine = 0',
-            default => '',
-        };
-    }
 }
