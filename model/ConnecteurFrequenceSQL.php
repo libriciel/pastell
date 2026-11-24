@@ -179,7 +179,7 @@ SQL;
         );
     }
 
-    public function getInfo(int|string $id_cf): array|false
+    public function getInfo($id_cf)
     {
         $sql = <<<SQL
 SELECT connecteur_frequence.*, connecteur_entite.libelle, entite.denomination
@@ -204,7 +204,7 @@ SQL;
         return $result;
     }
 
-    public function getAllArray(): array
+    public function getAllArray()
     {
         $sql = <<<SQL
 SELECT connecteur_frequence.*, connecteur_entite.libelle, entite.denomination
@@ -233,7 +233,7 @@ SQL;
         return $connecteurFrequence;
     }
 
-    public function delete(int $id_cf): void
+    public function delete($id_cf)
     {
         $sql = <<<SQL
 DELETE FROM connecteur_frequence WHERE id_cf = ?
@@ -249,7 +249,7 @@ SQL;
         $this->query($sql, $id_ce);
     }
 
-    public function deleteAll(): void
+    public function deleteAll()
     {
         $sql = <<<SQL
 DELETE FROM connecteur_frequence
