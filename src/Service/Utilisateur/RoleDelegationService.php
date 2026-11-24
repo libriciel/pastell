@@ -16,13 +16,36 @@ final class RoleDelegationService
 
     public function getAuthorizedRoleToDelegate(int $id_u): array
     {
-        $role_list = $this->roleSQL->getAuthorizedRoleToDelegate($this->utilisateurRoleService->getAllDroit($id_u));
-        return $this->roleSQL->getRoleLibelle($role_list);
+        return $this->getDelegableRoles($this->utilisateurRoleService->getAllDroit($id_u));
     }
 
     public function canDelegateRole(int $id_u, string $role, int $id_e): bool
     {
         $droit_delegant = $this->utilisateurRoleService->getDroitsForEntite($id_u, $id_e);
-        return \in_array($role, $this->roleSQL->getAuthorizedRoleToDelegate($droit_delegant), true);
+        foreach ($this->getDelegableRoles($droit_delegant) as $role_info) {
+            if ($role_info['role'] === $role) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function getDelegableRoles(array $droit_list): array
+    {
+        $droit_set = array_flip($droit_list);
+        $forbidden_role_list = [];
+        foreach ($this->roleSQL->getAllRoleDroit() as $role_droit) {
+            if (!isset($droit_set[$role_droit['droit']])) {
+                $forbidden_role_list[$role_droit['role']] = true;
+            }
+        }
+
+        $result = [];
+        foreach ($this->roleSQL->getAllRole() as $role_info) {
+            if (!isset($forbidden_role_list[$role_info['role']])) {
+                $result[] = ['role' => $role_info['role'], 'libelle' => $role_info['libelle']];
+            }
+        }
+        return $result;
     }
 }

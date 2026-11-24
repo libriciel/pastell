@@ -2,6 +2,7 @@
 
 use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
 class LDAPCreateUser extends ActionExecutor
@@ -16,7 +17,12 @@ class LDAPCreateUser extends ActionExecutor
         foreach ($users as $user) {
             if ($user['create']) {
                 $password = mt_rand();
-                $user['id_u'] = $utilisateur->create($user['login'], $password, $user['email'], "");
+                $user['id_u'] = $this->objectInstancier->getInstance(UserCreationService::class)->createAccount(
+                    $user['login'],
+                    (string)$password,
+                    $user['email'],
+                    '',
+                );
                 $utilisateur->validMailAuto($user['id_u']);
                 $utilisateur->setColBase($user['id_u'], 0);
                 $this->objectInstancier->getInstance(UtilisateurRoleService::class)->addRole(

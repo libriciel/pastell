@@ -175,10 +175,11 @@ class RoleControler extends PastellControler
             $this->redirect('/Role/edition');
         }
 
-        $this->getRoleSQL()->edit($role, $libelle);
+        $roleService = $this->getInstance(RoleService::class);
         if ($this->getPostInfo()->get('nouveau')) {
-            $this->getRoleSQL()->addDroit($role, DroitService::getDroitFor(DroitService::DROIT_JOURNAL, DroitType::LECTURE));
-            $this->getRoleSQL()->addDroit($role, DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+            $roleService->createRole((string)$role, (string)$libelle);
+        } else {
+            $roleService->saveRole((string)$role, (string)$libelle);
         }
         $this->redirect("/Role/detail?role=$role");
     }

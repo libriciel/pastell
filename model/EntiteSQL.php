@@ -5,13 +5,14 @@ use Pastell\Service\Entite\EntityType;
 class EntiteSQL extends SQL
 {
     public const STATE_ACTIVE = 1;
+    /**
+     * @deprecated 4.1.26 Use EntityType::COLLECTIVITE instead
+     */
+    public const TYPE_COLLECTIVITE = "collectivite";
 
     public const NB_COLLECTIVITE_DISPLAY = 20;
 
-    /**
-     * Untyped parameter: legacy callers may pass null or a non-numeric string coming from the request.
-     */
-    public function getInfo($id_e): array|false
+    public function getInfo($id_e)
     {
         $sql = <<<SQL
 SELECT * FROM entite WHERE id_e = ?
@@ -19,12 +20,12 @@ SQL;
         return $this->queryOne($sql, $id_e);
     }
 
-    public function exists(int $id_e): bool
+    public function exists($id_e)
     {
-        return (bool)$this->getInfo($id_e);
+        return (bool) $this->getInfo($id_e);
     }
 
-    public function getBySiren(string $siren): int|false
+    public function getBySiren($siren)
     {
         $sql = <<<SQL
 SELECT id_e FROM entite WHERE siren = ?
@@ -32,7 +33,7 @@ SQL;
         return $this->queryOne($sql, $siren);
     }
 
-    public function getIdByDenomination(string $denomination): int|false
+    public function getIdByDenomination($denomination)
     {
         $sql = <<<SQL
 SELECT id_e FROM entite WHERE denomination = ?
@@ -45,11 +46,10 @@ SQL;
         $sql = <<<SQL
 SELECT entite_mere FROM entite WHERE id_e = ?
 SQL;
-        $entite_mere = $this->queryOne($sql, $id_e);
-        return $entite_mere === false ? false : (int)$entite_mere;
+        return $this->queryOne($sql, $id_e);
     }
 
-    public function getAncetre(int $id_e): array
+    public function getAncetre($id_e)
     {
         $sql = <<<SQL
 SELECT * FROM entite_ancetre
@@ -85,15 +85,20 @@ SQL;
         $this->query($sql, $id_e);
     }
 
-    public function updateEntiteMere(int $id_e, int $id_entite_mere): void
+    public function delete($id_e)
+    {
+        $this->deleteEntite($id_e);
+    }
+
+    public function updateEntiteMere($id_e, $id_entite_mere)
     {
         $sql = <<<SQL
 UPDATE entite SET entite_mere = ? WHERE id_e = ?
 SQL;
-        $this->query($sql, $id_entite_mere, $id_e);
+        return $this->query($sql, $id_entite_mere, $id_e);
     }
 
-    public function setActive(int $id_e, bool $active): void
+    public function setActive($id_e, $active)
     {
         $sql = <<<SQL
 UPDATE entite SET is_active = ? WHERE id_e = ?
@@ -101,7 +106,7 @@ SQL;
         $this->query($sql, (int)$active, $id_e);
     }
 
-    public function getInfoByDenomination(string $denomination): array|false
+    public function getInfoByDenomination($denomination)
     {
         $sql = <<<SQL
 SELECT * FROM entite WHERE denomination = ?
@@ -109,22 +114,21 @@ SQL;
         return $this->queryOne($sql, $denomination);
     }
 
-    public function getNumberOfEntiteWithName(string $denomination): int
+    public function getNumberOfEntiteWithName($denomination)
     {
         $sql = <<<SQL
 SELECT count(*) FROM entite WHERE denomination = ?
 SQL;
-        return (int)$this->queryOne($sql, $denomination);
+        return $this->queryOne($sql, $denomination);
     }
 
     public function create(
         string $name,
         string $siren = '',
-        ?string $type = null,
+        string $type = self::TYPE_COLLECTIVITE,
         int $mere = 0,
         int $cdg = 0,
     ): int {
-        $type ??= EntityType::COLLECTIVITE->value;
         $sql = <<<SQL
 INSERT INTO entite(denomination, siren, type, entite_mere, date_inscription, centre_de_gestion)
 VALUES (?, ?, ?, ?, ?, ?)
@@ -137,11 +141,10 @@ SQL;
         int $entityId,
         string $name,
         string $siren = '',
-        ?string $type = null,
+        string $type = self::TYPE_COLLECTIVITE,
         int $mere = 0,
         int $cdg = 0,
     ): void {
-        $type ??= EntityType::COLLECTIVITE->value;
         $sql = <<<SQL
 UPDATE entite
 SET denomination = ?, siren = ?, type = ?, entite_mere = ?, centre_de_gestion = ?

@@ -300,7 +300,7 @@ class WorkerSQLTest extends PastellTestCase
     /**
      * @throws Exception
      */
-    private function addJobWithVerrou(): void
+    private function addJobWithVerrou(): int
     {
         $job = new Job();
         $job->type = Job::TYPE_DOCUMENT;
@@ -310,7 +310,7 @@ class WorkerSQLTest extends PastellTestCase
         $job->id_e = 1;
         $job->id_verrou = 'VERROU';
         $job->next_try = date('Y-M-d', strtotime('yesterday'));
-        $this->jobQueueSQL->createJob($job);
+        return (int)$this->jobQueueSQL->createJob($job);
     }
 
     /**
@@ -390,5 +390,33 @@ class WorkerSQLTest extends PastellTestCase
             (int)$id_worker,
             $this->workerSQL->getActionEnCoursForConnecteur(1, 'cible')
         );
+    }
+
+    public function testUnlockedJobsToLaunch(): void
+    {
+        $id_job = (int)$this->createJob();
+        $this->addJobWithVerrou();
+
+        $job_list = $this->workerSQL->getUnlockedJobsToLaunch(5);
+        self::assertSame([$id_job], array_column($job_list, 'id_job'));
+    }
+
+    public function testCountRunningByLock(): void
+    {
+        $id_job = $this->addJobWithVerrou();
+        self::assertSame(0, $this->workerSQL->countRunningJobsByLock('VERROU'));
+
+        $id_worker = $this->workerSQL->create(42);
+        $this->workerSQL->attachJob($id_worker, $id_job);
+        self::assertSame(1, $this->workerSQL->countRunningJobsByLock('VERROU'));
+    }
+
+    public function testPendingJobsByLock(): void
+    {
+        $id_job = $this->addJobWithVerrou();
+
+        $job_list = $this->workerSQL->getPendingJobsByLock('VERROU', 1);
+        self::assertSame([$id_job], array_column($job_list, 'id_job'));
+        self::assertSame([], $this->workerSQL->getPendingJobsByLock('OTHER', 1));
     }
 }

@@ -89,7 +89,7 @@ class NotificationServiceTest extends PastellTestCase
     {
         $this->notificationService->subscribe(1, 1, 'actes-generique', 'send-tdt', false);
         $this->notificationService->subscribe(1, 1, 'helios-generique', 'send-tdt', false);
-        $this->roleSQL->updateDroit('admin', ['entite:lecture', 'actes-generique:lecture']);
+        $this->replaceAdminDroits(['entite:lecture', 'actes-generique:lecture']);
 
         $this->notificationService->revokeInvalidForRole('admin');
 
@@ -102,7 +102,7 @@ class NotificationServiceTest extends PastellTestCase
     public function testRevokeWithoutEntiteLecture(): void
     {
         $this->notificationService->subscribe(1, 1, 'actes-generique', 'send-tdt', false);
-        $this->roleSQL->updateDroit('admin', ['actes-generique:lecture']);
+        $this->replaceAdminDroits(['actes-generique:lecture']);
 
         $this->notificationService->revokeInvalid(1);
 
@@ -112,7 +112,7 @@ class NotificationServiceTest extends PastellTestCase
     public function testRevokeWithEntiteEdition(): void
     {
         $this->notificationService->subscribe(1, 1, 'actes-generique', 'send-tdt', false);
-        $this->roleSQL->updateDroit('admin', ['entite:edition']);
+        $this->replaceAdminDroits(['entite:edition']);
 
         $this->notificationService->revokeInvalid(1);
 
@@ -122,7 +122,7 @@ class NotificationServiceTest extends PastellTestCase
     public function testRevokeKeepsAllType(): void
     {
         $this->notificationService->subscribe(1, 1, NotificationSubscription::ALL_TYPE, 'send-tdt', false);
-        $this->roleSQL->updateDroit('admin', ['entite:lecture']);
+        $this->replaceAdminDroits(['entite:lecture']);
 
         $this->notificationService->revokeInvalid(1);
 
@@ -132,7 +132,7 @@ class NotificationServiceTest extends PastellTestCase
     public function testRevokeAllType(): void
     {
         $this->notificationService->subscribe(1, 1, NotificationSubscription::ALL_TYPE, 'send-tdt', false);
-        $this->roleSQL->updateDroit('admin', []);
+        $this->replaceAdminDroits([]);
 
         $this->notificationService->revokeInvalid(1);
 
@@ -141,7 +141,7 @@ class NotificationServiceTest extends PastellTestCase
 
     public function testRevokeIgnoresDisabledPack(): void
     {
-        $this->roleSQL->updateDroit('admin', ['entite:lecture', 'facture-cpp:lecture']);
+        $this->replaceAdminDroits(['entite:lecture', 'facture-cpp:lecture']);
         $this->notificationService->subscribe(1, 1, 'facture-cpp', 'send-tdt', false);
         $this->setListPack(['pack_chorus_pro' => false]);
 
@@ -157,5 +157,13 @@ class NotificationServiceTest extends PastellTestCase
         $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)->removeRole(1, 'admin', 0);
 
         static::assertEmpty($this->notificationService->getSubscriptionsByUser(1));
+    }
+
+    private function replaceAdminDroits(array $droit_list): void
+    {
+        $this->roleSQL->deleteAllDroit('admin');
+        foreach ($droit_list as $droit) {
+            $this->roleSQL->insertDroit('admin', $droit);
+        }
     }
 }

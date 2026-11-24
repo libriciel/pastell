@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\RoleService;
 
 class DocumentControlerTest extends ControlerTestCase
 {
@@ -269,8 +270,8 @@ class DocumentControlerTest extends ControlerTestCase
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $id_u = $userCreationService->create('badguy', 'test@bar.baz', 'foo', 'foo');
 
-        $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
-        $roleSQL->addDroit('utilisateur', DroitService::getDroitFor('actes-generique', DroitType::LECTURE));
+        $roleService = $this->getObjectInstancier()->getInstance(RoleService::class);
+        $roleService->addDroit('utilisateur', DroitService::getDroitFor('actes-generique', DroitType::LECTURE));
 
         $utilisateurRoleService = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
         $utilisateurRoleService->addRole($id_u, 'admin', 2);
@@ -555,8 +556,8 @@ bar', $output);
     {
         $this->loadTypeDossier(__DIR__ . '/../pastell-core/type-dossier/fixtures/test-default-value.json');
         $typeDossier = 'testdefaultvalue';
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor($typeDossier, DroitType::LECTURE));
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor($typeDossier, DroitType::EDITION));
+        $this->getObjectInstancier()->getInstance(RoleService::class)->addDroit('admin', DroitService::getDroitFor($typeDossier, DroitType::LECTURE));
+        $this->getObjectInstancier()->getInstance(RoleService::class)->addDroit('admin', DroitService::getDroitFor($typeDossier, DroitType::EDITION));
         $documentID = $this->createDocument($typeDossier)['id_d'];
         $data = $this->getDonneesFormulaireFactory()->get($documentID, $typeDossier)->getRawDataWithoutPassword();
         $this->assertSame('Ma valeur par défaut !', $data['nomtest']);

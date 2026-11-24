@@ -20,7 +20,7 @@ class TdTRecupAnnulation extends ConnecteurTypeActionExecutor
         $tdT = $this->getConnecteur('TdT');
 
         $tedetis_annulation_id_element = $this->getDonneesFormulaire()->get($tedetis_annulation_id);
-
+        $actionChange = $this->getActionChange();
         if (!$tedetis_annulation_id_element) {
             $message = "Une erreur est survenue lors de l'envoi à " . $tdT->getLogicielName();
             $this->changeOrUpdateAction($tdt_error, $message);

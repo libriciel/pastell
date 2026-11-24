@@ -304,7 +304,7 @@ final class MailsecManager
             $mailSecInfo->id_e,
             0,
             'validation',
-            'Validation du document par ' . $mailSecInfo->email
+            'Validation du document par ' . $mailSecInfo->email,
         );
 
         $titre = $mailSecInfo->donneesFormulaireReponse->getTitre();

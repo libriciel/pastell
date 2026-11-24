@@ -4,6 +4,7 @@ use Pastell\Service\Annuaire\AnnuaireContactService;
 use Pastell\Service\Annuaire\AnnuaireExportService;
 use Pastell\Service\Annuaire\AnnuaireGroupeService;
 use Pastell\Service\Annuaire\AnnuaireImportService;
+use Pastell\Service\Annuaire\AnnuaireRoleService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Entite\EntityHierarchyService;
@@ -39,10 +40,7 @@ class MailSecControler extends PastellControler
         return $this->getInstance(AnnuaireSQL::class);
     }
 
-    /**
-     * @return AnnuaireRoleSQL
-     */
-    private function getAnnuaireRoleSQL()
+    private function getAnnuaireRoleSQL(): AnnuaireRoleSQL
     {
         return $this->getInstance(AnnuaireRoleSQL::class);
     }
@@ -678,7 +676,7 @@ class MailSecControler extends PastellControler
     public function addGroupeRoleAction()
     {
 
-        $recuperateur = new Recuperateur($_POST);
+        $recuperateur = $this->getPostInfo();
         $id_e = (int)$recuperateur->getInt('id_e');
         $id_e_owner = $recuperateur->getInt('id_e_owner');
         $role = $recuperateur->get('role');
@@ -686,16 +684,12 @@ class MailSecControler extends PastellControler
         $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::EDITION, "MailSec/annuaire?id_e=$id_e");
         $this->checkDroitFor($id_e_owner, DroitService::DROIT_ANNUAIRE, DroitType::EDITION, "MailSec/annuaire?id_e=$id_e");
 
-
-        $infoEntite = $this->getEntiteSQL()->getInfo($id_e);
-
-        if ($id_e !== RootEntity::ID_E) {
-            $nom = "$role - {$infoEntite['denomination']}";
-        } else {
-            $nom = "$role - toutes les collectivités";
+        if (!is_string($role) || $role === '') {
+            $this->setLastError('Le rôle est obligatoire');
+            $this->redirect("MailSec/groupeRoleList?id_e=$id_e_owner");
         }
 
-        $this->getAnnuaireRoleSQL()->add($nom, $id_e_owner, $id_e, $role);
+        $nom = $this->getInstance(AnnuaireRoleService::class)->createRole($id_e_owner, $id_e, $role);
 
         $this->setLastMessage("Le groupe « $nom » a été créé");
         $this->redirect("MailSec/groupeRoleList?id_e=$id_e_owner");
@@ -893,14 +887,20 @@ class MailSecControler extends PastellControler
      */
     public function getContactAjaxAction()
     {
-        $recuperateur = new Recuperateur($_REQUEST);
+        $recuperateur = $this->getPostOrGetInfo();
         $id_e = $recuperateur->getInt('id_e');
         $q = $recuperateur->get('term');
         $mailOnly = $recuperateur->get('mail-only');
 
         $this->checkDroitFor($id_e, DroitService::DROIT_ANNUAIRE, DroitType::LECTURE);
 
+        if (!is_string($q)) {
+            $q = '';
+        }
+
         $annuaireGroupe = $this->getInstance(AnnuaireGroupeSQL::class);
+        $annuaireGroupeService = $this->getInstance(AnnuaireGroupeService::class);
+        $annuaireRoleService = $this->getInstance(AnnuaireRoleService::class);
 
         $result = [];
 
@@ -917,10 +917,10 @@ class MailSecControler extends PastellControler
                 $result[] = "role: \"" . $item['nom'] . "\"\n";
             }
             foreach ($groupe_herited as $item) {
-                $result[] = $annuaireGroupe->getChaineHerited($item) . "\n";
+                $result[] = $annuaireGroupeService->getInheritedGroupLabel($item) . "\n";
             }
             foreach ($role_herited as $item) {
-                $result[] = $this->getAnnuaireRoleSQL()->getChaineHerited($item) . "\n";
+                $result[] = $annuaireRoleService->getInheritedRoleLabel($item) . "\n";
             }
         }
 
@@ -939,27 +939,36 @@ class MailSecControler extends PastellControler
     /**
      * @throws LastMessageException
      * @throws LastErrorException
-     * @throws NotFoundException
      */
     public function operationGroupeRoleAction()
     {
-        $recuperateur = new Recuperateur($_POST);
+        $recuperateur = $this->getPostInfo();
         $all_id_r = $recuperateur->get('id_r', []);
         $id_e = $recuperateur->getInt('id_e');
         $submit = $recuperateur->get('submit');
 
-        foreach ($all_id_r as $id_r) {
-            $info = $this->getAnnuaireRoleSQL()->getInfo($id_r);
+        if (!is_array($all_id_r)) {
+            $all_id_r = [];
+        }
 
-            if ($this->hasDroitFor($info['id_e_owner'], DroitService::DROIT_ANNUAIRE, DroitType::EDITION)) {
+        $annuaireRoleService = $this->getInstance(AnnuaireRoleService::class);
+        foreach ($all_id_r as $id_r_input) {
+            $id_r = (int)$id_r_input;
+            try {
+                $role_info = $annuaireRoleService->findRole($id_r);
+            } catch (NotFoundException) {
+                continue;
+            }
+
+            if ($this->hasDroitFor($role_info['id_e_owner'], DroitService::DROIT_ANNUAIRE, DroitType::EDITION)) {
                 if ($submit == "Supprimer") {
-                    $this->getAnnuaireRoleSQL()->delete($id_r);
+                    $annuaireRoleService->deleteRole($id_r);
                     $this->setLastMessage("Les groupes sélectionnés ont été supprimés");
                 } elseif ($submit == "Partager") {
-                    $this->getAnnuaireRoleSQL()->partage($id_r);
+                    $annuaireRoleService->shareRole($id_r);
                     $this->setLastMessage("Les groupes sélectionnés sont accessibles aux entités filles");
                 } else {
-                    $this->getAnnuaireRoleSQL()->unpartage($id_r);
+                    $annuaireRoleService->unshareRole($id_r);
                     $this->setLastMessage("Les groupes sélectionnés ne sont plus accessibles aux entités filles");
                 }
             }

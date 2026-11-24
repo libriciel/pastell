@@ -4,14 +4,18 @@ class AnnuaireRoleSQL extends SQL
 {
     public function getAll($id_e)
     {
-        $sql = "SELECT * FROM annuaire_role WHERE id_e_owner=? ORDER BY nom ASC";
+        $sql = <<<SQL
+SELECT * FROM annuaire_role WHERE id_e_owner = ? ORDER BY nom ASC
+SQL;
         return $this->query($sql, $id_e);
     }
 
     public function add($nom, $id_e_owner, $id_e, $role)
     {
-        $sql = "INSERT INTO annuaire_role(nom,id_e_owner,id_e,role) VALUES (?,?,?,?)";
-        $this->queryOne($sql, $nom, $id_e_owner, $id_e, $role);
+        $sql = <<<SQL
+INSERT INTO annuaire_role (nom, id_e_owner, id_e, role) VALUES (?, ?, ?, ?)
+SQL;
+        $this->query($sql, $nom, $id_e_owner, $id_e, $role);
         return $this->lastInsertId();
     }
 
@@ -30,91 +34,111 @@ SQL;
 
     public function getInfo($id_r)
     {
-        $sql = "SELECT * FROM annuaire_role WHERE id_r=?";
+        $sql = <<<SQL
+SELECT * FROM annuaire_role WHERE id_r = ?
+SQL;
         return $this->queryOne($sql, $id_r);
     }
 
     public function delete($id_r)
     {
-        $sql = "DELETE FROM annuaire_role WHERE id_r=?";
+        $sql = <<<SQL
+DELETE FROM annuaire_role WHERE id_r = ?
+SQL;
         $this->query($sql, $id_r);
     }
 
     public function getNbByRole(string $role): int
     {
         $sql = <<<SQL
-SELECT count(*) FROM annuaire_role WHERE role = ?;
+SELECT count(*) FROM annuaire_role WHERE role = ?
 SQL;
-        return (int) $this->queryOne($sql, $role);
+        return (int)$this->queryOne($sql, $role);
     }
 
     public function deleteByEntite(int $id_e): void
     {
         $sql = <<<SQL
-DELETE FROM annuaire_role WHERE id_e_owner = ? OR id_e = ?;
+DELETE FROM annuaire_role WHERE id_e_owner = ? OR id_e = ?
 SQL;
         $this->query($sql, $id_e, $id_e);
     }
 
     public function getList($id_e, $debut)
     {
-        $sql = "SELECT nom FROM annuaire_role WHERE id_e_owner=? AND nom LIKE ?";
+        $sql = <<<SQL
+SELECT nom FROM annuaire_role WHERE id_e_owner = ? AND nom LIKE ?
+SQL;
         return $this->query($sql, $id_e, "$debut%");
     }
 
     public function getFromNom($id_e, $nom)
     {
-        $sql = "SELECT id_r FROM annuaire_role WHERE id_e_owner=? AND nom=?";
+        $sql = <<<SQL
+SELECT id_r FROM annuaire_role WHERE id_e_owner = ? AND nom = ?
+SQL;
         return $this->queryOne($sql, $id_e, $nom);
     }
 
     public function partage($id_r)
     {
-        $sql = "UPDATE annuaire_role SET partage=1 WHERE id_r=?";
+        $sql = <<<SQL
+UPDATE annuaire_role SET partage = 1 WHERE id_r = ?
+SQL;
         $this->query($sql, $id_r);
     }
 
     public function unpartage($id_r)
     {
-        $sql = "UPDATE annuaire_role SET partage=0 WHERE id_r=?";
+        $sql = <<<SQL
+UPDATE annuaire_role SET partage = 0 WHERE id_r = ?
+SQL;
         $this->query($sql, $id_r);
     }
 
-    public function getGroupeHerite($all_ancetre, $debut = "")
+    public function getGroupeHerite($all_ancetre, $debut = '')
     {
         $result = [];
         foreach ($all_ancetre as $id_e) {
-            $sql = "SELECT annuaire_role.*,entite.denomination FROM annuaire_role " .
-                    " LEFT JOIN entite ON annuaire_role.id_e_owner = entite.id_e" .
-                    " WHERE annuaire_role.id_e_owner=? AND partage=1";
+            $sql = <<<SQL
+SELECT annuaire_role.*, entite.denomination FROM annuaire_role
+LEFT JOIN entite ON annuaire_role.id_e_owner = entite.id_e
+WHERE annuaire_role.id_e_owner = ? AND partage = 1
+SQL;
             $data = [$id_e];
             if ($debut) {
-                $sql .= " AND nom LIKE ?";
+                $sql .= ' AND nom LIKE ?';
                 $data[] = "$debut%";
             }
-            $all_g = $this->query($sql, $data);
-            if ($all_g) {
-                $result = array_merge($result, $all_g);
+            $role_list = $this->query($sql, $data);
+            if ($role_list) {
+                $result = array_merge($result, $role_list);
             }
         }
         return $result;
     }
 
+    /**
+     * @deprecated 4.1.26 Use AnnuaireRoleService::getInheritedRoleLabel() instead
+     */
     public function getChaineHerited($info)
     {
         if ($info['denomination']) {
-            $debut = "rôle hérité de {$info['denomination']}";
+            $debut = 'rôle hérité de ' . $info['denomination'];
         } else {
-            $debut = "rôle global";
+            $debut = 'rôle global';
         }
 
-        return "$debut: \"" . $info['nom'] . "\"";
+        return $debut . ': "' . $info['nom'] . '"';
     }
 
+    /**
+     * @deprecated 4.1.26 Use AnnuaireRoleService::findInheritedRoleId() instead
+     */
     public function getFromNomDenomination($all_ancetre, $chaine)
     {
         foreach ($this->getGroupeHerite($all_ancetre) as $info) {
-            if ($chaine == $this->getChaineHerited($info)) {
+            if ($chaine === $this->getChaineHerited($info)) {
                 return $info['id_r'];
             }
         }

@@ -65,7 +65,7 @@ class DocumentEmailReadService
                 $id_e,
                 0,
                 $nextAction,
-                $allRead ? 'Tous les destinataires ont consulté le message' : 'Un destinataire a consulté le message'
+                $allRead ? 'Tous les destinataires ont consulté le message' : 'Un destinataire a consulté le message',
             );
         }
 

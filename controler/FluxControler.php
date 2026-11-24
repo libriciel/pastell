@@ -2,6 +2,8 @@
 
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Connecteur\ConnecteurAvailabilityService;
+use Pastell\Service\Connecteur\FluxConnecteurListService;
+use Pastell\Service\Connecteur\FluxInheritanceService;
 use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Entite\EntityInfoService;
 use Pastell\Service\Entite\RootEntity;
@@ -27,6 +29,11 @@ class FluxControler extends PastellControler
     private function getConnecteurAssociationService(): ConnecteurAssociationService
     {
         return $this->getObjectInstancier()->getInstance(ConnecteurAssociationService::class);
+    }
+
+    private function getFluxConnecteurListService(): FluxConnecteurListService
+    {
+        return $this->getObjectInstancier()->getInstance(FluxConnecteurListService::class);
     }
 
     /**
@@ -160,7 +167,10 @@ class FluxControler extends PastellControler
         $fluxEntiteHeritageSQL = $this->getInstance(FluxEntiteHeritageSQL::class);
         $this->setViewParameter('id_e_mere', $this->getEntiteSQL()->getEntiteMere($id_e));
         $this->setViewParameter('all_herited', $fluxEntiteHeritageSQL->hasInheritanceAllFlux($id_e));
-        $this->setViewParameter('flux_connecteur_list', $this->getConnectorForFlux($id_e, $flux));
+        $this->setViewParameter(
+            'flux_connecteur_list',
+            $this->getFluxConnecteurListService()->getConnecteurList($id_e, $flux)
+        );
         $this->setViewParameter('template_milieu', "FluxDetail");
         $this->setDroitViewParameter($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
         $this->setViewParameter('entite_denomination', $this->getInstance(EntityInfoService::class)->getDenomination($id_e));
@@ -282,46 +292,20 @@ class FluxControler extends PastellControler
         }
     }
 
+    /**
+     * @deprecated 4.1.26 Use FluxConnecteurListService::getConnecteurList() instead
+     */
     public function getConnectorForFlux(int $id_e, string $id_flux): array
     {
-        $fluxEntiteHeritageSQL = $this->getObjectInstancier()->getInstance(FluxEntiteHeritageSQL::class);
-        $all_flux_entite = $fluxEntiteHeritageSQL->getAllWithSameType($id_e);
-        $result = [];
-        $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($id_flux);
-        foreach ($documentType->getConnecteurAllInfo() as $j => $connecteur_type_info) {
-            $connecteur_id = $connecteur_type_info[DocumentType::CONNECTEUR_ID];
-            $line = [];
-            $line['nb_connecteur'] = count($documentType->getConnecteur());
-            $line['num_connecteur'] = $j;
-            $line['id_flux'] = $id_flux;
-            $line['nom_flux'] = $documentType->getName();
-            $line['connecteur_type'] = $connecteur_id;
-            $line[DocumentType::CONNECTEUR_WITH_SAME_TYPE] =
-                $connecteur_type_info[DocumentType::CONNECTEUR_WITH_SAME_TYPE];
-            $line[DocumentType::NUM_SAME_TYPE] = $connecteur_type_info[DocumentType::NUM_SAME_TYPE];
-            $line['inherited_flux'] = false;
-            $line['connecteur_info'] = false;
-            $connecteur_info = $all_flux_entite[$id_flux][$connecteur_id][$line[DocumentType::NUM_SAME_TYPE]] ?? null;
-            if ($connecteur_info !== null) {
-                $line['connecteur_info'] = RootEntity::addDenomination([$connecteur_info])[0];
-            }
-            if (isset($all_flux_entite[$id_flux]['inherited_flux'])) {
-                $line['inherited_flux'] = $all_flux_entite[$id_flux]['inherited_flux'];
-            }
-            $result[] = $line;
-        }
-        return $result;
+        return $this->getFluxConnecteurListService()->getConnecteurList($id_e, $id_flux);
     }
 
     public function toogleHeritageAction()
     {
-        /** @var FluxEntiteHeritageSQL $fluxEntiteHeritageSQL */
-        $fluxEntiteHeritageSQL = $this->getInstance(FluxEntiteHeritageSQL::class);
-
         $id_e = $this->getPostInfo()->getInt('id_e');
         $flux = $this->getPostInfo()->get('flux');
         $this->checkDroitFor($id_e, DroitService::DROIT_CONNECTEUR, DroitType::EDITION);
-        $fluxEntiteHeritageSQL->toogleInheritance($id_e, $flux);
+        $this->getInstance(FluxInheritanceService::class)->toggleInheritance($id_e, (string)$flux);
         $this->setLastMessage("L'héritage a été modifié");
         if ($flux === FluxEntiteHeritageSQL::ALL_FLUX) {
             $this->redirect("/Flux/index?id_e=$id_e");

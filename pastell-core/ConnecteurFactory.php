@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Logger;
+use Pastell\Service\Connecteur\FluxInheritanceService;
 use Pastell\Service\Entite\RootEntity;
 
 class ConnecteurFactory
@@ -34,8 +35,8 @@ class ConnecteurFactory
     public function getConnecteurId($id_e, $id_flux, $type_connecteur, $num_same_type = 0)
     {
         return $this->objectInstancier
-            ->getInstance(FluxEntiteHeritageSQL::class)
-            ->getConnecteurId($id_e, $id_flux, $type_connecteur, $num_same_type);
+            ->getInstance(FluxInheritanceService::class)
+            ->getConnecteurId((int)$id_e, (string)$id_flux, (string)$type_connecteur, (int)$num_same_type);
     }
 
     public function getConnecteurByType($id_e, $id_flux, $type_connecteur, $num_same_type = 0)

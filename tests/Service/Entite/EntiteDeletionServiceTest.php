@@ -8,8 +8,8 @@ use AnnuaireSQL;
 use ConnecteurEntiteSQL;
 use DocumentSQL;
 use EntiteSQL;
-use FluxEntiteHeritageSQL;
 use FluxEntiteSQL;
+use Pastell\Service\Connecteur\FluxInheritanceService;
 use Pastell\Service\Document\DocumentRoleService;
 use Pastell\Service\Entite\EntiteDeletionService;
 use Pastell\Service\Entite\EntityType;
@@ -189,7 +189,7 @@ class EntiteDeletionServiceTest extends PastellTestCase
 
     public function testCannotDeleteWhenHasFluxEntityInheritance(): void
     {
-        $this->getObjectInstancier()->getInstance(FluxEntiteHeritageSQL::class)->setInheritance(
+        $this->getObjectInstancier()->getInstance(FluxInheritanceService::class)->setInheritance(
             $this->entityId,
             'flux-fake'
         );

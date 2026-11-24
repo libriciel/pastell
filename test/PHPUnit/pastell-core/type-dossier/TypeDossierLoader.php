@@ -4,13 +4,14 @@ use Pastell\Service\TypeDossier\TypeDossierImportService;
 use Pastell\Service\TypeDossier\TypeDossierUtilService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\RoleService;
 
 class TypeDossierLoader
 {
     private $workspacePath;
     private $memoryCache;
     private $extensionLoader;
-    private $roleSQL;
+    private $roleService;
 
     private $tmp_folder;
     private $typeDossierImportService;
@@ -19,13 +20,13 @@ class TypeDossierLoader
         $workspacePath,
         MemoryCache $memoryCache,
         ExtensionLoader $extensionLoader,
-        RoleSQL $roleSQL,
+        RoleService $roleService,
         TypeDossierImportService $typeDossierImportService
     ) {
         $this->workspacePath = $workspacePath;
         $this->memoryCache = $memoryCache;
         $this->extensionLoader = $extensionLoader;
-        $this->roleSQL = $roleSQL;
+        $this->roleService = $roleService;
         $this->typeDossierImportService = $typeDossierImportService;
     }
 
@@ -69,8 +70,8 @@ class TypeDossierLoader
 
         $this->extensionLoader->loadExtension([$this->tmp_folder]);
 
-        $this->roleSQL->addDroit('admin', DroitService::getDroitFor($type_dossier, DroitType::LECTURE));
-        $this->roleSQL->addDroit('admin', DroitService::getDroitFor($type_dossier, DroitType::EDITION));
+        $this->roleService->addDroit('admin', DroitService::getDroitFor($type_dossier, DroitType::LECTURE));
+        $this->roleService->addDroit('admin', DroitService::getDroitFor($type_dossier, DroitType::EDITION));
         $this->memoryCache->flushAll();
     }
 

@@ -5,6 +5,7 @@
  */
 
 use Pastell\Bootstrap\Bootstrap;
+use Pastell\Service\Utilisateur\UserPasswordService;
 use Pastell\Service\Entite\EntityType;
 
 require_once __DIR__ . '/../../../docker/define-from-environnement.php';
@@ -24,8 +25,8 @@ $objectInstancier->setInstance('pastell_admin_email', 'test@libriciel.invalid');
 $bootstrap = $objectInstancier->getInstance(Bootstrap::class);
 $bootstrap->bootstrap();
 
-$utilisateurSQL = $objectInstancier->getInstance(UtilisateurSQL::class);
-$utilisateurSQL->setPassword(1, 'admin');
+$userPasswordService = $objectInstancier->getInstance(UserPasswordService::class);
+$userPasswordService->setPassword(1, 'admin');
 
 /** @var InternalAPI $internalAPI */
 $internalAPI = $objectInstancier->getInstance(InternalAPI::class);

@@ -22,7 +22,6 @@ class FournisseurCommandeOrientation extends ActionExecutor
         $this->changeAction($next_action, $message);
 
         $this->notify($next_action, $this->type, $message);
-        $this->setLastMessage($message);
         return true;
     }
 

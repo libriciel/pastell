@@ -6,6 +6,9 @@ namespace Pastell\Service\Entite;
 
 use Pastell\Helpers\ArrayHelper;
 
+/**
+ * @deprecated 4.1.26 Use RootEntity instead
+ */
 final class EntityUtilitiesService
 {
     public function buildEntityTreeselectOptions(array $flatList): array
