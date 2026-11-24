@@ -22,6 +22,7 @@ class TdTRestamp extends ConnecteurTypeActionExecutor
 
         $tedetis_transaction_id = $this->getDonneesFormulaire()->get($tedetis_transaction_id_element);
 
+        $actionChange = $this->getActionChange();
         if (! $tedetis_transaction_id) {
             $message = "Une erreur est survenue lors de l'envoi à " . $tdT->getLogicielName() . ' (tedetis_transaction_id non disponible)';
             $this->changeOrUpdateAction($tdt_error, $message);

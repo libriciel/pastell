@@ -16,6 +16,7 @@ final class PasswordResetService
         private readonly UtilisateurSQL $utilisateurSQL,
         private readonly JournalEntryService $journalEntryService,
         private readonly TokenGenerator $tokenGenerator,
+        private readonly UserPasswordService $userPasswordService,
     ) {
     }
 
@@ -25,7 +26,7 @@ final class PasswordResetService
     public function changePassword(int $id_u, string $password): void
     {
         $info = $this->utilisateurSQL->getInfo($id_u);
-        $this->utilisateurSQL->setPassword($id_u, $password);
+        $this->userPasswordService->setPassword($id_u, $password);
         $this->utilisateurSQL->reinitPassword($id_u, $this->tokenGenerator->generate());
         $this->journalEntryService->add(
             JournalEventType::USER_MODIFICATION,

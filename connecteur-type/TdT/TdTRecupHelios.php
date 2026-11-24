@@ -20,6 +20,7 @@ class TdTRecupHelios extends ConnecteurTypeActionExecutor
 
         $tedetis_transaction_id = $this->getDonneesFormulaire()->get($this->getMappingValue('pes_tedetis_transaction_id'));
 
+        $actionChange = $this->getActionChange();
         if (! $tedetis_transaction_id) {
             $message = "Une erreur est survenue lors de l'envoi à " . $tdT->getLogicielName();
             $this->changeOrUpdateAction($tdt_error, $message);

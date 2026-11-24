@@ -3,6 +3,7 @@
 use Pastell\Configuration\JobStatus;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
+use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 use Pastell\Service\Entite\RootEntity;
@@ -54,8 +55,8 @@ class EntiteControlerTest extends ControlerTestCase
 
     public function testExportUtilisateurAction()
     {
-        $user = $this->getObjectInstancier()->getInstance(UtilisateurSQL::class);
-        $id_u = $user->create('other', 'other', 'other@other.other', 'other');
+        $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
+        $id_u = $userCreationService->createAccount('other', 'other', 'other@example.invalid', 'other');
 
         $roleUser = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
         $roleUser->addRole($id_u, 'autre', 0);
@@ -71,7 +72,7 @@ class EntiteControlerTest extends ControlerTestCase
         $this->entiteControler->exportUtilisateurAction();
         $result = ob_get_contents();
         ob_end_clean();
-        $this->assertMatchesRegularExpression('/3,other,,,other@other.other/', $result);
+        $this->assertMatchesRegularExpression('/3,other,,,other@example.invalid/', $result);
         self::assertStringContainsString('"autre rôle - Entité racine"', $result);
 
         $this->setGetInfo([
@@ -86,7 +87,7 @@ class EntiteControlerTest extends ControlerTestCase
         $result = ob_get_contents();
         ob_end_clean();
 
-        $this->assertDoesNotMatchRegularExpression('/3,other,,,other@other.other/', $result);
+        $this->assertDoesNotMatchRegularExpression('/3,other,,,other@example.invalid/', $result);
     }
 
     public function testNumberOfUsersIsCorrect()

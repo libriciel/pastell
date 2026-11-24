@@ -4,6 +4,7 @@ use Jumbojett\OpenIDConnectClient;
 use Jumbojett\OpenIDConnectClientException;
 use Pastell\Security\Authentication\OpenIDConnectClientFactory;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 
 final class OidcAuthentication extends AuthenticationConnecteur
@@ -25,6 +26,7 @@ final class OidcAuthentication extends AuthenticationConnecteur
     public function __construct(
         private readonly UtilisateurSQL $utilisateurSQL,
         private readonly UtilisateurRoleService $utilisateurRoleService,
+        private readonly UserCreationService $userCreationService,
         private readonly string $site_base,
     ) {
         $this->setOpenIDConnectClientFactory(new OpenIDConnectClientFactory());
@@ -132,7 +134,7 @@ final class OidcAuthentication extends AuthenticationConnecteur
             return;
         }
         $email = $userInfo[$this->emailAttribute] ?? '';
-        $id_u = $this->utilisateurSQL->create($login, random_int(1, mt_getrandmax()), $email, '');
+        $id_u = $this->userCreationService->createAccount($login, (string)random_int(1, mt_getrandmax()), $email, '');
         $this->utilisateurSQL->setNomPrenom(
             $id_u,
             $userInfo[$this->familyNameAttribute] ?? '',

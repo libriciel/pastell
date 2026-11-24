@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Utilisateur\UtilisateurRoleService;
+
 class UtilisateurRoleAPIControllerTest extends PastellTestCase
 {
     public function testList(): void
@@ -8,6 +10,18 @@ class UtilisateurRoleAPIControllerTest extends PastellTestCase
         self::assertSame('1', $list[0]['id_u']);
         self::assertSame('admin', $list[0]['role']);
         self::assertSame('0', $list[0]['id_e']);
+    }
+
+    public function testListOnlyRoleDroits(): void
+    {
+        $this->getObjectInstancier()->getInstance(RoleSQL::class)->insertDroit('autre', 'entite:lecture');
+        $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)->addRole(2, 'autre', 1);
+
+        $list = $this->getInternalAPI()->get('/utilisateur/2/role?id_e=1');
+
+        $role_droit_list = array_column($list, 'droits', 'role');
+        self::assertSame(['entite:lecture'], $role_droit_list['autre']);
+        self::assertContains('actes-generique:lecture', $role_droit_list['admin']);
     }
 
     public function testAdd(): void

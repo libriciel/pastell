@@ -2,12 +2,21 @@ include:
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
-  - template: Security/Container-Scanning.gitlab-ci.yml
   # FIXME: disabled because the qlty code-quality job uses too much memory, gets OOM-killed
   # by the runner and blocks the other jobs of the pipeline.
 #  - component: $LIBRICIEL_CATALOG_PATH/qlty/code-quality@~latest
 #    inputs:
 #      mode: "changed"
+  -   component: $LIBRICIEL_CATALOG_PATH/vulnerability-scan/container@2.0.0
+      inputs:
+          name: "app"
+          image: "${CONTAINER_IMAGE_APP}"
+          needs: [ "build-app" ]
+  -   component: $LIBRICIEL_CATALOG_PATH/vulnerability-scan/container@2.0.0
+      inputs:
+          name: "web"
+          image: "${CONTAINER_IMAGE_WEB}"
+          needs: [ "build-web" ]
   - component: $LIBRICIEL_CATALOG_PATH/project-standards/check-libriciel-standards@3.3.1
   - component: $LIBRICIEL_CATALOG_PATH/renovate-runner/runner@1.7.0
   - component: $LIBRICIEL_CATALOG_PATH/software-release/publish-compose@3.5.0
@@ -182,35 +191,6 @@ acceptance_test:
             - $CI_PROJECT_DIR
         expire_in: 1h
 
-.security_scan_base:
-  stage: test
-  image:
-    name: hubdocker.libriciel.fr/aquasec/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb
-    entrypoint: [""]
-  services:
-    - docker:dind@sha256:4bbc7223f81db790097c6dea42fb93e05b8fead4f0431fbe6ccaba6e8473201c
-  script:
-    - apk add --no-cache curl docker-cli
-    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - trivy image --no-progress --skip-dirs "/app/documentation/data-exemple" --output scanning-report.txt $CONTAINER_IMAGE
-    - trivy image --exit-code 1 --no-progress --skip-dirs "/app/documentation/data-exemple" --severity HIGH,CRITICAL $CONTAINER_IMAGE
-  artifacts:
-    reports:
-      container_scanning: scanning-report.txt
-    expire_in: 1 week
-
-security_scan_app:
-  allow_failure: true
-  extends: .security_scan_base
-  variables:
-    CONTAINER_IMAGE: $CONTAINER_IMAGE_APP
-
-security_scan_web:
-  allow_failure: true
-  extends: .security_scan_base
-  variables:
-    CONTAINER_IMAGE: $CONTAINER_IMAGE_WEB
-
 publish-container-to-registry:
   stage: deploy
   tags:
@@ -245,6 +225,10 @@ publish-compose:
   before_script:
     - sed -i "s/canary/${CI_COMMIT_REF_NAME}/" docker/compose.yaml
 
-container_scanning:
-  variables:
-    CS_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH-app
+container-scan-app:
+    allow_failure:
+        exit_codes: [3]
+
+container-scan-web:
+    allow_failure:
+        exit_codes: [3]

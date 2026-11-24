@@ -7,6 +7,7 @@ use Pastell\Service\TypeDossier\TypeDossierExportService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Utilisateur\UtilisateurRoleCacheService;
+use Pastell\Service\Utilisateur\RoleService;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 class TypeDossierControlerTest extends ControlerTestCase
@@ -79,8 +80,8 @@ class TypeDossierControlerTest extends ControlerTestCase
 
         $id_t = $this->copyTypeDossierTest();
 
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('cas-nominal', DroitType::LECTURE));
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('cas-nominal', DroitType::EDITION));
+        $this->getObjectInstancier()->getInstance(RoleService::class)->addDroit('admin', DroitService::getDroitFor('cas-nominal', DroitType::LECTURE));
+        $this->getObjectInstancier()->getInstance(RoleService::class)->addDroit('admin', DroitService::getDroitFor('cas-nominal', DroitType::EDITION));
         $this->getObjectInstancier()->getInstance(UtilisateurRoleCacheService::class)->invalidate(1, 1);
 
         $this->createDocument('cas-nominal');
@@ -232,8 +233,8 @@ class TypeDossierControlerTest extends ControlerTestCase
         $id_t = $this->createTypeDossier('test-42');
         $this->assertTrue($typeDossierSQL->exists($id_t));
 
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('test-42', DroitType::LECTURE));
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('test-42', DroitType::EDITION));
+        $this->getObjectInstancier()->getInstance(RoleService::class)->addDroit('admin', DroitService::getDroitFor('test-42', DroitType::LECTURE));
+        $this->getObjectInstancier()->getInstance(RoleService::class)->addDroit('admin', DroitService::getDroitFor('test-42', DroitType::EDITION));
 
         $this->setGetInfo(['id_t' => $id_t]);
         try {
@@ -273,8 +274,8 @@ class TypeDossierControlerTest extends ControlerTestCase
     public function testSetAllFatalError(): void
     {
         $this->createTypeDossier('fluxstudio');
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('fluxstudio', DroitType::LECTURE));
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)->addDroit('admin', DroitService::getDroitFor('fluxstudio', DroitType::EDITION));
+        $this->getObjectInstancier()->getInstance(RoleService::class)->addDroit('admin', DroitService::getDroitFor('fluxstudio', DroitType::LECTURE));
+        $this->getObjectInstancier()->getInstance(RoleService::class)->addDroit('admin', DroitService::getDroitFor('fluxstudio', DroitType::EDITION));
         $this->createDocument('fluxstudio');
         $docInfo = $this->getObjectInstancier()->getInstance(DocumentSQL::class)->getAllIdByType('fluxstudio');
         $lastActionDoc = $this->getObjectInstancier()->getInstance(DocumentActionEntiteSQL::class)->getLastAction($docInfo[0]['id_e'], $docInfo[0]['id_d']);
@@ -335,9 +336,9 @@ class TypeDossierControlerTest extends ControlerTestCase
     {
         $studioFlux = 'studio';
         $this->createTypeDossier($studioFlux);
-        $roleSQL = $this->getObjectInstancier()->getInstance(RoleSQL::class);
-        $roleSQL->addDroit('admin', DroitService::getDroitFor($studioFlux, DroitType::LECTURE));
-        $roleSQL->addDroit('admin', DroitService::getDroitFor($studioFlux, DroitType::EDITION));
+        $roleService = $this->getObjectInstancier()->getInstance(RoleService::class);
+        $roleService->addDroit('admin', DroitService::getDroitFor($studioFlux, DroitType::LECTURE));
+        $roleService->addDroit('admin', DroitService::getDroitFor($studioFlux, DroitType::EDITION));
         $document = $this->createDocument($studioFlux);
         $typeDossierControler = $this->getTypeDossierController();
         $this->authenticateNewUserWithPermission(
