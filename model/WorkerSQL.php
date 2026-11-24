@@ -251,7 +251,7 @@ SELECT job_queue.id_job, next_try FROM job_queue
 LEFT JOIN worker ON job_queue.id_job = worker.id_job AND worker.termine = 0
 WHERE worker.id_worker IS NULL
 AND next_try <= now()
-AND is_lock = 0
+AND job_status = 0
 AND id_verrou = ''
 ORDER BY next_try
 LIMIT $limit
@@ -276,7 +276,7 @@ SELECT job_queue.id_job, next_try FROM job_queue
 LEFT JOIN worker ON job_queue.id_job = worker.id_job AND worker.termine = 0
 WHERE worker.id_worker IS NULL
 AND next_try < now()
-AND is_lock = 0
+AND job_status = 0
 AND id_verrou = ?
 ORDER BY next_try
 LIMIT $limit

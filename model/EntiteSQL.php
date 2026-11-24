@@ -85,11 +85,6 @@ SQL;
         $this->query($sql, $id_e);
     }
 
-    public function delete($id_e)
-    {
-        $this->deleteEntite($id_e);
-    }
-
     public function updateEntiteMere($id_e, $id_entite_mere)
     {
         $sql = <<<SQL

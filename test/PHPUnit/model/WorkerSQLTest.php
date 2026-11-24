@@ -406,8 +406,7 @@ class WorkerSQLTest extends PastellTestCase
         $id_job = $this->addJobWithVerrou();
         self::assertSame(0, $this->workerSQL->countRunningJobsByLock('VERROU'));
 
-        $id_worker = $this->workerSQL->create(42);
-        $this->workerSQL->attachJob($id_worker, $id_job);
+        $this->workerSQL->create(42, $id_job);
         self::assertSame(1, $this->workerSQL->countRunningJobsByLock('VERROU'));
     }
 

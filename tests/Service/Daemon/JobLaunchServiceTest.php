@@ -38,8 +38,7 @@ final class JobLaunchServiceTest extends PastellTestCase
 
     private function attachWorker(int $id_job): void
     {
-        $id_worker = $this->getWorkerSQL()->create(42);
-        $this->getWorkerSQL()->attachJob($id_worker, $id_job);
+        $this->getWorkerSQL()->create(42, $id_job);
     }
 
     public function testNoJobWithoutLimit(): void
