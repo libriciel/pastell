@@ -71,6 +71,23 @@ class MailsecEnvoyerTest extends PastellTestCase
     }
 
     /**
+     * @throws NotFoundException
+     */
+    public function testUnknownRecipientsAreIgnored(): void
+    {
+        $id_d = $this->prepareAndEnvoiMail(
+            'groupe: "unknown_group", ' .
+            'role: "unknown_role", ' .
+            'groupe hérité de Bourg-en-Bresse: "unknown_group", ' .
+            'rôle hérité de Bourg-en-Bresse: "unknown_role", ' .
+            'johndoe@example.invalid'
+        );
+
+        $documentEmailSQL = $this->getObjectInstancier()->getInstance(DocumentEmailSQL::class);
+        self::assertSame(['johndoe@example.invalid'], $documentEmailSQL->getAllEmail($id_d));
+    }
+
+    /**
      * @param string $to
      * @return string
      * @throws NotFoundException

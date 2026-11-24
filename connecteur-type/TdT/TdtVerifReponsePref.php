@@ -26,6 +26,8 @@ class TdtVerifReponsePref extends ConnecteurTypeActionExecutor
         $reponse_de_reponse_transaction_id = 'response_transaction_id';
         $reponse_de_reponse_transaction_id_element = $this->getDonneesFormulaire()->get($reponse_de_reponse_transaction_id);
 
+        $actionChange = $this->getActionChange();
+
         if (( ! $acte_transaction_id_element) || ( ! $reponse_transaction_id_element)) {
             $message = "Une erreur est survenue lors de l'envoi à " . $tdT->getLogicielName() . ' (tedetis_transaction_id non disponible)';
             $this->changeOrUpdateAction($tdt_error, $message);

@@ -31,6 +31,7 @@ class TdTRecupActe extends ConnecteurTypeActionExecutor
         $tdT = $this->getConnecteurOrFail('Tdt');
         $tedetis_transaction_id = $this->getDonneesFormulaire()->get($tedetis_transaction_id_element);
 
+        $actionChange = $this->getActionChange();
         if (! $tedetis_transaction_id) {
             $message = \sprintf(
                 "Une erreur est survenue lors de l'envoi à %s (tedetis_transaction_id non disponible)",

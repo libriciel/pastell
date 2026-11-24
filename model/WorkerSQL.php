@@ -20,7 +20,9 @@ class WorkerSQL extends SQL
 
     public function create($pid)
     {
-        $sql = "INSERT INTO worker (pid,date_begin) VALUES (?,?)";
+        $sql = <<<SQL
+INSERT INTO worker (pid, date_begin) VALUES (?, ?)
+SQL;
         $this->query($sql, $pid, $this->getNow());
         return $this->lastInsertId();
     }
@@ -37,7 +39,9 @@ class WorkerSQL extends SQL
 
     public function error($id_worker, $message)
     {
-        $sql = "UPDATE worker SET message=?,date_end=?,termine=1 WHERE id_worker=?";
+        $sql = <<<SQL
+UPDATE worker SET message = ?, date_end = ?, termine = 1 WHERE id_worker = ?
+SQL;
         $this->query($sql, $message, $this->getNow(), $id_worker);
     }
 
@@ -53,13 +57,17 @@ class WorkerSQL extends SQL
 
     public function attachJob($id_worker, $id_job)
     {
-        $sql = "UPDATE worker SET id_job=? WHERE id_worker=?";
+        $sql = <<<SQL
+UPDATE worker SET id_job = ? WHERE id_worker = ?
+SQL;
         $this->query($sql, $id_job, $id_worker);
     }
 
     public function success($id_worker)
     {
-        $sql = "DELETE FROM worker WHERE id_worker=?";
+        $sql = <<<SQL
+DELETE FROM worker WHERE id_worker = ?
+SQL;
         $this->query($sql, $id_worker);
     }
 
@@ -140,64 +148,128 @@ class WorkerSQL extends SQL
 
     public function getAllVerrou()
     {
-        $sql = "SELECT DISTINCT id_verrou FROM job_queue WHERE id_verrou != ''";
+        $sql = <<<SQL
+SELECT DISTINCT id_verrou FROM job_queue WHERE id_verrou != ''
+SQL;
         return $this->queryOneCol($sql);
     }
 
     public function getVerrou()
     {
-        $sql = "SELECT id_verrou FROM job_queue " .
-            " JOIN worker ON worker.id_job=job_queue.id_job " .
-            " WHERE termine=0 AND id_verrou != ''";
+        $sql = <<<SQL
+SELECT id_verrou FROM job_queue
+JOIN worker ON worker.id_job = job_queue.id_job
+WHERE termine = 0 AND id_verrou != ''
+SQL;
         return $this->queryOneCol($sql);
     }
 
     public function getNbActif(): int
     {
-        $sql = 'SELECT count(*) FROM worker WHERE termine=0';
+        $sql = <<<SQL
+SELECT count(*) FROM worker WHERE termine = 0
+SQL;
         return $this->queryOne($sql);
     }
 
     public function getNbActifForDaemon(int $id_daemon): int
     {
-        $sql = 'SELECT count(*) 
-            FROM worker w 
-            JOIN job_queue jq ON jq.id_job = w.id_job 
+        $sql = 'SELECT count(*)
+            FROM worker w
+            JOIN job_queue jq ON jq.id_job = w.id_job
             WHERE termine=0 AND jq.id_daemon = ?';
         return $this->queryOne($sql, $id_daemon);
     }
 
     public function getActif($offset = 0, $limit = 20)
     {
-        $offset = intval($offset);
-        $limit = intval($limit);
-        $sql = "SELECT * FROM worker" .
-                " LEFT JOIN job_queue ON job_queue.id_job = worker.id_job " .
-                " WHERE termine=0 " .
-                " ORDER BY date_begin" .
-                " LIMIT $offset,$limit";
+        $offset = (int)$offset;
+        $limit = (int)$limit;
+        $sql = <<<SQL
+SELECT * FROM worker
+LEFT JOIN job_queue ON job_queue.id_job = worker.id_job
+WHERE termine = 0
+ORDER BY date_begin
+LIMIT $offset, $limit
+SQL;
         return $this->query($sql);
     }
 
     public function menageAll()
     {
-        $sql = "DELETE FROM worker WHERE termine=1";
+        $sql = <<<SQL
+DELETE FROM worker WHERE termine = 1
+SQL;
         $this->query($sql);
     }
 
     public function getActionEnCours($id_e, $id_d)
     {
-        $sql = "SELECT id_worker FROM job_queue " .
-                " JOIN worker ON job_queue.id_job = worker.id_job " .
-                " WHERE id_e=? AND id_d=? AND termine=0";
+        $sql = <<<SQL
+SELECT id_worker FROM job_queue
+JOIN worker ON job_queue.id_job = worker.id_job
+WHERE id_e = ? AND id_d = ? AND termine = 0
+SQL;
         return $this->queryOne($sql, $id_e, $id_d);
     }
 
     public function getActionEnCoursForConnecteur($id_ce, $action_name)
     {
-        $sql = "SELECT id_worker FROM job_queue " .
-            " JOIN worker ON job_queue.id_job = worker.id_job " .
-            " WHERE id_ce=? AND etat_cible =? AND termine=0";
+        $sql = <<<SQL
+SELECT id_worker FROM job_queue
+JOIN worker ON job_queue.id_job = worker.id_job
+WHERE id_ce = ? AND etat_cible = ? AND termine = 0
+SQL;
         return $this->queryOne($sql, $id_ce, $action_name);
+    }
+
+    public function getUnlockedJobsToLaunch(int $limit): array
+    {
+        $sql = <<<SQL
+SELECT job_queue.id_job, next_try FROM job_queue
+LEFT JOIN worker ON job_queue.id_job = worker.id_job AND worker.termine = 0
+WHERE worker.id_worker IS NULL
+AND next_try <= now()
+AND is_lock = 0
+AND id_verrou = ''
+ORDER BY next_try
+LIMIT $limit
+SQL;
+        return $this->query($sql);
+    }
+
+    public function countRunningJobsByLock(string $id_verrou): int
+    {
+        $sql = <<<SQL
+SELECT count(*) FROM job_queue
+JOIN worker ON worker.id_job = job_queue.id_job
+WHERE termine = 0 AND id_verrou = ?
+SQL;
+        return (int)$this->queryOne($sql, $id_verrou);
+    }
+
+    public function getPendingJobsByLock(string $id_verrou, int $limit): array
+    {
+        $sql = <<<SQL
+SELECT job_queue.id_job, next_try FROM job_queue
+LEFT JOIN worker ON job_queue.id_job = worker.id_job AND worker.termine = 0
+WHERE worker.id_worker IS NULL
+AND next_try < now()
+AND is_lock = 0
+AND id_verrou = ?
+ORDER BY next_try
+LIMIT $limit
+SQL;
+        return $this->query($sql, $id_verrou);
+    }
+
+    private function getJobFilterCondition(string $filtre): string
+    {
+        return match ($filtre) {
+            'lock' => 'AND is_lock = 1',
+            'wait' => 'AND next_try < now()',
+            'actif' => 'AND worker.termine = 0',
+            default => '',
+        };
     }
 }

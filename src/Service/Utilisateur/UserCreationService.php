@@ -24,6 +24,7 @@ final class UserCreationService
         private readonly UtilisateurRoleService $utilisateurRoleService,
         private readonly JournalEntryService $journalEntryService,
         private readonly UserValidator $userValidator,
+        private readonly UserPasswordService $userPasswordService,
         private readonly PasswordResetMailService $passwordResetMailService,
     ) {
     }
@@ -57,7 +58,7 @@ final class UserCreationService
 
         $emailPasswordValidation = $this->tokenGenerator->generate();
 
-        $userId = $this->utilisateurSQL->create($login, $password, $email, $emailPasswordValidation);
+        $userId = $this->createAccount($login, $password, $email, $emailPasswordValidation);
 
         $this->utilisateurSQL->validMailAuto($userId);
         $this->utilisateurSQL->setNomPrenom($userId, $lastname, $firstname);
@@ -101,7 +102,7 @@ final class UserCreationService
 
         $this->userValidator->validateNewAPIUser($login, $lastname, $firstname, $id_e);
         $emailPasswordValidation = $this->tokenGenerator->generate();
-        $userId = $this->utilisateurSQL->create($login, $password, '', $emailPasswordValidation);
+        $userId = $this->createAccount($login, $password, '', $emailPasswordValidation);
         $this->utilisateurSQL->setIsAPI($userId, true);
         $this->utilisateurSQL->setColBase($userId, $id_e);
         $this->utilisateurSQL->setLogin($userId, $login);
@@ -121,6 +122,13 @@ final class UserCreationService
             "Création de l'utilisateur API $login ($userId) : $info"
         );
 
+        return $userId;
+    }
+
+    public function createAccount(string $login, string $password, string $email, string $mail_verif_password): int
+    {
+        $userId = $this->utilisateurSQL->insert($login, $email, $mail_verif_password);
+        $this->userPasswordService->setPassword($userId, $password);
         return $userId;
     }
 }

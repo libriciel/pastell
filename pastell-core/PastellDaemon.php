@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Logger;
+use Pastell\Service\Daemon\JobLaunchService;
 use Symfony\Component\Process\Process;
 
 class PastellDaemon
@@ -11,6 +12,7 @@ class PastellDaemon
         private readonly ActionExecutorFactory $actionExecutorFactory,
         private readonly DocumentSQL $document,
         private readonly NotificationMail $notificationMail,
+        private readonly JobLaunchService $jobLaunchService,
         private readonly Logger $logger,
         private readonly bool $unlock_job_error_at_startup,
         private readonly string $pastell_path,

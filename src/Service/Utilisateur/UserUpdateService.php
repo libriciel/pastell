@@ -22,6 +22,8 @@ final class UserUpdateService
         private readonly JournalEntryService $journalEntryService,
         private readonly UserValidator $userValidator,
         private readonly NotificationDigestSQL $notificationDigestSQL,
+        private readonly UserPasswordService $userPasswordService,
+        private readonly UserCertificateService $userCertificateService,
     ) {
     }
 
@@ -51,7 +53,7 @@ final class UserUpdateService
         $oldInfo = $this->utilisateurSQL->getInfo($userId);
 
         if ($password !== null) {
-            $this->utilisateurSQL->setPassword($userId, $password);
+            $this->userPasswordService->setPassword($userId, $password);
         }
         $this->utilisateurSQL->validMailAuto($userId);
         $this->utilisateurSQL->setNomPrenom($userId, $lastname, $firstname);

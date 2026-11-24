@@ -160,6 +160,7 @@ $objectInstancier->setInstance('pastell_admin_login', PASTELL_ADMIN_LOGIN);
 $objectInstancier->setInstance('pastell_admin_email', PASTELL_ADMIN_EMAIL);
 
 $objectInstancier->setInstance('unlock_job_error_at_startup', UNLOK_JOB_ERROR_AT_STARTUP);
+$objectInstancier->setInstance('nb_job_par_verrou', (int)NB_JOB_PAR_VERROU);
 
 $objectInstancier->setInstance('upload_chunk_directory', UPLOAD_CHUNK_DIRECTORY);
 
