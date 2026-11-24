@@ -8,6 +8,7 @@ use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Mailsec\MailsecManager;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\RoleService;
 
 class DocumentAPIControllerTest extends PastellTestCase
 {
@@ -370,9 +371,10 @@ class DocumentAPIControllerTest extends PastellTestCase
         $this->expectException(ForbiddenException::class);
         $this->expectExceptionMessage('Acces interdit id_e=1, droit=test:edition,id_u=3');
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
-        $roleSql->edit('readonly', 'readonly');
-        $roleSql->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
-        $roleSql->addDroit('readonly', DroitService::getDroitFor('test', DroitType::LECTURE));
+        $roleService = $this->getObjectInstancier()->getInstance(RoleService::class);
+        $roleSql->insert('readonly', 'readonly');
+        $roleService->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+        $roleService->addDroit('readonly', DroitService::getDroitFor('test', DroitType::LECTURE));
         $userId = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create(
                 'readonly',
@@ -488,11 +490,12 @@ class DocumentAPIControllerTest extends PastellTestCase
         $utilisateurRoleService = $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class);
         $userCreationService = $this->getObjectInstancier()->getInstance(UserCreationService::class);
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
+        $roleService = $this->getObjectInstancier()->getInstance(RoleService::class);
 
         //userAvecDroit mailsec-bidir:lecture
-        $roleSql->edit('lecteur_mail', 'lecteur_mail');
-        $roleSql->addDroit('lecteur_mail', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
-        $roleSql->addDroit('lecteur_mail', DroitService::getDroitFor('mailsec-bidir', DroitType::LECTURE));
+        $roleSql->insert('lecteur_mail', 'lecteur_mail');
+        $roleService->addDroit('lecteur_mail', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+        $roleService->addDroit('lecteur_mail', DroitService::getDroitFor('mailsec-bidir', DroitType::LECTURE));
         $userAvecDroit = $userCreationService->create('lecteur_mail', 'lecteur_mail@example.org', 'user', 'user');
         $utilisateurRoleService->addRole($userAvecDroit, 'lecteur_mail', self::ID_E_COL);
 
@@ -501,9 +504,9 @@ class DocumentAPIControllerTest extends PastellTestCase
         static::assertSame($id_d_reponse, $infoReponse['info']['id_d']);
 
         //userSansDroit mailsec-bidir:lecture (avec mailsec-bidir-reponse:lecture)
-        $roleSql->edit('lecteur_reponse', 'lecteur_reponse');
-        $roleSql->addDroit('lecteur_reponse', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
-        $roleSql->addDroit('lecteur_reponse', DroitService::getDroitFor('mailsec-bidir-reponse', DroitType::LECTURE));
+        $roleSql->insert('lecteur_reponse', 'lecteur_reponse');
+        $roleService->addDroit('lecteur_reponse', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+        $roleService->addDroit('lecteur_reponse', DroitService::getDroitFor('mailsec-bidir-reponse', DroitType::LECTURE));
         $userSansDroit = $userCreationService->create('lecteur_reponse', 'lecteur_reponse@example.org', 'user', 'user');
         $utilisateurRoleService->addRole($userSansDroit, 'lecteur_reponse', self::ID_E_COL);
 
@@ -692,9 +695,10 @@ class DocumentAPIControllerTest extends PastellTestCase
     public function testGetDocumentWithOnlyReadPermission(): void
     {
         $roleSql = $this->getObjectInstancier()->getInstance(RoleSQL::class);
-        $roleSql->edit('readonly', 'readonly');
-        $roleSql->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
-        $roleSql->addDroit('readonly', DroitService::getDroitFor('test', DroitType::LECTURE));
+        $roleService = $this->getObjectInstancier()->getInstance(RoleService::class);
+        $roleSql->insert('readonly', 'readonly');
+        $roleService->addDroit('readonly', DroitService::getDroitFor(DroitService::DROIT_ENTITE, DroitType::LECTURE));
+        $roleService->addDroit('readonly', DroitService::getDroitFor('test', DroitType::LECTURE));
         $userId = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create(
                 'readonly',

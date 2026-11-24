@@ -5,6 +5,7 @@ use Pastell\Service\Journal\JournalEntryService;
 use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\PasswordEntropy;
 use Pastell\Service\Utilisateur\PasswordResetService;
+use Pastell\Service\Utilisateur\UserPasswordService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -402,7 +403,7 @@ class ConnexionControler extends PastellControler
                 $this->getLastError()->setLastError('Identifiant ou mot de passe incorrect. (LDAP)');
                 $this->redirect($redirect_fail);
             }
-        } elseif (!$this->getUtilisateur()->verifPassword($id_u, $password)) {
+        } elseif (!$this->getInstance(UserPasswordService::class)->verifyPassword((int)$id_u, $password)) {
             $loginAttemptLimit->consumeLoginAttempt($login);
             $this->getLastError()->setLastError('Identifiant ou mot de passe incorrect.');
             $this->redirect($redirect_fail);

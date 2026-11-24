@@ -518,6 +518,12 @@
 
 ## [4.1.26] - 2026-12-07
 
+### Corrections
+
+- Envoi d'un acte à S²low : les caractères typographiques de l'objet ne sont plus remplacés par « ? » #2630
+- L'API de consultation des rôles d'un utilisateur renvoyait dans le champ `droits` l'ensemble des droits de
+  l'utilisateur au lieu des seuls droits du rôle #2635
+
 ### Dépréciations
 
 - Classe `DocumentEmail` dépréciée au profit de `DocumentEmailSQL` et des services `DocumentEmailService` et
@@ -539,6 +545,21 @@
   `EntiteSQL` dépréciées au profit de l'enum `EntityType` et de la classe `RootEntity` #2627
 - Méthodes `getAllType()`, `getNom()`, `isActive()` et `isCDG()` de `EntiteSQL` dépréciées au profit de l'enum
   `EntityType` et du service `EntityInfoService` #2627
+- Méthodes `getAllWithSameType()`, `getConnecteurId()`, `setInheritance()`, `setInheritanceAllFlux()` et
+  `toogleInheritance()` de `FluxEntiteHeritageSQL` dépréciées au profit du service `FluxInheritanceService` #2628
+- Méthode `getConnectorForFlux()` de `FluxControler` dépréciée au profit du service `FluxConnecteurListService` #2628
+- Classe `ActionCreatorSQL` dépréciée au profit de `ActionChange` #2629
+- Méthode `getActionCreator()` de `ActionExecutor` dépréciée au profit de `getActionChange()` #2629
+- Méthodes `getJobToLaunch()` et `getFirstJobToLaunch()` de `WorkerSQL` dépréciées au profit du service
+  `JobLaunchService` #2633
+- Méthodes `getChaineHerited()` et `getFromNomDenomination()` de `AnnuaireRoleSQL` et `AnnuaireGroupeSQL` dépréciées
+  au profit des services `AnnuaireRoleService` et `AnnuaireGroupeService` #2634
+- Méthodes `setPassword()`, `verifPassword()`, `create()`, `setCertificat()` et `getUserFromData()` de `UtilisateurSQL`
+  dépréciées au profit des services `UserPasswordService`, `UserCreationService`, `UserCertificateService` et
+  `UserInfoService` #2632
+- Méthode `validMail()` de `UtilisateurSQL` dépréciée car inutilisée #2632
+- Méthodes `edit()`, `getDroit()`, `updateDroit()`, `addDroit()`, `getAuthorizedRoleToDelegate()` et
+  `getRoleLibelle()` de `RoleSQL` dépréciées au profit des services `RoleService` et `RoleDelegationService` #2635
 
 ### Sécurité
 

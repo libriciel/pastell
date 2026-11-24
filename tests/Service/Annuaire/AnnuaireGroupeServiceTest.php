@@ -170,4 +170,56 @@ final class AnnuaireGroupeServiceTest extends PastellTestCase
         $this->expectException(NotFoundException::class);
         $this->getService()->findGroupe($id_g);
     }
+
+    public function testGetInheritedGroupLabel(): void
+    {
+        self::assertSame(
+            'groupe hérité de Bourg-en-Bresse: "Groupe"',
+            $this->getService()->getInheritedGroupLabel(['denomination' => 'Bourg-en-Bresse', 'nom' => 'Groupe'])
+        );
+    }
+
+    public function testGetGlobalGroupLabel(): void
+    {
+        self::assertSame(
+            'groupe global: "Groupe"',
+            $this->getService()->getInheritedGroupLabel(['denomination' => null, 'nom' => 'Groupe'])
+        );
+    }
+
+    public function testFindInheritedGroupId(): void
+    {
+        $annuaireGroupeSQL = $this->getObjectInstancier()->getInstance(AnnuaireGroupeSQL::class);
+        $id_g = $annuaireGroupeSQL->add(self::ID_E, 'Groupe');
+        $annuaireGroupeSQL->tooglePartage($id_g);
+
+        self::assertSame(
+            $id_g,
+            $this->getService()->findInheritedGroupId(
+                [self::ID_E, self::ID_E_EMPTY],
+                'groupe hérité de Bourg-en-Bresse: "Groupe"'
+            )
+        );
+    }
+
+    public function testFindUnsharedGroupId(): void
+    {
+        $this->getObjectInstancier()->getInstance(AnnuaireGroupeSQL::class)->add(self::ID_E, 'Groupe');
+
+        self::assertNull(
+            $this->getService()->findInheritedGroupId([self::ID_E], 'groupe hérité de Bourg-en-Bresse: "Groupe"')
+        );
+    }
+
+    public function testFindGlobalGroupId(): void
+    {
+        $annuaireGroupeSQL = $this->getObjectInstancier()->getInstance(AnnuaireGroupeSQL::class);
+        $id_g = $annuaireGroupeSQL->add(0, 'Groupe');
+        $annuaireGroupeSQL->tooglePartage($id_g);
+
+        self::assertSame(
+            $id_g,
+            $this->getService()->findInheritedGroupId([0, self::ID_E], 'groupe global: "Groupe"')
+        );
+    }
 }

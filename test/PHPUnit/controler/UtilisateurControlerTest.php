@@ -1,11 +1,13 @@
 <?php
 
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UserPasswordService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Entite\EntityCreationService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Droit\DroitService;
+use Pastell\Service\Utilisateur\RoleService;
 
 class UtilisateurControlerTest extends ControlerTestCase
 {
@@ -38,7 +40,9 @@ class UtilisateurControlerTest extends ControlerTestCase
         $utilisateurSQL = $this->getObjectInstancier()->getInstance(UtilisateurSQL::class);
         static::assertEquals('boz@byz.fr', $utilisateurSQL->getInfo(3)['email']);
         // Password cannot be set with web controller
-        static::assertFalse($utilisateurSQL->verifPassword(3, $password));
+        static::assertFalse(
+            $this->getObjectInstancier()->getInstance(UserPasswordService::class)->verifyPassword(3, $password)
+        );
     }
 
     /**
@@ -365,8 +369,8 @@ class UtilisateurControlerTest extends ControlerTestCase
         $user = $this->getObjectInstancier()->getInstance(UserCreationService::class)
             ->create('tester', 'tester@example.org', 'tester', 'tester');
         $this->getObjectInstancier()->getInstance(RoleSQL::class)
-            ->edit('entiteLectureEdition', 'Droit utilisateur');
-        $this->getObjectInstancier()->getInstance(RoleSQL::class)
+            ->insert('entiteLectureEdition', 'Droit utilisateur');
+        $this->getObjectInstancier()->getInstance(RoleService::class)
             ->addDroit('entiteLectureEdition', DroitService::getDroitFor(DroitService::DROIT_UTILISATEUR, DroitType::EDITION));
         $this->getObjectInstancier()->getInstance(UtilisateurRoleService::class)
             ->addRole(3, 'entiteLectureEdition', 1);

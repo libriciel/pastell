@@ -93,4 +93,24 @@ final class AnnuaireGroupeService
     {
         $this->annuaireGroupeSQL->delete($id_e, $id_g);
     }
+
+    public function getInheritedGroupLabel(array $groupe_info): string
+    {
+        if ($groupe_info['denomination']) {
+            $prefix = 'groupe hérité de ' . $groupe_info['denomination'];
+        } else {
+            $prefix = 'groupe global';
+        }
+        return $prefix . ': "' . $groupe_info['nom'] . '"';
+    }
+
+    public function findInheritedGroupId(array $ancestor_ids, string $label): ?int
+    {
+        foreach ($this->annuaireGroupeSQL->getGroupeHerite($ancestor_ids) as $groupe_info) {
+            if ($label === $this->getInheritedGroupLabel($groupe_info)) {
+                return (int)$groupe_info['id_g'];
+            }
+        }
+        return null;
+    }
 }
