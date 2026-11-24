@@ -5,6 +5,7 @@ use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
+use Pastell\Service\Entite\RootEntity;
 
 class EntiteControlerTest extends ControlerTestCase
 {
@@ -297,11 +298,11 @@ class EntiteControlerTest extends ControlerTestCase
         $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
         $id_job_root = $this->createJobForBulkAction(
             $jobQueueSQL,
-            EntiteSQL::ID_E_ENTITE_RACINE,
+            RootEntity::ID_E,
             DaemonSQL::GLOBAL_DAEMON
         );
 
-        $this->setGetInfo(['id_e' => EntiteSQL::ID_E_ENTITE_RACINE]);
+        $this->setGetInfo(['id_e' => RootEntity::ID_E]);
         $this->entiteControler->_beforeAction();
         ob_start();
         $this->entiteControler->jobAction();

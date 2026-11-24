@@ -59,15 +59,6 @@ class DocumentControler extends PastellControler
         parent::renderDefault();
     }
 
-    /**
-     * @return DocumentActionEntite
-     * @deprecated 4.1.26 Use DocumentActionEntiteSQL, DocumentEntiteService and DocumentSearchService instead
-     */
-    protected function getDocumentActionEntite(): DocumentActionEntite
-    {
-        return $this->getInstance(DocumentActionEntite::class);
-    }
-
     private function enrichListDocumentForDisplay(array $listDocument): array
     {
         $documentTypeFactory = $this->getDocumentTypeFactory();

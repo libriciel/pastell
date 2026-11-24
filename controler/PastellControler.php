@@ -66,7 +66,7 @@ class PastellControler extends Controler
         $this->setViewParameter(
             'daemon_global_lecture',
             $this->hasDroitFor(
-                EntiteSQL::ID_E_ENTITE_RACINE,
+                RootEntity::ID_E,
                 DroitService::DROIT_DAEMON,
                 DroitType::LECTURE
             )
@@ -244,7 +244,7 @@ class PastellControler extends Controler
             );
 
             $daemon_lecture = $this->hasDroitFor(
-                EntiteSQL::ID_E_ENTITE_RACINE,
+                RootEntity::ID_E,
                 DroitService::DROIT_DAEMON,
                 DroitType::LECTURE
             );
@@ -264,7 +264,7 @@ class PastellControler extends Controler
         }
 
         if (
-            $this->hasDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE)
+            $this->hasDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::LECTURE)
         ) {
             $threshold = $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->getWorkspaceAlertThreshold();
             $workspaceAlertWarning = $this->getObjectInstancier()->getInstance(FreeSpace::class)->getUsagePercent(
@@ -481,7 +481,7 @@ class PastellControler extends Controler
         if (
             $advancedFilters !== null
             && $this->hasDroitFor(
-                $rootEntityId ?? EntiteSQL::ID_E_ENTITE_RACINE,
+                $rootEntityId ?? RootEntity::ID_E,
                 DroitService::DROIT_DAEMON,
                 DroitType::EDITION
             )

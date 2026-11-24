@@ -519,7 +519,7 @@ class SystemControler extends PastellControler
      */
     public function editAdminEmailAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', 'Modification de la configuration ADMIN_EMAIL');
         $this->setViewParameter('template_milieu', 'SystemEditAdminEmail');
         $this->setViewParameter('admin_email', implode(', ', $this->getConfigurationSQL()->getAdminEmails()));
@@ -533,7 +533,7 @@ class SystemControler extends PastellControler
      */
     public function doEditAdminEmailAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $admin_email = array_map('trim', explode(',', $this->getPostInfo()->get('admin_email')));
         try {
             $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->setAdminEmails($admin_email);
@@ -552,7 +552,7 @@ class SystemControler extends PastellControler
      */
     public function editLibellePlateformeMailAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', 'Modification de la configuration LIBELLE_PLATEFORME_MAIL');
         $this->setViewParameter('template_milieu', 'SystemEditLibellePlateformeEmail');
         $this->setViewParameter('libelle_plateforme_mail', $this->getConfigurationSQL()->getLibellePlateformeMail());
@@ -565,7 +565,7 @@ class SystemControler extends PastellControler
      */
     public function doEditLibellePlateformeMailAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $libelle_plateforme_mail = $this->getPostInfo()->get('libelle_plateforme_mail');
         $this->getConfigurationSQL()->setConfiguration(
             ConfigurationSQL::LIBELLE_PLATEFORME_MAIL,
@@ -583,7 +583,7 @@ class SystemControler extends PastellControler
      */
     public function editWorkspaceAlertThresholdAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', "Modification du seuil d'alerte taux d'occupation du workspace");
         $this->setViewParameter('template_milieu', 'SystemEditWorkspaceAlertThreshold');
         $this->setViewParameter('workspace_alert_threshold', $this->getConfigurationSQL()->getWorkspaceAlertThreshold());
@@ -596,7 +596,7 @@ class SystemControler extends PastellControler
      */
     public function doEditWorkspaceAlertThresholdAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         try {
             $this->getObjectInstancier()->getInstance(ConfigurationSQL::class)->setWorkspaceAlertThreshold(
                 (int) $this->getPostInfo()->get('workspace_alert_threshold')
@@ -616,7 +616,7 @@ class SystemControler extends PastellControler
      */
     public function magicLinkAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
 
         $activeMagicLinks = $this->getInstance(MagicLinkService::class)->getActiveLinks();
 
@@ -635,7 +635,7 @@ class SystemControler extends PastellControler
      */
     public function magicLinkEditionAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
         $this->setViewParameter('page_title', "Création d'un accès temporaire");
 
         $roleAuthorized = $this->getInstance(RoleDelegationService::class)->getAuthorizedRoleToDelegate($this->getId_u());
@@ -664,7 +664,7 @@ class SystemControler extends PastellControler
      */
     public function doMagicLinkEditionAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $recuperateur = $this->getPostInfo();
         $motif = $recuperateur->get('motif');
@@ -718,7 +718,7 @@ class SystemControler extends PastellControler
      */
     public function magicLinkRevokeAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $magicLinkId = (string)$this->getGetInfo()->get('id');
         $magicLink = $this->getInstance(MagicLinkService::class)->getActiveLink($magicLinkId);
@@ -740,7 +740,7 @@ class SystemControler extends PastellControler
      */
     public function doMagicLinkRevokeAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $magicLinkId = (string)$this->getPostInfo()->get('id');
         $this->getInstance(MagicLinkService::class)->revoke($magicLinkId);
@@ -755,7 +755,7 @@ class SystemControler extends PastellControler
      */
     public function doMagicLinkResendAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
 
         $magicLinkId = (string)$this->getPostInfo()->get('id');
         try {
@@ -776,7 +776,7 @@ class SystemControler extends PastellControler
      */
     public function magicLinkHistoryAction(): void
     {
-        $this->checkDroitFor(EntiteSQL::ID_E_ENTITE_RACINE, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::LECTURE);
 
         $search = (string)$this->getGetInfo()->get('search');
 

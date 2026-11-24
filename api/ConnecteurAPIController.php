@@ -294,7 +294,7 @@ class ConnecteurAPIController extends BaseAPIController
 
         if (
             !$isGlobalConnecteur &&
-            $id_e === EntiteSQL::ID_E_ENTITE_RACINE &&
+            $id_e === RootEntity::ID_E &&
             !$this->connecteurDefinitionFiles->isAllowedOnEntiteRacine($connecteur_info)
         ) {
             throw new RuntimeException(

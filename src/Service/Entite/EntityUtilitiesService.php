@@ -45,13 +45,4 @@ final class EntityUtilitiesService
             return $option;
         }, $tree);
     }
-
-    /**
-     * @deprecated 4.1.26 Use RootEntity::addDenomination() instead
-     */
-    public function addDenominationForEntiteRacine(
-        array $listWithEntities
-    ): array {
-        return RootEntity::addDenomination($listWithEntities);
-    }
 }
