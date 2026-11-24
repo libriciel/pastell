@@ -5,6 +5,7 @@
 ### Corrections
 
 - Correction d'une erreur fatale lors de la consultation d'un mail sécurisé avec mot de passe #2640
+- Le vhost pastell est désormais le vhost par défaut #2603
 
 ## [5.0.13] - 2026-11-12
 
