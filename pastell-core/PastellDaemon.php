@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Logger;
+use Pastell\Service\Daemon\JobLaunchService;
 use Symfony\Component\Process\Process;
 
 class PastellDaemon
@@ -11,6 +12,7 @@ class PastellDaemon
         private readonly ActionExecutorFactory $actionExecutorFactory,
         private readonly DocumentSQL $document,
         private readonly NotificationMail $notificationMail,
+        private readonly JobLaunchService $jobLaunchService,
         private readonly Logger $logger,
         private readonly bool $unlock_job_error_at_startup,
         private readonly string $pastell_path,
@@ -67,7 +69,7 @@ class PastellDaemon
 
         $nb_worker_to_launch = NB_WORKERS - $nb_worker_alive;
 
-        $job_id_list = $workerSQL->getJobToLaunch($nb_worker_to_launch);
+        $job_id_list = $this->jobLaunchService->getJobsToLaunch($nb_worker_to_launch);
 
         foreach ($job_id_list as $id_job) {
             $this->launchWorker($id_job);
