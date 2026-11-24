@@ -181,10 +181,13 @@ SQL;
 
     public function getInfo($id_cf)
     {
-        $sql = "SELECT connecteur_frequence.*,connecteur_entite.libelle, entite.denomination FROM connecteur_frequence " .
-                " LEFT JOIN connecteur_entite ON connecteur_frequence.id_ce=connecteur_entite.id_ce" .
-                " LEFT JOIN entite ON entite.id_e=connecteur_entite.id_e" .
-                " WHERE id_cf = ?";
+        $sql = <<<SQL
+SELECT connecteur_frequence.*, connecteur_entite.libelle, entite.denomination
+FROM connecteur_frequence
+LEFT JOIN connecteur_entite ON connecteur_frequence.id_ce = connecteur_entite.id_ce
+LEFT JOIN entite ON entite.id_e = connecteur_entite.id_e
+WHERE id_cf = ?
+SQL;
         return $this->queryOne($sql, $id_cf);
     }
 
@@ -203,10 +206,14 @@ SQL;
 
     public function getAllArray()
     {
-        $sql = "SELECT connecteur_frequence.*,connecteur_entite.libelle, entite.denomination FROM connecteur_frequence " .
-            " LEFT JOIN connecteur_entite ON connecteur_frequence.id_ce=connecteur_entite.id_ce" .
-            " LEFT JOIN entite ON entite.id_e=connecteur_entite.id_e" .
-            " ORDER BY type_connecteur,famille_connecteur,connecteur_frequence.id_connecteur,connecteur_frequence.id_ce,action_type,type_document,action";
+        $sql = <<<SQL
+SELECT connecteur_frequence.*, connecteur_entite.libelle, entite.denomination
+FROM connecteur_frequence
+LEFT JOIN connecteur_entite ON connecteur_frequence.id_ce = connecteur_entite.id_ce
+LEFT JOIN entite ON entite.id_e = connecteur_entite.id_e
+ORDER BY type_connecteur, famille_connecteur, connecteur_frequence.id_connecteur, connecteur_frequence.id_ce,
+    action_type, type_document, action
+SQL;
         return $this->query($sql);
     }
 
@@ -228,21 +235,25 @@ SQL;
 
     public function delete($id_cf)
     {
-        $sql = "DELETE FROM connecteur_frequence WHERE id_cf =?";
+        $sql = <<<SQL
+DELETE FROM connecteur_frequence WHERE id_cf = ?
+SQL;
         $this->query($sql, $id_cf);
     }
 
     public function deleteByIdCe(int $id_ce): void
     {
         $sql = <<<SQL
-DELETE FROM connecteur_frequence WHERE id_ce = ?;
+DELETE FROM connecteur_frequence WHERE id_ce = ?
 SQL;
         $this->query($sql, $id_ce);
     }
 
     public function deleteAll()
     {
-        $sql = "DELETE FROM connecteur_frequence";
+        $sql = <<<SQL
+DELETE FROM connecteur_frequence
+SQL;
         $this->query($sql);
     }
 

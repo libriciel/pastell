@@ -126,6 +126,28 @@ final class ConnecteurFrequenceServiceTest extends PastellTestCase
     /**
      * @throws UnrecoverableException
      */
+    public function testSaveWithoutActionType(): void
+    {
+        $id_cf = $this->connecteurFrequenceService->save(
+            new ConnecteurFrequenceData(
+                type_connecteur: ConnecteurFrequenceType::ENTITE->value,
+                famille_connecteur: 'signature',
+                id_connecteur: 'i-parapheur',
+                id_ce: 1,
+                type_document: 'actes-generique',
+                action: 'verif-signature',
+            )
+        );
+        $connecteurFrequenceData = $this->connecteurFrequenceService->get($id_cf);
+
+        self::assertSame(1, $connecteurFrequenceData->id_ce);
+        self::assertSame('', $connecteurFrequenceData->type_document);
+        self::assertSame('', $connecteurFrequenceData->action);
+    }
+
+    /**
+     * @throws UnrecoverableException
+     */
     public function testSaveUnknownTypes(): void
     {
         $id_cf = $this->connecteurFrequenceService->save(

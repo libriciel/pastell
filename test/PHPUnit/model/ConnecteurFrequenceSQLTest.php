@@ -160,6 +160,33 @@ class ConnecteurFrequenceSQLTest extends PastellTestCase
         self::assertSame('60', $info['expression']);
     }
 
+    public function testGetAllArray(): void
+    {
+        $connecteur_frequence_list = \array_column($this->connecteurFrequenceSQL->getAllArray(), null, 'id_cf');
+
+        self::assertSame('i-parapheur', $connecteur_frequence_list[$this->id_cf]['id_connecteur']);
+        self::assertArrayHasKey('libelle', $connecteur_frequence_list[$this->id_cf]);
+        self::assertArrayHasKey('denomination', $connecteur_frequence_list[$this->id_cf]);
+    }
+
+    public function testDeleteByIdCe(): void
+    {
+        $this->connecteurFrequenceSQL->deleteByIdCe(1);
+
+        self::assertFalse($this->connecteurFrequenceSQL->getInfo($this->id_cf));
+        self::assertContains(
+            'DEFAULT_FREQUENCE',
+            \array_column($this->connecteurFrequenceSQL->getAllArray(), 'id_verrou')
+        );
+    }
+
+    public function testDeleteAll(): void
+    {
+        $this->connecteurFrequenceSQL->deleteAll();
+
+        self::assertSame([], $this->connecteurFrequenceSQL->getAllArray());
+    }
+
     public function testGetCandidateList(): void
     {
         $candidate_list = \array_column(
