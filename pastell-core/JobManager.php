@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Logger;
+use Pastell\Service\Daemon\JobCreationService;
 use Pastell\Service\Document\DocumentEntiteService;
 use Pastell\Service\Connecteur\Frequence\ConnecteurFrequenceService;
 
@@ -25,6 +26,7 @@ class JobManager
         private readonly ConnecteurEntiteSQL $connecteurEntiteSQL,
         private readonly ConnecteurFrequenceSQL $connecteurFrequenceSQL,
         private readonly ConnecteurFrequenceService $connecteurFrequenceService,
+        private readonly JobCreationService $jobCreationService,
         private readonly Logger $logger,
         private $disable_job_queue = false
     ) {
@@ -35,7 +37,9 @@ class JobManager
         $this->disable_job_queue = $disable_job_queue;
     }
 
-
+    /**
+     * @throws UnrecoverableException
+     */
     public function setJobForDocument($id_e, $id_d, $last_message, ?string $action_name = null)
     {
         if ($this->disable_job_queue) {
@@ -85,6 +89,9 @@ class JobManager
         }
     }
 
+    /**
+     * @throws UnrecoverableException
+     */
     public function setTraitementLot($id_e, $id_d, $id_u, $action, string $verrou = '')
     {
         if ($this->disable_job_queue) {
@@ -93,6 +100,9 @@ class JobManager
         return $this->createJobForDocument($id_e, $id_d, $id_u, "Action programmée sur le document", $action, $verrou);
     }
 
+    /**
+     * @throws UnrecoverableException
+     */
     public function setJobForConnecteur($id_ce, $action_name, $last_message)
     {
         if ($this->disable_job_queue) {
@@ -120,6 +130,9 @@ class JobManager
         return $id_job;
     }
 
+    /**
+     * @throws UnrecoverableException
+     */
     private function createJobForDocument($id_e, $id_d, $id_u = 0, $last_message = '', $action = '', string $verrou = '')
     {
 
@@ -135,9 +148,12 @@ class JobManager
         $job->next_try = $now;
         $job->id_verrou = $verrou ?: $this->connecteurFrequenceService->getForJob($job)->id_verrou;
         $this->deleteDocument($id_e, $id_d);
-        return $this->jobQueueSQL->createJob($job);
+        return $this->jobCreationService->create($job);
     }
 
+    /**
+     * @throws UnrecoverableException
+     */
     private function createJobForConnecteur($id_ce, $action_name)
     {
         $info = $this->connecteurEntiteSQL->getInfo($id_ce);
@@ -150,7 +166,7 @@ class JobManager
         $now = date('Y-m-d H:i:s');
         $job->next_try = $now;
         $job->id_verrou = $this->connecteurFrequenceService->getForJob($job)->id_verrou;
-        return $this->jobQueueSQL->createJob($job);
+        return $this->jobCreationService->create($job);
     }
 
     private function updateJob($id_job, $last_message)
