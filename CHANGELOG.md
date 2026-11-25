@@ -48,6 +48,9 @@
   `UserEmailChangeService` #2636
 - Méthode `getUtilisateurNewEmailSQL()` de `UtilisateurControler` dépréciée au profit du service
   `UserEmailChangeService`, et méthode `getNotificationMail()` dépréciée car inutilisée #2636
+- Méthode `getNewId()` et constante `MAX_ESSAI` de `DocumentSQL` dépréciées au profit du service `DocumentIdService`
+  #2642
+- Méthodes `getIdFromTitre()` et `getIdFromEntiteAndTitre()` de `DocumentSQL` dépréciées car inutilisées #2642
 
 ### Sécurité
 

@@ -603,10 +603,6 @@ Lignes',
     private function setUuidForDocument(): void
     {
         $this->getObjectInstancier()->setInstance(IdentifierGeneratorInterface::class, new UuidGenerator());
-        $this->getObjectInstancier()->setInstance(DocumentSQL::class, new DocumentSQL(
-            static::getSQLQuery(),
-            $this->getObjectInstancier()->getInstance(IdentifierGeneratorInterface::class)
-        ));
     }
 
     public function testCreateDocumentWithUUID(): void
