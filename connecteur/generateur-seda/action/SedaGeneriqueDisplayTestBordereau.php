@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Connector\AbstractSedaGeneratorConnector;
+use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Symfony\Component\Uid\Uuid;
 
 class SedaGeneriqueDisplayTestBordereau extends ActionExecutor
@@ -57,7 +58,8 @@ class SedaGeneriqueDisplayTestBordereau extends ActionExecutor
 
         $fakeDonneesFormulaire = $this->getDonneesFormulaireFactory()->getNonPersistingDonneesFormulaire();
 
-        $flux = $this->objectInstancier->getInstance(FluxEntiteSQL::class)->getUsedByConnecteurIfUnique($this->id_ce, $this->id_e);
+        $flux = $this->objectInstancier->getInstance(ConnecteurAssociationService::class)
+            ->getUniqueAssociatedFlux((int)$this->id_ce, (int)$this->id_e);
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($flux);
 
         $formulaire = $documentType->getFormulaire();

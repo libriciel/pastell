@@ -243,4 +243,25 @@ class ConnecteurAssociationServiceTest extends PastellTestCase
 
         static::assertGreaterThan(0, $id_fe);
     }
+
+    public function testGetUniqueAssociatedFlux(): void
+    {
+        self::assertSame('actes-generique', $this->getConnecteurAssociationService()->getUniqueAssociatedFlux(1, 1));
+    }
+
+    /**
+     * @throws UnrecoverableException
+     * @throws Exception
+     */
+    public function testUniqueFluxSeveralAssociations(): void
+    {
+        $this->getConnecteurAssociationService()->addConnecteurAssociation(1, 1, 'signature', 0, 'mailsec');
+
+        self::assertNull($this->getConnecteurAssociationService()->getUniqueAssociatedFlux(1, 1));
+    }
+
+    public function testUniqueFluxWithoutAssociation(): void
+    {
+        self::assertNull($this->getConnecteurAssociationService()->getUniqueAssociatedFlux(1, 2));
+    }
 }
