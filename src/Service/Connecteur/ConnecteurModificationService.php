@@ -13,6 +13,8 @@ use UnrecoverableException;
 
 class ConnecteurModificationService
 {
+    public const MINIMUM_FREQUENCY_IN_MINUTES = 1;
+
     private $lastMessage = '';
 
     public function __construct(
@@ -46,8 +48,8 @@ class ConnecteurModificationService
         int $id_u = 0,
         string $message = ''
     ): void {
-
-        $this->connecteurEntiteSQL->edit($id_ce, $libelle, $frequence_en_minute, $id_verrou);
+        $frequence_en_minute = max(self::MINIMUM_FREQUENCY_IN_MINUTES, $frequence_en_minute);
+        $this->connecteurEntiteSQL->update($id_ce, $libelle, $frequence_en_minute, $id_verrou);
         $this->connecteurActionService->add(
             $id_e,
             $id_u,

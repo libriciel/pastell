@@ -55,6 +55,9 @@
   `getJobLock()` dépréciée car inutilisée #2643
 - Méthode `getUsedByConnecteurIfUnique()` de `FluxEntiteSQL` dépréciée au profit du service
   `ConnecteurAssociationService` #2644
+- Méthode `edit()` de `ConnecteurEntiteSQL` dépréciée au profit du service `ConnecteurModificationService` #2645
+- Méthodes `getDisponibleUsed()`, `getDisponibleUsedLocal()`, `getOne()`, `getAllId()` et `listNotUsed()` de
+  `ConnecteurEntiteSQL` dépréciées car inutilisées #2645
 
 ### Sécurité
 
