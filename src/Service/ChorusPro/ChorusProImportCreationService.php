@@ -11,6 +11,7 @@ use CPPException;
 use Exception;
 use NotFoundException;
 use Pastell\Service\Document\DocumentEntiteService;
+use Pastell\Service\Document\DocumentIdService;
 use Pastell\Service\Document\DocumentRoleService;
 use UnrecoverableException;
 use DonneesFormulaireFactory;
@@ -37,10 +38,7 @@ class ChorusProImportCreationService
      */
     private $documentTypeFactory;
 
-    /**
-     * @var DocumentSQL
-     */
-    private $documentSQL;
+    private DocumentSQL $documentSQL;
 
     private DocumentEntiteService $documentEntiteService;
     private DocumentRoleService $documentRoleService;
@@ -49,6 +47,8 @@ class ChorusProImportCreationService
      * @var DonneesFormulaireFactory
      */
     private $donneesFormulaireFactory;
+
+    private DocumentIdService $documentIdService;
 
     /** @var  int */
     private $id_e;
@@ -72,7 +72,8 @@ class ChorusProImportCreationService
         DocumentSQL $documentSQL,
         DocumentEntiteService $documentEntiteService,
         DocumentRoleService $documentRoleService,
-        DonneesFormulaireFactory $donneesFormulaireFactory
+        DonneesFormulaireFactory $donneesFormulaireFactory,
+        DocumentIdService $documentIdService
     ) {
         $this->fluxEntiteSQL = $fluxEntiteSQL;
         $this->documentIndexSQL = $documentIndexSQL;
@@ -82,6 +83,7 @@ class ChorusProImportCreationService
         $this->documentEntiteService = $documentEntiteService;
         $this->documentRoleService = $documentRoleService;
         $this->donneesFormulaireFactory = $donneesFormulaireFactory;
+        $this->documentIdService = $documentIdService;
     }
 
     public function analyseOneFactureCreation(array $facture_a_creer, string $nommage_csv = ""): array
@@ -152,7 +154,7 @@ class ChorusProImportCreationService
             throw new CPPException("Le type $authorized_flux n'existe pas sur cette plateforme Pastell");
         }
 
-        $id_d = $this->documentSQL->getNewId();
+        $id_d = $this->documentIdService->generate();
         $this->documentSQL->save($id_d, $authorized_flux);
         $this->documentRoleService->addRole($id_d, $this->id_e, DocumentRoleService::EDITEUR);
 

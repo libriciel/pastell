@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Pastell\Service\Document\DocumentIdService;
+
 class DocumentEntiteSQLTest extends PastellTestCase
 {
     private const TYPE = 'document-type-test';
@@ -16,7 +18,7 @@ class DocumentEntiteSQLTest extends PastellTestCase
     {
         parent::setUp();
         $documentSQL = $this->getObjectInstancier()->getInstance(DocumentSQL::class);
-        $this->id_d = $documentSQL->getNewId();
+        $this->id_d = $this->getObjectInstancier()->getInstance(DocumentIdService::class)->generate();
         $documentSQL->save($this->id_d, self::TYPE);
         $this->documentEntiteSQL = new DocumentEntiteSQL(self::getSQLQuery());
         $this->documentEntiteSQL->insert($this->id_d, self::ID_E_COL, 'editeur');

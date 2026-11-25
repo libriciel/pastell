@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Document\DocumentIdService;
 use Pastell\Service\Document\DocumentRoleService;
 
 class CreationFactureCPP
@@ -79,7 +80,7 @@ class CreationFactureCPP
             throw new Exception("Le type $nom_flux_cpp n'existe pas sur cette plateforme Pastell");
         }
 
-        $new_id_d = $this->objectInstancier->getInstance(DocumentSQL::class)->getNewId();
+        $new_id_d = $this->objectInstancier->getInstance(DocumentIdService::class)->generate();
         $this->objectInstancier->getInstance(DocumentSQL::class)->save($new_id_d, $nom_flux_cpp);
         $this->objectInstancier->getInstance(DocumentRoleService::class)
             ->addRole($new_id_d, (int) $id_e, DocumentRoleService::EDITEUR);

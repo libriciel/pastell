@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Document\DocumentIdService;
 use Pastell\Service\Document\DocumentRoleService;
 
 class PieceMarcheParEtapeCreationPiece
@@ -31,7 +32,7 @@ class PieceMarcheParEtapeCreationPiece
         if (!$this->objectInstancier->getInstance(DocumentTypeFactory::class)->isTypePresent($nom_flux_piece)) {
             throw new Exception("Le type $nom_flux_piece n'existe pas sur cette plateforme Pastell");
         }
-        $new_id_d = $this->objectInstancier->getInstance(DocumentSQL::class)->getNewId();
+        $new_id_d = $this->objectInstancier->getInstance(DocumentIdService::class)->generate();
         $this->objectInstancier->getInstance(DocumentSQL::class)->save($new_id_d, $nom_flux_piece);
         $this->objectInstancier->getInstance(DocumentRoleService::class)
             ->addRole($new_id_d, (int) $id_e, DocumentRoleService::EDITEUR);

@@ -1,24 +1,19 @@
 <?php
 
+use Pastell\Service\Document\DocumentIdService;
 use Pastell\Service\Droit\DroitService;
 use Pastell\Service\Droit\DroitType;
 use Pastell\Service\Entite\EntityInfoService;
 
 class DocumentCreationService
 {
-    private $documentSQL;
-    private $actionExecutorFactory;
-    private $droitService;
-
     public function __construct(
         private readonly EntityInfoService $entityInfoService,
-        DocumentSQL $documentSQL,
-        ActionExecutorFactory $actionExecutorFactory,
-        DroitService $droitService
+        private readonly DocumentSQL $documentSQL,
+        private readonly ActionExecutorFactory $actionExecutorFactory,
+        private readonly DroitService $droitService,
+        private readonly DocumentIdService $documentIdService,
     ) {
-        $this->documentSQL = $documentSQL;
-        $this->actionExecutorFactory = $actionExecutorFactory;
-        $this->droitService = $droitService;
     }
 
     /**
@@ -62,7 +57,7 @@ class DocumentCreationService
      */
     private function _createDocument(int $id_e, int $id_u, string $type): string
     {
-        $id_d = $this->documentSQL->getNewId();
+        $id_d = $this->documentIdService->generate();
         $this->documentSQL->save($id_d, $type);
 
         $result = $this->actionExecutorFactory->executeOnDocument(

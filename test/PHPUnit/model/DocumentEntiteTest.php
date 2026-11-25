@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Document\DocumentIdService;
+
 /**
  * @deprecated 4.1.25 Use DocumentEntiteSQLTest instead (tests DocumentEntiteSQL).
  */
@@ -19,7 +21,7 @@ class DocumentEntiteTest extends PastellTestCase
     {
         parent::setUp();
         $document = new DocumentSQL($this->getSQLQuery(), new PasswordGenerator());
-        $this->id_d = $document->getNewId();
+        $this->id_d = $this->getObjectInstancier()->getInstance(DocumentIdService::class)->generate();
         $document->save($this->id_d, "document-type-test");
         $this->documentEntite = new DocumentEntite($this->getSQLQuery());
         $this->documentEntite->addRole($this->id_d, 1, "editeur");
