@@ -12,6 +12,7 @@ use Pastell\Service\Utilisateur\RoleDelegationService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UserEmailChangeService;
 use Pastell\Service\Utilisateur\UserPasswordService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Utilisateur\UserUpdateService;
@@ -19,12 +20,14 @@ use Pastell\Service\Utilisateur\UtilisateurDeletionService;
 use Pastell\Utilities\Certificate;
 use Pastell\ViewModel\DeleteConfirmation;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Pastell\Service\Entite\RootEntity;
 
 class UtilisateurControler extends PastellControler
 {
     /**
      * @return UtilisateurNewEmailSQL
+     * @deprecated 4.1.26 Use UserEmailChangeService instead
      */
     public function getUtilisateurNewEmailSQL()
     {
@@ -32,7 +35,7 @@ class UtilisateurControler extends PastellControler
     }
 
     /**
-     * @return NotificationMail
+     * @deprecated 4.1.26 no longer used, to be deleted in 6.0.0
      */
     public function getNotificationMail()
     {
@@ -140,9 +143,14 @@ class UtilisateurControler extends PastellControler
 
         $utilisateur_info = $this->getUtilisateur()->getInfo($this->getId_u());
 
-        $password = $this->getUtilisateurNewEmailSQL()->add($this->getId_u(), $email);
+        $confirmation_password = $this->getInstance(UserEmailChangeService::class)
+            ->createRequest($this->getId_u(), $email);
 
-        $link = sprintf('%s/Utilisateur/modifEmailConfirm?password=%s', $this->getSiteBase(), $password);
+        $link = sprintf(
+            '%s/Utilisateur/modifEmailConfirm?password=%s',
+            $this->getSiteBase(),
+            $confirmation_password
+        );
         $templatedEmail = (new TemplatedEmail())
             ->to($email)
             ->subject('[Pastell] Changement de mail sur Pastell')
@@ -170,53 +178,16 @@ class UtilisateurControler extends PastellControler
      * @throws ForbiddenException
      * @throws NotFoundException
      * @throws UnrecoverableException
+     * @throws TransportExceptionInterface
      */
     public function modifEmailConfirmAction()
     {
-        $recuperateur = new Recuperateur($_GET);
-        $password = $recuperateur->get('password');
-        $info = $this->getUtilisateurNewEmailSQL()->confirm($password);
-        if ($info) {
-            $this->createChangementEmail($info['id_u'], $info['email']);
-            $this->getUtilisateurNewEmailSQL()->delete($info['id_u']);
-        }
-        $this->setViewParameter('result', $info);
+        $password = (string)$this->getGetInfo()->get('password');
+        $is_confirmed = $this->getInstance(UserEmailChangeService::class)->confirmRequest($password);
+        $this->setViewParameter('result', $is_confirmed);
         $this->setViewParameter('page_title', "Procédure de changement d'email");
         $this->setViewParameter('template_milieu', 'UtilisateurModifEmailConfirm');
         $this->renderDefault();
-    }
-
-    /**
-     * @param $id_u
-     * @param $email
-     * @throws ForbiddenException
-     * @throws NotFoundException
-     * @throws UnrecoverableException
-     */
-    private function createChangementEmail($id_u, $email)
-    {
-        $utilisateur_info = $this->getUtilisateur()->getInfo($id_u);
-
-        $documentCreationService = $this->getObjectInstancier()->getInstance(DocumentCreationService::class);
-        $id_d = $documentCreationService->createDocument($utilisateur_info['id_e'], $id_u, 'changement-email');
-        $this->getDocumentSQL()->setTitre($id_d, $utilisateur_info['login']);
-
-        /** @var DonneesFormulaire $donneesFormulaire */
-        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
-        foreach (['id_u', 'login', 'nom', 'prenom'] as $key) {
-            $data[$key] = $utilisateur_info[$key];
-        }
-        $data['email_actuel'] = $utilisateur_info['email'];
-        $data['email_demande'] = $email;
-        $donneesFormulaire->setTabData($data);
-
-        $this->getNotificationMail()->notify(
-            $utilisateur_info['id_e'],
-            $id_d,
-            'creation',
-            'changement-email',
-            $utilisateur_info['login'] . " a fait une demande de changement d'email"
-        );
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
 
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UserEmailChangeService;
 use Pastell\Service\Utilisateur\UserPasswordService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Utilisateur\UserTokenService;
@@ -677,5 +678,32 @@ class UtilisateurControlerTest extends ControlerTestCase
         $this->expectException(LastErrorException::class);
         $this->expectExceptionMessage("L'utilisateur n'existe pas");
         $this->getUtilisateurControler()->_beforeAction();
+    }
+
+    public function testConfirmInvalidPassword(): void
+    {
+        $this->setGetInfo(['password' => 'unknown']);
+        $this->getUtilisateurControler()->modifEmailConfirmAction();
+
+        $this->expectOutputRegex('#Ce lien de confirmation est invalide#');
+    }
+
+    public function testConfirmValidPassword(): void
+    {
+        $id_u = $this->authenticateNewUserWithPermission(['changement-email:edition']);
+        $password = $this->getObjectInstancier()
+            ->getInstance(UserEmailChangeService::class)
+            ->createRequest($id_u, 'newmail@example.invalid');
+        $this->setGetInfo(['password' => $password]);
+        $this->getUtilisateurControler()->modifEmailConfirmAction();
+
+        $this->expectOutputRegex('#Votre email a été validé#');
+        self::assertNull(
+            $this->getObjectInstancier()->getInstance(UserEmailChangeService::class)->getValidRequest($password)
+        );
+        self::assertCount(
+            1,
+            $this->getObjectInstancier()->getInstance(DocumentSQL::class)->getAllIdByType('changement-email')
+        );
     }
 }
