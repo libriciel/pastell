@@ -161,4 +161,13 @@ class ConnecteurAssociationService
             $message
         );
     }
+
+    public function getUniqueAssociatedFlux(int $id_ce, int $id_e): ?string
+    {
+        $association_list = $this->fluxEntiteSQL->getUsedByConnecteur($id_ce, null, $id_e);
+        if (count($association_list) !== 1) {
+            return null;
+        }
+        return $association_list[0]['flux'];
+    }
 }

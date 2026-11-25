@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Validator\ElementIdValidator;
 
 class TransformationGeneriqueFillData extends ChoiceActionExecutor
@@ -47,9 +48,10 @@ class TransformationGeneriqueFillData extends ChoiceActionExecutor
      */
     public function display()
     {
-        $fluxEntiteSQL = $this->objectInstancier->getInstance(FluxEntiteSQL::class);
-        $this->setViewParameter('flux', $fluxEntiteSQL->getUsedByConnecteurIfUnique($this->id_ce, $this->id_e));
-        $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($this->getViewParameter()['flux']);
+        $flux = $this->objectInstancier->getInstance(ConnecteurAssociationService::class)
+            ->getUniqueAssociatedFlux((int)$this->id_ce, (int)$this->id_e);
+        $this->setViewParameter('flux', $flux);
+        $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($flux);
         $this->setViewParameter('fieldsList', $documentType->getFormulaire()->getFieldsList());
 
         $transformationGeneriqueDefinition = $this->objectInstancier->getInstance(

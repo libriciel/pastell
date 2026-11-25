@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Pastell\Connector\AbstractSedaGeneratorConnector;
+use Pastell\Service\Connecteur\ConnecteurAssociationService;
 
 class SedaGeneriqueFillFiles extends ChoiceActionExecutor
 {
@@ -94,8 +95,8 @@ class SedaGeneriqueFillFiles extends ChoiceActionExecutor
     public function display()
     {
         $this->setViewParameter('node_id', $this->getRecuperateur()->get('node_id'));
-        $fluxEntiteSQL = $this->objectInstancier->getInstance(FluxEntiteSQL::class);
-        $flux = $fluxEntiteSQL->getUsedByConnecteurIfUnique($this->id_ce, $this->id_e);
+        $flux = $this->objectInstancier->getInstance(ConnecteurAssociationService::class)
+            ->getUniqueAssociatedFlux((int)$this->id_ce, (int)$this->id_e);
         $this->setViewParameter('flux', $flux);
         $documentType = $this->getDocumentTypeFactory()->getFluxDocumentType($flux);
         $this->setViewParameter('fieldsList', $documentType->getFormulaire()->getFieldsList());

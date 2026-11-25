@@ -112,4 +112,32 @@ class FluxEntiteSQLTest extends PastellTestCase
         $this->assertCount(1, $associatedConnectors);
         $this->assertSame(2, $associatedConnectors[0]['id_ce']);
     }
+
+    public function testGetConnecteurRootEntity(): void
+    {
+        $connecteur = $this->getFluxEntiteSQL()->getConnecteur(0, '', 'horodateur');
+        self::assertSame('Horodateur interne par défaut', $connecteur['libelle']);
+    }
+
+    public function testDeleteConnecteurRootEntity(): void
+    {
+        $this->getFluxEntiteSQL()->deleteConnecteur(0, '', 'horodateur');
+        self::assertFalse($this->getFluxEntiteSQL()->getConnecteurId(0, 'global', 'horodateur'));
+    }
+
+    public function testGetEntiteByFlux(): void
+    {
+        self::assertSame(
+            [['id_e' => 1, 'denomination' => 'Bourg-en-Bresse']],
+            $this->getFluxEntiteSQL()->getEntiteByFlux('actes-generique')
+        );
+    }
+
+    public function testGetFluxAndEntity(): void
+    {
+        self::assertSame(
+            [['id_e' => 1, 'flux' => 'actes-generique']],
+            $this->getFluxEntiteSQL()->getFluxAndEntityByConnectorId('1')
+        );
+    }
 }
