@@ -46,8 +46,8 @@
   `getRoleLibelle()` de `RoleSQL` dépréciées au profit des services `RoleService` et `RoleDelegationService` #2635
 - Méthodes `add()` et `confirm()` de `UtilisateurNewEmailSQL` dépréciées au profit du service
   `UserEmailChangeService` #2636
-- Méthodes `getUtilisateurNewEmailSQL()` et `createChangementEmail()` de `UtilisateurControler` dépréciées au profit
-  du service `UserEmailChangeService`, et méthode `getNotificationMail()` dépréciée car inutilisée #2636
+- Méthode `getUtilisateurNewEmailSQL()` de `UtilisateurControler` dépréciée au profit du service
+  `UserEmailChangeService`, et méthode `getNotificationMail()` dépréciée car inutilisée #2636
 
 ### Sécurité
 

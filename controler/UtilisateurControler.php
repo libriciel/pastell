@@ -26,9 +26,10 @@ use Pastell\Service\Entite\RootEntity;
 class UtilisateurControler extends PastellControler
 {
     /**
+     * @return UtilisateurNewEmailSQL
      * @deprecated 4.1.26 Use UserEmailChangeService instead
      */
-    public function getUtilisateurNewEmailSQL(): UtilisateurNewEmailSQL
+    public function getUtilisateurNewEmailSQL()
     {
         return $this->getInstance(UtilisateurNewEmailSQL::class);
     }
@@ -36,7 +37,7 @@ class UtilisateurControler extends PastellControler
     /**
      * @deprecated 4.1.26 no longer used, to be deleted in 6.0.0
      */
-    public function getNotificationMail(): NotificationMail
+    public function getNotificationMail()
     {
         return $this->getInstance(NotificationMail::class);
     }
@@ -187,40 +188,6 @@ class UtilisateurControler extends PastellControler
         $this->setViewParameter('page_title', "Procédure de changement d'email");
         $this->setViewParameter('template_milieu', 'UtilisateurModifEmailConfirm');
         $this->renderDefault();
-    }
-
-    /**
-     * @deprecated 4.1.26 Use UserEmailChangeService::confirmRequest() instead
-     * @param $id_u
-     * @param $email
-     * @throws ForbiddenException
-     * @throws NotFoundException
-     * @throws UnrecoverableException
-     */
-    private function createChangementEmail($id_u, $email) // @phpstan-ignore method.unused
-    {
-        $utilisateur_info = $this->getUtilisateur()->getInfo($id_u);
-
-        $documentCreationService = $this->getObjectInstancier()->getInstance(DocumentCreationService::class);
-        $id_d = $documentCreationService->createDocument($utilisateur_info['id_e'], $id_u, 'changement-email');
-        $this->getDocumentSQL()->setTitre($id_d, $utilisateur_info['login']);
-
-        /** @var DonneesFormulaire $donneesFormulaire */
-        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($id_d);
-        foreach (['id_u', 'login', 'nom', 'prenom'] as $key) {
-            $data[$key] = $utilisateur_info[$key];
-        }
-        $data['email_actuel'] = $utilisateur_info['email'];
-        $data['email_demande'] = $email;
-        $donneesFormulaire->setTabData($data);
-
-        $this->getNotificationMail()->notify(
-            $utilisateur_info['id_e'],
-            $id_d,
-            'creation',
-            'changement-email',
-            $utilisateur_info['login'] . " a fait une demande de changement d'email"
-        );
     }
 
     /**
