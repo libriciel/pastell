@@ -2,7 +2,10 @@
 
 namespace Pastell\Tests\Service\Connecteur;
 
+use ConnecteurEntiteSQL;
+use Exception;
 use Pastell\Service\Connecteur\ConnecteurActionService;
+use Pastell\Service\Connecteur\ConnecteurModificationService;
 use PastellTestCase;
 
 class ConnecteurModificationServiceTest extends PastellTestCase
@@ -51,5 +54,36 @@ class ConnecteurModificationServiceTest extends PastellTestCase
         $connecteurActionService = $this->getObjectInstancier()->getInstance(ConnecteurActionService::class);
         $connecteur_action_message = $connecteurActionService->getByIdCe(12)[0]['message'];
         $this->assertEquals("L'external data external_data a été modifié via l'API", $connecteur_action_message);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testEditConnecteurLibelle(): void
+    {
+        $id_ce = $this->createConnector('test', 'test')['id_ce'];
+        $connecteurModificationService = $this->getObjectInstancier()
+            ->getInstance(ConnecteurModificationService::class);
+        $connecteurModificationService->editConnecteurLibelle(
+            $id_ce,
+            'nouveau libellé',
+            0,
+            'VERROU',
+            self::ID_E_COL,
+            self::ID_U_ADMIN,
+            'Libellé modifié'
+        );
+
+        $connecteurEntiteSQL = $this->getObjectInstancier()->getInstance(ConnecteurEntiteSQL::class);
+        $connecteur_info = $connecteurEntiteSQL->getInfo($id_ce);
+        self::assertSame('nouveau libellé', $connecteur_info['libelle']);
+        self::assertSame(
+            ConnecteurModificationService::MINIMUM_FREQUENCY_IN_MINUTES,
+            $connecteur_info['frequence_en_minute']
+        );
+        self::assertSame('VERROU', $connecteur_info['id_verrou']);
+
+        $connecteur_action_list = $this->getConnecteurActionService()->getByIdCe($id_ce);
+        self::assertSame('Libellé modifié', $connecteur_action_list[0]['message']);
     }
 }

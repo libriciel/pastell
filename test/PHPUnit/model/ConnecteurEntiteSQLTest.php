@@ -48,12 +48,13 @@ class ConnecteurEntiteSQLTest extends PastellTestCase
         $this->assertCount(11, $this->getConnecteurEntiteSQL()->getAll(1));
     }
 
-    public function testEdit()
+    public function testUpdate(): void
     {
-        $new_libelle = "***test***";
-        $this->getConnecteurEntiteSQL()->edit(1, $new_libelle);
-        $result = $this->getConnecteurEntiteSQL()->getInfo(1);
-        $this->assertEquals($new_libelle, $result['libelle']);
+        $this->getConnecteurEntiteSQL()->update(1, '***test***', 5, 'VERROU');
+        $connecteur_info = $this->getConnecteurEntiteSQL()->getInfo(1);
+        self::assertSame('***test***', $connecteur_info['libelle']);
+        self::assertSame(5, $connecteur_info['frequence_en_minute']);
+        self::assertSame('VERROU', $connecteur_info['id_verrou']);
     }
 
     public function testGetDisponible()
@@ -68,18 +69,27 @@ class ConnecteurEntiteSQLTest extends PastellTestCase
         $this->assertEquals(10, $result);
     }
 
+    /**
+     * @deprecated 4.1.26
+     */
     public function testGetDisponibleUsed()
     {
         $info = $this->getConnecteurEntiteSQL()->getDisponibleUsed(1, 'mailsec');
         $this->assertEquals("Mail securise", $info[0]['libelle']);
     }
 
+    /**
+     * @deprecated 4.1.26
+     */
     public function testGetDisponibleLocalUsed()
     {
         $info = $this->getConnecteurEntiteSQL()->getDisponibleUsedLocal("mailsec");
         $this->assertEquals("Mail securise", $info[0]['libelle']);
     }
 
+    /**
+     * @deprecated 4.1.26
+     */
     public function testGetOne()
     {
         $result = $this->getConnecteurEntiteSQL()->getOne('fakeIparapheur');
@@ -98,18 +108,27 @@ class ConnecteurEntiteSQLTest extends PastellTestCase
         $this->assertEquals('Fake iParapheur', $result[0]['libelle']);
     }
 
+    /**
+     * @deprecated 4.1.26
+     */
     public function testGetAllId()
     {
         $result = $this->getConnecteurEntiteSQL()->getAllId();
         $this->assertEquals('fakeIparapheur', $result[0]['id_connecteur']);
     }
 
+    /**
+     * @deprecated 4.1.26
+     */
     public function testListNotUsed()
     {
         $result = $this->getConnecteurEntiteSQL()->listNotUsed(1);
         $this->assertEquals('SEDA CG86', $result[0]['libelle']);
     }
 
+    /**
+     * @deprecated 4.1.26
+     */
     public function testListNotUsedGlobal()
     {
         $result = $this->getConnecteurEntiteSQL()->listNotUsed(0);
@@ -125,6 +144,17 @@ class ConnecteurEntiteSQLTest extends PastellTestCase
                 $this->getConnecteurEntiteSQL()->getAllUsedByScope(true)
             )
         );
+    }
+
+    public function testUsedByScope(): void
+    {
+        $global_id_connecteur_list = $this->getConnecteurEntiteSQL()->getAllUsedByScope(true);
+        self::assertContains('horodateur-interne', $global_id_connecteur_list);
+        self::assertNotContains('fakeIparapheur', $global_id_connecteur_list);
+
+        $local_id_connecteur_list = $this->getConnecteurEntiteSQL()->getAllUsedByScope();
+        self::assertContains('fakeIparapheur', $local_id_connecteur_list);
+        self::assertNotContains('horodateur-interne', $local_id_connecteur_list);
     }
 
     public function testIsConnectorInEntityScope(): void
