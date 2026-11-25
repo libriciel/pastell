@@ -51,6 +51,8 @@
 - Méthode `getNewId()` et constante `MAX_ESSAI` de `DocumentSQL` dépréciées au profit du service `DocumentIdService`
   #2642
 - Méthodes `getIdFromTitre()` et `getIdFromEntiteAndTitre()` de `DocumentSQL` dépréciées car inutilisées #2642
+- Méthode `createJob()` de `JobQueueSQL` dépréciée au profit du service `JobCreationService`, et méthode
+  `getJobLock()` dépréciée car inutilisée #2643
 
 ### Sécurité
 

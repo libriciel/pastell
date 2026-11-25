@@ -33,7 +33,7 @@ final class JobLaunchServiceTest extends PastellTestCase
         $job->id_verrou = $id_verrou;
         $job->next_try = date('Y-m-d H:i:s', strtotime($next_try));
         $jobQueueSQL = $this->getObjectInstancier()->getInstance(JobQueueSQL::class);
-        return (int)$jobQueueSQL->createJob($job);
+        return $jobQueueSQL->insert($job);
     }
 
     private function attachWorker(int $id_job): void

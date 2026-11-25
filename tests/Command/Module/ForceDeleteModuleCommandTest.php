@@ -63,7 +63,7 @@ class ForceDeleteModuleCommandTest extends \PastellTestCase
         $now = date('Y-m-d H:i:s');
         $this->job->next_try = $now;
         $this->job->id_verrou = '';
-        $id_job = $this->jobQueueSQL->createJob($this->job);
+        $id_job = $this->jobQueueSQL->insert($this->job);
 
         $documents = $this->documentSQL->getAllByType(self::ACTES_AUTOMATIQUE);
         $docJob = $this->jobQueueSQL->getJob($id_job);

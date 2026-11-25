@@ -66,7 +66,7 @@ class WorkerSQLTest extends PastellTestCase
         $job->etat_source = "source";
         $job->etat_cible = "cible";
         $job->next_try = date("Y-M-d", strtotime("yesterday"));
-        $id_job = $jobQueueSQL->createJob($job);
+        $id_job = $jobQueueSQL->insert($job);
         return $id_job;
     }
 
@@ -161,7 +161,7 @@ class WorkerSQLTest extends PastellTestCase
         $job->id_e = 1;
         $job->id_verrou = "VERROU";
         $job->next_try = date("Y-M-d", strtotime("yesterday"));
-        $id_job_1 = $jobQueueSQL->createJob($job);
+        $id_job_1 = $jobQueueSQL->insert($job);
 
         $id_job_list = $this->workerSQL->getJobToLaunch(5);
         $this->assertEquals([$id_job_1], $id_job_list);
@@ -173,7 +173,7 @@ class WorkerSQLTest extends PastellTestCase
         $this->assertEquals(["VERROU"], $all_verrou);
 
         $job->id_d = "ABCD";
-        $jobQueueSQL->createJob($job);
+        $jobQueueSQL->insert($job);
         $id_job_list = $this->workerSQL->getJobToLaunch(5);
         $this->assertEmpty($id_job_list);
     }
@@ -189,10 +189,10 @@ class WorkerSQLTest extends PastellTestCase
         $job->id_e = 1;
         $job->id_verrou = "VERROU";
         $job->next_try = date("Y-M-d", strtotime("yesterday"));
-        $id_job_1 = $jobQueueSQL->createJob($job);
+        $id_job_1 = $jobQueueSQL->insert($job);
 
         $job->id_d = "ABCD";
-        $jobQueueSQL->createJob($job);
+        $jobQueueSQL->insert($job);
 
         $id_job_list = $this->workerSQL->getJobToLaunch(5);
         $this->assertEquals([$id_job_1], $id_job_list);
@@ -209,7 +209,7 @@ class WorkerSQLTest extends PastellTestCase
         $job->id_e = 1;
         $job->id_verrou = "VERROU";
         $job->next_try = date("Y-M-d", strtotime("yesterday"));
-        return (int)$jobQueueSQL->createJob($job);
+        return $jobQueueSQL->insert($job);
     }
 
     public function testGetAllVerrou()
@@ -243,7 +243,7 @@ class WorkerSQLTest extends PastellTestCase
         $job->etat_cible = "cible";
         $job->next_try = date("Y-M-d", strtotime("yesterday"));
         $job->id_ce = 1;
-        $id_job = $jobQueueSQL->createJob($job);
+        $id_job = $jobQueueSQL->insert($job);
         $id_worker = $this->workerSQL->create(42);
         $this->workerSQL->attachJob($id_worker, $id_job);
 
