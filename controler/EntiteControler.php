@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Agent\AgentImportService;
 use Pastell\Service\Crypto;
 use Pastell\Service\FeatureToggle\DisplayConnecteurEntiteRacine;
 use Pastell\Service\Menu\MenuGaucheService;
@@ -39,11 +40,6 @@ class EntiteControler extends PastellControler
                 ->getInstance(FeatureToggleService::class)
                 ->isEnabled(CDGFeature::class)
         );
-    }
-
-    private function getAgentSQL()
-    {
-        return $this->getInstance(AgentSQL::class);
     }
 
     /**
@@ -585,31 +581,11 @@ class EntiteControler extends PastellControler
         $fileUploader = new FileUploader();
         $file_path = $fileUploader->getFilePath('csv_agent');
         if (!$file_path) {
-            $this->setLastError("Impossible de lire le fichier : " . $fileUploader->getLastError());
-            $this->redirect("/Entite/import?onglet=agents");
+            $this->setLastError('Impossible de lire le fichier : ' . $fileUploader->getLastError());
+            $this->redirect('/Entite/import?onglet=agents');
         }
 
-        $CSV = new CSV();
-
-        $infoCollectivite = [];
-        if ($id_e) {
-            $entiteSQL = $this->getEntiteSQL();
-            $infoCollectivite = $entiteSQL->getInfo($id_e);
-            $this->getAgentSQL()->clean($infoCollectivite['siren']);
-        } elseif ($delete_all) {
-            $this->getAgentSQL()->cleanAll();
-        }
-
-        $fileContent = $CSV->get($file_path, ';');
-
-        $nb_agent = 0;
-        foreach ($fileContent as $col) {
-            if (count($col) != 14) {
-                continue;
-            }
-            $this->getAgentSQL()->add($col, $infoCollectivite);
-            $nb_agent++;
-        }
+        $nb_agent = $this->getInstance(AgentImportService::class)->import($file_path, $id_e, (bool)$delete_all);
 
         $this->setLastMessage("$nb_agent agents ont été créés");
         $this->redirect("/Entite/import?onglet=agents&id_e=$id_e");
