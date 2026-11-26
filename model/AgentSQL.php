@@ -8,7 +8,7 @@ class AgentSQL extends SQL
     public const NB_MAX = 20;
 
     private const COLUMN_MATRICULE = 0;
-    private const COLUMN_SIREN = 9;
+    public const COLUMN_SIREN = 9;
 
     /**
      * @deprecated 4.1.26 Use AgentImportService::add() instead

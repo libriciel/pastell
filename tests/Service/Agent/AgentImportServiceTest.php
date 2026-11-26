@@ -56,10 +56,11 @@ final class AgentImportServiceTest extends PastellTestCase
     private function createCsv(array $line_list): string
     {
         $file_path = $this->tmp_folder . '/agent.csv';
-        file_put_contents(
-            $file_path,
-            implode("\n", array_map(static fn(array $line) => implode(';', $line), $line_list))
-        );
+        $csv_content = '';
+        foreach ($line_list as $line) {
+            $csv_content .= implode(';', $line) . "\n";
+        }
+        file_put_contents($file_path, $csv_content);
         return $file_path;
     }
 

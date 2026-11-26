@@ -13,7 +13,6 @@ final class AgentImportService
 {
     private const CSV_DELIMITER = ';';
     private const CSV_COLUMN_COUNT = 14;
-    private const COLUMN_SIREN = 9;
 
     public function __construct(
         private readonly AgentSQL $agentSQL,
@@ -46,7 +45,7 @@ final class AgentImportService
     public function add(array $agent_data, ?string $siren = null): void
     {
         if ($siren !== null) {
-            $agent_data[self::COLUMN_SIREN] = $siren;
+            $agent_data[AgentSQL::COLUMN_SIREN] = $siren;
         }
         $this->agentSQL->replace($agent_data);
     }
