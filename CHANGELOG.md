@@ -27,6 +27,11 @@
   - Les destinataires de mail reçoivent « Autre(s) document(s) signé(s) » :
     `ls-document-destinataire`, `ls-document-pdf-destinataire`, `ls-commande-destinataire`, `gfc-dossier-destinataire`,
     `document-autorisation-urbanisme-destinataire`, `rh-bulletin-salaire-destinataire`, `rh-document-individuel-destinataire` #2520 
+- Studio, l'étape « Visa/Signature » dispose d'un nouveau champ « Premis iparapheur » dans l'onglet Signature,
+  alimenté par le fichier PREMIS lorsque le connecteur iparapheur REST est utilisé. Champ ajouté aux modules :
+  `ls-actes`, `ls-document`, `ls-document-pdf`, `ls-commande`, `ls-helios`, `ls-helios-pj`, `gfc-dossier`,
+  `document-autorisation-urbanisme`, `rh-bulletin-salaire`, `rh-document-individuel`, `piece-marche`.
+  Ce fichier est déposé en GED avec les autres fichiers du dossier, sauf si le connecteur GED restreint les fichiers inclus #2424
 - Accès temporaires : génération d'un lien d'accès à durée limitée envoyé par mail à l'intervenant, révocable à tout moment, avec historique des accès.
   La connexion est protégée par un code à 6 chiffres (visible dans la liste des accès actifs et transmis à
   l'intervenant par l'administrateur) : après 3 saisies erronées, l'accès est automatiquement révoqué #2421

@@ -137,6 +137,7 @@ class TypeDossierEtapeDefinitionTest extends PastellTestCase
             'Signature' => 'Signature #2',
             'iparapheur_dossier_id' => 'iparapheur_dossier_id_2',
             'iparapheur_historique' => 'iparapheur_historique_2',
+            'iparapheur_premis' => 'iparapheur_premis_2',
             'parapheur_last_message' => 'parapheur_last_message_2',
             'has_signature' => 'has_signature_2',
             'signature' => 'signature_2',
@@ -264,6 +265,11 @@ class TypeDossierEtapeDefinitionTest extends PastellTestCase
                             'type' => 'file',
                             'read-only' => true,
                         ],
+                    'iparapheur_premis_2' => [
+                        'name' => 'Premis iparapheur',
+                        'type' => 'file',
+                        'read-only' => true,
+                    ],
                     'parapheur_last_message_2' => [
                         'name' => 'Dernier message reçu du parapheur',
                         'read-only' => true,
@@ -416,6 +422,7 @@ Uniquement avec le mode "circuit à la volée"',
                     'connecteur-type-action' => 'SignatureRecuperation',
                     'connecteur-type-mapping' => [
                         'iparapheur_historique' => 'iparapheur_historique_2',
+                        'iparapheur_premis' => 'iparapheur_premis_2',
                         'has_signature' => 'has_signature_2',
                         'signature' => 'signature_2',
                         'document_original' => 'document_original_2',

@@ -98,6 +98,10 @@ formulaire:
             name: 'Historique iparapheur'
             type: file
             read-only: true
+        iparapheur_premis_1:
+            name: 'Premis iparapheur'
+            type: file
+            read-only: true
         parapheur_last_message_1:
             name: 'Dernier message reçu du parapheur'
             read-only: true
@@ -192,6 +196,10 @@ formulaire:
             read-only: true
         iparapheur_historique_2:
             name: 'Historique iparapheur'
+            type: file
+            read-only: true
+        iparapheur_premis_2:
+            name: 'Premis iparapheur'
             type: file
             read-only: true
         parapheur_last_message_2:
@@ -388,6 +396,7 @@ action:
         connecteur-type-action: SignatureRecuperation
         connecteur-type-mapping:
             iparapheur_historique: iparapheur_historique_1
+            iparapheur_premis: iparapheur_premis_1
             parapheur_last_message: parapheur_last_message_1
             parapheur_date_signature: parapheur_date_signature_1
             has_signature: has_signature_1
@@ -516,6 +525,7 @@ action:
         connecteur-type-action: SignatureRecuperation
         connecteur-type-mapping:
             iparapheur_historique: iparapheur_historique_2
+            iparapheur_premis: iparapheur_premis_2
             parapheur_last_message: parapheur_last_message_2
             parapheur_date_signature: parapheur_date_signature_2
             has_signature: has_signature_2

@@ -30,6 +30,7 @@ use UnrecoverableException;
 
 use function array_key_exists;
 use function count;
+use function str_ends_with;
 
 final class IparapheurRestConnectorTest extends PastellTestCase
 {
@@ -42,6 +43,8 @@ final class IparapheurRestConnectorTest extends PastellTestCase
     private const string ERROR_FOLDER_ID = 'cccccccc-71d2-11f0-878d-000000000001';
     private const string LEGACY_FOLDER_ID = 'LEGACY-FOLDER-ID';
     private const string UNKNOWN_LEGACY_FOLDER_ID = 'UNKNOWN-LEGACY-FOLDER-ID';
+
+    private int $premis_request_count = 0;
 
     public function getConnectorId(): int
     {
@@ -125,6 +128,9 @@ final class IparapheurRestConnectorTest extends PastellTestCase
                 $key = $request->getMethod() . ' ' . $request->getUri()->getPath();
                 if (!array_key_exists($key, $routes)) {
                     throw new UnrecoverableException('Unknown path : ' . $key);
+                }
+                if (str_ends_with($key, '/premis')) {
+                    $this->premis_request_count++;
                 }
                 return $routes[$key];
             });
@@ -364,6 +370,67 @@ final class IparapheurRestConnectorTest extends PastellTestCase
         self::assertSame($info['documents'][0]->filename, $premis->object[1]->originalName);
         self::assertSame($info['annexes'][0]->filename, $premis->object[2]->originalName);
         self::assertEquals($premis, $info['premis']);
+    }
+
+    /**
+     * @throws IpRestApiException
+     * @throws JsonException
+     * @throws ClientExceptionInterface
+     */
+    public function testGetPremisFile(): void
+    {
+        $this->getConnectorId();
+        $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
+        $premisFile = $connector->getPremisFile(self::ONGOING_FOLDER_ID);
+        self::assertSame('i_Parapheur_internal_premis.xml', $premisFile->filename);
+        self::assertStringEqualsFile(__DIR__ . '/fixtures/ongoing_folder.xml', $premisFile->content);
+    }
+
+    /**
+     * @throws IpRestApiException
+     * @throws JsonException
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
+    public function testPremisFileReusesDownload(): void
+    {
+        $this->getConnectorId();
+        $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
+        $connector->getAllHistoriqueInfo(self::ONGOING_FOLDER_ID);
+        $premisFile = $connector->getPremisFile(self::ONGOING_FOLDER_ID);
+        self::assertSame(1, $this->premis_request_count);
+        self::assertStringEqualsFile(__DIR__ . '/fixtures/ongoing_folder.xml', $premisFile->content);
+    }
+
+    /**
+     * @throws IpRestApiException
+     * @throws JsonException
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
+    public function testPremisOtherDossierRedownloads(): void
+    {
+        $this->getConnectorId();
+        $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
+        $connector->getAllHistoriqueInfo(self::ONGOING_FOLDER_ID);
+        $premisFile = $connector->getPremisFile(self::FINISHED_FOLDER_ID);
+        self::assertSame(2, $this->premis_request_count);
+        self::assertStringEqualsFile(__DIR__ . '/fixtures/finished_folder.xml', $premisFile->content);
+    }
+
+    /**
+     * @throws IpRestApiException
+     * @throws JsonException
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
+    public function testGetPremisDoesNotCache(): void
+    {
+        $this->getConnectorId();
+        $connector = $this->makeConnector(['tenant_id' => self::TENANT_ID, 'desk_id' => self::DESK_ID]);
+        $connector->getPremis(self::ONGOING_FOLDER_ID);
+        $connector->getPremisFile(self::ONGOING_FOLDER_ID);
+        self::assertSame(2, $this->premis_request_count);
     }
 
     /**

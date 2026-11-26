@@ -24,6 +24,7 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
         $has_historique_element = $this->getMappingValue('has_historique');
         $iparapheur_historique_element = $this->getMappingValue('iparapheur_historique');
         $parapheur_last_message_element = $this->getMappingValue('parapheur_last_message');
+        $iparapheur_premis_element = $this->getMappingValue('iparapheur_premis');
         $parapheur_date_signature_element = $this->getMappingValue('parapheur_date_signature');
         $has_signature_element = $this->getMappingValue('has_signature');
         $signature_element = $this->getMappingValue('signature');
@@ -40,10 +41,18 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
 
         $erreur = false;
         $all_historique = [];
+        $premisFile = null;
         try {
             $all_historique = $signature->getAllHistoriqueInfo($dossierID);
             if (! $all_historique) {
                 $erreur = 'La connexion avec le iParapheur a échoué : ' . $signature->getLastError();
+            } else {
+                $premisFile = $this->getPremisFile(
+                    $signature,
+                    $donneesFormulaire,
+                    $dossierID,
+                    $iparapheur_premis_element
+                );
             }
         } catch (Exception $e) {
             $erreur = $e->getMessage();
@@ -66,6 +75,13 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
                 $this->getComputedFileName('iparapheur_historique.xml'),
                 $historique_xml
             );
+            if ($premisFile !== null) {
+                $donneesFormulaire->addFileFromData(
+                    $iparapheur_premis_element,
+                    $this->getComputedFileName($premisFile->filename),
+                    $premisFile->content
+                );
+            }
             $lastHistorique = $signature->getLastHistorique($all_historique);
             $lastCompletedHistorique = $signature->getLastCompletedHistorique($all_historique);
             $donneesFormulaire->setData($parapheur_last_message_element, $lastCompletedHistorique);
@@ -248,6 +264,22 @@ class SignatureRecuperation extends ConnecteurTypeActionExecutor
             $file = sprintf('%s_%s.%s', $filename, $matches[2], $extension);
         }
         return $file;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function getPremisFile(
+        SignatureConnecteur $signature,
+        DonneesFormulaire $donneesFormulaire,
+        string $dossierID,
+        string $iparapheur_premis_element
+    ): ?Fichier {
+        $formulaire = $donneesFormulaire->getFormulaire();
+        if (!$formulaire->getField($iparapheur_premis_element)) {
+            return null;
+        }
+        return $signature->getPremisFile($dossierID);
     }
 
     /**

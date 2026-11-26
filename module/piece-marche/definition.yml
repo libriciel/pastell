@@ -186,6 +186,10 @@ formulaire:
         iparapheur_historique:
             name: 'Historique iparapheur'
             type: file
+        iparapheur_premis:
+            name: 'Premis iparapheur'
+            type: file
+            read-only: true
         parapheur_last_message:
             name: 'Dernier message reçu du parapheur'
         has_signature:

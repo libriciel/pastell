@@ -106,6 +106,11 @@ abstract class SignatureConnecteur extends Connecteur
      */
     abstract public function getMetadataSortie($info): ?Fichier;
 
+    public function getPremisFile(string $dossierID): ?Fichier
+    {
+        return null;
+    }
+
     /**
      * @param $info - output of SignatureConnecteur::getSignature()
      * @return bool

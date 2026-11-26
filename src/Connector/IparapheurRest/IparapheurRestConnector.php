@@ -7,7 +7,6 @@ namespace Pastell\Connector\IparapheurRest;
 use BadMethodCallException;
 use DOMDocument;
 use DOMException;
-use DOMXPath;
 use DonneesFormulaire;
 use Exception;
 use Fichier;
@@ -30,6 +29,7 @@ use Pastell\Client\IparapheurV5\IparapheurInternalApi;
 use Pastell\Client\IparapheurV5\Model\Premis;
 use Pastell\Client\IparapheurV5\Model\PremisObject;
 use Pastell\Client\IparapheurV5\Model\SignificantProperties;
+use Pastell\Client\IparapheurV5\ZipContent;
 use Psr\Http\Client\ClientExceptionInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -72,7 +72,9 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     private int $iparapheur_nb_jour_max;
     private string $iparapheur_metadata;
     private ?array $sending_metadata = null;
-    private string $resolvedFolderId;
+    private array $resolvedFolderIds = [];
+    private ?string $lastPremisDossierId = null;
+    private ?string $lastPremisXml = null;
 
     public function __construct(
         private readonly ApiClientFactory $apiClientFactory,
@@ -284,38 +286,21 @@ class IparapheurRestConnector extends SignatureConnecteur implements
      */
     public function getPremis(string $folderId): Premis
     {
+        $premis_xml = $this->downloadPremis($folderId);
+        return $this->parsePremis($premis_xml);
+    }
+
+    /**
+     * @throws IpRestApiException
+     */
+    private function downloadPremis(string $folderId): string
+    {
         $tenantId = $this->connecteurConfig->get(self::TENANT_ID, '');
         $deskId = $this->connecteurConfig->get(self::DESK_ID, '');
 
-        $tmpFolder = new TmpFolder();
-        $tmp_folder = $tmpFolder->create();
-
         try {
-            $premisXml = new FolderApi($this->client, $this->configuration)
+            $premis_xml = new FolderApi($this->client, $this->configuration)
                 ->downloadFolderPremis($tenantId, $deskId, $folderId);
-
-            $propertyInfo = new PropertyInfoExtractor([], [new PhpDocExtractor(), new ReflectionExtractor()]);
-            $normalizer = new ObjectNormalizer(null, null, null, $propertyInfo);
-
-            $serializer = new Serializer(
-                [$normalizer, new ArrayDenormalizer()],
-                [new XmlEncoder()]
-            );
-
-            /** @var Premis $premis */
-            $premis = $serializer->deserialize($premisXml, Premis::class, 'xml');
-            $dom = new DOMDocument();
-            $dom->loadXML($premisXml);
-            $xpath = new DOMXPath($dom);
-            $xpath->registerNamespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance');
-            $objectNodes = $dom->getElementsByTagName('object');
-            foreach ($objectNodes as $index => $node) {
-                $type = $node->getAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'type');
-                if (isset($premis->object[$index])) {
-                    $premis->object[$index]->type = $type;
-                }
-            }
-            return $premis;
         } catch (ApiException $e) {
             throw new IpRestApiException(
                 sprintf(
@@ -324,9 +309,35 @@ class IparapheurRestConnector extends SignatureConnecteur implements
                     $e->getResponseBody(),
                 )
             );
-        } finally {
-            $tmpFolder->delete($tmp_folder);
         }
+        return $premis_xml;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function parsePremis(string $premis_xml): Premis
+    {
+        $propertyInfo = new PropertyInfoExtractor([], [new PhpDocExtractor(), new ReflectionExtractor()]);
+        $normalizer = new ObjectNormalizer(null, null, null, $propertyInfo);
+
+        $serializer = new Serializer(
+            [$normalizer, new ArrayDenormalizer()],
+            [new XmlEncoder()]
+        );
+
+        /** @var Premis $premis */
+        $premis = $serializer->deserialize($premis_xml, Premis::class, 'xml');
+        $dom = new DOMDocument();
+        $dom->loadXML($premis_xml);
+        $objectNodes = $dom->getElementsByTagName('object');
+        foreach ($objectNodes as $index => $node) {
+            $type = $node->getAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'type');
+            if (isset($premis->object[$index])) {
+                $premis->object[$index]->type = $type;
+            }
+        }
+        return $premis;
     }
 
     public function getNbJourMaxInConnecteur(): int
@@ -575,7 +586,11 @@ class IparapheurRestConnector extends SignatureConnecteur implements
      */
     public function getAllHistoriqueInfo($dossierID): stdClass
     {
-        $premis = $this->getPremis($this->getFolderId($dossierID));
+        $folderId = $this->getFolderId($dossierID);
+        $premis_xml = $this->downloadPremis($folderId);
+        $this->lastPremisDossierId = $dossierID;
+        $this->lastPremisXml = $premis_xml;
+        $premis = $this->parsePremis($premis_xml);
         $events = $premis->getAllCurrentEvents();
 
         $logDossier = [];
@@ -790,6 +805,24 @@ class IparapheurRestConnector extends SignatureConnecteur implements
     }
 
     /**
+     * @throws IpRestApiException
+     * @throws JsonException
+     */
+    public function getPremisFile(string $dossierID): Fichier
+    {
+        if ($this->lastPremisDossierId !== $dossierID) {
+            $folderId = $this->getFolderId($dossierID);
+            $this->lastPremisXml = $this->downloadPremis($folderId);
+            $this->lastPremisDossierId = $dossierID;
+        }
+
+        $file = new Fichier();
+        $file->filename = ZipContent::PREMIS_FILENAME;
+        $file->content = $this->lastPremisXml;
+        return $file;
+    }
+
+    /**
      * @param array $info output of IparapheurRestConnector::getSignature()
      */
     public function getAllDocumentSigne(array $info): array
@@ -881,10 +914,12 @@ class IparapheurRestConnector extends SignatureConnecteur implements
      */
     private function getFolderId(string $folderId): string
     {
-        if (!isset($this->resolvedFolderId)) {
-            $this->resolvedFolderId = Uuid::isValid($folderId) ? $folderId : $this->getFolderIdByLegacyId($folderId);
+        if (!isset($this->resolvedFolderIds[$folderId])) {
+            $this->resolvedFolderIds[$folderId] = Uuid::isValid($folderId)
+                ? $folderId
+                : $this->getFolderIdByLegacyId($folderId);
         }
-        return $this->resolvedFolderId;
+        return $this->resolvedFolderIds[$folderId];
     }
 
     /**

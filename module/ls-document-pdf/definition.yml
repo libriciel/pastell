@@ -143,6 +143,10 @@ formulaire:
             name: 'Historique iparapheur'
             type: file
             read-only: true
+        iparapheur_premis:
+            name: 'Premis iparapheur'
+            type: file
+            read-only: true
         parapheur_last_message:
             name: 'Dernier message reçu du parapheur'
             read-only: true
@@ -548,6 +552,7 @@ action:
         connecteur-type-action: SignatureRecuperation
         connecteur-type-mapping:
             iparapheur_historique: iparapheur_historique
+            iparapheur_premis: iparapheur_premis
             parapheur_last_message: parapheur_last_message
             parapheur_date_signature: parapheur_date_signature
             has_signature: has_signature

@@ -157,6 +157,115 @@ class SignatureRecupTest extends PastellTestCase
     }
 
     /**
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    public function testRestWithoutPremisField(): void
+    {
+        $this->mockRestMultiDoc();
+
+        $connecteur_info = $this->createConnector('iparapheur-rest', 'i-Parapheur REST');
+        $connecteurDonneesFormulaire = $this->getDonneesFormulaireFactory()
+            ->getConnecteurEntiteFormulaire($connecteur_info['id_ce']);
+        $connecteurDonneesFormulaire->setTabData([
+            'url' => 'https://url',
+            'username' => 'user',
+            'password' => 'pass',
+            'tenant_id' => 'tenant-test',
+            'desk_id' => 'desk-test',
+        ]);
+        $this->associateFluxWithConnector($connecteur_info['id_ce'], 'document-a-signer', 'signature');
+
+        $document_info = $this->createDocument('document-a-signer');
+
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document_info['id_d']);
+        $donneesFormulaire->setTabData([
+            'iparapheur_type' => 'FOO',
+            'iparapheur_sous_type' => 'BAR',
+            'libelle' => 'LIBELLE',
+        ]);
+        $donneesFormulaire->addFileFromData('document', 'document.pdf', 'main content');
+
+        $this->triggerActionOnDocument($document_info['id_d'], 'send-iparapheur');
+        $this->triggerActionOnDocument($document_info['id_d'], 'verif-iparapheur');
+        $this->assertLastMessage('La signature a été récupérée');
+
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document_info['id_d']);
+        self::assertEmpty($donneesFormulaire->get('iparapheur_premis'));
+    }
+
+    /**
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    public function testSoapLeavesPremisEmpty(): void
+    {
+        $this->mockSoapClient(
+            function ($soapMethod) {
+                if ($soapMethod === 'CreerDossier') {
+                    return json_decode(
+                        '{"MessageRetour":{"codeRetour":"OK","message":"","severite":"INFO"}}',
+                        false,
+                        512,
+                        JSON_THROW_ON_ERROR
+                    );
+                }
+                if ($soapMethod === 'GetHistoDossier') {
+                    $histo_dossier = [
+                        'LogDossier' => [
+                            0 => [
+                                'timestamp' => 1,
+                                'annotation' => 'annotation',
+                                'status' => 'Archive',
+                            ],
+                        ],
+                    ];
+                    $histo_dossier_json = json_encode($histo_dossier, JSON_THROW_ON_ERROR);
+                    return json_decode($histo_dossier_json, false, 512, JSON_THROW_ON_ERROR);
+                }
+                $dossier = [
+                    'DocPrincipal' => [
+                        '_' => '%PDF1-4',
+                        'contentType' => 'application/pdf',
+                    ],
+                    'NomDocPrincipal' => 'document.pdf',
+                    'MessageRetour' => [
+                        'codeRetour' => 'OK',
+                    ],
+                ];
+                $dossier_json = json_encode($dossier, JSON_THROW_ON_ERROR);
+                return json_decode($dossier_json, false, 512, JSON_THROW_ON_ERROR);
+            }
+        );
+
+        $connecteur_info = $this->createConnector('iParapheur', 'i-Parapheur');
+        $connecteurDonneesFormulaire = $this->getDonneesFormulaireFactory()
+            ->getConnecteurEntiteFormulaire($connecteur_info['id_ce']);
+        $connecteurDonneesFormulaire->setTabData([
+            'iparapheur_wsdl' => 'https://foo',
+        ]);
+        $this->associateFluxWithConnector($connecteur_info['id_ce'], 'ls-document-pdf', 'signature');
+
+        $document_info = $this->createDocument('ls-document-pdf');
+
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document_info['id_d']);
+        $donneesFormulaire->setTabData([
+            'iparapheur_type' => 'FOO',
+            'iparapheur_sous_type' => 'BAR',
+            'libelle' => 'LIBELLE',
+        ]);
+        $donneesFormulaire->addFileFromData('document', 'document.pdf', 'main content');
+
+        $this->triggerActionOnDocument($document_info['id_d'], 'send-iparapheur');
+        $this->triggerActionOnDocument($document_info['id_d'], 'verif-iparapheur');
+        $this->assertLastMessage('La signature a été récupérée');
+
+        $donneesFormulaire = $this->getDonneesFormulaireFactory()->get($document_info['id_d']);
+        self::assertSame('1', $donneesFormulaire->get('has_historique'));
+        self::assertEmpty($donneesFormulaire->get('iparapheur_premis'));
+    }
+
+    /**
      * @throws JsonException
      */
     private function mockRestMultiDoc(): void
@@ -290,6 +399,15 @@ class SignatureRecupTest extends PastellTestCase
         $this->assertSame('multi doc content', $donneesFormulaire->getFileContent('multi_document_original', 0));
 
         $this->assertEmpty($donneesFormulaire->get('iparapheur_annexe_sortie'));
+
+        self::assertSame(
+            'i_Parapheur_internal_premis.xml',
+            $donneesFormulaire->getFileName('iparapheur_premis')
+        );
+        self::assertStringEqualsFile(
+            __DIR__ . '/fixtures/multidoc_with_annexe_folder.xml',
+            $donneesFormulaire->getFileContent('iparapheur_premis')
+        );
     }
 
     /**
