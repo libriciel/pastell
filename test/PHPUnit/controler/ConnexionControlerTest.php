@@ -1,8 +1,13 @@
 <?php
 
+use OTPHP\TOTP;
+use Symfony\Component\Clock\Clock;
+use Pastell\Service\LoginAttemptLimit;
 use Pastell\Service\MagicLink\MagicLinkService;
+use Pastell\Service\Utilisateur\MfaService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\RateLimiter\RateLimit;
 
 class ConnexionControlerTest extends ControlerTestCase
 {
@@ -176,7 +181,7 @@ class ConnexionControlerTest extends ControlerTestCase
         ['link' => $link, 'token' => $token, 'code' => $code] = $this->createMagicLinkAndGetToken();
 
         $this->setPostInfo(['token' => $token, 'code' => $code]);
-        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        $this->connexionControler->setServerInfo(['REMOTE_ADDR' => '127.0.0.1']);
 
         try {
             $this->connexionControler->doMagicLinkCodeAction();
@@ -203,7 +208,7 @@ class ConnexionControlerTest extends ControlerTestCase
         static::assertSame(1, (int)$authentification->getId());
 
         $this->setPostInfo(['token' => $token, 'code' => $code]);
-        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        $this->connexionControler->setServerInfo(['REMOTE_ADDR' => '127.0.0.1']);
 
         try {
             $this->connexionControler->doMagicLinkCodeAction();
@@ -278,5 +283,187 @@ class ConnexionControlerTest extends ControlerTestCase
         } catch (LastErrorException $e) {
             static::assertStringContainsString('invalide, a expiré ou a été révoqué', $e->getMessage());
         }
+    }
+
+    private function mockLoginAttemptLimit(int $remainingTokens = 5): void
+    {
+        $loginAttemptLimit = $this->createMock(LoginAttemptLimit::class);
+        $loginAttemptLimit->method('getRateLimit')
+            ->willReturn(new RateLimit($remainingTokens, new \DateTimeImmutable(), $remainingTokens > 0, 5));
+        $this->getObjectInstancier()->setInstance(LoginAttemptLimit::class, $loginAttemptLimit);
+    }
+
+    public function testMfaPendingAfterPassword(): void
+    {
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->deconnexion();
+        $this->enableMfa(1);
+        $this->mockLoginAttemptLimit();
+        $this->setPostInfo(['login' => 'admin', 'password' => 'admin', 'request_uri' => '/']);
+        $this->connexionControler->setServerInfo(['REMOTE_ADDR' => '127.0.0.1']);
+
+        try {
+            $this->connexionControler->doConnexionAction();
+            static::fail('Une redirection était attendue');
+        } catch (LastMessageException $e) {
+            static::assertStringContainsString('/Connexion/mfa', $e->getMessage());
+        }
+
+        static::assertFalse($authentification->isConnected());
+        static::assertSame(1, $authentification->getMfaPending()['id_u']);
+    }
+
+    public function testMfaValidCodeConnects(): void
+    {
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->deconnexion();
+        $secret = $this->enableMfa(1);
+        $this->mockLoginAttemptLimit();
+        $authentification->setMfaPending(1, 'admin', '/');
+        $this->setPostInfo(['code' => TOTP::createFromSecret($secret, new Clock())->now()]);
+        $this->connexionControler->setServerInfo(['REMOTE_ADDR' => '127.0.0.1', 'REQUEST_METHOD' => 'POST']);
+
+        try {
+            $this->connexionControler->doMfaAction();
+            static::fail('Une redirection était attendue');
+        } catch (LastMessageException) {
+        }
+
+        static::assertTrue($authentification->isConnected());
+        static::assertSame(1, (int)$authentification->getId());
+        static::assertNull($authentification->getMfaPending());
+    }
+
+    public function testMfaInvalidCode(): void
+    {
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->deconnexion();
+        $secret = $this->enableMfa(1);
+        $this->mockLoginAttemptLimit();
+        $authentification->setMfaPending(1, 'admin', '/');
+        $valid = TOTP::createFromSecret($secret, new Clock())->now();
+        $this->setPostInfo(['code' => $this->differentCode($valid)]);
+        $this->connexionControler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+
+        try {
+            $this->connexionControler->doMfaAction();
+            static::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('code saisi est invalide', $e->getMessage());
+        }
+
+        static::assertFalse($authentification->isConnected());
+        static::assertNotNull($authentification->getMfaPending());
+        static::assertNotEmpty(
+            $this->getJournalConsultationService()->getList(recherche: 'Échec double authentification')
+        );
+    }
+
+    public function testMfaPendingExpires(): void
+    {
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->setMfaPending(1, 'admin', '/');
+        $_SESSION['mfa_pending']['created_at'] = time() - 301;
+
+        static::assertNull($authentification->getMfaPending());
+    }
+
+    public function testDeconnexionClearsMfaPending(): void
+    {
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->setMfaPending(1, 'admin', '/');
+        $authentification->deconnexion();
+
+        static::assertNull($authentification->getMfaPending());
+    }
+
+    /**
+     * @throws LastErrorException
+     */
+    public function testMfaRecoveryCodeConnects(): void
+    {
+        $authentification = $this->getObjectInstancier()->getInstance(Authentification::class);
+        $authentification->deconnexion();
+        $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
+        $this->enableMfa(1);
+        $recoveryCodes = $mfaService->regenerateRecoveryCodes(1);
+        $this->mockLoginAttemptLimit();
+        $authentification->setMfaPending(1, 'admin', '/');
+        $this->setPostInfo(['code' => $recoveryCodes[0]]);
+        $this->connexionControler->setServerInfo(['REMOTE_ADDR' => '127.0.0.1', 'REQUEST_METHOD' => 'POST']);
+
+        try {
+            $this->connexionControler->doMfaAction();
+            static::fail('Une redirection était attendue');
+        } catch (LastMessageException) {
+        }
+
+        static::assertTrue($authentification->isConnected());
+        static::assertSame(9, $mfaService->countRemainingRecoveryCodes(1));
+    }
+
+    public function testMfaNoPendingRedirects(): void
+    {
+        $this->getObjectInstancier()->getInstance(Authentification::class)->clearMfaPending();
+
+        try {
+            $this->connexionControler->mfaAction();
+            static::fail('Une redirection était attendue');
+        } catch (LastMessageException $e) {
+            static::assertStringContainsString('/Connexion/connexion', $e->getMessage());
+        }
+    }
+
+    private function loginWithLdap(bool|UnrecoverableException $result): void
+    {
+        $ldapVerification = $this->createMock(LDAPVerification::class);
+        $verifLogin = $ldapVerification->method('verifLogin')->with('eric', 'ldap-password');
+        $result instanceof UnrecoverableException
+            ? $verifLogin->willThrowException($result)
+            : $verifLogin->willReturn($result);
+        $connecteurFactory = $this->createMock(ConnecteurFactory::class);
+        $connecteurFactory->method('getGlobalConnecteur')
+            ->willReturnCallback(static fn(string $type) => $type === LDAPVerification::CONNECTEUR_TYPE_ID ? $ldapVerification : false);
+        $this->getObjectInstancier()->setInstance(ConnecteurFactory::class, $connecteurFactory);
+        $this->getObjectInstancier()->getInstance(Authentification::class)->deconnexion();
+        $this->mockLoginAttemptLimit();
+        $this->setPostInfo(['login' => 'eric', 'password' => 'ldap-password', 'request_uri' => '/']);
+        $this->connexionControler->setServerInfo(['REMOTE_ADDR' => '127.0.0.1']);
+        $this->connexionControler->doConnexionAction();
+    }
+
+    public function testLdapLoginConnects(): void
+    {
+        try {
+            $this->loginWithLdap(true);
+            static::fail('Une redirection était attendue');
+        } catch (LastMessageException) {
+        }
+
+        static::assertSame(2, $this->getObjectInstancier()->getInstance(Authentification::class)->getId());
+    }
+
+    public function testLdapWrongPassword(): void
+    {
+        try {
+            $this->loginWithLdap(false);
+            static::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('Identifiant ou mot de passe incorrect.', $e->getMessage());
+        }
+
+        static::assertFalse($this->getObjectInstancier()->getInstance(Authentification::class)->isConnected());
+    }
+
+    public function testLdapUnreachable(): void
+    {
+        try {
+            $this->loginWithLdap(new UnrecoverableException('LDAP injoignable'));
+            static::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            static::assertStringContainsString('LDAP injoignable', $e->getMessage());
+        }
+
+        static::assertFalse($this->getObjectInstancier()->getInstance(Authentification::class)->isConnected());
     }
 }

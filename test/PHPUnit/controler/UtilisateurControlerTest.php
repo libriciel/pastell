@@ -1,5 +1,6 @@
 <?php
 
+use Pastell\Service\Utilisateur\MfaService;
 use Pastell\Service\Utilisateur\UserCreationService;
 use Pastell\Service\Utilisateur\UserPasswordService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
@@ -195,6 +196,90 @@ class UtilisateurControlerTest extends ControlerTestCase
             /* Nothing to do*/
         }
         self::assertTrue($utilisateurSQL->isEnabled(1));
+    }
+
+    public function testDisableMfaByAdmin(): void
+    {
+        $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
+        $this->enableMfa(2);
+
+        $this->setPostInfo(['id_u' => 2]);
+        $controler = $this->getUtilisateurControler();
+        $controler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        try {
+            $controler->disableMfaAction();
+        } catch (Exception) {
+        }
+
+        self::assertFalse($mfaService->isEnabled(2));
+    }
+
+    public function testDisableMfaNotEnabled(): void
+    {
+        $this->setPostInfo(['id_u' => 2]);
+        $controler = $this->getUtilisateurControler();
+        $controler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        try {
+            $controler->disableMfaAction();
+            self::fail('Une redirection était attendue');
+        } catch (LastErrorException $e) {
+            self::assertStringContainsString("n'est pas activée", $e->getMessage());
+        }
+    }
+
+    public function testDisableMfaUnknownUser(): void
+    {
+        $this->setPostInfo(['id_u' => 999]);
+        $controler = $this->getUtilisateurControler();
+        $controler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        try {
+            $controler->disableMfaAction();
+            self::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            self::assertStringContainsString('Utilisateur 999 inconnu', $e->getMessage());
+        }
+    }
+
+    /**
+     * @throws LastMessageException
+     * @throws UnrecoverableException
+     * @throws ConflictException
+     */
+    public function testDisableMfaNoRights(): void
+    {
+        $this->setUpRemoteToken();
+        $this->enableMfa($this->api_user_id);
+        $userController = $this->getUtilisateurControler();
+        $userController->getAuthentification()->connexion('admin_inferieur', $this->admin_inf);
+
+        $this->setPostInfo(['id_u' => $this->api_user_id]);
+        $userController->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        try {
+            $userController->disableMfaAction();
+            self::fail('Une LastErrorException était attendue');
+        } catch (LastErrorException $e) {
+            self::assertStringContainsString('droits nécessaires', $e->getMessage());
+        }
+
+        self::assertTrue($this->getObjectInstancier()->getInstance(MfaService::class)->isEnabled($this->api_user_id));
+    }
+
+    public function testDisableMfaSelfRedirects(): void
+    {
+        $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
+        $this->enableMfa(self::ID_U_ADMIN);
+
+        $this->setPostInfo(['id_u' => self::ID_U_ADMIN]);
+        $controler = $this->getUtilisateurControler();
+        $controler->setServerInfo(['REQUEST_METHOD' => 'POST']);
+        try {
+            $controler->disableMfaAction();
+            self::fail('Une redirection était attendue');
+        } catch (LastMessageException $e) {
+            self::assertStringContainsString('/Mfa/authRequired', $e->getMessage());
+        }
+
+        self::assertTrue($mfaService->isEnabled(self::ID_U_ADMIN));
     }
 
     public function testAddToken(): void
@@ -730,5 +815,30 @@ class UtilisateurControlerTest extends ControlerTestCase
         $this->expectException(LastErrorException::class);
         $this->expectExceptionMessage("L'utilisateur n'existe pas");
         $this->getUtilisateurControler()->_beforeAction();
+    }
+
+    /**
+     * @throws NotFoundException
+     * @throws JsonException
+     */
+    public function testMoiHidesMfaWhenExternal(): void
+    {
+        $connecteurFactory = $this->createMock(ConnecteurFactory::class);
+        $connecteurFactory->method('getGlobalConnecteur')
+            ->willReturnCallback(
+                fn(string $type) => $type === AuthenticationConnecteur::CONNECTEUR_TYPE_ID
+                    ? $this->createMock(AuthenticationConnecteur::class)
+                    : false
+            );
+        $this->getObjectInstancier()->setInstance(ConnecteurFactory::class, $connecteurFactory);
+        $controler = $this->getUtilisateurControler();
+        $this->getObjectInstancier()->getInstance(Authentification::class)->connexion('eric', 2);
+
+        ob_start();
+        $controler->moiAction();
+        $output = ob_get_clean();
+
+        self::assertStringContainsString('Vos rôles sur Pastell', $output);
+        self::assertStringNotContainsString('Double authentification', $output);
     }
 }

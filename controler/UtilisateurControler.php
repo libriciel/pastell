@@ -9,10 +9,12 @@ use Pastell\Service\Menu\MenuGaucheService;
 use Pastell\Service\Notification\NotificationService;
 use Pastell\Service\PasswordEntropy;
 use Pastell\Service\Module\ModuleListService;
+use Pastell\Service\Utilisateur\MfaManagementAction;
 use Pastell\Service\Utilisateur\RoleDelegationService;
 use Pastell\Service\Utilisateur\UtilisateurEntiteService;
 use Pastell\Service\Utilisateur\UtilisateurRoleService;
 use Pastell\Service\Utilisateur\UserCreationService;
+use Pastell\Service\Utilisateur\UserAuthenticationService;
 use Pastell\Service\Utilisateur\UserPasswordService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Pastell\Service\Utilisateur\UserUpdateService;
@@ -367,8 +369,45 @@ class UtilisateurControler extends PastellControler
         );
 
         $this->setDroitViewParameter((int) $info['id_e'], DroitService::DROIT_JOURNAL, DroitType::LECTURE);
+
+        $this->setViewParameter('mfa_enabled', $this->getMfaService()->isEnabled((int) $id_u));
+        $this->setViewParameter(
+            'root_system_edition',
+            $this->hasDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION)
+        );
+
         $this->setViewParameter('template_milieu', 'UtilisateurDetail');
         $this->renderDefault();
+    }
+
+    /**
+     * @throws LastErrorException
+     * @throws LastMessageException
+     */
+    public function disableMfaAction(): void
+    {
+        $this->checkPostRequest('/Utilisateur/index');
+        $id_u = (int) $this->getPostInfo()->get('id_u');
+        if ($id_u === (int) $this->getId_u()) {
+            $this->redirect('/Mfa/authRequired?action=' . MfaManagementAction::DISABLE->value);
+        }
+
+        $this->checkDroitFor(RootEntity::ID_E, DroitService::DROIT_SYSTEM, DroitType::EDITION);
+
+        $redirect = "/Utilisateur/detail?id_u=$id_u";
+
+        try {
+            $this->getMfaService()->disable($id_u, (int) $this->getId_u());
+        } catch (NotFoundException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect('/Utilisateur/index');
+        } catch (UnrecoverableException $e) {
+            $this->setLastError($e->getMessage());
+            $this->redirect($redirect);
+        }
+
+        $this->setLastMessage('La double authentification a été désactivée.');
+        $this->redirect($redirect);
     }
 
     private function getNotificationList($id_u)
@@ -428,6 +467,20 @@ class UtilisateurControler extends PastellControler
             ->getInstance(UserTokenService::class)
             ->getTokens($this->getId_u());
         $this->setViewParameter('tokens', $tokens);
+
+        $this->setViewParameter(
+            'mfa_available',
+            !$this->getInstance(UserAuthenticationService::class)->isExternal($id_u)
+        );
+        $mfaService = $this->getMfaService();
+        $mfaEnabled = $mfaService->isEnabled($id_u);
+        $this->setViewParameter('mfa_enabled', $mfaEnabled);
+        $this->setViewParameter('mfa_activated_at', $mfaService->getActivatedAt($id_u) ?? '');
+        $this->setViewParameter(
+            'mfa_recovery_remaining',
+            $mfaEnabled ? $mfaService->countRemainingRecoveryCodes($id_u) : 0
+        );
+
         $this->setViewParameter('template_milieu', 'UtilisateurMoi');
         $this->setViewParameter('pages_without_left_menu', true);
         $this->renderDefault();

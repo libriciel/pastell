@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Pastell\Service\LoginAttemptLimit;
+use Pastell\Service\Utilisateur\MfaService;
 use Pastell\Service\Utilisateur\UserTokenService;
 use Symfony\Component\RateLimiter\RateLimit;
 
@@ -85,6 +86,32 @@ class ApiAuthenticationTest extends PastellTestCase
         ]);
         $httpApi->setGetArray(['api_function' => 'v2/version']);
         $this->expectOutputRegex('/401 Unauthorized/');
+        $httpApi->dispatch();
+    }
+
+    public function testPasswordWorksWithMfa(): void
+    {
+        $this->enableMfa(self::ID_U_ADMIN);
+        $loginAttemptLimit = $this->createMock(LoginAttemptLimit::class);
+        $this->getObjectInstancier()->setInstance(LoginAttemptLimit::class, $loginAttemptLimit);
+        $httpApi = $this->getObjectInstancier()->getInstance(HttpApi::class);
+        $httpApi->setServerArray(['REQUEST_METHOD' => 'get', 'PHP_AUTH_USER' => 'admin', 'PHP_AUTH_PW' => 'admin']);
+        $httpApi->setGetArray(['api_function' => 'v2/version']);
+        $this->expectOutputRegex('#1.4-fixtures#');
+        $httpApi->dispatch();
+    }
+
+    public function testTokenWorksWithMfa(): void
+    {
+        $this->enableMfa(self::ID_U_ADMIN);
+        $loginAttemptLimit = $this->createMock(LoginAttemptLimit::class);
+        $this->getObjectInstancier()->setInstance(LoginAttemptLimit::class, $loginAttemptLimit);
+        $token = $this->getObjectInstancier()->getInstance(UserTokenService::class)
+            ->createToken(self::ID_U_ADMIN, 'token');
+        $httpApi = $this->getObjectInstancier()->getInstance(HttpApi::class);
+        $httpApi->setServerArray(['REQUEST_METHOD' => 'get', 'HTTP_AUTHORIZATION' => "Bearer $token"]);
+        $httpApi->setGetArray(['api_function' => 'v2/version']);
+        $this->expectOutputRegex('#1.4-fixtures#');
         $httpApi->dispatch();
     }
 }

@@ -12,6 +12,10 @@ declare(strict_types=1);
  * @var string $entity_treeselect_data
  * @var string $module_treeselect_data
  * @var array $tokens
+ * @var bool $mfa_available
+ * @var bool $mfa_enabled
+ * @var string $mfa_activated_at
+ * @var int $mfa_recovery_remaining
  */
 
 ?>
@@ -63,6 +67,39 @@ declare(strict_types=1);
     </a>
     <a href='Utilisateur/modifEmail' class='btn btn-primary'><i class="fas fa-pen"></i>&nbsp;Modifier mon email</a>
 </div>
+
+<?php if ($mfa_available) : ?>
+<div class="box">
+    <h2 id="desc-mfa-table">Double authentification (MFA)</h2>
+    <?php if (!empty($mfa_enabled)) : ?>
+        <p>
+            <i class="fas fa-shield-alt text-success"></i>&nbsp;
+            La double authentification est activée sur votre compte depuis le
+            <?php echo time_iso_to_fr($mfa_activated_at); ?>.
+        </p>
+        <p>
+            Codes de récupération restants : <strong><?php echo (int)$mfa_recovery_remaining; ?></strong>
+        </p>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <a href='Mfa/authRequired?action=regenerate' class='btn btn-outline-primary'>
+                <i class="fas fa-arrows-rotate"></i>&nbsp;Régénérer les codes de récupération
+            </a>
+            <a href='Mfa/authRequired?action=disable' class='btn btn-danger'>
+                <i class="fas fa-shield-alt"></i>&nbsp;Désactiver
+            </a>
+        </div>
+    <?php else : ?>
+        <p>
+            Renforcez la sécurité de votre compte en activant la double authentification (TOTP).
+            Un code temporaire, généré par une application mobile (Google Authenticator, Aegis, FreeOTP, etc.),
+            vous sera demandé à chaque connexion.
+        </p>
+        <a href='Mfa/authRequired?action=enable' class='btn btn-primary'>
+            <i class="fas fa-shield-alt"></i>&nbsp;Activer la double authentification
+        </a>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
 
 <div class="box">
     <h2 id="desc-roles-table">Vos rôles sur Pastell</h2>

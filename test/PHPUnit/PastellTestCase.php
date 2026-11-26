@@ -8,13 +8,16 @@ use Pastell\Process\CommandRunner;
 use Pastell\Process\SymfonyCommandRunner;
 use Pastell\Service\Connecteur\ConnecteurAssociationService;
 use Pastell\Service\Pack\PackService;
+use Pastell\Service\Utilisateur\MfaService;
 use Pastell\Service\Utilisateur\UtilisateurRoleCacheService;
 use Pastell\Storage\StorageInterface;
 use Pastell\Storage\StorageInterfaceFake;
 use Pastell\Tests\SymfonyContainerFactory;
 use Pastell\Utilities\Identifier\IdentifierGeneratorInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Clock\ClockInterface;
 use Pastell\Service\TypeDossier\TypeDossierImportService;
+use Symfony\Component\Clock\Clock;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\InMemoryStore;
 use Twig\Environment;
@@ -101,6 +104,7 @@ abstract class PastellTestCase extends TestCase
         $this->objectInstancier->setInstance('disable_job_queue', false);
         $this->objectInstancier->setInstance('cache_ttl_in_seconds', 10);
         $this->objectInstancier->setInstance('rgpd_page_path', RGPD_PAGE_PATH);
+        $this->objectInstancier->setInstance(ClockInterface::class, new Clock());
         $this->objectInstancier->setInstance(IdentifierGeneratorInterface::class, new PasswordGenerator());
         $this->objectInstancier->setInstance(Logger::class, new  Logger('PHPUNIT'));
         $this->objectInstancier->setInstance('log_level', Logger::DEBUG);
@@ -421,6 +425,15 @@ iparapheur_retour: Archive',
             $id_d,
             $action
         );
+    }
+
+    protected function enableMfa(int $id_u): string
+    {
+        $mfaService = $this->getObjectInstancier()->getInstance(MfaService::class);
+        $mfaService->enroll($id_u);
+        $secret = $mfaService->getEnrolment($id_u, 'test')->secret;
+        $this->getObjectInstancier()->getInstance(UtilisateurMfaSQL::class)->confirm($id_u);
+        return $secret;
     }
 
     /**

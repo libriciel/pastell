@@ -11,6 +11,9 @@
   - Possibilité de suspendre/reprendre les travaux correspondants à la recherche
   - La page d'accueil du gestionnaire de tâches affiche la liste des prochains travaux à exécuter
     et des liens vers 'Tous les travaux' avec les filtres correspondants
+- Double authentification (TOTP) : activation, réinitialisation et désactivation depuis l'espace personnel, avec
+  codes de récupération. Un administrateur peut désactiver celle d'un utilisateur. Non disponible
+  si un connecteur CAS ou OIDC est configuré #2453
 - iparapheur REST "Multi-documents ET annexes" :
   - **BREAKING** : Suppression de la case 'Appliquer le multi-document' du connecteur iparapheur REST #2593
   - Studio, l'étape « Visa/Signature » dispose d'un nouveau champ « Autre(s) document(s) à signer ».
