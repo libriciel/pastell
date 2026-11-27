@@ -134,16 +134,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.407.2",
+            "version": "3.408.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "aedc610bbd4c1fb4fe6fde7d3fbf9fb151d463dc"
+                "reference": "6ef06d2fbda9570d766b4146e1dadc5e24f6bc78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/aedc610bbd4c1fb4fe6fde7d3fbf9fb151d463dc",
-                "reference": "aedc610bbd4c1fb4fe6fde7d3fbf9fb151d463dc",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/6ef06d2fbda9570d766b4146e1dadc5e24f6bc78",
+                "reference": "6ef06d2fbda9570d766b4146e1dadc5e24f6bc78",
                 "shasum": ""
             },
             "require": {
@@ -225,10 +225,10 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.407.2"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.408.0"
             },
-            "time": "2026-11-23T20:14:00+00:00",
-            "published-time": "2026-11-23T20:21:37+00:00"
+            "time": "2026-11-25T19:08:58+00:00",
+            "published-time": "2026-11-25T19:16:29+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
@@ -2569,16 +2569,16 @@
         },
         {
             "name": "paragonie/halite",
-            "version": "v5.1.5",
+            "version": "v5.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/halite.git",
-                "reference": "aa28beef75a09ed8b7ca87d758ba4916753646a6"
+                "reference": "00ce1be57a7ac6ee8535b9f4672f57aa43c5691d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/halite/zipball/aa28beef75a09ed8b7ca87d758ba4916753646a6",
-                "reference": "aa28beef75a09ed8b7ca87d758ba4916753646a6",
+                "url": "https://api.github.com/repos/paragonie/halite/zipball/00ce1be57a7ac6ee8535b9f4672f57aa43c5691d",
+                "reference": "00ce1be57a7ac6ee8535b9f4672f57aa43c5691d",
                 "shasum": ""
             },
             "require": {
@@ -2635,10 +2635,10 @@
             "support": {
                 "docs": "https://github.com/paragonie/halite/tree/master/doc",
                 "issues": "https://github.com/paragonie/halite/issues",
-                "source": "https://github.com/paragonie/halite/tree/v5.1.5"
+                "source": "https://github.com/paragonie/halite/tree/v5.2.0"
             },
-            "time": "2026-11-06T19:23:08+00:00",
-            "published-time": "2026-11-06T19:24:14+00:00"
+            "time": "2026-11-27T02:03:23+00:00",
+            "published-time": "2026-11-27T02:04:00+00:00"
         },
         {
             "name": "paragonie/hidden-string",
@@ -12045,16 +12045,16 @@
         },
         {
             "name": "rector/rector",
-            "version": "2.8.5",
+            "version": "2.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "bf2982e3e2b8dfbcb43e5589fa301431cb1e479e"
+                "reference": "8a06053cae42915224f9357566162ccb1076001a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/bf2982e3e2b8dfbcb43e5589fa301431cb1e479e",
-                "reference": "bf2982e3e2b8dfbcb43e5589fa301431cb1e479e",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/8a06053cae42915224f9357566162ccb1076001a",
+                "reference": "8a06053cae42915224f9357566162ccb1076001a",
                 "shasum": ""
             },
             "require": {
@@ -12090,7 +12090,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/2.8.5"
+                "source": "https://github.com/rectorphp/rector/tree/2.9.2"
             },
             "funding": [
                 {
@@ -12098,8 +12098,8 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-11-14T23:24:35+00:00",
-            "published-time": "2026-11-14T23:24:41+00:00"
+            "time": "2026-11-24T23:34:02+00:00",
+            "published-time": "2026-11-24T23:34:08+00:00"
         },
         {
             "name": "sebastian/cli-parser",
