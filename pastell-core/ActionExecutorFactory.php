@@ -469,5 +469,7 @@ class ActionExecutorFactory
     {
         $actionClass = $this->getActionClass($all_id_d[0], $id_e, $id_u, $action_name, $id_destinataire, $from_api, $action_params, $id_worker);
         $actionClass->goLot($all_id_d);
+        $this->lastMessageString = $actionClass->getLastMessageString();
+        $this->lastMessage = $actionClass->getLastMessage();
     }
 }

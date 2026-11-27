@@ -1,5 +1,7 @@
 <?php
 
+use Pastell\Service\Document\DocumentReindexService;
+
 /**
  * @var ObjectInstancier $objectInstancier
  */
@@ -18,4 +20,24 @@ $champs_reindex = get_argv(2);
 $offset = get_argv(3) ?: 0;
 $limit = get_argv(4) ?: -1;
 
-$objectInstancier->getInstance(DocumentControler::class)->reindex($document_type, $champs_reindex, $offset, $limit);
+$documentReindexService = $objectInstancier->getInstance(DocumentReindexService::class);
+try {
+    $document_list = $documentReindexService->getDocumentsToReindex(
+        $document_type,
+        [$champs_reindex],
+        (int) $offset,
+        (int) $limit
+    );
+} catch (UnrecoverableException $e) {
+    echo '[ERREUR] ' . $e->getMessage() . "\n";
+    exit(1);
+}
+
+echo 'Nombre de documents : ' . count($document_list) . "\n";
+foreach ($document_list as $i => $document_info) {
+    echo "Réindexation du document {$document_info['titre']} ({$document_info['id_d']})\n";
+    $documentReindexService->reindexDocument($document_info['id_d'], [$champs_reindex]);
+    if (($i + 1) % 100 === 0) {
+        gc_collect_cycles();
+    }
+}

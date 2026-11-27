@@ -171,4 +171,10 @@ final class EntityInfoServiceTest extends PastellTestCase
     {
         self::assertFalse($this->getEntityInfoService()->isCentreDeGestion(42));
     }
+
+    public function testGetInfo(): void
+    {
+        self::assertSame('Bourg-en-Bresse', $this->getEntityInfoService()->getInfo(self::ID_E_COL)['denomination']);
+        self::assertNull($this->getEntityInfoService()->getInfo(42));
+    }
 }

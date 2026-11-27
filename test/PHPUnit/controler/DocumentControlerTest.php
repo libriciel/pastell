@@ -19,6 +19,7 @@ class DocumentControlerTest extends ControlerTestCase
     use TypeDossierLoaderTestTrait;
 
     /**
+     * @deprecated 4.1.26
      * @throws Exception
      */
     public function testReindex()
@@ -502,6 +503,41 @@ class DocumentControlerTest extends ControlerTestCase
         );
     }
 
+    /**
+     * @throws Exception
+     */
+    public function testTeletransmissionReturn(): void
+    {
+        $connector = $this->createConnector('fakeTdt', 'Fake TdT');
+        $this->associateFluxWithConnector($connector['id_ce'], 'actes-generique', 'TdT');
+        $document = $this->createDocument('actes-generique');
+        $this->getObjectInstancier()->getInstance(ActionChange::class)->addAction(
+            $document['id_d'],
+            PastellTestCase::ID_E_COL,
+            PastellTestCase::ID_U_ADMIN,
+            'teletransmission-tdt',
+            'Télétransmission ordonnée'
+        );
+        $this->setGetInfo([
+            'id_e' => PastellTestCase::ID_E_COL,
+            'type' => 'actes-generique',
+            'id_d' => [$document['id_d']],
+            'action' => 'return-teletransmission-tdt',
+        ]);
+        $documentController = $this->getControlerInstance(DocumentControler::class);
+
+        try {
+            $documentController->retourTeletransmissionAction();
+            self::fail('A teletransmission return must redirect to the document list');
+        } catch (LastMessageException $e) {
+            self::assertStringEndsWith(
+                "Document/list?id_e=1&type=actes-generique: Le document « {$document['titre']} » a été télétransmis<br/>",
+                $e->getMessage()
+            );
+        }
+        $this->assertLastDocumentAction('send-tdt', $document['id_d']);
+    }
+
     public function testChangeEtat(): void
     {
         $documentController = $this->getControlerInstance(DocumentControler::class);
@@ -619,5 +655,102 @@ Lignes',
         $documentSQL = $this->getObjectInstancier()->getInstance(DocumentSQL::class);
         $info = $documentSQL->getInfo($id_d);
         static::assertTrue($id_d === $info['id_d'] && 'test' === $info['type']);
+    }
+
+    public function testWarningRequiresReadRight(): void
+    {
+        $document = $this->createDocument('test');
+        $this->setGetInfo([
+            'id_e' => PastellTestCase::ID_E_COL,
+            'id_d' => $document['id_d'],
+            'action' => 'supression',
+        ]);
+        $documentController = $this->getControlerInstance(DocumentControler::class);
+        $this->authenticateNewUserWithPermission([
+            DroitService::getDroitFor('actes-generique', DroitType::LECTURE),
+        ]);
+
+        $this->expectException(LastMessageException::class);
+        $this->expectExceptionMessageMatches('#/Document/list\?id_e=1&type=test#');
+        $documentController->warningAction();
+    }
+
+    public function testWarningOtherEntityDocument(): void
+    {
+        $document = $this->createDocument('test', PastellTestCase::ID_E_SERVICE);
+        $this->setGetInfo([
+            'id_e' => PastellTestCase::ID_E_COL,
+            'id_d' => $document['id_d'],
+            'action' => 'supression',
+        ]);
+        $documentController = $this->getControlerInstance(DocumentControler::class);
+
+        $this->expectException(LastMessageException::class);
+        $this->expectExceptionMessageMatches('#/Document/list\?id_e=1&type=test#');
+        $documentController->warningAction();
+    }
+
+    public function testWarningDisplaysDeleteConfirmation(): void
+    {
+        $document = $this->createDocument('test');
+        $this->setGetInfo([
+            'id_e' => PastellTestCase::ID_E_COL,
+            'id_d' => $document['id_d'],
+            'action' => 'supression',
+        ]);
+        $documentController = $this->getControlerInstance(DocumentControler::class);
+
+        $this->expectOutputRegex('/Suppression du dossier/');
+        $documentController->warningAction();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testTeletransmissionReturnWithoutDocument(): void
+    {
+        $this->setGetInfo([
+            'id_e' => PastellTestCase::ID_E_COL,
+            'type' => 'actes-generique',
+        ]);
+        $documentController = $this->getControlerInstance(DocumentControler::class);
+
+        $this->expectException(LastErrorException::class);
+        $this->expectExceptionMessageMatches('/Vous devez sélectionner au moins un document/');
+        $documentController->retourTeletransmissionAction();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testActionUnknownDocument(): void
+    {
+        $this->setPostInfo([
+            'id_e' => PastellTestCase::ID_E_COL,
+            'id_d' => 'unknown',
+            'action' => 'ok',
+        ]);
+        $documentController = $this->getControlerInstance(DocumentControler::class);
+        $documentController->setServerInfo(['REQUEST_METHOD' => 'POST']);
+
+        $this->expectException(LastErrorException::class);
+        $this->expectExceptionMessageMatches("/Ce dossier n'existe pas/");
+        $documentController->actionAction();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testExternalDataApiUnknownDocument(): void
+    {
+        $this->setGetInfo([
+            'id_e' => PastellTestCase::ID_E_COL,
+            'id_d' => 'unknown',
+            'field' => 'foo',
+        ]);
+        $documentController = $this->getControlerInstance(DocumentControler::class);
+
+        $this->expectOutputString("Ce dossier n'existe pas");
+        $documentController->doExternalDataApiAction();
     }
 }

@@ -85,6 +85,11 @@ final class DocumentEntiteService
         return $document_info;
     }
 
+    public function getActions(int $id_e, string $id_d): array
+    {
+        return $this->documentActionEntiteSQL->getActions($id_e, $id_d);
+    }
+
     public function getDocumentsByLastAction(int $id_e, string $type, string $last_action): array
     {
         return $this->documentEntiteSQL->getDocumentsByLastAction($id_e, $type, $last_action);

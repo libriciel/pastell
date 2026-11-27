@@ -138,6 +138,24 @@ class DroitService
     }
 
     /**
+     * @throws NotFoundException
+     */
+    public function getPartsWithLecture(int $id_u, ?int $id_e = null): array
+    {
+        $part_list = [];
+        foreach ($this->getUnrestrictedDroits($id_u) as $droit) {
+            if (!preg_match('/^(.*):' . DroitType::LECTURE->value . '$/u', $droit, $matches)) {
+                continue;
+            }
+            if ($id_e !== null && !$this->hasDroitFor($id_u, $id_e, $matches[1], DroitType::LECTURE)) {
+                continue;
+            }
+            $part_list[] = $matches[1];
+        }
+        return $part_list;
+    }
+
+    /**
      * @param $id_u (pas possible de typer. Authentification::getId() peut retourner false)
      * @param int $id_e
      * @return array

@@ -100,4 +100,35 @@ final class DocumentSearchServiceTest extends PastellTestCase
         static::assertSame(1, $this->documentSearchService->getOffset($id_d, self::ID_E_COL, self::TYPE, 1));
         static::assertSame(0, $this->documentSearchService->getOffset('unknown', self::ID_E_COL, self::TYPE, 1));
     }
+
+    public function testGetCsvLines(): void
+    {
+        $id_d = $this->createDocument(self::TYPE)['id_d'];
+        $this->configureDocument($id_d, ['nom' => 'foo']);
+        $documentSearchCriteria = new DocumentSearchCriteria(
+            allowed_types: [self::TYPE],
+            id_e: self::ID_E_COL,
+            type: self::TYPE,
+        );
+
+        $csv_line_list = $this->documentSearchService
+            ->getCsvLines($documentSearchCriteria, ['nom' => 'Nom'], '', 'DESC');
+
+        self::assertCount(2, $csv_line_list);
+        self::assertSame(
+            ['ENTITE', 'ID_D', 'TYPE', 'TITRE', 'DERNIERE ACTION', 'DATE DERNIERE ACTION', 'Nom'],
+            $csv_line_list[0]
+        );
+        self::assertSame($id_d, $csv_line_list[1][1]);
+        self::assertSame(self::TYPE, $csv_line_list[1][2]);
+        self::assertSame('foo', $csv_line_list[1][6]);
+    }
+
+    public function testGetIndexValues(): void
+    {
+        $id_d = $this->createTitledDocument('foo');
+        $this->getObjectInstancier()->getInstance(DocumentIndexSQL::class)->index($id_d, 'numero', '42');
+
+        static::assertSame('42', $this->documentSearchService->getIndexValues($id_d)['numero']);
+    }
 }

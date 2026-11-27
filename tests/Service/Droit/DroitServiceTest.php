@@ -72,4 +72,15 @@ class DroitServiceTest extends PastellTestCase
         static::assertContains($droit_test_lecture, $droitService->getUnrestrictedDroitsForEntite(1, 1));
         static::assertContains($droit_test_lecture, $droitService->getUnrestrictedDroits(1));
     }
+
+    /**
+     * @throws NotFoundException
+     */
+    public function testGetPartsWithLecture(): void
+    {
+        $droitService = $this->getObjectInstancier()->getInstance(DroitService::class);
+        self::assertContains('test', $droitService->getPartsWithLecture(self::ID_U_ADMIN));
+        self::assertContains('test', $droitService->getPartsWithLecture(self::ID_U_ADMIN, self::ID_E_COL));
+        self::assertSame([], $droitService->getPartsWithLecture(42));
+    }
 }

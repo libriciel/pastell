@@ -7,6 +7,8 @@
 - Envoi d'un acte à S²low : les caractères typographiques de l'objet ne sont plus remplacés par « ? » #2630
 - L'API de consultation des rôles d'un utilisateur renvoyait dans le champ `droits` l'ensemble des droits de
   l'utilisateur au lieu des seuls droits du rôle #2635
+- Télétransmission par lot : seul le premier dossier passait dans l'état « Tentative de télétransmission sur le TDT »
+  #2647
 
 ### Dépréciations
 
@@ -59,11 +61,19 @@
 - Méthodes `getDisponibleUsed()`, `getDisponibleUsedLocal()`, `getOne()`, `getAllId()` et `listNotUsed()` de
   `ConnecteurEntiteSQL` dépréciées car inutilisées #2645
 - Méthode `add()` de `AgentSQL` dépréciée au profit du service `AgentImportService` #2646
+- Méthode `reindex()` de `DocumentControler` dépréciée au profit du service `DocumentReindexService`, et méthodes
+  `fixModuleChamps()` et `bulkModification()` dépréciées car inutilisées #2647
+- Méthode `chunkUploadAction()` de `DocumentControler` dépréciée au profit de
+  `DonneesFormulaireControler::chunkUploadAction()` #2647
 
 ### Sécurité
 
 - Faille de contrôle d'accès sur la consultation et le téléchargement des certificats utilisateur
   (CVSS 3.1 - criticité BASSE - CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:L/I:N/A:N) #2617
+- Renforcement du contrôle d'accès sur la page de confirmation d'une action sur un dossier
+  (CVSS 4.3 - criticité MOYENNE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:N) #2647
+- Renforcement des contrôles au retour d'une télétransmission par lot
+  (CVSS 4.3 - criticité MOYENNE - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:L/A:N) #2647
 
 ## [4.1.25] - 2026-11-02
 

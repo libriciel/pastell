@@ -6,12 +6,16 @@ namespace Pastell\Service\Document;
 
 use DocumentActionEntiteSQL;
 use DocumentEntiteSQL;
+use DocumentIndexSQL;
 
 final class DocumentSearchService
 {
+    private const CSV_HEADER = ['ENTITE', 'ID_D', 'TYPE', 'TITRE', 'DERNIERE ACTION', 'DATE DERNIERE ACTION'];
+
     public function __construct(
         private readonly DocumentActionEntiteSQL $documentActionEntiteSQL,
         private readonly DocumentEntiteSQL $documentEntiteSQL,
+        private readonly DocumentIndexSQL $documentIndexSQL,
     ) {
     }
 
@@ -47,5 +51,36 @@ final class DocumentSearchService
         }
         $nb_document = $this->documentEntiteSQL->countDocumentsWithLastActionAfter($id_e, $type, $last_action_date);
         return intdiv($nb_document, $limit) * $limit;
+    }
+
+    public function getIndexValues(string $id_d): array
+    {
+        return $this->documentIndexSQL->getAll($id_d);
+    }
+
+    public function getCsvLines(
+        DocumentSearchCriteria $criteria,
+        array $indexed_fields,
+        string $sort,
+        string $direction,
+    ): array {
+        $document_list = $this->search($criteria, 0, $this->count($criteria), $sort, $direction);
+
+        $line_list = [array_merge(self::CSV_HEADER, array_values($indexed_fields))];
+        foreach ($document_list as $document_info) {
+            $line = [
+                $document_info['denomination'],
+                $document_info['id_d'],
+                $document_info['type'],
+                $document_info['titre'],
+                $document_info['last_action'],
+                $document_info['last_action_date'],
+            ];
+            foreach (array_keys($indexed_fields) as $field_name) {
+                $line[] = $this->documentIndexSQL->get($document_info['id_d'], $field_name);
+            }
+            $line_list[] = $line;
+        }
+        return $line_list;
     }
 }

@@ -63,18 +63,23 @@ class TdtTeletransmettre extends ActionExecutor
                 ->get($id_d)
                 ->get($stringMapper->get('tedetis_transaction_id'));
             $lst_id_transaction .= "id[]=$tedetis_transaction_id&";
-            $this->changeAction($this->action, "La télétransmission par lot a été ordonnée depuis Pastell");
+            $this->getActionChange()->addAction(
+                $id_d,
+                $this->id_e,
+                $this->id_u,
+                $this->action,
+                'La télétransmission par lot a été ordonnée depuis Pastell'
+            );
         }
 
         $this->setJobManagerForLot($all_id_d);
 
         $url_retour = sprintf(
-            '%s/Document/retourTeletransmission?%stype=%s&id_e=%s&id_u=%s&action=%s',
+            '%s/Document/retourTeletransmission?%stype=%s&id_e=%s&action=%s',
             $this->getSiteBase(),
             $lst_id_d,
             $this->type,
             $this->id_e,
-            $this->id_u,
             $return_teletransmission_tdt
         );
         $to = $redirect_url . "?{$lst_id_transaction}";
@@ -83,7 +88,7 @@ class TdtTeletransmettre extends ActionExecutor
         }
         $to .= "&url_return=" . urlencode($url_retour);
 
-        header("Location: $to");
-        exit;
+        header_wrapper("Location: $to");
+        exit_wrapper();
     }
 }

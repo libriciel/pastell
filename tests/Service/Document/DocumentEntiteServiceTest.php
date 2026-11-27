@@ -93,4 +93,13 @@ final class DocumentEntiteServiceTest extends PastellTestCase
             $this->documentEntiteService->getDocumentsThroughActionOlderThan(self::ID_E_COL, self::TYPE, 'creation', 1)
         );
     }
+
+    public function testGetActions(): void
+    {
+        $id_d = $this->createDocument('test')['id_d'];
+
+        $action_list = $this->documentEntiteService->getActions(self::ID_E_COL, $id_d);
+        static::assertCount(1, $action_list);
+        static::assertSame('creation', $action_list[0]['action']);
+    }
 }

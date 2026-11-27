@@ -34,4 +34,36 @@ class TdtTeletransmettreTest extends PastellTestCase
             $contents
         );
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testGoLotChangesAll(): void
+    {
+        $connector = $this->createConnector('fakeTdt', 'Fake TdT');
+        $this->associateFluxWithConnector($connector['id_ce'], 'actes-generique', 'TdT');
+        $id_d_list = [
+            $this->createDocument('actes-generique')['id_d'],
+            $this->createDocument('actes-generique')['id_d'],
+        ];
+
+        ob_start();
+        try {
+            $this->getObjectInstancier()->getInstance(ActionExecutorFactory::class)
+                ->executeLotDocument(self::ID_E_COL, self::ID_U_ADMIN, $id_d_list, 'teletransmission-tdt');
+            self::fail('The batch teletransmission must redirect to the TdT');
+        } catch (Exception $e) {
+            self::assertSame('Exit called with code 0', $e->getMessage());
+        } finally {
+            $contents = ob_get_clean();
+        }
+
+        self::assertStringContainsString(
+            urlencode("/Document/retourTeletransmission?id_d[]=$id_d_list[0]&id_d[]=$id_d_list[1]&"),
+            $contents
+        );
+        foreach ($id_d_list as $id_d) {
+            $this->assertLastDocumentAction('teletransmission-tdt', $id_d);
+        }
+    }
 }

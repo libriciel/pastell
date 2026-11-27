@@ -20,6 +20,11 @@ final class EntityInfoService
     ) {
     }
 
+    public function getInfo(int $id_e): ?array
+    {
+        return $this->entiteSQL->getInfo($id_e) ?: null;
+    }
+
     public function getDenomination(int $id_e): string
     {
         if ($id_e === RootEntity::ID_E) {
